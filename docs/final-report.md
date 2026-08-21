@@ -1,174 +1,273 @@
-# Agent SDK v0.3 — Implementation Report
+# Agent SDK v0.35 — Execution Consolidation Report
 
-**Date:** 2026-08-21
+**Date:** 2026-08-22
 
 **Status:** implemented
 
-**Version:** 0.3.0
+**Version:** 0.35.0
 
 ## Outcome
 
-v0.3 preserves the v0.2 workflow path and adds a true iterative execution path:
+v0.35 consolidates the architecture around one external-turn coordinator and one canonical
+agentic-loop implementation:
 
 ```text
-PreflightPlan
-  → current-Phase capability catalog
-  → planner/responder model
-  → shared runtime CapabilityGateway
-  → Knowledge or Tool observation
-  → planner/responder model again
-  → final / pending confirmation / deterministic stop
+AgentRuntime
+→ AgentHarness
+  → resolve Agent_SDK PendingAction
+  → semantic Preflight when structurally required
+  → compile authoritative current-state context
+  → AgentLoopEngine
+      → StrandsLoopEngine
+      → model/tool lifecycle + ConversationManager + Interventions
+      → every capability request crosses CapabilityGateway
+  → persist Agent_SDK events, state, reply, and call metrics
 ```
 
-The architecture now has three execution Harnesses:
+Agent_SDK owns control-plane semantics. Strands supplies mature, temporary execution machinery.
+Models plan; the runtime authorizes; executors act; ToolResult is truth; Durable Session remembers.
 
-- `TwoPassHarness` — v0.2 bounded-preplanning/workflow strategy;
-- `NativeAgentHarness` — provider-neutral iterative strategy, including Gemini;
-- `ClaudeAgentHarness` — optional Claude Agent SDK adapter in `providers/claude-agent`.
+## Implemented architecture
 
-## Core changes
+### One primary Harness
 
-### Iterative native execution
+`AgentHarness` is the public coordinator for one external user turn. Its `agentic` strategy requires
+an injected engine; its `workflow` strategy retains the bounded compatibility behavior. The runtime
+default is now the primary Harness in workflow mode rather than direct construction of a legacy
+Harness.
 
-`NativeAgentHarness` performs one PreflightPlan, then repeated model decisions. It can request
-document, record, web, and Tool capabilities that were not in the preflight retrieval list. The
-same model stream plans and responds during the inner loop.
+Core's `AgentLoopEngine` interface contains only Agent_SDK types: compiled context, current
+capability catalog, runtime decision/result callbacks, restricted execution context, limits,
+metrics, and neutral lifecycle traces. `ReferenceLoopEngine` supports deterministic tests and
+offline examples. `StrandsLoopEngine` is canonical for real agentic execution.
 
-Document/record/web requests in one iteration execute in concurrent batches bounded by
-`maxParallelReadCalls`. Existing read Tools and every Action execute sequentially.
+### Strands execution layer
 
-### Shared capability authority
+`@agent-sdk/integration-strands` pins `@strands-agents/sdk` 1.14.0 and `@google/genai` 2.6.0. It:
 
-`CapabilityGateway` owns the common path for TwoPass, Native, and Claude requests. It validates
-current Phase scope, source kind, schemas, typed authority, confirmation, idempotency, executor
-availability, and deterministic budgets. Claude hooks are integration callbacks, not a second
-policy system.
+- creates a fresh Strands `Agent` for each external turn;
+- keeps one mutable `InvocationState` across that turn's model/tool cycles;
+- invokes provider-level models, including Strands' `GoogleModel` for Gemini;
+- refreshes the model tool catalog from the current Agent_SDK Phase/capability snapshot;
+- maps lifecycle hooks to provider-neutral trace events;
+- adapts Proceed/Deny/Guide/Confirm/Transform decisions to Strands Interventions;
+- delegates all real Knowledge/Tool execution to Agent_SDK's `CapabilityGateway`;
+- uses the actual `SummarizingConversationManager` conservatively, with proactive compression off;
+- counts agent-loop, Guide-retry, and conversation-summary model activity.
 
-### Preflight terminology
+No Strands tool callback performs an unapproved side effect. The callback returns the authoritative
+observation cached after the Gateway decision. Runtime-only Host Context can be read by the adapter
+through InvocationState but is never serialized into model messages.
 
-The public `PreflightPlan` type describes the old `TurnPlan` shape. `TurnPlan` remains an alias.
-Preflight establishes memory, Working Notes, macro signals, and optional initial retrieval; it does
-not prescribe the full autonomous trajectory.
+### Narrow Preflight and instruction scopes
 
-### Web Knowledge
+Agentic Preflight synchronizes Memory, Working Notes, and coarse Flow signals. It receives no
+knowledge source catalog, emits no accepted retrieval requests, and does not prescribe a future
+tool trajectory. Evidence acquisition happens in the iterative loop.
 
-`WebSearchProvider` is provider-neutral and injected into `KnowledgeIndex`. `web_search` sources can
-fix allowed/blocked domains. Company website search is the same source kind with `allowedDomains`.
-Missing search infrastructure rejects explicitly. Tests use fakes and perform no live network call.
+Preflight skips only when definition structure proves that no Memory, Working Note, signal, or
+compatibility retrieval output is possible. Tests confirm the decision uses no regex, keyword, or
+phrase dictionary.
 
-The existing LangChain document implementation remains localized to
-`core/src/knowledge/in-memory.ts`, still using `RecursiveCharacterTextSplitter` and local lexical
-ranking. Record queries remain deterministic and outside LangChain.
+Rules support `planner`, `response`, and `both` scopes. Planner rules are present during semantic
+Preflight. Response rules and shared rules are compiled into the one agent-loop system context;
+Strands middleware may update the provider call's current tool specification without introducing a
+framework type into core.
 
-### Host Context observation
+### Durable authority and confirmation
 
-`AgentRuntime.observeHostContext()` validates and persists `HostContextObserved` without a user
-message, Harness execution, or assistant reply. Studio exposes a development context-only endpoint
-and control. The next user turn sees the newest permitted context; restricted visibility still does
-not leak to models.
+Agent_SDK still owns Durable Session, ContextCompiler, Memory, Host Context, Flow, Knowledge,
+ToolDefinition/ToolExecutor, CapabilityGateway, exact consent, idempotency, and event truth.
+InvocationState and Strands conversation history are temporary execution details.
 
-### Claude adapter
+`Confirm` is derived from an Agent_SDK Gateway result after a durable `PendingAction` freezes the
+validated payload and hash. Strands interrupts the current loop, but it does not become the pending
+action store. A later external turn resolves and executes only the frozen payload. `Transform`
+modifies the proposed input before the Gateway, so schema validation, payload hash, authority,
+idempotency, and confirmation run again against the transformed value.
 
-`providers/claude-agent` depends on `@anthropic-ai/claude-agent-sdk` 0.2.141. It uses the current
-`query()`, SDK-MCP tool, hook, `defer`, and `maxTurns` APIs. Each external user turn creates a fresh
-query with built-in filesystem/Skill/subagent tools disabled. Custom capability calls pass through
-core's gateway.
+### Standalone P01/P02 builds
 
-When confirmation is needed, the gateway first persists `PendingAction`, the PreToolUse bridge
-returns `defer`, and the Harness surfaces only the runtime confirmation prompt. The next external
-turn resolves and executes the frozen payload before a new Claude query. Claude resume is not used.
+`examples/p01-craig` and `examples/p02-estate` are fresh AgentDefinitions built from original
+requirements and product data. They do not import either reference application's chat route,
+prompt, UI state machine, classifier, provider call, or email implementation.
 
-## Events and limits
+P01 includes structured project memory, authoritative hemp-lime guidance, current-product code
+caveats, and deterministic wall-volume calculation. P02 includes the exact six-property and room
+data, deterministic record querying, qualification/seller/handoff Flow, and a once-per-session,
+confirmation-gated injected handoff executor. Their mains run as standalone Agent_SDK applications
+through the primary Harness and offline `ReferenceLoopEngine`.
 
-Additive structured trace events are:
+Historical benchmark definitions/results remain present. The benchmark adapters project to the
+standalone builds, but v0.35 does not present a new cross-builder comparison.
 
-- `AgentIterationStarted` / `AgentIterationCompleted`;
-- `DelegationRequested` / `DelegationRejected` / `DelegationCompleted`.
+### Studio and examples
 
-They store capability decisions, inputs, compact observations, current Phase, model metadata, and
-runtime outcomes. No hidden chain-of-thought is persisted.
+Studio now defaults to the primary `AgentHarness`, reports Strands vs offline reference engine
+status, exposes workflow and explicitly legacy modes, displays model-call breakdowns, and renders
+neutral execution lifecycle events without showing InvocationState values.
 
-New defaults:
+`examples/strands-gemini` proves AgentDefinition + Durable Session + semantic Preflight +
+StrandsLoopEngine + Gemini-compatible model + Agent_SDK Knowledge + CapabilityGateway with a fully
+offline scripted Strands model. `--live` switches the same application to Strands `GoogleModel`
+when an application-supplied Gemini key exists.
 
-| Policy | Default |
-| --- | ---: |
-| `maxAgentIterations` | 8 |
-| `maxKnowledgeCallsPerTurn` | 12 |
-| `maxActionRequestsPerTurn` | 4 |
-| `maxParallelReadCalls` | 4 |
+## Compatibility status
 
-Claude `maxTurns` is mapped from `maxAgentIterations`, while core counters remain authoritative.
+- **Canonical:** `AgentHarness` + `StrandsLoopEngine` for agentic execution.
+- **Reference/offline:** `ReferenceLoopEngine`.
+- **Deprecated compatibility:** `TwoPassHarness`; use primary workflow strategy.
+- **Deprecated reference:** `NativeAgentHarness`.
+- **Experimental compatibility outside core:** `ClaudeAgentHarness`.
 
-## Studio and example
-
-Studio adds Harness selection, agentic limits, Web Search/company-site source authoring, context-only
-observation, and agent/delegation trace rendering. Claude mode is used when configured; web search
-can be connected through an injected development endpoint.
-
-`examples/native-agent` is an offline executable proof of
-`GeminiProvider + NativeAgentHarness + local Knowledge`. It uses a fake fetch transport and spends
-no quota.
+Working code was retained until replacement coverage exists. v0.35 deliberately does not
+implement Skills, automatic Skill learning, subagents, teams, MCP, Strands Graph/Workflow/Swarm,
+cross-turn Strands resume, a browser SDK, public production Host Context API, semantic LLM rule
+judge, crawler, vector database, embeddings, or a large Studio graph editor.
 
 ## Verification
 
-Automated coverage includes:
+The final offline verification passed:
 
-- multi-iteration Native execution and evidence absent from PreflightPlan;
-- bounded parallel reads and sequential side effects;
-- current-Phase Knowledge/Action scope and post-transition catalog rebuilding;
-- PendingAction freeze/confirm execution;
-- injected web search, company domains, and explicit missing-provider failure;
-- Gemini adapter through the Native loop;
-- out-of-band Host Context and restricted-value non-leakage;
-- mocked Claude capability mapping, defer semantics, and fresh context policy;
-- proof that no Claude Agent SDK import occurs in core;
-- max-iteration stop and full replay/snapshot invariants;
-- all v0.2 regressions.
+- `npm test`: 158/158 tests in 38 suites;
+- `npm run typecheck`;
+- all six offline examples (`minimal`, `estate`, `native`, `p01`, `p02`, `strands`);
+- Studio JavaScript syntax plus a local HTTP smoke test for status, seed, session creation, and one
+  primary-Harness turn;
+- `git diff --check`.
 
-Final verification was clean: `npm test` passed 142/142 tests in 33 suites; `npm run typecheck`,
-all three examples, both benchmark Harness self-checks, Studio JavaScript syntax validation, and
-`git diff --check` also passed. A local Studio HTTP smoke test exercised status, seed, session
-creation, and the context-only observation endpoint without invoking a model.
+Coverage includes structural and semantic Preflight, scoped
+instructions, multi-cycle InvocationState mutation, restricted-context non-leakage, dynamic tools,
+Guide retries, transformed payload revalidation, PendingAction confirmation, conservative and
+forced ConversationManager behavior, dependency containment, standalone P01/P02 behavior, session
+replay/snapshots, legacy regressions, and Studio syntax/smoke behavior. No live provider, network,
+paid search, or benchmark comparison was used.
 
 ## Explicit acceptance answers
 
-1. **Can Gemini still run an agentic loop?** Yes. `GeminiProvider` drives `NativeAgentHarness`; an
-   automated test and offline example prove it.
-2. **Does Claude Agent SDK appear anywhere inside core?** No. Core contains no import or type from
-   `@anthropic-ai/claude-agent-sdk`.
-3. **Which Harness uses Claude Agent SDK?** Only `ClaudeAgentHarness` in
-   `providers/claude-agent`.
-4. **What is now meant by PreflightPlan?** A pre-execution application-state proposal for user
-   facts, Working Notes, macro signals, and optional initial retrieval—not the whole autonomous plan.
-5. **What is now meant by Agent Planner?** The model's iterative semantic decision about the next
-   capability request or final response inside the current Phase.
-6. **Can the Agent Planner retrieve new evidence after seeing earlier evidence?** Yes.
-7. **Can it make multiple iterative Knowledge calls?** Yes, across multiple model iterations and in
-   safe bounded parallel batches within one iteration.
-8. **Does Flow restrict every iteration?** Yes. The catalog is rebuilt from current Phase and the
-   gateway revalidates every request.
-9. **Can a Phase allow Knowledge but prohibit side effects?** Yes, with knowledge scope and an empty
-   Action/tool scope.
-10. **Can Host Context update without invoking an LLM?** Yes, through
-    `AgentRuntime.observeHostContext()`.
-11. **Does page/context navigation itself trigger an agent run?** No.
-12. **How would a future host application send page context?** Its UI reports observations to an
-    authenticated host backend/future Agent API, which calls `observeHostContext`; trusted identity
-    should come from backend/auth state.
-13. **Is Web Search product-classified as Knowledge?** Yes.
-14. **How is company website search represented?** A `web_search` Knowledge source with fixed
-    `allowedDomains`.
-15. **Does Web Search require Anthropic?** No. It uses injected `WebSearchProvider`.
-16. **Can a fake/native search provider be injected?** Yes; all automated web tests use one.
-17. **How does Claude WebSearch map to our Knowledge semantics?** v0.3 uses a controlled custom
-    capability bridge rather than unrestricted built-in WebSearch, preserving source scope, domains,
-    limits, and audit events.
-18. **Does PendingAction remain runtime-owned?** Yes, including frozen validated args and hash.
-19. **Can Claude permission/hooks bypass our authority?** No. Effective permission is our runtime
-    gateway plus Claude execution permission; a hook cannot grant what core rejects.
-20. **Can the session still reconstruct from durable events/snapshot?** Yes. Full replay and
-    snapshot-plus-later-event equality remain tested, including v0.3 events and observations.
-21. **What was explicitly deferred to v0.4?** Skills/SKILL.md, automatic Skill learning, subagents,
-    teams/multi-agent orchestration, Skill/subagent Phase scope, cross-turn Claude resume,
-    phase-specific Harness switching, visual Flow graph, MCP integration, semantic rule judge,
-    proactive context triggers, browser SDK, production public context API, and generic crawling.
+1. **What is the one primary Harness concept after v0.35?** `AgentHarness`, the Agent_SDK-owned
+   coordinator for one external user turn. It supports primary agentic execution and bounded
+   workflow compatibility.
+
+2. **What is an `AgentLoopEngine`?** A narrow provider-neutral core contract for temporary
+   model/tool loop mechanics. It consumes authoritative compiled context and capability callbacks
+   and returns a reply, stop reason, neutral trace, and metrics; it owns no durable business truth.
+
+3. **Which engine is canonical for agentic execution?** `StrandsLoopEngine` from
+   `@agent-sdk/integration-strands`.
+
+4. **Where does `@strands-agents/sdk` appear?** In the Strands integration package (and its tests
+   and offline example fixture), plus the lockfile. It does not appear in Agent_SDK core source.
+
+5. **Does any Strands type leak into core public contracts?** No. Core exposes only its own
+   `AgentLoop*`, capability, context, decision, metric, and trace types. A static containment test
+   checks protected control-plane directories.
+
+6. **Can Gemini run through the Strands engine?** Yes. `createStrandsGeminiEngine` constructs
+   Strands' first-party `GoogleModel` from the AgentDefinition model policy plus application wiring.
+
+7. **Are credentials still outside AgentDefinition?** Yes. Keys are supplied to provider/engine
+   constructors or read by explicit application-boundary helpers, never serialized in the
+   definition, session, prompt, or trace.
+
+8. **What happened to `NativeAgentHarness`?** It is deprecated and retained as an offline/reference
+   regression path. It is not the canonical implementation.
+
+9. **What happened to `TwoPassHarness`?** It is deprecated and retained for compatibility. New
+   bounded applications use `AgentHarness({ strategy: "workflow" })`.
+
+10. **What happened to `ClaudeAgentHarness`?** It remains an experimental compatibility adapter in
+    `providers/claude-agent`, outside core. It is not a second primary architecture.
+
+11. **What does Preflight do now?** It proposes user-established structured Memory changes,
+    ephemeral Working Notes, and coarse semantic Flow signals before the loop.
+
+12. **What no longer belongs in Preflight?** Retrieval planning, evidence acquisition, tool-call
+    sequencing, complete task decomposition, and the future capability trajectory.
+
+13. **Under what structural conditions is Preflight skipped?** When there are zero Memory fields,
+    zero available Flow signals, `extractWorkingNotes` is false, and no enabled compatibility
+    retrieval catalog can produce an output. Agentic mode always disables compatibility retrieval.
+
+14. **Does any Preflight skip depend on regex/keywords/phrase dictionaries?** No. It depends only on
+    declared definition structure and execution strategy.
+
+15. **How many model calls occur for typical direct/tool paths?** A structurally trivial direct path
+    uses one loop call; a semantic-state direct path normally uses one Preflight plus one loop call.
+    A one-tool path normally adds one loop call after the observation: two without Preflight, three
+    with Preflight. Guide retries and summaries add explicitly reported calls.
+
+16. **What causes Guide retries?** A deterministic/application RuntimeDecision or terminal validator
+    returns `guide`, and the configured retry ceiling has not been reached. The feedback is inserted
+    into the same Strands loop.
+
+17. **Does Guide itself require an LLM?** No. Producing the decision/feedback can be deterministic.
+    Acting on it causes a new model call, which is counted as a Guide retry.
+
+18. **How are planner vs response Instructions represented in a single agent loop?** Rules declare
+    `scope: "planner" | "response" | "both"`. Semantic Preflight compiles planner/shared rules;
+    the loop compiles response/shared rules plus its execution task instruction.
+
+19. **Can Strands middleware modify model-call context without leaking into core?** Yes. The
+    integration refreshes provider tool specs before model invocation through Strands middleware;
+    core sees only the neutral capability snapshot and engine contract.
+
+20. **What does InvocationState contain?** Per-turn execution context, request/trace/session IDs,
+    current iteration and model/tool/Guide counters, mutation metadata, runtime-context key-read
+    metadata, and transient decision/outcome caches. It contains no framework-independent durable
+    source of truth and is not persisted wholesale.
+
+21. **Which Host Context fields map to model prompt vs InvocationState?** Fields declared with
+    `visibility: "model"` may enter compiled prompt context. `runtime_only` and other withheld fields
+    are omitted from model messages and passed out of band in the engine execution context /
+    InvocationState for authorized adapters.
+
+22. **Does InvocationState replace Durable Session?** No. It is discarded after the external turn;
+    Durable Session remains replayable authoritative state.
+
+23. **Does Strands ConversationManager replace ContextCompiler?** No. ContextCompiler produces the
+    initial authoritative application context. ConversationManager only reduces temporary inner-loop
+    messages when context pressure requires it.
+
+24. **Does Strands Session Management replace our Durable Session?** No. Cross-turn Strands session
+    resume is explicitly deferred, and a fresh Strands agent is created for each turn.
+
+25. **How are our Runtime decisions adapted to Interventions?** `proceed`, `deny`, `guide`,
+    `confirm`, and `transform` map respectively to Strands Proceed, Deny, Guide, Confirm/interrupt,
+    and Transform actions. Agent_SDK defines their semantics.
+
+26. **How does Confirm interact with PendingAction?** CapabilityGateway first creates the durable
+    Agent_SDK PendingAction with validated frozen args/hash. Confirm then pauses Strands and surfaces
+    that runtime prompt. The next user turn resolves and executes the frozen action outside the old
+    invocation.
+
+27. **Can Transform bypass existing confirmation?** No. Transform changes the proposal before the
+    Gateway call; the new value is revalidated, rehashed, re-authorized, and freshly confirmed when
+    required.
+
+28. **Is Web Search still provider-neutral and traceable?** Yes. It remains Agent_SDK Knowledge via
+    an injected `WebSearchProvider`, Phase scope, Gateway budgets, domain restrictions, and events.
+
+29. **Can Strands built-in Google Search bypass Knowledge policy?** No. The engine exposes only
+    capabilities produced by Agent_SDK's current catalog. Built-in Google Search is not enabled;
+    search must use the Agent_SDK Knowledge capability and Gateway.
+
+30. **Are P01/P02 AgentDefinitions rebuilt from original requirements?** Yes. The standalone builds
+    normalize original requirements/product data into fresh v0.35 definitions and injected
+    executors without copying bespoke application runtimes.
+
+31. **Are historical benchmark artifacts preserved?** Yes. Previous benchmark material remains in
+    place. v0.35 does not erase history or claim a new cross-building-method comparison.
+
+32. **What is explicitly deferred to v0.4?** Provider-neutral Skills and governed Skill proposals,
+    subagents, MCP, Preflight-collapse experiments, long-term/resumable execution context, richer
+    Flow evaluation, host/browser integration, rule refinement, and formal-release preparation.
+    Teams, Strands Graph/Workflow/Swarm, automatic permanent learning, and cross-turn Strands resume
+    are not v0.35 features.
+
+33. **What are the stated formal-release requirements for v1.0?** v1.0 is the first formal/stable
+    release. It requires public API/deprecation cleanup, SemVer, stable definition serialization,
+    package-boundary documentation, migration guidance, commercial examples, concurrency and
+    transaction review, crash/retry/idempotency tests, security review, provider failure semantics,
+    observability contracts, formal P01/P02/P03/P04 evidence, deployment guidance, API reference,
+    compatibility matrix, and proof that framework-specific types do not leak through core.

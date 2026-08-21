@@ -17,8 +17,8 @@ export interface DefineAgentInput extends Omit<AgentDefinition, "version" | "pol
 export function normalizeAgentRules(rules: AgentRuleInput[] = []): AgentRule[] {
   return rules.map((rule, index) =>
     typeof rule === "string"
-      ? { id: `legacy-rule-${index + 1}`, text: rule, kind: "invariant" }
-      : rule,
+      ? { id: `legacy-rule-${index + 1}`, text: rule, kind: "invariant", scope: "both" }
+      : { ...rule, scope: rule.scope ?? "both" },
   );
 }
 
@@ -83,11 +83,11 @@ export function validateDefinition(def: AgentDefinition): DefinitionIssue[] {
   }
   if (def.planning?.model && !def.planning.model.providerId) error("planning.model.providerId", "planner providerId is required");
   if (def.planning?.model && !def.planning.model.model) error("planning.model.model", "planner model is required");
-  if (def.execution && !["two_pass", "native_agent", "claude_agent"].includes(def.execution.harness)) {
+  if (def.execution && !["agentic", "workflow", "two_pass", "native_agent", "claude_agent"].includes(def.execution.harness)) {
     error("execution.harness", `unknown Harness "${String(def.execution.harness)}"`);
   }
   if (def.execution?.executionContextPolicy === "resume") {
-    error("execution.executionContextPolicy", "v0.3 supports only fresh_each_turn; resume is deferred to v0.4");
+    error("execution.executionContextPolicy", "v0.35 supports only fresh_each_turn; resume is deferred to v0.4");
   }
 
   if (def.policies.maxSteps < 1) error("policies.maxSteps", "maxSteps must be at least 1");
@@ -147,6 +147,9 @@ export function validateDefinition(def: AgentDefinition): DefinitionIssue[] {
     if (!rule.id.trim()) error("globalRules", "rule id is required");
     if (!rule.text.trim()) error(`globalRules.${rule.id}`, "rule text is required");
     if (ruleIds.has(rule.id)) error(`globalRules.${rule.id}`, `duplicate rule id "${rule.id}"`);
+    if (rule.scope && !["planner", "response", "both"].includes(rule.scope)) {
+      error(`globalRules.${rule.id}.scope`, `unknown instruction scope "${String(rule.scope)}"`);
+    }
     ruleIds.add(rule.id);
   }
 

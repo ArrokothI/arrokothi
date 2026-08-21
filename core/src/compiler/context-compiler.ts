@@ -47,6 +47,8 @@ export interface CompileInput {
   retrievedKnowledge?: KnowledgeResult[];
   /** Extra instruction for this particular response/tool-loop call. */
   taskInstruction?: string;
+  /** Agent loops receive planning/execution and final-response instructions in one prompt. */
+  instructionMode?: "response" | "agent_loop";
   transcriptWindow?: number;
   now: Date;
 }
@@ -79,13 +81,46 @@ export function effectiveRules(definition: AgentDefinition, phase: Phase | undef
   return normalizeAgentRules(definition.globalRules).filter((rule) => rule.kind === "invariant" || !overridden.has(rule.id));
 }
 
-function rulesSection(rules: AgentRule[]): CompiledContextSection | null {
-  if (!rules.length) return null;
+function rulesSection(rules: AgentRule[], scope: "planner" | "response"): CompiledContextSection | null {
+  const selected = rules.filter((rule) => rule.scope === undefined || rule.scope === "both" || rule.scope === scope);
+  if (!selected.length) return null;
+  const title = scope === "planner" ? "Planning / execution instructions" : "Final response instructions";
   return {
-    id: "effective_rules",
-    title: "Effective rules",
-    lines: rules.map((rule) => `- [${rule.kind.toUpperCase()}:${rule.id}] ${rule.text}`),
+    id: scope === "planner" ? "planning_instructions" : "effective_rules",
+    title,
+    lines: selected.map((rule) => `- [${rule.kind.toUpperCase()}:${rule.id}] ${rule.text}`),
   };
+}
+
+function exactRulesSection(
+  rules: AgentRule[],
+  scope: "planner" | "response" | "both",
+): CompiledContextSection | null {
+  const selected = rules.filter((rule) => (rule.scope ?? "both") === scope);
+  if (!selected.length) return null;
+  const presentation = scope === "planner"
+    ? { id: "planning_instructions", title: "Planning / execution instructions" }
+    : scope === "response"
+      ? { id: "effective_rules", title: "Final response instructions" }
+      : { id: "shared_instructions", title: "Instructions for planning and final response" };
+  return {
+    ...presentation,
+    lines: selected.map((rule) => `- [${rule.kind.toUpperCase()}:${rule.id}] ${rule.text}`),
+  };
+}
+
+function instructionSections(rules: AgentRule[], mode: "response" | "agent_loop"): CompiledContextSection[] {
+  if (mode === "response") {
+    const section = rulesSection(rules, "response");
+    return section ? [section] : [];
+  }
+  // A single inner loop may plan and answer, but a `both` rule should still appear only once.
+  return [
+    exactRulesSection(rules, "planner"),
+    exactRulesSection(rules, "both"),
+    exactRulesSection(rules, "response"),
+  ]
+    .filter((section): section is CompiledContextSection => section !== null);
 }
 
 function phaseSection(phase: Phase | undefined): CompiledContextSection | null {
@@ -260,7 +295,7 @@ export function compileContext(input: CompileInput): CompiledContext {
   const selected = knowledgeSection(input.retrievedKnowledge ?? [], definition.policies.maxKnowledgeChars);
   const sections = [
     goalSection(definition),
-    rulesSection(rules),
+    ...instructionSections(rules, input.instructionMode ?? "response"),
     phaseSection(phase),
     memorySection(state, definition),
     host,
@@ -292,7 +327,7 @@ export function compilePlannerContext(input: CompilePlannerInput): CompiledConte
   });
   const sections = [
     goalSection(definition),
-    rulesSection(rules),
+    rulesSection(rules, "planner"),
     phaseSection(phase),
     memorySection(state, definition),
     host,

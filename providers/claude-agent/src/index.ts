@@ -71,6 +71,7 @@ export interface ClaudeAgentHarnessOptions {
 }
 
 /**
+ * @deprecated Experimental provider-specific v0.3 history. Prefer AgentHarness + StrandsLoopEngine.
  * Optional Claude-specific execution Harness. Core remains provider-neutral; this package alone
  * imports Claude Agent SDK. Every custom capability still enters the core CapabilityGateway.
  */

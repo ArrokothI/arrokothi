@@ -1,161 +1,130 @@
-# Agent SDK — experimental v0.3
+# Agent SDK v0.35
 
-A provider-neutral agent kernel, iterative execution Harnesses, and a small development Studio.
+A provider-neutral agent control plane with one primary external-turn Harness and a canonical
+Strands execution engine.
 
-> LLM proposes. Runtime validates and authorizes. Executor acts. ToolResult is truth. Session remembers.
+> Models plan. Runtime authorizes. Executors act. ToolResult is truth. Durable Session remembers.
 
-v0.3 evolves v0.2; it does not replace its workflow path. `TwoPassHarness` remains available for
-bounded preplanning, while `NativeAgentHarness` adds an iterative observe/delegate/observe loop.
-`ClaudeAgentHarness` is an optional package outside core.
+Agent_SDK owns the meaning of the agent: `AgentDefinition`, Durable Session, Structured Memory,
+Host Context, Flow, Knowledge, Tools, confirmation, idempotency, and audit events. A narrow
+`AgentLoopEngine` seam delegates temporary inner-loop mechanics. The canonical agentic engine is
+`StrandsLoopEngine` in `@agent-sdk/integration-strands`; no Strands type appears in core's public
+contracts.
 
-## Install and run
+## Install and verify
 
-Requires Node 22.6+.
+Node 22.6 or newer is required.
 
 ```bash
 npm install
 npm test
 npm run typecheck
-npm run example:minimal
-npm run example:estate
-npm run example:native
+npm run example:strands
+npm run example:p01
+npm run example:p02
 npm run studio
 ```
 
-`example:native` is an offline fixture that drives `GeminiProvider` through
-`NativeAgentHarness` and local document Knowledge. It spends no quota.
+All default examples and tests are offline. The optional live Strands/Gemini example reads a key at
+the application boundary:
 
-The Studio uses an offline response provider unless `GEMINI_API_KEY` is set. Claude Agent mode is
-available when `ANTHROPIC_API_KEY` is configured. An optional provider-neutral web endpoint can be
-connected with `STUDIO_WEB_SEARCH_ENDPOINT`; automated tests never require network access.
+```bash
+GEMINI_API_KEY=... npm run example:strands -- --live
+```
 
-## Three layers
+Credentials and provider objects are never serialized into `AgentDefinition`.
+
+## Architecture
 
 ```text
 APPLICATION CONTROL PLANE
-  AgentDefinition · Durable Session · Memory · Host Context
-  Flow · Instructions/Policies · Knowledge definitions · Tool authority
+  AgentDefinition · Durable Session · Memory · Host Context · Flow
+  Knowledge · CapabilityGateway · Tool authority · PendingAction
 
-EXECUTION HARNESS
-  TwoPassHarness · NativeAgentHarness · ClaudeAgentHarness
+PRIMARY EXTERNAL-TURN COORDINATOR
+  AgentHarness
+    semantic Preflight when structurally needed
+    current-state context compilation
+    pending-confirmation resolution
+    metrics and durable trace projection
 
-MODELS / CAPABILITIES / INFRASTRUCTURE
-  Gemini · Claude Agent SDK · LangChain documents · Web Search · APIs · Tools
+INNER-LOOP EXECUTION
+  AgentLoopEngine (provider-neutral core contract)
+    StrandsLoopEngine (canonical agentic implementation)
+    ReferenceLoopEngine (small deterministic/offline implementation)
+
+MODELS / INFRASTRUCTURE
+  Strands GoogleModel / Gemini · other adapters · stores · executors
 ```
 
-`AgentHarness` is the stable execution seam. It manages model execution, iterative delegation,
-runtime gates, result delivery, limits, cancellation, execution context, and final/blocked states.
-The Agent Planner decides what to do next; the Harness safely lets it do that and continue.
+Construct the primary path explicitly:
 
-### TwoPassHarness
-
-The v0.2 strategy remains the default for compatibility:
-
-```text
-PreflightPlan → explicit initial retrieval → response/reactive-tool loop
+```ts
+const runtime = new AgentRuntime({
+  definition,
+  sessions,
+  model: preflightModel,
+  tools,
+  knowledge,
+  harness: new AgentHarness({
+    engine: createStrandsGeminiEngine({ apiKey: process.env.GEMINI_API_KEY }),
+  }),
+});
 ```
 
-It is useful for deterministic and workflow-oriented agents.
+`AgentRuntime` defaults to `new AgentHarness({ strategy: "workflow" })` for bounded compatibility.
+Use `strategy: "agentic"` plus an engine for the consolidated agent loop.
 
-### NativeAgentHarness
+## Preflight and the loop
 
-The provider-neutral iterative strategy works with the existing `ModelProvider`, including Gemini:
+Preflight is semantic state synchronization only: user-established Memory proposals, ephemeral
+Working Notes, and coarse Flow signals. It does not pre-plan retrieval, tools, or the future
+capability trajectory in agentic mode. It is skipped only when definition structure proves that no
+memory, note, signal, or compatibility-retrieval output is possible; no keyword or regex heuristic
+is used.
 
-```text
-PreflightPlan
-  → compile current control context
-  → model decides delegation(s) or final text
-  → CapabilityGateway validates current Phase, schemas, provenance, limits, and consent
-  → executor/provider returns structured observation
-  → model decides again
-  → final / awaiting confirmation / limit / error / cancellation
-```
+The inner loop receives a compiled, current-state context and a dynamic capability catalog. Every
+capability request still passes through `CapabilityGateway`. Strands interventions adapt
+Agent_SDK's provider-neutral decisions—Proceed, Deny, Guide, Confirm, and Transform—without owning
+business authority. A Transform is revalidated and, when consequential, reconfirmed against the
+new frozen payload.
 
-Safe document, record, and web Knowledge calls from one iteration may run concurrently up to
-`maxParallelReadCalls`. Existing read Tools and all actions remain conservative/sequential.
+Strands `InvocationState` is ephemeral per external turn. It may carry request IDs, counters,
+restricted runtime context, and adapter caches out of band; it never replaces Durable Session or
+becomes model-visible. `SummarizingConversationManager` reduces only the temporary loop history,
+while `ContextCompiler` remains responsible for authoritative application context.
 
-### ClaudeAgentHarness
+## Standalone P01 and P02 builds
 
-`providers/claude-agent` imports `@anthropic-ai/claude-agent-sdk`; core never does. It creates a
-fresh Claude query for each external user turn, exposes only runtime-scoped custom capabilities,
-maps `maxAgentIterations` to Claude `maxTurns`, and bridges `PreToolUse` to the same
-`CapabilityGateway`. A confirmation-required request persists our `PendingAction` and defers the
-Claude tool. Cross-turn Claude transcript resume is intentionally deferred.
+- `examples/p01-craig` is a fresh Craig Hempcrete Agent_SDK build with structured project memory,
+  authoritative product/code Knowledge, and deterministic wall-volume calculation.
+- `examples/p02-estate` is a fresh EstatePro Agent_SDK build with the exact property/room catalog,
+  deterministic record queries, coarse Flow, and one frozen-payload confirmation-gated handoff.
 
-## Preflight versus Agent Planner
+They use only Agent_SDK concepts and injected executors; no bespoke runtime code from either
+reference application is imported. Benchmark history remains in `benchmarks/`, but v0.35 does not
+claim or perform a new cross-builder comparison.
 
-`PreflightPlan` is the v0.3 name for the v0.2 `TurnPlan` concept. `TurnPlan` remains a compatibility
-alias. Preflight establishes application state before autonomous execution:
+## Compatibility paths
 
-- user-fact memory proposals;
-- working notes;
-- macro routing signals;
-- optional initial retrieval requests.
-
-It is not the complete future capability trajectory. The Agent Planner is the model decision made
-inside each iterative execution step. It may retrieve new evidence after observing earlier results.
-
-## Capability and authority model
-
-The internal catalog currently has two product categories:
-
-- **Knowledge** — document search, deterministic record query, web search, and read-only Tools;
-- **Action** — write and external-side-effect Tools.
-
-Flow is the macro capability envelope; the Agent Planner has micro-autonomy only inside it. The
-catalog is rebuilt from the current Phase and the gateway checks scope again on every request.
-
-Tool authority remains centralized. Side-effect arguments require declared typed provenance,
-idempotency is runtime-owned, and confirmation binds to one frozen payload. Neither a model nor a
-Claude hook can bypass those checks.
-
-## Knowledge
-
-- Documents still use LangChain `RecursiveCharacterTextSplitter` plus local lexical retrieval.
-- Record sets still use the SDK's typed deterministic query engine—never SQL generation.
-- Web Search uses an injected `WebSearchProvider`; tests use deterministic fakes.
-- Company website search is a `web_search` source with fixed `allowedDomains`.
-
-Web Search is product-classified as Knowledge even when a model protocol represents it as a tool.
-It does not require Anthropic.
-
-## Host Context observation
-
-`AgentRuntime.observeHostContext({ sessionId, hostContext })` validates, events, projects, and
-persists context without a user message, Harness run, or model call. Studio exposes the same
-development operation through `POST /api/sessions/:id/context`.
-
-Recommended trust boundary:
-
-```text
-browser UI observation → authenticated host backend → Host Context → runtime/compiler
-```
-
-Navigation state such as current page or selected item may come from UI observations. Identity,
-permissions, subscription, and business authorization should normally come from authenticated
-backend state, not a raw browser-provided user ID. Observing context alone never triggers an agent.
-
-## Durable session versus execution context
-
-The durable application session is authoritative: memory, Host Context, Phase, PendingAction,
-ledger, ToolResults, and events. Execution context is the temporary model/tool trajectory within a
-Harness run. Claude may compact its internal query context, but that transcript never becomes the
-sole application truth.
+`TwoPassHarness`, `NativeAgentHarness`, and `ClaudeAgentHarness` remain temporarily available for
+regression/reference use. They are not the canonical v0.35 architecture. New applications should
+use `AgentHarness`; agentic applications should inject `StrandsLoopEngine`.
 
 ## Repository layout
 
 ```text
-core/src/capabilities/     provider-neutral catalog + shared runtime gateway
-core/src/harness/          TwoPassHarness + NativeAgentHarness
-core/src/knowledge/        LangChain documents, record queries, WebSearchProvider seam
-core/src/runtime/          turn orchestration + out-of-band Host Context observation
-providers/gemini/          provider-neutral ModelProvider adapter
-providers/claude-agent/    optional Claude Agent SDK Harness adapter
-apps/studio/               SQLite development Studio and trace viewer
-examples/                  workflow examples + offline Gemini/native example
-docs/                      architecture, migration, and implementation report
+core/                         Agent_SDK control plane and engine-neutral contracts
+integrations/strands/         canonical Strands loop implementation
+providers/gemini/             legacy/provider-neutral ModelProvider adapter
+providers/claude-agent/       retained experimental compatibility adapter
+apps/studio/                  minimal development Studio
+examples/strands-gemini/      offline proof and optional live Gemini command
+examples/p01-craig/           standalone P01 build
+examples/p02-estate/          standalone P02 build
+benchmarks/                   preserved historical self-checks/results
+docs/                         migration, roadmap, and architecture report
 ```
 
-See [the v0.3 design](docs/core-v0-design.md), [v0.3 migration notes](docs/v0.3-migration.md), and
-[the implementation report](docs/final-report.md). The [v0.2 migration guide](docs/v0.2-migration.md)
-remains as historical compatibility documentation.
+See [v0.35 migration](docs/v0.35-migration.md), [the implementation report](docs/final-report.md),
+and [the v0.4 roadmap](docs/v0.4-roadmap.md). Earlier v0.2/v0.3 documents remain historical.

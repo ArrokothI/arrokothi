@@ -36,7 +36,7 @@ function blankDefinition() {
     description: "",
     model: { providerId: "gemini", model: "gemini-3.5-flash-lite", temperature: 0.2 },
     planning: { mode: "llm" },
-    execution: { harness: "two_pass", executionContextPolicy: "fresh_each_turn" },
+    execution: { harness: "agentic", executionContextPolicy: "fresh_each_turn" },
     globalRules: [],
     knowledge: [],
     memorySchema: { fields: [] },
@@ -85,7 +85,7 @@ function fillForm(def) {
   $("f-temperature").value = def.model?.temperature ?? "";
   $("f-maxtokens").value = def.model?.maxOutputTokens ?? "";
   $("f-planner-mode").value = def.planning?.mode ?? "llm";
-  $("f-harness").value = def.execution?.harness ?? "two_pass";
+  $("f-harness").value = def.execution?.harness ?? "agentic";
   $("f-planner-provider").value = def.planning?.model?.providerId ?? "";
   $("f-planner-model").value = def.planning?.model?.model ?? "";
   $("f-rules").value = (def.globalRules ?? []).map((rule) =>
@@ -519,7 +519,10 @@ async function send() {
       method: "POST",
       body: JSON.stringify({ message, hostContext: $("f-hostcontext").value }),
     });
-    appendMessage("assistant", lastTurn.reply, `stop=${lastTurn.stopReason} · steps=${lastTurn.steps} · phase=${lastTurn.state.phaseId ?? "none"}`);
+    const calls = lastTurn.metrics
+      ? ` · calls=${lastTurn.metrics.totalModelCalls} (preflight ${lastTurn.metrics.preflightModelCalls}, loop ${lastTurn.metrics.agentLoopModelCalls}, summary ${lastTurn.metrics.conversationSummaryModelCalls}, guide ${lastTurn.metrics.guideRetryModelCalls})`
+      : "";
+    appendMessage("assistant", lastTurn.reply, `stop=${lastTurn.stopReason} · steps=${lastTurn.steps} · phase=${lastTurn.state.phaseId ?? "none"}${calls}`);
     renderState(lastTurn.state, lastTurn.dryRunLedger);
     renderTrace(lastTurn.events);
     renderPrompts(lastTurn.contexts);
@@ -653,6 +656,7 @@ const EVENT_CLASS = {
   RetrievalRequestRejected: "reject",
   AgentIterationStarted: "confirm",
   AgentIterationCompleted: "confirm",
+  ExecutionLifecycleObserved: "confirm",
   DelegationRequested: "action",
   DelegationCompleted: "action",
   DelegationRejected: "reject",
@@ -668,11 +672,12 @@ function describeEvent(event) {
     case "MemoryWriteRejected": return `${p.key} = ${JSON.stringify(p.value)}\nREJECTED (${p.code}): ${p.reason}`;
     case "HostContextObserved": return `accepted: ${p.accepted.map((a) => a.key).join(", ") || "none"}${p.rejected.length ? `\nrejected: ${p.rejected.map((r) => `${r.key} (${r.reason})`).join(", ")}` : ""}`;
     case "SemanticSignalsObserved": return p.signals.join(", ");
-    case "TurnPlanCreated": return `${p.strategy} -> ${p.resolvedBy}\n${JSON.stringify(p.plan, null, 2)}`;
+    case "TurnPlanCreated": return `${p.strategy} -> ${p.resolvedBy}${p.detail ? `\n${p.detail}` : ""}\n${JSON.stringify(p.plan, null, 2)}`;
     case "KnowledgeRetrieved": return `${p.request.kind} · ${p.sourceId} · ${p.returnedCount} result(s)\nids: ${p.resultIds.join(", ")}${p.scores?.length ? `\nscores: ${p.scores.join(", ")}` : ""}`;
     case "RetrievalRequestRejected": return `${p.request.kind} · ${p.request.sourceId}\nREJECTED (${p.error.code}): ${p.error.message}`;
     case "AgentIterationStarted": return `${p.harness} · iteration ${p.iteration} · phase ${p.phaseId ?? "none"}\ncapabilities: ${p.capabilityNames.join(", ") || "none"}`;
     case "AgentIterationCompleted": return `${p.harness} · iteration ${p.iteration} · requested ${p.requested} · completed ${p.completed} · rejected ${p.rejected}${p.stopReason ? ` · stop=${p.stopReason}` : ""}`;
+    case "ExecutionLifecycleObserved": return `${p.engine} · ${p.event}${p.iteration ? ` · iteration ${p.iteration}` : ""}${p.capabilityName ? ` · ${p.capabilityName}` : ""}${p.detail ? `\n${JSON.stringify(p.detail)}` : ""}`;
     case "DelegationRequested": return `${p.category} · ${p.capabilityName}(${JSON.stringify(p.input)}) · iteration ${p.iteration}`;
     case "DelegationCompleted": return `${p.category} · ${p.capabilityName} · ${p.outcome}\n${JSON.stringify(p.summary).slice(0, 500)}`;
     case "DelegationRejected": return `${p.category} · ${p.capabilityName}\nREJECTED (${p.code}): ${p.reason}`;

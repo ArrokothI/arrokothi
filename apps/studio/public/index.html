@@ -6,7 +6,7 @@
 <header class="topbar">
   <div class="brand">
     <strong>Agent SDK Studio</strong>
-    <span class="muted">experimental v0.3</span>
+    <span class="muted">experimental v0.35</span>
   </div>
   <div class="status" id="status">connecting…</div>
 </header>
@@ -50,11 +50,12 @@
           <label class="grow">Provider <input id="f-provider" placeholder="gemini" /></label>
           <label class="grow">Model <input id="f-model" placeholder="gemini-3.5-flash-lite" /></label>
         </div>
-        <label>Execution Harness
+        <label>Execution strategy
           <select id="f-harness">
-            <option value="two_pass">TwoPass / workflow</option>
-            <option value="native_agent">Native Agent</option>
-            <option value="claude_agent">Claude Agent (when configured)</option>
+            <option value="agentic">AgentHarness / Strands agentic</option>
+            <option value="workflow">AgentHarness / workflow</option>
+            <option value="native_agent">Legacy Native Agent</option>
+            <option value="claude_agent">Experimental Claude Agent</option>
           </select>
         </label>
         <div class="row">
@@ -62,7 +63,7 @@
           <label class="grow">Max output tokens <input id="f-maxtokens" type="number" min="1" /></label>
         </div>
         <fieldset>
-          <legend>Preflight Plan</legend>
+          <legend>Semantic Preflight and execution limits</legend>
           <div class="row">
             <label class="grow">Planner mode
               <select id="f-planner-mode"><option>llm</option><option>deterministic</option><option>hybrid</option></select>

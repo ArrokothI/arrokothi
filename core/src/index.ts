@@ -208,11 +208,34 @@ export type {
 } from "./planning/types.ts";
 
 // -- harness / runtime -------------------------------------------------------
+export { AgentHarness } from "./harness/agent-harness.ts";
 export { TwoPassHarness } from "./harness/two-pass.ts";
 export { NativeAgentHarness } from "./harness/native-agent.ts";
+export type { AgentHarnessOptions, AgentHarnessStrategy } from "./harness/agent-harness.ts";
 export type { TwoPassOptions } from "./harness/two-pass.ts";
 export type { NativeAgentOptions } from "./harness/native-agent.ts";
-export type { AgentHarness, HarnessServices, HarnessTurnInput, HarnessTurnResult, TurnStopReason } from "./harness/types.ts";
+export type {
+  HarnessImplementation,
+  HarnessServices,
+  HarnessTurnInput,
+  HarnessTurnResult,
+  TurnModelCallMetrics,
+  TurnStopReason,
+} from "./harness/types.ts";
+export { ReferenceLoopEngine } from "./loop/reference.ts";
+export type {
+  AgentLoopEngine,
+  AgentLoopInput,
+  AgentLoopResult,
+  AgentLoopMetrics,
+  AgentLoopTraceEvent,
+  AgentLoopExecutionContext,
+  AgentLoopCapabilityRequest,
+  AgentLoopCapabilityResult,
+  AgentLoopLimits,
+  AgentLoopStopReason,
+} from "./loop/types.ts";
+export type { RuntimeDecision } from "./runtime/decision.ts";
 export { AgentRuntime } from "./runtime/runtime.ts";
 export type { AgentRuntimeConfig, RunTurnInput, RunTurnResult, ObserveHostContextInput, ObserveHostContextResult } from "./runtime/runtime.ts";
 export { TurnJournal } from "./runtime/journal.ts";

@@ -1,5 +1,8 @@
 # Agent SDK — Core v0.3 Design
 
+> Historical design record. The current execution architecture is documented in
+> [the v0.35 migration guide](v0.35-migration.md) and [implementation report](final-report.md).
+
 **Status:** implemented
 
 **Date:** 2026-08-21

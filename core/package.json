@@ -1,7 +1,7 @@
 {
   "name": "@agent-sdk/core",
-  "version": "0.3.0",
-  "description": "Provider-neutral agent control plane with workflow and iterative execution Harnesses.",
+  "version": "0.35.0",
+  "description": "Provider-neutral agent control plane with one primary Harness and pluggable loop engines.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",

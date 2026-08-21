@@ -6,7 +6,7 @@ import type { ModelProvider } from "../provider/types.ts";
 import type { ToolRegistry } from "../tools/registry.ts";
 import type { KnowledgeProvider } from "../knowledge/types.ts";
 import type { ConfirmationResolver } from "../confirmation/types.ts";
-import type { AgentHarness, HarnessServices, TurnStopReason } from "../harness/types.ts";
+import type { HarnessImplementation, HarnessServices, TurnModelCallMetrics, TurnStopReason } from "../harness/types.ts";
 import type { CompiledContext } from "../compiler/context-compiler.ts";
 import type { HostContextInput } from "../context/types.ts";
 import type { Clock, IdGenerator } from "../util/ids.ts";
@@ -15,7 +15,7 @@ import { observeHostContext as validateHostContext } from "../context/host-conte
 import type { ContextObservation } from "../context/host-context.ts";
 import { TurnJournal } from "./journal.ts";
 import { ConservativeConfirmationResolver } from "../confirmation/resolver.ts";
-import { TwoPassHarness } from "../harness/two-pass.ts";
+import { AgentHarness } from "../harness/agent-harness.ts";
 import { assertValidDefinition } from "../definition/definition.ts";
 import { createRandomIds, createSystemClock } from "../util/ids.ts";
 import { DEFAULT_POLICIES } from "../definition/types.ts";
@@ -36,7 +36,7 @@ export interface AgentRuntimeConfig {
   planningModel?: ModelProvider;
   tools: ToolRegistry;
   knowledge: KnowledgeProvider;
-  harness?: AgentHarness;
+  harness?: HarnessImplementation;
   confirmationResolver?: ConfirmationResolver;
   ids?: IdGenerator;
   clock?: Clock;
@@ -62,6 +62,7 @@ export interface RunTurnResult {
   events: SessionEvent[];
   /** Compiled contexts for this turn, in order, for traces and tests. */
   contexts: { purpose: string; context: CompiledContext }[];
+  metrics: TurnModelCallMetrics;
 }
 
 export interface ObserveHostContextInput {
@@ -77,7 +78,7 @@ export interface ObserveHostContextResult {
 
 export class AgentRuntime {
   private readonly config: AgentRuntimeConfig;
-  private readonly harness: AgentHarness;
+  private readonly harness: HarnessImplementation;
   private readonly ids: IdGenerator;
   private readonly clock: Clock;
 
@@ -88,7 +89,10 @@ export class AgentRuntime {
     };
     assertValidDefinition(definition);
     this.config = { ...config, definition };
-    this.harness = config.harness ?? new TwoPassHarness();
+    // The bounded workflow strategy preserves the historical default behavior while routing all
+    // new construction through the primary v0.35 Harness. Legacy Harness classes remain available
+    // only for explicit compatibility use.
+    this.harness = config.harness ?? new AgentHarness({ strategy: "workflow" });
     this.ids = config.ids ?? createRandomIds();
     this.clock = config.clock ?? createSystemClock();
   }
@@ -215,6 +219,7 @@ export class AgentRuntime {
       state: journal.state,
       events: stored,
       contexts,
+      metrics: result.metrics ?? metricsFromEvents(journal.events),
     };
   }
 
@@ -259,4 +264,12 @@ export class AgentRuntime {
     }
     return stored;
   }
+}
+
+function metricsFromEvents(events: SessionEvent[]): TurnModelCallMetrics {
+  const preflightModelCalls = events.filter((event) => event.type === "ModelCallCompleted" && event.payload.purpose === "plan").length;
+  const conversationSummaryModelCalls = events.filter((event) => event.type === "ModelCallCompleted" && event.payload.purpose === "conversation_summary").length;
+  const agentLoopModelCalls = events.filter((event) => event.type === "ModelCallCompleted" && event.payload.purpose.startsWith("agent_loop")).length;
+  const totalModelCalls = events.filter((event) => event.type === "ModelCallCompleted").length;
+  return { preflightModelCalls, agentLoopModelCalls, conversationSummaryModelCalls, guideRetryModelCalls: 0, totalModelCalls };
 }

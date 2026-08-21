@@ -1,0 +1,12 @@
+{
+  "name": "@agent-sdk/example-p02-estate",
+  "version": "0.35.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./agent.ts"
+  },
+  "dependencies": {
+    "@agent-sdk/core": "*"
+  }
+}

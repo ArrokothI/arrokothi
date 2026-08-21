@@ -7,9 +7,10 @@ import { fileURLToPath } from "node:url";
 import type { AgentDefinition, CompiledContext, ModelProvider, WebSearchProvider } from "@agent-sdk/core";
 import {
   AgentRuntime,
+  AgentHarness,
   KnowledgeIndex,
   NativeAgentHarness,
-  TwoPassHarness,
+  ReferenceLoopEngine,
   ToolRegistry,
   createRandomIds,
   createSystemClock,
@@ -22,6 +23,7 @@ import {
 import { StaticModelProvider } from "@agent-sdk/core/testing";
 import { GeminiProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";
 import { ClaudeAgentHarness } from "@agent-sdk/provider-claude-agent";
+import { createStrandsGeminiEngine } from "@agent-sdk/integration-strands";
 import { SqliteDefinitionStore, SqliteSessionStore, openDatabase } from "./sqlite-store.ts";
 import { DryRunRegistry, registerStudioExecutors } from "./executors.ts";
 import { SAMPLE_DEFINITIONS } from "./samples.ts";
@@ -57,8 +59,7 @@ const contextLog = new Map<string, { turn: number; purpose: string; context: Com
  * With a key, real Gemini. Without one, an offline echo provider - clearly labelled as such in the
  * UI and in the trace, so nobody mistakes plumbing for model behaviour.
  */
-function buildProvider(): { provider: ModelProvider; mode: "gemini" | "offline"; detail: string } {
-  const apiKey = geminiApiKeyFromEnv();
+function buildProvider(apiKey: string | undefined): { provider: ModelProvider; mode: "gemini" | "offline"; detail: string } {
   if (apiKey) {
     const model = process.env["STUDIO_MODEL"] ?? "gemini-3.5-flash-lite";
     return { provider: new GeminiProvider({ apiKey, model }), mode: "gemini", detail: `Gemini (${model})` };
@@ -70,7 +71,8 @@ function buildProvider(): { provider: ModelProvider; mode: "gemini" | "offline";
   };
 }
 
-const { provider, mode: providerMode, detail: providerDetail } = buildProvider();
+const studioGeminiApiKey = geminiApiKeyFromEnv();
+const { provider, mode: providerMode, detail: providerDetail } = buildProvider(studioGeminiApiKey);
 
 function buildWebSearchProvider(): WebSearchProvider | undefined {
   if (!WEB_SEARCH_ENDPOINT) return undefined;
@@ -104,7 +106,13 @@ function buildRuntime(
     ? new NativeAgentHarness()
     : definition.execution?.harness === "claude_agent"
       ? new ClaudeAgentHarness({ executionContextPolicy: "fresh_each_turn" })
-      : new TwoPassHarness();
+      : definition.execution?.harness === "workflow" || definition.execution?.harness === "two_pass"
+        ? new AgentHarness({ strategy: "workflow" })
+        : new AgentHarness({
+            engine: studioGeminiApiKey
+              ? createStrandsGeminiEngine({ apiKey: studioGeminiApiKey })
+              : new ReferenceLoopEngine(),
+          });
   return new AgentRuntime({
     definition,
     sessions,
@@ -181,7 +189,12 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL): P
   if (method === "GET" && path === "/status") {
     return json(res, 200, {
       provider: { id: provider.id, mode: providerMode, detail: providerDetail },
-      harnesses: { claudeConfigured: !!process.env["ANTHROPIC_API_KEY"], webSearchConfigured: !!webSearch },
+      harnesses: {
+        primary: "AgentHarness",
+        agenticEngine: studioGeminiApiKey ? "StrandsLoopEngine" : "ReferenceLoopEngine (offline)",
+        claudeConfigured: !!process.env["ANTHROPIC_API_KEY"],
+        webSearchConfigured: !!webSearch,
+      },
       database: DB_PATH,
       definitionCount: (await definitions.listLatest()).length,
     });
@@ -329,6 +342,7 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL): P
         reply: result.reply,
         stopReason: result.stopReason,
         steps: result.steps,
+        metrics: result.metrics,
         state: result.state,
         events: result.events,
         contexts: captured,

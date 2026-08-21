@@ -11,6 +11,8 @@ export interface AgentRule {
   text: string;
   /** Invariants are non-overridable. Defaults may be explicitly specialized by a phase. */
   kind: "invariant" | "default";
+  /** Which semantic model work should see this instruction. Defaults to `both`. */
+  scope?: "planner" | "response" | "both";
 }
 
 export type AgentRuleInput = string | AgentRule;
@@ -40,7 +42,8 @@ export interface AgentDefinition {
   planning?: PlanningPolicy;
   /** Serializable Harness preference. The application still injects the implementation. */
   execution?: {
-    harness: "two_pass" | "native_agent" | "claude_agent";
+    /** `agentic` and `workflow` are the v0.35 primary strategies. Other values are legacy. */
+    harness: "agentic" | "workflow" | "two_pass" | "native_agent" | "claude_agent";
     executionContextPolicy?: "fresh_each_turn" | "resume";
   };
   /** Standing rules. Legacy strings remain supported and are treated as invariants. */

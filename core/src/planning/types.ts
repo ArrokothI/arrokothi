@@ -10,6 +10,8 @@ export interface PlanningPolicy {
   mode?: PlanningMode;
   /** Defaults to AgentDefinition.model. A separately injected provider may serve it. */
   model?: ModelPolicy;
+  /** Set false only when this definition has no use for ephemeral semantic notes. */
+  extractWorkingNotes?: boolean;
 }
 
 export interface WorkingNoteProposal {
@@ -27,6 +29,7 @@ export interface PreflightPlan {
   memoryProposals: MemoryWriteProposal[];
   workingNotes: WorkingNoteProposal[];
   signals: string[];
+  /** @deprecated Agentic execution acquires evidence iteratively through CapabilityGateway. */
   retrievalRequests: RetrievalRequest[];
 }
 

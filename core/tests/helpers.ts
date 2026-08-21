@@ -7,7 +7,7 @@ import { InMemorySessionStore } from "../src/session/store.ts";
 import { AgentRuntime } from "../src/runtime/runtime.ts";
 import { createDeterministicIds, createFixedClock } from "../src/util/ids.ts";
 import type { ModelProvider } from "../src/provider/types.ts";
-import type { AgentHarness } from "../src/harness/types.ts";
+import type { HarnessImplementation } from "../src/harness/types.ts";
 import type { WebSearchProvider } from "../src/knowledge/types.ts";
 import { recordQueryTools } from "../src/tools/record-query-tool.ts";
 
@@ -125,7 +125,7 @@ export function buildRuntime(
   options: {
     definition?: AgentDefinition;
     planningModel?: ModelProvider;
-    harness?: AgentHarness;
+    harness?: HarnessImplementation;
     webSearch?: WebSearchProvider;
     registerTools?: (r: ToolRegistry) => void;
   } = {},

@@ -1,6 +1,6 @@
 {
   "name": "@agent-sdk/studio",
-  "version": "0.3.0",
+  "version": "0.35.0",
   "private": true,
   "description": "Development Studio: configure, persist, and test experimental agent definitions. Outside core.",
   "type": "module",
@@ -9,6 +9,7 @@
     "@agent-sdk/core": "*",
     "@agent-sdk/provider-gemini": "*",
     "@agent-sdk/provider-claude-agent": "*",
+    "@agent-sdk/integration-strands": "*",
     "@agent-sdk/example-minimal-agent": "*",
     "@agent-sdk/example-estate-like": "*"
   }

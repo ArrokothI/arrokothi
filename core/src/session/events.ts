@@ -31,6 +31,7 @@ export type SessionEventType =
   | "DelegationRejected"
   | "DelegationCompleted"
   | "AgentIterationCompleted"
+  | "ExecutionLifecycleObserved"
   | "MemoryWriteProposed"
   | "MemoryWriteCommitted"
   | "MemoryWriteRejected"
@@ -148,6 +149,28 @@ export type AgentIterationCompletedEvent = EventBase<
   }
 >;
 
+export type ExecutionLifecycleObservedEvent = EventBase<
+  "ExecutionLifecycleObserved",
+  {
+    engine: string;
+    event:
+      | "before_invocation"
+      | "after_invocation"
+      | "before_model"
+      | "after_model"
+      | "before_tool"
+      | "after_tool"
+      | "capability_requested"
+      | "runtime_decision"
+      | "guide_retry"
+      | "conversation_compacted"
+      | "execution_terminated";
+    iteration?: number;
+    capabilityName?: string;
+    detail?: Record<string, unknown>;
+  }
+>;
+
 export type MemoryWriteProposedEvent = EventBase<
   "MemoryWriteProposed",
   { key: string; value: unknown; writeMechanism: MemoryWriteMechanism; provenance: MemoryProvenance; confidence?: number }
@@ -260,6 +283,7 @@ export type SessionEvent =
   | DelegationRejectedEvent
   | DelegationCompletedEvent
   | AgentIterationCompletedEvent
+  | ExecutionLifecycleObservedEvent
   | MemoryWriteProposedEvent
   | MemoryWriteCommittedEvent
   | MemoryWriteRejectedEvent

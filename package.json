@@ -1,34 +1,42 @@
 {
   "name": "agent-sdk-workspace",
   "private": true,
-  "version": "0.3.0",
-  "description": "Experimental provider-neutral agent kernel, iterative Harnesses, and development Studio.",
+  "version": "0.35.0",
+  "description": "Provider-neutral agent control plane with a consolidated Harness and Strands execution engine.",
   "type": "module",
   "workspaces": [
     "core",
     "providers/gemini",
     "providers/claude-agent",
+    "integrations/strands",
     "apps/studio",
     "benchmarks",
     "examples/minimal-agent",
     "examples/estate-like",
-    "examples/native-agent"
+    "examples/native-agent",
+    "examples/strands-gemini",
+    "examples/p01-craig",
+    "examples/p02-estate"
   ],
   "engines": {
     "node": ">=22.6.0"
   },
   "scripts": {
-    "test": "node --test --experimental-strip-types core/tests/*.test.ts benchmarks/*.test.ts",
+    "test": "node --test --experimental-strip-types core/tests/*.test.ts integrations/strands/tests/*.test.ts benchmarks/*.test.ts examples/*.test.ts",
     "test:watch": "node --test --watch --experimental-strip-types core/tests/*.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "studio": "node --experimental-strip-types --experimental-sqlite apps/studio/src/server.ts",
     "example:minimal": "node --experimental-strip-types examples/minimal-agent/main.ts",
     "example:estate": "node --experimental-strip-types examples/estate-like/main.ts",
     "example:native": "node --experimental-strip-types examples/native-agent/main.ts",
+    "example:strands": "node --experimental-strip-types examples/strands-gemini/main.ts",
+    "example:p01": "node --experimental-strip-types examples/p01-craig/main.ts",
+    "example:p02": "node --experimental-strip-types examples/p02-estate/main.ts",
     "bench:p01": "node --experimental-strip-types benchmarks/p01-craig/run.ts",
     "bench:p02": "node --experimental-strip-types benchmarks/p02-estate/run.ts",
     "bench:compare": "node --experimental-strip-types benchmarks/shared/compare.ts",
-    "test:core": "node --test --experimental-strip-types core/tests/*.test.ts"
+    "test:core": "node --test --experimental-strip-types core/tests/*.test.ts",
+    "test:strands": "node --test --experimental-strip-types integrations/strands/tests/*.test.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

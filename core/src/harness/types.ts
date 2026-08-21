@@ -57,9 +57,19 @@ export interface HarnessTurnResult {
   stopReason: TurnStopReason;
   /** Model/tool steps consumed in the response pass, for the step-limit accounting. */
   steps: number;
+  metrics?: TurnModelCallMetrics;
 }
 
-export interface AgentHarness {
+export interface TurnModelCallMetrics {
+  preflightModelCalls: number;
+  agentLoopModelCalls: number;
+  conversationSummaryModelCalls: number;
+  guideRetryModelCalls: number;
+  totalModelCalls: number;
+}
+
+/** Implementation contract used by AgentRuntime. `AgentHarness` is the primary implementation. */
+export interface HarnessImplementation {
   readonly name: string;
   runTurn(input: HarnessTurnInput, services: HarnessServices): Promise<HarnessTurnResult>;
 }

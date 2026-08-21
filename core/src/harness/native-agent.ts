@@ -10,7 +10,7 @@ import { ModelProviderError } from "../provider/types.ts";
 
 export interface NativeAgentOptions extends TwoPassOptions {}
 
-/** Provider-neutral iterative observe/decide/delegate Harness. Works with Gemini ModelProvider. */
+/** @deprecated Reference v0.3 handwritten loop. Use AgentHarness + StrandsLoopEngine. */
 export class NativeAgentHarness extends TwoPassHarness {
   override readonly name = "native-agent-v0.3";
 

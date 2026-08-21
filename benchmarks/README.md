@@ -1,8 +1,12 @@
-# Benchmarks — P01 / Craig and P02 / EstatePro
+# Preserved benchmark history — P01 / Craig and P02 / EstatePro
 
-Adapters that run this SDK against the same scripted user turns as the frozen P01/P02 benchmarks,
+Historical adapters that run this SDK against the same scripted user turns as the frozen P01/P02 benchmarks,
 project its state into the **canonical benchmark field names**, and grade with faithfully ported
 assertions.
+
+The v0.35 task rebuilds the standalone Agent_SDK P01/P02 applications; it does not produce or claim
+a new comparison against original or other-builder implementations. These adapters and prior
+machine-readable results are retained only so experiment history is not erased.
 
 ## What was and was not taken from the existing benchmark artifacts
 
@@ -20,7 +24,8 @@ assertions.
 - the recorded source conflicts, carried over rather than quietly resolved (see CRAIG-S02).
 
 **Not used**: any Agenerateor runtime code, configuration, prompt, or bespoke implementation. The
-agent definitions here are this SDK's own answer to the requirement registers.
+standalone Agent_SDK definitions live in `examples/p01-craig` and `examples/p02-estate`; benchmark
+files are thin projections over those same artifacts. Existing results are retained as history.
 
 ## Modes
 
@@ -38,7 +43,7 @@ GEMINI_API_KEY=... node --experimental-strip-types benchmarks/p01-craig/run.ts -
 canonical names with known inputs, that the deterministic volume tool reproduces the product's own
 published figures, and that the ported detectors behave as specified.
 
-Every scenario result also records v0.2 efficiency/routing metrics: planner model calls, response
+Every historical scenario result also records legacy efficiency/routing metrics: planner model calls, response
 model calls, total model calls, retrieval-request count, selected logical knowledge sources,
 retrieved document chunks, and tool calls. Self-check metrics exercise the instrumentation but are
 not a quality or cost measurement; live-mode metrics describe the actual provider run.
@@ -73,14 +78,15 @@ behaviour — is real.
 - buy→sell change of mind, with a deterministic pre-response phase transition (S09);
 - optional email declined and not re-demanded (S10, S19);
 - grounded property records, no invented listings (S01, S13);
-- **deterministic record filtering** for budget/location via `query_listings` (S01, S14);
+- **deterministic record filtering** for budget/location via the `listings` record Knowledge
+  capability (S01, S14);
 - truthful no-match (S14);
 - handoff success and failure (S19, S16);
 - duplicate prevention via `once_per_session` idempotency (S17);
 - corrected payload reaching the action (S16);
 - **the GAP-005 adversarial confirmation regression** (S20).
 
-## Comparing against the stored results
+## Historical comparison utility (not part of v0.35)
 
 ```bash
 node --experimental-strip-types benchmarks/shared/compare.ts \
@@ -88,7 +94,8 @@ node --experimental-strip-types benchmarks/shared/compare.ts \
   --baseline=/path/to/tests/benchmarks/real-agents/estate/results-controlled.json
 ```
 
-The baseline file is read **read-only**; nothing is written back to it. Two rules keep the
+This command is documented only to preserve the old experiment workflow. The baseline file is read
+**read-only**; nothing is written back to it. Two rules keep the
 comparison honest: a `harness_selfcheck` run is refused outright, and only assertions judged on
 *both* sides are counted — an assertion one side structurally cannot have is never a win for the
 other.

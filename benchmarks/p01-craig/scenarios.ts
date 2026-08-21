@@ -1,6 +1,6 @@
 import type { Assertion, BenchmarkScenario, Severity } from "../shared/types.ts";
 import { cubicMetres, has, statesVolume, VOLUME_TOLERANCE } from "../shared/grade.ts";
-import { volumeM3 } from "./agent.ts";
+import { wallVolumeM3 as volumeM3 } from "../../examples/p01-craig/agent.ts";
 
 /**
  * P01 / Craig scenarios.

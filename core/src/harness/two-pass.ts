@@ -1,4 +1,4 @@
-import type { AgentHarness, HarnessServices, HarnessTurnInput, HarnessTurnResult, TurnStopReason } from "./types.ts";
+import type { HarnessImplementation, HarnessServices, HarnessTurnInput, HarnessTurnResult, TurnStopReason } from "./types.ts";
 import type { MemoryWriteProposal, WorkingNote } from "../memory/types.ts";
 import type { ModelToolSpec } from "../provider/types.ts";
 import type { AuthorizeDeps } from "../tools/authorize.ts";
@@ -26,6 +26,8 @@ export interface TwoPassOptions {
   signalVocabulary?: string[];
   /** Optional code-injected deterministic seam used by deterministic/hybrid modes. */
   deterministicPlanner?: DeterministicPlanner;
+  /** Compatibility switch. The primary agentic Harness always leaves this false. */
+  preflightRetrieval?: boolean;
 }
 
 interface PlannedTurn {
@@ -33,7 +35,8 @@ interface PlannedTurn {
   retrievedKnowledge: KnowledgeResult[];
 }
 
-export class TwoPassHarness implements AgentHarness {
+/** @deprecated Use the primary AgentHarness with `strategy: "workflow"` for new applications. */
+export class TwoPassHarness implements HarnessImplementation {
   readonly name: string = "two-pass-v0.2";
   private readonly options: TwoPassOptions;
   private readonly deterministicPlanner: DeterministicPlanner;
@@ -68,7 +71,7 @@ export class TwoPassHarness implements AgentHarness {
     }
 
     // Pass 1: one bounded semantic plan when needed, followed by runtime-owned state changes.
-    const plan = await this.interpretAndPlan(input, services);
+    const plan = await this.interpretAndPlan(input, services, { includeRetrievalPlanning: this.options.preflightRetrieval ?? true });
     await this.applyTransitions(input, services, "pre_response");
     const retrievedKnowledge = await this.executeRetrievals(plan.retrievalRequests, input, services, gateway);
 
@@ -76,10 +79,17 @@ export class TwoPassHarness implements AgentHarness {
     return this.respond(input, services, gateway, { plan, retrievedKnowledge });
   }
 
-  protected async interpretAndPlan(input: HarnessTurnInput, services: HarnessServices): Promise<TurnPlan> {
+  protected async interpretAndPlan(
+    input: HarnessTurnInput,
+    services: HarnessServices,
+    options: { includeRetrievalPlanning?: boolean } = {},
+  ): Promise<TurnPlan> {
     const { definition, knowledge } = services;
+    const includeRetrievalPlanning = options.includeRetrievalPlanning ?? true;
     const phase = definition.flow ? findPhase(definition.flow, input.journal.state.phaseId) : undefined;
-    const sourceCatalog = knowledge.catalog(input.journal.state.phaseId ?? undefined, phase?.knowledgeSourceIds);
+    const sourceCatalog = includeRetrievalPlanning
+      ? knowledge.catalog(input.journal.state.phaseId ?? undefined, phase?.knowledgeSourceIds)
+      : [];
     const signalVocabulary = this.options.signalVocabulary ?? collectSignalNames(services);
     const strategy = definition.planning?.mode ?? "llm";
     const deterministicInput = {
@@ -90,26 +100,38 @@ export class TwoPassHarness implements AgentHarness {
       memoryFieldKeys: definition.memorySchema.fields.map((field) => field.key),
     };
 
-    const trivial = !definition.memorySchema.fields.length && !signalVocabulary.length && !sourceCatalog.length;
+    const extractsWorkingNotes = definition.planning?.extractWorkingNotes ?? true;
+    const trivial = !definition.memorySchema.fields.length
+      && !signalVocabulary.length
+      && !extractsWorkingNotes
+      && (!includeRetrievalPlanning || !sourceCatalog.length);
     if (trivial) {
-      return this.acceptPlan(input, services, structuredClone(EMPTY_TURN_PLAN), strategy, "deterministic", "no memory, routing, or knowledge planning is needed");
+      return this.acceptPlan(
+        input,
+        services,
+        structuredClone(EMPTY_TURN_PLAN),
+        strategy,
+        "deterministic",
+        "definition structure permits no memory, note, signal, or compatible retrieval change",
+        includeRetrievalPlanning,
+      );
     }
 
     if (strategy === "deterministic" || strategy === "hybrid") {
       const deterministic = await this.deterministicPlanner.plan(deterministicInput);
       if (deterministic.kind === "planned") {
-        return this.acceptPlan(input, services, deterministic.plan, strategy, "deterministic", deterministic.reason);
+        return this.acceptPlan(input, services, deterministic.plan, strategy, "deterministic", deterministic.reason, includeRetrievalPlanning);
       }
       if (strategy === "deterministic") {
-        return this.acceptPlan(input, services, structuredClone(EMPTY_TURN_PLAN), strategy, "safe_empty", deterministic.reason);
+        return this.acceptPlan(input, services, structuredClone(EMPTY_TURN_PLAN), strategy, "safe_empty", deterministic.reason, includeRetrievalPlanning);
       }
     }
 
-    const planned = await this.planWithModel(input, services, sourceCatalog, signalVocabulary);
+    const planned = await this.planWithModel(input, services, sourceCatalog, signalVocabulary, includeRetrievalPlanning);
     if (!planned) {
-      return this.acceptPlan(input, services, structuredClone(EMPTY_TURN_PLAN), strategy, "safe_empty", "planner failed or returned malformed structured output");
+      return this.acceptPlan(input, services, structuredClone(EMPTY_TURN_PLAN), strategy, "safe_empty", "planner failed or returned malformed structured output", includeRetrievalPlanning);
     }
-    return this.acceptPlan(input, services, planned, strategy, "llm");
+    return this.acceptPlan(input, services, planned, strategy, "llm", undefined, includeRetrievalPlanning);
   }
 
   private async planWithModel(
@@ -117,6 +139,7 @@ export class TwoPassHarness implements AgentHarness {
     services: HarnessServices,
     sourceCatalog: ReturnType<HarnessServices["knowledge"]["catalog"]>,
     signalVocabulary: string[],
+    includeRetrievalPlanning: boolean,
   ): Promise<TurnPlan | null> {
     const { definition, planningModel } = services;
     const fieldDoc = definition.memorySchema.fields.map((field) => {
@@ -132,9 +155,13 @@ export class TwoPassHarness implements AgentHarness {
       "Only memory_writes directly established by the latest user message are allowed. Put genuine inference in working_notes instead.",
       `Memory fields:\n${fieldDoc || "(none)"}`,
       signalVocabulary.length ? `Signals you may emit: ${signalVocabulary.join(", ")}` : "Emit no signals.",
-      "Choose logical knowledge sources from the catalog only. Emit zero retrieval requests when no evidence lookup is needed.",
-      "Rewrite every document query as a concise standalone query. Resolve references such as 'the second one' from the recent transcript.",
-      "Use document_search only for document sources, web_search only for web sources, and record_query for exact filters/sorts/counts over record_set sources; never produce SQL.",
+      includeRetrievalPlanning
+        ? "Compatibility mode only: choose logical knowledge sources from the catalog and emit zero retrieval requests when no evidence lookup is needed."
+        : "Evidence acquisition, searches, record queries, tool calls, and task decomposition belong to the iterative agent loop. Emit no retrieval requests.",
+      ...(includeRetrievalPlanning ? [
+        "Rewrite every document query as a concise standalone query. Resolve references such as 'the second one' from the recent transcript.",
+        "Use document_search only for document sources, web_search only for web sources, and record_query for exact filters/sorts/counts over record_set sources; never produce SQL.",
+      ] : []),
       "Return exactly: {memory_writes, working_notes, signals, retrieval_requests}.",
     ].join("\n\n");
     const context = compilePlannerContext({
@@ -202,16 +229,17 @@ export class TwoPassHarness implements AgentHarness {
     strategy: "llm" | "deterministic" | "hybrid",
     resolvedBy: "llm" | "deterministic" | "safe_empty",
     detail?: string,
+    includeRetrievalPlanning = true,
   ): TurnPlan {
     const vocabulary = new Set(this.options.signalVocabulary ?? collectSignalNames(services));
     const plan: TurnPlan = {
       memoryProposals: proposed.memoryProposals.slice(0, services.definition.memorySchema.fields.length + 8),
-      workingNotes: proposed.workingNotes
+      workingNotes: services.definition.planning?.extractWorkingNotes === false ? [] : proposed.workingNotes
         .filter((note) => typeof note.text === "string" && note.text.trim())
         .slice(0, 5)
         .map((note) => ({ ...note, text: note.text.trim() })),
       signals: [...new Set(proposed.signals.filter((signal) => vocabulary.has(signal)))].slice(0, 6),
-      retrievalRequests: proposed.retrievalRequests.slice(),
+      retrievalRequests: includeRetrievalPlanning ? proposed.retrievalRequests.slice() : [],
     };
 
     input.journal.append({ type: "TurnPlanCreated", turn: input.turn, payload: { strategy, resolvedBy, plan, detail } });
