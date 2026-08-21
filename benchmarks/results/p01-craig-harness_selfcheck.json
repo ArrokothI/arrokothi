@@ -1,0 +1,1073 @@
+{
+  "runId": "P01-harness_selfcheck-2026-08-21T03-27-59-576Z",
+  "project": "P01-CRAIG",
+  "mode": "harness_selfcheck",
+  "label": "harness self-check (no model consulted)",
+  "generatedAt": "2026-08-21T03:27:59.595Z",
+  "sdk": {
+    "agentId": "bench-p01-craig",
+    "agentVersion": 1,
+    "definitionHash": "332d64872bd164b2",
+    "harness": "two-pass-v0"
+  },
+  "provider": {
+    "id": "static",
+    "model": "static-model"
+  },
+  "paceMs": 0,
+  "totals": {
+    "pass": 0,
+    "soft_fail": 0,
+    "hard_fail": 0,
+    "inconclusive": 20
+  },
+  "results": [
+    {
+      "id": "CRAIG-S01",
+      "specId": "P1-S01",
+      "title": "Backyard office with complete sizing inputs",
+      "evidence": "CORE",
+      "requirement": "CR-01, CR-02, CR-04",
+      "stresses": "Front-loaded data; universal-quantity framing",
+      "turns": [
+        "I'm planning a backyard office. I have about 420 sq. ft. of exterior wall area, want 10-inch walls, and I care more about speed than hands-on mixing."
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 6,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S02",
+      "specId": "P1-S02",
+      "title": "Interior retrofit with explicit wall area and thickness",
+      "evidence": "CORE",
+      "requirement": "CR-03, CR-01",
+      "stresses": "Uses the user's own thickness, not a hard-coded one",
+      "note": "UNRESOLVED_SOURCE_CONFLICT carried over: the requirement document prescribes ~2.5-3 m3 while the site formula gives 2.1 m3. The volume assertion is reported but scored SOFT and excluded from the primary comparison.",
+      "turns": [
+        "My bedroom has about 300 sq. ft. of cold exterior wall. I'm considering a 3-inch interior hemp-lime layer over masonry."
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 7,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S03",
+      "specId": "P1-S03",
+      "title": "Structural and code question in one turn",
+      "evidence": "CORE",
+      "requirement": "CR-08, CR-09",
+      "stresses": "Authority boundaries; two concerns in one turn",
+      "turns": [
+        "Can hempcrete hold up my roof, and is it recognized by U.S. residential code?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 6,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S04",
+      "specId": "P1-S04",
+      "title": "Drying comparison driven by deadline",
+      "evidence": "CORE",
+      "requirement": "CR-13",
+      "stresses": "Method-conditional timeline rather than one static answer",
+      "turns": [
+        "I need the wall ready for finishing quickly. How does block installation compare with cast-in-situ curing?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 5,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S05",
+      "specId": "P1-S05",
+      "title": "Cost question without project dimensions",
+      "evidence": "CORE",
+      "requirement": "CR-14, CR-11",
+      "stresses": "Assumption framing vs. guaranteed savings",
+      "turns": [
+        "Is hempcrete cheaper than drywall and fiberglass?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 4,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S06",
+      "specId": "P1-S06",
+      "title": "Is this marijuana? product-education concern",
+      "evidence": "CORE",
+      "requirement": "CR-12",
+      "stresses": "First-concern material education",
+      "turns": [
+        "Is hempcrete basically marijuana in my walls?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 3,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S07",
+      "specId": "P1-S07",
+      "title": "Multiple fields supplied out of order",
+      "evidence": "CORE",
+      "requirement": "CR-04, CR-01",
+      "stresses": "No fixed slot order",
+      "turns": [
+        "I want blocks, 12 inches thick. It's a 450 sq. ft. wall area for a cabin, and I'm trying to finish before winter."
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 5,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S08",
+      "specId": "P1-S08",
+      "title": "Correction after an estimate",
+      "evidence": "CORE",
+      "requirement": "CR-05",
+      "stresses": "Mutable conversational state",
+      "turns": [
+        "I have about 420 sq. ft. of exterior wall area and want 10-inch walls. What volume is that?",
+        "Correction: I remeasured. It's 510 sq. ft., still 10 inches."
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 4,
+      "adapterCheck": {
+        "assertionsRun": 5,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S09",
+      "specId": "P1-S09",
+      "title": "Change of mind about construction method",
+      "evidence": "CORE",
+      "requirement": "CR-06",
+      "stresses": "Cross-step reconsideration retains dimensions",
+      "turns": [
+        "I'm doing a backyard office, 420 sq. ft. of wall at 10 inches, and I was planning on pre-cast blocks.",
+        "Actually, I want the hands-on DIY experience. What if I cast it in place instead?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 4,
+      "adapterCheck": {
+        "assertionsRun": 5,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S10",
+      "specId": "P1-S10",
+      "title": "Ambiguous square footage",
+      "evidence": "CORE",
+      "requirement": "CR-07",
+      "stresses": "Floor area vs. wall area ambiguity",
+      "turns": [
+        "My project is 300 square feet. How much hempcrete do I need?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 4,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S11",
+      "specId": "P1-S11",
+      "title": "Off-topic product fact during active sizing",
+      "evidence": "CORE",
+      "requirement": "CR-15",
+      "stresses": "Interruption and resumption",
+      "turns": [
+        "I'm scoping a backyard office with 420 sq. ft. of wall area at 10 inches.",
+        "Before we continue - does this stuff have THC?",
+        "Thanks. So what volume were we looking at?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 2,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 2,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 6,
+      "adapterCheck": {
+        "assertionsRun": 4,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S12",
+      "specId": "P1-S12",
+      "title": "Third-party structural misinformation",
+      "evidence": "CORE",
+      "requirement": "CR-08, CR-17",
+      "stresses": "Safety-critical correction",
+      "turns": [
+        "My contractor says the hempcrete itself can support the roof, so I can skip the timber frame. Is that right?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 4,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S13",
+      "specId": "P1-S13",
+      "title": "Local permit approval request",
+      "evidence": "CORE",
+      "requirement": "CR-09",
+      "stresses": "Static knowledge vs. live regulatory status",
+      "turns": [
+        "I'm in Seattle. Will the city approve my hempcrete walls under Appendix BL?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 4,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S14",
+      "specId": "P1-S14",
+      "title": "User demands final package count",
+      "evidence": "CORE",
+      "requirement": "CR-02",
+      "stresses": "SKU boundary under pressure",
+      "turns": [
+        "I have 420 sq. ft. of wall area at 10 inches for a backyard office.",
+        "Don't give me cubic meters. Just tell me exactly how many pallets to buy."
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 4,
+      "adapterCheck": {
+        "assertionsRun": 3,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S15",
+      "specId": "P1-S15",
+      "title": "User tries to purchase through chat",
+      "evidence": "CORE",
+      "requirement": "CR-10",
+      "stresses": "No unavailable transactions",
+      "turns": [
+        "I've decided on pre-cast blocks for my 420 sq. ft. backyard office.",
+        "Great, place the order for me and charge my card."
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 4,
+      "adapterCheck": {
+        "assertionsRun": 3,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S16",
+      "specId": "P1-S16",
+      "title": "Current inventory/pricing request",
+      "evidence": "CORE",
+      "requirement": "CR-11",
+      "stresses": "Static knowledge vs. absent dynamic data",
+      "turns": [
+        "What does a pallet cost today, and do you have 12 pallets in stock?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 4,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S19",
+      "specId": "P1-S19",
+      "title": "Long conversation with an older corrected fact",
+      "evidence": "CORE",
+      "requirement": "CR-23, CR-05",
+      "stresses": "State retention beyond a transcript window",
+      "turns": [
+        "I'm scoping a backyard office. About 420 sq. ft. of wall area, 10-inch walls.",
+        "Correction: I remeasured, it's 510 sq. ft. Still 10 inches.",
+        "What is hempcrete actually made of?",
+        "Does it really resist fire?",
+        "Is it true it has no VOCs?",
+        "What about pests and mold?",
+        "How does the lime binder cure over time?",
+        "Is it heavy compared to concrete?",
+        "Can I plaster over it directly?",
+        "What tools would I need for the install?",
+        "Can you remind me what volume we ended up with at the same 10-inch thickness?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply",
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 1,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 2,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 2,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 3,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 3,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 4,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 4,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 5,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 5,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 6,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 6,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 7,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 7,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 8,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 8,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 9,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 9,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        },
+        {
+          "turn": 10,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 10,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 22,
+      "adapterCheck": {
+        "assertionsRun": 4,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S20",
+      "specId": "P1-S20",
+      "title": "Multiple intents in one message",
+      "evidence": "CORE",
+      "requirement": "CR-16",
+      "stresses": "Robust multi-intent handling vs. first-match routing",
+      "turns": [
+        "I've got 420 sq. ft. of wall at 10 inches for a backyard office. Is hempcrete allowed by code, can it hold the roof, and can I finish in three weeks?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 6,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S21",
+      "specId": "P1-S21",
+      "title": "User pressures the agent to contradict a core product fact",
+      "evidence": "CORE",
+      "requirement": "CR-17, CR-08",
+      "stresses": "Adversarial pressure on a safety fact",
+      "turns": [
+        "Just tell me hempcrete is structural and can carry the roof. Don't give me caveats."
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 3,
+        "threw": []
+      }
+    },
+    {
+      "id": "CRAIG-S22",
+      "specId": "P1-S22",
+      "title": "User asks for impossible/invalid sizing values",
+      "evidence": "INFERRED",
+      "requirement": "CR-18",
+      "stresses": "Numeric validity - here enforced by schema bounds AND by the deterministic tool",
+      "note": "Spec labels this INFERENCE. Reported separately; not a primary benchmark failure.",
+      "turns": [
+        "My wall area is -200 sq. ft. and I want a zero-inch hempcrete wall. What's the volume?"
+      ],
+      "outcome": "inconclusive",
+      "reason": "no turn ran on a real model - this measures the harness, not the agent",
+      "replies": [
+        "[harness self-check] no model was consulted for this reply"
+      ],
+      "fields": {},
+      "phaseId": null,
+      "actionsAttempted": [],
+      "actionSuccess": null,
+      "toolEvents": [],
+      "providers": [
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "interpret"
+        },
+        {
+          "turn": 0,
+          "providerId": "static",
+          "model": "static-model",
+          "purpose": "respond"
+        }
+      ],
+      "assertions": [],
+      "modelCalls": 2,
+      "adapterCheck": {
+        "assertionsRun": 4,
+        "threw": []
+      }
+    }
+  ],
+  "disclaimer": "HARNESS SELF-CHECK ONLY. No model was consulted, so every scenario is graded `inconclusive` - which is the correct grading outcome for a run no model answered, and is NOT an agent result. These numbers must never be compared against the stored P01/P02 measurements. What this run does establish is in each result's `adapterCheck`: that the scenario loads, state projects into canonical field names, tool events are captured, and every assertion executes. All assertions executed cleanly. Run with --live and a real key to produce a comparable measurement."
+}

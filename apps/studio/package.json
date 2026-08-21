@@ -1,0 +1,14 @@
+{
+  "name": "@agent-sdk/studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Development Studio: configure, persist, and test experimental agent definitions. Outside core.",
+  "type": "module",
+  "scripts": { "start": "node --experimental-strip-types --experimental-sqlite src/server.ts" },
+  "dependencies": {
+    "@agent-sdk/core": "*",
+    "@agent-sdk/provider-gemini": "*",
+    "@agent-sdk/example-minimal-agent": "*",
+    "@agent-sdk/example-estate-like": "*"
+  }
+}

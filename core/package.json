@@ -1,0 +1,12 @@
+{
+  "name": "@agent-sdk/core",
+  "version": "0.1.0",
+  "description": "Importable agent kernel. Zero runtime dependencies. No React/Next, no database, no web routes, no provider credentials.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing/index.ts"
+  },
+  "files": ["src"],
+  "sideEffects": false
+}

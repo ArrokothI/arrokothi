@@ -1,0 +1,34 @@
+{
+  "name": "agent-sdk-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Experimental first-principles agent kernel + development Studio.",
+  "type": "module",
+  "workspaces": [
+    "core",
+    "providers/gemini",
+    "apps/studio",
+    "benchmarks",
+    "examples/minimal-agent",
+    "examples/estate-like"
+  ],
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "test": "node --test --experimental-strip-types core/tests/*.test.ts benchmarks/*.test.ts",
+    "test:watch": "node --test --watch --experimental-strip-types core/tests/*.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "studio": "node --experimental-strip-types --experimental-sqlite apps/studio/src/server.ts",
+    "example:minimal": "node --experimental-strip-types examples/minimal-agent/main.ts",
+    "example:estate": "node --experimental-strip-types examples/estate-like/main.ts",
+    "bench:p01": "node --experimental-strip-types benchmarks/p01-craig/run.ts",
+    "bench:p02": "node --experimental-strip-types benchmarks/p02-estate/run.ts",
+    "bench:compare": "node --experimental-strip-types benchmarks/shared/compare.ts",
+    "test:core": "node --test --experimental-strip-types core/tests/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "typescript": "^5.7.0"
+  }
+}

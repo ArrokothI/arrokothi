@@ -1,0 +1,8 @@
+{
+  "name": "@agent-sdk/example-estate-like",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./agent.ts" },
+  "dependencies": { "@agent-sdk/core": "*" }
+}
