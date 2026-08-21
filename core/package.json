@@ -1,12 +1,18 @@
 {
   "name": "@agent-sdk/core",
-  "version": "0.1.0",
-  "description": "Importable agent kernel. Zero runtime dependencies. No React/Next, no database, no web routes, no provider credentials.",
+  "version": "0.2.0",
+  "description": "Importable agent kernel with a narrow LangChain-backed local document knowledge implementation.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./testing": "./src/testing/index.ts"
   },
-  "files": ["src"],
-  "sideEffects": false
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@langchain/core": "^1.2.9",
+    "@langchain/textsplitters": "^1.0.1"
+  }
 }

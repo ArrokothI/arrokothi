@@ -6,7 +6,7 @@
 <header class="topbar">
   <div class="brand">
     <strong>Agent SDK Studio</strong>
-    <span class="muted">experimental v0</span>
+    <span class="muted">experimental v0.2</span>
   </div>
   <div class="status" id="status">connecting…</div>
 </header>
@@ -54,7 +54,17 @@
           <label class="grow">Temperature <input id="f-temperature" type="number" step="0.1" min="0" max="2" /></label>
           <label class="grow">Max output tokens <input id="f-maxtokens" type="number" min="1" /></label>
         </div>
-        <label>Global rules (one per line) <textarea id="f-rules" rows="4"></textarea></label>
+        <fieldset>
+          <legend>Interpret + Plan</legend>
+          <div class="row">
+            <label class="grow">Planner mode
+              <select id="f-planner-mode"><option>llm</option><option>deterministic</option><option>hybrid</option></select>
+            </label>
+            <label class="grow">Optional planner provider <input id="f-planner-provider" placeholder="defaults to response provider" /></label>
+            <label class="grow">Optional planner model <input id="f-planner-model" placeholder="defaults to response model" /></label>
+          </div>
+        </fieldset>
+        <label>Global rules (legacy text, or <code>invariant:id: text</code> / <code>default:id: text</code>) <textarea id="f-rules" rows="4"></textarea></label>
         <fieldset>
           <legend>Deterministic policies</legend>
           <div class="row">
@@ -64,6 +74,14 @@
           <div class="row">
             <label class="grow">Transcript window <input id="f-window" type="number" min="1" /></label>
             <label class="grow">Working-note TTL (ms) <input id="f-ttl" type="number" min="0" /></label>
+          </div>
+          <div class="row">
+            <label class="grow">Max retrieval requests <input id="f-maxretrievals" type="number" min="0" /></label>
+            <label class="grow">Max document chunks / search <input id="f-maxchunks" type="number" min="1" /></label>
+          </div>
+          <div class="row">
+            <label class="grow">Max record rows / query <input id="f-maxrows" type="number" min="1" /></label>
+            <label class="grow">Max knowledge characters <input id="f-maxknowledgechars" type="number" min="1" /></label>
           </div>
           <label class="check"><input id="f-rejectunknown" type="checkbox" /> Reject undeclared memory fields</label>
           <label class="check danger"><input id="f-allowunconfirmed" type="checkbox" /> Allow side effects without confirmation</label>
@@ -83,7 +101,7 @@
       </div>
 
       <div class="tab hidden" data-tab="knowledge">
-        <p class="muted">Documents are retrieved lexically. Record sets additionally get a deterministic query tool, so numeric constraints are computed rather than reasoned about.</p>
+        <p class="muted">The planner selects sources. Documents use LangChain splitting plus local lexical ranking; record sets use deterministic typed queries.</p>
         <div id="knowledge-rows" class="rows"></div>
         <div class="row">
           <button id="btn-add-doc" class="ghost">Add document</button>

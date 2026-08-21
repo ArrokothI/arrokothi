@@ -38,6 +38,11 @@ GEMINI_API_KEY=... node --experimental-strip-types benchmarks/p01-craig/run.ts -
 canonical names with known inputs, that the deterministic volume tool reproduces the product's own
 published figures, and that the ported detectors behave as specified.
 
+Every scenario result also records v0.2 efficiency/routing metrics: planner model calls, response
+model calls, total model calls, retrieval-request count, selected logical knowledge sources,
+retrieved document chunks, and tool calls. Self-check metrics exercise the instrumentation but are
+not a quality or cost measurement; live-mode metrics describe the actual provider run.
+
 ## Safety
 
 No real email is ever delivered, in any mode. The handoff transport is injected per scenario and

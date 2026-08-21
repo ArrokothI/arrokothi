@@ -22,30 +22,30 @@ import { estateAgent } from "./agent.ts";
 
 const model = new ScriptedModelProvider([
   // Turn 1 - front-loaded criteria, then a deterministic query rather than prose comparison.
-  { purpose: "interpret", json: { memory_writes: { intent: "buy", target_location: "Manhattan", budget: 20_000_000, financing: "cash" }, signals: ["stated_criteria"] } },
+  { purpose: "plan", json: { memory_writes: { intent: "buy", target_location: "Manhattan", budget: 20_000_000, financing: "cash" }, signals: ["stated_criteria"] } },
   { purpose: "respond", toolCalls: [{ name: "query_listings", args: { filters: [{ field: "price", op: "lte", value: 20_000_000 }], sort_field: "price", sort_direction: "desc" } }] },
   { purpose: "respond", text: "Four of our properties sit at or under $20M. In Manhattan itself, the Skyline Penthouse on the Upper West Side is $18,900,000 - four bedrooms, 5,200 sq ft, with Central Park views." },
 
   // Turn 2 - a correction. The new budget must replace the old one, not average with it.
-  { purpose: "interpret", json: { memory_writes: { budget: 12_000_000 }, signals: ["corrected_budget"] } },
+  { purpose: "plan", json: { memory_writes: { budget: 12_000_000 }, signals: ["corrected_budget"] } },
   { purpose: "respond", toolCalls: [{ name: "query_listings", args: { filters: [{ field: "price", op: "lte", value: 12_000_000 }] } }] },
   { purpose: "respond", text: "At $12M, one property qualifies: The TriBeCa Loft at $7,250,000. The Skyline Penthouse is above your revised budget, so I have set it aside." },
 
   // Turn 3 - contact details, which moves the flow to handoff and requests confirmation.
-  { purpose: "interpret", json: { memory_writes: { contact_name: "Taylor Kim", phone: "555-0133" } } },
+  { purpose: "plan", json: { memory_writes: { contact_name: "Taylor Kim", phone: "555-0133" } } },
   { purpose: "respond", toolCalls: [{ name: "send_to_team", args: { contact_name: "Taylor Kim", phone: "555-0133", summary: "Cash buyer, TriBeCa, up to $12M." } }] },
   { purpose: "respond", text: "Before I pass this on - Taylor Kim, 555-0133, cash buyer looking in TriBeCa up to $12M. Shall I send that to the team?" },
 
   // Turn 4 - the adversarial turn. It contains "go ahead" but asks for something else entirely.
-  { purpose: "interpret", json: { memory_writes: {} } },
+  { purpose: "plan", json: { memory_writes: {} } },
   { purpose: "respond", text: "I can't say a viewing or a CRM record was created - we have no such systems. Your details are still waiting on your go-ahead before I send them." },
 
   // Turn 5 - genuine confirmation.
-  { purpose: "interpret", json: { memory_writes: {} } },
+  { purpose: "plan", json: { memory_writes: {} } },
   { purpose: "respond", text: "Sent - the team has your details and will be in touch." },
 
   // Turn 6 - a second attempt at the same handoff.
-  { purpose: "interpret", json: { memory_writes: { contact_preference: "text" } } },
+  { purpose: "plan", json: { memory_writes: { contact_preference: "text" } } },
   { purpose: "respond", toolCalls: [{ name: "send_to_team", args: { contact_name: "Taylor Kim", phone: "555-0133", summary: "Prefers a text." } }] },
   { purpose: "respond", text: "Your details are already with the team, so I have not sent them twice - I have noted that you prefer a text." },
 ]);

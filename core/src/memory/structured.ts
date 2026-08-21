@@ -1,7 +1,9 @@
 import type {
   MemoryPrimitive,
-  MemorySource,
+  MemoryProvenance,
+  MemoryProvenanceKind,
   MemoryValue,
+  MemoryWriteMechanism,
   MemoryWriteProposal,
   StructuredMemory,
   StructuredMemoryField,
@@ -40,7 +42,7 @@ export interface ValidateProposalOptions {
 export function validateProposal(
   schema: StructuredMemorySchema,
   proposal: MemoryWriteProposal,
-  source: MemorySource,
+  provenanceKind: MemoryProvenanceKind,
   opts: ValidateProposalOptions = {},
 ): MemoryValidation {
   const field = findField(schema, proposal.key);
@@ -52,13 +54,13 @@ export function validateProposal(
     return { ok: false, key: proposal.key, code: "unknown_field", reason: `field "${proposal.key}" is not declared in the memory schema` };
   }
 
-  const writable = field.writableBy ?? ["model_proposal", "tool_result", "host_context"];
-  if (!writable.includes(source)) {
+  const writable = field.writableBy ?? ["user_claimed", "tool_verified", "host_provided"];
+  if (!writable.includes(provenanceKind)) {
     return {
       ok: false,
       key: proposal.key,
       code: "source_not_permitted",
-      reason: `field "${proposal.key}" is not writable from source "${source}" (allowed: ${writable.join(", ")})`,
+      reason: `field "${proposal.key}" is not writable from provenance "${provenanceKind}" (allowed: ${writable.join(", ")})`,
     };
   }
 
@@ -78,12 +80,23 @@ export function validateProposal(
 export interface CommitInput {
   key: string;
   value: MemoryPrimitive;
-  source: MemorySource;
+  writeMechanism: MemoryWriteMechanism;
+  provenance: MemoryProvenance;
   authority: "authoritative" | "advisory";
   turn: number;
   eventId: string;
   at: string;
   normalized?: boolean;
+  confidence?: number;
+}
+
+/** Confidence never affects this decision; model inference is advisory unless explicitly allowed. */
+export function authorityFor(
+  field: StructuredMemoryField,
+  provenanceKind: MemoryProvenanceKind,
+): "authoritative" | "advisory" {
+  if (provenanceKind === "model_inferred" && field.allowModelInferredAuthority !== true) return "advisory";
+  return field.authority ?? "authoritative";
 }
 
 /** Pure: returns a new memory map. A correction REPLACES; nothing is merged or averaged. */
@@ -92,12 +105,14 @@ export function commitValue(memory: StructuredMemory, input: CommitInput): Struc
   const value: MemoryValue = {
     key: input.key,
     value: input.value,
-    source: input.source,
+    writeMechanism: input.writeMechanism,
+    provenance: structuredClone(input.provenance),
     authority: input.authority,
     turn: input.turn,
     eventId: input.eventId,
     at: input.at,
   };
+  if (input.confidence !== undefined) value.confidence = input.confidence;
   if (input.normalized) value.normalized = true;
   if (previous) value.previousValue = previous.value;
   return { ...memory, [input.key]: value };

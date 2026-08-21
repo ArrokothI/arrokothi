@@ -2,7 +2,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import type { RecordSetSource } from "../src/knowledge/types.ts";
 import { queryRecords } from "../src/knowledge/record-query.ts";
-import { KnowledgeIndex } from "../src/knowledge/in-memory.ts";
+import { DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, KnowledgeIndex, chunkDocument } from "../src/knowledge/in-memory.ts";
 import { parseRecordQueryArgs, recordQueryTools } from "../src/tools/record-query-tool.ts";
 import { ScriptedModelProvider } from "../src/testing/scripted-provider.ts";
 import { PROPERTIES, buildRuntime, callTool, interpret, reply, testDefinition } from "./helpers.ts";
@@ -150,19 +150,53 @@ describe("lexical retrieval", () => {
         },
       },
     ]);
-    const hits = await knowledge.retrieve({ text: "what are closing costs" });
+    const hits = await knowledge.retrieve({ kind: "document_search", sourceId: "faq", query: "what are closing costs" });
     assert.ok(hits.length > 0);
     assert.match(hits[0]!.text, /Closing costs/);
 
-    const none = await knowledge.retrieve({ text: "zzzz" });
+    const none = await knowledge.retrieve({ kind: "document_search", sourceId: "faq", query: "zzzz" });
     assert.equal(none.length, 0);
   });
 
-  test("record retrieval surfaces the structured row, not just prose", async () => {
+  test("RecursiveCharacterTextSplitter defaults keep a small document as one chunk", async () => {
+    assert.equal(DEFAULT_CHUNK_SIZE, 1000);
+    assert.equal(DEFAULT_CHUNK_OVERLAP, 200);
+    const chunks = await chunkDocument({ id: "small", kind: "document", title: "Small", text: "A short source remains whole." });
+    assert.equal(chunks.length, 1);
+    assert.equal(chunks[0]?.text, "A short source remains whole.");
+  });
+
+  test("large documents produce overlapping chunks with configurable LangChain splitting", async () => {
+    const text = "abcdefghijklmnopqrstuvwxyz".repeat(8);
+    const chunks = await chunkDocument({
+      id: "large",
+      kind: "document",
+      title: "Large",
+      text,
+      chunking: { chunkSize: 50, chunkOverlap: 10 },
+    });
+    assert.ok(chunks.length > 1);
+    assert.equal(chunks[0]!.text.slice(-10), chunks[1]!.text.slice(0, 10));
+  });
+
+  test("the LangChain-backed local retriever returns only SDK KnowledgeChunk fields", async () => {
+    const knowledge = new KnowledgeIndex([
+      { source: { id: "local", kind: "document", title: "Local", text: "Local lexical retrieval needs no embedding service or vector store." } },
+    ]);
+    const [hit] = await knowledge.retrieve({ kind: "document_search", sourceId: "local", query: "lexical retrieval" });
+    assert.ok(hit);
+    assert.deepEqual(Object.keys(hit).sort(), ["chunkId", "rank", "score", "sourceId", "sourceTitle", "text"]);
+  });
+
+  test("record sets use deterministic queries rather than document retrieval", () => {
     const knowledge = new KnowledgeIndex(testDefinition().knowledge);
-    const hits = await knowledge.retrieve({ text: "TriBeCa loft" });
-    assert.ok(hits.length > 0);
-    assert.equal(hits[0]!.record?.["title"], "The TriBeCa Loft");
-    assert.equal(hits[0]!.record?.["price"], PROPERTIES[1]!.price);
+    const result = knowledge.queryRecords({
+      kind: "record_query",
+      sourceId: "listings",
+      filters: [{ field: "title", op: "eq", value: "The TriBeCa Loft" }],
+    });
+    assert.ok(result.ok);
+    assert.equal(result.value.matches[0]?.["title"], "The TriBeCa Loft");
+    assert.equal(result.value.matches[0]?.["price"], PROPERTIES[1]!.price);
   });
 });

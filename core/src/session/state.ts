@@ -6,6 +6,8 @@ import type { ActionLedger } from "../tools/idempotency.ts";
 import type { AuthoritativeFact } from "../tools/types.ts";
 import { commitValue } from "../memory/structured.ts";
 import { applyHostContext } from "../context/host-context.ts";
+import type { TurnPlan, TurnPlanValidationError } from "../planning/types.ts";
+import type { RetrievalRequest } from "../knowledge/types.ts";
 
 /**
  * The session projection.
@@ -34,6 +36,16 @@ export interface ToolResultRecord {
   replayed?: boolean;
 }
 
+export interface RetrievalTraceRecord {
+  request: RetrievalRequest;
+  sourceId: string;
+  resultIds: string[];
+  scores?: number[];
+  returnedCount: number;
+  totalMatched?: number;
+  error?: TurnPlanValidationError;
+}
+
 export interface SessionState {
   sessionId: string;
   agentId: string;
@@ -54,6 +66,10 @@ export interface SessionState {
   turnToolResults: ToolResultRecord[];
   /** Semantic routing signals observed on the current turn. */
   turnSignals: string[];
+  /** Validated pass-1 plan for the current turn. */
+  turnPlan: TurnPlan | null;
+  /** Retrieval outcomes from the current turn, without duplicating document contents. */
+  turnRetrievals: RetrievalTraceRecord[];
   /** Every tool result in the session, for the Studio's action ledger view. */
   allToolResults: ToolResultRecord[];
   status: "active" | "error";
@@ -89,6 +105,8 @@ export function initialState(params: {
     transcript: [],
     turnToolResults: [],
     turnSignals: [],
+    turnPlan: null,
+    turnRetrievals: [],
     allToolResults: [],
     status: "active",
     createdAt: params.createdAt,
@@ -116,30 +134,65 @@ export function applyEvent(state: SessionState, event: SessionEvent): SessionSta
         turn: event.turn,
         turnToolResults: [],
         turnSignals: [],
+        turnPlan: null,
+        turnRetrievals: [],
         hostContext: applyHostContext(base.hostContext, [], event.turn),
         transcript: [...base.transcript, { role: "user", text: event.payload.text, turn: event.turn, at: event.at }],
       };
     }
 
     case "HostContextObserved":
-      return { ...base, hostContext: applyHostContext(base.hostContext, event.payload.accepted, event.turn) };
+      return {
+        ...base,
+        hostContext: applyHostContext(
+          base.hostContext,
+          event.payload.accepted.map((value) => ({ ...value, sourceEventId: event.id })),
+          event.turn,
+        ),
+      };
 
     case "SemanticSignalsObserved":
       return { ...base, turnSignals: [...new Set([...base.turnSignals, ...event.payload.signals])] };
 
+    case "TurnPlanCreated":
+      return { ...base, turnPlan: structuredClone(event.payload.plan) };
+
+    case "RetrievalRequestRejected":
+      return {
+        ...base,
+        turnRetrievals: [
+          ...(base.turnRetrievals ?? []),
+          {
+            request: structuredClone(event.payload.request),
+            sourceId: event.payload.request.sourceId,
+            resultIds: [],
+            returnedCount: 0,
+            error: structuredClone(event.payload.error),
+          },
+        ],
+      };
+
+    case "KnowledgeRetrieved":
+      return {
+        ...base,
+        turnRetrievals: [...(base.turnRetrievals ?? []), structuredClone(event.payload)],
+      };
+
     case "MemoryWriteCommitted": {
-      const { key, value, source, authority, normalized } = event.payload;
+      const { key, value, writeMechanism, provenance, authority, normalized, confidence } = event.payload;
       return {
         ...base,
         memory: commitValue(base.memory, {
           key,
           value,
-          source,
+          writeMechanism,
+          provenance,
           authority,
           turn: event.turn,
           eventId: event.id,
           at: event.at,
           normalized,
+          confidence,
         }),
       };
     }

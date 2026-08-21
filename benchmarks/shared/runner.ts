@@ -94,7 +94,7 @@ export async function runBenchmark(options: RunOptions): Promise<BenchmarkRun> {
       agentId: options.agent.definition.id,
       agentVersion: options.agent.definition.version,
       definitionHash: definitionHash(options.agent.definition),
-      harness: "two-pass-v0",
+      harness: "two-pass-v0.2",
     },
     provider: { id: first?.providers[0]?.providerId ?? "unknown", model: first?.providers[0]?.model ?? "unknown" },
     paceMs,
@@ -151,6 +151,12 @@ async function runScenario(scenario: BenchmarkScenario, options: RunOptions, pac
   const modelBacked: boolean[] = [];
   let actionSuccess: boolean | null = null;
   let modelCalls = 0;
+  let plannerModelCalls = 0;
+  let responseModelCalls = 0;
+  let retrievalRequests = 0;
+  let retrievedChunks = 0;
+  let toolCalls = 0;
+  const selectedKnowledgeSources = new Set<string>();
   let harnessError: string | undefined;
   let finalState: ProjectionInput = { memory: {}, phaseId: null };
 
@@ -164,6 +170,18 @@ async function runScenario(scenario: BenchmarkScenario, options: RunOptions, pac
 
       const calls = turn.events.filter((e) => e.type === "ModelCallCompleted");
       modelCalls += calls.length;
+      plannerModelCalls += calls.filter((call) => call.type === "ModelCallCompleted" && call.payload.purpose === "plan").length;
+      responseModelCalls += calls.filter((call) => call.type === "ModelCallCompleted" && call.payload.purpose === "respond").length;
+      for (const event of turn.events) {
+        if (event.type === "TurnPlanCreated") {
+          retrievalRequests += event.payload.plan.retrievalRequests.length;
+          for (const request of event.payload.plan.retrievalRequests) selectedKnowledgeSources.add(request.sourceId);
+        }
+        if (event.type === "KnowledgeRetrieved" && event.payload.request.kind === "document_search") {
+          retrievedChunks += event.payload.returnedCount;
+        }
+        if (event.type === "ToolRequested") toolCalls++;
+      }
       for (const call of calls) {
         if (call.type !== "ModelCallCompleted") continue;
         providers.push({ turn: index, providerId: call.payload.providerId, model: call.payload.model, purpose: call.payload.purpose });
@@ -224,6 +242,12 @@ async function runScenario(scenario: BenchmarkScenario, options: RunOptions, pac
     providers,
     assertions: graded.assertions,
     modelCalls,
+    plannerModelCalls,
+    responseModelCalls,
+    retrievalRequests,
+    selectedKnowledgeSources: [...selectedKnowledgeSources],
+    retrievedChunks,
+    toolCalls,
     harnessError,
     adapterCheck,
   };

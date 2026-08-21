@@ -32,6 +32,12 @@ export const sendToTeam: ToolDefinition = {
   effect: "external_side_effect",
   confirmation: "required",
   idempotency: "once_per_session",
+  argumentPolicies: {
+    contact_name: { kind: "authoritative_value", sources: ["memory.contact_name"] },
+    phone: { kind: "authoritative_value", sources: ["memory.phone"] },
+    email: { kind: "authoritative_value", sources: ["memory.email"] },
+    summary: { kind: "model_composed" },
+  },
   input: {
     kind: "object",
     fields: {
@@ -88,6 +94,7 @@ export const estateAgent: AgentDefinition = defineAgent({
         id: "listings",
         kind: "record_set",
         title: "Available properties",
+        description: "Current sale listings including price, location, bedrooms, baths, size, and highlights.",
         displayField: "title",
         fields: {
           id: { kind: "string" },
@@ -108,6 +115,7 @@ export const estateAgent: AgentDefinition = defineAgent({
         id: "policies",
         kind: "document",
         title: "What the concierge can and cannot do",
+        description: "Service limits, inventory caveats, rental-data limitations, and seller next steps.",
         text: [
           "We market six properties. The neighbourhood counts shown on the website are marketing figures, not inventory: there is exactly one TriBeCa listing, The TriBeCa Loft.",
           "We have no rental pricing or rental availability data. Every listed price is a sale price.",

@@ -44,6 +44,8 @@ export interface HostContextValue {
   /** Turn on which it was observed. Turn-scoped values are only live for their own turn. */
   turn: number;
   at: string;
+  /** HostContextObserved event that accepted this value. Filled by session projection. */
+  sourceEventId?: string;
 }
 
 export type HostContextState = Record<string, HostContextValue>;

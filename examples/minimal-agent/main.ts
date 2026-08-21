@@ -19,11 +19,11 @@ import { minimalAgent } from "./agent.ts";
  */
 
 const model = new ScriptedModelProvider([
-  { purpose: "interpret", json: { memory_writes: { problem_summary: "checkout page returns a 500 for card payments", severity: "high" } } },
+  { purpose: "plan", json: { memory_writes: { problem_summary: "checkout page returns a 500 for card payments", severity: "high" } } },
   { purpose: "respond", text: "That sounds disruptive. Roughly how many people are hitting it?" },
-  { purpose: "interpret", json: { memory_writes: { affected_users: "about 40" } } },
+  { purpose: "plan", json: { memory_writes: { affected_users: "about 40" } } },
   { purpose: "respond", text: "Understood. When did you first notice it?" },
-  { purpose: "interpret", json: { memory_writes: { affected_users: 40, first_noticed: "this morning around 9am" } } },
+  { purpose: "plan", json: { memory_writes: { affected_users: 40, first_noticed: "this morning around 9am" } } },
   { purpose: "respond", text: "Thanks - I have enough for a colleague to pick this up: a high-severity checkout failure affecting about 40 people since 9am." },
 ]);
 

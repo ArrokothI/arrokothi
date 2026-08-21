@@ -4,6 +4,16 @@ import type { KnowledgeBinding } from "../knowledge/types.ts";
 import type { ToolBinding } from "../tools/types.ts";
 import type { FlowDefinition } from "../flow/types.ts";
 import type { ModelPolicy } from "../provider/types.ts";
+import type { PlanningPolicy } from "../planning/types.ts";
+
+export interface AgentRule {
+  id: string;
+  text: string;
+  /** Invariants are non-overridable. Defaults may be explicitly specialized by a phase. */
+  kind: "invariant" | "default";
+}
+
+export type AgentRuleInput = string | AgentRule;
 
 /**
  * The AgentDefinition: immutable, versioned, serializable.
@@ -26,8 +36,10 @@ export interface AgentDefinition {
    */
   goal: string;
   model: ModelPolicy;
-  /** Standing rules compiled into every prompt. Keep them short and behavioural. */
-  globalRules?: string[];
+  /** Planner mode/model. Omitted model means use the main model/provider. */
+  planning?: PlanningPolicy;
+  /** Standing rules. Legacy strings remain supported and are treated as invariants. */
+  globalRules?: AgentRuleInput[];
   knowledge: KnowledgeBinding[];
   memorySchema: StructuredMemorySchema;
   hostContextSchema: HostContextSchema;
@@ -57,6 +69,14 @@ export interface DeterministicPolicies {
   workingNoteTtlMs?: number;
   /** Transcript messages included in compiled context. Default 10. */
   transcriptWindow?: number;
+  /** Maximum explicit retrieval requests accepted from one TurnPlan. */
+  maxRetrievalRequests: number;
+  /** Maximum chunks returned by one document search. */
+  maxDocumentChunks: number;
+  /** Maximum record rows from one planned query entering response context. */
+  maxRecordRows: number;
+  /** Approximate total character budget for retrieved knowledge in response context. */
+  maxKnowledgeChars: number;
 }
 
 export const DEFAULT_POLICIES: DeterministicPolicies = {
@@ -66,6 +86,10 @@ export const DEFAULT_POLICIES: DeterministicPolicies = {
   allowUnconfirmedSideEffects: false,
   workingNoteTtlMs: 0,
   transcriptWindow: 10,
+  maxRetrievalRequests: 4,
+  maxDocumentChunks: 4,
+  maxRecordRows: 20,
+  maxKnowledgeChars: 12_000,
 };
 
 export interface DefinitionIssue {

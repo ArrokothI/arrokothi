@@ -9,12 +9,13 @@ import type { ModelProvider, ModelRequest, ModelResponse, ModelToolCall } from "
  */
 
 export interface ScriptedStep {
-  /** JSON for an interpretation call, text and/or tool calls for a response call. */
+  /** JSON for a planning call, text and/or tool calls for a response call. */
   json?: unknown;
   text?: string;
   toolCalls?: ModelToolCall[];
   /** Only match a request whose `purpose` equals this. Lets a script target one pass. */
-  purpose?: "interpret" | "respond";
+  /** `interpret` is retained as a test-fixture alias for the v0.2 `plan` purpose. */
+  purpose?: "plan" | "interpret" | "respond";
   finishReason?: string;
   /** Throw instead of responding, to exercise provider-failure handling. */
   throws?: Error;
@@ -48,7 +49,8 @@ export class ScriptedModelProvider implements ModelProvider {
     // about without having to pad the other pass with placeholders.
     while (this.cursor < this.steps.length) {
       const candidate = this.steps[this.cursor]!;
-      if (candidate.purpose && candidate.purpose !== request.purpose) {
+      const candidatePurpose = candidate.purpose === "interpret" ? "plan" : candidate.purpose;
+      if (candidatePurpose && candidatePurpose !== request.purpose) {
         this.cursor++;
         continue;
       }
@@ -58,8 +60,8 @@ export class ScriptedModelProvider implements ModelProvider {
     const step = this.steps[this.cursor];
     if (!step) {
       // Running out of script is a test authoring error for a response call, but harmless for an
-      // interpretation call - so return an empty interpretation rather than failing the run.
-      if (request.purpose === "interpret") {
+      // planning call - so return an empty plan rather than failing the run.
+      if (request.purpose === "plan") {
         return { json: {}, providerId: this.id, model: this.model };
       }
       throw new Error(`ScriptedModelProvider exhausted after ${this.cursor} steps (purpose "${request.purpose}")`);
@@ -94,7 +96,7 @@ export class StaticModelProvider implements ModelProvider {
 
   async generate(request: ModelRequest): Promise<ModelResponse> {
     this.requests.push(request);
-    if (request.purpose === "interpret") return { json: {}, providerId: this.id, model: "static-model" };
+    if (request.purpose === "plan") return { json: {}, providerId: this.id, model: "static-model" };
     return { text: this.reply, providerId: this.id, model: "static-model" };
   }
 }

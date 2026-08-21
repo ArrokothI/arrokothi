@@ -19,7 +19,7 @@ export type Condition =
   | { kind: "memory_absent"; field: string }
   /** True when the field was committed *this turn* - i.e. the user just supplied or corrected it. */
   | { kind: "memory_changed"; field: string }
-  /** A semantic routing signal emitted by the interpretation pass. Model understanding enters here. */
+  /** A semantic routing signal emitted by Interpret + Plan. Model understanding enters here. */
   | { kind: "signal"; name: string }
   | { kind: "tool_succeeded"; tool: string }
   | { kind: "tool_failed"; tool: string }
@@ -28,7 +28,7 @@ export type Condition =
   | { kind: "not"; of: Condition };
 
 /**
- * `pre_response`  - evaluated after interpretation/memory commits and BEFORE the reply is generated,
+ * `pre_response`  - evaluated after planning/memory commits and BEFORE the reply is generated,
  *                   so "actually, I want to sell instead" reroutes the same turn that states it.
  * `action_result` - evaluated after a tool result, so a successful handoff can move to a terminal phase.
  */
@@ -45,6 +45,8 @@ export interface Phase {
   id: string;
   objective: string;
   instructions?: string;
+  /** Explicitly suppresses named global defaults in this phase. Invariants cannot be overridden. */
+  overrideRuleIds?: string[];
   /** Optional scoping. Absent means every bound source/tool is available in this phase. */
   knowledgeSourceIds?: string[];
   toolNames?: string[];

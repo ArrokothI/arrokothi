@@ -1,27 +1,17 @@
-import type { AgentDefinition } from "../definition/types.ts";
+import type { AgentDefinition, AgentRule } from "../definition/types.ts";
 import type { SessionState, ToolResultRecord, TranscriptEntry } from "../session/state.ts";
-import type { KnowledgeChunk } from "../knowledge/types.ts";
-import type { KnowledgeIndex } from "../knowledge/in-memory.ts";
+import type { KnowledgeResult, KnowledgeSourceCatalogEntry } from "../knowledge/types.ts";
 import type { Phase } from "../flow/types.ts";
 import type { WorkingNote } from "../memory/types.ts";
 import type { ModelMessage } from "../provider/types.ts";
 import { modelVisibleContext, trustLabel } from "../context/host-context.ts";
 import { selectNotes } from "../memory/working.ts";
 import { findPhase } from "../flow/evaluate.ts";
+import { normalizeAgentRules } from "../definition/definition.ts";
 
 /**
- * The ContextCompiler builds the smallest useful context for each model call.
- *
- * It produces a STRUCTURED value first and renders text second. That ordering is deliberate: tests
- * and traces assert on `CompiledContext`, so "does a runtime_only secret reach the model" is a
- * question about data, not about grepping a prompt string.
- *
- * Rules enforced here:
- *  - `tools_only` / `runtime_only` host context never appears, in any section;
- *  - corrected structured state is presented as CURRENT and outranks stale transcript values;
- *  - authoritative tool facts are labelled as authoritative;
- *  - working notes are labelled unverified;
- *  - the authoring requirements document is never concatenated in - only the concise goal is.
+ * The ContextCompiler is intentionally close to pure. Retrieval has already happened; this module
+ * only selects and renders what one model call may see.
  */
 
 export interface CompiledContextSection {
@@ -35,12 +25,17 @@ export interface CompiledContext {
   agentVersion: number;
   phaseId: string | null;
   sections: CompiledContextSection[];
-  /** Rendered system prompt. Derived from `sections`; never assembled independently. */
   system: string;
   messages: ModelMessage[];
-  /** Which knowledge chunks were selected, for the trace. */
-  knowledgeUsed: { sourceId: string; chunkId: string; score: number }[];
-  /** Context keys deliberately withheld, and why. Makes the filter auditable. */
+  knowledgeUsed: {
+    kind: "document_search" | "record_query";
+    sourceId: string;
+    chunkId?: string;
+    score?: number;
+    rank?: number;
+  }[];
+  effectiveRules: AgentRule[];
+  /** Context keys deliberately withheld, and why. */
   withheldContextKeys: { key: string; visibility: string }[];
   approxChars: number;
 }
@@ -48,21 +43,49 @@ export interface CompiledContext {
 export interface CompileInput {
   definition: AgentDefinition;
   state: SessionState;
-  /** Retrieved knowledge for this turn. The caller retrieves so the compiler stays synchronous/pure. */
-  knowledge?: KnowledgeChunk[];
-  /** Extra instruction for this specific model call (e.g. the interpretation pass's task). */
+  /** Evidence explicitly retrieved from a validated TurnPlan. */
+  retrievedKnowledge?: KnowledgeResult[];
+  /** Extra instruction for this particular response/tool-loop call. */
   taskInstruction?: string;
-  /** Overrides the transcript window from policies. */
+  transcriptWindow?: number;
+  now: Date;
+}
+
+export interface CompilePlannerInput {
+  definition: AgentDefinition;
+  state: SessionState;
+  sourceCatalog: KnowledgeSourceCatalogEntry[];
+  taskInstruction: string;
   transcriptWindow?: number;
   now: Date;
 }
 
 const formatValue = (value: unknown): string => (Array.isArray(value) ? value.join(", ") : String(value));
 
+/** Rendering belongs to compilation; importing a Knowledge implementation here would blur the boundary. */
+const renderRecord = (record: Record<string, unknown>): string =>
+  Object.entries(record)
+    .filter(([, value]) => value !== undefined && value !== null && value !== "")
+    .map(([key, value]) => `${key}: ${formatValue(value)}`)
+    .join("\n");
+
 function goalSection(definition: AgentDefinition): CompiledContextSection {
-  const lines = [definition.goal.trim()];
-  for (const rule of definition.globalRules ?? []) lines.push(`- ${rule}`);
-  return { id: "goal", title: "Your role", lines };
+  return { id: "goal", title: "Your role", lines: [definition.goal.trim()] };
+}
+
+/** Compiles contradictions away: only defaults may be explicitly suppressed by a phase. */
+export function effectiveRules(definition: AgentDefinition, phase: Phase | undefined): AgentRule[] {
+  const overridden = new Set(phase?.overrideRuleIds ?? []);
+  return normalizeAgentRules(definition.globalRules).filter((rule) => rule.kind === "invariant" || !overridden.has(rule.id));
+}
+
+function rulesSection(rules: AgentRule[]): CompiledContextSection | null {
+  if (!rules.length) return null;
+  return {
+    id: "effective_rules",
+    title: "Effective rules",
+    lines: rules.map((rule) => `- [${rule.kind.toUpperCase()}:${rule.id}] ${rule.text}`),
+  };
 }
 
 function phaseSection(phase: Phase | undefined): CompiledContextSection | null {
@@ -72,31 +95,24 @@ function phaseSection(phase: Phase | undefined): CompiledContextSection | null {
   return { id: "phase", title: `Current phase (${phase.id})`, lines };
 }
 
-/**
- * Current structured state.
- *
- * Every value is labelled CURRENT, and a corrected value states what it replaced. This is what stops
- * a model from re-reading a superseded number out of the transcript: the correction is not merely
- * present, it is marked as the one that counts.
- */
 function memorySection(state: SessionState, definition: AgentDefinition): CompiledContextSection | null {
   const entries = Object.values(state.memory);
   if (!entries.length) return null;
-  const described = new Map(definition.memorySchema.fields.map((f) => [f.key, f]));
+  const described = new Map(definition.memorySchema.fields.map((field) => [field.key, field]));
   const lines = entries
     .sort((a, b) => a.key.localeCompare(b.key))
     .map((entry) => {
       const label = described.get(entry.key)?.description ?? entry.key;
-      const corrected =
-        entry.previousValue !== undefined && entry.previousValue !== entry.value
-          ? ` (CORRECTED this session - replaced ${formatValue(entry.previousValue)}, which is no longer true)`
-          : "";
-      const source = entry.source === "tool_result" ? " [established by a tool result]" : "";
-      return `- ${entry.key}: ${formatValue(entry.value)}${corrected}${source} - ${label}`;
+      const corrected = entry.previousValue !== undefined && entry.previousValue !== entry.value
+        ? ` (CORRECTED this session - replaced ${formatValue(entry.previousValue)}, which is no longer true)`
+        : "";
+      const origin = entry.provenance?.kind ?? "unknown";
+      const authority = entry.authority === "authoritative" ? "AUTHORITATIVE" : "ADVISORY";
+      return `- ${entry.key}: ${formatValue(entry.value)}${corrected} [${authority}; origin=${origin}] - ${label}`;
     });
   return {
     id: "memory",
-    title: "Confirmed facts about this conversation (CURRENT - these override anything earlier in the transcript)",
+    title: "Current structured memory (CURRENT values override stale transcript statements)",
     lines,
   };
 }
@@ -105,31 +121,32 @@ function workingNotesSection(notes: WorkingNote[]): CompiledContextSection | nul
   if (!notes.length) return null;
   return {
     id: "working_notes",
-    title: "Working notes (UNVERIFIED observations - useful context, but never a basis for taking an action)",
-    lines: notes.map((n) => `- ${n.text}${n.confidence !== undefined ? ` (confidence ${n.confidence})` : ""}`),
+    title: "Working notes (UNVERIFIED; never a basis for taking an action)",
+    lines: notes.map((note) => `- ${note.text}${note.confidence !== undefined ? ` (confidence ${note.confidence})` : ""}`),
   };
 }
 
-/** Model-visible host context only. The withheld keys are returned separately for auditing. */
-function contextSection(state: SessionState): { section: CompiledContextSection | null; withheld: { key: string; visibility: string }[] } {
+function contextSection(state: SessionState): {
+  section: CompiledContextSection | null;
+  withheld: { key: string; visibility: string }[];
+} {
   const visible = modelVisibleContext(state.hostContext);
   const withheld = Object.values(state.hostContext)
-    .filter((v) => v.visibility !== "model")
-    .map((v) => ({ key: v.key, visibility: v.visibility }));
-
+    .filter((value) => value.visibility !== "model")
+    .map((value) => ({ key: value.key, visibility: value.visibility }));
   if (!visible.length) return { section: null, withheld };
-  const lines = visible
-    .sort((a, b) => a.key.localeCompare(b.key))
-    .map((v) => `- ${v.key}: ${formatValue(v.value)} [${trustLabel(v.trust)}]${v.description ? ` - ${v.description}` : ""}`);
-  return { section: { id: "host_context", title: "Context supplied by the host application", lines }, withheld };
+  return {
+    section: {
+      id: "host_context",
+      title: "Context supplied by the host application",
+      lines: visible
+        .sort((a, b) => a.key.localeCompare(b.key))
+        .map((value) => `- ${value.key}: ${formatValue(value.value)} [${trustLabel(value.trust)}]${value.description ? ` - ${value.description}` : ""}`),
+    },
+    withheld,
+  };
 }
 
-/**
- * Latest tool results.
- *
- * Successes and failures are both stated plainly. A failed action is presented as failed so the
- * model cannot report a success that never happened - the runtime's record is the authority.
- */
 function toolResultsSection(results: ToolResultRecord[]): CompiledContextSection | null {
   if (!results.length) return null;
   const lines: string[] = [];
@@ -145,13 +162,44 @@ function toolResultsSection(results: ToolResultRecord[]): CompiledContextSection
       lines.push(`- ${result.toolName}: FAILED (${result.error?.code}: ${result.error?.message}). Do not claim it succeeded.`);
     }
   }
-  return { id: "tool_results", title: "Results of actions taken this turn (AUTHORITATIVE - the runtime observed these directly)", lines };
+  return { id: "tool_results", title: "Results of actions taken this turn (AUTHORITATIVE runtime observations)", lines };
 }
 
-function knowledgeSection(chunks: KnowledgeChunk[]): CompiledContextSection | null {
-  if (!chunks.length) return null;
-  const lines = chunks.map((c) => `- [${c.sourceTitle}] ${c.text.replace(/\n/g, "\n  ")}`);
-  return { id: "knowledge", title: "Reference material (only state what this supports)", lines };
+function knowledgeSection(results: KnowledgeResult[], charBudget: number): {
+  section: CompiledContextSection | null;
+  used: CompiledContext["knowledgeUsed"];
+} {
+  if (!results.length) return { section: null, used: [] };
+  const lines: string[] = [];
+  const used: CompiledContext["knowledgeUsed"] = [];
+  let remaining = charBudget;
+  const add = (line: string): boolean => {
+    if (remaining <= 0) return false;
+    const accepted = line.length <= remaining ? line : `${line.slice(0, Math.max(0, remaining - 16))}… [truncated]`;
+    lines.push(accepted);
+    remaining -= accepted.length;
+    return line.length <= remaining + accepted.length;
+  };
+
+  for (const result of results) {
+    if (remaining <= 0) break;
+    if (result.kind === "document_search") {
+      for (const chunk of result.chunks) {
+        if (remaining <= 0) break;
+        const line = `- [${chunk.sourceTitle}; chunk=${chunk.chunkId}; rank=${chunk.rank}; score=${chunk.score}] ${chunk.text.replace(/\n/g, "\n  ")}`;
+        used.push({ kind: result.kind, sourceId: result.sourceId, chunkId: chunk.chunkId, score: chunk.score, rank: chunk.rank });
+        if (!add(line)) break;
+      }
+    } else {
+      const header = `- [${result.sourceTitle}] DETERMINISTIC RECORD QUERY matched ${result.totalMatched} of ${result.totalRecords} records; ${result.matches.length} rows are shown.`;
+      used.push({ kind: result.kind, sourceId: result.sourceId });
+      if (!add(header)) break;
+      for (const [index, record] of result.matches.entries()) {
+        if (!add(`  - row ${index + 1}: ${renderRecord(record).replace(/\n/g, "; ")}`)) break;
+      }
+    }
+  }
+  return { section: lines.length ? { id: "knowledge", title: "Explicitly retrieved evidence", lines } : null, used };
 }
 
 function pendingSection(state: SessionState): CompiledContextSection | null {
@@ -168,65 +216,84 @@ function pendingSection(state: SessionState): CompiledContextSection | null {
 }
 
 function transcriptMessages(transcript: TranscriptEntry[], window: number): ModelMessage[] {
-  return transcript.slice(-window).map((entry) => ({
-    role: entry.role === "user" ? ("user" as const) : ("assistant" as const),
-    content: entry.text,
-  }));
+  return transcript.slice(-window).map((entry) => ({ role: entry.role, content: entry.text }));
 }
 
-export function compileContext(input: CompileInput): CompiledContext {
-  const { definition, state, now } = input;
-  const phase = definition.flow ? findPhase(definition.flow, state.phaseId) : undefined;
-  const notes = selectNotes(state.workingNotes, now, definition.policies.workingNoteTtlMs ?? 0);
-  const { section: ctxSection, withheld } = contextSection(state);
-  const knowledge = input.knowledge ?? [];
-
-  const sections = [
-    goalSection(definition),
-    phaseSection(phase),
-    memorySection(state, definition),
-    ctxSection,
-    knowledgeSection(knowledge),
-    toolResultsSection(state.turnToolResults),
-    workingNotesSection(notes),
-    pendingSection(state),
-    input.taskInstruction ? { id: "task", title: "Your task for this step", lines: [input.taskInstruction] } : null,
-  ].filter((s): s is CompiledContextSection => s !== null);
-
-  const system = sections.map((s) => `## ${s.title}\n${s.lines.join("\n")}`).join("\n\n");
-  const window = input.transcriptWindow ?? definition.policies.transcriptWindow ?? 10;
-
+function finishContext(
+  definition: AgentDefinition,
+  state: SessionState,
+  sections: CompiledContextSection[],
+  messages: ModelMessage[],
+  rules: AgentRule[],
+  withheld: { key: string; visibility: string }[],
+  knowledgeUsed: CompiledContext["knowledgeUsed"],
+): CompiledContext {
+  const system = sections.map((section) => `## ${section.title}\n${section.lines.join("\n")}`).join("\n\n");
   return {
     agentId: definition.id,
     agentVersion: definition.version,
     phaseId: state.phaseId,
     sections,
     system,
-    messages: transcriptMessages(state.transcript, window),
-    knowledgeUsed: knowledge.map((c) => ({ sourceId: c.sourceId, chunkId: c.chunkId, score: c.score })),
+    messages,
+    knowledgeUsed,
+    effectiveRules: rules,
     withheldContextKeys: withheld,
     approxChars: system.length,
   };
 }
 
-/**
- * Retrieval + compilation in one step.
- *
- * The retrieval query is the latest user message plus current memory values: a bare user message
- * like "what about that one?" retrieves nothing useful on its own, while the accumulated state
- * carries the terms that actually identify the subject.
- */
-export async function compileWithRetrieval(
-  input: Omit<CompileInput, "knowledge">,
-  knowledgeIndex: KnowledgeIndex,
-  phaseSourceIds?: string[],
-): Promise<CompiledContext> {
-  const lastUser = [...input.state.transcript].reverse().find((t) => t.role === "user");
-  const memoryTerms = Object.values(input.state.memory)
-    .map((m) => formatValue(m.value))
-    .join(" ");
-  const queryText = `${lastUser?.text ?? ""} ${memoryTerms}`.trim();
-  const chunks = queryText ? await knowledgeIndex.retrieve({ text: queryText }, input.state.phaseId ?? undefined, phaseSourceIds) : [];
-  const topK = 4;
-  return compileContext({ ...input, knowledge: chunks.slice(0, topK) });
+/** Response-only compilation. This function has no provider/index parameter and cannot retrieve. */
+export function compileContext(input: CompileInput): CompiledContext {
+  const { definition, state, now } = input;
+  const phase = definition.flow ? findPhase(definition.flow, state.phaseId) : undefined;
+  const rules = effectiveRules(definition, phase);
+  const notes = selectNotes(state.workingNotes, now, definition.policies.workingNoteTtlMs ?? 0);
+  const { section: host, withheld } = contextSection(state);
+  const selected = knowledgeSection(input.retrievedKnowledge ?? [], definition.policies.maxKnowledgeChars);
+  const sections = [
+    goalSection(definition),
+    rulesSection(rules),
+    phaseSection(phase),
+    memorySection(state, definition),
+    host,
+    selected.section,
+    toolResultsSection(state.turnToolResults),
+    workingNotesSection(notes),
+    pendingSection(state),
+    input.taskInstruction ? { id: "task", title: "Your task for this step", lines: [input.taskInstruction] } : null,
+  ].filter((section): section is CompiledContextSection => section !== null);
+  const window = input.transcriptWindow ?? definition.policies.transcriptWindow ?? 10;
+  return finishContext(definition, state, sections, transcriptMessages(state.transcript, window), rules, withheld, selected.used);
+}
+
+/** Minimal pre-retrieval context for Harness pass 1. It cannot contain document text or tool secrets. */
+export function compilePlannerContext(input: CompilePlannerInput): CompiledContext {
+  const { definition, state } = input;
+  const phase = definition.flow ? findPhase(definition.flow, state.phaseId) : undefined;
+  const rules = effectiveRules(definition, phase);
+  const { section: host, withheld } = contextSection(state);
+  const catalogLines = input.sourceCatalog.map((source) => {
+    const base = `- ${source.id}: ${source.title} [type=${source.type}]${source.description ? ` - ${source.description}` : ""}`;
+    if (source.type === "document") return base;
+    return `${base}\n  fields: ${source.fields.map((field) => `${field.name} (${field.type})`).join(", ")}\n  operators: ${source.supportedOperators.join(", ")}; filters use AND; sort and limit are deterministic`;
+  });
+  const sections = [
+    goalSection(definition),
+    rulesSection(rules),
+    phaseSection(phase),
+    memorySection(state, definition),
+    host,
+    catalogLines.length ? { id: "knowledge_catalog", title: "Available logical knowledge sources (catalog only)", lines: catalogLines } : null,
+    { id: "task", title: "Interpret and plan this turn", lines: [input.taskInstruction] },
+  ].filter((section): section is CompiledContextSection => section !== null);
+  return finishContext(
+    definition,
+    state,
+    sections,
+    transcriptMessages(state.transcript, input.transcriptWindow ?? 6),
+    rules,
+    withheld,
+    [],
+  );
 }

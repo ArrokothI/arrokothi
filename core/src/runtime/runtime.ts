@@ -4,7 +4,7 @@ import type { SessionEvent } from "../session/events.ts";
 import type { SessionState, SessionSnapshot } from "../session/state.ts";
 import type { ModelProvider } from "../provider/types.ts";
 import type { ToolRegistry } from "../tools/registry.ts";
-import type { KnowledgeIndex } from "../knowledge/in-memory.ts";
+import type { KnowledgeProvider } from "../knowledge/types.ts";
 import type { ConfirmationResolver } from "../confirmation/types.ts";
 import type { AgentHarness, HarnessServices, TurnStopReason } from "../harness/types.ts";
 import type { CompiledContext } from "../compiler/context-compiler.ts";
@@ -30,8 +30,10 @@ export interface AgentRuntimeConfig {
   definition: AgentDefinition;
   sessions: SessionStore;
   model: ModelProvider;
+  /** Optional separate provider for planning. Defaults to `model`. */
+  planningModel?: ModelProvider;
   tools: ToolRegistry;
-  knowledge: KnowledgeIndex;
+  knowledge: KnowledgeProvider;
   harness?: AgentHarness;
   confirmationResolver?: ConfirmationResolver;
   ids?: IdGenerator;
@@ -146,7 +148,7 @@ export class AgentRuntime {
       });
     }
 
-    journal.append({ type: "UserMessageReceived", turn, payload: { text: input.message } });
+    const userEvent = journal.append({ type: "UserMessageReceived", turn, payload: { text: input.message } });
 
     if (input.hostContext && Object.keys(input.hostContext).length) {
       const observation = observeHostContext(
@@ -161,6 +163,7 @@ export class AgentRuntime {
     const services: HarnessServices = {
       definition: this.config.definition,
       model: this.config.model,
+      planningModel: this.config.planningModel ?? this.config.model,
       tools: this.config.tools,
       knowledge: this.config.knowledge,
       confirmationResolver: this.config.confirmationResolver ?? new ConservativeConfirmationResolver(),
@@ -174,7 +177,7 @@ export class AgentRuntime {
 
     let result;
     try {
-      result = await this.harness.runTurn({ journal, userMessage: input.message, turn }, services);
+      result = await this.harness.runTurn({ journal, userMessage: input.message, turn, userEventId: userEvent.id }, services);
     } catch (error) {
       // A harness that throws is a runtime error, recorded truthfully. The user gets an honest
       // message and the events written so far are still persisted, so the failure is inspectable.

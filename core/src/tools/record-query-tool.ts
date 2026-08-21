@@ -1,7 +1,6 @@
 import type { ToolDefinition, ToolExecutor } from "./types.ts";
 import type { KnowledgeIndex } from "../knowledge/in-memory.ts";
 import type { RecordFilterOp, RecordQuery, RecordSetSource } from "../knowledge/types.ts";
-import { queryRecords } from "../knowledge/record-query.ts";
 
 /**
  * Exposes a record set to the model as a deterministic READ tool.
@@ -117,15 +116,12 @@ export function parseRecordQueryArgs(args: Record<string, unknown>): RecordQuery
 export function createRecordQueryExecutor(knowledge: KnowledgeIndex, sourceId: string): ToolExecutor {
   return {
     async execute(args) {
-      const source = knowledge.getRecordSet(sourceId);
-      if (!source) {
-        return { ok: false, error: { code: "unknown_source", message: `record set "${sourceId}" is not bound to this agent` } };
-      }
-      const result = queryRecords(source, parseRecordQueryArgs(args));
+      const result = knowledge.queryRecords({ kind: "record_query", sourceId, ...parseRecordQueryArgs(args) });
       if (!result.ok) {
         return { ok: false, error: { code: result.error.code, message: result.error.message } };
       }
       const { matches, totalMatched, totalRecords } = result.value;
+      const source = knowledge.getRecordSet(sourceId)!;
       return {
         ok: true,
         output: { matches, total_matched: totalMatched, total_records: totalRecords },

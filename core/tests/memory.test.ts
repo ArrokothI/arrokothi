@@ -9,68 +9,68 @@ const schema = testDefinition().memorySchema;
 /** INVARIANT 1 - structured memory type/min/max/enum validation. */
 describe("invariant 1: structured memory validation", () => {
   test("accepts a well-typed value", () => {
-    const result = validateProposal(schema, { key: "budget", value: 20_000_000 }, "model_proposal");
+    const result = validateProposal(schema, { key: "budget", value: 20_000_000 }, "user_claimed");
     assert.equal(result.ok, true);
     assert.equal(result.ok && result.value, 20_000_000);
     assert.equal(result.ok && result.normalized, false);
   });
 
   test("rejects a wrong type", () => {
-    const result = validateProposal(schema, { key: "budget", value: "twenty million" }, "model_proposal", { coerce: true });
+    const result = validateProposal(schema, { key: "budget", value: "twenty million" }, "user_claimed", { coerce: true });
     assert.equal(result.ok, false);
     assert.equal(!result.ok && result.code, "schema_violation");
     assert.match(!result.ok ? result.reason : "", /expected number/);
   });
 
   test("rejects a value above max", () => {
-    const result = validateProposal(schema, { key: "budget", value: 500_000_000 }, "model_proposal");
+    const result = validateProposal(schema, { key: "budget", value: 500_000_000 }, "user_claimed");
     assert.equal(result.ok, false);
     assert.match(!result.ok ? result.reason : "", /expected <= 100000000/);
   });
 
   test("rejects a value below min", () => {
-    const result = validateProposal(schema, { key: "bedrooms_needed", value: -2 }, "model_proposal");
+    const result = validateProposal(schema, { key: "bedrooms_needed", value: -2 }, "user_claimed");
     assert.equal(result.ok, false);
     assert.match(!result.ok ? result.reason : "", /expected >= 0/);
   });
 
   test("rejects a non-integer where an integer is declared", () => {
-    const result = validateProposal(schema, { key: "bedrooms_needed", value: 2.5 }, "model_proposal");
+    const result = validateProposal(schema, { key: "bedrooms_needed", value: 2.5 }, "user_claimed");
     assert.equal(result.ok, false);
     assert.match(!result.ok ? result.reason : "", /integer/);
   });
 
   test("rejects a value outside the enum", () => {
-    const result = validateProposal(schema, { key: "intent", value: "lease" }, "model_proposal", { coerce: true });
+    const result = validateProposal(schema, { key: "intent", value: "lease" }, "user_claimed", { coerce: true });
     assert.equal(result.ok, false);
     assert.equal(!result.ok && result.code, "schema_violation");
     assert.match(!result.ok ? result.reason : "", /buy \| rent \| sell/);
   });
 
   test("accepts an enum value differing only in case, and marks it normalized", () => {
-    const result = validateProposal(schema, { key: "intent", value: "Buy" }, "model_proposal", { coerce: true });
+    const result = validateProposal(schema, { key: "intent", value: "Buy" }, "user_claimed", { coerce: true });
     assert.equal(result.ok, true);
     assert.equal(result.ok && result.value, "buy");
     assert.equal(result.ok && result.normalized, true);
   });
 
   test("normalizes a lossless numeric string but records that it did", () => {
-    const result = validateProposal(schema, { key: "budget", value: "20000000" }, "model_proposal", { coerce: true });
+    const result = validateProposal(schema, { key: "budget", value: "20000000" }, "user_claimed", { coerce: true });
     assert.equal(result.ok, true);
     assert.equal(result.ok && result.value, 20_000_000);
     assert.equal(result.ok && result.normalized, true);
   });
 
   test("enforces string_array item type and maxItems", () => {
-    const bad = validateProposal(schema, { key: "features_wanted", value: ["terrace", 7] }, "model_proposal");
+    const bad = validateProposal(schema, { key: "features_wanted", value: ["terrace", 7] }, "user_claimed");
     assert.equal(bad.ok, false);
-    const tooMany = validateProposal(schema, { key: "features_wanted", value: ["a", "b", "c", "d", "e", "f"] }, "model_proposal");
+    const tooMany = validateProposal(schema, { key: "features_wanted", value: ["a", "b", "c", "d", "e", "f"] }, "user_claimed");
     assert.equal(tooMany.ok, false);
     assert.match(!tooMany.ok ? tooMany.reason : "", /at most 5 items/);
   });
 
   test("rejects an undeclared field", () => {
-    const result = validateProposal(schema, { key: "favourite_colour", value: "blue" }, "model_proposal");
+    const result = validateProposal(schema, { key: "favourite_colour", value: "blue" }, "user_claimed");
     assert.equal(result.ok, false);
     assert.equal(!result.ok && result.code, "unknown_field");
   });

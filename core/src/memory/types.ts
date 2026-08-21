@@ -17,8 +17,18 @@ export type MemoryFieldSchema = Extract<
   { kind: "string" } | { kind: "number" } | { kind: "boolean" } | { kind: "enum" } | { kind: "string_array" }
 >;
 
-/** Where a committed value came from. Determines whether a side-effecting tool may rely on it. */
-export type MemorySource = "model_proposal" | "tool_result" | "host_context";
+/** How a write reached the runtime. This is separate from what the value originated from. */
+export type MemoryWriteMechanism = "planner_proposal" | "runtime_observation";
+
+export type MemoryProvenanceKind = "user_claimed" | "tool_verified" | "host_provided" | "model_inferred";
+
+export interface MemoryProvenance {
+  kind: MemoryProvenanceKind;
+  /** Concrete event(s) containing the originating statement/result/observation. */
+  sourceEventIds: string[];
+  /** Logical source such as a tool name or host-context key. */
+  sourceName?: string;
+}
 
 export interface StructuredMemoryField {
   key: string;
@@ -29,8 +39,10 @@ export interface StructuredMemoryField {
    * `advisory` values are treated like working notes at the authorization boundary.
    */
   authority?: "authoritative" | "advisory";
-  /** Restricts which sources may write this field. Defaults to all three. */
-  writableBy?: MemorySource[];
+  /** Restricts origin kinds that may establish this field. Defaults to user/tool/host. */
+  writableBy?: MemoryProvenanceKind[];
+  /** Model inference is advisory by default even if writable; this explicitly permits authority. */
+  allowModelInferredAuthority?: boolean;
 }
 
 export interface StructuredMemorySchema {
@@ -43,8 +55,11 @@ export type MemoryPrimitive = string | number | boolean | string[];
 export interface MemoryValue {
   key: string;
   value: MemoryPrimitive;
-  source: MemorySource;
+  writeMechanism: MemoryWriteMechanism;
+  provenance: MemoryProvenance;
   authority: "authoritative" | "advisory";
+  /** Advisory metadata only. It never grants authority. */
+  confidence?: number;
   /** Turn on which this value was committed. */
   turn: number;
   /** The `MemoryWriteCommitted` event that established it. */

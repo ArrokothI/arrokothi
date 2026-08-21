@@ -1,7 +1,7 @@
 /**
  * @agent-sdk/core - an importable agent kernel.
  *
- * Zero runtime dependencies. No React/Next, no database, no web routes, no provider credentials.
+ * Narrow LangChain document dependencies; no database, web routes, or provider credentials.
  * Everything environment-specific is injected: a `ModelProvider`, a `SessionStore`, and a
  * `ToolExecutor` per tool.
  *
@@ -26,14 +26,15 @@ export {
   assertValidDefinition,
   serializeDefinition,
   deserializeDefinition,
+  normalizeAgentRules,
 } from "./definition/definition.ts";
 export { DEFAULT_POLICIES } from "./definition/types.ts";
-export type { AgentDefinition, DeterministicPolicies, DefinitionIssue } from "./definition/types.ts";
+export type { AgentDefinition, AgentRule, AgentRuleInput, DeterministicPolicies, DefinitionIssue } from "./definition/types.ts";
 export { InMemoryDefinitionStore } from "./definition/store.ts";
 export type { DefinitionStore } from "./definition/store.ts";
 
 // -- memory ------------------------------------------------------------------
-export { validateProposal, commitValue, memoryValues, changedOnTurn, isAuthoritative, findField } from "./memory/structured.ts";
+export { validateProposal, commitValue, memoryValues, changedOnTurn, isAuthoritative, findField, authorityFor } from "./memory/structured.ts";
 export type { MemoryValidation, MemoryRejectionCode, CommitInput } from "./memory/structured.ts";
 export { addNote, liveNotes, selectNotes } from "./memory/working.ts";
 export type {
@@ -43,7 +44,9 @@ export type {
   MemoryFieldSchema,
   MemoryValue,
   MemoryPrimitive,
-  MemorySource,
+  MemoryWriteMechanism,
+  MemoryProvenanceKind,
+  MemoryProvenance,
   MemoryWriteProposal,
   WorkingNote,
 } from "./memory/types.ts";
@@ -69,7 +72,16 @@ export type {
 } from "./context/types.ts";
 
 // -- knowledge ---------------------------------------------------------------
-export { KnowledgeIndex, createRetriever, chunkDocument, tokenize, renderRecord } from "./knowledge/in-memory.ts";
+export {
+  KnowledgeIndex,
+  createRetriever,
+  chunkDocument,
+  tokenize,
+  renderRecord,
+  DEFAULT_CHUNK_SIZE,
+  DEFAULT_CHUNK_OVERLAP,
+  RECORD_FILTER_OPERATORS,
+} from "./knowledge/in-memory.ts";
 export { queryRecords } from "./knowledge/record-query.ts";
 export type {
   KnowledgeSource,
@@ -77,9 +89,18 @@ export type {
   RecordSetSource,
   KnowledgeBinding,
   KnowledgeChunk,
-  KnowledgeQuery,
   KnowledgeRetriever,
+  KnowledgeProvider,
+  KnowledgeSourceCatalogEntry,
+  DocumentSourceCatalogEntry,
+  RecordSetCatalogEntry,
+  DocumentSearchRequest,
+  RetrievalRequest,
+  KnowledgeResult,
+  DocumentKnowledgeResult,
+  RecordKnowledgeResult,
   RecordQuery,
+  RecordQueryRequest,
   RecordFilter,
   RecordFilterOp,
   RecordSort,
@@ -113,6 +134,8 @@ export type {
   ToolRejectionReason,
   AuthoritativeFact,
   BoundTool,
+  ToolArgumentPolicy,
+  ToolArgumentSource,
 } from "./tools/types.ts";
 
 // -- confirmation ------------------------------------------------------------
@@ -127,7 +150,7 @@ export type {
 
 // -- session -----------------------------------------------------------------
 export { applyEvent, project, resume, initialState, snapshotOf } from "./session/state.ts";
-export type { SessionState, SessionSnapshot, TranscriptEntry, ToolResultRecord } from "./session/state.ts";
+export type { SessionState, SessionSnapshot, TranscriptEntry, ToolResultRecord, RetrievalTraceRecord } from "./session/state.ts";
 export { InMemorySessionStore } from "./session/store.ts";
 export type { SessionStore, SessionRecord, CreateSessionInput, DraftEvent } from "./session/store.ts";
 export { isEventOfType } from "./session/events.ts";
@@ -146,8 +169,22 @@ export type {
 } from "./flow/types.ts";
 
 // -- compiler ----------------------------------------------------------------
-export { compileContext, compileWithRetrieval } from "./compiler/context-compiler.ts";
-export type { CompiledContext, CompiledContextSection, CompileInput } from "./compiler/context-compiler.ts";
+export { compileContext, compilePlannerContext, effectiveRules } from "./compiler/context-compiler.ts";
+export type { CompiledContext, CompiledContextSection, CompileInput, CompilePlannerInput } from "./compiler/context-compiler.ts";
+
+// -- planning ----------------------------------------------------------------
+export { ConservativeDeterministicPlanner, parseTurnPlan, turnPlanSchema } from "./planning/turn-plan.ts";
+export { EMPTY_TURN_PLAN } from "./planning/types.ts";
+export type {
+  PlanningMode,
+  PlanningPolicy,
+  WorkingNoteProposal,
+  TurnPlan,
+  DeterministicPlannerInput,
+  DeterministicPlanResult,
+  DeterministicPlanner,
+  TurnPlanValidationError,
+} from "./planning/types.ts";
 
 // -- harness / runtime -------------------------------------------------------
 export { TwoPassHarness } from "./harness/two-pass.ts";

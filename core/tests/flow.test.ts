@@ -60,8 +60,8 @@ describe("condition DSL", () => {
     ...base,
     turn: 2,
     memory: {
-      intent: { key: "intent", value: "sell", source: "model_proposal" as const, authority: "authoritative" as const, turn: 2, eventId: "e", at: "t" },
-      budget: { key: "budget", value: 20, source: "model_proposal" as const, authority: "authoritative" as const, turn: 1, eventId: "e", at: "t" },
+      intent: { key: "intent", value: "sell", writeMechanism: "planner_proposal" as const, provenance: { kind: "user_claimed" as const, sourceEventIds: ["u"] }, authority: "authoritative" as const, turn: 2, eventId: "e", at: "t" },
+      budget: { key: "budget", value: 20, writeMechanism: "planner_proposal" as const, provenance: { kind: "user_claimed" as const, sourceEventIds: ["u"] }, authority: "authoritative" as const, turn: 1, eventId: "e", at: "t" },
     },
   };
   const input = { state, signals: ["intent_changed_to_sell"], toolResults: [] };

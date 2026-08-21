@@ -1,6 +1,6 @@
 {
   "name": "@agent-sdk/benchmarks",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "P01/P02 benchmark adapters. Consume only neutral requirements/scenarios/evaluation contracts.",
   "type": "module",

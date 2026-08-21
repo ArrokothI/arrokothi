@@ -19,6 +19,19 @@ export type ToolConfirmation = "none" | "required";
  */
 export type ToolIdempotency = "none" | "per_input" | "once_per_session";
 
+export type ToolArgumentSource = `memory.${string}` | `host_context.${string}` | `tool_fact.${string}`;
+
+export type ToolArgumentPolicy =
+  | {
+      kind: "authoritative_value";
+      /** Exact typed equality against at least one named runtime-controlled source is required. */
+      sources: ToolArgumentSource[];
+    }
+  | {
+      /** Prose or another non-identifying value may be composed by the response model. */
+      kind: "model_composed";
+    };
+
 export interface ToolDefinition {
   name: string;
   description: string;
@@ -27,6 +40,8 @@ export interface ToolDefinition {
   effect: ToolEffect;
   confirmation: ToolConfirmation;
   idempotency: ToolIdempotency;
+  /** Required for each argument that an external side effect may receive. */
+  argumentPolicies?: Record<string, ToolArgumentPolicy>;
   /** Human-readable label used in confirmation prompts and the confirmation resolver. */
   label?: string;
 }
@@ -36,7 +51,7 @@ export interface AuthoritativeFact {
   key: string;
   value: string | number | boolean | string[];
   description?: string;
-  /** When set, the runtime commits this fact into structured memory with source `tool_result`. */
+  /** When set, the runtime commits this fact with `runtime_observation` / `tool_verified` provenance. */
   writeToMemory?: boolean;
 }
 

@@ -7,6 +7,7 @@ import { InMemorySessionStore } from "../src/session/store.ts";
 import { AgentRuntime } from "../src/runtime/runtime.ts";
 import { createDeterministicIds, createFixedClock } from "../src/util/ids.ts";
 import type { ModelProvider } from "../src/provider/types.ts";
+import type { AgentHarness } from "../src/harness/types.ts";
 import { recordQueryTools } from "../src/tools/record-query-tool.ts";
 
 /** Shared fixtures. Every test runs on a deterministic clock and id generator so runs are replayable. */
@@ -27,6 +28,11 @@ export const SEND_EMAIL: ToolDefinition = {
   effect: "external_side_effect",
   confirmation: "required",
   idempotency: "once_per_session",
+  argumentPolicies: {
+    contact_name: { kind: "authoritative_value", sources: ["memory.contact_name"] },
+    phone: { kind: "authoritative_value", sources: ["memory.phone"] },
+    summary: { kind: "model_composed" },
+  },
   input: {
     kind: "object",
     fields: {
@@ -84,6 +90,7 @@ export function testDefinition(overrides: Partial<AgentDefinition> = {}): AgentD
           id: "listings",
           kind: "record_set",
           title: "Available properties",
+          description: "Current property listings with exact prices, locations, bedroom counts, and sizes.",
           displayField: "title",
           fields: {
             id: { kind: "string" },
@@ -112,7 +119,15 @@ export interface Harnessed {
 }
 
 /** Builds a runtime wired to deterministic ids/clock, with record-query tools auto-registered. */
-export function buildRuntime(model: ModelProvider, options: { definition?: AgentDefinition; registerTools?: (r: ToolRegistry) => void } = {}): Harnessed {
+export function buildRuntime(
+  model: ModelProvider,
+  options: {
+    definition?: AgentDefinition;
+    planningModel?: ModelProvider;
+    harness?: AgentHarness;
+    registerTools?: (r: ToolRegistry) => void;
+  } = {},
+): Harnessed {
   const definition = options.definition ?? testDefinition();
   const sessions = new InMemorySessionStore();
   const knowledge = new KnowledgeIndex(definition.knowledge);
@@ -124,6 +139,8 @@ export function buildRuntime(model: ModelProvider, options: { definition?: Agent
     definition,
     sessions,
     model,
+    planningModel: options.planningModel,
+    harness: options.harness,
     tools,
     knowledge,
     ids: createDeterministicIds(),
@@ -132,10 +149,25 @@ export function buildRuntime(model: ModelProvider, options: { definition?: Agent
   return { runtime, sessions, tools, knowledge, definition };
 }
 
-/** Convenience: interpretation-pass JSON for a scripted step. */
+/** Legacy test-fixture alias: planning-pass JSON for a scripted step. */
 export const interpret = (memory_writes: Record<string, unknown>, signals: string[] = [], working_notes: string[] = []) => ({
   purpose: "interpret" as const,
   json: { memory_writes, signals, working_notes },
+});
+
+export const plan = (value: {
+  memory_writes?: Record<string, unknown>;
+  signals?: string[];
+  working_notes?: string[];
+  retrieval_requests?: Record<string, unknown>[];
+} = {}) => ({
+  purpose: "plan" as const,
+  json: {
+    memory_writes: value.memory_writes ?? {},
+    signals: value.signals ?? [],
+    working_notes: value.working_notes ?? [],
+    retrieval_requests: value.retrieval_requests ?? [],
+  },
 });
 
 export const reply = (text: string) => ({ purpose: "respond" as const, text });

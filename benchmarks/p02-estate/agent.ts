@@ -40,6 +40,12 @@ export const sendToTeam: ToolDefinition = {
   effect: "external_side_effect",
   confirmation: "required",
   idempotency: "once_per_session",
+  argumentPolicies: {
+    contact_name: { kind: "authoritative_value", sources: ["memory.contact_name"] },
+    phone: { kind: "authoritative_value", sources: ["memory.phone"] },
+    email: { kind: "authoritative_value", sources: ["memory.email"] },
+    summary: { kind: "model_composed" },
+  },
   input: {
     kind: "object",
     fields: {
@@ -140,6 +146,7 @@ export const estateAgent: AgentDefinition = defineAgent({
         id: "listings",
         kind: "record_set",
         title: "EstatePro properties",
+        description: "The six exact properties with prices, locations, rooms, sizes, and descriptions.",
         displayField: "title",
         fields: {
           id: { kind: "string" },
@@ -161,6 +168,7 @@ export const estateAgent: AgentDefinition = defineAgent({
         id: "rooms",
         kind: "record_set",
         title: "Rooms within our properties",
+        description: "Named rooms, sizes, and descriptions tied to exact properties.",
         displayField: "name",
         fields: {
           property: { kind: "string" },
@@ -171,7 +179,16 @@ export const estateAgent: AgentDefinition = defineAgent({
         records: ROOMS,
       },
     },
-    { source: { id: "policies", kind: "document", title: "What the concierge can and cannot do", text: POLICY_DOC }, topK: 3 },
+    {
+      source: {
+        id: "policies",
+        kind: "document",
+        title: "What the concierge can and cannot do",
+        description: "Service limits, inventory caveats, rental-data limitations, and seller rules.",
+        text: POLICY_DOC,
+      },
+      topK: 3,
+    },
   ],
   tools: [{ definition: sendToTeam, phaseIds: ["qualify", "handoff"] }],
   flow: {

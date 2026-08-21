@@ -7,6 +7,7 @@ import type {
 } from "./types.ts";
 import type { Result } from "../util/result.ts";
 import { err, ok } from "../util/result.ts";
+import { describeIssues, validateValue } from "../schema/value-schema.ts";
 
 /**
  * Deterministic filtering and sorting over a typed record set.
@@ -23,6 +24,7 @@ import { err, ok } from "../util/result.ts";
 
 const COMPARISON_OPS = new Set(["lt", "lte", "gt", "gte"]);
 const STRING_OPS = new Set(["contains", "starts_with"]);
+const ALL_OPS = new Set(["eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "starts_with"]);
 
 function fieldKind(source: RecordSetSource, field: string): string | null {
   const schema = source.fields[field];
@@ -30,7 +32,14 @@ function fieldKind(source: RecordSetSource, field: string): string | null {
 }
 
 function validateFilter(source: RecordSetSource, filter: RecordFilter): RecordQueryError | null {
-  const kind = fieldKind(source, filter.field);
+  if (!filter || typeof filter !== "object" || typeof filter.field !== "string") {
+    return { code: "bad_value", message: "every filter requires a string field name" };
+  }
+  if (!ALL_OPS.has(filter.op)) {
+    return { code: "bad_operator", message: `unsupported record filter operator ${JSON.stringify(filter.op)}` };
+  }
+  const schema = source.fields[filter.field];
+  const kind = schema?.kind ?? null;
   if (kind === null) {
     const declared = Object.keys(source.fields).join(", ");
     return { code: "unknown_field", message: `unknown field "${filter.field}" on record set "${source.id}" (declared: ${declared})` };
@@ -46,8 +55,25 @@ function validateFilter(source: RecordSetSource, filter: RecordFilter): RecordQu
   if (STRING_OPS.has(filter.op) && typeof filter.value !== "string") {
     return { code: "bad_value", message: `operator "${filter.op}" on "${filter.field}" requires a string, received ${JSON.stringify(filter.value)}` };
   }
+  if (STRING_OPS.has(filter.op) && kind !== "string" && kind !== "string_array") {
+    return { code: "bad_operator", message: `operator "${filter.op}" requires a string or string_array field; "${filter.field}" is ${kind}` };
+  }
   if (filter.op === "in" && !Array.isArray(filter.value)) {
     return { code: "bad_value", message: `operator "in" on "${filter.field}" requires an array, received ${JSON.stringify(filter.value)}` };
+  }
+  if ((filter.op === "eq" || filter.op === "ne") && schema) {
+    const validation = validateValue(schema, filter.value, { coerce: false });
+    if (!validation.ok) {
+      return { code: "bad_value", message: `value for "${filter.field}" is invalid: ${describeIssues(validation.issues)}` };
+    }
+  }
+  if (filter.op === "in" && schema) {
+    for (const candidate of filter.value as unknown[]) {
+      const validation = validateValue(schema, candidate, { coerce: false });
+      if (!validation.ok) {
+        return { code: "bad_value", message: `value in "${filter.field}" list is invalid: ${describeIssues(validation.issues)}` };
+      }
+    }
   }
   return null;
 }
@@ -95,12 +121,25 @@ function compareValues(a: unknown, b: unknown): number {
  * field the record set does not declare.
  */
 export function queryRecords(source: RecordSetSource, query: RecordQuery): Result<RecordQueryResult, RecordQueryError> {
+  if (query.filters !== undefined && !Array.isArray(query.filters)) {
+    return err({ code: "bad_value", message: "record query filters must be an array" });
+  }
+  if (query.sort !== undefined && !Array.isArray(query.sort)) {
+    return err({ code: "bad_value", message: "record query sort must be an array" });
+  }
+  if (query.limit !== undefined && (!Number.isInteger(query.limit) || query.limit < 0)) {
+    return err({ code: "bad_value", message: `record query limit must be a non-negative integer, received ${JSON.stringify(query.limit)}` });
+  }
+
   const filters = query.filters ?? [];
   for (const filter of filters) {
     const problem = validateFilter(source, filter);
     if (problem) return err(problem);
   }
   for (const sort of query.sort ?? []) {
+    if (!sort || typeof sort !== "object" || (sort.direction !== "asc" && sort.direction !== "desc")) {
+      return err({ code: "bad_value", message: "every sort requires a field and direction of asc or desc" });
+    }
     if (fieldKind(source, sort.field) === null) {
       const declared = Object.keys(source.fields).join(", ");
       return err({ code: "unknown_field", message: `cannot sort by unknown field "${sort.field}" on record set "${source.id}" (declared: ${declared})` });

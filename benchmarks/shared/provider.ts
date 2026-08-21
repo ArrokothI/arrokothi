@@ -42,7 +42,7 @@ export function chooseProvider(argv: string[]): ProviderChoice {
 
   const model = modelArg ?? "gemini-3.5-flash-lite";
   // Pacing is applied BETWEEN TURNS, but the two-pass harness issues at least two model calls per
-  // turn back-to-back (interpret + respond), plus one more per tool round trip - roughly 2.3 calls
+  // turn back-to-back (plan + respond), plus one more per tool round trip - roughly 2.3 calls
   // per turn in practice. To stay under the protocol's conservative ~10 successful-calls/minute
   // ceiling, the gap must be sized per TURN, not per call: 15s x ~2.3 calls is about 9 calls/min.
   // A 7s gap would be ~20/min and would start drawing 429s.

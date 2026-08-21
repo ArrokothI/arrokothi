@@ -96,6 +96,12 @@ export interface ScenarioResult {
   assertions: AssertionResult[];
   /** Model calls, retries, and failures, for efficiency accounting. */
   modelCalls: number;
+  plannerModelCalls: number;
+  responseModelCalls: number;
+  retrievalRequests: number;
+  selectedKnowledgeSources: string[];
+  retrievedChunks: number;
+  toolCalls: number;
   harnessError?: string;
   /**
    * Only on a self-check run. Grading is `inconclusive` there (correctly - no model answered), so

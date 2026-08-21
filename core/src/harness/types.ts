@@ -1,7 +1,7 @@
 import type { AgentDefinition } from "../definition/types.ts";
 import type { ModelProvider } from "../provider/types.ts";
 import type { ToolRegistry } from "../tools/registry.ts";
-import type { KnowledgeIndex } from "../knowledge/in-memory.ts";
+import type { KnowledgeProvider } from "../knowledge/types.ts";
 import type { ConfirmationResolver } from "../confirmation/types.ts";
 import type { TurnJournal } from "../runtime/journal.ts";
 import type { Clock, IdGenerator } from "../util/ids.ts";
@@ -22,8 +22,10 @@ import type { CompiledContext } from "../compiler/context-compiler.ts";
 export interface HarnessServices {
   definition: AgentDefinition;
   model: ModelProvider;
+  /** May differ from the response provider; defaults to `model` in AgentRuntime. */
+  planningModel: ModelProvider;
   tools: ToolRegistry;
-  knowledge: KnowledgeIndex;
+  knowledge: KnowledgeProvider;
   confirmationResolver: ConfirmationResolver;
   ids: IdGenerator;
   clock: Clock;
@@ -35,6 +37,8 @@ export interface HarnessTurnInput {
   journal: TurnJournal;
   userMessage: string;
   turn: number;
+  /** UserMessageReceived event that the planner's extracted facts must cite. */
+  userEventId: string;
 }
 
 export type TurnStopReason = "completed" | "max_steps" | "awaiting_confirmation" | "error";

@@ -206,7 +206,7 @@ export class GeminiProvider implements ModelProvider {
       try {
         json = JSON.parse(text);
       } catch {
-        json = undefined; // The harness falls back to its own tolerant parse.
+      json = undefined; // The harness safely rejects malformed structured output.
       }
     }
 

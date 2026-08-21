@@ -1,10 +1,12 @@
 import type { HostContextValue } from "../context/types.ts";
-import type { MemoryPrimitive, MemorySource, WorkingNote } from "../memory/types.ts";
+import type { MemoryPrimitive, MemoryProvenance, MemoryWriteMechanism, WorkingNote } from "../memory/types.ts";
 import type { AuthoritativeFact, ToolRejectionReason } from "../tools/types.ts";
 import type { ConfirmationDecision } from "../confirmation/types.ts";
 import type { TransitionEvaluation, TransitionTiming } from "../flow/types.ts";
 import type { ModelUsage } from "../provider/types.ts";
 import type { MemoryRejectionCode } from "../memory/structured.ts";
+import type { TurnPlan, TurnPlanValidationError } from "../planning/types.ts";
+import type { RetrievalRequest } from "../knowledge/types.ts";
 
 /**
  * The append-only session event stream.
@@ -21,6 +23,9 @@ export type SessionEventType =
   | "UserMessageReceived"
   | "HostContextObserved"
   | "SemanticSignalsObserved"
+  | "TurnPlanCreated"
+  | "RetrievalRequestRejected"
+  | "KnowledgeRetrieved"
   | "MemoryWriteProposed"
   | "MemoryWriteCommitted"
   | "MemoryWriteRejected"
@@ -56,12 +61,39 @@ export type HostContextObservedEvent = EventBase<
   { accepted: HostContextValue[]; rejected: { key: string; reason: string }[] }
 >;
 
-/** Semantic routing signals from the interpretation pass. Recorded so replay reproduces routing. */
+/** Semantic routing signals from Interpret + Plan. Recorded so replay reproduces routing. */
 export type SemanticSignalsObservedEvent = EventBase<"SemanticSignalsObserved", { signals: string[] }>;
+
+export type TurnPlanCreatedEvent = EventBase<
+  "TurnPlanCreated",
+  {
+    strategy: "llm" | "deterministic" | "hybrid";
+    resolvedBy: "llm" | "deterministic" | "safe_empty";
+    plan: TurnPlan;
+    detail?: string;
+  }
+>;
+
+export type RetrievalRequestRejectedEvent = EventBase<
+  "RetrievalRequestRejected",
+  { request: RetrievalRequest; error: TurnPlanValidationError }
+>;
+
+export type KnowledgeRetrievedEvent = EventBase<
+  "KnowledgeRetrieved",
+  {
+    request: RetrievalRequest;
+    sourceId: string;
+    resultIds: string[];
+    scores?: number[];
+    returnedCount: number;
+    totalMatched?: number;
+  }
+>;
 
 export type MemoryWriteProposedEvent = EventBase<
   "MemoryWriteProposed",
-  { key: string; value: unknown; source: MemorySource; confidence?: number }
+  { key: string; value: unknown; writeMechanism: MemoryWriteMechanism; provenance: MemoryProvenance; confidence?: number }
 >;
 
 export type MemoryWriteCommittedEvent = EventBase<
@@ -70,8 +102,10 @@ export type MemoryWriteCommittedEvent = EventBase<
     key: string;
     value: MemoryPrimitive;
     previousValue?: MemoryPrimitive;
-    source: MemorySource;
+    writeMechanism: MemoryWriteMechanism;
+    provenance: MemoryProvenance;
     authority: "authoritative" | "advisory";
+    confidence?: number;
     normalized?: boolean;
     proposalEventId?: string;
   }
@@ -80,7 +114,15 @@ export type MemoryWriteCommittedEvent = EventBase<
 /** Rejections are first-class. A model failure is recorded with its reason, never silently repaired. */
 export type MemoryWriteRejectedEvent = EventBase<
   "MemoryWriteRejected",
-  { key: string; value: unknown; code: MemoryRejectionCode; reason: string; source: MemorySource; proposalEventId?: string }
+  {
+    key: string;
+    value: unknown;
+    code: MemoryRejectionCode;
+    reason: string;
+    writeMechanism: MemoryWriteMechanism;
+    provenance: MemoryProvenance;
+    proposalEventId?: string;
+  }
 >;
 
 export type WorkingNoteRecordedEvent = EventBase<"WorkingNoteRecorded", { note: WorkingNote }>;
@@ -150,6 +192,9 @@ export type SessionEvent =
   | UserMessageReceivedEvent
   | HostContextObservedEvent
   | SemanticSignalsObservedEvent
+  | TurnPlanCreatedEvent
+  | RetrievalRequestRejectedEvent
+  | KnowledgeRetrievedEvent
   | MemoryWriteProposedEvent
   | MemoryWriteCommittedEvent
   | MemoryWriteRejectedEvent

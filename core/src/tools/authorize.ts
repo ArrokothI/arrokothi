@@ -1,6 +1,6 @@
 import type { AgentDefinition } from "../definition/types.ts";
 import type { ToolRegistry } from "./registry.ts";
-import type { ToolDefinition, ToolRejection, ToolResult } from "./types.ts";
+import type { ToolArgumentSource, ToolDefinition, ToolRejection, ToolResult } from "./types.ts";
 import type { TurnJournal } from "../runtime/journal.ts";
 import type { ConfirmationResolver } from "../confirmation/types.ts";
 import type { Clock, IdGenerator } from "../util/ids.ts";
@@ -9,7 +9,7 @@ import { findDuplicate, idempotencyKey } from "./idempotency.ts";
 import { hashValue } from "../util/hash.ts";
 import { defaultConfirmationPrompt } from "../confirmation/resolver.ts";
 import { findPhase } from "../flow/evaluate.ts";
-import { isAuthoritative } from "../memory/structured.ts";
+import { authorityFor, isAuthoritative, validateProposal } from "../memory/structured.ts";
 import { toolVisibleContext } from "../context/host-context.ts";
 
 /**
@@ -67,12 +67,8 @@ function permittedInPhase(definition: AgentDefinition, phaseId: string | null, t
 }
 
 /**
- * Guards against a side effect resting on a guess.
- *
- * A required string argument must be traceable to something authoritative: a value the user stated
- * that was validated into structured memory, an authoritative tool fact, or host context. Working
- * notes are absent from all of those collections by construction, so a note alone can never get an
- * argument past this check.
+ * Guards against a side effect resting on a guess using only declared, typed source paths.
+ * There is intentionally no fallback substring search or inference over prose.
  */
 function argumentsRestOnAuthoritativeSources(
   journal: TurnJournal,
@@ -81,46 +77,124 @@ function argumentsRestOnAuthoritativeSources(
 ): { ok: true } | { ok: false; message: string } {
   if (tool.effect !== "external_side_effect") return { ok: true };
 
-  const state = journal.state;
-  const authoritative = new Set<string>();
-  for (const entry of Object.values(state.memory)) {
-    if (isAuthoritative(entry)) authoritative.add(normalizeForMatch(String(entry.value)));
-  }
-  for (const result of state.allToolResults) {
-    if (!result.ok) continue;
-    for (const fact of result.facts ?? []) authoritative.add(normalizeForMatch(String(fact.value)));
-  }
-  for (const value of Object.values(toolVisibleContext(state.hostContext))) {
-    authoritative.add(normalizeForMatch(String(value.value)));
-  }
-
   const unsupported: string[] = [];
-  for (const [key, spec] of Object.entries(tool.input.fields)) {
-    if (spec.required !== true) continue;
-    const value = args[key];
-    if (typeof value !== "string" || value.trim().length < 3) continue;
-    const normalized = normalizeForMatch(value);
-    // A long free-text field (a message body, a summary) is prose the model composed; it is not a
-    // factual claim the runtime needs to source. Short identifying fields are the risk.
-    if (normalized.split(" ").length > 12) continue;
-    const supported = [...authoritative].some((a) => a.includes(normalized) || normalized.includes(a));
-    if (!supported) unsupported.push(`${key}="${value}"`);
+  for (const [key, value] of Object.entries(args)) {
+    const policy = tool.argumentPolicies?.[key];
+    if (!policy) {
+      unsupported.push(`${key} has no declared argument-source policy`);
+      continue;
+    }
+    if (policy.kind === "model_composed") continue;
+    const supported = policy.sources.some((source) => {
+      const candidate = authoritativeValue(journal, source);
+      return candidate.found && typedEqual(value, candidate.value);
+    });
+    if (!supported) unsupported.push(`${key}=${JSON.stringify(value)}`);
   }
 
   if (unsupported.length) {
     return {
       ok: false,
       message:
-        `argument(s) ${unsupported.join(", ")} do not correspond to any authoritative source ` +
-        `(validated structured memory, an authoritative tool fact, or host context). A working note or an ` +
-        `unverified inference cannot authorize an external side effect.`,
+        `argument(s) ${unsupported.join(", ")} do not exactly match any source allowed by the tool's ` +
+        `typed argument policy. A working note, ` +
+        `substring coincidence, confirmation, or an unverified inference cannot authorize an external side effect.`,
     };
   }
   return { ok: true };
 }
 
-function normalizeForMatch(text: string): string {
-  return text.toLowerCase().replace(/[^\w\s@.+-]/g, " ").replace(/\s+/g, " ").trim();
+function authoritativeValue(
+  journal: TurnJournal,
+  source: ToolArgumentSource,
+): { found: true; value: unknown } | { found: false } {
+  const [namespace, ...rest] = source.split(".");
+  const key = rest.join(".");
+  if (namespace === "memory") {
+    const entry = journal.state.memory[key];
+    return isAuthoritative(entry) ? { found: true, value: entry!.value } : { found: false };
+  }
+  if (namespace === "host_context") {
+    const entry = toolVisibleContext(journal.state.hostContext)[key];
+    return entry && entry.trust !== "user_claimed" ? { found: true, value: entry.value } : { found: false };
+  }
+  if (namespace === "tool_fact") {
+    for (const result of journal.state.allToolResults.slice().reverse()) {
+      if (!result.ok) continue;
+      const fact = result.facts?.find((candidate) => candidate.key === key);
+      if (fact) return { found: true, value: fact.value };
+    }
+  }
+  return { found: false };
+}
+
+function typedEqual(actual: unknown, expected: unknown): boolean {
+  if (typeof actual !== typeof expected) return false;
+  if (typeof actual === "string" && typeof expected === "string") {
+    return normalizeIdentifyingString(actual) === normalizeIdentifyingString(expected);
+  }
+  if (typeof actual === "number" || typeof actual === "boolean" || actual === null || expected === null) {
+    return Object.is(actual, expected);
+  }
+  if (Array.isArray(actual) || Array.isArray(expected)) {
+    return Array.isArray(actual) && Array.isArray(expected) && actual.length === expected.length && actual.every((value, index) => typedEqual(value, expected[index]));
+  }
+  return JSON.stringify(actual) === JSON.stringify(expected);
+}
+
+function normalizeIdentifyingString(text: string): string {
+  return text.normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US");
+}
+
+function commitToolFacts(
+  deps: AuthorizeDeps,
+  result: Extract<ToolResult, { ok: true }>,
+  resultEventId: string,
+  toolName: string,
+  turn: number,
+): void {
+  for (const fact of result.facts ?? []) {
+    if (fact.writeToMemory !== true) continue;
+    const provenance = { kind: "tool_verified" as const, sourceEventIds: [resultEventId], sourceName: toolName };
+    const proposed = deps.journal.append({
+      type: "MemoryWriteProposed",
+      turn,
+      payload: { key: fact.key, value: fact.value, writeMechanism: "runtime_observation", provenance },
+    });
+    const validation = validateProposal(deps.definition.memorySchema, { key: fact.key, value: fact.value }, provenance.kind, { coerce: false });
+    if (!validation.ok) {
+      deps.journal.append({
+        type: "MemoryWriteRejected",
+        turn,
+        payload: {
+          key: fact.key,
+          value: fact.value,
+          code: validation.code,
+          reason: validation.reason,
+          writeMechanism: "runtime_observation",
+          provenance,
+          proposalEventId: proposed.id,
+        },
+      });
+      continue;
+    }
+    const previous = deps.journal.state.memory[fact.key];
+    if (previous && typedEqual(previous.value, validation.value)) continue;
+    deps.journal.append({
+      type: "MemoryWriteCommitted",
+      turn,
+      payload: {
+        key: fact.key,
+        value: validation.value,
+        previousValue: previous?.value,
+        writeMechanism: "runtime_observation",
+        provenance,
+        authority: authorityFor(validation.field, provenance.kind),
+        normalized: validation.normalized || undefined,
+        proposalEventId: proposed.id,
+      },
+    });
+  }
 }
 
 /**
@@ -236,11 +310,12 @@ export async function attemptToolCall(
   }
 
   if (result.ok) {
-    journal.append({
+    const succeeded = journal.append({
       type: "ToolExecutionSucceeded",
       turn,
       payload: { requestId, toolName, output: result.output, facts: result.facts, idempotencyKey: key },
     });
+    commitToolFacts(deps, result, succeeded.id, toolName, turn);
   } else {
     journal.append({
       type: "ToolExecutionFailed",

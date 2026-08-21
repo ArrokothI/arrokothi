@@ -1,21 +1,21 @@
 import type { ValueSchema } from "../schema/value-schema.ts";
+import type { Result } from "../util/result.ts";
 
-/**
- * Knowledge sources.
- *
- * v0 supports two kinds, and the split is the point: a `document` answers "what does the material
- * say about X" with lexical retrieval, while a `record_set` answers "which rows satisfy price <=
- * budget" with a deterministic query. The second must not be left to prose reasoning, which is why
- * it is a typed query engine rather than a pile of text handed to the model.
- */
+/** SDK-owned knowledge contracts. LangChain remains an internal document implementation detail. */
 
 export interface DocumentSource {
   id: string;
   kind: "document";
   title: string;
+  /** Short routing hint for the planner. Source text is never included in planner context. */
+  description?: string;
   text: string;
-  /** Approximate characters per chunk. Chunking is on paragraph boundaries where possible. */
-  chunkChars?: number;
+  chunking?: {
+    /** Characters, as interpreted by RecursiveCharacterTextSplitter. Default 1000. */
+    chunkSize?: number;
+    /** Overlap between adjacent chunks. Default 200. */
+    chunkOverlap?: number;
+  };
   tags?: string[];
 }
 
@@ -23,12 +23,14 @@ export interface RecordSetSource {
   id: string;
   kind: "record_set";
   title: string;
+  /** Short routing hint for the planner. Records themselves never enter planner context. */
+  description?: string;
   /** Declared field types. A query referencing anything else is an error, not an empty result. */
   fields: Record<string, ValueSchema>;
   records: Record<string, unknown>[];
   /** Field used to name a record in rendered output, e.g. "title". */
   displayField?: string;
-  /** Fields included in lexical retrieval text. Defaults to all string-ish fields. */
+  /** Fields included in optional host-side search affordances. Deterministic filters ignore this. */
   searchFields?: string[];
 }
 
@@ -36,18 +38,19 @@ export type KnowledgeSource = DocumentSource | RecordSetSource;
 
 export interface KnowledgeBinding {
   source: KnowledgeSource;
-  /** Max chunks returned by lexical retrieval. Default 3. */
+  /** Default maximum chunks returned by a planned document search. Default 3. */
   topK?: number;
-  /** Include lexical hits in compiled context automatically. Default true. */
-  autoRetrieve?: boolean;
-  /** For record sets: expose a deterministic query tool to the model. Default true. */
+  /** For record sets: expose a deterministic query tool to the response model. Default true. */
   exposeQueryTool?: boolean;
   /** Restrict this source to specific phases. Absent means all phases. */
   phaseIds?: string[];
 }
 
-export interface KnowledgeQuery {
-  text: string;
+export interface DocumentSearchRequest {
+  kind: "document_search";
+  sourceId: string;
+  /** Standalone query written by the planner; it need not equal the user's literal message. */
+  query: string;
   topK?: number;
 }
 
@@ -58,19 +61,15 @@ export interface KnowledgeChunk {
   text: string;
   /** Lexical relevance score. Comparable only within one retrieval call. */
   score: number;
-  /** Present for record-set hits: the underlying row, so callers get structure, not just prose. */
-  record?: Record<string, unknown>;
+  rank: number;
 }
 
-/**
- * The retrieval interface. v0 ships an in-memory lexical implementation; a caller may inject
- * anything else that satisfies this shape. Core requires no vector database and no GPU.
- */
+/** A source-local document retriever. No LangChain type crosses this interface. */
 export interface KnowledgeRetriever {
   readonly sourceId: string;
-  readonly kind: KnowledgeSource["kind"];
+  readonly kind: "document";
   readonly title: string;
-  retrieve(query: KnowledgeQuery): Promise<KnowledgeChunk[]>;
+  retrieve(request: DocumentSearchRequest): Promise<KnowledgeChunk[]>;
 }
 
 // ---------------------------------------------------------------------------
@@ -96,6 +95,13 @@ export interface RecordQuery {
   limit?: number;
 }
 
+export interface RecordQueryRequest extends RecordQuery {
+  kind: "record_query";
+  sourceId: string;
+}
+
+export type RetrievalRequest = DocumentSearchRequest | RecordQueryRequest;
+
 export interface RecordQueryResult {
   sourceId: string;
   /** Rows that satisfied every filter, after sorting and limiting. */
@@ -111,4 +117,49 @@ export interface RecordQueryResult {
 export interface RecordQueryError {
   code: "unknown_field" | "bad_operator" | "bad_value" | "unknown_source";
   message: string;
+}
+
+export interface DocumentKnowledgeResult {
+  kind: "document_search";
+  sourceId: string;
+  sourceTitle: string;
+  query: string;
+  chunks: KnowledgeChunk[];
+}
+
+export interface RecordKnowledgeResult {
+  kind: "record_query";
+  sourceId: string;
+  sourceTitle: string;
+  query: RecordQuery;
+  matches: Record<string, unknown>[];
+  totalMatched: number;
+  totalRecords: number;
+}
+
+export type KnowledgeResult = DocumentKnowledgeResult | RecordKnowledgeResult;
+
+export interface DocumentSourceCatalogEntry {
+  id: string;
+  type: "document";
+  title: string;
+  description?: string;
+}
+
+export interface RecordSetCatalogEntry {
+  id: string;
+  type: "record_set";
+  title: string;
+  description?: string;
+  fields: { name: string; type: ValueSchema["kind"] }[];
+  supportedOperators: RecordFilterOp[];
+}
+
+export type KnowledgeSourceCatalogEntry = DocumentSourceCatalogEntry | RecordSetCatalogEntry;
+
+/** The provider-neutral boundary consumed by Harness. */
+export interface KnowledgeProvider {
+  catalog(phaseId?: string, allowedSourceIds?: string[]): KnowledgeSourceCatalogEntry[];
+  retrieve(request: DocumentSearchRequest): Promise<KnowledgeChunk[]>;
+  queryRecords(request: RecordQueryRequest): Result<RecordQueryResult, RecordQueryError>;
 }

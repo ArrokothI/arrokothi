@@ -12,7 +12,7 @@ class LoopingProvider implements ModelProvider {
   calls = 0;
   async generate(request: { purpose?: string }): Promise<ModelResponse> {
     this.calls++;
-    if (request.purpose === "interpret") return { json: {}, providerId: this.id, model: "loop" };
+    if (request.purpose === "plan") return { json: {}, providerId: this.id, model: "loop" };
     return { toolCalls: [{ name: "lookup_status", args: { code: `C${this.calls}` } }], providerId: this.id, model: "loop" };
   }
 }
@@ -91,7 +91,7 @@ describe("degradation is truthful", () => {
     assert.equal(result.reply, "Happy to help - could you tell me your budget?");
     const error = result.events.find((e) => e.type === "RuntimeError");
     assert.equal(error?.type === "RuntimeError" && error.payload.code, "NETWORK_TIMEOUT");
-    assert.match(error?.type === "RuntimeError" ? error.payload.detail ?? "" : "", /turn continued without new structured writes/);
+    assert.match(error?.type === "RuntimeError" ? error.payload.detail ?? "" : "", /continued without new memory or retrieval/);
   });
 
   test("an empty model response ends the turn rather than spinning", async () => {
@@ -122,7 +122,7 @@ describe("traces record provider and model metadata", () => {
       assert.equal(call.payload.model, "gemini-3.5-flash-lite");
       assert.ok(typeof call.payload.durationMs === "number");
     }
-    assert.deepEqual(calls.map((c) => (c.type === "ModelCallCompleted" ? c.payload.purpose : "")), ["interpret", "respond"]);
+    assert.deepEqual(calls.map((c) => (c.type === "ModelCallCompleted" ? c.payload.purpose : "")), ["plan", "respond"]);
   });
 
   test("the compiled context never contains the authoring requirements document", async () => {

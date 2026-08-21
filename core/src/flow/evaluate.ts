@@ -12,7 +12,7 @@ import { changedOnTurn } from "../memory/structured.ts";
 
 export interface ConditionInput {
   state: SessionState;
-  /** Signals from this turn's interpretation pass. */
+  /** Signals from this turn's Interpret + Plan pass. */
   signals: string[];
   /** Tool results from this turn, for `tool_succeeded` / `tool_failed`. */
   toolResults: ToolResultRecord[];

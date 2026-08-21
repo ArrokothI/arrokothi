@@ -1,14 +1,14 @@
 {
-  "runId": "P02-harness_selfcheck-2026-08-21T03-27-59-685Z",
+  "runId": "P02-harness_selfcheck-2026-08-21T06-24-16-317Z",
   "project": "P02-ESTATE",
   "mode": "harness_selfcheck",
   "label": "harness self-check (no model consulted)",
-  "generatedAt": "2026-08-21T03:27:59.706Z",
+  "generatedAt": "2026-08-21T06:24:16.343Z",
   "sdk": {
     "agentId": "bench-p02-estate",
     "agentVersion": 1,
-    "definitionHash": "d4184a9aa4e2f445",
-    "harness": "two-pass-v0"
+    "definitionHash": "85d200d2eea43c37",
+    "harness": "two-pass-v0.2"
   },
   "provider": {
     "id": "static",
@@ -47,7 +47,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -58,6 +58,12 @@
       ],
       "assertions": [],
       "modelCalls": 2,
+      "plannerModelCalls": 1,
+      "responseModelCalls": 1,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 7,
         "threw": []
@@ -88,7 +94,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -99,6 +105,12 @@
       ],
       "assertions": [],
       "modelCalls": 2,
+      "plannerModelCalls": 1,
+      "responseModelCalls": 1,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 5,
         "threw": []
@@ -129,7 +141,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -140,6 +152,12 @@
       ],
       "assertions": [],
       "modelCalls": 2,
+      "plannerModelCalls": 1,
+      "responseModelCalls": 1,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 5,
         "threw": []
@@ -170,7 +188,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -181,6 +199,12 @@
       ],
       "assertions": [],
       "modelCalls": 2,
+      "plannerModelCalls": 1,
+      "responseModelCalls": 1,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 6,
         "threw": []
@@ -213,7 +237,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -225,7 +249,7 @@
           "turn": 1,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 1,
@@ -236,6 +260,12 @@
       ],
       "assertions": [],
       "modelCalls": 4,
+      "plannerModelCalls": 2,
+      "responseModelCalls": 2,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 5,
         "threw": []
@@ -268,7 +298,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -280,7 +310,7 @@
           "turn": 1,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 1,
@@ -291,6 +321,12 @@
       ],
       "assertions": [],
       "modelCalls": 4,
+      "plannerModelCalls": 2,
+      "responseModelCalls": 2,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 5,
         "threw": []
@@ -323,7 +359,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -335,7 +371,7 @@
           "turn": 1,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 1,
@@ -346,6 +382,12 @@
       ],
       "assertions": [],
       "modelCalls": 4,
+      "plannerModelCalls": 2,
+      "responseModelCalls": 2,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 4,
         "threw": []
@@ -378,7 +420,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -390,7 +432,7 @@
           "turn": 1,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 1,
@@ -401,6 +443,12 @@
       ],
       "assertions": [],
       "modelCalls": 4,
+      "plannerModelCalls": 2,
+      "responseModelCalls": 2,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 3,
         "threw": []
@@ -435,7 +483,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -447,7 +495,7 @@
           "turn": 1,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 1,
@@ -459,7 +507,7 @@
           "turn": 2,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 2,
@@ -470,6 +518,12 @@
       ],
       "assertions": [],
       "modelCalls": 6,
+      "plannerModelCalls": 3,
+      "responseModelCalls": 3,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 3,
         "threw": []
@@ -500,7 +554,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -511,6 +565,12 @@
       ],
       "assertions": [],
       "modelCalls": 2,
+      "plannerModelCalls": 1,
+      "responseModelCalls": 1,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 3,
         "threw": []
@@ -541,7 +601,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -552,6 +612,12 @@
       ],
       "assertions": [],
       "modelCalls": 2,
+      "plannerModelCalls": 1,
+      "responseModelCalls": 1,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 2,
         "threw": []
@@ -582,7 +648,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -593,6 +659,12 @@
       ],
       "assertions": [],
       "modelCalls": 2,
+      "plannerModelCalls": 1,
+      "responseModelCalls": 1,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 2,
         "threw": []
@@ -630,7 +702,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -642,7 +714,7 @@
           "turn": 1,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 1,
@@ -654,7 +726,7 @@
           "turn": 2,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 2,
@@ -666,7 +738,7 @@
           "turn": 3,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 3,
@@ -677,6 +749,12 @@
       ],
       "assertions": [],
       "modelCalls": 8,
+      "plannerModelCalls": 4,
+      "responseModelCalls": 4,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 7,
         "threw": []
@@ -715,7 +793,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -727,7 +805,7 @@
           "turn": 1,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 1,
@@ -739,7 +817,7 @@
           "turn": 2,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 2,
@@ -751,7 +829,7 @@
           "turn": 3,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 3,
@@ -763,7 +841,7 @@
           "turn": 4,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 4,
@@ -774,6 +852,12 @@
       ],
       "assertions": [],
       "modelCalls": 10,
+      "plannerModelCalls": 5,
+      "responseModelCalls": 5,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 2,
         "threw": []
@@ -810,7 +894,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -822,7 +906,7 @@
           "turn": 1,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 1,
@@ -834,7 +918,7 @@
           "turn": 2,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 2,
@@ -846,7 +930,7 @@
           "turn": 3,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 3,
@@ -857,6 +941,12 @@
       ],
       "assertions": [],
       "modelCalls": 8,
+      "plannerModelCalls": 4,
+      "responseModelCalls": 4,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 5,
         "threw": []
@@ -890,7 +980,7 @@
           "turn": 0,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 0,
@@ -902,7 +992,7 @@
           "turn": 1,
           "providerId": "static",
           "model": "static-model",
-          "purpose": "interpret"
+          "purpose": "plan"
         },
         {
           "turn": 1,
@@ -913,6 +1003,12 @@
       ],
       "assertions": [],
       "modelCalls": 4,
+      "plannerModelCalls": 2,
+      "responseModelCalls": 2,
+      "retrievalRequests": 0,
+      "selectedKnowledgeSources": [],
+      "retrievedChunks": 0,
+      "toolCalls": 0,
       "adapterCheck": {
         "assertionsRun": 3,
         "threw": []

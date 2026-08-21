@@ -1,60 +1,45 @@
 import type { AgentHarness, HarnessServices, HarnessTurnInput, HarnessTurnResult, TurnStopReason } from "./types.ts";
-import type { ObjectSchema } from "../schema/value-schema.ts";
 import type { MemoryWriteProposal, WorkingNote } from "../memory/types.ts";
 import type { ModelToolSpec } from "../provider/types.ts";
 import type { AuthorizeDeps } from "../tools/authorize.ts";
 import type { TransitionTiming } from "../flow/types.ts";
+import type { KnowledgeResult, RetrievalRequest } from "../knowledge/types.ts";
+import type { DeterministicPlanner, TurnPlan, TurnPlanValidationError } from "../planning/types.ts";
 import { attemptToolCall, resolvePendingConfirmation } from "../tools/authorize.ts";
-import { validateProposal } from "../memory/structured.ts";
-import { compileWithRetrieval } from "../compiler/context-compiler.ts";
+import { authorityFor, validateProposal } from "../memory/structured.ts";
+import { compileContext, compilePlannerContext } from "../compiler/context-compiler.ts";
 import { evaluateTransitions, findPhase } from "../flow/evaluate.ts";
 import { ModelProviderError } from "../provider/types.ts";
+import { ConservativeDeterministicPlanner, parseTurnPlan, turnPlanSchema } from "../planning/turn-plan.ts";
+import { EMPTY_TURN_PLAN } from "../planning/types.ts";
 
 /**
- * The default harness: interpret, then respond.
+ * The default harness: Interpret + Plan, validate/route/retrieve, then Respond.
  *
- * Pass 1 turns the user's turn into candidate structured writes and semantic routing signals, which
- * the runtime validates and commits or rejects. Pass 2 compiles context and runs the model/tool loop
- * to a final reply.
- *
- * Why two passes in v0: separating "what did the user just tell me" from "what should I say" means
- * the memory correction and any phase transition happen BEFORE the reply is generated, so the reply
- * is written against corrected state rather than against the stale transcript. A one-pass strategy
- * can be substituted wholesale by implementing `AgentHarness`.
+ * The planner proposes. The runtime validates memory and retrieval requests. The response model
+ * sees only the resulting state/evidence and remains free to use reactive tools.
  */
 
-const INTERPRETATION_SCHEMA: ObjectSchema = {
-  kind: "object",
-  fields: {
-    memory_writes: {
-      required: false,
-      description: "Facts the user has now established. Only include a field when the user's message actually supports it.",
-      schema: { kind: "object", additionalProperties: true, fields: {} },
-    },
-    working_notes: {
-      required: false,
-      description: "Short unverified observations worth remembering. Never put a fact here that belongs in memory_writes.",
-      schema: { kind: "string_array", maxItems: 5 },
-    },
-    signals: {
-      required: false,
-      description: "Routing signals that describe what the user is doing this turn.",
-      schema: { kind: "string_array", maxItems: 6 },
-    },
-  },
-};
-
 export interface TwoPassOptions {
-  /** Signal names the interpretation pass is told about. Defaults to those used by the flow. */
+  /** Signal names the planner is told about. Defaults to those referenced by Flow. */
   signalVocabulary?: string[];
+  /** Optional code-injected deterministic seam used by deterministic/hybrid modes. */
+  deterministicPlanner?: DeterministicPlanner;
+}
+
+interface PlannedTurn {
+  plan: TurnPlan;
+  retrievedKnowledge: KnowledgeResult[];
 }
 
 export class TwoPassHarness implements AgentHarness {
-  readonly name = "two-pass-v0";
+  readonly name = "two-pass-v0.2";
   private readonly options: TwoPassOptions;
+  private readonly deterministicPlanner: DeterministicPlanner;
 
   constructor(options: TwoPassOptions = {}) {
     this.options = options;
+    this.deterministicPlanner = options.deterministicPlanner ?? new ConservativeDeterministicPlanner();
   }
 
   async runTurn(input: HarnessTurnInput, services: HarnessServices): Promise<HarnessTurnResult> {
@@ -71,10 +56,7 @@ export class TwoPassHarness implements AgentHarness {
       grants,
     };
 
-    // ---- Confirmation first -------------------------------------------------
-    // An outstanding request is resolved against this message BEFORE anything else, and a genuine
-    // confirmation executes the STORED payload directly. The model never gets a chance to alter the
-    // arguments between the moment consent was given and the moment the action runs.
+    // Resolve a durable PendingAction first and execute only its frozen payload.
     const confirmation = resolvePendingConfirmation(deps, userMessage, turn);
     if (confirmation.resolved && confirmation.decision === "confirm") {
       const outcome = await attemptToolCall(deps, confirmation.action.toolName, confirmation.action.args, turn, "runtime");
@@ -83,73 +65,103 @@ export class TwoPassHarness implements AgentHarness {
       }
     }
 
-    // ---- Pass 1: interpret --------------------------------------------------
-    await this.interpret(input, services);
+    // Pass 1: one bounded semantic plan when needed, followed by runtime-owned state changes.
+    const plan = await this.interpretAndPlan(input, services);
     await this.applyTransitions(input, services, "pre_response");
+    const retrievedKnowledge = await this.executeRetrievals(plan.retrievalRequests, input, services);
 
-    // ---- Pass 2: respond ----------------------------------------------------
-    return this.respond(input, services, deps);
+    // Pass 2: response/tool loop over already-retrieved evidence.
+    return this.respond(input, services, deps, { plan, retrievedKnowledge });
   }
 
-  /** Pass 1. A model failure here degrades the turn rather than ending it: the reply pass still runs. */
-  private async interpret(input: HarnessTurnInput, services: HarnessServices): Promise<void> {
-    const { journal, turn } = input;
-    const { definition } = services;
-    if (!definition.memorySchema.fields.length && !this.options.signalVocabulary?.length) return;
+  private async interpretAndPlan(input: HarnessTurnInput, services: HarnessServices): Promise<TurnPlan> {
+    const { definition, knowledge } = services;
+    const phase = definition.flow ? findPhase(definition.flow, input.journal.state.phaseId) : undefined;
+    const sourceCatalog = knowledge.catalog(input.journal.state.phaseId ?? undefined, phase?.knowledgeSourceIds);
+    const signalVocabulary = this.options.signalVocabulary ?? collectSignalNames(services);
+    const strategy = definition.planning?.mode ?? "llm";
+    const deterministicInput = {
+      userMessage: input.userMessage,
+      state: input.journal.state,
+      sourceCatalog,
+      signalVocabulary,
+      memoryFieldKeys: definition.memorySchema.fields.map((field) => field.key),
+    };
 
-    const fieldDoc = definition.memorySchema.fields
-      .map((f) => {
-        const s = f.schema;
-        const constraint =
-          s.kind === "enum" ? ` one of: ${s.choices.join(" | ")}`
-          : s.kind === "number" ? `${s.min !== undefined ? ` min ${s.min}` : ""}${s.max !== undefined ? ` max ${s.max}` : ""}`
-          : s.kind === "string_array" ? " a list of strings"
-          : ` ${s.kind}`;
-        return `- ${f.key} (${s.kind}):${constraint}${f.description ? ` - ${f.description}` : ""}`;
-      })
-      .join("\n");
+    const trivial = !definition.memorySchema.fields.length && !signalVocabulary.length && !sourceCatalog.length;
+    if (trivial) {
+      return this.acceptPlan(input, services, structuredClone(EMPTY_TURN_PLAN), strategy, "deterministic", "no memory, routing, or knowledge planning is needed");
+    }
 
-    const signals = this.options.signalVocabulary ?? collectSignalNames(services);
+    if (strategy === "deterministic" || strategy === "hybrid") {
+      const deterministic = await this.deterministicPlanner.plan(deterministicInput);
+      if (deterministic.kind === "planned") {
+        return this.acceptPlan(input, services, deterministic.plan, strategy, "deterministic", deterministic.reason);
+      }
+      if (strategy === "deterministic") {
+        return this.acceptPlan(input, services, structuredClone(EMPTY_TURN_PLAN), strategy, "safe_empty", deterministic.reason);
+      }
+    }
+
+    const planned = await this.planWithModel(input, services, sourceCatalog, signalVocabulary);
+    if (!planned) {
+      return this.acceptPlan(input, services, structuredClone(EMPTY_TURN_PLAN), strategy, "safe_empty", "planner failed or returned malformed structured output");
+    }
+    return this.acceptPlan(input, services, planned, strategy, "llm");
+  }
+
+  private async planWithModel(
+    input: HarnessTurnInput,
+    services: HarnessServices,
+    sourceCatalog: ReturnType<HarnessServices["knowledge"]["catalog"]>,
+    signalVocabulary: string[],
+  ): Promise<TurnPlan | null> {
+    const { definition, planningModel } = services;
+    const fieldDoc = definition.memorySchema.fields.map((field) => {
+      const schema = field.schema;
+      const constraint = schema.kind === "enum" ? `one of ${schema.choices.join(" | ")}`
+        : schema.kind === "number" ? `${schema.min !== undefined ? `min ${schema.min}` : ""}${schema.max !== undefined ? ` max ${schema.max}` : ""}`.trim()
+        : schema.kind === "string_array" ? "list of strings"
+        : schema.kind;
+      return `- ${field.key} (${constraint})${field.description ? ` - ${field.description}` : ""}`;
+    }).join("\n");
     const instruction = [
-      "Read ONLY the user's most recent message and extract what it establishes. Do not restate facts already recorded unless the user just changed them.",
-      "",
-      "Fields you may write:",
-      fieldDoc || "(none)",
-      "",
-      signals.length ? `Signals you may emit: ${signals.join(", ")}` : "",
-      "",
-      "Rules: propose a value only when the user's message actually supports it; never guess. Use the exact field names above.",
-      "For a correction, propose the NEW value - the runtime replaces the old one.",
-      "Respond with JSON: {\"memory_writes\": {field: value}, \"working_notes\": [string], \"signals\": [string]}.",
-    ]
-      .filter(Boolean)
-      .join("\n");
+      "Interpret the latest user turn and produce a plan, not a conversational answer.",
+      "Only memory_writes directly established by the latest user message are allowed. Put genuine inference in working_notes instead.",
+      `Memory fields:\n${fieldDoc || "(none)"}`,
+      signalVocabulary.length ? `Signals you may emit: ${signalVocabulary.join(", ")}` : "Emit no signals.",
+      "Choose logical knowledge sources from the catalog only. Emit zero retrieval requests when no evidence lookup is needed.",
+      "Rewrite every document query as a concise standalone query. Resolve references such as 'the second one' from the recent transcript.",
+      "Use document_search only for document sources. Use record_query for exact filters/sorts/counts over record_set sources; never produce SQL.",
+      "Return exactly: {memory_writes, working_notes, signals, retrieval_requests}.",
+    ].join("\n\n");
+    const context = compilePlannerContext({
+      definition,
+      state: input.journal.state,
+      sourceCatalog,
+      taskInstruction: instruction,
+      transcriptWindow: 6,
+      now: services.clock.now(),
+    });
+    services.onContextCompiled?.(context, "plan");
 
-    const interpretPhase = definition.flow ? findPhase(definition.flow, journal.state.phaseId) : undefined;
-    const context = await compileWithRetrieval(
-      { definition, state: journal.state, now: services.clock.now(), taskInstruction: instruction, transcriptWindow: 4 },
-      services.knowledge,
-      interpretPhase?.knowledgeSourceIds,
-    );
-    services.onContextCompiled?.(context, "interpret");
-
-    let json: unknown;
     try {
+      const policy = definition.planning?.model ?? definition.model;
       const started = Date.now();
-      const response = await services.model.generate({
+      const response = await planningModel.generate({
         system: context.system,
         messages: context.messages,
-        responseSchema: INTERPRETATION_SCHEMA,
-        model: definition.model.model,
-        temperature: definition.model.temperature ?? 0,
-        maxOutputTokens: definition.model.maxOutputTokens,
-        purpose: "interpret",
+        responseSchema: turnPlanSchema(definition.policies.maxRetrievalRequests),
+        model: policy.model,
+        temperature: policy.temperature ?? 0,
+        maxOutputTokens: policy.maxOutputTokens,
+        purpose: "plan",
       });
-      journal.append({
+      input.journal.append({
         type: "ModelCallCompleted",
-        turn,
+        turn: input.turn,
         payload: {
-          purpose: "interpret",
+          purpose: "plan",
           providerId: response.providerId,
           model: response.model,
           usage: response.usage,
@@ -157,141 +169,270 @@ export class TwoPassHarness implements AgentHarness {
           durationMs: Date.now() - started,
         },
       });
-      json = response.json ?? (response.text ? safeParse(response.text) : undefined);
+      const parsed = parseTurnPlan(response.json, definition.policies.maxRetrievalRequests);
+      if (!parsed.ok) {
+        input.journal.append({
+          type: "RuntimeError",
+          turn: input.turn,
+          payload: { code: "invalid_turn_plan", message: parsed.message, detail: "planner structured output was rejected; retrieval and memory writes were skipped" },
+        });
+        return null;
+      }
+      return parsed.plan;
     } catch (error) {
-      // Interpretation is best-effort. The turn continues with whatever state already exists, and
-      // the failure is recorded rather than hidden.
-      journal.append({
+      input.journal.append({
         type: "RuntimeError",
-        turn,
+        turn: input.turn,
         payload: {
-          code: error instanceof ModelProviderError ? error.code : "interpret_failed",
+          code: error instanceof ModelProviderError ? error.code : "planning_failed",
           message: error instanceof Error ? error.message : String(error),
-          detail: "interpretation pass failed; the turn continued without new structured writes",
+          detail: "planning pass failed; the response continued without new memory or retrieval",
         },
       });
-      return;
-    }
-
-    if (!json || typeof json !== "object") return;
-    const parsed = json as Record<string, unknown>;
-
-    const writes = parsed["memory_writes"];
-    if (writes && typeof writes === "object" && !Array.isArray(writes)) {
-      for (const [key, value] of Object.entries(writes as Record<string, unknown>)) {
-        if (value === undefined || value === null || value === "") continue;
-        this.commitProposal(input, services, { key, value });
-      }
-    }
-
-    const notes = parsed["working_notes"];
-    if (Array.isArray(notes)) {
-      for (const text of notes.slice(0, 5)) {
-        if (typeof text !== "string" || !text.trim()) continue;
-        const note: WorkingNote = {
-          id: services.ids.next("note"),
-          text: text.trim(),
-          sourceEventIds: [],
-          turn,
-          at: services.clock.now().toISOString(),
-        };
-        journal.append({ type: "WorkingNoteRecorded", turn, payload: { note } });
-      }
-    }
-
-    const emitted = parsed["signals"];
-    if (Array.isArray(emitted)) {
-      const clean = emitted.filter((s): s is string => typeof s === "string" && s.length > 0).slice(0, 6);
-      if (clean.length) journal.append({ type: "SemanticSignalsObserved", turn, payload: { signals: clean } });
+      return null;
     }
   }
 
-  /**
-   * Validates one proposal and records the outcome.
-   *
-   * Both outcomes are events. A rejected proposal is never silently dropped and never repaired into
-   * something the model did not say - the reason is stored so a bad extraction is visible in the
-   * trace instead of showing up later as mysteriously wrong state.
-   */
+  private acceptPlan(
+    input: HarnessTurnInput,
+    services: HarnessServices,
+    proposed: TurnPlan,
+    strategy: "llm" | "deterministic" | "hybrid",
+    resolvedBy: "llm" | "deterministic" | "safe_empty",
+    detail?: string,
+  ): TurnPlan {
+    const vocabulary = new Set(this.options.signalVocabulary ?? collectSignalNames(services));
+    const plan: TurnPlan = {
+      memoryProposals: proposed.memoryProposals.slice(0, services.definition.memorySchema.fields.length + 8),
+      workingNotes: proposed.workingNotes
+        .filter((note) => typeof note.text === "string" && note.text.trim())
+        .slice(0, 5)
+        .map((note) => ({ ...note, text: note.text.trim() })),
+      signals: [...new Set(proposed.signals.filter((signal) => vocabulary.has(signal)))].slice(0, 6),
+      retrievalRequests: proposed.retrievalRequests.slice(),
+    };
+
+    input.journal.append({ type: "TurnPlanCreated", turn: input.turn, payload: { strategy, resolvedBy, plan, detail } });
+    for (const proposal of plan.memoryProposals) this.commitProposal(input, services, proposal);
+    for (const proposal of plan.workingNotes) {
+      const note: WorkingNote = {
+        id: services.ids.next("note"),
+        text: proposal.text,
+        sourceEventIds: [input.userEventId],
+        turn: input.turn,
+        at: services.clock.now().toISOString(),
+        confidence: proposal.confidence,
+      };
+      input.journal.append({ type: "WorkingNoteRecorded", turn: input.turn, payload: { note } });
+    }
+    if (plan.signals.length) {
+      input.journal.append({ type: "SemanticSignalsObserved", turn: input.turn, payload: { signals: plan.signals } });
+    }
+    return plan;
+  }
+
   private commitProposal(input: HarnessTurnInput, services: HarnessServices, proposal: MemoryWriteProposal): void {
-    const { journal, turn } = input;
-    const { definition } = services;
-
-    const proposedEvent = journal.append({
+    if (proposal.value === undefined || proposal.value === null || proposal.value === "") return;
+    const provenance = { kind: "user_claimed" as const, sourceEventIds: [input.userEventId], sourceName: "latest_user_message" };
+    const proposedEvent = input.journal.append({
       type: "MemoryWriteProposed",
-      turn,
-      payload: { key: proposal.key, value: proposal.value, source: "model_proposal", confidence: proposal.confidence },
+      turn: input.turn,
+      payload: {
+        key: proposal.key,
+        value: proposal.value,
+        writeMechanism: "planner_proposal",
+        provenance,
+        confidence: proposal.confidence,
+      },
     });
-
-    const validation = validateProposal(definition.memorySchema, proposal, "model_proposal", { coerce: true });
+    const validation = validateProposal(services.definition.memorySchema, proposal, provenance.kind, { coerce: true });
     if (!validation.ok) {
-      journal.append({
+      input.journal.append({
         type: "MemoryWriteRejected",
-        turn,
+        turn: input.turn,
         payload: {
           key: proposal.key,
           value: proposal.value,
           code: validation.code,
           reason: validation.reason,
-          source: "model_proposal",
+          writeMechanism: "planner_proposal",
+          provenance,
           proposalEventId: proposedEvent.id,
         },
       });
-      // An undeclared field may still be worth remembering, but only as a non-authoritative note -
-      // never as validated state. This is what `rejectUnknownMemoryFields: false` buys.
-      if (validation.code === "unknown_field" && !definition.policies.rejectUnknownMemoryFields) {
+      if (validation.code === "unknown_field" && !services.definition.policies.rejectUnknownMemoryFields) {
         const note: WorkingNote = {
           id: services.ids.next("note"),
           text: `${proposal.key}: ${String(proposal.value)}`,
-          sourceEventIds: [proposedEvent.id],
-          turn,
+          sourceEventIds: [input.userEventId, proposedEvent.id],
+          turn: input.turn,
           at: services.clock.now().toISOString(),
+          confidence: proposal.confidence,
         };
-        journal.append({ type: "WorkingNoteRecorded", turn, payload: { note } });
+        input.journal.append({ type: "WorkingNoteRecorded", turn: input.turn, payload: { note } });
       }
       return;
     }
-
-    const previous = journal.state.memory[proposal.key];
+    const previous = input.journal.state.memory[proposal.key];
     if (previous && JSON.stringify(previous.value) === JSON.stringify(validation.value)) return;
-
-    journal.append({
+    input.journal.append({
       type: "MemoryWriteCommitted",
-      turn,
+      turn: input.turn,
       payload: {
         key: proposal.key,
         value: validation.value,
         previousValue: previous?.value,
-        source: "model_proposal",
-        authority: validation.field.authority ?? "authoritative",
+        writeMechanism: "planner_proposal",
+        provenance,
+        authority: authorityFor(validation.field, provenance.kind),
+        confidence: proposal.confidence,
         normalized: validation.normalized || undefined,
         proposalEventId: proposedEvent.id,
       },
     });
   }
 
-  /** Evaluates transitions at one timing point and emits `PhaseTransitioned` if one fires. */
+  private async executeRetrievals(
+    requests: RetrievalRequest[],
+    input: HarnessTurnInput,
+    services: HarnessServices,
+  ): Promise<KnowledgeResult[]> {
+    const results: KnowledgeResult[] = [];
+    const { definition } = services;
+    const phase = definition.flow ? findPhase(definition.flow, input.journal.state.phaseId) : undefined;
+
+    for (const [index, request] of requests.entries()) {
+      if (index >= definition.policies.maxRetrievalRequests) {
+        this.rejectRetrieval(input, request, {
+          code: "retrieval_limit_exceeded",
+          message: `TurnPlan exceeds maxRetrievalRequests=${definition.policies.maxRetrievalRequests}`,
+          requestIndex: index,
+        });
+        continue;
+      }
+      const binding = definition.knowledge.find((candidate) => candidate.source.id === request.sourceId);
+      if (!binding) {
+        this.rejectRetrieval(input, request, { code: "unknown_source", message: `unknown knowledge source "${request.sourceId}"`, requestIndex: index });
+        continue;
+      }
+      const permittedByPhase = (!phase?.knowledgeSourceIds || phase.knowledgeSourceIds.includes(request.sourceId))
+        && (!binding.phaseIds || (!!input.journal.state.phaseId && binding.phaseIds.includes(input.journal.state.phaseId)));
+      if (!permittedByPhase) {
+        this.rejectRetrieval(input, request, {
+          code: "source_not_permitted_in_phase",
+          message: `source "${request.sourceId}" is not permitted in phase "${input.journal.state.phaseId}"`,
+          requestIndex: index,
+        });
+        continue;
+      }
+
+      if (request.kind === "document_search") {
+        if (binding.source.kind !== "document") {
+          this.rejectRetrieval(input, request, { code: "wrong_source_kind", message: `source "${request.sourceId}" is a record_set, not a document`, requestIndex: index });
+          continue;
+        }
+        const requestedTopK = request.topK ?? binding.topK ?? 3;
+        if (!request.query.trim() || !Number.isInteger(requestedTopK) || requestedTopK < 1 || requestedTopK > definition.policies.maxDocumentChunks) {
+          this.rejectRetrieval(input, request, {
+            code: "invalid_document_query",
+            message: `document query must be non-empty and topK must be within 1..${definition.policies.maxDocumentChunks}`,
+            requestIndex: index,
+          });
+          continue;
+        }
+        try {
+          const normalized = { ...request, query: request.query.trim(), topK: requestedTopK };
+          const chunks = (await services.knowledge.retrieve(normalized)).slice(0, definition.policies.maxDocumentChunks);
+          results.push({ kind: "document_search", sourceId: request.sourceId, sourceTitle: binding.source.title, query: normalized.query, chunks });
+          input.journal.append({
+            type: "KnowledgeRetrieved",
+            turn: input.turn,
+            payload: {
+              request: normalized,
+              sourceId: request.sourceId,
+              resultIds: chunks.map((chunk) => chunk.chunkId),
+              scores: chunks.map((chunk) => chunk.score),
+              returnedCount: chunks.length,
+            },
+          });
+        } catch (error) {
+          this.rejectRetrieval(input, request, {
+            code: "invalid_document_query",
+            message: error instanceof Error ? error.message : String(error),
+            requestIndex: index,
+          });
+        }
+        continue;
+      }
+
+      if (binding.source.kind !== "record_set") {
+        this.rejectRetrieval(input, request, { code: "wrong_source_kind", message: `source "${request.sourceId}" is a document, not a record_set`, requestIndex: index });
+        continue;
+      }
+      if (request.limit !== undefined && request.limit > definition.policies.maxRecordRows) {
+        this.rejectRetrieval(input, request, {
+          code: "retrieval_limit_exceeded",
+          message: `record query limit exceeds maxRecordRows=${definition.policies.maxRecordRows}`,
+          requestIndex: index,
+        });
+        continue;
+      }
+      const normalized = { ...request, limit: request.limit ?? definition.policies.maxRecordRows };
+      const queried = services.knowledge.queryRecords(normalized);
+      if (!queried.ok) {
+        this.rejectRetrieval(input, request, { code: "invalid_record_query", message: queried.error.message, requestIndex: index });
+        continue;
+      }
+      results.push({
+        kind: "record_query",
+        sourceId: request.sourceId,
+        sourceTitle: binding.source.title,
+        query: queried.value.query,
+        matches: queried.value.matches.slice(0, definition.policies.maxRecordRows),
+        totalMatched: queried.value.totalMatched,
+        totalRecords: queried.value.totalRecords,
+      });
+      input.journal.append({
+        type: "KnowledgeRetrieved",
+        turn: input.turn,
+        payload: {
+          request: normalized,
+          sourceId: request.sourceId,
+          resultIds: queried.value.matches.map((record, row) => `${request.sourceId}#${String(record["id"] ?? row)}`),
+          returnedCount: queried.value.matches.length,
+          totalMatched: queried.value.totalMatched,
+        },
+      });
+    }
+    return results;
+  }
+
+  private rejectRetrieval(input: HarnessTurnInput, request: RetrievalRequest, error: TurnPlanValidationError): void {
+    input.journal.append({ type: "RetrievalRequestRejected", turn: input.turn, payload: { request, error } });
+  }
+
   private async applyTransitions(input: HarnessTurnInput, services: HarnessServices, timing: TransitionTiming): Promise<void> {
-    const { journal, turn } = input;
     const flow = services.definition.flow;
     if (!flow) return;
-
     const { fired } = evaluateTransitions(flow, timing, {
-      state: journal.state,
-      signals: journal.state.turnSignals,
-      toolResults: journal.state.turnToolResults,
+      state: input.journal.state,
+      signals: input.journal.state.turnSignals,
+      toolResults: input.journal.state.turnToolResults,
     });
     if (!fired) return;
-
-    journal.append({
+    input.journal.append({
       type: "PhaseTransitioned",
-      turn,
+      turn: input.turn,
       payload: { from: fired.from, to: fired.to, on: timing, label: fired.label, evaluation: fired },
     });
   }
 
-  /** Pass 2: the bounded model/tool loop. */
-  private async respond(input: HarnessTurnInput, services: HarnessServices, deps: AuthorizeDeps): Promise<HarnessTurnResult> {
+  private async respond(
+    input: HarnessTurnInput,
+    services: HarnessServices,
+    deps: AuthorizeDeps,
+    planned: PlannedTurn,
+  ): Promise<HarnessTurnResult> {
     const { journal, turn } = input;
     const { definition } = services;
     const maxSteps = Math.max(1, definition.policies.maxSteps);
@@ -301,24 +442,18 @@ export class TwoPassHarness implements AgentHarness {
 
     while (steps < maxSteps) {
       steps++;
-
       const phase = definition.flow ? findPhase(definition.flow, journal.state.phaseId) : undefined;
       const available = services.tools.availableIn(journal.state.phaseId, phase?.toolNames);
-      const specs: ModelToolSpec[] =
-        toolCalls >= definition.policies.maxToolCallsPerTurn ? [] : services.tools.toModelSpecs(available);
-
-      const context = await compileWithRetrieval(
-        {
-          definition,
-          state: journal.state,
-          now: services.clock.now(),
-          taskInstruction: awaitingConfirmationPrompt
-            ? `You must now ask the user to confirm before anything is sent. Ask exactly this, in your own voice: ${awaitingConfirmationPrompt}`
-            : undefined,
-        },
-        services.knowledge,
-        phase?.knowledgeSourceIds,
-      );
+      const specs: ModelToolSpec[] = toolCalls >= definition.policies.maxToolCallsPerTurn ? [] : services.tools.toModelSpecs(available);
+      const context = compileContext({
+        definition,
+        state: journal.state,
+        now: services.clock.now(),
+        retrievedKnowledge: planned.retrievedKnowledge,
+        taskInstruction: awaitingConfirmationPrompt
+          ? `You must now ask the user to confirm before anything is sent. Ask exactly this, in your own voice: ${awaitingConfirmationPrompt}`
+          : undefined,
+      });
       services.onContextCompiled?.(context, `respond:${steps}`);
 
       let response;
@@ -346,7 +481,6 @@ export class TwoPassHarness implements AgentHarness {
           },
         });
       } catch (error) {
-        // A provider failure must not become a fabricated reply. The turn ends truthfully.
         const message = error instanceof Error ? error.message : String(error);
         journal.append({
           type: "RuntimeError",
@@ -362,13 +496,10 @@ export class TwoPassHarness implements AgentHarness {
           if (toolCalls >= definition.policies.maxToolCallsPerTurn) break;
           toolCalls++;
           const outcome = await attemptToolCall(deps, call.name, call.args ?? {}, turn, "model");
-          if (outcome.kind === "awaiting_confirmation") {
-            awaitingConfirmationPrompt = outcome.promptText;
-          } else if (outcome.kind === "executed" || outcome.kind === "replayed") {
-            await this.applyTransitions(input, services, "action_result");
-          }
+          if (outcome.kind === "awaiting_confirmation") awaitingConfirmationPrompt = outcome.promptText;
+          else if (outcome.kind === "executed" || outcome.kind === "replayed") await this.applyTransitions(input, services, "action_result");
         }
-        continue; // Re-compile with the new results in context and let the model respond to them.
+        continue;
       }
 
       const text = (response.text ?? "").trim();
@@ -376,8 +507,6 @@ export class TwoPassHarness implements AgentHarness {
         const stop: TurnStopReason = journal.state.pendingAction ? "awaiting_confirmation" : "completed";
         return this.emit(input, text, stop, steps);
       }
-
-      // Neither text nor an actionable tool call. Rather than looping on an empty response, stop.
       journal.append({
         type: "RuntimeError",
         turn,
@@ -386,7 +515,6 @@ export class TwoPassHarness implements AgentHarness {
       return this.emit(input, "Sorry - I did not manage to put a reply together. Could you say that again?", "error", steps);
     }
 
-    // Step limit reached. Terminate safely and truthfully; never invent a completion.
     journal.append({
       type: "RuntimeError",
       turn,
@@ -396,12 +524,7 @@ export class TwoPassHarness implements AgentHarness {
         detail: "the step limit is enforced by the runtime, not by the model",
       },
     });
-    return this.emit(
-      input,
-      "This is taking more steps than I have available for one turn, so I have stopped rather than guess. Could you narrow down what you need?",
-      "max_steps",
-      steps,
-    );
+    return this.emit(input, "This is taking more steps than I have available for one turn, so I have stopped rather than guess. Could you narrow down what you need?", "max_steps", steps);
   }
 
   private emit(input: HarnessTurnInput, text: string, stopReason: TurnStopReason, steps: number): HarnessTurnResult {
@@ -410,35 +533,18 @@ export class TwoPassHarness implements AgentHarness {
   }
 }
 
-/** Signal names referenced anywhere in the flow, so the interpretation pass knows the vocabulary. */
+/** Signal names referenced anywhere in Flow; no message regex or keyword routing is used. */
 function collectSignalNames(services: HarnessServices): string[] {
   const names = new Set<string>();
   const walk = (condition: unknown): void => {
     if (!condition || typeof condition !== "object") return;
-    const c = condition as { kind?: string; name?: string; of?: unknown };
-    if (c.kind === "signal" && typeof c.name === "string") names.add(c.name);
-    if (Array.isArray(c.of)) c.of.forEach(walk);
-    else if (c.of) walk(c.of);
+    const candidate = condition as { kind?: string; name?: string; of?: unknown };
+    if (candidate.kind === "signal" && typeof candidate.name === "string") names.add(candidate.name);
+    if (Array.isArray(candidate.of)) candidate.of.forEach(walk);
+    else if (candidate.of) walk(candidate.of);
   };
   for (const phase of services.definition.flow?.phases ?? []) {
     for (const transition of phase.transitions ?? []) walk(transition.when);
   }
   return [...names];
-}
-
-function safeParse(text: string): unknown {
-  const trimmed = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/, "");
-  try {
-    return JSON.parse(trimmed);
-  } catch {
-    // Some models wrap JSON in prose. Take the outermost object rather than failing the whole pass.
-    const start = trimmed.indexOf("{");
-    const end = trimmed.lastIndexOf("}");
-    if (start === -1 || end <= start) return undefined;
-    try {
-      return JSON.parse(trimmed.slice(start, end + 1));
-    } catch {
-      return undefined;
-    }
-  }
 }

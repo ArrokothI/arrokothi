@@ -35,12 +35,24 @@ function blankDefinition() {
     goal: "",
     description: "",
     model: { providerId: "gemini", model: "gemini-3.5-flash-lite", temperature: 0.2 },
+    planning: { mode: "llm" },
     globalRules: [],
     knowledge: [],
     memorySchema: { fields: [] },
     hostContextSchema: { fields: [] },
     tools: [],
-    policies: { maxSteps: 6, maxToolCallsPerTurn: 3, rejectUnknownMemoryFields: true, allowUnconfirmedSideEffects: false, transcriptWindow: 10, workingNoteTtlMs: 0 },
+    policies: {
+      maxSteps: 6,
+      maxToolCallsPerTurn: 3,
+      rejectUnknownMemoryFields: true,
+      allowUnconfirmedSideEffects: false,
+      transcriptWindow: 10,
+      workingNoteTtlMs: 0,
+      maxRetrievalRequests: 4,
+      maxDocumentChunks: 4,
+      maxRecordRows: 20,
+      maxKnowledgeChars: 12000,
+    },
   };
 }
 
@@ -67,11 +79,20 @@ function fillForm(def) {
   $("f-model").value = def.model?.model ?? "";
   $("f-temperature").value = def.model?.temperature ?? "";
   $("f-maxtokens").value = def.model?.maxOutputTokens ?? "";
-  $("f-rules").value = (def.globalRules ?? []).join("\n");
+  $("f-planner-mode").value = def.planning?.mode ?? "llm";
+  $("f-planner-provider").value = def.planning?.model?.providerId ?? "";
+  $("f-planner-model").value = def.planning?.model?.model ?? "";
+  $("f-rules").value = (def.globalRules ?? []).map((rule) =>
+    typeof rule === "string" ? rule : `${rule.kind}:${rule.id}: ${rule.text}`,
+  ).join("\n");
   $("f-maxsteps").value = def.policies?.maxSteps ?? 6;
   $("f-maxtools").value = def.policies?.maxToolCallsPerTurn ?? 3;
   $("f-window").value = def.policies?.transcriptWindow ?? 10;
   $("f-ttl").value = def.policies?.workingNoteTtlMs ?? 0;
+  $("f-maxretrievals").value = def.policies?.maxRetrievalRequests ?? 4;
+  $("f-maxchunks").value = def.policies?.maxDocumentChunks ?? 4;
+  $("f-maxrows").value = def.policies?.maxRecordRows ?? 20;
+  $("f-maxknowledgechars").value = def.policies?.maxKnowledgeChars ?? 12000;
   $("f-rejectunknown").checked = def.policies?.rejectUnknownMemoryFields !== false;
   $("f-allowunconfirmed").checked = def.policies?.allowUnconfirmedSideEffects === true;
   $("f-initial-phase").value = def.flow?.initialPhaseId ?? "";
@@ -97,7 +118,16 @@ function readForm() {
     temperature: num("f-temperature"),
     maxOutputTokens: num("f-maxtokens"),
   };
-  current.globalRules = $("f-rules").value.split("\n").map((s) => s.trim()).filter(Boolean);
+  const plannerProvider = $("f-planner-provider").value.trim();
+  const plannerModel = $("f-planner-model").value.trim();
+  current.planning = {
+    mode: $("f-planner-mode").value,
+    ...(plannerProvider && plannerModel ? { model: { providerId: plannerProvider, model: plannerModel, temperature: 0 } } : {}),
+  };
+  current.globalRules = $("f-rules").value.split("\n").map((line) => line.trim()).filter(Boolean).map((line) => {
+    const match = /^(invariant|default):([^:]+):\s*(.+)$/.exec(line);
+    return match ? { kind: match[1], id: match[2].trim(), text: match[3].trim() } : line;
+  });
   current.policies = {
     maxSteps: num("f-maxsteps") ?? 6,
     maxToolCallsPerTurn: num("f-maxtools") ?? 3,
@@ -105,6 +135,10 @@ function readForm() {
     workingNoteTtlMs: num("f-ttl") ?? 0,
     rejectUnknownMemoryFields: $("f-rejectunknown").checked,
     allowUnconfirmedSideEffects: $("f-allowunconfirmed").checked,
+    maxRetrievalRequests: num("f-maxretrievals") ?? 4,
+    maxDocumentChunks: num("f-maxchunks") ?? 4,
+    maxRecordRows: num("f-maxrows") ?? 20,
+    maxKnowledgeChars: num("f-maxknowledgechars") ?? 12000,
   };
   const initial = $("f-initial-phase").value.trim();
   if (current.flow?.phases?.length) current.flow.initialPhaseId = initial || current.flow.phases[0].id;
@@ -205,8 +239,14 @@ function renderKnowledge() {
         field("id", textInput(src.id, (v) => (src.id = v))),
         field("title", textInput(src.title, (v) => (src.title = v))),
       ]),
+      el("div", { className: "row" }, [field("planner description", textInput(src.description, (v) => (src.description = v)))]),
     ];
     if (src.kind === "document") {
+      src.chunking ??= { chunkSize: 1000, chunkOverlap: 200 };
+      rows.push(el("div", { className: "row" }, [
+        field("chunk size", textInput(src.chunking.chunkSize ?? 1000, (v) => (src.chunking.chunkSize = Number(v)))),
+        field("chunk overlap", textInput(src.chunking.chunkOverlap ?? 200, (v) => (src.chunking.chunkOverlap = Number(v)))),
+      ]));
       rows.push(el("label", { textContent: "text" }, [
         el("textarea", { rows: 6, value: src.text ?? "", oninput: (e) => (src.text = e.target.value) }),
       ]));
@@ -244,6 +284,9 @@ function renderTools() {
       el("label", { textContent: "input schema (JSON)" }, [
         el("textarea", { rows: 8, value: JSON.stringify(t.input ?? { kind: "object", fields: {} }, null, 2), onchange: (e) => tryJson(e.target, (v) => (t.input = v)) }),
       ]),
+      el("label", { textContent: "argument source policies (JSON; required for side effects)" }, [
+        el("textarea", { rows: 5, value: JSON.stringify(t.argumentPolicies ?? {}, null, 2), onchange: (e) => tryJson(e.target, (v) => (t.argumentPolicies = v)) }),
+      ]),
       el("div", { className: "row" }, [
         el("span", { className: "muted", textContent: "dry-run outcome:" }),
         el("button", { className: "tiny", textContent: "succeed", onclick: () => setDryRun(t.name, "success") }),
@@ -276,6 +319,18 @@ function renderPhases() {
           if (v.trim() === "") delete p.toolNames; else p.toolNames = list;
         })),
       ]),
+      el("div", { className: "row" }, [
+        field("knowledge scope (comma separated, blank = all)", textInput((p.knowledgeSourceIds ?? []).join(", "), (v) => {
+          const list = v.split(",").map((s) => s.trim()).filter(Boolean);
+          if (v.trim() === "") delete p.knowledgeSourceIds; else p.knowledgeSourceIds = list;
+        })),
+      ]),
+      el("div", { className: "row" }, [
+        field("override global default rule IDs", textInput((p.overrideRuleIds ?? []).join(", "), (v) => {
+          const list = v.split(",").map((s) => s.trim()).filter(Boolean);
+          if (v.trim() === "") delete p.overrideRuleIds; else p.overrideRuleIds = list;
+        })),
+      ]),
       el("label", { textContent: "transitions (JSON array of {to, on, when, label})" }, [
         el("textarea", { rows: 6, value: JSON.stringify(p.transitions ?? [], null, 2), onchange: (e) => tryJson(e.target, (v) => (p.transitions = v)) }),
       ]),
@@ -301,11 +356,11 @@ async function setDryRun(toolName, mode) {
 // ── buttons ────────────────────────────────────────────────────────────────
 $("btn-add-memory").onclick = () => { current.memorySchema.fields.push({ key: "", schema: { kind: "string" } }); renderMemory(); };
 $("btn-add-context").onclick = () => { current.hostContextSchema.fields.push({ key: "", schema: { kind: "string" }, lifecycle: "session", visibility: "model", trust: "trusted_host" }); renderContext(); };
-$("btn-add-doc").onclick = () => { current.knowledge.push({ source: { id: "", kind: "document", title: "", text: "" } }); renderKnowledge(); };
+$("btn-add-doc").onclick = () => { current.knowledge.push({ source: { id: "", kind: "document", title: "", description: "", text: "", chunking: { chunkSize: 1000, chunkOverlap: 200 } } }); renderKnowledge(); };
 $("btn-add-records").onclick = () => { current.knowledge.push({ source: { id: "", kind: "record_set", title: "", fields: {}, records: [] } }); renderKnowledge(); };
 $("btn-add-tool").onclick = () => {
   current.tools.push({
-    definition: { name: "", description: "", effect: "external_side_effect", confirmation: "required", idempotency: "once_per_session", input: { kind: "object", fields: {} }, output: { kind: "object", additionalProperties: true, fields: {} } },
+    definition: { name: "", description: "", effect: "external_side_effect", confirmation: "required", idempotency: "once_per_session", argumentPolicies: {}, input: { kind: "object", fields: {} }, output: { kind: "object", additionalProperties: true, fields: {} } },
   });
   renderTools();
 };
@@ -478,15 +533,27 @@ function renderState(state, dryRunLedger = []) {
   host.replaceChildren();
 
   const memory = Object.values(state.memory);
-  host.append(section("Structured memory (authoritative)", memory.length
-    ? table(["field", "value", "source", "turn", "note"], memory.map((m) => [
+  host.append(section("Structured memory", memory.length
+    ? table(["field", "value", "mechanism", "origin", "source events", "turn", "note"], memory.map((m) => [
         m.key,
         JSON.stringify(m.value),
-        m.source,
+        m.writeMechanism,
+        m.provenance?.kind,
+        (m.provenance?.sourceEventIds ?? []).join(", "),
         m.turn,
         [m.normalized ? "normalized" : "", m.previousValue !== undefined ? `was ${JSON.stringify(m.previousValue)}` : "", m.authority === "advisory" ? "advisory" : ""].filter(Boolean).join(" · "),
       ]))
     : el("div", { className: "empty", textContent: "nothing committed yet" })));
+
+  host.append(section("TurnPlan", state.turnPlan
+    ? el("pre", { textContent: JSON.stringify(state.turnPlan, null, 2) })
+    : el("div", { className: "empty", textContent: "no plan for this turn" })));
+
+  host.append(section("Retrieval trace", state.turnRetrievals?.length
+    ? table(["source", "kind", "returned", "result ids", "error"], state.turnRetrievals.map((r) => [
+        r.sourceId, r.request.kind, r.returnedCount, r.resultIds.join(", "), r.error?.message ?? "",
+      ]))
+    : el("div", { className: "empty", textContent: "no retrieval operations" })));
 
   host.append(section("Working memory (non-authoritative)", state.workingNotes.length
     ? table(["note", "turn"], state.workingNotes.map((n) => [n.text, n.turn]))
@@ -532,6 +599,9 @@ const EVENT_CLASS = {
   ConfirmationResolved: "confirm",
   RuntimeError: "error",
   PhaseTransitioned: "confirm",
+  TurnPlanCreated: "confirm",
+  KnowledgeRetrieved: "action",
+  RetrievalRequestRejected: "reject",
 };
 
 function describeEvent(event) {
@@ -544,6 +614,9 @@ function describeEvent(event) {
     case "MemoryWriteRejected": return `${p.key} = ${JSON.stringify(p.value)}\nREJECTED (${p.code}): ${p.reason}`;
     case "HostContextObserved": return `accepted: ${p.accepted.map((a) => a.key).join(", ") || "none"}${p.rejected.length ? `\nrejected: ${p.rejected.map((r) => `${r.key} (${r.reason})`).join(", ")}` : ""}`;
     case "SemanticSignalsObserved": return p.signals.join(", ");
+    case "TurnPlanCreated": return `${p.strategy} -> ${p.resolvedBy}\n${JSON.stringify(p.plan, null, 2)}`;
+    case "KnowledgeRetrieved": return `${p.request.kind} · ${p.sourceId} · ${p.returnedCount} result(s)\nids: ${p.resultIds.join(", ")}${p.scores?.length ? `\nscores: ${p.scores.join(", ")}` : ""}`;
+    case "RetrievalRequestRejected": return `${p.request.kind} · ${p.request.sourceId}\nREJECTED (${p.error.code}): ${p.error.message}`;
     case "PhaseTransitioned": return `${p.from ?? "(start)"} -> ${p.to}  [${p.on}]${p.label ? ` · ${p.label}` : ""}`;
     case "ToolRequested": return `${p.toolName}(${JSON.stringify(p.args)})  by ${p.requestedBy}`;
     case "ToolCallRejected": return `${p.toolName} REFUSED (${p.reason})\n${p.message}`;
@@ -582,6 +655,12 @@ function renderPrompts(contexts) {
     host.append(el("h3", { textContent: `${purpose} · ${context.approxChars} chars · phase ${context.phaseId ?? "none"}` }));
     if (context.withheldContextKeys.length) {
       host.append(el("div", { className: "muted", textContent: `withheld from the model: ${context.withheldContextKeys.map((w) => `${w.key} (${w.visibility})`).join(", ")}` }));
+    }
+    if (context.knowledgeUsed.length) {
+      host.append(el("div", { className: "muted", textContent: `retrieved evidence: ${context.knowledgeUsed.map((item) => `${item.sourceId}${item.chunkId ? `/${item.chunkId}` : ""}${item.score !== undefined ? ` score=${item.score}` : ""}`).join(", ")}` }));
+    }
+    if (context.effectiveRules?.length) {
+      host.append(el("div", { className: "muted", textContent: `effective rules: ${context.effectiveRules.map((rule) => `${rule.id} (${rule.kind})`).join(", ")}` }));
     }
     host.append(el("pre", { textContent: context.system }));
   }
