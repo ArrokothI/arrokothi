@@ -60,6 +60,7 @@ export {
   findContextField,
   trustLabel,
 } from "./context/host-context.ts";
+export type { ContextObservation } from "./context/host-context.ts";
 export type {
   HostContextSchema,
   HostContextField,
@@ -87,6 +88,7 @@ export type {
   KnowledgeSource,
   DocumentSource,
   RecordSetSource,
+  WebSearchSource,
   KnowledgeBinding,
   KnowledgeChunk,
   KnowledgeRetriever,
@@ -94,11 +96,17 @@ export type {
   KnowledgeSourceCatalogEntry,
   DocumentSourceCatalogEntry,
   RecordSetCatalogEntry,
+  WebSearchCatalogEntry,
   DocumentSearchRequest,
+  WebSearchRequest,
+  WebSearchProvider,
+  WebSearchResult,
+  WebSearchResultItem,
   RetrievalRequest,
   KnowledgeResult,
   DocumentKnowledgeResult,
   RecordKnowledgeResult,
+  WebKnowledgeResult,
   RecordQuery,
   RecordQueryRequest,
   RecordFilter,
@@ -107,6 +115,18 @@ export type {
   RecordQueryResult,
   RecordQueryError,
 } from "./knowledge/types.ts";
+
+// -- capabilities -----------------------------------------------------------
+export { buildCapabilityCatalog, knowledgeCapabilityName, retrievalFromCapability } from "./capabilities/catalog.ts";
+export { CapabilityGateway } from "./capabilities/gateway.ts";
+export type {
+  CapabilityCategory,
+  CapabilityImplementation,
+  CapabilityDefinition,
+  CapabilityCatalogSnapshot,
+  CapabilityOutcome,
+} from "./capabilities/types.ts";
+export type { CapabilityGatewayOptions } from "./capabilities/gateway.ts";
 
 // -- tools -------------------------------------------------------------------
 export { ToolRegistry } from "./tools/registry.ts";
@@ -179,6 +199,7 @@ export type {
   PlanningMode,
   PlanningPolicy,
   WorkingNoteProposal,
+  PreflightPlan,
   TurnPlan,
   DeterministicPlannerInput,
   DeterministicPlanResult,
@@ -188,9 +209,12 @@ export type {
 
 // -- harness / runtime -------------------------------------------------------
 export { TwoPassHarness } from "./harness/two-pass.ts";
+export { NativeAgentHarness } from "./harness/native-agent.ts";
+export type { TwoPassOptions } from "./harness/two-pass.ts";
+export type { NativeAgentOptions } from "./harness/native-agent.ts";
 export type { AgentHarness, HarnessServices, HarnessTurnInput, HarnessTurnResult, TurnStopReason } from "./harness/types.ts";
 export { AgentRuntime } from "./runtime/runtime.ts";
-export type { AgentRuntimeConfig, RunTurnInput, RunTurnResult } from "./runtime/runtime.ts";
+export type { AgentRuntimeConfig, RunTurnInput, RunTurnResult, ObserveHostContextInput, ObserveHostContextResult } from "./runtime/runtime.ts";
 export { TurnJournal } from "./runtime/journal.ts";
 
 // -- provider ----------------------------------------------------------------

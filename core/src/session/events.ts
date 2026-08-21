@@ -26,6 +26,11 @@ export type SessionEventType =
   | "TurnPlanCreated"
   | "RetrievalRequestRejected"
   | "KnowledgeRetrieved"
+  | "AgentIterationStarted"
+  | "DelegationRequested"
+  | "DelegationRejected"
+  | "DelegationCompleted"
+  | "AgentIterationCompleted"
   | "MemoryWriteProposed"
   | "MemoryWriteCommitted"
   | "MemoryWriteRejected"
@@ -61,7 +66,7 @@ export type HostContextObservedEvent = EventBase<
   { accepted: HostContextValue[]; rejected: { key: string; reason: string }[] }
 >;
 
-/** Semantic routing signals from Interpret + Plan. Recorded so replay reproduces routing. */
+/** Semantic routing signals from PreflightPlan. Recorded so replay reproduces routing. */
 export type SemanticSignalsObservedEvent = EventBase<"SemanticSignalsObserved", { signals: string[] }>;
 
 export type TurnPlanCreatedEvent = EventBase<
@@ -88,6 +93,58 @@ export type KnowledgeRetrievedEvent = EventBase<
     scores?: number[];
     returnedCount: number;
     totalMatched?: number;
+  }
+>;
+
+export type AgentIterationStartedEvent = EventBase<
+  "AgentIterationStarted",
+  { harness: string; iteration: number; phaseId: string | null; capabilityNames: string[] }
+>;
+
+export type DelegationRequestedEvent = EventBase<
+  "DelegationRequested",
+  {
+    harness: string;
+    iteration: number;
+    category: "knowledge" | "action";
+    capabilityName: string;
+    input: Record<string, unknown>;
+  }
+>;
+
+export type DelegationRejectedEvent = EventBase<
+  "DelegationRejected",
+  {
+    harness: string;
+    iteration: number;
+    category: "knowledge" | "action";
+    capabilityName: string;
+    code: string;
+    reason: string;
+  }
+>;
+
+export type DelegationCompletedEvent = EventBase<
+  "DelegationCompleted",
+  {
+    harness: string;
+    iteration: number;
+    category: "knowledge" | "action";
+    capabilityName: string;
+    outcome: "completed" | "replayed" | "awaiting_confirmation";
+    summary: Record<string, unknown>;
+  }
+>;
+
+export type AgentIterationCompletedEvent = EventBase<
+  "AgentIterationCompleted",
+  {
+    harness: string;
+    iteration: number;
+    requested: number;
+    completed: number;
+    rejected: number;
+    stopReason?: string;
   }
 >;
 
@@ -183,7 +240,10 @@ export type ModelCallCompletedEvent = EventBase<
 
 export type AssistantMessageEmittedEvent = EventBase<
   "AssistantMessageEmitted",
-  { text: string; stopReason: "completed" | "max_steps" | "awaiting_confirmation" | "error" }
+  {
+    text: string;
+    stopReason: "completed" | "max_steps" | "max_iterations" | "awaiting_confirmation" | "awaiting_user" | "cancelled" | "error";
+  }
 >;
 
 export type RuntimeErrorEvent = EventBase<"RuntimeError", { code: string; message: string; detail?: string }>;
@@ -195,6 +255,11 @@ export type SessionEvent =
   | TurnPlanCreatedEvent
   | RetrievalRequestRejectedEvent
   | KnowledgeRetrievedEvent
+  | AgentIterationStartedEvent
+  | DelegationRequestedEvent
+  | DelegationRejectedEvent
+  | DelegationCompletedEvent
+  | AgentIterationCompletedEvent
   | MemoryWriteProposedEvent
   | MemoryWriteCommittedEvent
   | MemoryWriteRejectedEvent

@@ -10,10 +10,10 @@ import type { CompiledContext } from "../compiler/context-compiler.ts";
 /**
  * The harness interface.
  *
- * Harness strategy is the part of an agent most likely to change as models improve: a two-pass
- * interpret-then-respond loop is right for today's models, but a stronger model may do better in one
- * pass. Putting the strategy behind an interface means that change does not touch the session, tool,
- * or storage interfaces - which is exactly the property v0 is trying to preserve.
+ * A Harness is the execution environment around the planning/model/capability lifecycle. It owns
+ * model mechanics, iterative delegation, result delivery, limits, cancellation, temporary context,
+ * provider event translation, and terminal states. The planner decides what to do next; the Harness
+ * safely lets it do that without changing session, authority, executor, or storage contracts.
  *
  * A harness receives a `TurnJournal`, not a store. It therefore cannot persist anything directly and
  * cannot change state except by appending an event.
@@ -39,9 +39,18 @@ export interface HarnessTurnInput {
   turn: number;
   /** UserMessageReceived event that the planner's extracted facts must cite. */
   userEventId: string;
+  /** Optional request cancellation signal. Harnesses must stop before starting more work. */
+  signal?: AbortSignal;
 }
 
-export type TurnStopReason = "completed" | "max_steps" | "awaiting_confirmation" | "error";
+export type TurnStopReason =
+  | "completed"
+  | "max_steps"
+  | "max_iterations"
+  | "awaiting_confirmation"
+  | "awaiting_user"
+  | "cancelled"
+  | "error";
 
 export interface HarnessTurnResult {
   replyText: string;

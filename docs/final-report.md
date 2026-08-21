@@ -1,328 +1,174 @@
-# Agent SDK v0.2 — Implementation Report
+# Agent SDK v0.3 — Implementation Report
 
 **Date:** 2026-08-21
-**Status:** implemented and verified
-**Version:** all workspace packages `0.2.0`
+
+**Status:** implemented
+
+**Version:** 0.3.0
 
 ## Outcome
 
-v0.2 evolves the existing kernel around one explicit turn pipeline:
+v0.3 preserves the v0.2 workflow path and adds a true iterative execution path:
 
 ```text
-Durable Session
-  -> Interpret + Plan
-  -> runtime validates memory/signals
-  -> pre-response Flow transition
-  -> runtime validates and executes explicit retrieval
-  -> ContextCompiler receives KnowledgeResult[]
-  -> response model + bounded reactive tool loop
-  -> runtime authorization
-  -> injected executor
-  -> authoritative ToolResult
-  -> append-only session events
+PreflightPlan
+  → current-Phase capability catalog
+  → planner/responder model
+  → shared runtime CapabilityGateway
+  → Knowledge or Tool observation
+  → planner/responder model again
+  → final / pending confirmation / deterministic stop
 ```
 
-The authority split is unchanged and sharper:
+The architecture now has three execution Harnesses:
 
-```text
-LLM proposes.
-Runtime validates and authorizes.
-Executor acts.
-ToolResult says what actually happened.
-Session remembers.
-```
+- `TwoPassHarness` — v0.2 bounded-preplanning/workflow strategy;
+- `NativeAgentHarness` — provider-neutral iterative strategy, including Gemini;
+- `ClaudeAgentHarness` — optional Claude Agent SDK adapter in `providers/claude-agent`.
 
-This is an evolution, not a runtime replacement. Durable sessions, request-scoped runtime,
-confirmation, idempotency, coarse Flow, dependency-injected executors, and provider-neutral model
-interfaces remain intact.
+## Core changes
 
-## Architecture changes
+### Iterative native execution
 
-### Interpret + Plan
+`NativeAgentHarness` performs one PreflightPlan, then repeated model decisions. It can request
+document, record, web, and Tool capabilities that were not in the preflight retrieval list. The
+same model stream plans and responds during the inner loop.
 
-Harness pass 1 now emits a structured `TurnPlan` containing:
+Document/record/web requests in one iteration execute in concurrent batches bounded by
+`maxParallelReadCalls`. Existing read Tools and every Action execute sequentially.
 
-- candidate memory writes;
-- working-note proposals;
-- closed-vocabulary routing signals;
-- zero or more discriminated `RetrievalRequest`s.
+### Shared capability authority
 
-Planning remains a Harness strategy, not an independent planner runtime. Supported modes are:
+`CapabilityGateway` owns the common path for TwoPass, Native, and Claude requests. It validates
+current Phase scope, source kind, schemas, typed authority, confirmation, idempotency, executor
+availability, and deterministic budgets. Claude hooks are integration callbacks, not a second
+policy system.
 
-- `llm`: the default for rich agents; one structured planner call;
-- `deterministic`: use only injected, machine-checkable planning; `unknown` becomes a safe empty plan;
-- `hybrid`: use deterministic logic when conclusive, otherwise make one planner call.
+### Preflight terminology
 
-The built-in deterministic strategy is deliberately conservative. It skips the planner only when
-there are no memory fields, routing signals, or knowledge sources. It does not classify semantic
-intent through generic regexes, keywords, or substring lists.
+The public `PreflightPlan` type describes the old `TurnPlan` shape. `TurnPlan` remains an alias.
+Preflight establishes memory, Working Notes, macro signals, and optional initial retrieval; it does
+not prescribe the full autonomous trajectory.
 
-Planner context is separate from response context. It contains corrected memory, the current phase,
-effective rules, a small transcript slice, permitted model-visible host context, signal vocabulary,
-and a concise source catalog. It excludes raw documents, record rows, retrieved evidence, restricted
-host values, and historical tool-result bulk.
+### Web Knowledge
 
-Malformed structured output records `invalid_turn_plan`, commits no proposed memory, performs no
-retrieval, records a safe empty plan, and continues to the response pass.
-
-### Planned Knowledge
-
-The Harness sees only the SDK-owned `KnowledgeProvider` contract:
-
-```ts
-interface KnowledgeProvider {
-  catalog(...): KnowledgeSourceCatalogEntry[];
-  retrieve(request: DocumentSearchRequest): Promise<KnowledgeChunk[]>;
-  queryRecords(request: RecordQueryRequest): Result<RecordQueryResult, RecordQueryError>;
-}
-```
-
-The planner selects a logical source and writes a standalone document query. Runtime checks request
-shape, source existence, source kind, phase/binding scope, query text, record fields/operators/value
-types, and resource limits before executing it.
-
-`KnowledgeRetrieved` events store request and compact metadata—source, IDs, scores, and counts—not
-raw document contents. Invalid requests produce `RetrievalRequestRejected`.
-
-### ContextCompiler
-
-Hidden compiler retrieval was removed. `compileWithRetrieval` no longer exists.
-
-`compileContext` is synchronous, receives `retrievedKnowledge`, performs no I/O, and has no provider
-or index parameter. It renders one contradiction-free effective rule set and the smallest useful
-response context from state, explicit evidence, current-turn ToolResults, working notes, pending
-action, and a transcript window.
-
-The deterministic evidence budget is enforced through:
-
-- `maxRetrievalRequests` (default 4);
-- `maxDocumentChunks` per search (default 4);
-- `maxRecordRows` per query (default 20);
-- `maxKnowledgeChars` across compiled evidence (default 12,000).
-
-### Durable Session and provenance
-
-New trace events are:
-
-- `TurnPlanCreated`;
-- `RetrievalRequestRejected`;
-- `KnowledgeRetrieved`.
-
-Session projection exposes the current turn plan and retrieval trace for Studio. The core invariant
-still holds:
-
-```text
-resume(snapshot, laterEvents) === project(allEvents)
-```
-
-Structured memory now separates:
-
-- write mechanism: `planner_proposal` or `runtime_observation`;
-- provenance: `user_claimed`, `tool_verified`, `host_provided`, or `model_inferred`;
-- authority: `authoritative` or `advisory`;
-- confidence: optional metadata that never grants authority.
-
-Planner-extracted user facts cite the exact `UserMessageReceived` event. Tool facts configured with
-`writeToMemory` cite `ToolExecutionSucceeded`. Accepted host values carry their
-`HostContextObserved` event ID. Model inference is advisory unless the field explicitly opts into
-authoritative inferred values. Corrections still replace the current value while retaining the
-prior value in the trace.
-
-### Rules and Flow
-
-Global rules may now be named `invariant` or `default` rules. Legacy strings remain supported and
-are normalized to non-overridable invariants.
-
-A phase may explicitly suppress a named default using `overrideRuleIds`. Definition validation
-rejects an unknown rule ID or any attempt to override an invariant. Runtime invariants—schema,
-visibility, phase permissions, confirmation, provenance, limits, and idempotency—remain mechanical
-and are never subject to prompt precedence.
-
-Flow remains coarse and optional. Pre-response transitions run after plan memory/signal handling and
-before retrieval, so the new phase controls knowledge and tool scope on the same turn.
-
-### Tool authorization
-
-External-side-effect arguments now require explicit per-argument policies:
-
-- `authoritative_value` names allowed `memory.*`, `host_context.*`, or `tool_fact.*` paths;
-- `model_composed` explicitly permits the response model to compose that argument.
-
-Authoritative matching uses normalized whole-string equality, exact number/boolean equality, and
-structural array equality. The old general substring heuristic is gone. Working notes are not read
-by authorization, and confirmation cannot repair missing provenance.
-
-The rest of the authorization order remains deterministic: binding, phase scope, schema, authority,
-idempotency, confirmation, executor presence, execution. The executor's `ToolResult` remains the
-authoritative success/failure record.
-
-## LangChain dependency decision
-
-Two runtime dependencies were added to `@agent-sdk/core`:
-
-| Package | Version | Exact reason |
-| --- | --- | --- |
-| `@langchain/core` | `^1.2.9` | Internal `Document` representation and `BaseRetriever` invocation seam. |
-| `@langchain/textsplitters` | `^1.0.1` | Maintained `RecursiveCharacterTextSplitter` document preprocessing. |
-
-All three LangChain imports live in `core/src/knowledge/in-memory.ts`. No LangChain type appears in
-Harness, ContextCompiler, Session, Runtime, Flow, Memory, Tools, Confirmation, or public Knowledge
-contracts.
-
-Document processing is:
-
-```text
-DocumentSource.text
-  -> LangChain Document
-  -> RecursiveCharacterTextSplitter
-  -> LocalLexicalLangChainRetriever extends BaseRetriever
-  -> retriever.invoke(query)
-  -> SDK KnowledgeChunk[]
-```
-
-Default `chunkSize` is 1000 characters and default `chunkOverlap` is 200 characters, configurable
-per document source. Small documents naturally remain one chunk.
-
-Local ranking tokenizes lower-cased alphanumeric terms, removes a small stopword set, and sums
-IDF-weighted overlap for query tokens found in each chunk. Positive-scoring chunks are sorted by
-score descending, with stable chunk ID as the tie-break. Retrieval is CPU-local and source-local.
-
-No embeddings, embedding API, vector database, hosted RAG, ingestion service, reranker, network
-retrieval, LangGraph, LangChain Agent, or automatic multi-query RAG was introduced.
-
-Record sets remain outside LangChain. Planned record queries and the reactive record-query tool use
-the same SDK engine for schema validation, numeric comparison, AND filters, sorting, limiting, and
-pre-limit counts. Unknown fields and invalid operators are errors; arbitrary SQL is impossible.
-
-## Studio, examples, and benchmarks
-
-Studio now exposes:
-
-- planner mode and optional planner provider/model;
-- source descriptions and document chunk size/overlap;
-- named rule syntax and phase default-rule overrides;
-- phase knowledge scope;
-- external-tool argument policy JSON;
-- all four retrieval limits;
-- `TurnPlan`, retrieval requests, retrieved IDs/scores/counts, effective rules, and memory provenance.
-
-A local browser pass verified the updated definition panels and planning trace with no console
-errors. It also caught and corrected a stale `experimental v0` banner to `experimental v0.2`.
-
-The minimal and estate-like examples both run offline. Estate behavior still demonstrates a budget
-correction, deterministic filtering, frozen-payload confirmation, adversarial confirmation refusal,
-exactly-once dispatch, and event replay.
-
-P01/P02 adapters remain compatible. Each scenario result now includes:
-
-- planner model calls;
-- response model calls;
-- total model calls;
-- retrieval-request count;
-- selected logical sources;
-- retrieved document chunks;
-- tool calls.
-
-Only offline adapter self-checks were run; no live model quota was spent and no external email was
-sent. P01 executed all assertions for 20 scenarios; P02 did the same for 16. Their outcomes remain
-correctly `inconclusive` because a self-check is not an agent-quality measurement.
-
-## Tests added or expanded
-
-The v0.2 coverage includes:
-
-- structured plans and turns with zero retrieval;
-- conversational-reference query rewriting;
-- multi-source document plus record retrieval;
-- unknown source, wrong kind, malformed discriminated request, and invalid record field rejection;
-- planner-context catalog visibility and restricted-data exclusion;
-- separate planner model/provider configuration and trace metadata;
-- malformed structured-output degradation;
-- deterministic `unknown` and hybrid fallback;
-- proof that ContextCompiler cannot retrieve;
-- LangChain default/configured splitting, overlap, stable SDK output shape, and record/RAG separation;
-- named-rule precedence and invariant protection;
-- exact user/tool event provenance and advisory model inference;
-- typed side-effect source matching, array equality, substring refusal, and required policies;
-- all pre-existing memory, context, confirmation, tool, flow, replay, definition, and benchmark tests.
-
-Verification completed:
-
-```text
-npm test                  127 passed, 0 failed (30 suites)
-npm run typecheck         clean
-node --check app.js       clean
-npm run example:minimal   passed
-npm run example:estate    passed
-npm run bench:p01         20/20 scenarios: every assertion executable
-npm run bench:p02         16/16 scenarios: every assertion executable
-Studio HTTP/API smoke     200 OK
-Studio browser QA         no console errors
-git diff --check          clean
-```
-
-## Files changed
-
-The implementation is concentrated in:
-
-- `core/src/planning/` — plan contracts, schema/parser, deterministic seam;
-- `core/src/harness/` and `core/src/runtime/` — plan/retrieve/respond orchestration;
-- `core/src/knowledge/` — provider-neutral contracts, LangChain-backed documents, deterministic records;
-- `core/src/compiler/` — separate planner/response compilation with explicit evidence;
-- `core/src/memory/`, `core/src/context/`, and `core/src/session/` — provenance and event projection;
-- `core/src/definition/` and `core/src/flow/` — planner policy, resource limits, named rules, validation;
-- `core/src/tools/` — typed argument-source policy and tool-fact memory writes;
-- `core/tests/` — planning, Knowledge, provenance, rule, and authorization regression coverage;
-- `apps/studio/` — v0.2 definition controls and trace inspection;
-- `examples/` — v0.2 scripted planning and side-effect policies;
-- `benchmarks/` — v0.2 Harness compatibility and metrics;
-- `README.md`, `docs/core-v0-design.md`, and `docs/v0.2-migration.md` — architecture and migration guidance;
-- workspace manifests and `package-lock.json` — v0.2 versions and narrow dependencies.
-
-## Explicit answers
-
-1. **Does a normal rich-agent turn currently perform two LLM calls?** Yes: normally one planner
-   call and one response call. Reactive tool round trips may add response calls; a conclusively
-   trivial/deterministic plan can skip the planner call.
-2. **Which call is planner vs response?** `purpose: "plan"` is Interpret + Plan;
-   `purpose: "respond"` writes the reply or requests reactive tools.
-3. **Can the planner use a cheaper model?** Yes. `planning.model` may differ, and
-   `AgentRuntime.planningModel` may inject a separate provider.
-4. **Can a turn produce zero retrieval operations?** Yes. An empty retrieval list is normal.
-5. **Does any generic semantic routing depend on regex/keyword matching?** No. Semantic routing is
-   model planning or an injected genuinely deterministic strategy. The narrow confirmation resolver
-   remains deterministic, but it is not a generic semantic router.
-6. **Who decides which knowledge source to search?** The planner proposes the logical source; the
-   runtime validates source existence, kind, scope, and limits.
-7. **Who generates the document search query?** The planner, using permitted recent context to make
-   a standalone query.
-8. **Who performs document chunking?** LangChain's `RecursiveCharacterTextSplitter`, inside the
-   default Knowledge implementation.
-9. **Is document retrieval local in v0?** Yes, entirely in-memory and CPU-local.
-10. **Are embeddings used anywhere?** No.
-11. **Is a vector database required?** No.
-12. **Does LangChain appear outside the Knowledge implementation boundary?** No. Imports are
-    localized to `core/src/knowledge/in-memory.ts`, and public contracts are SDK-owned.
-13. **Can LangChain retrieval later be replaced without changing Harness?** Yes. Replace the
-    `KnowledgeProvider`/`KnowledgeRetriever` implementation.
-14. **Are record-set numeric filters still deterministic?** Yes, and invalid field/operator/value
-    combinations fail explicitly.
-15. **Can ContextCompiler retrieve knowledge by itself?** No.
-16. **Can a phase override a global invariant?** No. It may override only a named global default;
-    invalid overrides fail definition validation.
-17. **Can substring coincidence authorize a side-effect argument?** No.
-18. **Is ToolResult still authoritative?** Yes, for both success and failure.
-19. **Can a pending action survive runtime restart?** Yes. It is projected from durable events and
-    includes the frozen payload and argument hash.
-20. **Can the session still reconstruct from events + snapshot?** Yes; full replay and snapshot plus
-    later-event resumption are both tested.
-
-## Remaining v1 hypotheses
-
-The replaceable Knowledge boundary permits future experiments with BM25, embeddings, vector stores,
-hybrid retrieval, hosted/provider-managed file search, reranking, and richer split strategies. Those
-remain hypotheses, not v0.2 dependencies.
-
-Other intentionally deferred areas are model-assisted author-time rule linting, production stores
-and auth, deployment/billing, retention policy, Skills, multi-agent workers, self-modification,
-permanent learning, arbitrary workflow code, graph RAG, and arbitrary SQL.
+`WebSearchProvider` is provider-neutral and injected into `KnowledgeIndex`. `web_search` sources can
+fix allowed/blocked domains. Company website search is the same source kind with `allowedDomains`.
+Missing search infrastructure rejects explicitly. Tests use fakes and perform no live network call.
+
+The existing LangChain document implementation remains localized to
+`core/src/knowledge/in-memory.ts`, still using `RecursiveCharacterTextSplitter` and local lexical
+ranking. Record queries remain deterministic and outside LangChain.
+
+### Host Context observation
+
+`AgentRuntime.observeHostContext()` validates and persists `HostContextObserved` without a user
+message, Harness execution, or assistant reply. Studio exposes a development context-only endpoint
+and control. The next user turn sees the newest permitted context; restricted visibility still does
+not leak to models.
+
+### Claude adapter
+
+`providers/claude-agent` depends on `@anthropic-ai/claude-agent-sdk` 0.2.141. It uses the current
+`query()`, SDK-MCP tool, hook, `defer`, and `maxTurns` APIs. Each external user turn creates a fresh
+query with built-in filesystem/Skill/subagent tools disabled. Custom capability calls pass through
+core's gateway.
+
+When confirmation is needed, the gateway first persists `PendingAction`, the PreToolUse bridge
+returns `defer`, and the Harness surfaces only the runtime confirmation prompt. The next external
+turn resolves and executes the frozen payload before a new Claude query. Claude resume is not used.
+
+## Events and limits
+
+Additive structured trace events are:
+
+- `AgentIterationStarted` / `AgentIterationCompleted`;
+- `DelegationRequested` / `DelegationRejected` / `DelegationCompleted`.
+
+They store capability decisions, inputs, compact observations, current Phase, model metadata, and
+runtime outcomes. No hidden chain-of-thought is persisted.
+
+New defaults:
+
+| Policy | Default |
+| --- | ---: |
+| `maxAgentIterations` | 8 |
+| `maxKnowledgeCallsPerTurn` | 12 |
+| `maxActionRequestsPerTurn` | 4 |
+| `maxParallelReadCalls` | 4 |
+
+Claude `maxTurns` is mapped from `maxAgentIterations`, while core counters remain authoritative.
+
+## Studio and example
+
+Studio adds Harness selection, agentic limits, Web Search/company-site source authoring, context-only
+observation, and agent/delegation trace rendering. Claude mode is used when configured; web search
+can be connected through an injected development endpoint.
+
+`examples/native-agent` is an offline executable proof of
+`GeminiProvider + NativeAgentHarness + local Knowledge`. It uses a fake fetch transport and spends
+no quota.
+
+## Verification
+
+Automated coverage includes:
+
+- multi-iteration Native execution and evidence absent from PreflightPlan;
+- bounded parallel reads and sequential side effects;
+- current-Phase Knowledge/Action scope and post-transition catalog rebuilding;
+- PendingAction freeze/confirm execution;
+- injected web search, company domains, and explicit missing-provider failure;
+- Gemini adapter through the Native loop;
+- out-of-band Host Context and restricted-value non-leakage;
+- mocked Claude capability mapping, defer semantics, and fresh context policy;
+- proof that no Claude Agent SDK import occurs in core;
+- max-iteration stop and full replay/snapshot invariants;
+- all v0.2 regressions.
+
+Final verification was clean: `npm test` passed 142/142 tests in 33 suites; `npm run typecheck`,
+all three examples, both benchmark Harness self-checks, Studio JavaScript syntax validation, and
+`git diff --check` also passed. A local Studio HTTP smoke test exercised status, seed, session
+creation, and the context-only observation endpoint without invoking a model.
+
+## Explicit acceptance answers
+
+1. **Can Gemini still run an agentic loop?** Yes. `GeminiProvider` drives `NativeAgentHarness`; an
+   automated test and offline example prove it.
+2. **Does Claude Agent SDK appear anywhere inside core?** No. Core contains no import or type from
+   `@anthropic-ai/claude-agent-sdk`.
+3. **Which Harness uses Claude Agent SDK?** Only `ClaudeAgentHarness` in
+   `providers/claude-agent`.
+4. **What is now meant by PreflightPlan?** A pre-execution application-state proposal for user
+   facts, Working Notes, macro signals, and optional initial retrieval—not the whole autonomous plan.
+5. **What is now meant by Agent Planner?** The model's iterative semantic decision about the next
+   capability request or final response inside the current Phase.
+6. **Can the Agent Planner retrieve new evidence after seeing earlier evidence?** Yes.
+7. **Can it make multiple iterative Knowledge calls?** Yes, across multiple model iterations and in
+   safe bounded parallel batches within one iteration.
+8. **Does Flow restrict every iteration?** Yes. The catalog is rebuilt from current Phase and the
+   gateway revalidates every request.
+9. **Can a Phase allow Knowledge but prohibit side effects?** Yes, with knowledge scope and an empty
+   Action/tool scope.
+10. **Can Host Context update without invoking an LLM?** Yes, through
+    `AgentRuntime.observeHostContext()`.
+11. **Does page/context navigation itself trigger an agent run?** No.
+12. **How would a future host application send page context?** Its UI reports observations to an
+    authenticated host backend/future Agent API, which calls `observeHostContext`; trusted identity
+    should come from backend/auth state.
+13. **Is Web Search product-classified as Knowledge?** Yes.
+14. **How is company website search represented?** A `web_search` Knowledge source with fixed
+    `allowedDomains`.
+15. **Does Web Search require Anthropic?** No. It uses injected `WebSearchProvider`.
+16. **Can a fake/native search provider be injected?** Yes; all automated web tests use one.
+17. **How does Claude WebSearch map to our Knowledge semantics?** v0.3 uses a controlled custom
+    capability bridge rather than unrestricted built-in WebSearch, preserving source scope, domains,
+    limits, and audit events.
+18. **Does PendingAction remain runtime-owned?** Yes, including frozen validated args and hash.
+19. **Can Claude permission/hooks bypass our authority?** No. Effective permission is our runtime
+    gateway plus Claude execution permission; a hook cannot grant what core rejects.
+20. **Can the session still reconstruct from durable events/snapshot?** Yes. Full replay and
+    snapshot-plus-later-event equality remain tested, including v0.3 events and observations.
+21. **What was explicitly deferred to v0.4?** Skills/SKILL.md, automatic Skill learning, subagents,
+    teams/multi-agent orchestration, Skill/subagent Phase scope, cross-turn Claude resume,
+    phase-specific Harness switching, visual Flow graph, MCP integration, semantic rule judge,
+    proactive context triggers, browser SDK, production public context API, and generic crawling.

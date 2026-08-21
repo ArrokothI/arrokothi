@@ -17,15 +17,23 @@ export interface WorkingNoteProposal {
   confidence?: number;
 }
 
-/** Structured output of Harness pass 1. Every field is still subject to runtime validation. */
-export interface TurnPlan {
+/**
+ * Preflight state proposal for one external user turn.
+ *
+ * This is deliberately not the complete autonomous plan. It establishes memory, notes, routing,
+ * and optional initial retrieval before an agentic Harness begins its iterative decisions.
+ */
+export interface PreflightPlan {
   memoryProposals: MemoryWriteProposal[];
   workingNotes: WorkingNoteProposal[];
   signals: string[];
   retrievalRequests: RetrievalRequest[];
 }
 
-export const EMPTY_TURN_PLAN: TurnPlan = {
+/** v0.2 compatibility name. TurnPlan now means the preflight plan, not a full tool trajectory. */
+export type TurnPlan = PreflightPlan;
+
+export const EMPTY_TURN_PLAN: PreflightPlan = {
   memoryProposals: [],
   workingNotes: [],
   signals: [],
@@ -57,6 +65,9 @@ export interface TurnPlanValidationError {
     | "source_not_permitted_in_phase"
     | "invalid_document_query"
     | "invalid_record_query"
+    | "invalid_web_query"
+    | "web_search_unavailable"
+    | "knowledge_limit_exceeded"
     | "retrieval_limit_exceeded";
   message: string;
   requestIndex?: number;

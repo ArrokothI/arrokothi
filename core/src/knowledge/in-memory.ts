@@ -15,6 +15,9 @@ import type {
   RecordQueryError,
   RecordQueryResult,
   RecordSetSource,
+  WebKnowledgeResult,
+  WebSearchProvider,
+  WebSearchRequest,
 } from "./types.ts";
 import type { Result } from "../util/result.ts";
 import { err } from "../util/result.ts";
@@ -184,8 +187,10 @@ export function createRetriever(source: DocumentSource, defaultTopK = 3): Knowle
 export class KnowledgeIndex implements KnowledgeProvider {
   private readonly bindings = new Map<string, KnowledgeBinding>();
   private readonly retrievers = new Map<string, KnowledgeRetriever>();
+  private readonly webSearch?: WebSearchProvider;
 
-  constructor(bindings: KnowledgeBinding[] = []) {
+  constructor(bindings: KnowledgeBinding[] = [], options: { webSearch?: WebSearchProvider } = {}) {
+    this.webSearch = options.webSearch;
     for (const binding of bindings) {
       this.bindings.set(binding.source.id, binding);
       if (binding.source.kind === "document") {
@@ -228,7 +233,7 @@ export class KnowledgeIndex implements KnowledgeProvider {
       const source = binding.source;
       if (source.kind === "document") {
         catalog.push({ id: source.id, type: "document", title: source.title, description: source.description });
-      } else {
+      } else if (source.kind === "record_set") {
         catalog.push({
           id: source.id,
           type: "record_set",
@@ -236,6 +241,15 @@ export class KnowledgeIndex implements KnowledgeProvider {
           description: source.description,
           fields: Object.entries(source.fields).map(([name, schema]) => ({ name, type: schema.kind })),
           supportedOperators: [...RECORD_FILTER_OPERATORS],
+        });
+      } else {
+        catalog.push({
+          id: source.id,
+          type: "web_search",
+          title: source.title,
+          description: source.description,
+          allowedDomains: source.allowedDomains,
+          blockedDomains: source.blockedDomains,
         });
       }
     }
@@ -253,5 +267,31 @@ export class KnowledgeIndex implements KnowledgeProvider {
     if (!source) return err({ code: "unknown_source", message: `record set "${request.sourceId}" is not bound to this agent` });
     const { kind: _kind, sourceId: _sourceId, ...query } = request;
     return executeRecordQuery(source, query);
+  }
+
+  async searchWeb(request: WebSearchRequest): Promise<WebKnowledgeResult> {
+    const source = this.getSource(request.sourceId);
+    if (!source || source.kind !== "web_search") {
+      throw new Error(`web search source "${request.sourceId}" is not bound to this agent`);
+    }
+    if (!this.webSearch) {
+      throw new Error(`web search source "${request.sourceId}" is configured, but no WebSearchProvider was injected`);
+    }
+    const sourceLimit = source.maxResults ?? Number.MAX_SAFE_INTEGER;
+    const maxResults = Math.min(request.maxResults ?? source.maxResults ?? 5, sourceLimit);
+    const found = await this.webSearch.search({
+      query: request.query,
+      allowedDomains: source.allowedDomains,
+      blockedDomains: source.blockedDomains,
+      maxResults,
+    });
+    return {
+      kind: "web_search",
+      sourceId: source.id,
+      sourceTitle: source.title,
+      query: found.query || request.query,
+      allowedDomains: source.allowedDomains,
+      results: found.results.slice(0, maxResults),
+    };
   }
 }

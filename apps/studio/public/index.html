@@ -6,7 +6,7 @@
 <header class="topbar">
   <div class="brand">
     <strong>Agent SDK Studio</strong>
-    <span class="muted">experimental v0.2</span>
+    <span class="muted">experimental v0.3</span>
   </div>
   <div class="status" id="status">connecting…</div>
 </header>
@@ -50,18 +50,33 @@
           <label class="grow">Provider <input id="f-provider" placeholder="gemini" /></label>
           <label class="grow">Model <input id="f-model" placeholder="gemini-3.5-flash-lite" /></label>
         </div>
+        <label>Execution Harness
+          <select id="f-harness">
+            <option value="two_pass">TwoPass / workflow</option>
+            <option value="native_agent">Native Agent</option>
+            <option value="claude_agent">Claude Agent (when configured)</option>
+          </select>
+        </label>
         <div class="row">
           <label class="grow">Temperature <input id="f-temperature" type="number" step="0.1" min="0" max="2" /></label>
           <label class="grow">Max output tokens <input id="f-maxtokens" type="number" min="1" /></label>
         </div>
         <fieldset>
-          <legend>Interpret + Plan</legend>
+          <legend>Preflight Plan</legend>
           <div class="row">
             <label class="grow">Planner mode
               <select id="f-planner-mode"><option>llm</option><option>deterministic</option><option>hybrid</option></select>
             </label>
             <label class="grow">Optional planner provider <input id="f-planner-provider" placeholder="defaults to response provider" /></label>
             <label class="grow">Optional planner model <input id="f-planner-model" placeholder="defaults to response model" /></label>
+          </div>
+          <div class="row">
+            <label class="grow">Max agent iterations <input id="f-maxiterations" type="number" min="1" /></label>
+            <label class="grow">Max Knowledge calls / turn <input id="f-maxknowledgecalls" type="number" min="0" /></label>
+          </div>
+          <div class="row">
+            <label class="grow">Max Action requests / turn <input id="f-maxactions" type="number" min="0" /></label>
+            <label class="grow">Max parallel reads <input id="f-maxparallelreads" type="number" min="1" /></label>
           </div>
         </fieldset>
         <label>Global rules (legacy text, or <code>invariant:id: text</code> / <code>default:id: text</code>) <textarea id="f-rules" rows="4"></textarea></label>
@@ -101,11 +116,13 @@
       </div>
 
       <div class="tab hidden" data-tab="knowledge">
-        <p class="muted">The planner selects sources. Documents use LangChain splitting plus local lexical ranking; record sets use deterministic typed queries.</p>
+        <p class="muted">Read-only evidence: LangChain-backed documents, deterministic record queries, or injected Web Search. Company sites are Web Search with allowed domains.</p>
         <div id="knowledge-rows" class="rows"></div>
         <div class="row">
           <button id="btn-add-doc" class="ghost">Add document</button>
           <button id="btn-add-records" class="ghost">Add record set</button>
+          <button id="btn-add-web" class="ghost">Add Web Search</button>
+          <button id="btn-add-company" class="ghost">Add company website</button>
         </div>
       </div>
 
@@ -155,7 +172,10 @@
       <details id="context-injector">
         <summary>Inject host context (JSON)</summary>
         <textarea id="f-hostcontext" rows="4" spellcheck="false" placeholder='{"locale": "en-US"}'></textarea>
-        <small class="muted">Applied to the next turn. Turn-scoped fields expire after it.</small>
+        <div class="row">
+          <small class="muted grow">Apply with the next message, or observe now without invoking a model.</small>
+          <button id="btn-observe-context" class="ghost" type="button">Update context only</button>
+        </div>
       </details>
       <div class="row">
         <input id="f-message" placeholder="Say something to the agent…" autocomplete="off" />

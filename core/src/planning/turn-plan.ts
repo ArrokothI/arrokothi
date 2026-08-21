@@ -27,17 +27,18 @@ export function turnPlanSchema(maxRetrievalRequests: number): ObjectSchema {
       },
       retrieval_requests: {
         required: false,
-        description: "Zero or more explicit document searches or deterministic record queries.",
+        description: "Zero or more explicit document searches, web searches, or deterministic record queries.",
         schema: {
           kind: "array",
           maxItems: maxRetrievalRequests,
           items: {
             kind: "object",
             fields: {
-              kind: { required: true, schema: { kind: "enum", choices: ["document_search", "record_query"] } },
+              kind: { required: true, schema: { kind: "enum", choices: ["document_search", "record_query", "web_search"] } },
               source_id: { required: true, schema: { kind: "string", minLength: 1 } },
               query: { required: false, schema: { kind: "string", minLength: 1, maxLength: 500 } },
               top_k: { required: false, schema: { kind: "number", min: 1, integer: true } },
+              max_results: { required: false, schema: { kind: "number", min: 1, integer: true } },
               filters: {
                 required: false,
                 schema: {
@@ -93,10 +94,17 @@ export function parseTurnPlan(value: unknown, maxRetrievalRequests: number): Par
       if (typeof request["query"] !== "string") {
         return { ok: false, message: `retrieval_requests[${index}].query is required for document_search` };
       }
-      if (request["filters"] !== undefined || request["sort"] !== undefined || request["limit"] !== undefined) {
+      if (request["filters"] !== undefined || request["sort"] !== undefined || request["limit"] !== undefined || request["max_results"] !== undefined) {
         return { ok: false, message: `retrieval_requests[${index}] mixes record-query fields into document_search` };
       }
-    } else if (request["query"] !== undefined || request["top_k"] !== undefined) {
+    } else if (request["kind"] === "web_search") {
+      if (typeof request["query"] !== "string") {
+        return { ok: false, message: `retrieval_requests[${index}].query is required for web_search` };
+      }
+      if (request["filters"] !== undefined || request["sort"] !== undefined || request["limit"] !== undefined || request["top_k"] !== undefined) {
+        return { ok: false, message: `retrieval_requests[${index}] mixes non-web fields into web_search` };
+      }
+    } else if (request["query"] !== undefined || request["top_k"] !== undefined || request["max_results"] !== undefined) {
       return { ok: false, message: `retrieval_requests[${index}] mixes document-search fields into record_query` };
     }
   }
@@ -114,6 +122,14 @@ export function parseTurnPlan(value: unknown, maxRetrievalRequests: number): Par
             sourceId: String(request["source_id"]),
             query: String(request["query"] ?? ""),
             ...(request["top_k"] === undefined ? {} : { topK: request["top_k"] as number }),
+          };
+        }
+        if (request["kind"] === "web_search") {
+          return {
+            kind: "web_search" as const,
+            sourceId: String(request["source_id"]),
+            query: String(request["query"] ?? ""),
+            ...(request["max_results"] === undefined ? {} : { maxResults: request["max_results"] as number }),
           };
         }
         return {

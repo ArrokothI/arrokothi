@@ -1,13 +1,13 @@
 {
-  "runId": "P01-harness_selfcheck-2026-08-21T06-24-16-317Z",
+  "runId": "P01-harness_selfcheck-2026-08-21T14-05-03-328Z",
   "project": "P01-CRAIG",
   "mode": "harness_selfcheck",
   "label": "harness self-check (no model consulted)",
-  "generatedAt": "2026-08-21T06:24:16.340Z",
+  "generatedAt": "2026-08-21T14:05:03.343Z",
   "sdk": {
     "agentId": "bench-p01-craig",
     "agentVersion": 1,
-    "definitionHash": "30390d8ca60d1a53",
+    "definitionHash": "753dcce1f1ceef35",
     "harness": "two-pass-v0.2"
   },
   "provider": {

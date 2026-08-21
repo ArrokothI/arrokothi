@@ -34,7 +34,18 @@ export interface RecordSetSource {
   searchFields?: string[];
 }
 
-export type KnowledgeSource = DocumentSource | RecordSetSource;
+/** Product-classified web Knowledge. A company website is this source with allowedDomains. */
+export interface WebSearchSource {
+  id: string;
+  kind: "web_search";
+  title: string;
+  description?: string;
+  allowedDomains?: string[];
+  blockedDomains?: string[];
+  maxResults?: number;
+}
+
+export type KnowledgeSource = DocumentSource | RecordSetSource | WebSearchSource;
 
 export interface KnowledgeBinding {
   source: KnowledgeSource;
@@ -52,6 +63,35 @@ export interface DocumentSearchRequest {
   /** Standalone query written by the planner; it need not equal the user's literal message. */
   query: string;
   topK?: number;
+}
+
+export interface WebSearchRequest {
+  kind: "web_search";
+  sourceId: string;
+  query: string;
+  maxResults?: number;
+}
+
+export interface WebSearchResultItem {
+  title: string;
+  url: string;
+  snippet: string;
+  publishedAt?: string;
+}
+
+export interface WebSearchResult {
+  query: string;
+  results: WebSearchResultItem[];
+}
+
+/** Provider-neutral injected search seam. Tests can use deterministic fakes. */
+export interface WebSearchProvider {
+  search(request: {
+    query: string;
+    allowedDomains?: string[];
+    blockedDomains?: string[];
+    maxResults?: number;
+  }): Promise<WebSearchResult>;
 }
 
 export interface KnowledgeChunk {
@@ -100,7 +140,7 @@ export interface RecordQueryRequest extends RecordQuery {
   sourceId: string;
 }
 
-export type RetrievalRequest = DocumentSearchRequest | RecordQueryRequest;
+export type RetrievalRequest = DocumentSearchRequest | RecordQueryRequest | WebSearchRequest;
 
 export interface RecordQueryResult {
   sourceId: string;
@@ -137,7 +177,16 @@ export interface RecordKnowledgeResult {
   totalRecords: number;
 }
 
-export type KnowledgeResult = DocumentKnowledgeResult | RecordKnowledgeResult;
+export interface WebKnowledgeResult {
+  kind: "web_search";
+  sourceId: string;
+  sourceTitle: string;
+  query: string;
+  allowedDomains?: string[];
+  results: WebSearchResultItem[];
+}
+
+export type KnowledgeResult = DocumentKnowledgeResult | RecordKnowledgeResult | WebKnowledgeResult;
 
 export interface DocumentSourceCatalogEntry {
   id: string;
@@ -155,11 +204,22 @@ export interface RecordSetCatalogEntry {
   supportedOperators: RecordFilterOp[];
 }
 
-export type KnowledgeSourceCatalogEntry = DocumentSourceCatalogEntry | RecordSetCatalogEntry;
+export interface WebSearchCatalogEntry {
+  id: string;
+  type: "web_search";
+  title: string;
+  description?: string;
+  allowedDomains?: string[];
+  blockedDomains?: string[];
+}
+
+export type KnowledgeSourceCatalogEntry = DocumentSourceCatalogEntry | RecordSetCatalogEntry | WebSearchCatalogEntry;
 
 /** The provider-neutral boundary consumed by Harness. */
 export interface KnowledgeProvider {
   catalog(phaseId?: string, allowedSourceIds?: string[]): KnowledgeSourceCatalogEntry[];
   retrieve(request: DocumentSearchRequest): Promise<KnowledgeChunk[]>;
   queryRecords(request: RecordQueryRequest): Result<RecordQueryResult, RecordQueryError>;
+  /** Optional so document/record-only implementations remain compatible. Absence is explicit. */
+  searchWeb?(request: WebSearchRequest): Promise<WebKnowledgeResult>;
 }

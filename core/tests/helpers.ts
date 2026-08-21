@@ -8,6 +8,7 @@ import { AgentRuntime } from "../src/runtime/runtime.ts";
 import { createDeterministicIds, createFixedClock } from "../src/util/ids.ts";
 import type { ModelProvider } from "../src/provider/types.ts";
 import type { AgentHarness } from "../src/harness/types.ts";
+import type { WebSearchProvider } from "../src/knowledge/types.ts";
 import { recordQueryTools } from "../src/tools/record-query-tool.ts";
 
 /** Shared fixtures. Every test runs on a deterministic clock and id generator so runs are replayable. */
@@ -125,12 +126,13 @@ export function buildRuntime(
     definition?: AgentDefinition;
     planningModel?: ModelProvider;
     harness?: AgentHarness;
+    webSearch?: WebSearchProvider;
     registerTools?: (r: ToolRegistry) => void;
   } = {},
 ): Harnessed {
   const definition = options.definition ?? testDefinition();
   const sessions = new InMemorySessionStore();
-  const knowledge = new KnowledgeIndex(definition.knowledge);
+  const knowledge = new KnowledgeIndex(definition.knowledge, { webSearch: options.webSearch });
   const tools = new ToolRegistry(definition.tools);
   for (const { definition: def, executor } of recordQueryTools(knowledge)) tools.add(def, executor);
   options.registerTools?.(tools);

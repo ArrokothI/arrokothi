@@ -145,15 +145,18 @@ export class GeminiProvider implements ModelProvider {
       body["contents"] = [{ role: "user", parts: [{ text: "(start of conversation)" }] }];
     }
 
-    const payload = await this.post(`/models/${encodeURIComponent(model)}:generateContent`, body);
+    const payload = await this.post(`/models/${encodeURIComponent(model)}:generateContent`, body, request.signal);
     return this.toModelResponse(payload, model);
   }
 
-  private async post(path: string, body: unknown): Promise<GeminiResponseBody> {
+  private async post(path: string, body: unknown, signal?: AbortSignal): Promise<GeminiResponseBody> {
     let lastError: ModelProviderError | undefined;
 
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       const controller = new AbortController();
+      const abort = () => controller.abort();
+      signal?.addEventListener("abort", abort, { once: true });
+      if (signal?.aborted) controller.abort();
       const timer = setTimeout(() => controller.abort(), this.timeoutMs);
       try {
         const response = await this.fetchImpl(`${this.baseUrl}${path}`, {
@@ -176,12 +179,14 @@ export class GeminiProvider implements ModelProvider {
         }
       } catch (error) {
         if (error instanceof ModelProviderError) throw error;
+        if (signal?.aborted) throw new ModelProviderError("CANCELLED", "Gemini request was cancelled", false);
         const { code, retryable } = classifyNetwork(error);
         const wrapped = new ModelProviderError(code, error instanceof Error ? error.message : String(error), retryable);
         if (!retryable || attempt === this.maxRetries) throw wrapped;
         lastError = wrapped;
       } finally {
         clearTimeout(timer);
+        signal?.removeEventListener("abort", abort);
       }
       await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
     }

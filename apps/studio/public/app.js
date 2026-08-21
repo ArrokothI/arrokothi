@@ -36,6 +36,7 @@ function blankDefinition() {
     description: "",
     model: { providerId: "gemini", model: "gemini-3.5-flash-lite", temperature: 0.2 },
     planning: { mode: "llm" },
+    execution: { harness: "two_pass", executionContextPolicy: "fresh_each_turn" },
     globalRules: [],
     knowledge: [],
     memorySchema: { fields: [] },
@@ -52,6 +53,10 @@ function blankDefinition() {
       maxDocumentChunks: 4,
       maxRecordRows: 20,
       maxKnowledgeChars: 12000,
+      maxAgentIterations: 8,
+      maxKnowledgeCallsPerTurn: 12,
+      maxActionRequestsPerTurn: 4,
+      maxParallelReadCalls: 4,
     },
   };
 }
@@ -80,6 +85,7 @@ function fillForm(def) {
   $("f-temperature").value = def.model?.temperature ?? "";
   $("f-maxtokens").value = def.model?.maxOutputTokens ?? "";
   $("f-planner-mode").value = def.planning?.mode ?? "llm";
+  $("f-harness").value = def.execution?.harness ?? "two_pass";
   $("f-planner-provider").value = def.planning?.model?.providerId ?? "";
   $("f-planner-model").value = def.planning?.model?.model ?? "";
   $("f-rules").value = (def.globalRules ?? []).map((rule) =>
@@ -93,6 +99,10 @@ function fillForm(def) {
   $("f-maxchunks").value = def.policies?.maxDocumentChunks ?? 4;
   $("f-maxrows").value = def.policies?.maxRecordRows ?? 20;
   $("f-maxknowledgechars").value = def.policies?.maxKnowledgeChars ?? 12000;
+  $("f-maxiterations").value = def.policies?.maxAgentIterations ?? 8;
+  $("f-maxknowledgecalls").value = def.policies?.maxKnowledgeCallsPerTurn ?? 12;
+  $("f-maxactions").value = def.policies?.maxActionRequestsPerTurn ?? 4;
+  $("f-maxparallelreads").value = def.policies?.maxParallelReadCalls ?? 4;
   $("f-rejectunknown").checked = def.policies?.rejectUnknownMemoryFields !== false;
   $("f-allowunconfirmed").checked = def.policies?.allowUnconfirmedSideEffects === true;
   $("f-initial-phase").value = def.flow?.initialPhaseId ?? "";
@@ -124,6 +134,7 @@ function readForm() {
     mode: $("f-planner-mode").value,
     ...(plannerProvider && plannerModel ? { model: { providerId: plannerProvider, model: plannerModel, temperature: 0 } } : {}),
   };
+  current.execution = { harness: $("f-harness").value, executionContextPolicy: "fresh_each_turn" };
   current.globalRules = $("f-rules").value.split("\n").map((line) => line.trim()).filter(Boolean).map((line) => {
     const match = /^(invariant|default):([^:]+):\s*(.+)$/.exec(line);
     return match ? { kind: match[1], id: match[2].trim(), text: match[3].trim() } : line;
@@ -139,6 +150,10 @@ function readForm() {
     maxDocumentChunks: num("f-maxchunks") ?? 4,
     maxRecordRows: num("f-maxrows") ?? 20,
     maxKnowledgeChars: num("f-maxknowledgechars") ?? 12000,
+    maxAgentIterations: num("f-maxiterations") ?? 8,
+    maxKnowledgeCallsPerTurn: num("f-maxknowledgecalls") ?? 12,
+    maxActionRequestsPerTurn: num("f-maxactions") ?? 4,
+    maxParallelReadCalls: num("f-maxparallelreads") ?? 4,
   };
   const initial = $("f-initial-phase").value.trim();
   if (current.flow?.phases?.length) current.flow.initialPhaseId = initial || current.flow.phases[0].id;
@@ -250,7 +265,7 @@ function renderKnowledge() {
       rows.push(el("label", { textContent: "text" }, [
         el("textarea", { rows: 6, value: src.text ?? "", oninput: (e) => (src.text = e.target.value) }),
       ]));
-    } else {
+    } else if (src.kind === "record_set") {
       rows.push(el("label", { textContent: "field types (JSON: {\"price\": {\"kind\": \"number\"}})" }, [
         el("textarea", { rows: 5, value: JSON.stringify(src.fields ?? {}, null, 2), onchange: (e) => tryJson(e.target, (v) => (src.fields = v)) }),
       ]));
@@ -259,6 +274,20 @@ function renderKnowledge() {
       ]));
       rows.push(el("label", { className: "check", textContent: "expose deterministic query tool to the model" }, [
         el("input", { type: "checkbox", checked: binding.exposeQueryTool !== false, onchange: (e) => (binding.exposeQueryTool = e.target.checked) }),
+      ]));
+    } else {
+      rows.push(el("div", { className: "row" }, [
+        field("allowed domains (comma separated; blank = public web)", textInput((src.allowedDomains ?? []).join(", "), (v) => {
+          const list = v.split(",").map((s) => s.trim()).filter(Boolean);
+          if (list.length) src.allowedDomains = list; else delete src.allowedDomains;
+        })),
+      ]));
+      rows.push(el("div", { className: "row" }, [
+        field("blocked domains", textInput((src.blockedDomains ?? []).join(", "), (v) => {
+          const list = v.split(",").map((s) => s.trim()).filter(Boolean);
+          if (list.length) src.blockedDomains = list; else delete src.blockedDomains;
+        })),
+        field("max results", textInput(src.maxResults ?? 5, (v) => (src.maxResults = Number(v)))),
       ]));
     }
     host.append(card(`${src.kind}: ${src.id || i}`, () => { current.knowledge.splice(i, 1); renderKnowledge(); }, rows));
@@ -358,6 +387,8 @@ $("btn-add-memory").onclick = () => { current.memorySchema.fields.push({ key: ""
 $("btn-add-context").onclick = () => { current.hostContextSchema.fields.push({ key: "", schema: { kind: "string" }, lifecycle: "session", visibility: "model", trust: "trusted_host" }); renderContext(); };
 $("btn-add-doc").onclick = () => { current.knowledge.push({ source: { id: "", kind: "document", title: "", description: "", text: "", chunking: { chunkSize: 1000, chunkOverlap: 200 } } }); renderKnowledge(); };
 $("btn-add-records").onclick = () => { current.knowledge.push({ source: { id: "", kind: "record_set", title: "", fields: {}, records: [] } }); renderKnowledge(); };
+$("btn-add-web").onclick = () => { current.knowledge.push({ source: { id: "web", kind: "web_search", title: "Public Web Search", description: "Current public web evidence.", maxResults: 5 } }); renderKnowledge(); };
+$("btn-add-company").onclick = () => { current.knowledge.push({ source: { id: "company_site", kind: "web_search", title: "Company website", description: "Official company-site evidence only.", allowedDomains: ["example.com"], maxResults: 5 } }); renderKnowledge(); };
 $("btn-add-tool").onclick = () => {
   current.tools.push({
     definition: { name: "", description: "", effect: "external_side_effect", confirmation: "required", idempotency: "once_per_session", argumentPolicies: {}, input: { kind: "object", fields: {} }, output: { kind: "object", additionalProperties: true, fields: {} } },
@@ -500,6 +531,24 @@ async function send() {
   }
 }
 
+$("btn-observe-context").onclick = async () => {
+  if (!sessionId) return flash("start a session first", true);
+  try {
+    const raw = $("f-hostcontext").value.trim();
+    const hostContext = raw ? JSON.parse(raw) : {};
+    const result = await api(`/sessions/${encodeURIComponent(sessionId)}/context`, {
+      method: "POST",
+      body: JSON.stringify({ hostContext }),
+    });
+    renderState(result.state);
+    const { events } = await api(`/sessions/${encodeURIComponent(sessionId)}/events`);
+    renderTrace(events);
+    flash(`Host Context observed without a model call (${result.observation.accepted.length} accepted)`);
+  } catch (error) {
+    flash(error.message, true);
+  }
+};
+
 function appendMessage(role, text, meta) {
   const node = el("div", { className: `msg ${role}` }, [document.createTextNode(text)]);
   if (meta) node.append(el("span", { className: "meta", textContent: meta }));
@@ -545,7 +594,7 @@ function renderState(state, dryRunLedger = []) {
       ]))
     : el("div", { className: "empty", textContent: "nothing committed yet" })));
 
-  host.append(section("TurnPlan", state.turnPlan
+  host.append(section("PreflightPlan (TurnPlan compatibility field)", state.turnPlan
     ? el("pre", { textContent: JSON.stringify(state.turnPlan, null, 2) })
     : el("div", { className: "empty", textContent: "no plan for this turn" })));
 
@@ -602,6 +651,11 @@ const EVENT_CLASS = {
   TurnPlanCreated: "confirm",
   KnowledgeRetrieved: "action",
   RetrievalRequestRejected: "reject",
+  AgentIterationStarted: "confirm",
+  AgentIterationCompleted: "confirm",
+  DelegationRequested: "action",
+  DelegationCompleted: "action",
+  DelegationRejected: "reject",
 };
 
 function describeEvent(event) {
@@ -617,6 +671,11 @@ function describeEvent(event) {
     case "TurnPlanCreated": return `${p.strategy} -> ${p.resolvedBy}\n${JSON.stringify(p.plan, null, 2)}`;
     case "KnowledgeRetrieved": return `${p.request.kind} · ${p.sourceId} · ${p.returnedCount} result(s)\nids: ${p.resultIds.join(", ")}${p.scores?.length ? `\nscores: ${p.scores.join(", ")}` : ""}`;
     case "RetrievalRequestRejected": return `${p.request.kind} · ${p.request.sourceId}\nREJECTED (${p.error.code}): ${p.error.message}`;
+    case "AgentIterationStarted": return `${p.harness} · iteration ${p.iteration} · phase ${p.phaseId ?? "none"}\ncapabilities: ${p.capabilityNames.join(", ") || "none"}`;
+    case "AgentIterationCompleted": return `${p.harness} · iteration ${p.iteration} · requested ${p.requested} · completed ${p.completed} · rejected ${p.rejected}${p.stopReason ? ` · stop=${p.stopReason}` : ""}`;
+    case "DelegationRequested": return `${p.category} · ${p.capabilityName}(${JSON.stringify(p.input)}) · iteration ${p.iteration}`;
+    case "DelegationCompleted": return `${p.category} · ${p.capabilityName} · ${p.outcome}\n${JSON.stringify(p.summary).slice(0, 500)}`;
+    case "DelegationRejected": return `${p.category} · ${p.capabilityName}\nREJECTED (${p.code}): ${p.reason}`;
     case "PhaseTransitioned": return `${p.from ?? "(start)"} -> ${p.to}  [${p.on}]${p.label ? ` · ${p.label}` : ""}`;
     case "ToolRequested": return `${p.toolName}(${JSON.stringify(p.args)})  by ${p.requestedBy}`;
     case "ToolCallRejected": return `${p.toolName} REFUSED (${p.reason})\n${p.message}`;

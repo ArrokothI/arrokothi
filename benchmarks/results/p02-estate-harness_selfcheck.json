@@ -1,13 +1,13 @@
 {
-  "runId": "P02-harness_selfcheck-2026-08-21T06-24-16-317Z",
+  "runId": "P02-harness_selfcheck-2026-08-21T14-05-03-676Z",
   "project": "P02-ESTATE",
   "mode": "harness_selfcheck",
   "label": "harness self-check (no model consulted)",
-  "generatedAt": "2026-08-21T06:24:16.343Z",
+  "generatedAt": "2026-08-21T14:05:03.694Z",
   "sdk": {
     "agentId": "bench-p02-estate",
     "agentVersion": 1,
-    "definitionHash": "85d200d2eea43c37",
+    "definitionHash": "2f9a7f9b595f4f83",
     "harness": "two-pass-v0.2"
   },
   "provider": {

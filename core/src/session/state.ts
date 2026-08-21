@@ -66,7 +66,7 @@ export interface SessionState {
   turnToolResults: ToolResultRecord[];
   /** Semantic routing signals observed on the current turn. */
   turnSignals: string[];
-  /** Validated pass-1 plan for the current turn. */
+  /** Validated preflight plan for the current turn; not the full autonomous trajectory. */
   turnPlan: TurnPlan | null;
   /** Retrieval outcomes from the current turn, without duplicating document contents. */
   turnRetrievals: RetrievalTraceRecord[];

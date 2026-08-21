@@ -32,6 +32,7 @@ export function defineAgent(input: DefineAgentInput): AgentDefinition {
     description: input.description,
     model: input.model,
     planning: input.planning,
+    execution: input.execution,
     globalRules: input.globalRules ?? [],
     knowledge: input.knowledge ?? [],
     memorySchema: input.memorySchema,
@@ -82,6 +83,12 @@ export function validateDefinition(def: AgentDefinition): DefinitionIssue[] {
   }
   if (def.planning?.model && !def.planning.model.providerId) error("planning.model.providerId", "planner providerId is required");
   if (def.planning?.model && !def.planning.model.model) error("planning.model.model", "planner model is required");
+  if (def.execution && !["two_pass", "native_agent", "claude_agent"].includes(def.execution.harness)) {
+    error("execution.harness", `unknown Harness "${String(def.execution.harness)}"`);
+  }
+  if (def.execution?.executionContextPolicy === "resume") {
+    error("execution.executionContextPolicy", "v0.3 supports only fresh_each_turn; resume is deferred to v0.4");
+  }
 
   if (def.policies.maxSteps < 1) error("policies.maxSteps", "maxSteps must be at least 1");
   if (def.policies.maxToolCallsPerTurn < 0) error("policies.maxToolCallsPerTurn", "maxToolCallsPerTurn cannot be negative");
@@ -96,6 +103,18 @@ export function validateDefinition(def: AgentDefinition): DefinitionIssue[] {
   }
   if (!Number.isInteger(def.policies.maxKnowledgeChars) || def.policies.maxKnowledgeChars < 1) {
     error("policies.maxKnowledgeChars", "maxKnowledgeChars must be at least 1");
+  }
+  if (!Number.isInteger(def.policies.maxAgentIterations) || def.policies.maxAgentIterations < 1) {
+    error("policies.maxAgentIterations", "maxAgentIterations must be at least 1");
+  }
+  if (!Number.isInteger(def.policies.maxKnowledgeCallsPerTurn) || def.policies.maxKnowledgeCallsPerTurn < 0) {
+    error("policies.maxKnowledgeCallsPerTurn", "maxKnowledgeCallsPerTurn must be a non-negative integer");
+  }
+  if (!Number.isInteger(def.policies.maxActionRequestsPerTurn) || def.policies.maxActionRequestsPerTurn < 0) {
+    error("policies.maxActionRequestsPerTurn", "maxActionRequestsPerTurn must be a non-negative integer");
+  }
+  if (!Number.isInteger(def.policies.maxParallelReadCalls) || def.policies.maxParallelReadCalls < 1) {
+    error("policies.maxParallelReadCalls", "maxParallelReadCalls must be at least 1");
   }
   if (def.policies.allowUnconfirmedSideEffects) {
     warn("policies.allowUnconfirmedSideEffects", "confirmation gating is disabled; side-effecting tools will run without a resolved PendingAction");
@@ -149,12 +168,25 @@ export function validateDefinition(def: AgentDefinition): DefinitionIssue[] {
           }
         }
       }
-    } else {
+    } else if (src.kind === "document") {
       const chunkSize = src.chunking?.chunkSize ?? 1000;
       const chunkOverlap = src.chunking?.chunkOverlap ?? 200;
       if (!Number.isInteger(chunkSize) || chunkSize < 1) error(`knowledge.${src.id}.chunking.chunkSize`, "chunkSize must be a positive integer");
       if (!Number.isInteger(chunkOverlap) || chunkOverlap < 0) error(`knowledge.${src.id}.chunking.chunkOverlap`, "chunkOverlap must be a non-negative integer");
       if (chunkOverlap >= chunkSize) error(`knowledge.${src.id}.chunking`, "chunkOverlap must be smaller than chunkSize");
+    } else {
+      if (src.maxResults !== undefined && (!Number.isInteger(src.maxResults) || src.maxResults < 1)) {
+        error(`knowledge.${src.id}.maxResults`, "maxResults must be a positive integer");
+      }
+      for (const [field, domains] of [["allowedDomains", src.allowedDomains], ["blockedDomains", src.blockedDomains]] as const) {
+        if (domains?.some((domain) => !domain.trim() || domain.includes("/") || domain.includes(":"))) {
+          error(`knowledge.${src.id}.${field}`, "domains must be bare host names such as example.com");
+        }
+      }
+      const overlap = new Set(src.allowedDomains ?? []);
+      if ((src.blockedDomains ?? []).some((domain) => overlap.has(domain))) {
+        error(`knowledge.${src.id}`, "the same domain cannot be both allowed and blocked");
+      }
     }
   }
 

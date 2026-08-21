@@ -38,6 +38,11 @@ export interface AgentDefinition {
   model: ModelPolicy;
   /** Planner mode/model. Omitted model means use the main model/provider. */
   planning?: PlanningPolicy;
+  /** Serializable Harness preference. The application still injects the implementation. */
+  execution?: {
+    harness: "two_pass" | "native_agent" | "claude_agent";
+    executionContextPolicy?: "fresh_each_turn" | "resume";
+  };
   /** Standing rules. Legacy strings remain supported and are treated as invariants. */
   globalRules?: AgentRuleInput[];
   knowledge: KnowledgeBinding[];
@@ -69,7 +74,7 @@ export interface DeterministicPolicies {
   workingNoteTtlMs?: number;
   /** Transcript messages included in compiled context. Default 10. */
   transcriptWindow?: number;
-  /** Maximum explicit retrieval requests accepted from one TurnPlan. */
+  /** Maximum explicit retrieval requests accepted from one PreflightPlan. */
   maxRetrievalRequests: number;
   /** Maximum chunks returned by one document search. */
   maxDocumentChunks: number;
@@ -77,6 +82,14 @@ export interface DeterministicPolicies {
   maxRecordRows: number;
   /** Approximate total character budget for retrieved knowledge in response context. */
   maxKnowledgeChars: number;
+  /** Hard ceiling on observe/decide/delegate iterations in an agentic Harness. */
+  maxAgentIterations: number;
+  /** All product-classified Knowledge requests, including read-only Tool implementations. */
+  maxKnowledgeCallsPerTurn: number;
+  /** Requests for write/external-side-effect capabilities, whether or not they are authorized. */
+  maxActionRequestsPerTurn: number;
+  /** Maximum read-only Knowledge operations started concurrently from one planner iteration. */
+  maxParallelReadCalls: number;
 }
 
 export const DEFAULT_POLICIES: DeterministicPolicies = {
@@ -90,6 +103,10 @@ export const DEFAULT_POLICIES: DeterministicPolicies = {
   maxDocumentChunks: 4,
   maxRecordRows: 20,
   maxKnowledgeChars: 12_000,
+  maxAgentIterations: 8,
+  maxKnowledgeCallsPerTurn: 12,
+  maxActionRequestsPerTurn: 4,
+  maxParallelReadCalls: 4,
 };
 
 export interface DefinitionIssue {

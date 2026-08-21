@@ -58,11 +58,12 @@ export type ToolAttemptOutcome =
   | { kind: "rejected"; rejection: ToolRejection; requestId: string };
 
 /** Phase scoping: the phase's `toolNames` list, when present, is a whitelist. */
-function permittedInPhase(definition: AgentDefinition, phaseId: string | null, toolName: string): boolean {
+function permittedInPhase(definition: AgentDefinition, tools: ToolRegistry, phaseId: string | null, toolName: string): boolean {
+  const binding = tools.getBinding(toolName);
+  if (binding?.phaseIds && (!phaseId || !binding.phaseIds.includes(phaseId))) return false;
   if (!definition.flow) return true;
   const phase = findPhase(definition.flow, phaseId);
-  if (!phase) return true;
-  if (!phase.toolNames) return true;
+  if (!phase?.toolNames) return true;
   return phase.toolNames.includes(toolName);
 }
 
@@ -226,7 +227,7 @@ export async function attemptToolCall(
   }
 
   // 2. phase scoping
-  if (!permittedInPhase(definition, journal.state.phaseId, toolName)) {
+  if (!permittedInPhase(definition, tools, journal.state.phaseId, toolName)) {
     return reject("not_permitted_in_phase", `tool "${toolName}" is not permitted in phase "${journal.state.phaseId}"`);
   }
 

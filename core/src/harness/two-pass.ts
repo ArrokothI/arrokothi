@@ -4,7 +4,7 @@ import type { ModelToolSpec } from "../provider/types.ts";
 import type { AuthorizeDeps } from "../tools/authorize.ts";
 import type { TransitionTiming } from "../flow/types.ts";
 import type { KnowledgeResult, RetrievalRequest } from "../knowledge/types.ts";
-import type { DeterministicPlanner, TurnPlan, TurnPlanValidationError } from "../planning/types.ts";
+import type { DeterministicPlanner, TurnPlan } from "../planning/types.ts";
 import { attemptToolCall, resolvePendingConfirmation } from "../tools/authorize.ts";
 import { authorityFor, validateProposal } from "../memory/structured.ts";
 import { compileContext, compilePlannerContext } from "../compiler/context-compiler.ts";
@@ -12,9 +12,10 @@ import { evaluateTransitions, findPhase } from "../flow/evaluate.ts";
 import { ModelProviderError } from "../provider/types.ts";
 import { ConservativeDeterministicPlanner, parseTurnPlan, turnPlanSchema } from "../planning/turn-plan.ts";
 import { EMPTY_TURN_PLAN } from "../planning/types.ts";
+import { CapabilityGateway } from "../capabilities/gateway.ts";
 
 /**
- * The default harness: Interpret + Plan, validate/route/retrieve, then Respond.
+ * The default workflow Harness: PreflightPlan, validate/route/retrieve, then Respond.
  *
  * The planner proposes. The runtime validates memory and retrieval requests. The response model
  * sees only the resulting state/evidence and remains free to use reactive tools.
@@ -33,7 +34,7 @@ interface PlannedTurn {
 }
 
 export class TwoPassHarness implements AgentHarness {
-  readonly name = "two-pass-v0.2";
+  readonly name: string = "two-pass-v0.2";
   private readonly options: TwoPassOptions;
   private readonly deterministicPlanner: DeterministicPlanner;
 
@@ -55,6 +56,7 @@ export class TwoPassHarness implements AgentHarness {
       clock: services.clock,
       grants,
     };
+    const gateway = new CapabilityGateway({ services, deps, harnessName: this.name, turn });
 
     // Resolve a durable PendingAction first and execute only its frozen payload.
     const confirmation = resolvePendingConfirmation(deps, userMessage, turn);
@@ -68,13 +70,13 @@ export class TwoPassHarness implements AgentHarness {
     // Pass 1: one bounded semantic plan when needed, followed by runtime-owned state changes.
     const plan = await this.interpretAndPlan(input, services);
     await this.applyTransitions(input, services, "pre_response");
-    const retrievedKnowledge = await this.executeRetrievals(plan.retrievalRequests, input, services);
+    const retrievedKnowledge = await this.executeRetrievals(plan.retrievalRequests, input, services, gateway);
 
     // Pass 2: response/tool loop over already-retrieved evidence.
-    return this.respond(input, services, deps, { plan, retrievedKnowledge });
+    return this.respond(input, services, gateway, { plan, retrievedKnowledge });
   }
 
-  private async interpretAndPlan(input: HarnessTurnInput, services: HarnessServices): Promise<TurnPlan> {
+  protected async interpretAndPlan(input: HarnessTurnInput, services: HarnessServices): Promise<TurnPlan> {
     const { definition, knowledge } = services;
     const phase = definition.flow ? findPhase(definition.flow, input.journal.state.phaseId) : undefined;
     const sourceCatalog = knowledge.catalog(input.journal.state.phaseId ?? undefined, phase?.knowledgeSourceIds);
@@ -132,7 +134,7 @@ export class TwoPassHarness implements AgentHarness {
       signalVocabulary.length ? `Signals you may emit: ${signalVocabulary.join(", ")}` : "Emit no signals.",
       "Choose logical knowledge sources from the catalog only. Emit zero retrieval requests when no evidence lookup is needed.",
       "Rewrite every document query as a concise standalone query. Resolve references such as 'the second one' from the recent transcript.",
-      "Use document_search only for document sources. Use record_query for exact filters/sorts/counts over record_set sources; never produce SQL.",
+      "Use document_search only for document sources, web_search only for web sources, and record_query for exact filters/sorts/counts over record_set sources; never produce SQL.",
       "Return exactly: {memory_writes, working_notes, signals, retrieval_requests}.",
     ].join("\n\n");
     const context = compilePlannerContext({
@@ -292,126 +294,29 @@ export class TwoPassHarness implements AgentHarness {
     });
   }
 
-  private async executeRetrievals(
+  protected async executeRetrievals(
     requests: RetrievalRequest[],
     input: HarnessTurnInput,
     services: HarnessServices,
+    gateway: CapabilityGateway,
   ): Promise<KnowledgeResult[]> {
     const results: KnowledgeResult[] = [];
-    const { definition } = services;
-    const phase = definition.flow ? findPhase(definition.flow, input.journal.state.phaseId) : undefined;
-
     for (const [index, request] of requests.entries()) {
-      if (index >= definition.policies.maxRetrievalRequests) {
-        this.rejectRetrieval(input, request, {
+      if (index >= services.definition.policies.maxRetrievalRequests) {
+        input.journal.append({ type: "RetrievalRequestRejected", turn: input.turn, payload: { request, error: {
           code: "retrieval_limit_exceeded",
-          message: `TurnPlan exceeds maxRetrievalRequests=${definition.policies.maxRetrievalRequests}`,
+          message: `PreflightPlan exceeds maxRetrievalRequests=${services.definition.policies.maxRetrievalRequests}`,
           requestIndex: index,
-        });
+        } } });
         continue;
       }
-      const binding = definition.knowledge.find((candidate) => candidate.source.id === request.sourceId);
-      if (!binding) {
-        this.rejectRetrieval(input, request, { code: "unknown_source", message: `unknown knowledge source "${request.sourceId}"`, requestIndex: index });
-        continue;
-      }
-      const permittedByPhase = (!phase?.knowledgeSourceIds || phase.knowledgeSourceIds.includes(request.sourceId))
-        && (!binding.phaseIds || (!!input.journal.state.phaseId && binding.phaseIds.includes(input.journal.state.phaseId)));
-      if (!permittedByPhase) {
-        this.rejectRetrieval(input, request, {
-          code: "source_not_permitted_in_phase",
-          message: `source "${request.sourceId}" is not permitted in phase "${input.journal.state.phaseId}"`,
-          requestIndex: index,
-        });
-        continue;
-      }
-
-      if (request.kind === "document_search") {
-        if (binding.source.kind !== "document") {
-          this.rejectRetrieval(input, request, { code: "wrong_source_kind", message: `source "${request.sourceId}" is a record_set, not a document`, requestIndex: index });
-          continue;
-        }
-        const requestedTopK = request.topK ?? binding.topK ?? 3;
-        if (!request.query.trim() || !Number.isInteger(requestedTopK) || requestedTopK < 1 || requestedTopK > definition.policies.maxDocumentChunks) {
-          this.rejectRetrieval(input, request, {
-            code: "invalid_document_query",
-            message: `document query must be non-empty and topK must be within 1..${definition.policies.maxDocumentChunks}`,
-            requestIndex: index,
-          });
-          continue;
-        }
-        try {
-          const normalized = { ...request, query: request.query.trim(), topK: requestedTopK };
-          const chunks = (await services.knowledge.retrieve(normalized)).slice(0, definition.policies.maxDocumentChunks);
-          results.push({ kind: "document_search", sourceId: request.sourceId, sourceTitle: binding.source.title, query: normalized.query, chunks });
-          input.journal.append({
-            type: "KnowledgeRetrieved",
-            turn: input.turn,
-            payload: {
-              request: normalized,
-              sourceId: request.sourceId,
-              resultIds: chunks.map((chunk) => chunk.chunkId),
-              scores: chunks.map((chunk) => chunk.score),
-              returnedCount: chunks.length,
-            },
-          });
-        } catch (error) {
-          this.rejectRetrieval(input, request, {
-            code: "invalid_document_query",
-            message: error instanceof Error ? error.message : String(error),
-            requestIndex: index,
-          });
-        }
-        continue;
-      }
-
-      if (binding.source.kind !== "record_set") {
-        this.rejectRetrieval(input, request, { code: "wrong_source_kind", message: `source "${request.sourceId}" is a document, not a record_set`, requestIndex: index });
-        continue;
-      }
-      if (request.limit !== undefined && request.limit > definition.policies.maxRecordRows) {
-        this.rejectRetrieval(input, request, {
-          code: "retrieval_limit_exceeded",
-          message: `record query limit exceeds maxRecordRows=${definition.policies.maxRecordRows}`,
-          requestIndex: index,
-        });
-        continue;
-      }
-      const normalized = { ...request, limit: request.limit ?? definition.policies.maxRecordRows };
-      const queried = services.knowledge.queryRecords(normalized);
-      if (!queried.ok) {
-        this.rejectRetrieval(input, request, { code: "invalid_record_query", message: queried.error.message, requestIndex: index });
-        continue;
-      }
-      results.push({
-        kind: "record_query",
-        sourceId: request.sourceId,
-        sourceTitle: binding.source.title,
-        query: queried.value.query,
-        matches: queried.value.matches.slice(0, definition.policies.maxRecordRows),
-        totalMatched: queried.value.totalMatched,
-        totalRecords: queried.value.totalRecords,
-      });
-      input.journal.append({
-        type: "KnowledgeRetrieved",
-        turn: input.turn,
-        payload: {
-          request: normalized,
-          sourceId: request.sourceId,
-          resultIds: queried.value.matches.map((record, row) => `${request.sourceId}#${String(record["id"] ?? row)}`),
-          returnedCount: queried.value.matches.length,
-          totalMatched: queried.value.totalMatched,
-        },
-      });
+      const outcome = await gateway.requestKnowledge(request, 0);
+      if (outcome.kind === "completed" && outcome.knowledgeResult) results.push(outcome.knowledgeResult);
     }
     return results;
   }
 
-  private rejectRetrieval(input: HarnessTurnInput, request: RetrievalRequest, error: TurnPlanValidationError): void {
-    input.journal.append({ type: "RetrievalRequestRejected", turn: input.turn, payload: { request, error } });
-  }
-
-  private async applyTransitions(input: HarnessTurnInput, services: HarnessServices, timing: TransitionTiming): Promise<void> {
+  protected async applyTransitions(input: HarnessTurnInput, services: HarnessServices, timing: TransitionTiming): Promise<void> {
     const flow = services.definition.flow;
     if (!flow) return;
     const { fired } = evaluateTransitions(flow, timing, {
@@ -430,7 +335,7 @@ export class TwoPassHarness implements AgentHarness {
   private async respond(
     input: HarnessTurnInput,
     services: HarnessServices,
-    deps: AuthorizeDeps,
+    gateway: CapabilityGateway,
     planned: PlannedTurn,
   ): Promise<HarnessTurnResult> {
     const { journal, turn } = input;
@@ -495,9 +400,9 @@ export class TwoPassHarness implements AgentHarness {
         for (const call of calls) {
           if (toolCalls >= definition.policies.maxToolCallsPerTurn) break;
           toolCalls++;
-          const outcome = await attemptToolCall(deps, call.name, call.args ?? {}, turn, "model");
+          const outcome = await gateway.requestTool(call.name, call.args ?? {}, steps);
           if (outcome.kind === "awaiting_confirmation") awaitingConfirmationPrompt = outcome.promptText;
-          else if (outcome.kind === "executed" || outcome.kind === "replayed") await this.applyTransitions(input, services, "action_result");
+          else if (outcome.kind === "completed" && outcome.toolOutcome) await this.applyTransitions(input, services, "action_result");
         }
         continue;
       }
@@ -527,7 +432,7 @@ export class TwoPassHarness implements AgentHarness {
     return this.emit(input, "This is taking more steps than I have available for one turn, so I have stopped rather than guess. Could you narrow down what you need?", "max_steps", steps);
   }
 
-  private emit(input: HarnessTurnInput, text: string, stopReason: TurnStopReason, steps: number): HarnessTurnResult {
+  protected emit(input: HarnessTurnInput, text: string, stopReason: TurnStopReason, steps: number): HarnessTurnResult {
     input.journal.append({ type: "AssistantMessageEmitted", turn: input.turn, payload: { text, stopReason } });
     return { replyText: text, stopReason, steps };
   }

@@ -45,6 +45,8 @@ export interface ModelRequest {
   maxOutputTokens?: number;
   /** Free-form label identifying which harness pass issued this call, recorded in traces. */
   purpose?: string;
+  /** Optional cancellation signal supplied by an execution Harness. */
+  signal?: AbortSignal;
 }
 
 export interface ModelToolCall {

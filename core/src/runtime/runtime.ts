@@ -11,12 +11,14 @@ import type { CompiledContext } from "../compiler/context-compiler.ts";
 import type { HostContextInput } from "../context/types.ts";
 import type { Clock, IdGenerator } from "../util/ids.ts";
 import { initialState, project, resume, snapshotOf } from "../session/state.ts";
-import { observeHostContext } from "../context/host-context.ts";
+import { observeHostContext as validateHostContext } from "../context/host-context.ts";
+import type { ContextObservation } from "../context/host-context.ts";
 import { TurnJournal } from "./journal.ts";
 import { ConservativeConfirmationResolver } from "../confirmation/resolver.ts";
 import { TwoPassHarness } from "../harness/two-pass.ts";
 import { assertValidDefinition } from "../definition/definition.ts";
 import { createRandomIds, createSystemClock } from "../util/ids.ts";
+import { DEFAULT_POLICIES } from "../definition/types.ts";
 
 /**
  * The request-scoped runtime.
@@ -48,6 +50,7 @@ export interface RunTurnInput {
   message: string;
   /** Raw host context for this turn. Validated against the declared schema before it is stored. */
   hostContext?: HostContextInput;
+  signal?: AbortSignal;
 }
 
 export interface RunTurnResult {
@@ -61,6 +64,17 @@ export interface RunTurnResult {
   contexts: { purpose: string; context: CompiledContext }[];
 }
 
+export interface ObserveHostContextInput {
+  sessionId: string;
+  hostContext: HostContextInput;
+}
+
+export interface ObserveHostContextResult {
+  state: SessionState;
+  observation: ContextObservation;
+  events: SessionEvent[];
+}
+
 export class AgentRuntime {
   private readonly config: AgentRuntimeConfig;
   private readonly harness: AgentHarness;
@@ -68,8 +82,12 @@ export class AgentRuntime {
   private readonly clock: Clock;
 
   constructor(config: AgentRuntimeConfig) {
-    assertValidDefinition(config.definition);
-    this.config = config;
+    const definition: AgentDefinition = {
+      ...config.definition,
+      policies: { ...DEFAULT_POLICIES, ...config.definition.policies },
+    };
+    assertValidDefinition(definition);
+    this.config = { ...config, definition };
     this.harness = config.harness ?? new TwoPassHarness();
     this.ids = config.ids ?? createRandomIds();
     this.clock = config.clock ?? createSystemClock();
@@ -151,7 +169,7 @@ export class AgentRuntime {
     const userEvent = journal.append({ type: "UserMessageReceived", turn, payload: { text: input.message } });
 
     if (input.hostContext && Object.keys(input.hostContext).length) {
-      const observation = observeHostContext(
+      const observation = validateHostContext(
         this.config.definition.hostContextSchema,
         input.hostContext,
         turn,
@@ -177,7 +195,7 @@ export class AgentRuntime {
 
     let result;
     try {
-      result = await this.harness.runTurn({ journal, userMessage: input.message, turn, userEventId: userEvent.id }, services);
+      result = await this.harness.runTurn({ journal, userMessage: input.message, turn, userEventId: userEvent.id, signal: input.signal }, services);
     } catch (error) {
       // A harness that throws is a runtime error, recorded truthfully. The user gets an honest
       // message and the events written so far are still persisted, so the failure is inspectable.
@@ -198,6 +216,25 @@ export class AgentRuntime {
       events: stored,
       contexts,
     };
+  }
+
+  /**
+   * Records host observations without a user message or model/Harness invocation.
+   * Out-of-band values are tagged for the next user turn, so a turn-lifecycle page selection is
+   * available to the later "this one" message and then expires normally.
+   */
+  async observeHostContext(input: ObserveHostContextInput): Promise<ObserveHostContextResult> {
+    const state = await this.loadState(input.sessionId);
+    const journal = new TurnJournal(state, this.ids, this.clock);
+    const observation = validateHostContext(
+      this.config.definition.hostContextSchema,
+      input.hostContext,
+      state.turn + 1,
+      this.clock.now().toISOString(),
+    );
+    journal.append({ type: "HostContextObserved", turn: state.turn, payload: observation });
+    const events = await this.persist(input.sessionId, journal);
+    return { state: journal.state, observation, events };
   }
 
   /**

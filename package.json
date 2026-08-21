@@ -1,16 +1,18 @@
 {
   "name": "agent-sdk-workspace",
   "private": true,
-  "version": "0.2.0",
-  "description": "Experimental first-principles agent kernel + development Studio.",
+  "version": "0.3.0",
+  "description": "Experimental provider-neutral agent kernel, iterative Harnesses, and development Studio.",
   "type": "module",
   "workspaces": [
     "core",
     "providers/gemini",
+    "providers/claude-agent",
     "apps/studio",
     "benchmarks",
     "examples/minimal-agent",
-    "examples/estate-like"
+    "examples/estate-like",
+    "examples/native-agent"
   ],
   "engines": {
     "node": ">=22.6.0"
@@ -22,6 +24,7 @@
     "studio": "node --experimental-strip-types --experimental-sqlite apps/studio/src/server.ts",
     "example:minimal": "node --experimental-strip-types examples/minimal-agent/main.ts",
     "example:estate": "node --experimental-strip-types examples/estate-like/main.ts",
+    "example:native": "node --experimental-strip-types examples/native-agent/main.ts",
     "bench:p01": "node --experimental-strip-types benchmarks/p01-craig/run.ts",
     "bench:p02": "node --experimental-strip-types benchmarks/p02-estate/run.ts",
     "bench:compare": "node --experimental-strip-types benchmarks/shared/compare.ts",

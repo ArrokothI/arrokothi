@@ -28,7 +28,7 @@ export interface CompiledContext {
   system: string;
   messages: ModelMessage[];
   knowledgeUsed: {
-    kind: "document_search" | "record_query";
+    kind: "document_search" | "record_query" | "web_search";
     sourceId: string;
     chunkId?: string;
     score?: number;
@@ -43,7 +43,7 @@ export interface CompiledContext {
 export interface CompileInput {
   definition: AgentDefinition;
   state: SessionState;
-  /** Evidence explicitly retrieved from a validated TurnPlan. */
+  /** Evidence explicitly retrieved from a validated PreflightPlan or an agentic iteration. */
   retrievedKnowledge?: KnowledgeResult[];
   /** Extra instruction for this particular response/tool-loop call. */
   taskInstruction?: string;
@@ -190,12 +190,19 @@ function knowledgeSection(results: KnowledgeResult[], charBudget: number): {
         used.push({ kind: result.kind, sourceId: result.sourceId, chunkId: chunk.chunkId, score: chunk.score, rank: chunk.rank });
         if (!add(line)) break;
       }
-    } else {
+    } else if (result.kind === "record_query") {
       const header = `- [${result.sourceTitle}] DETERMINISTIC RECORD QUERY matched ${result.totalMatched} of ${result.totalRecords} records; ${result.matches.length} rows are shown.`;
       used.push({ kind: result.kind, sourceId: result.sourceId });
       if (!add(header)) break;
       for (const [index, record] of result.matches.entries()) {
         if (!add(`  - row ${index + 1}: ${renderRecord(record).replace(/\n/g, "; ")}`)) break;
+      }
+    } else {
+      const scope = result.allowedDomains?.length ? `; domains=${result.allowedDomains.join(",")}` : "";
+      used.push({ kind: result.kind, sourceId: result.sourceId });
+      if (!add(`- [${result.sourceTitle}] WEB SEARCH for ${JSON.stringify(result.query)}${scope}`)) break;
+      for (const item of result.results) {
+        if (!add(`  - ${item.title} — ${item.url} — ${item.snippet}`)) break;
       }
     }
   }
@@ -276,6 +283,11 @@ export function compilePlannerContext(input: CompilePlannerInput): CompiledConte
   const catalogLines = input.sourceCatalog.map((source) => {
     const base = `- ${source.id}: ${source.title} [type=${source.type}]${source.description ? ` - ${source.description}` : ""}`;
     if (source.type === "document") return base;
+    if (source.type === "web_search") {
+      const allowed = source.allowedDomains?.length ? `\n  allowed domains: ${source.allowedDomains.join(", ")}` : "";
+      const blocked = source.blockedDomains?.length ? `\n  blocked domains: ${source.blockedDomains.join(", ")}` : "";
+      return `${base}${allowed}${blocked}`;
+    }
     return `${base}\n  fields: ${source.fields.map((field) => `${field.name} (${field.type})`).join(", ")}\n  operators: ${source.supportedOperators.join(", ")}; filters use AND; sort and limit are deterministic`;
   });
   const sections = [

@@ -4,10 +4,12 @@ import { readFile } from "node:fs/promises";
 import { mkdirSync } from "node:fs";
 import { dirname, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AgentDefinition, CompiledContext, ModelProvider } from "@agent-sdk/core";
+import type { AgentDefinition, CompiledContext, ModelProvider, WebSearchProvider } from "@agent-sdk/core";
 import {
   AgentRuntime,
   KnowledgeIndex,
+  NativeAgentHarness,
+  TwoPassHarness,
   ToolRegistry,
   createRandomIds,
   createSystemClock,
@@ -19,6 +21,7 @@ import {
 } from "@agent-sdk/core";
 import { StaticModelProvider } from "@agent-sdk/core/testing";
 import { GeminiProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";
+import { ClaudeAgentHarness } from "@agent-sdk/provider-claude-agent";
 import { SqliteDefinitionStore, SqliteSessionStore, openDatabase } from "./sqlite-store.ts";
 import { DryRunRegistry, registerStudioExecutors } from "./executors.ts";
 import { SAMPLE_DEFINITIONS } from "./samples.ts";
@@ -37,6 +40,7 @@ const PUBLIC_DIR = join(HERE, "..", "public");
 const DATA_DIR = process.env["STUDIO_DATA_DIR"] ?? join(HERE, "..", "data");
 const DB_PATH = process.env["STUDIO_DB"] ?? join(DATA_DIR, "studio.sqlite");
 const PORT = Number(process.env["PORT"] ?? 4321);
+const WEB_SEARCH_ENDPOINT = process.env["STUDIO_WEB_SEARCH_ENDPOINT"];
 
 mkdirSync(DATA_DIR, { recursive: true });
 const db = openDatabase(DB_PATH);
@@ -68,18 +72,46 @@ function buildProvider(): { provider: ModelProvider; mode: "gemini" | "offline";
 
 const { provider, mode: providerMode, detail: providerDetail } = buildProvider();
 
+function buildWebSearchProvider(): WebSearchProvider | undefined {
+  if (!WEB_SEARCH_ENDPOINT) return undefined;
+  return {
+    async search(request) {
+      const response = await fetch(WEB_SEARCH_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(process.env["STUDIO_WEB_SEARCH_TOKEN"] ? { authorization: `Bearer ${process.env["STUDIO_WEB_SEARCH_TOKEN"]}` } : {}),
+        },
+        body: JSON.stringify(request),
+      });
+      if (!response.ok) throw new Error(`Studio web search endpoint returned HTTP ${response.status}`);
+      const value = await response.json() as { query?: string; results?: unknown[] };
+      if (!Array.isArray(value.results)) throw new Error("Studio web search endpoint returned no results array");
+      return { query: value.query ?? request.query, results: value.results as never };
+    },
+  };
+}
+
+const webSearch = buildWebSearchProvider();
+
 function buildRuntime(
   definition: AgentDefinition,
   onContextCompiled?: (context: CompiledContext, purpose: string) => void,
 ): AgentRuntime {
-  const knowledge = new KnowledgeIndex(definition.knowledge);
+  const knowledge = new KnowledgeIndex(definition.knowledge, { webSearch });
   const tools = registerStudioExecutors(new ToolRegistry(definition.tools), definition, knowledge, dryRun);
+  const harness = definition.execution?.harness === "native_agent"
+    ? new NativeAgentHarness()
+    : definition.execution?.harness === "claude_agent"
+      ? new ClaudeAgentHarness({ executionContextPolicy: "fresh_each_turn" })
+      : new TwoPassHarness();
   return new AgentRuntime({
     definition,
     sessions,
     model: provider,
     tools,
     knowledge,
+    harness,
     ids: createRandomIds(),
     clock: createSystemClock(),
     onContextCompiled,
@@ -149,6 +181,7 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL): P
   if (method === "GET" && path === "/status") {
     return json(res, 200, {
       provider: { id: provider.id, mode: providerMode, detail: providerDetail },
+      harnesses: { claudeConfigured: !!process.env["ANTHROPIC_API_KEY"], webSearchConfigured: !!webSearch },
       database: DB_PATH,
       definitionCount: (await definitions.listLatest()).length,
     });
@@ -301,6 +334,18 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL): P
         contexts: captured,
         dryRunLedger: dryRun.recordsFor(sessionId),
       });
+    }
+
+    // POST /api/sessions/:id/context { hostContext } - observation only; no model call.
+    if (method === "POST" && segments[2] === "context") {
+      const body = await readBody(req);
+      const rawContext = body["hostContext"] ?? body;
+      if (!rawContext || typeof rawContext !== "object" || Array.isArray(rawContext)) {
+        throw new HttpError(400, "hostContext must be a JSON object");
+      }
+      const runtime = buildRuntime(definition);
+      const result = await runtime.observeHostContext({ sessionId, hostContext: rawContext as Record<string, unknown> });
+      return json(res, 200, result);
     }
 
     // DELETE /api/sessions/:id

@@ -19,7 +19,7 @@ export type Condition =
   | { kind: "memory_absent"; field: string }
   /** True when the field was committed *this turn* - i.e. the user just supplied or corrected it. */
   | { kind: "memory_changed"; field: string }
-  /** A semantic routing signal emitted by Interpret + Plan. Model understanding enters here. */
+  /** A semantic routing signal emitted by PreflightPlan. Model understanding enters here. */
   | { kind: "signal"; name: string }
   | { kind: "tool_succeeded"; tool: string }
   | { kind: "tool_failed"; tool: string }

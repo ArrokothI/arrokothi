@@ -1,0 +1,12 @@
+{
+  "name": "@agent-sdk/provider-claude-agent",
+  "version": "0.3.0",
+  "description": "Optional Claude Agent SDK execution harness adapter. Kept outside @agent-sdk/core.",
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": {
+    "@agent-sdk/core": "*",
+    "@anthropic-ai/claude-agent-sdk": "^0.2.0",
+    "zod": "^4.0.0"
+  }
+}

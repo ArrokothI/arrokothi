@@ -1,8 +1,7 @@
 {
-  "name": "@agent-sdk/benchmarks",
+  "name": "@agent-sdk/example-native-agent",
   "version": "0.3.0",
   "private": true,
-  "description": "P01/P02 benchmark adapters. Consume only neutral requirements/scenarios/evaluation contracts.",
   "type": "module",
   "dependencies": {
     "@agent-sdk/core": "*",

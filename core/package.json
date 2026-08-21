@@ -1,7 +1,7 @@
 {
   "name": "@agent-sdk/core",
-  "version": "0.2.0",
-  "description": "Importable agent kernel with a narrow LangChain-backed local document knowledge implementation.",
+  "version": "0.3.0",
+  "description": "Provider-neutral agent control plane with workflow and iterative execution Harnesses.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
