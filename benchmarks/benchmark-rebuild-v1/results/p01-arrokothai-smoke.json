@@ -1,0 +1,347 @@
+{
+  "schemaVersion": "benchmark-raw-run-v1",
+  "rebuildLabel": "benchmark-rebuild-v1",
+  "benchmarkApplicationId": "p01",
+  "implementationId": "p01-arrokothai",
+  "framework": {
+    "id": "arrokothai",
+    "name": "Agent_SDK",
+    "version": "0.37.0"
+  },
+  "scenarioRunId": "p01-representative-project-scope",
+  "timestamps": {
+    "startedAt": "2026-08-22T12:17:23.356Z",
+    "completedAt": "2026-08-22T12:17:24.926Z",
+    "elapsedMs": 1569
+  },
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm planning a cast-in-situ garden studio. The net wall area is 420 square feet and the wall will be 10 inches thick. What material volume should I plan for, and how long should curing take?",
+      "assistant": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+      "stopReason": "error",
+      "steps": 0,
+      "elapsedMs": 1568,
+      "metrics": {
+        "preflightModelCalls": 0,
+        "agentLoopModelCalls": 1,
+        "conversationSummaryModelCalls": 0,
+        "guideRetryModelCalls": 0,
+        "totalModelCalls": 1
+      },
+      "eventSeqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    }
+  ],
+  "model": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "maxOutputTokens": 700,
+    "thinking": null,
+    "calls": [
+      {
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.924Z",
+        "purpose": "agent_loop:1",
+        "providerId": "strands:gemini",
+        "model": "gemini-3.5-flash-lite"
+      }
+    ],
+    "callCount": 1,
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0
+    }
+  },
+  "canonicalState": {},
+  "knowledge": {
+    "calls": [],
+    "rejectedCalls": []
+  },
+  "actions": {
+    "requests": [],
+    "confirmationsRequested": [],
+    "confirmationsResolved": [],
+    "executionStarted": [],
+    "succeeded": [],
+    "failed": [],
+    "outcomeUnknown": [],
+    "dispatchCount": 0
+  },
+  "stopReason": "error",
+  "runtimeErrors": [
+    {
+      "turn": 1,
+      "at": "2026-08-22T12:17:24.902Z",
+      "code": "OTHER_PROVIDER_FAILURE",
+      "message": "fetch failed",
+      "detail": "planning pass failed; the response continued without new memory or retrieval"
+    },
+    {
+      "turn": 1,
+      "at": "2026-08-22T12:17:24.925Z",
+      "code": "agent_loop_failed",
+      "message": "agent-loop execution stopped before producing a successful terminal result",
+      "detail": "engine=strands-loop-v0.37; providerStopReason=fetch failed"
+    }
+  ],
+  "nativeTrace": {
+    "eventStream": [
+      {
+        "id": "evt_mt4cfjq68fzxgbhg",
+        "turn": 1,
+        "at": "2026-08-22T12:17:23.358Z",
+        "type": "UserMessageReceived",
+        "payload": {
+          "text": "I'm planning a cast-in-situ garden studio. The net wall area is 420 square feet and the wall will be 10 inches thick. What material volume should I plan for, and how long should curing take?"
+        },
+        "seq": 1,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkx2nzbc3wpq",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.902Z",
+        "type": "RuntimeError",
+        "payload": {
+          "code": "OTHER_PROVIDER_FAILURE",
+          "message": "fetch failed",
+          "detail": "planning pass failed; the response continued without new memory or retrieval"
+        },
+        "seq": 2,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkx20kxbpa4g",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.902Z",
+        "type": "TurnPlanCreated",
+        "payload": {
+          "strategy": "llm",
+          "resolvedBy": "safe_empty",
+          "plan": {
+            "memoryProposals": [],
+            "workingNotes": [],
+            "signals": [],
+            "retrievalRequests": []
+          },
+          "detail": "planner failed or returned malformed structured output"
+        },
+        "seq": 3,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxbjjgbcfsj",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.911Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_invocation"
+        },
+        "seq": 4,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxg81pd6bcm",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.916Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_model",
+          "iteration": 1
+        },
+        "seq": 5,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxgozwim60b",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.916Z",
+        "type": "AgentIterationStarted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "phaseId": null,
+          "capabilityNames": [
+            "knowledge_document_search_craig_product_knowledge_abceae",
+            "compute_wall_volume"
+          ]
+        },
+        "seq": 6,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxo9p6ws70g",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.924Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_model",
+          "iteration": 1
+        },
+        "seq": 7,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxoh5yym8pm",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.924Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite"
+        },
+        "seq": 8,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxp4txbgcqi",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.925Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_invocation",
+          "detail": {
+            "mutationVersion": 1,
+            "runtimeContextKeysRead": []
+          }
+        },
+        "seq": 9,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxpof8adyqh",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.925Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_error",
+          "detail": {
+            "providerStopReason": "fetch failed"
+          }
+        },
+        "seq": 10,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxpf57b47qf",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.925Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_terminated",
+          "detail": {
+            "stopReason": "error"
+          }
+        },
+        "seq": 11,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxpgls84vjw",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.925Z",
+        "type": "RuntimeError",
+        "payload": {
+          "code": "agent_loop_failed",
+          "message": "agent-loop execution stopped before producing a successful terminal result",
+          "detail": "engine=strands-loop-v0.37; providerStopReason=fetch failed"
+        },
+        "seq": 12,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxpw0oppo6g",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.925Z",
+        "type": "AgentIterationCompleted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "requested": 0,
+          "completed": 0,
+          "rejected": 0,
+          "stopReason": "error"
+        },
+        "seq": 13,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      },
+      {
+        "id": "evt_mt4cfkxpfe7gw885",
+        "turn": 1,
+        "at": "2026-08-22T12:17:24.925Z",
+        "type": "AssistantMessageEmitted",
+        "payload": {
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "stopReason": "error"
+        },
+        "seq": 14,
+        "sessionId": "benchmark-rebuild-v1-p01-1787401043357"
+      }
+    ],
+    "finalState": {
+      "sessionId": "benchmark-rebuild-v1-p01-1787401043357",
+      "agentId": "benchmark-rebuild-v1-p01-arrokothai",
+      "agentVersion": 1,
+      "turn": 1,
+      "lastSeq": 14,
+      "memory": {},
+      "workingNotes": [],
+      "hostContext": {},
+      "phaseId": null,
+      "pendingAction": null,
+      "ledger": {},
+      "transcript": [
+        {
+          "role": "user",
+          "text": "I'm planning a cast-in-situ garden studio. The net wall area is 420 square feet and the wall will be 10 inches thick. What material volume should I plan for, and how long should curing take?",
+          "turn": 1,
+          "at": "2026-08-22T12:17:23.358Z"
+        },
+        {
+          "role": "assistant",
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "turn": 1,
+          "at": "2026-08-22T12:17:24.925Z"
+        }
+      ],
+      "turnToolResults": [],
+      "turnSignals": [],
+      "turnPlan": {
+        "memoryProposals": [],
+        "workingNotes": [],
+        "signals": [],
+        "retrievalRequests": []
+      },
+      "turnRetrievals": [],
+      "allToolResults": [],
+      "unresolvedExternalExecution": null,
+      "status": "active",
+      "createdAt": "2026-08-22T12:17:23.357Z",
+      "updatedAt": "2026-08-22T12:17:24.925Z"
+    }
+  }
+}

@@ -35,6 +35,8 @@
     "canary:gemini": "node --env-file-if-exists=.env --experimental-strip-types diagnostics/gemini-provider-canary.ts",
     "bench:p01": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p01-craig/run.ts",
     "bench:p02": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p02-estate/run.ts",
+    "smoke:rebuild:p01:arrokothai": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/benchmark-rebuild-v1/p01-arrokothai/smoke.ts",
+    "smoke:rebuild:p02:arrokothai": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/benchmark-rebuild-v1/p02-arrokothai/smoke.ts",
     "bench:triad-arrokothi": "node --env-file-if-exists=.env --experimental-strip-types --import ../Agenerateor/tests/register-ts-loader.mjs benchmarks/triad/runner/run-arrokothi.ts",
     "bench:compare": "node --experimental-strip-types benchmarks/shared/compare.ts",
     "test:core": "node --test --experimental-strip-types core/tests/*.test.ts",

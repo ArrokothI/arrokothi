@@ -1,4 +1,8 @@
-# Preserved benchmark history — P01 / Craig and P02 / EstatePro
+# P01 / P02 benchmarks
+
+The active clean-room subject implementations are under [`benchmark-rebuild-v1`](./benchmark-rebuild-v1/README.md). They use neutral product requirements and original source data, run on Agent_SDK v0.37.0, require explicit Gemini credentials and model selection, and emit neutral raw trajectories. The scenarios, graders, and older adapters below remain frozen history and are not imported by the rebuild.
+
+## Preserved benchmark history — P01 / Craig and P02 / EstatePro
 
 Historical adapters that run this SDK against the same scripted user turns as the frozen P01/P02 benchmarks,
 project its state into the **canonical benchmark field names**, and grade with faithfully ported

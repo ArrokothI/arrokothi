@@ -6,6 +6,7 @@
   "type": "module",
   "dependencies": {
     "@agent-sdk/core": "*",
+    "@agent-sdk/integration-strands": "*",
     "@agent-sdk/provider-gemini": "*"
   }
 }
