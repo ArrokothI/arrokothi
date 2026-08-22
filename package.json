@@ -30,10 +30,11 @@
     "example:estate": "node --experimental-strip-types examples/estate-like/main.ts",
     "example:native": "node --experimental-strip-types examples/native-agent/main.ts",
     "example:strands": "node --env-file-if-exists=.env --experimental-strip-types examples/strands-gemini/main.ts",
-    "example:p01": "node --experimental-strip-types examples/p01-craig/main.ts",
-    "example:p02": "node --experimental-strip-types examples/p02-estate/main.ts",
+    "example:p01": "node --env-file-if-exists=.env --experimental-strip-types examples/p01-craig/main.ts",
+    "example:p02": "node --env-file-if-exists=.env --experimental-strip-types examples/p02-estate/main.ts",
     "bench:p01": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p01-craig/run.ts",
     "bench:p02": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p02-estate/run.ts",
+    "bench:triad-v035": "node --env-file-if-exists=.env --experimental-strip-types --import ../Agenerateor/tests/register-ts-loader.mjs benchmarks/triad-v035/run.ts",
     "bench:compare": "node --experimental-strip-types benchmarks/shared/compare.ts",
     "test:core": "node --test --experimental-strip-types core/tests/*.test.ts",
     "test:strands": "node --test --experimental-strip-types integrations/strands/tests/*.test.ts"

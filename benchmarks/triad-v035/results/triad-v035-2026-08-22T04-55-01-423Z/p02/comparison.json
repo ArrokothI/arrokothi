@@ -1,0 +1,144 @@
+{
+  "project": "p02",
+  "absolute": {
+    "bespoke": {
+      "pass": 8,
+      "soft_fail": 0,
+      "hard_fail": 7,
+      "inconclusive": 0
+    },
+    "agenerateor": {
+      "pass": 11,
+      "soft_fail": 0,
+      "hard_fail": 4,
+      "inconclusive": 0
+    },
+    "arrokothi": {
+      "pass": 0,
+      "soft_fail": 0,
+      "hard_fail": 15,
+      "inconclusive": 0
+    }
+  },
+  "pairwise": {
+    "arrokothi_vs_bespoke": {
+      "inconclusive": 15
+    },
+    "arrokothi_vs_agenerateor": {
+      "inconclusive": 15
+    },
+    "agenerateor_vs_bespoke": {
+      "tie": 8,
+      "agenerateor_better": 4,
+      "mixed": 1,
+      "tie_both_fail": 2
+    }
+  },
+  "frameworkFailures": [
+    {
+      "scenarioId": "ESTATE-S01",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S02",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S03",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S07",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S08",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S09",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S10",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S11",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S12",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S13",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S14",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S15",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S16",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S17",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    },
+    {
+      "scenarioId": "ESTATE-S19",
+      "code": "PROVIDER_HTTP_400",
+      "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+      "turnIndex": 0,
+      "classification": "FRAMEWORK_GAP"
+    }
+  ]
+}

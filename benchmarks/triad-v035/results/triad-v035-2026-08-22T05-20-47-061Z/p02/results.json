@@ -1,0 +1,786 @@
+{
+  "project": "p02",
+  "records": [
+    {
+      "scenarioId": "ESTATE-S17",
+      "specId": "P1-S17",
+      "title": "Duplicate completion must not duplicate the handoff",
+      "evidence": "CORE",
+      "requirement": "EST-19",
+      "stresses": "Idempotency of a consequential side effect",
+      "note": null,
+      "turns": [
+        "I'm buying in West Village, budget $18M, three month timeline, cash buyer.",
+        "I'll go with option 2. Name's Sam Park, phone 555-0122, email sam@example.com.",
+        "Call me around 5pm.",
+        "Yes, please go ahead and send that to the team.",
+        "Great, thanks! Actually, can you also call me at 5pm tomorrow instead?"
+      ],
+      "executionOrder": [
+        "bespoke",
+        "agenerateor",
+        "arrokothi"
+      ],
+      "systems": {
+        "bespoke": {
+          "replies": [
+            "Found it! Here are 2 quick previews: 1. $24,500,000 in West Village — private elevator and rooftop garden. 2. $7,250,000 in TriBeCa — classic industrial loft with original brickwork. Which one catches your eye, 1 or 2?",
+            "Great taste, Sam! Would you prefer our agent to reach out by text or call, and what time works best for you?",
+            "Perfect, Sam! Our agent will call you around 5pm. Excited to help you out!",
+            "Awesome — I've sent your details over to our team. They'll be reaching out soon!",
+            "Perfect, Sam! Our agent will call you around 5pm. Excited to help you out!",
+            "You got it, Sam! I have updated your preference to a call at 5pm tomorrow."
+          ],
+          "fields": {
+            "intent": "buy",
+            "target_location": "West Village",
+            "budget": "18000000",
+            "timeline": "3 months",
+            "financing": "cash",
+            "contact_name": "Sam Park",
+            "phone": "555-0122",
+            "email": "sam@example.com",
+            "contact_preference": "call",
+            "best_contact_time": "5pm"
+          },
+          "actions": [
+            "send_email"
+          ],
+          "actionsAttempted": [
+            "send_email"
+          ],
+          "actionSuccess": true,
+          "actionResults": [
+            {
+              "attempted": true,
+              "success": true,
+              "payload": {
+                "stage": "complete",
+                "intent": "buy",
+                "location": "West Village",
+                "budget": "18000000",
+                "timeline": "3 months",
+                "financing": "cash",
+                "firstName": "Sam",
+                "lastName": "Park",
+                "phone": "555-0122",
+                "email": "sam@example.com",
+                "contactPreference": "call",
+                "bestTime": "5pm"
+              },
+              "analysisModelBacked": true
+            }
+          ],
+          "turnProviders": [
+            "gemini",
+            "gemini",
+            "gemini",
+            "gemini",
+            "gemini",
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "bespoke",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "bespoke",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 1,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "bespoke",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 2,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "bespoke",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 3,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "bespoke",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 4,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "bespoke",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 4,
+              "purpose": "lead_analysis",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 6970,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 6,
+            "physicalAttempts": 6,
+            "note": "Faithful client exposes no token usage; no transport retry is performed inside the copied driver."
+          },
+          "outcome": "pass",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "handoff_attempted_once",
+              "label": "The handoff Action fired at least once",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "attempted=true (expected true); actionsAttempted=[\"send_email\"]"
+            },
+            {
+              "id": "single_dispatch",
+              "label": "Exactly ONE external handoff dispatch across the whole run",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "send_email attempted 1 time(s) across the run (expected exactly 1)"
+            }
+          ]
+        },
+        "agenerateor": {
+          "replies": [
+            "For a cash purchase in the West Village within a three-month timeline, we have the magnificent Greenwich Townhouse. It is a restored 25-foot-wide Greek Revival mansion with six bedrooms, seven bathrooms, 8,400 square feet, a private elevator, and a rooftop garden with an outdoor kitchen, listed at $24,500,000. \n\nBecause your budget of $18 million sits below this property's listed price, would you like me to connect you with a human EstatePro representative to discuss alternative purchasing options or other neighborhoods that align closely with your criteria?",
+            "I have everything prepared to connect you with our team. May I have your explicit confirmation to send your inquiry and contact details to our human EstatePro representatives so they can follow up with you directly?",
+            "Thank you for providing your preferred contact time of around 5:00 PM. May I have your explicit confirmation to send your inquiry and contact details to our human EstatePro representatives so they can follow up with you directly?",
+            "Your request has been transmitted successfully to the EstatePro team. A representative will reach out to you around 5:00 PM to discuss your West Village search and potential options.",
+            "I have noted your updated request to be reached tomorrow at 5:00 PM. May I have your explicit confirmation to send your updated contact time to our human EstatePro representatives?"
+          ],
+          "fields": {
+            "intent": "Buy",
+            "budget": "18",
+            "contact_name": "Sam Park",
+            "target_location": "West Village",
+            "timeline": "three month timeline",
+            "financing": "cash",
+            "email": "sam@example.com",
+            "contact_preference": "Call",
+            "best_contact_time": "tomorrow at 5pm"
+          },
+          "stageId": "stg_estate_consult",
+          "actions": [
+            "send_email"
+          ],
+          "actionsAttempted": [
+            "send_email"
+          ],
+          "actionSuccess": true,
+          "actionResults": [
+            {
+              "actionId": "send_email",
+              "attempted": true,
+              "success": true
+            }
+          ],
+          "turnProviders": [
+            "gemini",
+            "gemini",
+            "gemini",
+            "gemini",
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 0,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 2675,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 1,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 1,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 2601,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 2,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 2,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 2094,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 3,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 3,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 1993,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 4,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 4,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 1988,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 10,
+            "physicalAttempts": 10,
+            "note": "Counted from returned extraction.aiAttempted plus reply provider metadata."
+          },
+          "outcome": "pass",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "handoff_attempted_once",
+              "label": "The handoff Action fired at least once",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "attempted=true (expected true); actionsAttempted=[\"send_email\"]"
+            },
+            {
+              "id": "single_dispatch",
+              "label": "Exactly ONE external handoff dispatch across the whole run",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "send_email attempted 1 time(s) across the run (expected exactly 1)"
+            }
+          ]
+        },
+        "arrokothi": {
+          "replies": [
+            "We don't currently have any properties in the West Village matching an $18M budget with at least 3 bedrooms. \n\nWe do have one magnificent West Village listing above that budget: the **Greenwich Townhouse** on Greenwich Village / West Village, featuring 6 bedrooms, 7 bathrooms, and 8,400 sq ft, listed at **$24,500,000**. \n\nWould you like to hear more about that property, or would you like me to connect you with a representative to discuss other potential options or off-market opportunities?"
+          ],
+          "fields": {},
+          "stageId": "qualify",
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "toolEvents": [
+            {
+              "turnIndex": 0,
+              "type": "ToolRequested",
+              "payload": {
+                "requestId": "act_mt3xlji4geoxlz9q",
+                "toolName": "query_listings",
+                "args": {
+                  "filters": [
+                    {
+                      "value": "West Village",
+                      "op": "contains",
+                      "field": "location"
+                    },
+                    {
+                      "value": 18000000,
+                      "field": "price",
+                      "op": "lte"
+                    },
+                    {
+                      "field": "beds",
+                      "op": "gte",
+                      "value": 3
+                    }
+                  ]
+                },
+                "requestedBy": "model"
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "ToolExecutionSucceeded",
+              "payload": {
+                "requestId": "act_mt3xlji4geoxlz9q",
+                "toolName": "query_listings",
+                "output": {
+                  "matches": [],
+                  "total_matched": 0,
+                  "total_records": 6
+                },
+                "facts": [
+                  {
+                    "key": "listings_matches",
+                    "value": 0,
+                    "description": "0 of 6 records in \"EstatePro properties\" satisfy the stated constraints. This count is computed by the runtime and is authoritative."
+                  }
+                ],
+                "idempotencyKey": "query_listings:492b6335851aa386"
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "DelegationCompleted",
+              "payload": {
+                "harness": "agent-harness-v0.35",
+                "iteration": 1,
+                "category": "knowledge",
+                "capabilityName": "query_listings",
+                "outcome": "completed",
+                "summary": {
+                  "ok": true,
+                  "output": {
+                    "matches": [],
+                    "total_matched": 0,
+                    "total_records": 6
+                  },
+                  "facts": [
+                    {
+                      "key": "listings_matches",
+                      "value": 0,
+                      "description": "0 of 6 records in \"EstatePro properties\" satisfy the stated constraints. This count is computed by the runtime and is authoritative."
+                    }
+                  ],
+                  "replayed": false
+                }
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "ToolRequested",
+              "payload": {
+                "requestId": "act_mt3xlkfc6z30uo3f",
+                "toolName": "query_listings",
+                "args": {
+                  "filters": [
+                    {
+                      "value": "West Village",
+                      "op": "contains",
+                      "field": "location"
+                    }
+                  ]
+                },
+                "requestedBy": "model"
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "ToolExecutionSucceeded",
+              "payload": {
+                "requestId": "act_mt3xlkfc6z30uo3f",
+                "toolName": "query_listings",
+                "output": {
+                  "matches": [
+                    {
+                      "id": "5",
+                      "title": "Greenwich Townhouse",
+                      "type": "Mansion",
+                      "location": "West Village",
+                      "city": "New York",
+                      "price": 24500000,
+                      "beds": 6,
+                      "baths": 7,
+                      "sqft": 8400,
+                      "description": "An impeccably restored 25-foot wide Greek Revival townhouse featuring a private elevator and a rooftop garden with an outdoor kitchen."
+                    }
+                  ],
+                  "total_matched": 1,
+                  "total_records": 6
+                },
+                "facts": [
+                  {
+                    "key": "listings_matches",
+                    "value": 1,
+                    "description": "1 of 6 records in \"EstatePro properties\" satisfy the stated constraints. This count is computed by the runtime and is authoritative."
+                  }
+                ],
+                "idempotencyKey": "query_listings:3c9502abb82b598f"
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "DelegationCompleted",
+              "payload": {
+                "harness": "agent-harness-v0.35",
+                "iteration": 2,
+                "category": "knowledge",
+                "capabilityName": "query_listings",
+                "outcome": "completed",
+                "summary": {
+                  "ok": true,
+                  "output": {
+                    "matches": [
+                      {
+                        "id": "5",
+                        "title": "Greenwich Townhouse",
+                        "type": "Mansion",
+                        "location": "West Village",
+                        "city": "New York",
+                        "price": 24500000,
+                        "beds": 6,
+                        "baths": 7,
+                        "sqft": 8400,
+                        "description": "An impeccably restored 25-foot wide Greek Revival townhouse featuring a private elevator and a rooftop garden with an outdoor kitchen."
+                      }
+                    ],
+                    "total_matched": 1,
+                    "total_records": 6
+                  },
+                  "facts": [
+                    {
+                      "key": "listings_matches",
+                      "value": 1,
+                      "description": "1 of 6 records in \"EstatePro properties\" satisfy the stated constraints. This count is computed by the runtime and is authoritative."
+                    }
+                  ],
+                  "replayed": false
+                }
+              }
+            }
+          ],
+          "turnProviders": [
+            "gemini_then_framework_failure"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "frameworkFailure": {
+            "code": "PROVIDER_HTTP_400",
+            "message": "Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+            "turnIndex": 0,
+            "classification": "FRAMEWORK_GAP"
+          },
+          "callMetrics": {
+            "preflightModelCalls": 0,
+            "agentLoopModelCalls": 3,
+            "conversationSummaryModelCalls": 0,
+            "guideRetryModelCalls": 0,
+            "totalModelCalls": 3,
+            "logicalModelCalls": 4,
+            "physicalAttempts": null,
+            "physicalAttemptNote": "Strands SDK does not expose transport retry attempts; configured provider retries=0 for preflight. Failed model attempts are counted separately from RunTurnResult.metrics."
+          },
+          "calls": [
+            {
+              "system": "arrokothi",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 0,
+              "purpose": "agent_loop:1",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 2077,
+              "outputTokens": 71,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 2148
+            },
+            {
+              "system": "arrokothi",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 0,
+              "purpose": "agent_loop:2",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 2235,
+              "outputTokens": 32,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 2267
+            },
+            {
+              "system": "arrokothi",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 0,
+              "purpose": "agent_loop:3",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 2449,
+              "outputTokens": 122,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 2571
+            },
+            {
+              "system": "arrokothi",
+              "project": "p02",
+              "scenarioId": "ESTATE-S17",
+              "turnIndex": 0,
+              "purpose": "agent_loop_failed_attempt",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null,
+              "error": "PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n"
+            }
+          ],
+          "outcome": "hard_fail",
+          "reason": "FRAMEWORK_GAP: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "assertions": [
+            {
+              "id": "arrokothi_framework_execution_completed",
+              "label": "Canonical v0.35 Strands execution completes without an invalid provider request",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": false,
+              "detail": "PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n"
+            }
+          ]
+        }
+      },
+      "comparisons": {
+        "arrokothi_vs_bespoke": {
+          "left": "arrokothi",
+          "right": "bespoke",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "arrokothi_vs_agenerateor": {
+          "left": "arrokothi",
+          "right": "agenerateor",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "agenerateor_vs_bespoke": {
+          "left": "agenerateor",
+          "right": "bespoke",
+          "verdict": "tie",
+          "shared": [
+            {
+              "id": "handoff_attempted_once",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "single_dispatch",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            }
+          ],
+          "leftWins": [],
+          "rightWins": [],
+          "bothFail": []
+        }
+      }
+    }
+  ]
+}

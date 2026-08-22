@@ -1,0 +1,46 @@
+{
+  "agentSdk": {
+    "root": "/Users/rex-shih/Documents/Codex/projects/Agent_SDK",
+    "commit": "0e242dac161de3e53e56764df06d067b4eaddf2f",
+    "trackedDirty": [
+      " M package.json",
+      " M tsconfig.json",
+      "?? benchmarks/triad-v035/"
+    ],
+    "statusShort": [
+      " M package.json",
+      " M tsconfig.json",
+      "?? benchmarks/triad-v035/"
+    ]
+  },
+  "craig": {
+    "root": "/Users/rex-shih/Documents/Codex/projects/Craig-Hempcrete-DemoSitee",
+    "commit": "0297a5cc43e4fcbc4e8edc7b4d90254cea76a893",
+    "trackedDirty": [],
+    "statusShort": []
+  },
+  "estatePro": {
+    "root": "/Users/rex-shih/Documents/Codex/projects/EstatePro",
+    "commit": "49e33528281ca28c08ac3993778493c3bfaa153c",
+    "trackedDirty": [
+      " M .gitignore",
+      " M components/AIConcierge.tsx",
+      " M package-lock.json",
+      "?? .claude/",
+      "?? .env.example"
+    ],
+    "statusShort": [
+      " M .gitignore",
+      " M components/AIConcierge.tsx",
+      " M package-lock.json",
+      "?? .claude/",
+      "?? .env.example"
+    ]
+  },
+  "agenerateor": {
+    "root": "/Users/rex-shih/Documents/Codex/projects/Agenerateor",
+    "commit": "2a52f14e3679886c38f5d333b54d4f5c2bc094a7",
+    "trackedDirty": [],
+    "statusShort": []
+  }
+}

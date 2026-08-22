@@ -1,0 +1,68 @@
+{
+  "bespoke": {
+    "attemptedUserTurns": 31,
+    "totalLogicalModelCalls": 33,
+    "meanLogicalCallsPerAttemptedTurn": 1.064516129032258,
+    "medianLogicalCallsPerAttemptedTurn": 1,
+    "minLogicalCallsPerAttemptedTurn": 1,
+    "maxLogicalCallsPerAttemptedTurn": 2,
+    "callsPerTurnHistogram": {
+      "1": 29,
+      "2": 2,
+      "3": 0,
+      "4+": 0
+    },
+    "physicalAttempts": 33,
+    "physicalAttemptCoverage": "complete",
+    "totalInputTokens": null,
+    "totalOutputTokens": null,
+    "tokenCoverageCalls": 0,
+    "p50ObservedTurnLatencyMs": 2075,
+    "p95ObservedTurnLatencyMs": 6562,
+    "latencyCoverageTurns": 15
+  },
+  "agenerateor": {
+    "attemptedUserTurns": 31,
+    "totalLogicalModelCalls": 63,
+    "meanLogicalCallsPerAttemptedTurn": 2.032258064516129,
+    "medianLogicalCallsPerAttemptedTurn": 2,
+    "minLogicalCallsPerAttemptedTurn": 2,
+    "maxLogicalCallsPerAttemptedTurn": 3,
+    "callsPerTurnHistogram": {
+      "1": 0,
+      "2": 30,
+      "3": 1,
+      "4+": 0
+    },
+    "physicalAttempts": 63,
+    "physicalAttemptCoverage": "complete",
+    "totalInputTokens": null,
+    "totalOutputTokens": null,
+    "tokenCoverageCalls": 0,
+    "p50ObservedTurnLatencyMs": 2369,
+    "p95ObservedTurnLatencyMs": 2994,
+    "latencyCoverageTurns": 31
+  },
+  "arrokothi": {
+    "attemptedUserTurns": 15,
+    "totalLogicalModelCalls": 51,
+    "meanLogicalCallsPerAttemptedTurn": 3.4,
+    "medianLogicalCallsPerAttemptedTurn": 3,
+    "minLogicalCallsPerAttemptedTurn": 3,
+    "maxLogicalCallsPerAttemptedTurn": 5,
+    "callsPerTurnHistogram": {
+      "1": 0,
+      "2": 0,
+      "3": 12,
+      "4+": 3
+    },
+    "physicalAttempts": null,
+    "physicalAttemptCoverage": "unknown for 15 scenario(s)",
+    "totalInputTokens": 80895,
+    "totalOutputTokens": 2538,
+    "tokenCoverageCalls": 36,
+    "p50ObservedTurnLatencyMs": null,
+    "p95ObservedTurnLatencyMs": null,
+    "latencyCoverageTurns": 0
+  }
+}

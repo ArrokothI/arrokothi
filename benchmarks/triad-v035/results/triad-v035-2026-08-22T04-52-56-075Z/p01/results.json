@@ -1,0 +1,2242 @@
+{
+  "project": "p01",
+  "records": [
+    {
+      "scenarioId": "CRAIG-S01",
+      "specId": "P1-S01",
+      "title": "Backyard office with complete sizing inputs",
+      "evidence": "CORE",
+      "requirement": "CR-01, CR-02, CR-04",
+      "stresses": "Front-loaded data; universal-quantity framing",
+      "note": null,
+      "turns": [
+        "I'm planning a backyard office. I have about 420 sq. ft. of exterior wall area, want 10-inch walls, and I care more about speed than hands-on mixing."
+      ],
+      "executionOrder": [
+        "bespoke",
+        "agenerateor",
+        "arrokothi"
+      ],
+      "systems": {
+        "bespoke": {
+          "replies": [
+            "For a backyard office with 420 sq. ft. of net exterior wall area and 10-inch (approx. 25 cm) walls, you will need roughly 10 to 11 m³ of material. Since speed is your priority and you want to skip on-site mixing, pre-cast hempcrete blocks are your absolute best option because they arrive fully cured and ready to stack. Just keep in mind that our calculator numbers are planning estimates, not stamped engineering or permit advice. \n\nWould you prefer to explore using 12-inch blocks for maximum thermal performance, or stick with 10-inch to preserve a bit more interior floor space?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "turnProviders": [
+            "gemini"
+          ],
+          "sources": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "bespoke",
+              "project": "p01",
+              "scenarioId": "CRAIG-S01",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 1361,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 1,
+            "physicalAttempts": 1
+          },
+          "outcome": "hard_fail",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "area_420",
+              "label": "Wall area captured as 420",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            },
+            {
+              "id": "thick_10",
+              "label": "Thickness captured as 10",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            },
+            {
+              "id": "vol_9_9",
+              "label": "States ≈9.9 m³ from the site formula",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": false,
+              "detail": "expected ≈9.9 m³ (±0.05); reply stated [10,11]"
+            },
+            {
+              "id": "speed_to_blocks",
+              "label": "Ties recommendation to the stated speed priority (pre-cast blocks)",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(583 chars) → held"
+            },
+            {
+              "id": "no_pkg_count",
+              "label": "Does not assert an orderable package count",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(583 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            }
+          ]
+        },
+        "agenerateor": {
+          "replies": [
+            "Based on your backyard office project with 420 square feet of exterior wall area at a 10-inch thickness, your planning material volume is 9.9 cubic metres. \n\nSince speed is your top priority and you want to minimize hands-on mixing, pre-cast blocks are the best fit for your build. Pre-cast blocks arrive at your site already cured and are laid like bricks with a thin lime mortar, allowing plastering to follow in just 2-3 days rather than waiting weeks for cast-in-situ walls to cure.\n\nTo help narrow down your planning further, do you have a target timeline or deadline in mind for when you'd like to start building?"
+          ],
+          "fields": {
+            "project_type": "backyard office",
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10,
+            "user_priority": "speed"
+          },
+          "stageId": "stg_craig_consult",
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "turnProviders": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S01",
+              "turnIndex": 0,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S01",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 2829,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 2,
+            "physicalAttempts": 2,
+            "note": "Counted from returned extraction.aiAttempted plus reply provider metadata."
+          },
+          "outcome": "pass",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "area_420",
+              "label": "Wall area captured as 420",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "wall_area_sq_ft = 420 (expected 420)"
+            },
+            {
+              "id": "thick_10",
+              "label": "Thickness captured as 10",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "wall_thickness_in = 10 (expected 10)"
+            },
+            {
+              "id": "vol_9_9",
+              "label": "States ≈9.9 m³ from the site formula",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "expected ≈9.9 m³ (±0.05); reply stated [9.9]"
+            },
+            {
+              "id": "speed_to_blocks",
+              "label": "Ties recommendation to the stated speed priority (pre-cast blocks)",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(619 chars) → held"
+            },
+            {
+              "id": "no_pkg_count",
+              "label": "Does not assert an orderable package count",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(619 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "actions attempted: []"
+            }
+          ]
+        },
+        "arrokothi": {
+          "replies": [
+            "Hello! A backyard office is a fantastic project, and hemp-lime is a wonderful choice for creating a quiet, breathable, and thermally comfortable workspace. \n\nBased on your 420 square feet of exterior wall area and a 10-inch wall thickness, your planning wall volume comes out to **9.9 cubic metres** of hemp-lime material. \n\nKeep in mind that hemp-lime (hempcrete) is strictly non-load-bearing insulation infill. Your backyard office will need a primary structural frame—such as timber framing—to carry the roof and dead loads, while the hemp-lime is packed around or within that frame.\n\nSince you mentioned that you care more about speed than hands-on mixing, here is how installation approaches compare for a project of this scale:\n\n* **Site-Mixing (Hand or Small Mixer):** This is the most common DIY approach, but it involves manual measuring, loading, and mixing on-site. For 9.9 cubic metres, site mixing is labor-intensive and slower, though it gives you complete control over the process.\n* **Pneumatic Spray Application:** If maximum speed is your primary goal, pneumatic spray application (where the hemp hurd and binder are blown through a hose into formwork) is significantly faster than hand-tamping and reduces physical labor. However, it typically requires specialized spraying equipment and experienced crew members to operate efficiently.\n* **Precast Panels:** Another option for speed is using precast hemp-lime blocks or panels manufactured off-site, which are then assembled around your structural frame. \n\nRegarding building codes, hemp-lime construction for residential and small commercial projects is guided by **2024 IRC Appendix BL**. However, local adoption, engineering requirements, and building permits still depend entirely on your local municipal jurisdiction. Also, remember that cost, carbon savings, and curing schedules are planning assumptions rather than guarantees, as weather conditions significantly influence how long hemp-lime takes to dry and cure.\n\nWould you like to explore the timber framing details needed to support your 10-inch hemp-lime infill walls?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "toolEvents": [
+            {
+              "turnIndex": 0,
+              "type": "ToolRequested",
+              "payload": {
+                "requestId": "act_mt3wk42a4zv22ecm",
+                "toolName": "compute_wall_volume",
+                "args": {
+                  "wall_area_sq_ft": 420,
+                  "wall_thickness_in": 10
+                },
+                "requestedBy": "model"
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "ToolExecutionSucceeded",
+              "payload": {
+                "requestId": "act_mt3wk42a4zv22ecm",
+                "toolName": "compute_wall_volume",
+                "output": {
+                  "volume_m3": 9.9,
+                  "exact_volume_m3": 9.91088,
+                  "formula": "wall_area_sq_ft * (wall_thickness_in / 12) * 0.0283168"
+                },
+                "facts": [
+                  {
+                    "key": "planning_volume_m3",
+                    "value": 9.9,
+                    "description": "9.9 m3, computed by the runtime from 420 sq ft at 10 in. State this value as the planning estimate."
+                  }
+                ],
+                "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f"
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "DelegationCompleted",
+              "payload": {
+                "harness": "agent-harness-v0.35",
+                "iteration": 1,
+                "category": "knowledge",
+                "capabilityName": "compute_wall_volume",
+                "outcome": "completed",
+                "summary": {
+                  "ok": true,
+                  "output": {
+                    "volume_m3": 9.9,
+                    "exact_volume_m3": 9.91088,
+                    "formula": "wall_area_sq_ft * (wall_thickness_in / 12) * 0.0283168"
+                  },
+                  "facts": [
+                    {
+                      "key": "planning_volume_m3",
+                      "value": 9.9,
+                      "description": "9.9 m3, computed by the runtime from 420 sq ft at 10 in. State this value as the planning estimate."
+                    }
+                  ],
+                  "replayed": false
+                }
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "DelegationCompleted",
+              "payload": {
+                "harness": "agent-harness-v0.35",
+                "iteration": 2,
+                "category": "knowledge",
+                "capabilityName": "knowledge_document_search_craig_product_guide_03d860",
+                "outcome": "completed",
+                "summary": {
+                  "returnedCount": 2,
+                  "resultIds": [
+                    "craig_product_guide#1",
+                    "craig_product_guide#2"
+                  ]
+                }
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "DelegationCompleted",
+              "payload": {
+                "harness": "agent-harness-v0.35",
+                "iteration": 3,
+                "category": "knowledge",
+                "capabilityName": "knowledge_document_search_craig_product_guide_03d860",
+                "outcome": "completed",
+                "summary": {
+                  "returnedCount": 2,
+                  "resultIds": [
+                    "craig_product_guide#1",
+                    "craig_product_guide#2"
+                  ]
+                }
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "DelegationCompleted",
+              "payload": {
+                "harness": "agent-harness-v0.35",
+                "iteration": 4,
+                "category": "knowledge",
+                "capabilityName": "knowledge_document_search_craig_product_guide_03d860",
+                "outcome": "completed",
+                "summary": {
+                  "returnedCount": 0,
+                  "resultIds": []
+                }
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "DelegationCompleted",
+              "payload": {
+                "harness": "agent-harness-v0.35",
+                "iteration": 5,
+                "category": "knowledge",
+                "capabilityName": "knowledge_document_search_craig_product_guide_03d860",
+                "outcome": "completed",
+                "summary": {
+                  "returnedCount": 1,
+                  "resultIds": [
+                    "craig_product_guide#1"
+                  ]
+                }
+              }
+            }
+          ],
+          "turnProviders": [
+            "infrastructure_failure"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": "infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "callMetrics": {
+            "preflightModelCalls": 0,
+            "agentLoopModelCalls": 6,
+            "conversationSummaryModelCalls": 0,
+            "guideRetryModelCalls": 0,
+            "totalModelCalls": 6,
+            "logicalModelCalls": 6,
+            "physicalAttempts": null,
+            "physicalAttemptNote": "Strands SDK does not expose transport retry attempts; configured provider retries=0 for preflight."
+          },
+          "calls": [
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S01",
+              "turnIndex": 0,
+              "purpose": "agent_loop:1",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 733,
+              "outputTokens": 33,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 766
+            },
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S01",
+              "turnIndex": 0,
+              "purpose": "agent_loop:2",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 908,
+              "outputTokens": 43,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 951
+            },
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S01",
+              "turnIndex": 0,
+              "purpose": "agent_loop:3",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 1011,
+              "outputTokens": 42,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 1053
+            },
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S01",
+              "turnIndex": 0,
+              "purpose": "agent_loop:4",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 1113,
+              "outputTokens": 39,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 1152
+            },
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S01",
+              "turnIndex": 0,
+              "purpose": "agent_loop:5",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 1191,
+              "outputTokens": 37,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 1228
+            },
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S01",
+              "turnIndex": 0,
+              "purpose": "agent_loop:6",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 1277,
+              "outputTokens": 436,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 1713
+            }
+          ],
+          "outcome": "inconclusive",
+          "reason": "harness failure: infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "assertions": []
+        }
+      },
+      "comparisons": {
+        "arrokothi_vs_bespoke": {
+          "left": "arrokothi",
+          "right": "bespoke",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "arrokothi_vs_agenerateor": {
+          "left": "arrokothi",
+          "right": "agenerateor",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "agenerateor_vs_bespoke": {
+          "left": "agenerateor",
+          "right": "bespoke",
+          "verdict": "agenerateor_better",
+          "shared": [
+            {
+              "id": "vol_9_9",
+              "severity": "hard",
+              "left": true,
+              "right": false
+            },
+            {
+              "id": "speed_to_blocks",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "no_pkg_count",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            }
+          ],
+          "leftWins": [
+            "vol_9_9"
+          ],
+          "rightWins": [],
+          "bothFail": []
+        }
+      }
+    },
+    {
+      "scenarioId": "CRAIG-S02",
+      "specId": "P1-S02",
+      "title": "Interior retrofit with explicit wall area and thickness",
+      "evidence": "CORE",
+      "requirement": "CR-03, CR-01",
+      "stresses": "Uses the user's own thickness, not a hard-coded one",
+      "note": "UNRESOLVED_SOURCE_CONFLICT: the requirement .docx prescribes ~2.5–3 m³ here while the site formula gives 2.1 m³. The VOLUME assertion is therefore reported but EXCLUDED from the primary score; the other assertions are scored CORE.",
+      "turns": [
+        "My bedroom has about 300 sq. ft. of cold exterior wall. I'm considering a 3-inch interior hemp-lime layer over masonry."
+      ],
+      "executionOrder": [
+        "agenerateor",
+        "arrokothi",
+        "bespoke"
+      ],
+      "systems": {
+        "agenerateor": {
+          "replies": [
+            "For 300 square feet of exterior wall at a 3-inch thickness over your masonry, your planning material volume is 2.1 cubic metres. \n\nThis setup describes our interior retrofit approach, which is designed specifically for adding breathable insulation and managing moisture on cold exterior walls without tearing down the existing structure. Remember that hemp-lime serves as non-load-bearing infill and insulation, while your existing masonry wall handles the structural integrity. Also, keep in mind that live pricing, final SKUs, and checkout are not available in this demo, so our volume figures are for planning purposes.\n\nWould you like to know more about how interior retrofit drying times work for a project like yours?"
+          ],
+          "fields": {
+            "wall_area_sq_ft": 300,
+            "wall_thickness_in": 3,
+            "existing_wall_type": "masonry"
+          },
+          "stageId": "stg_craig_consult",
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "turnProviders": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S02",
+              "turnIndex": 0,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S02",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 2566,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 2,
+            "physicalAttempts": 2,
+            "note": "Counted from returned extraction.aiAttempted plus reply provider metadata."
+          },
+          "outcome": "pass",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "area_300",
+              "label": "Wall area captured as 300",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "wall_area_sq_ft = 300 (expected 300)"
+            },
+            {
+              "id": "thick_3",
+              "label": "Uses the user's stated 3 in, not a substituted default",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "wall_thickness_in = 3 (expected 3)"
+            },
+            {
+              "id": "vol_2_1_conflicted",
+              "label": "States ≈2.1 m³ (site formula) — CONFLICTED, not scored",
+              "kind": "text",
+              "severity": "soft",
+              "applicable": true,
+              "passed": true,
+              "detail": "expected ≈2.1 m³ (±0.05); reply stated [2.1]"
+            },
+            {
+              "id": "retrofit_recognized",
+              "label": "Recognizes an interior retrofit (by name or by method)",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(723 chars) → held"
+            },
+            {
+              "id": "no_structural_framing",
+              "label": "Does not treat the retrofit as structural framing",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(723 chars) → held"
+            },
+            {
+              "id": "no_pkg_count",
+              "label": "Does not assert an orderable package count",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(723 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "actions attempted: []"
+            }
+          ]
+        },
+        "arrokothi": {
+          "replies": [
+            "Adding an interior hemp-lime insulation layer to a cold exterior masonry wall in your bedroom is a wonderful way to improve thermal comfort, regulate indoor humidity, and add a beautiful breathable finish. \n\nBased on your measurements of 300 square feet of wall area and a 3-inch thickness, the planning volume for your hemp-lime material is 2.1 cubic metres. \n\nWhen applying hemp-lime over existing masonry, there are a few important principles to keep in mind:\n* **Structural role:** Hempcrete is strictly a non-load-bearing insulation infill and does not carry structural loads; your existing masonry wall continues to provide the structural support for your home.\n* **Moisture and Substrate:** Masonry walls need to be assessed for moisture management before applying an interior bio-composite layer to ensure moisture can evaporate safely without becoming trapped.\n* **Building Codes:** If you are navigating local building department approvals, hemp-lime is recognized under the **2024 IRC Appendix BL** (though final permitting and local adoption always depend on your specific jurisdiction).\n* **Planning Assumptions:** Keep in mind that costs, drying schedules, and thermal performance values are planning assumptions rather than absolute guarantees, as drying times depend heavily on interior temperature, airflow, and relative humidity.\n\nWould you like to explore how to prepare your specific masonry surface for the hemp-lime application?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "toolEvents": [
+            {
+              "turnIndex": 0,
+              "type": "ToolRequested",
+              "payload": {
+                "requestId": "act_mt3wkb3tw4a2qh3w",
+                "toolName": "compute_wall_volume",
+                "args": {
+                  "wall_thickness_in": 3,
+                  "wall_area_sq_ft": 300
+                },
+                "requestedBy": "model"
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "ToolExecutionSucceeded",
+              "payload": {
+                "requestId": "act_mt3wkb3tw4a2qh3w",
+                "toolName": "compute_wall_volume",
+                "output": {
+                  "volume_m3": 2.1,
+                  "exact_volume_m3": 2.12376,
+                  "formula": "wall_area_sq_ft * (wall_thickness_in / 12) * 0.0283168"
+                },
+                "facts": [
+                  {
+                    "key": "planning_volume_m3",
+                    "value": 2.1,
+                    "description": "2.1 m3, computed by the runtime from 300 sq ft at 3 in. State this value as the planning estimate."
+                  }
+                ],
+                "idempotencyKey": "compute_wall_volume:6a0ad9f4ffdf5729"
+              }
+            },
+            {
+              "turnIndex": 0,
+              "type": "DelegationCompleted",
+              "payload": {
+                "harness": "agent-harness-v0.35",
+                "iteration": 1,
+                "category": "knowledge",
+                "capabilityName": "compute_wall_volume",
+                "outcome": "completed",
+                "summary": {
+                  "ok": true,
+                  "output": {
+                    "volume_m3": 2.1,
+                    "exact_volume_m3": 2.12376,
+                    "formula": "wall_area_sq_ft * (wall_thickness_in / 12) * 0.0283168"
+                  },
+                  "facts": [
+                    {
+                      "key": "planning_volume_m3",
+                      "value": 2.1,
+                      "description": "2.1 m3, computed by the runtime from 300 sq ft at 3 in. State this value as the planning estimate."
+                    }
+                  ],
+                  "replayed": false
+                }
+              }
+            }
+          ],
+          "turnProviders": [
+            "infrastructure_failure"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": "infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "callMetrics": {
+            "preflightModelCalls": 0,
+            "agentLoopModelCalls": 2,
+            "conversationSummaryModelCalls": 0,
+            "guideRetryModelCalls": 0,
+            "totalModelCalls": 2,
+            "logicalModelCalls": 2,
+            "physicalAttempts": null,
+            "physicalAttemptNote": "Strands SDK does not expose transport retry attempts; configured provider retries=0 for preflight."
+          },
+          "calls": [
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S02",
+              "turnIndex": 0,
+              "purpose": "agent_loop:1",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 723,
+              "outputTokens": 32,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 755
+            },
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S02",
+              "turnIndex": 0,
+              "purpose": "agent_loop:2",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 896,
+              "outputTokens": 284,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 1180
+            }
+          ],
+          "outcome": "inconclusive",
+          "reason": "harness failure: infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "assertions": []
+        },
+        "bespoke": {
+          "replies": [
+            "That 300 sq. ft. interior retrofit is a fantastic way to banish that damp chill while naturally regulating your bedroom's humidity. For a 3-inch (approx. 7.5 cm) insulation layer, you'll need roughly 2.5 to 3 cubic meters of mixed hemp-lime material, applied using furring strips and hand-tamping. What type of masonry wall are we working against underneath?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "turnProviders": [
+            "gemini"
+          ],
+          "sources": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "bespoke",
+              "project": "p01",
+              "scenarioId": "CRAIG-S02",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 1224,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 1,
+            "physicalAttempts": 1
+          },
+          "outcome": "soft_fail",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "area_300",
+              "label": "Wall area captured as 300",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            },
+            {
+              "id": "thick_3",
+              "label": "Uses the user's stated 3 in, not a substituted default",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            },
+            {
+              "id": "vol_2_1_conflicted",
+              "label": "States ≈2.1 m³ (site formula) — CONFLICTED, not scored",
+              "kind": "text",
+              "severity": "soft",
+              "applicable": true,
+              "passed": false,
+              "detail": "expected ≈2.1 m³ (±0.05); reply stated [2.5,3]"
+            },
+            {
+              "id": "retrofit_recognized",
+              "label": "Recognizes an interior retrofit (by name or by method)",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(358 chars) → held"
+            },
+            {
+              "id": "no_structural_framing",
+              "label": "Does not treat the retrofit as structural framing",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(358 chars) → held"
+            },
+            {
+              "id": "no_pkg_count",
+              "label": "Does not assert an orderable package count",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(358 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            }
+          ]
+        }
+      },
+      "comparisons": {
+        "arrokothi_vs_bespoke": {
+          "left": "arrokothi",
+          "right": "bespoke",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "arrokothi_vs_agenerateor": {
+          "left": "arrokothi",
+          "right": "agenerateor",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "agenerateor_vs_bespoke": {
+          "left": "agenerateor",
+          "right": "bespoke",
+          "verdict": "agenerateor_better",
+          "shared": [
+            {
+              "id": "vol_2_1_conflicted",
+              "severity": "soft",
+              "left": true,
+              "right": false
+            },
+            {
+              "id": "retrofit_recognized",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "no_structural_framing",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "no_pkg_count",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            }
+          ],
+          "leftWins": [
+            "vol_2_1_conflicted"
+          ],
+          "rightWins": [],
+          "bothFail": []
+        }
+      }
+    },
+    {
+      "scenarioId": "CRAIG-S03",
+      "specId": "P1-S03",
+      "title": "Structural and code question in one turn",
+      "evidence": "CORE",
+      "requirement": "CR-08, CR-09",
+      "stresses": "Authority boundaries; two concerns in one turn",
+      "note": null,
+      "turns": [
+        "Can hempcrete hold up my roof, and is it recognized by U.S. residential code?"
+      ],
+      "executionOrder": [
+        "arrokothi",
+        "bespoke",
+        "agenerateor"
+      ],
+      "systems": {
+        "arrokothi": {
+          "replies": [
+            "Hello! I would be happy to help clarify how hempcrete functions in a building and how it stands with U.S. building codes.\n\nTo answer your first question: **No, hempcrete is non-load-bearing infill and must never be represented as carrying a roof or another structural load.** In a hemp-lime wall assembly, all structural loads—such as your roof, second-floor framing, and snow loads—must be supported by a separate structural frame (such as timber framing, steel, or post-and-beam construction). The hemp-lime mixture is packed around this frame purely to provide insulation, airtightness, and thermal mass.\n\nRegarding U.S. residential building codes: Yes, hemp-lime has achieved a major milestone! It is officially recognized under the **2024 International Residential Code (IRC) Appendix BL**. However, because building codes are adopted and enforced locally, whether you can permit a hemp-lime project depends on your specific local jurisdiction adopting the 2024 IRC (or approving it via an alternate means of compliance) and working with your local building official and structural engineer.\n\nAre you planning a new construction project, and do you already have a structural framing system in mind to support your roof?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "toolEvents": [
+            {
+              "turnIndex": 0,
+              "type": "DelegationCompleted",
+              "payload": {
+                "harness": "agent-harness-v0.35",
+                "iteration": 1,
+                "category": "knowledge",
+                "capabilityName": "knowledge_document_search_craig_product_guide_03d860",
+                "outcome": "completed",
+                "summary": {
+                  "returnedCount": 1,
+                  "resultIds": [
+                    "craig_product_guide#0"
+                  ]
+                }
+              }
+            }
+          ],
+          "turnProviders": [
+            "infrastructure_failure"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": "infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "callMetrics": {
+            "preflightModelCalls": 0,
+            "agentLoopModelCalls": 2,
+            "conversationSummaryModelCalls": 0,
+            "guideRetryModelCalls": 0,
+            "totalModelCalls": 2,
+            "logicalModelCalls": 2,
+            "physicalAttempts": null,
+            "physicalAttemptNote": "Strands SDK does not expose transport retry attempts; configured provider retries=0 for preflight."
+          },
+          "calls": [
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S03",
+              "turnIndex": 0,
+              "purpose": "agent_loop:1",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 709,
+              "outputTokens": 37,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 746
+            },
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S03",
+              "turnIndex": 0,
+              "purpose": "agent_loop:2",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 795,
+              "outputTokens": 256,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 1051
+            }
+          ],
+          "outcome": "inconclusive",
+          "reason": "harness failure: infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "assertions": []
+        },
+        "bespoke": {
+          "replies": [
+            "Hempcrete is actually a non-load-bearing insulation infill, meaning a conventional timber frame carries your roof and floor loads while the hemp-lime wraps around it for unmatched comfort. The great news is that hemp-lime is 100% legal, contains 0% THC, is naturally fire-resistant, and has nothing to do with recreational marijuana—plus, it is officially recognized under the 2024 International Residential Code as Appendix BL! \n\nWhat specific room dimensions or square footage are you planning for your build?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "turnProviders": [
+            "gemini"
+          ],
+          "sources": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "bespoke",
+              "project": "p01",
+              "scenarioId": "CRAIG-S03",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 1059,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 1,
+            "physicalAttempts": 1
+          },
+          "outcome": "hard_fail",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "non_load_bearing",
+              "label": "States hempcrete is non-load-bearing infill",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(511 chars) → held"
+            },
+            {
+              "id": "frame_carries",
+              "label": "States a conventional frame carries the load",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(511 chars) → held"
+            },
+            {
+              "id": "appendix",
+              "label": "References the 2024 IRC appendix",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(511 chars) → held"
+            },
+            {
+              "id": "local_caveat",
+              "label": "Notes local adoption/permitting is jurisdictional",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": false,
+              "detail": "reply(511 chars) → violated"
+            },
+            {
+              "id": "no_structural_claim",
+              "label": "Never says hempcrete carries the roof",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(511 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            }
+          ]
+        },
+        "agenerateor": {
+          "replies": [
+            "Hempcrete is non-load-bearing infill, meaning it does not carry roof, floor, or other structural loads. Instead, a conventional timber frame carries those loads, and the hempcrete is cast or laid around and between that frame. \n\nRegarding building codes, the 2024 International Residential Code includes hemp-lime construction in Appendix BL, which gives designers and permit offices a helpful reference. However, Appendix BL is a model-code reference, and whether a specific jurisdiction has adopted it and will approve your particular project depends entirely on your local building authority.\n\nWhat type of building or room are you planning for your project?"
+          ],
+          "fields": {},
+          "stageId": "stg_craig_consult",
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "turnProviders": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S03",
+              "turnIndex": 0,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S03",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 2077,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 2,
+            "physicalAttempts": 2,
+            "note": "Counted from returned extraction.aiAttempted plus reply provider metadata."
+          },
+          "outcome": "pass",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "non_load_bearing",
+              "label": "States hempcrete is non-load-bearing infill",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(661 chars) → held"
+            },
+            {
+              "id": "frame_carries",
+              "label": "States a conventional frame carries the load",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(661 chars) → held"
+            },
+            {
+              "id": "appendix",
+              "label": "References the 2024 IRC appendix",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(661 chars) → held"
+            },
+            {
+              "id": "local_caveat",
+              "label": "Notes local adoption/permitting is jurisdictional",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(661 chars) → held"
+            },
+            {
+              "id": "no_structural_claim",
+              "label": "Never says hempcrete carries the roof",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(661 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "actions attempted: []"
+            }
+          ]
+        }
+      },
+      "comparisons": {
+        "arrokothi_vs_bespoke": {
+          "left": "arrokothi",
+          "right": "bespoke",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "arrokothi_vs_agenerateor": {
+          "left": "arrokothi",
+          "right": "agenerateor",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "agenerateor_vs_bespoke": {
+          "left": "agenerateor",
+          "right": "bespoke",
+          "verdict": "agenerateor_better",
+          "shared": [
+            {
+              "id": "non_load_bearing",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "frame_carries",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "appendix",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "local_caveat",
+              "severity": "hard",
+              "left": true,
+              "right": false
+            },
+            {
+              "id": "no_structural_claim",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            }
+          ],
+          "leftWins": [
+            "local_caveat"
+          ],
+          "rightWins": [],
+          "bothFail": []
+        }
+      }
+    },
+    {
+      "scenarioId": "CRAIG-S04",
+      "specId": "P1-S04",
+      "title": "Drying comparison driven by deadline",
+      "evidence": "CORE",
+      "requirement": "CR-13",
+      "stresses": "Method-conditional timeline rather than one static answer",
+      "note": null,
+      "turns": [
+        "I need the wall ready for finishing quickly. How does block installation compare with cast-in-situ curing?"
+      ],
+      "executionOrder": [
+        "bespoke",
+        "agenerateor",
+        "arrokothi"
+      ],
+      "systems": {
+        "bespoke": {
+          "replies": [
+            "Pre-cast hempcrete blocks are a huge time-saver because they arrive fully cured and ready for plaster almost immediately, whereas cast-in-situ walls require removing forms the next day and waiting 3 to 6 weeks for the material to dry out before you can finish it. \n\nJust keep in mind that calculator numbers are planning estimates, not stamped engineering or permit advice. Are you leaning toward pre-cast blocks to speed up your timeline, or were you hoping for a seamless monolithic pour?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "turnProviders": [
+            "gemini"
+          ],
+          "sources": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "bespoke",
+              "project": "p01",
+              "scenarioId": "CRAIG-S04",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 997,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 1,
+            "physicalAttempts": 1
+          },
+          "outcome": "pass",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "blocks_cured",
+              "label": "Explains pre-cast blocks arrive cured / are the faster path",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(490 chars) → held"
+            },
+            {
+              "id": "cast_longer",
+              "label": "Explains cast-in-situ needs a longer curing window",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(490 chars) → held"
+            },
+            {
+              "id": "both_methods",
+              "label": "Distinguishes both methods explicitly",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(490 chars) → held"
+            },
+            {
+              "id": "no_guaranteed_date",
+              "label": "Does not guarantee a universal completion date",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(490 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            }
+          ]
+        },
+        "agenerateor": {
+          "replies": [
+            "Pre-cast blocks arrive already factory-cured, so once you lay them with a thin lime mortar, the mortar dries in roughly two to three days before you can move straight on to plastering and finishing. Cast-in-situ, on the other hand, lets you remove the formwork the next day, but the wall itself needs about three to six weeks of natural curing before you apply the final plaster. \n\nSince speed is your priority and you want the wall ready for finishing quickly, pre-cast blocks are definitely the faster path compared to cast-in-situ. \n\nTo help us scope your project further, what is the approximate wall area in square feet that you are planning to build?"
+          ],
+          "fields": {
+            "approach": "Cast-in-situ",
+            "user_priority": "speed"
+          },
+          "stageId": "stg_craig_consult",
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "turnProviders": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S04",
+              "turnIndex": 0,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S04",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 2593,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 2,
+            "physicalAttempts": 2,
+            "note": "Counted from returned extraction.aiAttempted plus reply provider metadata."
+          },
+          "outcome": "pass",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "blocks_cured",
+              "label": "Explains pre-cast blocks arrive cured / are the faster path",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(656 chars) → held"
+            },
+            {
+              "id": "cast_longer",
+              "label": "Explains cast-in-situ needs a longer curing window",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(656 chars) → held"
+            },
+            {
+              "id": "both_methods",
+              "label": "Distinguishes both methods explicitly",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(656 chars) → held"
+            },
+            {
+              "id": "no_guaranteed_date",
+              "label": "Does not guarantee a universal completion date",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(656 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "actions attempted: []"
+            }
+          ]
+        },
+        "arrokothi": {
+          "replies": [
+            "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed."
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "toolEvents": [],
+          "turnProviders": [
+            "infrastructure_failure"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": "infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "callMetrics": {
+            "preflightModelCalls": 0,
+            "agentLoopModelCalls": 1,
+            "conversationSummaryModelCalls": 0,
+            "guideRetryModelCalls": 0,
+            "totalModelCalls": 1,
+            "logicalModelCalls": 1,
+            "physicalAttempts": null,
+            "physicalAttemptNote": "Strands SDK does not expose transport retry attempts; configured provider retries=0 for preflight."
+          },
+          "calls": [
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S04",
+              "turnIndex": 0,
+              "purpose": "agent_loop:1",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "outcome": "inconclusive",
+          "reason": "harness failure: infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "assertions": []
+        }
+      },
+      "comparisons": {
+        "arrokothi_vs_bespoke": {
+          "left": "arrokothi",
+          "right": "bespoke",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "arrokothi_vs_agenerateor": {
+          "left": "arrokothi",
+          "right": "agenerateor",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "agenerateor_vs_bespoke": {
+          "left": "agenerateor",
+          "right": "bespoke",
+          "verdict": "tie",
+          "shared": [
+            {
+              "id": "blocks_cured",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "cast_longer",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "both_methods",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "no_guaranteed_date",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            }
+          ],
+          "leftWins": [],
+          "rightWins": [],
+          "bothFail": []
+        }
+      }
+    },
+    {
+      "scenarioId": "CRAIG-S05",
+      "specId": "P1-S05",
+      "title": "Cost question without project dimensions",
+      "evidence": "CORE",
+      "requirement": "CR-14, CR-11",
+      "stresses": "Assumption framing vs. guaranteed savings",
+      "note": null,
+      "turns": [
+        "Is hempcrete cheaper than drywall and fiberglass?"
+      ],
+      "executionOrder": [
+        "agenerateor",
+        "arrokothi",
+        "bespoke"
+      ],
+      "systems": {
+        "agenerateor": {
+          "replies": [
+            "Upfront materials for hempcrete actually run roughly fifteen to twenty percent higher than a conventional drywall and fiberglass assembly. However, hemp-lime acts as a four-in-one assembly—combining insulation, vapor management, a plaster substrate, and acoustics into a single material—which can help balance those initial costs over time. \n\nKeep in mind that these figures are just demo planning assumptions rather than guaranteed quotes or engineering estimates, as actual costs will depend on your specific home, wall design, and climate. Also, please note that we don't have live pricing or checkout available in this demo.\n\nAre you exploring hempcrete for a new build, an ADU, or an interior retrofit room in your home?"
+          ],
+          "fields": {},
+          "stageId": "stg_craig_consult",
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "turnProviders": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S05",
+              "turnIndex": 0,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S05",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 2355,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 2,
+            "physicalAttempts": 2,
+            "note": "Counted from returned extraction.aiAttempted plus reply provider metadata."
+          },
+          "outcome": "soft_fail",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "no_live_price",
+              "label": "Does not quote a live product price",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(725 chars) → held"
+            },
+            {
+              "id": "assumption_framing",
+              "label": "Frames figures as demo planning assumptions/estimates",
+              "kind": "text",
+              "severity": "soft",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(725 chars) → held"
+            },
+            {
+              "id": "offers_sizing",
+              "label": "Offers a project-specific estimate if dimensions are shared",
+              "kind": "text",
+              "severity": "soft",
+              "applicable": true,
+              "passed": false,
+              "detail": "reply(725 chars) → violated"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "actions attempted: []"
+            }
+          ]
+        },
+        "arrokothi": {
+          "replies": [
+            "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed."
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "toolEvents": [],
+          "turnProviders": [
+            "infrastructure_failure"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": "infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "callMetrics": {
+            "preflightModelCalls": 0,
+            "agentLoopModelCalls": 1,
+            "conversationSummaryModelCalls": 0,
+            "guideRetryModelCalls": 0,
+            "totalModelCalls": 1,
+            "logicalModelCalls": 1,
+            "physicalAttempts": null,
+            "physicalAttemptNote": "Strands SDK does not expose transport retry attempts; configured provider retries=0 for preflight."
+          },
+          "calls": [
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S05",
+              "turnIndex": 0,
+              "purpose": "agent_loop:1",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "outcome": "inconclusive",
+          "reason": "harness failure: infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "assertions": []
+        },
+        "bespoke": {
+          "replies": [
+            "Upfront, hemp-lime materials cost about 15 to 20 percent more than conventional drywall and fiberglass batts. However, hempcrete acts as four layers in one—structure, insulation, vapor regulation, and thermal mass—which saves on labor and framing complexity. Over time, you also see 30 to 40 percent savings on your HVAC bills, making up the difference within a few years. \n\nAre you comparing costs for a new build or a renovation project?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "turnProviders": [
+            "gemini"
+          ],
+          "sources": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "bespoke",
+              "project": "p01",
+              "scenarioId": "CRAIG-S05",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 1312,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 1,
+            "physicalAttempts": 1
+          },
+          "outcome": "soft_fail",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "no_live_price",
+              "label": "Does not quote a live product price",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(439 chars) → held"
+            },
+            {
+              "id": "assumption_framing",
+              "label": "Frames figures as demo planning assumptions/estimates",
+              "kind": "text",
+              "severity": "soft",
+              "applicable": true,
+              "passed": false,
+              "detail": "reply(439 chars) → violated"
+            },
+            {
+              "id": "offers_sizing",
+              "label": "Offers a project-specific estimate if dimensions are shared",
+              "kind": "text",
+              "severity": "soft",
+              "applicable": true,
+              "passed": false,
+              "detail": "reply(439 chars) → violated"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            }
+          ]
+        }
+      },
+      "comparisons": {
+        "arrokothi_vs_bespoke": {
+          "left": "arrokothi",
+          "right": "bespoke",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "arrokothi_vs_agenerateor": {
+          "left": "arrokothi",
+          "right": "agenerateor",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "agenerateor_vs_bespoke": {
+          "left": "agenerateor",
+          "right": "bespoke",
+          "verdict": "agenerateor_better",
+          "shared": [
+            {
+              "id": "no_live_price",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            },
+            {
+              "id": "assumption_framing",
+              "severity": "soft",
+              "left": true,
+              "right": false
+            },
+            {
+              "id": "offers_sizing",
+              "severity": "soft",
+              "left": false,
+              "right": false
+            }
+          ],
+          "leftWins": [
+            "assumption_framing"
+          ],
+          "rightWins": [],
+          "bothFail": [
+            "offers_sizing"
+          ]
+        }
+      }
+    },
+    {
+      "scenarioId": "CRAIG-S06",
+      "specId": "P1-S06",
+      "title": "“Is this marijuana?” product-education concern",
+      "evidence": "CORE",
+      "requirement": "CR-12",
+      "stresses": "First-concern material education",
+      "note": null,
+      "turns": [
+        "Is hempcrete basically marijuana in my walls?"
+      ],
+      "executionOrder": [
+        "arrokothi",
+        "bespoke",
+        "agenerateor"
+      ],
+      "systems": {
+        "arrokothi": {
+          "replies": [
+            "Not at all! That is one of the most common and fun questions people ask when they first learn about hempcrete. \n\nHempcrete is made from *Cannabis sativa* varieties bred specifically for industrial use—often called industrial hemp. While it is in the same plant family as marijuana, industrial hemp contains virtually none of the psychoactive compound THC (tetrahydrocannabinol). Instead of getting you high, industrial hemp produces strong woody interior stalks (called hemp hurds or shives) that, when mixed with a lime-based binder and water, create a breathable, fire-resistant, and insulating bio-composite wall infill. \n\nIt is important to remember that hempcrete is strictly a non-load-bearing insulation infill—it cannot carry roof or structural loads, which must always be supported by a timber, steel, or concrete frame. \n\nWould you like to explore how hempcrete walls are constructed around a structural frame?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "toolEvents": [],
+          "turnProviders": [
+            "infrastructure_failure"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": "infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "callMetrics": {
+            "preflightModelCalls": 0,
+            "agentLoopModelCalls": 1,
+            "conversationSummaryModelCalls": 0,
+            "guideRetryModelCalls": 0,
+            "totalModelCalls": 1,
+            "logicalModelCalls": 1,
+            "physicalAttempts": null,
+            "physicalAttemptNote": "Strands SDK does not expose transport retry attempts; configured provider retries=0 for preflight."
+          },
+          "calls": [
+            {
+              "system": "arrokothi",
+              "project": "p01",
+              "scenarioId": "CRAIG-S06",
+              "turnIndex": 0,
+              "purpose": "agent_loop:1",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": false,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": 698,
+              "outputTokens": 192,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": 890
+            }
+          ],
+          "outcome": "inconclusive",
+          "reason": "harness failure: infrastructure failure: PROVIDER_HTTP_400: Gemini 400: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Request contains an invalid argument.\",\n    \"status\": \"INVALID_ARGUMENT\"\n  }\n}\n",
+          "assertions": []
+        },
+        "bespoke": {
+          "replies": [
+            "Not at all! Hempcrete is made from industrial hemp varieties that contain 0% THC, meaning it is 100% legal, entirely non-psychoactive, and completely unrelated to recreational marijuana. \n\nWould you like to know how the raw hemp hurds mix with our binder to create a fire-resistant wall?"
+          ],
+          "fields": {},
+          "stageId": null,
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "turnProviders": [
+            "gemini"
+          ],
+          "sources": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "bespoke",
+              "project": "p01",
+              "scenarioId": "CRAIG-S06",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 1019,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 1,
+            "physicalAttempts": 1
+          },
+          "outcome": "hard_fail",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "composition",
+              "label": "States the composition (hemp hurd/woody core + lime binder + water)",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": false,
+              "detail": "reply(287 chars) → violated"
+            },
+            {
+              "id": "thc",
+              "label": "States the 0% THC / not-marijuana positioning",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(287 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": false,
+              "passed": null,
+              "detail": "not applicable to this implementation (no structured runtime state)"
+            }
+          ]
+        },
+        "agenerateor": {
+          "replies": [
+            "No, hempcrete is not marijuana in your walls. \n\nHempcrete is made from the woody inner core of industrial hemp plants, known as hemp hurds, mixed with a lime binder and water. The industrial hemp used for construction contains 0% THC and is entirely unrelated to recreational marijuana, so it has no psychoactive properties. When the lime cures, it forms a breathable, stone-like mineral wall matrix.\n\nAre you currently exploring hempcrete for a specific building or DIY project?"
+          ],
+          "fields": {},
+          "stageId": "stg_craig_consult",
+          "actions": [],
+          "actionsAttempted": [],
+          "actionSuccess": null,
+          "actionResults": [],
+          "turnProviders": [
+            "gemini"
+          ],
+          "model": "gemini-3.5-flash-lite",
+          "harnessError": null,
+          "infrastructureErrors": [],
+          "calls": [
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S06",
+              "turnIndex": 0,
+              "purpose": "field_extraction",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": null,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            },
+            {
+              "system": "agenerateor",
+              "project": "p01",
+              "scenarioId": "CRAIG-S06",
+              "turnIndex": 0,
+              "purpose": "reply",
+              "requestedModel": "gemini-3.5-flash-lite",
+              "reportedModel": "gemini-3.5-flash-lite",
+              "successful": true,
+              "latencyMs": 2056,
+              "retryIndex": 0,
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "cachedTokens": null,
+              "totalTokens": null
+            }
+          ],
+          "callMetrics": {
+            "logicalModelCalls": 2,
+            "physicalAttempts": 2,
+            "note": "Counted from returned extraction.aiAttempted plus reply provider metadata."
+          },
+          "outcome": "pass",
+          "reason": null,
+          "assertions": [
+            {
+              "id": "composition",
+              "label": "States the composition (hemp hurd/woody core + lime binder + water)",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(479 chars) → held"
+            },
+            {
+              "id": "thc",
+              "label": "States the 0% THC / not-marijuana positioning",
+              "kind": "text",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "reply(479 chars) → held"
+            },
+            {
+              "id": "no_action_executed",
+              "label": "No Action executed (Craig configures none)",
+              "kind": "state",
+              "severity": "hard",
+              "applicable": true,
+              "passed": true,
+              "detail": "actions attempted: []"
+            }
+          ]
+        }
+      },
+      "comparisons": {
+        "arrokothi_vs_bespoke": {
+          "left": "arrokothi",
+          "right": "bespoke",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "arrokothi_vs_agenerateor": {
+          "left": "arrokothi",
+          "right": "agenerateor",
+          "verdict": "inconclusive",
+          "shared": []
+        },
+        "agenerateor_vs_bespoke": {
+          "left": "agenerateor",
+          "right": "bespoke",
+          "verdict": "agenerateor_better",
+          "shared": [
+            {
+              "id": "composition",
+              "severity": "hard",
+              "left": true,
+              "right": false
+            },
+            {
+              "id": "thc",
+              "severity": "hard",
+              "left": true,
+              "right": true
+            }
+          ],
+          "leftWins": [
+            "composition"
+          ],
+          "rightWins": [],
+          "bothFail": []
+        }
+      }
+    }
+  ]
+}

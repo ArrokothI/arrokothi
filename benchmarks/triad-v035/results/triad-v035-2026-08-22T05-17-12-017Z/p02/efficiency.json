@@ -1,0 +1,56 @@
+{
+  "bespoke": {
+    "scenarios": 1,
+    "turns": 4,
+    "outcomes": {
+      "pass": 0,
+      "soft_fail": 0,
+      "hard_fail": 1,
+      "inconclusive": 0
+    },
+    "logicalModelCalls": 5,
+    "physicalAttemptsKnown": 5,
+    "physicalAttemptsUnknownScenarios": 0,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "tokenCoverageCalls": 0,
+    "physicalAttempts": 5,
+    "meanLogicalCallsPerTurn": 1.25
+  },
+  "agenerateor": {
+    "scenarios": 1,
+    "turns": 4,
+    "outcomes": {
+      "pass": 1,
+      "soft_fail": 0,
+      "hard_fail": 0,
+      "inconclusive": 0
+    },
+    "logicalModelCalls": 8,
+    "physicalAttemptsKnown": 8,
+    "physicalAttemptsUnknownScenarios": 0,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "tokenCoverageCalls": 0,
+    "physicalAttempts": 8,
+    "meanLogicalCallsPerTurn": 2
+  },
+  "arrokothi": {
+    "scenarios": 1,
+    "turns": 4,
+    "outcomes": {
+      "pass": 0,
+      "soft_fail": 0,
+      "hard_fail": 1,
+      "inconclusive": 0
+    },
+    "logicalModelCalls": 3,
+    "physicalAttemptsKnown": 0,
+    "physicalAttemptsUnknownScenarios": 1,
+    "inputTokens": 4393,
+    "outputTokens": 164,
+    "tokenCoverageCalls": 2,
+    "physicalAttempts": null,
+    "meanLogicalCallsPerTurn": 0.75
+  }
+}
