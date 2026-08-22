@@ -88,6 +88,8 @@ export type {
   KnowledgeSource,
   DocumentSource,
   RecordSetSource,
+  RecordField,
+  RecordFieldMetadata,
   WebSearchSource,
   KnowledgeBinding,
   KnowledgeChunk,

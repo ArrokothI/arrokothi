@@ -5,6 +5,7 @@ import type {
   RecordQueryResult,
   RecordSetSource,
 } from "./types.ts";
+import { recordFieldSchema } from "./types.ts";
 import type { Result } from "../util/result.ts";
 import { err, ok } from "../util/result.ts";
 import { describeIssues, validateValue } from "../schema/value-schema.ts";
@@ -27,7 +28,8 @@ const STRING_OPS = new Set(["contains", "starts_with"]);
 const ALL_OPS = new Set(["eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "starts_with"]);
 
 function fieldKind(source: RecordSetSource, field: string): string | null {
-  const schema = source.fields[field];
+  const declared = source.fields[field];
+  const schema = declared ? recordFieldSchema(declared) : undefined;
   return schema ? schema.kind : null;
 }
 
@@ -38,7 +40,8 @@ function validateFilter(source: RecordSetSource, filter: RecordFilter): RecordQu
   if (!ALL_OPS.has(filter.op)) {
     return { code: "bad_operator", message: `unsupported record filter operator ${JSON.stringify(filter.op)}` };
   }
-  const schema = source.fields[filter.field];
+  const declared = source.fields[filter.field];
+  const schema = declared ? recordFieldSchema(declared) : undefined;
   const kind = schema?.kind ?? null;
   if (kind === null) {
     const declared = Object.keys(source.fields).join(", ");

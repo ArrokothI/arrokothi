@@ -39,7 +39,8 @@ export function idempotencyKey(definition: ToolDefinition, args: Record<string, 
 }
 
 /**
- * A prior entry only suppresses re-execution when it SUCCEEDED.
+ * The success ledger suppresses re-execution when a prior call succeeded. External definite
+ * failures and unknown outcomes are governed separately by the authorization layer.
  *
  * A failed attempt must remain retryable: the point of idempotency is to prevent duplicate effects,
  * not to make a transient failure permanent.

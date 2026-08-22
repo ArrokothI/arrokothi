@@ -1,6 +1,7 @@
 import type { ToolDefinition, ToolExecutor } from "./types.ts";
 import type { KnowledgeIndex } from "../knowledge/in-memory.ts";
 import type { RecordFilterOp, RecordQuery, RecordSetSource } from "../knowledge/types.ts";
+import { recordFieldDescription, recordFieldExamples, recordFieldSchema } from "../knowledge/types.ts";
 
 /**
  * Exposes a record set to the model as a deterministic READ tool.
@@ -19,7 +20,11 @@ export function recordQueryToolName(sourceId: string): string {
 
 export function createRecordQueryToolDefinition(source: RecordSetSource): ToolDefinition {
   const fieldList = Object.entries(source.fields)
-    .map(([key, schema]) => `${key} (${schema.kind})`)
+    .map(([key, field]) => {
+      const description = recordFieldDescription(field);
+      const examples = recordFieldExamples(field);
+      return `${key} (${recordFieldSchema(field).kind})${description ? ` — ${description}` : ""}${examples?.length ? ` [examples: ${examples.map((value) => JSON.stringify(value)).join(", ")}]` : ""}`;
+    })
     .join(", ");
 
   return {

@@ -1,7 +1,7 @@
 {
   "name": "agent-sdk-workspace",
   "private": true,
-  "version": "0.35.1",
+  "version": "0.36.0",
   "description": "Provider-neutral agent control plane with a consolidated Harness and Strands execution engine.",
   "type": "module",
   "workspaces": [

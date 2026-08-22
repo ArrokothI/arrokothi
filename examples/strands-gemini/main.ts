@@ -60,14 +60,13 @@ class OfflineStrandsModel extends Model<BaseModelConfig> {
 
 const definition = defineAgent({
   id: "strands-gemini-example",
-  version: 35,
+  version: 36,
   name: "Strands Gemini Product Guide",
   goal: "Answer product-limit questions only from runtime-controlled evidence.",
   model: { providerId: "gemini", model: process.env["GEMINI_MODEL"] ?? "gemini-3.5-flash-lite", temperature: 0.1 },
   planning: { mode: "llm", extractWorkingNotes: true },
   execution: { harness: "agentic", executionContextPolicy: "fresh_each_turn" },
   globalRules: [
-    { id: "plan-source", kind: "invariant", scope: "planner", text: "Call the configured product-policy Knowledge capability exactly once before answering a product-limit question. After its result, answer without calling it again." },
     { id: "answer-source", kind: "invariant", scope: "response", text: "State only limits supported by a runtime observation." },
   ],
   memorySchema: {
@@ -84,7 +83,7 @@ const definition = defineAgent({
     },
   }],
   tools: [],
-  policies: { maxAgentIterations: 5, maxKnowledgeCallsPerTurn: 1, maxToolCallsPerTurn: 1 },
+  policies: { maxAgentIterations: 5, maxKnowledgeCallsPerTurn: 3, maxToolCallsPerTurn: 3 },
 });
 
 const live = process.argv.includes("--live");
@@ -113,13 +112,6 @@ const runtime = new AgentRuntime({
   knowledge: new KnowledgeIndex(definition.knowledge),
   harness: new AgentHarness({
     engine,
-    validateTerminalResponse: (text) => /\b(?:five|5)\b/i.test(text) && !/\b50\b/.test(text)
-      ? { kind: "proceed" }
-      : {
-          kind: "guide",
-          code: "grounding_mismatch",
-          feedback: "Use the authoritative Knowledge result: the Team plan supports five active projects. Answer without another tool call.",
-        },
   }),
   ids: createDeterministicIds(),
   clock: createFixedClock(),

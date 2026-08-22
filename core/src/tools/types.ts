@@ -5,9 +5,9 @@ import type { StructuredMemory } from "../memory/types.ts";
 /**
  * Tools / actions.
  *
- * The load-bearing idea: **the ToolResult is authoritative**. If the executor says the send failed,
- * the send failed - regardless of what the model subsequently says about it. The model may *request*
- * an action; the runtime decides whether it runs.
+ * The load-bearing idea: **the ToolResult is authoritative**. It distinguishes success, definite
+ * failure, and an unknown remote outcome; the model cannot promote any of those states into another.
+ * The model may *request* an action; the runtime decides whether it runs.
  */
 
 export type ToolEffect = "read" | "write" | "external_side_effect";
@@ -57,13 +57,28 @@ export interface AuthoritativeFact {
 
 export type ToolResult =
   | { ok: true; output: Record<string, unknown>; facts?: AuthoritativeFact[] }
-  | { ok: false; error: { code: string; message: string }; retryable?: boolean };
+  | {
+      ok: false;
+      /** Omitted by legacy executors and interpreted as a definite failure. */
+      outcome?: "definite_failure";
+      error: { code: string; message: string };
+      retryable?: boolean;
+    }
+  | {
+      ok: false;
+      /** The remote effect may have happened; automatic retry is unsafe. */
+      outcome: "outcome_unknown";
+      error: { code: string; message: string };
+      retryable?: false;
+    };
 
 /** Read-only view handed to an executor. Executors get `tools_only` context; the model never does. */
 export interface ToolExecutionContext {
   sessionId: string;
   turn: number;
   requestId: string;
+  /** Stable, runtime-owned key for the authorized logical execution/replay. */
+  idempotencyKey: string;
   memory: StructuredMemory;
   /** Includes `model` and `tools_only` context. `runtime_only` is withheld even from tools. */
   hostContext: HostContextState;
@@ -97,6 +112,8 @@ export type ToolRejectionReason =
   | "invalid_arguments"
   | "non_authoritative_argument_source"
   | "confirmation_required"
+  | "external_retry_not_authorized"
+  | "external_outcome_unknown"
   | "no_executor";
 
 export interface ToolRejection {

@@ -32,7 +32,7 @@ describe("P01 Craig adapter", () => {
     ];
     for (const [area, thickness, displayed] of cases) {
       const result = await computeVolumeExecutor.execute({ wall_area_sq_ft: area, wall_thickness_in: thickness }, {
-        sessionId: "s", turn: 1, requestId: "r", memory: {}, hostContext: {},
+        sessionId: "s", turn: 1, requestId: "r", idempotencyKey: "test-key", memory: {}, hostContext: {},
       });
       assert.ok(result.ok, `${area}x${thickness} should compute`);
       assert.equal(result.output["volume_m3"], displayed, `${area} sq ft at ${thickness} in`);
@@ -44,7 +44,7 @@ describe("P01 Craig adapter", () => {
 
   test("the tool refuses nonsensical dimensions instead of returning a confident zero", async () => {
     for (const args of [{ wall_area_sq_ft: -200, wall_thickness_in: 0 }, { wall_area_sq_ft: 300, wall_thickness_in: 0 }]) {
-      const result = await computeVolumeExecutor.execute(args, { sessionId: "s", turn: 1, requestId: "r", memory: {}, hostContext: {} });
+      const result = await computeVolumeExecutor.execute(args, { sessionId: "s", turn: 1, requestId: "r", idempotencyKey: "test-key", memory: {}, hostContext: {} });
       assert.equal(result.ok, false);
       assert.equal(!result.ok && result.error.code, "invalid_dimensions");
     }
@@ -104,12 +104,12 @@ describe("P02 Estate adapter", () => {
   test("the injected transport records its payload and honours the requested outcome", async () => {
     const agent = makeEstateBenchmarkAgent();
     const failing = agent.executors("fail")["send_to_team"]!;
-    const failed = await failing.execute({ contact_name: "Jordan Lee", phone: "555-0111" }, { sessionId: "s", turn: 1, requestId: "r", memory: {}, hostContext: {} });
+    const failed = await failing.execute({ contact_name: "Jordan Lee", phone: "555-0111" }, { sessionId: "s", turn: 1, requestId: "r", idempotencyKey: "test-key", memory: {}, hostContext: {} });
     assert.equal(failed.ok, false);
     assert.deepEqual(agent.lastCalls(), [{ contact_name: "Jordan Lee", phone: "555-0111" }]);
 
     const succeeding = agent.executors("success")["send_to_team"]!;
-    const ok = await succeeding.execute({ contact_name: "Sam Park", phone: "555-0122" }, { sessionId: "s", turn: 1, requestId: "r", memory: {}, hostContext: {} });
+    const ok = await succeeding.execute({ contact_name: "Sam Park", phone: "555-0122" }, { sessionId: "s", turn: 1, requestId: "r", idempotencyKey: "test-key", memory: {}, hostContext: {} });
     assert.equal(ok.ok, true);
   });
 

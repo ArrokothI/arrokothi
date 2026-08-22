@@ -25,13 +25,38 @@ export interface RecordSetSource {
   title: string;
   /** Short routing hint for the planner. Records themselves never enter planner context. */
   description?: string;
-  /** Declared field types. A query referencing anything else is an error, not an empty result. */
-  fields: Record<string, ValueSchema>;
+  /**
+   * Declared field types and optional source-authored semantics. A query referencing anything else
+   * is an error, not an empty result. The legacy shorthand (`field: ValueSchema`) remains valid.
+   */
+  fields: Record<string, RecordField>;
   records: Record<string, unknown>[];
   /** Field used to name a record in rendered output, e.g. "title". */
   displayField?: string;
   /** Fields included in optional host-side search affordances. Deterministic filters ignore this. */
   searchFields?: string[];
+}
+
+/** Provider-neutral, JSON-serializable semantics owned by the record source author. */
+export interface RecordFieldMetadata {
+  schema: ValueSchema;
+  description?: string;
+  examples?: (string | number | boolean)[];
+}
+
+/** Backward-compatible field declaration: a bare schema or a schema with authored semantics. */
+export type RecordField = ValueSchema | RecordFieldMetadata;
+
+export function recordFieldSchema(field: RecordField): ValueSchema {
+  return "schema" in field ? field.schema : field;
+}
+
+export function recordFieldDescription(field: RecordField): string | undefined {
+  return "schema" in field ? field.description : undefined;
+}
+
+export function recordFieldExamples(field: RecordField): (string | number | boolean)[] | undefined {
+  return "schema" in field ? field.examples : undefined;
 }
 
 /** Product-classified web Knowledge. A company website is this source with allowedDomains. */
@@ -200,7 +225,7 @@ export interface RecordSetCatalogEntry {
   type: "record_set";
   title: string;
   description?: string;
-  fields: { name: string; type: ValueSchema["kind"] }[];
+  fields: { name: string; type: ValueSchema["kind"]; description?: string; examples?: (string | number | boolean)[] }[];
   supportedOperators: RecordFilterOp[];
 }
 

@@ -45,6 +45,10 @@ export interface AuthorizeDeps {
    * confirmation is demanded.
    */
   grants: Set<string>;
+  /** Runtime-owned authorization identity for stable external idempotency keys. */
+  grantOrigins?: Map<string, string>;
+  /** Exact external attempts made during this external user turn. */
+  externalAttempts?: Map<string, { result: ToolResult; requestId: string; idempotencyKey: string }>;
 }
 
 export function grantKey(toolName: string, argsHash: string): string {
@@ -237,6 +241,8 @@ export async function attemptToolCall(
     return reject("invalid_arguments", `arguments failed validation: ${describeIssues(validation.issues)}`);
   }
   const validatedArgs = validation.value as Record<string, unknown>;
+  const argsHash = hashValue(validatedArgs);
+  const actionKey = `${toolName}:${argsHash}`;
 
   // 4. authoritative-source check for side effects
   const sourced = argumentsRestOnAuthoritativeSources(journal, definitionForTool, validatedArgs);
@@ -244,9 +250,44 @@ export async function attemptToolCall(
     return reject("non_authoritative_argument_source", sourced.message);
   }
 
+  // A consequential executor is never dispatched twice for the same material payload in one
+  // external user turn. The exact prior observation is replayed to the loop with explicit
+  // provenance instead of treating another model request as retry authorization.
+  if (definitionForTool.effect === "external_side_effect") {
+    const priorThisTurn = deps.externalAttempts?.get(actionKey);
+    if (priorThisTurn) {
+      return { kind: "replayed", result: priorThisTurn.result, requestId };
+    }
+    const prior = journal.state.allToolResults.slice().reverse().find((candidate) =>
+      candidate.toolName === toolName && candidate.actionKey === actionKey,
+    );
+    if (prior?.outcome === "outcome_unknown") {
+      return reject(
+        "external_outcome_unknown",
+        `the prior execution outcome for this exact external action is unknown; automatic retry is not authorized`,
+      );
+    }
+    if (prior?.outcome === "definite_failure"
+      && definitionForTool.confirmation === "none") {
+      return reject(
+        "external_retry_not_authorized",
+        `the prior execution of this exact external action definitely failed; no explicit retry policy is configured`,
+      );
+    }
+  }
+
   // 5. idempotency
-  const key = idempotencyKey(definitionForTool, validatedArgs, requestId);
-  const duplicate = findDuplicate(journal.state.ledger, definitionForTool, key);
+  const authorizationKey = grantKey(toolName, argsHash);
+  const baseIdempotencyKey = idempotencyKey(definitionForTool, validatedArgs, requestId);
+  const key = definitionForTool.effect !== "external_side_effect"
+    ? baseIdempotencyKey
+    : definitionForTool.idempotency === "none"
+      ? `${toolName}:external:${journal.state.sessionId}:${deps.grantOrigins?.get(authorizationKey) ?? `turn-${turn}-${argsHash}`}`
+      : `${journal.state.sessionId}:${baseIdempotencyKey}`;
+  const duplicate = findDuplicate(journal.state.ledger, definitionForTool, key)
+    ?? (definitionForTool.effect === "external_side_effect" && key !== baseIdempotencyKey
+      ? findDuplicate(journal.state.ledger, definitionForTool, baseIdempotencyKey)
+      : undefined);
   if (duplicate && duplicate.result.ok) {
     journal.append({
       type: "ToolExecutionSucceeded",
@@ -257,6 +298,7 @@ export async function attemptToolCall(
         output: duplicate.result.output,
         facts: duplicate.result.facts,
         idempotencyKey: key,
+        actionKey,
         replayed: true,
       },
     });
@@ -265,7 +307,6 @@ export async function attemptToolCall(
 
   // 6. confirmation
   if (definitionForTool.confirmation === "required" && !definition.policies.allowUnconfirmedSideEffects) {
-    const argsHash = hashValue(validatedArgs);
     const pending = journal.state.pendingAction;
 
     if (!deps.grants.has(grantKey(toolName, argsHash))) {
@@ -289,7 +330,7 @@ export async function attemptToolCall(
     return reject("no_executor", `tool "${toolName}" is declared but no executor is registered for it`);
   }
 
-  journal.append({ type: "ToolExecutionStarted", turn, payload: { requestId, toolName, args: validatedArgs, idempotencyKey: key } });
+  journal.append({ type: "ToolExecutionStarted", turn, payload: { requestId, toolName, args: validatedArgs, actionKey, idempotencyKey: key } });
 
   let result: ToolResult;
   try {
@@ -297,32 +338,41 @@ export async function attemptToolCall(
       sessionId: journal.state.sessionId,
       turn,
       requestId,
+      idempotencyKey: key,
       memory: journal.state.memory,
       hostContext: toolVisibleContext(journal.state.hostContext),
     });
   } catch (error) {
-    // An executor that throws is a FAILED action, never an ambiguous one. Recording it as failure
-    // is what stops the model from narrating a success the runtime never observed.
-    result = {
-      ok: false,
-      error: { code: "executor_threw", message: error instanceof Error ? error.message : String(error) },
-      retryable: true,
-    };
+    const executionError = { code: "executor_threw", message: error instanceof Error ? error.message : String(error) };
+    result = definitionForTool.effect === "external_side_effect"
+      ? { ok: false, outcome: "outcome_unknown", error: executionError, retryable: false }
+      : { ok: false, outcome: "definite_failure", error: executionError, retryable: true };
   }
 
   if (result.ok) {
     const succeeded = journal.append({
       type: "ToolExecutionSucceeded",
       turn,
-      payload: { requestId, toolName, output: result.output, facts: result.facts, idempotencyKey: key },
+      payload: { requestId, toolName, output: result.output, facts: result.facts, actionKey, idempotencyKey: key },
     });
     commitToolFacts(deps, result, succeeded.id, toolName, turn);
+  } else if (result.outcome === "outcome_unknown") {
+    journal.append({
+      type: "ToolExecutionOutcomeUnknown",
+      turn,
+      payload: { requestId, toolName, error: result.error, actionKey, idempotencyKey: key },
+    });
   } else {
     journal.append({
       type: "ToolExecutionFailed",
       turn,
-      payload: { requestId, toolName, error: result.error, retryable: result.retryable, idempotencyKey: key },
+      payload: { requestId, toolName, error: result.error, retryable: result.retryable, actionKey, idempotencyKey: key },
     });
+  }
+
+  if (definitionForTool.effect === "external_side_effect") {
+    deps.externalAttempts ??= new Map();
+    deps.externalAttempts.set(actionKey, { result, requestId, idempotencyKey: key });
   }
 
   return { kind: "executed", result, requestId };
@@ -358,7 +408,10 @@ export function resolvePendingConfirmation(
   });
 
   if (resolution.decision === "confirm") {
-    deps.grants.add(grantKey(pending.toolName, pending.argsHash));
+    const key = grantKey(pending.toolName, pending.argsHash);
+    deps.grants.add(key);
+    deps.grantOrigins ??= new Map();
+    deps.grantOrigins.set(key, pending.requestId);
     return { resolved: true, decision: "confirm", action: pending };
   }
   return { resolved: true, decision: resolution.decision, reason: resolution.reason };

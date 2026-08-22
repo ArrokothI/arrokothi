@@ -6,6 +6,7 @@ import type { CapabilityCatalogSnapshot, CapabilityCategory, CapabilityOutcome }
 import { attemptToolCall } from "../tools/authorize.ts";
 import { buildCapabilityCatalog, knowledgeCapabilityName, retrievalFromCapability } from "./catalog.ts";
 import { findPhase } from "../flow/evaluate.ts";
+import { hashValue } from "../util/hash.ts";
 
 export interface CapabilityGatewayOptions {
   services: HarnessServices;
@@ -27,6 +28,8 @@ export class CapabilityGateway {
   private actionRequests = 0;
   private toolCalls = 0;
   private actionQueue: Promise<void> = Promise.resolve();
+  private readEpoch = 0;
+  private readonly knowledgeCache = new Map<string, Extract<CapabilityOutcome, { kind: "completed" }>>();
 
   constructor(options: CapabilityGatewayOptions) {
     this.services = options.services;
@@ -65,14 +68,6 @@ export class CapabilityGateway {
   async requestKnowledge(request: RetrievalRequest, iteration: number, capabilityName = knowledgeCapabilityName(request.kind, request.sourceId)): Promise<CapabilityOutcome> {
     this.requested(iteration, "knowledge", capabilityName, structuredClone(request) as unknown as Record<string, unknown>);
     const policies = this.services.definition.policies;
-    if (this.knowledgeCalls >= policies.maxKnowledgeCallsPerTurn) {
-      return this.rejectKnowledge(request, iteration, capabilityName, {
-        code: "knowledge_limit_exceeded",
-        message: `turn exceeds maxKnowledgeCallsPerTurn=${policies.maxKnowledgeCallsPerTurn}`,
-      });
-    }
-    this.knowledgeCalls++;
-
     const binding = this.services.definition.knowledge.find((candidate) => candidate.source.id === request.sourceId);
     if (!binding) {
       return this.rejectKnowledge(request, iteration, capabilityName, { code: "unknown_source", message: `unknown knowledge source "${request.sourceId}"` });
@@ -100,14 +95,25 @@ export class CapabilityGateway {
       }
       try {
         const normalized = { ...request, query: request.query.trim(), topK };
+        const cached = this.replayKnowledge(normalized, iteration, capabilityName);
+        if (cached) return cached;
+        const limited = this.beginKnowledgeExecution(request, iteration, capabilityName);
+        if (limited) return limited;
         const chunks = (await this.services.knowledge.retrieve(normalized)).slice(0, policies.maxDocumentChunks);
         const result: KnowledgeResult = { kind: request.kind, sourceId: request.sourceId, sourceTitle: binding.source.title, query: normalized.query, chunks };
         this.deps.journal.append({
           type: "KnowledgeRetrieved",
           turn: this.turn,
-          payload: { request: normalized, sourceId: request.sourceId, resultIds: chunks.map((chunk) => chunk.chunkId), scores: chunks.map((chunk) => chunk.score), returnedCount: chunks.length },
+          payload: { request: normalized, sourceId: request.sourceId, resultIds: chunks.map((chunk) => chunk.chunkId), scores: chunks.map((chunk) => chunk.score), returnedCount: chunks.length, result },
         });
-        return this.completed(iteration, "knowledge", capabilityName, { returnedCount: chunks.length, resultIds: chunks.map((chunk) => chunk.chunkId) }, result);
+        return this.rememberKnowledge(normalized, this.completed(
+          iteration,
+          "knowledge",
+          capabilityName,
+          structuredClone(result) as unknown as Record<string, unknown>,
+          result,
+          { returnedCount: chunks.length, resultIds: chunks.map((chunk) => chunk.chunkId) },
+        ));
       } catch (error) {
         return this.rejectKnowledge(request, iteration, capabilityName, { code: "invalid_document_query", message: error instanceof Error ? error.message : String(error) });
       }
@@ -121,6 +127,11 @@ export class CapabilityGateway {
         return this.rejectKnowledge(request, iteration, capabilityName, { code: "retrieval_limit_exceeded", message: `record query limit exceeds maxRecordRows=${policies.maxRecordRows}` });
       }
       const normalized = { ...request, limit: request.limit ?? policies.maxRecordRows };
+      const canonical = { ...normalized, filters: normalized.filters ?? [], sort: normalized.sort ?? [] };
+      const cached = this.replayKnowledge(canonical, iteration, capabilityName);
+      if (cached) return cached;
+      const limited = this.beginKnowledgeExecution(request, iteration, capabilityName);
+      if (limited) return limited;
       const queried = this.services.knowledge.queryRecords(normalized);
       if (!queried.ok) {
         return this.rejectKnowledge(request, iteration, capabilityName, { code: "invalid_record_query", message: queried.error.message });
@@ -139,9 +150,16 @@ export class CapabilityGateway {
       this.deps.journal.append({
         type: "KnowledgeRetrieved",
         turn: this.turn,
-        payload: { request: normalized, sourceId: request.sourceId, resultIds, returnedCount: matches.length, totalMatched: queried.value.totalMatched },
+        payload: { request: normalized, sourceId: request.sourceId, resultIds, returnedCount: matches.length, totalMatched: queried.value.totalMatched, result },
       });
-      return this.completed(iteration, "knowledge", capabilityName, { returnedCount: matches.length, totalMatched: queried.value.totalMatched, resultIds }, result);
+      return this.rememberKnowledge(canonical, this.completed(
+        iteration,
+        "knowledge",
+        capabilityName,
+        structuredClone(result) as unknown as Record<string, unknown>,
+        result,
+        { returnedCount: matches.length, totalMatched: queried.value.totalMatched, resultIds },
+      ));
     }
 
     if (binding.source.kind !== "web_search") {
@@ -159,13 +177,24 @@ export class CapabilityGateway {
     }
     try {
       const normalized = { ...request, query: request.query.trim(), maxResults };
+      const cached = this.replayKnowledge(normalized, iteration, capabilityName);
+      if (cached) return cached;
+      const limited = this.beginKnowledgeExecution(request, iteration, capabilityName);
+      if (limited) return limited;
       const result = await this.services.knowledge.searchWeb(normalized);
       this.deps.journal.append({
         type: "KnowledgeRetrieved",
         turn: this.turn,
-        payload: { request: normalized, sourceId: request.sourceId, resultIds: result.results.map((item) => item.url), returnedCount: result.results.length },
+        payload: { request: normalized, sourceId: request.sourceId, resultIds: result.results.map((item) => item.url), returnedCount: result.results.length, result },
       });
-      return this.completed(iteration, "knowledge", capabilityName, { returnedCount: result.results.length, resultIds: result.results.map((item) => item.url), allowedDomains: result.allowedDomains }, result);
+      return this.rememberKnowledge(normalized, this.completed(
+        iteration,
+        "knowledge",
+        capabilityName,
+        structuredClone(result) as unknown as Record<string, unknown>,
+        result,
+        { returnedCount: result.results.length, resultIds: result.results.map((item) => item.url), allowedDomains: result.allowedDomains },
+      ));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const code = /no WebSearchProvider/i.test(message) ? "web_search_unavailable" : "invalid_web_query";
@@ -206,9 +235,19 @@ export class CapabilityGateway {
     if (outcome.kind === "rejected") {
       return this.rejected(iteration, resolvedCategory, toolName, outcome.rejection.reason, outcome.rejection.message);
     }
+    if (definition?.effect !== "read"
+      && (outcome.result.ok || outcome.result.outcome === "outcome_unknown")) {
+      this.readEpoch++;
+    }
     const observation = outcome.result.ok
       ? { ok: true, output: outcome.result.output, facts: outcome.result.facts ?? [], replayed: outcome.kind === "replayed" }
-      : { ok: false, error: outcome.result.error, retryable: outcome.result.retryable ?? false };
+      : {
+          ok: false,
+          outcome: outcome.result.outcome ?? "definite_failure",
+          error: outcome.result.error,
+          retryable: outcome.result.retryable ?? false,
+          replayed: outcome.kind === "replayed",
+        };
     this.deps.journal.append({
       type: "DelegationCompleted",
       turn: this.turn,
@@ -231,18 +270,73 @@ export class CapabilityGateway {
     return { kind: "rejected", category, capabilityName, code, reason };
   }
 
+  private beginKnowledgeExecution(
+    request: RetrievalRequest,
+    iteration: number,
+    capabilityName: string,
+  ): CapabilityOutcome | undefined {
+    const maximum = this.services.definition.policies.maxKnowledgeCallsPerTurn;
+    if (this.knowledgeCalls >= maximum) {
+      return this.rejectKnowledge(request, iteration, capabilityName, {
+        code: "knowledge_limit_exceeded",
+        message: `turn exceeds maxKnowledgeCallsPerTurn=${maximum}`,
+      });
+    }
+    this.knowledgeCalls++;
+    return undefined;
+  }
+
+  private knowledgeCacheKey(request: RetrievalRequest): string {
+    return `${this.deps.journal.state.phaseId ?? ""}:${this.readEpoch}:${hashValue(request)}`;
+  }
+
+  private rememberKnowledge(
+    request: RetrievalRequest,
+    outcome: Extract<CapabilityOutcome, { kind: "completed" }>,
+  ): CapabilityOutcome {
+    this.knowledgeCache.set(this.knowledgeCacheKey(request), structuredClone(outcome));
+    return outcome;
+  }
+
+  private replayKnowledge(
+    request: RetrievalRequest,
+    iteration: number,
+    capabilityName: string,
+  ): CapabilityOutcome | undefined {
+    const cached = this.knowledgeCache.get(this.knowledgeCacheKey(request));
+    if (!cached) return undefined;
+    const observation = {
+      ...structuredClone(cached.observation),
+      observationProvenance: { kind: "cache_replay", reason: "identical normalized read in the same invocation and mutation epoch" },
+    };
+    this.deps.journal.append({
+      type: "DelegationCompleted",
+      turn: this.turn,
+      payload: {
+        harness: this.harnessName,
+        iteration,
+        category: "knowledge",
+        capabilityName,
+        outcome: "replayed",
+        summary: { cacheReplay: true },
+      },
+    });
+    return { ...structuredClone(cached), observation };
+  }
+
   private completed(
     iteration: number,
     category: CapabilityCategory,
     capabilityName: string,
     observation: Record<string, unknown>,
     knowledgeResult?: KnowledgeResult,
+    auditSummary: Record<string, unknown> = observation,
     toolOutcome?: Extract<ToolAttemptOutcome, { kind: "executed" | "replayed" }>,
-  ): CapabilityOutcome {
+  ): Extract<CapabilityOutcome, { kind: "completed" }> {
     this.deps.journal.append({
       type: "DelegationCompleted",
       turn: this.turn,
-      payload: { harness: this.harnessName, iteration, category, capabilityName, outcome: toolOutcome?.kind === "replayed" ? "replayed" : "completed", summary: observation },
+      payload: { harness: this.harnessName, iteration, category, capabilityName, outcome: toolOutcome?.kind === "replayed" ? "replayed" : "completed", summary: auditSummary },
     });
     return { kind: "completed", category, capabilityName, observation, knowledgeResult, toolOutcome };
   }

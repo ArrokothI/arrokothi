@@ -90,7 +90,7 @@ export class AgentRuntime {
     assertValidDefinition(definition);
     this.config = { ...config, definition };
     // The bounded workflow strategy preserves the historical default behavior while routing all
-    // new construction through the primary v0.35 Harness. Legacy Harness classes remain available
+    // new construction through the primary v0.36 Harness. Legacy Harness classes remain available
     // only for explicit compatibility use.
     this.harness = config.harness ?? new AgentHarness({ strategy: "workflow" });
     this.ids = config.ids ?? createRandomIds();

@@ -193,6 +193,8 @@ function toolResultsSection(results: ToolResultRecord[]): CompiledContextSection
       }
       const output = JSON.stringify(result.output);
       if (output && output !== "{}") lines.push(`  - result: ${output.length > 1200 ? `${output.slice(0, 1200)}...` : output}`);
+    } else if (result.outcome === "outcome_unknown") {
+      lines.push(`- ${result.toolName}: OUTCOME UNKNOWN (${result.error?.code}: ${result.error?.message}). The external effect may have occurred; do not claim success or failure.`);
     } else {
       lines.push(`- ${result.toolName}: FAILED (${result.error?.code}: ${result.error?.message}). Do not claim it succeeded.`);
     }
@@ -323,7 +325,7 @@ export function compilePlannerContext(input: CompilePlannerInput): CompiledConte
       const blocked = source.blockedDomains?.length ? `\n  blocked domains: ${source.blockedDomains.join(", ")}` : "";
       return `${base}${allowed}${blocked}`;
     }
-    return `${base}\n  fields: ${source.fields.map((field) => `${field.name} (${field.type})`).join(", ")}\n  operators: ${source.supportedOperators.join(", ")}; filters use AND; sort and limit are deterministic`;
+    return `${base}\n  fields: ${source.fields.map((field) => `${field.name} (${field.type})${field.description ? ` - ${field.description}` : ""}${field.examples?.length ? ` [examples: ${field.examples.map((value) => JSON.stringify(value)).join(", ")}]` : ""}`).join(", ")}\n  operators: ${source.supportedOperators.join(", ")}; filters use AND; sort and limit are deterministic`;
   });
   const sections = [
     goalSection(definition),

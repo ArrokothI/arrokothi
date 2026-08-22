@@ -12,7 +12,7 @@ import type {
  * It is deliberately non-primary: production agentic execution should inject StrandsLoopEngine.
  */
 export class ReferenceLoopEngine implements AgentLoopEngine {
-  readonly name = "reference-loop-v0.35";
+  readonly name = "reference-loop-v0.36";
 
   async run(input: AgentLoopInput): Promise<AgentLoopResult> {
     if (!input.modelProvider) throw new Error("ReferenceLoopEngine requires AgentLoopInput.modelProvider");

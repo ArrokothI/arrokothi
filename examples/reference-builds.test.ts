@@ -18,6 +18,7 @@ const executionContext = {
   sessionId: "reference-build-test",
   turn: 1,
   requestId: "request-1",
+  idempotencyKey: "reference-build-test-key",
   memory: {},
   hostContext: {},
 };

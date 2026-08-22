@@ -87,7 +87,7 @@ export function validateDefinition(def: AgentDefinition): DefinitionIssue[] {
     error("execution.harness", `unknown Harness "${String(def.execution.harness)}"`);
   }
   if (def.execution?.executionContextPolicy === "resume") {
-    error("execution.executionContextPolicy", "v0.35 supports only fresh_each_turn; resume is deferred to v0.4");
+    error("execution.executionContextPolicy", "v0.36 supports only fresh_each_turn; resume is deferred to v0.4");
   }
 
   if (def.policies.maxSteps < 1) error("policies.maxSteps", "maxSteps must be at least 1");

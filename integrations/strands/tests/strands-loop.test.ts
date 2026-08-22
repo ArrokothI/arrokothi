@@ -17,6 +17,8 @@ import {
   createDeterministicIds,
   createFixedClock,
   defineAgent,
+  knowledgeCapabilityName,
+  type KnowledgeRetriever,
 } from "@agent-sdk/core";
 import {
   Model,
@@ -139,6 +141,77 @@ function loopInput(
 }
 
 describe("StrandsLoopEngine", () => {
+  it("replays an identical normalized Knowledge read with full evidence and explicit cache provenance", async () => {
+    const capability = knowledgeCapabilityName("document_search", "lab_manual");
+    const model = new ScriptedStrandsModel([
+      { kind: "tool", name: capability, input: { query: "sample retention" }, id: "read-1" },
+      { kind: "tool", name: capability, input: { query: "sample retention" }, id: "read-2" },
+      { kind: "text", text: "The sample retention period is fourteen days." },
+    ]);
+    const definition = defineAgent({
+      id: "strands-read-cache",
+      name: "Strands Read Cache",
+      goal: "Answer from laboratory procedures.",
+      model: { providerId: "test", model: "strands-test", temperature: 0 },
+      globalRules: [],
+      memorySchema: { fields: [] },
+      hostContextSchema: { fields: [] },
+      knowledge: [{
+        source: {
+          id: "lab_manual",
+          kind: "document",
+          title: "Laboratory manual",
+          text: "Samples must be retained for fourteen days.",
+        },
+      }],
+      tools: [],
+      planning: { mode: "deterministic", extractWorkingNotes: false },
+      policies: { maxAgentIterations: 4, maxKnowledgeCallsPerTurn: 1 },
+    });
+    const sessions = new InMemorySessionStore();
+    const knowledge = new KnowledgeIndex(definition.knowledge);
+    let retrievals = 0;
+    const retriever: KnowledgeRetriever = {
+      sourceId: "lab_manual",
+      kind: "document",
+      title: "Laboratory manual",
+      async retrieve() {
+        retrievals++;
+        return [{
+          sourceId: "lab_manual",
+          sourceTitle: "Laboratory manual",
+          chunkId: "lab_manual#procedure",
+          text: "Samples must be retained for fourteen days.",
+          rank: 1,
+          score: 1,
+        }];
+      },
+    };
+    knowledge.setRetriever("lab_manual", retriever);
+    const runtime = new AgentRuntime({
+      definition,
+      sessions,
+      model: new ScriptedModelProvider([]),
+      tools: new ToolRegistry(),
+      knowledge,
+      harness: new AgentHarness({ engine: new StrandsLoopEngine({ model }) }),
+      ids: createDeterministicIds(),
+      clock: createFixedClock(),
+    });
+    const sessionId = await runtime.createSession("strands-read-cache");
+    const result = await runtime.runTurn({ sessionId, message: "What is the sample retention period?" });
+
+    assert.equal(result.reply, "The sample retention period is fourteen days.");
+    assert.equal(retrievals, 1);
+    const completions = result.events.filter((event): event is Extract<typeof event, { type: "DelegationCompleted" }> =>
+      event.type === "DelegationCompleted" && event.payload.capabilityName === capability,
+    );
+    assert.deepEqual(completions.map((event) => event.payload.outcome), ["completed", "replayed"]);
+    const finalModelInput = JSON.stringify(model.calls[2]?.messages);
+    assert.match(finalModelInput, /Samples must be retained for fourteen days/);
+    assert.match(finalModelInput, /cache_replay/);
+  });
+
   it("keeps one InvocationState across model/tool cycles without leaking runtime context", async () => {
     const model = new ScriptedStrandsModel([
       { kind: "tool", name: "lookup", input: { query: "safe" }, id: "lookup-1" },

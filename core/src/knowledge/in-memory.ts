@@ -19,6 +19,7 @@ import type {
   WebSearchProvider,
   WebSearchRequest,
 } from "./types.ts";
+import { recordFieldDescription, recordFieldExamples, recordFieldSchema } from "./types.ts";
 import type { Result } from "../util/result.ts";
 import { err } from "../util/result.ts";
 import { queryRecords as executeRecordQuery } from "./record-query.ts";
@@ -239,7 +240,12 @@ export class KnowledgeIndex implements KnowledgeProvider {
           type: "record_set",
           title: source.title,
           description: source.description,
-          fields: Object.entries(source.fields).map(([name, schema]) => ({ name, type: schema.kind })),
+          fields: Object.entries(source.fields).map(([name, field]) => ({
+            name,
+            type: recordFieldSchema(field).kind,
+            ...(recordFieldDescription(field) ? { description: recordFieldDescription(field) } : {}),
+            ...(recordFieldExamples(field) ? { examples: recordFieldExamples(field) } : {}),
+          })),
           supportedOperators: [...RECORD_FILTER_OPERATORS],
         });
       } else {

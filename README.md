@@ -1,4 +1,4 @@
-# Agent SDK v0.35
+# Agent SDK v0.36
 
 A provider-neutral agent control plane with one primary external-turn Harness and a canonical
 Strands execution engine.
@@ -99,6 +99,13 @@ Agent_SDK's provider-neutral decisions—Proceed, Deny, Guide, Confirm, and Tran
 business authority. A Transform is revalidated and, when consequential, reconfirmed against the
 new frozen payload.
 
+Native Knowledge capabilities are the canonical agentic path. Their tool observations contain the
+provider-neutral `KnowledgeResult` itself: executed query, document chunks, record matches/counts,
+or web snippets/URLs. `recordQueryTools(...)` remains a compatibility wrapper for older response
+tool loops. Identical normalized native Knowledge reads in one invocation/mutation epoch replay the
+prior evidence with explicit cache provenance; different inputs, phases, or relevant mutations do
+not share a cache entry.
+
 Strands `InvocationState` is ephemeral per external turn. It may carry request IDs, counters,
 restricted runtime context, and adapter caches out of band; it never replaces Durable Session or
 becomes model-visible. `SummarizingConversationManager` reduces only the temporary loop history,
@@ -112,13 +119,13 @@ while `ContextCompiler` remains responsible for authoritative application contex
   deterministic record queries, coarse Flow, and one frozen-payload confirmation-gated handoff.
 
 They use only Agent_SDK concepts and injected executors; no bespoke runtime code from either
-reference application is imported. Benchmark history remains in `benchmarks/`, but v0.35 does not
+reference application is imported. Benchmark history remains in `benchmarks/`, but v0.36 does not
 claim or perform a new cross-builder comparison.
 
 ## Compatibility paths
 
 `TwoPassHarness`, `NativeAgentHarness`, and `ClaudeAgentHarness` remain temporarily available for
-regression/reference use. They are not the canonical v0.35 architecture. New applications should
+regression/reference use. They are not the canonical v0.36 architecture. New applications should
 use `AgentHarness`; agentic applications should inject `StrandsLoopEngine`.
 
 ## Repository layout
@@ -136,5 +143,5 @@ benchmarks/                   preserved historical self-checks/results
 docs/                         migration, roadmap, and architecture report
 ```
 
-See [v0.35 migration](docs/v0.35-migration.md), [the implementation report](docs/final-report.md),
+See [v0.36 migration](docs/v0.36-migration.md), [the implementation report](docs/final-report.md),
 and [the v0.4 roadmap](docs/v0.4-roadmap.md). Earlier v0.2/v0.3 documents remain historical.

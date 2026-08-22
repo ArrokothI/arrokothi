@@ -7,7 +7,7 @@ import type { AuthoritativeFact } from "../tools/types.ts";
 import { commitValue } from "../memory/structured.ts";
 import { applyHostContext } from "../context/host-context.ts";
 import type { TurnPlan, TurnPlanValidationError } from "../planning/types.ts";
-import type { RetrievalRequest } from "../knowledge/types.ts";
+import type { KnowledgeResult, RetrievalRequest } from "../knowledge/types.ts";
 
 /**
  * The session projection.
@@ -30,6 +30,9 @@ export interface ToolResultRecord {
   turn: number;
   at: string;
   ok: boolean;
+  outcome: "success" | "definite_failure" | "outcome_unknown";
+  actionKey?: string;
+  idempotencyKey?: string;
   output?: Record<string, unknown>;
   error?: { code: string; message: string };
   facts?: AuthoritativeFact[];
@@ -43,6 +46,7 @@ export interface RetrievalTraceRecord {
   scores?: number[];
   returnedCount: number;
   totalMatched?: number;
+  result?: KnowledgeResult;
   error?: TurnPlanValidationError;
 }
 
@@ -236,6 +240,9 @@ export function applyEvent(state: SessionState, event: SessionEvent): SessionSta
         turn: event.turn,
         at: event.at,
         ok: true,
+        outcome: "success",
+        actionKey: event.payload.actionKey,
+        idempotencyKey: event.payload.idempotencyKey,
         output: event.payload.output,
         facts: event.payload.facts,
         replayed: event.payload.replayed,
@@ -269,10 +276,32 @@ export function applyEvent(state: SessionState, event: SessionEvent): SessionSta
         turn: event.turn,
         at: event.at,
         ok: false,
+        outcome: "definite_failure",
+        actionKey: event.payload.actionKey,
+        idempotencyKey: event.payload.idempotencyKey,
         error: event.payload.error,
       };
       // A failed attempt is NOT written to the idempotency ledger: the point of idempotency is to
       // prevent duplicate effects, not to make a transient failure permanent.
+      return {
+        ...base,
+        turnToolResults: [...base.turnToolResults, record],
+        allToolResults: [...base.allToolResults, record],
+      };
+    }
+
+    case "ToolExecutionOutcomeUnknown": {
+      const record: ToolResultRecord = {
+        requestId: event.payload.requestId,
+        toolName: event.payload.toolName,
+        turn: event.turn,
+        at: event.at,
+        ok: false,
+        outcome: "outcome_unknown",
+        actionKey: event.payload.actionKey,
+        idempotencyKey: event.payload.idempotencyKey,
+        error: event.payload.error,
+      };
       return {
         ...base,
         turnToolResults: [...base.turnToolResults, record],

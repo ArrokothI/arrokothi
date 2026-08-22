@@ -44,7 +44,7 @@ export interface AgentHarnessOptions {
  * AgentLoopEngine owns only the temporary iterative mechanics inside the turn.
  */
 export class AgentHarness extends TwoPassHarness implements HarnessImplementation {
-  override readonly name = "agent-harness-v0.35";
+  override readonly name = "agent-harness-v0.36";
   readonly strategy: AgentHarnessStrategy;
   private readonly primaryOptions: AgentHarnessOptions;
 
@@ -96,8 +96,8 @@ export class AgentHarness extends TwoPassHarness implements HarnessImplementatio
       now: services.clock.now(),
       instructionMode: "agent_loop",
       taskInstruction: [
-        "Choose the next safe step within the capabilities currently offered to you, or give the final user-facing response.",
-        "Acquire evidence iteratively. Do not claim a capability succeeded without its authoritative runtime observation.",
+        "Choose the next safe step using the current observations and available capabilities, or provide the final user-facing response.",
+        "Treat authoritative capability observations as truth for what that operation observed. Do not claim facts the observations do not establish.",
         "A denial is final for that request. Guidance describes a safe alternative. A confirmation pause is not a completed action.",
       ].join("\n\n"),
     });

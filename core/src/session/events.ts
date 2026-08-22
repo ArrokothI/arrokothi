@@ -6,7 +6,7 @@ import type { TransitionEvaluation, TransitionTiming } from "../flow/types.ts";
 import type { ModelUsage } from "../provider/types.ts";
 import type { MemoryRejectionCode } from "../memory/structured.ts";
 import type { TurnPlan, TurnPlanValidationError } from "../planning/types.ts";
-import type { RetrievalRequest } from "../knowledge/types.ts";
+import type { KnowledgeResult, RetrievalRequest } from "../knowledge/types.ts";
 
 /**
  * The append-only session event stream.
@@ -44,6 +44,7 @@ export type SessionEventType =
   | "ToolExecutionStarted"
   | "ToolExecutionSucceeded"
   | "ToolExecutionFailed"
+  | "ToolExecutionOutcomeUnknown"
   | "ModelCallCompleted"
   | "AssistantMessageEmitted"
   | "RuntimeError";
@@ -94,6 +95,8 @@ export type KnowledgeRetrievedEvent = EventBase<
     scores?: number[];
     returnedCount: number;
     totalMatched?: number;
+    /** Full authoritative evidence returned by this explicitly executed retrieval (v0.36+). */
+    result?: KnowledgeResult;
   }
 >;
 
@@ -235,7 +238,7 @@ export type ConfirmationResolvedEvent = EventBase<
 
 export type ToolExecutionStartedEvent = EventBase<
   "ToolExecutionStarted",
-  { requestId: string; toolName: string; args: Record<string, unknown>; idempotencyKey: string }
+  { requestId: string; toolName: string; args: Record<string, unknown>; actionKey: string; idempotencyKey: string }
 >;
 
 export type ToolExecutionSucceededEvent = EventBase<
@@ -246,6 +249,7 @@ export type ToolExecutionSucceededEvent = EventBase<
     output: Record<string, unknown>;
     facts?: AuthoritativeFact[];
     idempotencyKey: string;
+    actionKey: string;
     /** True when a prior identical action's result was replayed rather than re-executed. */
     replayed?: boolean;
   }
@@ -253,7 +257,12 @@ export type ToolExecutionSucceededEvent = EventBase<
 
 export type ToolExecutionFailedEvent = EventBase<
   "ToolExecutionFailed",
-  { requestId: string; toolName: string; error: { code: string; message: string }; retryable?: boolean; idempotencyKey: string }
+  { requestId: string; toolName: string; error: { code: string; message: string }; retryable?: boolean; actionKey: string; idempotencyKey: string }
+>;
+
+export type ToolExecutionOutcomeUnknownEvent = EventBase<
+  "ToolExecutionOutcomeUnknown",
+  { requestId: string; toolName: string; error: { code: string; message: string }; actionKey: string; idempotencyKey: string }
 >;
 
 /** Provider/model metadata for every model call, so traces can attribute behaviour to a model. */
@@ -297,6 +306,7 @@ export type SessionEvent =
   | ToolExecutionStartedEvent
   | ToolExecutionSucceededEvent
   | ToolExecutionFailedEvent
+  | ToolExecutionOutcomeUnknownEvent
   | ModelCallCompletedEvent
   | AssistantMessageEmittedEvent
   | RuntimeErrorEvent;

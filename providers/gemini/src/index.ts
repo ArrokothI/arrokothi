@@ -7,6 +7,7 @@ import type {
   ModelToolSpec,
 } from "@agent-sdk/core";
 import { ModelProviderError, toJsonSchema } from "@agent-sdk/core";
+import type { ObjectSchema, ValueSchema } from "@agent-sdk/core";
 
 /**
  * Gemini adapter.
@@ -127,6 +128,9 @@ export class GeminiProvider implements ModelProvider {
 
   async generate(request: ModelRequest): Promise<ModelResponse> {
     const model = request.model || this.defaultModel;
+    const structuredProjection = request.responseSchema
+      ? projectGeminiStructuredOutput(request.responseSchema)
+      : undefined;
     const body: Record<string, unknown> = {
       systemInstruction: { parts: [{ text: request.system }] },
       contents: toGeminiContents(request.messages),
@@ -136,7 +140,7 @@ export class GeminiProvider implements ModelProvider {
         ...(request.responseSchema
           ? {
               responseMimeType: "application/json",
-              responseJsonSchema: toGeminiResponseJsonSchema(toJsonSchema(request.responseSchema)),
+              responseJsonSchema: structuredProjection!.schema,
             }
           : {}),
       },
@@ -149,7 +153,10 @@ export class GeminiProvider implements ModelProvider {
     }
 
     const payload = await this.post(`/models/${encodeURIComponent(model)}:generateContent`, body, request.signal);
-    return this.toModelResponse(payload, model);
+    const response = this.toModelResponse(payload, model);
+    return structuredProjection && response.json !== undefined
+      ? { ...response, json: structuredProjection.normalize(response.json) }
+      : response;
   }
 
   private async post(path: string, body: unknown, signal?: AbortSignal): Promise<GeminiResponseBody> {
@@ -234,6 +241,84 @@ export class GeminiProvider implements ModelProvider {
       raw: payload,
     };
   }
+}
+
+export interface GeminiStructuredOutputProjection {
+  /** Gemini-compatible JSON Schema sent on the wire. */
+  schema: Record<string, unknown>;
+  /** Deterministically restores provider-neutral values before core validation. */
+  normalize(value: unknown): unknown;
+}
+
+/**
+ * Gemini's structured-output subset has rejected nested polymorphic `anyOf` shapes on some model
+ * versions. Provider-neutral `ValueSchema.any` is therefore represented on this provider's wire as
+ * JSON text and restored before core performs its complete authoritative validation.
+ */
+export function projectGeminiStructuredOutput(schema: ObjectSchema): GeminiStructuredOutputProjection {
+  return {
+    schema: projectGeminiSchema(schema),
+    normalize: (value) => normalizeGeminiWireValue(schema, value),
+  };
+}
+
+function projectGeminiSchema(schema: ValueSchema): Record<string, unknown> {
+  if (schema.kind === "any") {
+    return {
+      type: "string",
+      description: "JSON-encoded string, number, boolean, or array of those primitive values.",
+    };
+  }
+  if (schema.kind === "array") {
+    const out: Record<string, unknown> = { type: "array", items: projectGeminiSchema(schema.items) };
+    if (schema.maxItems !== undefined) out["maxItems"] = schema.maxItems;
+    return out;
+  }
+  if (schema.kind === "object") {
+    const properties: Record<string, unknown> = {};
+    const required: string[] = [];
+    for (const [name, field] of Object.entries(schema.fields)) {
+      const child = projectGeminiSchema(field.schema);
+      if (field.description) child["description"] = field.description;
+      properties[name] = child;
+      if (field.required) required.push(name);
+    }
+    return {
+      type: "object",
+      properties,
+      ...(required.length ? { required } : {}),
+      ...(schema.additionalProperties ? { additionalProperties: true } : {}),
+    };
+  }
+  return toGeminiResponseJsonSchema(toJsonSchema(schema)) as Record<string, unknown>;
+}
+
+function normalizeGeminiWireValue(schema: ValueSchema, value: unknown): unknown {
+  if (schema.kind === "any") {
+    if (typeof value !== "string") return value;
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      const primitive = typeof parsed === "string" || typeof parsed === "number" || typeof parsed === "boolean";
+      const primitiveArray = Array.isArray(parsed)
+        && parsed.every((item) => typeof item === "string" || typeof item === "number" || typeof item === "boolean");
+      return primitive || primitiveArray ? parsed : value;
+    } catch {
+      // A plain string remains a string. Complete core validation still decides whether it is valid
+      // for the record field selected by the model.
+      return value;
+    }
+  }
+  if (schema.kind === "array") {
+    return Array.isArray(value) ? value.map((item) => normalizeGeminiWireValue(schema.items, item)) : value;
+  }
+  if (schema.kind === "object" && value && typeof value === "object" && !Array.isArray(value)) {
+    const input = value as Record<string, unknown>;
+    return Object.fromEntries(Object.entries(input).map(([name, child]) => [
+      name,
+      schema.fields[name] ? normalizeGeminiWireValue(schema.fields[name]!.schema, child) : child,
+    ]));
+  }
+  return value;
 }
 
 /**

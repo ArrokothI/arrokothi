@@ -17,7 +17,7 @@ export function knowledgeCapabilityName(kind: RetrievalRequest["kind"], sourceId
   return `knowledge_${kind}_${safeName(sourceId)}`;
 }
 
-function knowledgeInput(kind: RetrievalRequest["kind"]): ObjectSchema {
+function knowledgeInput(kind: RetrievalRequest["kind"], recordFields?: { name: string; description?: string }[]): ObjectSchema {
   if (kind === "document_search") {
     return {
       kind: "object",
@@ -47,7 +47,13 @@ function knowledgeInput(kind: RetrievalRequest["kind"]): ObjectSchema {
           items: {
             kind: "object",
             fields: {
-              field: { required: true, schema: { kind: "string", minLength: 1 } },
+              field: {
+                required: true,
+                description: recordFields?.length
+                  ? recordFields.map((field) => `${field.name}${field.description ? `: ${field.description}` : ""}`).join("; ")
+                  : undefined,
+                schema: { kind: "string", minLength: 1 },
+              },
               op: { required: true, schema: { kind: "enum", choices: FILTER_OPS } },
               value: { required: true, schema: { kind: "any" } },
             },
@@ -87,14 +93,17 @@ export function buildCapabilityCatalog(input: {
     const scope = source.type === "web_search" && source.allowedDomains?.length
       ? ` Restricted to: ${source.allowedDomains.join(", ")}.`
       : "";
+    const fieldSemantics = source.type === "record_set"
+      ? ` Fields: ${source.fields.map((field) => `${field.name} (${field.type})${field.description ? ` — ${field.description}` : ""}`).join("; ")}.`
+      : "";
     return {
       name: knowledgeCapabilityName(kind, source.id),
       category: "knowledge" as const,
       readOnly: true,
       modelSpec: {
         name: knowledgeCapabilityName(kind, source.id),
-        description: `${source.title}: ${source.description ?? "read-only evidence source"}.${scope}`,
-        input: knowledgeInput(kind),
+        description: `${source.title}: ${source.description ?? "read-only evidence source"}.${scope}${fieldSemantics}`,
+        input: knowledgeInput(kind, source.type === "record_set" ? source.fields : undefined),
       },
       implementation: { kind: "knowledge" as const, sourceId: source.id, requestKind: kind },
     };

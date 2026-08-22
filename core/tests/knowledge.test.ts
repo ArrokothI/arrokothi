@@ -98,7 +98,7 @@ describe("record query as a tool", () => {
     assert.ok(tool);
     const result = await tool.executor.execute(
       { filters: [{ field: "price", op: "lte", value: 10_000_000 }] },
-      { sessionId: "s", turn: 1, requestId: "r", memory: {}, hostContext: {} },
+      { sessionId: "s", turn: 1, requestId: "r", idempotencyKey: "test-key", memory: {}, hostContext: {} },
     );
     assert.ok(result.ok);
     assert.equal(result.output["total_matched"], 1);
