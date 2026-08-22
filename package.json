@@ -33,6 +33,7 @@
     "example:p01": "node --env-file-if-exists=.env --experimental-strip-types examples/p01-craig/main.ts",
     "example:p02": "node --env-file-if-exists=.env --experimental-strip-types examples/p02-estate/main.ts",
     "canary:gemini": "node --env-file-if-exists=.env --experimental-strip-types diagnostics/gemini-provider-canary.ts",
+    "canary:gemini:minimal-model": "node --env-file-if-exists=.env --experimental-strip-types diagnostics/gemini-minimal-model-canary.ts",
     "bench:p01": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p01-craig/run.ts",
     "bench:p02": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p02-estate/run.ts",
     "smoke:rebuild:p01:arrokothai": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/benchmark-rebuild-v1/p01-arrokothai/smoke.ts",
@@ -43,7 +44,9 @@
     "test:strands": "node --test --experimental-strip-types integrations/strands/tests/*.test.ts",
     "test:evaluator-v2": "node --test --experimental-strip-types benchmarks/evaluator-v2/tests/*.test.ts",
     "evaluator:canary": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/evaluator-v2/canary.ts",
-    "benchmark:v2:six-subject": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/v2-six-subject/run.ts"
+    "benchmark:v2:six-subject": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/v2-six-subject/run.ts",
+    "benchmark:v2:generate-only": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/v2-six-subject/run.ts --generate-only",
+    "benchmark:v2:judge-only": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/v2-six-subject/run.ts --judge-only"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

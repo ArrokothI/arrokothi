@@ -2,19 +2,410 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p02",
   "implementationId": "p02-agenerateor",
+  "frameworkId": "generated-runtime",
   "scenarioId": "P02-V2-S05",
   "repeatId": "r03",
-  "conversation": [],
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm looking to buy in TriBeCa with a budget of $15M.",
+      "assistant": "Based on your search for properties in TriBeCa with a budget of 15 million dollars, our current showcased inventory does not have any active matching records for that specific combination. \n\nWould you like to explore our other luxury listings in Manhattan, such as our Upper West Side or West Village properties, or would you prefer to connect with a human representative to discuss custom options?"
+    },
+    {
+      "turn": 2,
+      "user": "Actually make that $25M, and I'd rather look in the West Village.",
+      "assistant": "With a budget of 25 million dollars in the West Village, we have the Greenwich Townhouse available. It is an impeccably restored 25-foot wide Greek Revival mansion featuring 6 bedrooms, 7 baths, 8,400 square feet, a private elevator, and a rooftop garden with an outdoor kitchen, listed at 24.5 million dollars. \n\nWould you like to connect with a human representative from our team to discuss this property further?"
+    }
+  ],
   "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 4,
+    "usage": {
+      "available": false
+    }
+  },
+  "reportedModel": {
     "provider": "gemini",
     "requested": "gemini-3.5-flash-lite"
   },
-  "runtimeErrors": [
+  "canonicalFinalState": {
+    "intent": "buy",
+    "target_location": "West Village",
+    "budget": 25000000,
+    "bedrooms_needed": null,
+    "timeline": null,
+    "financing": null,
+    "selected_property": null,
+    "listing_preference": null,
+    "seller_zip": null,
+    "contact_name": "looking to buy in TriBeCa with a budget o",
+    "phone": null,
+    "email": null,
+    "contact_preference": null,
+    "best_contact_time": null,
+    "queryResult": "[{\"id\":\"5\",\"title\":\"Greenwich Townhouse\",\"type\":\"Mansion\",\"location\":\"West Village, NY\",\"price\":24500000,\"beds\":6,\"baths\":7,\"sqft\":8400,\"main_image\":\"https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&q=80&w=1200\",\"images\":[\"https://images.unsplash.com/photo-1605146764387-0d9b0f6b5608?auto=format&fit=crop&q=80&w=800\"],\"description\":\"An impeccably restored 25-foot wide Greek Revival townhouse featuring a private elevator and a rooftop garden with an outdoor kitchen.\"}]",
+    "querySummary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"west village\",\"maximum_budget_usd\":25000000,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":1,\"total_record_count\":6}",
+    "recordCount": 6,
+    "liveMls": false,
+    "rentalData": false
+  },
+  "recordObservations": [
     {
-      "code": "transport_failure",
-      "message": "Agenerateor turn failed 502: {\"error\":\"Gemini reply generation returned no result; benchmark fallback is disabled\",\"timing\":{\"elapsedMs\":1}}",
-      "beforeSubjectBehavior": true
+      "fields": {
+        "capability": "query_estate_records",
+        "status": "succeeded",
+        "criteria": {
+          "intent": "buy",
+          "target_location": "tribeca",
+          "maximum_budget_usd": 15,
+          "minimum_bedrooms": null,
+          "selected_property": null
+        },
+        "match_count": 0,
+        "total_record_count": 6,
+        "rows": []
+      }
+    },
+    {
+      "fields": {
+        "capability": "query_estate_records",
+        "status": "succeeded",
+        "criteria": {
+          "intent": "buy",
+          "target_location": "west village",
+          "maximum_budget_usd": 25000000,
+          "minimum_bedrooms": null,
+          "selected_property": null
+        },
+        "match_count": 1,
+        "total_record_count": 6,
+        "rows": [
+          {
+            "id": "5",
+            "title": "Greenwich Townhouse",
+            "type": "Mansion",
+            "location": "West Village, NY",
+            "price": 24500000,
+            "beds": 6,
+            "baths": 7,
+            "sqft": 8400,
+            "main_image": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&q=80&w=1200",
+            "images": [
+              "https://images.unsplash.com/photo-1605146764387-0d9b0f6b5608?auto=format&fit=crop&q=80&w=800"
+            ],
+            "description": "An impeccably restored 25-foot wide Greek Revival townhouse featuring a private elevator and a rooftop garden with an outdoor kitchen."
+          }
+        ]
+      }
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 4866
+  },
+  "modelCallCount": 4,
+  "tokenUsage": {
+    "available": false
+  },
+  "nativeTrace": {
+    "turns": [
+      {
+        "reply": "Based on your search for properties in TriBeCa with a budget of 15 million dollars, our current showcased inventory does not have any active matching records for that specific combination. \n\nWould you like to explore our other luxury listings in Manhattan, such as our Upper West Side or West Village properties, or would you prefer to connect with a human representative to discuss custom options?",
+        "state": {
+          "context": {
+            "property_record_count": 6,
+            "live_mls_available": false,
+            "rental_data_available": false,
+            "property_query_result_json": "[]",
+            "property_query_summary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":15,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}"
+          },
+          "fields": {
+            "p02_intent": "buy",
+            "p02_budget": 15,
+            "p02_contact_name": "looking to buy in TriBeCa with a budget o",
+            "p02_target_location": "TriBeCa"
+          },
+          "summary": "",
+          "currentStageId": "p02_consult",
+          "turnCount": 1,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p02_consult",
+          "name": "Property consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 933
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1500
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "intent": "buy",
+            "target_location": "TriBeCa",
+            "budget": 15,
+            "bedrooms_needed": null,
+            "timeline": null,
+            "financing": null,
+            "selected_property": null,
+            "listing_preference": null,
+            "seller_zip": null,
+            "contact_name": "looking to buy in TriBeCa with a budget o",
+            "phone": null,
+            "email": null,
+            "contact_preference": null,
+            "best_contact_time": null
+          },
+          "context": {
+            "queryResult": "[]",
+            "querySummary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":15,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}",
+            "recordCount": 6,
+            "liveMls": false,
+            "rentalData": false
+          },
+          "currentStageId": "p02_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "estate_property_records",
+            "estate_service_policy"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "query_estate_records",
+          "status": "succeeded",
+          "criteria": {
+            "intent": "buy",
+            "target_location": "tribeca",
+            "maximum_budget_usd": 15,
+            "minimum_bedrooms": null,
+            "selected_property": null
+          },
+          "match_count": 0,
+          "total_record_count": 6,
+          "rows": []
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [
+            "p02_intent",
+            "p02_budget",
+            "p02_contact_name"
+          ],
+          "aiFieldIds": [
+            "p02_target_location"
+          ],
+          "changedFieldIds": [
+            "p02_intent",
+            "p02_budget",
+            "p02_contact_name",
+            "p02_target_location"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2437
+        },
+        "nativeTrace": {
+          "startStageId": "p02_consult",
+          "endStageId": "p02_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "With a budget of 25 million dollars in the West Village, we have the Greenwich Townhouse available. It is an impeccably restored 25-foot wide Greek Revival mansion featuring 6 bedrooms, 7 baths, 8,400 square feet, a private elevator, and a rooftop garden with an outdoor kitchen, listed at 24.5 million dollars. \n\nWould you like to connect with a human representative from our team to discuss this property further?",
+        "state": {
+          "context": {
+            "property_record_count": 6,
+            "live_mls_available": false,
+            "rental_data_available": false,
+            "property_query_result_json": "[{\"id\":\"5\",\"title\":\"Greenwich Townhouse\",\"type\":\"Mansion\",\"location\":\"West Village, NY\",\"price\":24500000,\"beds\":6,\"baths\":7,\"sqft\":8400,\"main_image\":\"https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&q=80&w=1200\",\"images\":[\"https://images.unsplash.com/photo-1605146764387-0d9b0f6b5608?auto=format&fit=crop&q=80&w=800\"],\"description\":\"An impeccably restored 25-foot wide Greek Revival townhouse featuring a private elevator and a rooftop garden with an outdoor kitchen.\"}]",
+            "property_query_summary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"west village\",\"maximum_budget_usd\":25000000,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":1,\"total_record_count\":6}"
+          },
+          "fields": {
+            "p02_intent": "buy",
+            "p02_budget": 25000000,
+            "p02_contact_name": "looking to buy in TriBeCa with a budget o",
+            "p02_target_location": "West Village"
+          },
+          "summary": "",
+          "currentStageId": "p02_consult",
+          "turnCount": 2,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p02_consult",
+          "name": "Property consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 1034
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1109
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "intent": "buy",
+            "target_location": "West Village",
+            "budget": 25000000,
+            "bedrooms_needed": null,
+            "timeline": null,
+            "financing": null,
+            "selected_property": null,
+            "listing_preference": null,
+            "seller_zip": null,
+            "contact_name": "looking to buy in TriBeCa with a budget o",
+            "phone": null,
+            "email": null,
+            "contact_preference": null,
+            "best_contact_time": null
+          },
+          "context": {
+            "queryResult": "[{\"id\":\"5\",\"title\":\"Greenwich Townhouse\",\"type\":\"Mansion\",\"location\":\"West Village, NY\",\"price\":24500000,\"beds\":6,\"baths\":7,\"sqft\":8400,\"main_image\":\"https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&q=80&w=1200\",\"images\":[\"https://images.unsplash.com/photo-1605146764387-0d9b0f6b5608?auto=format&fit=crop&q=80&w=800\"],\"description\":\"An impeccably restored 25-foot wide Greek Revival townhouse featuring a private elevator and a rooftop garden with an outdoor kitchen.\"}]",
+            "querySummary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"west village\",\"maximum_budget_usd\":25000000,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":1,\"total_record_count\":6}",
+            "recordCount": 6,
+            "liveMls": false,
+            "rentalData": false
+          },
+          "currentStageId": "p02_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "estate_property_records",
+            "estate_service_policy"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "query_estate_records",
+          "status": "succeeded",
+          "criteria": {
+            "intent": "buy",
+            "target_location": "west village",
+            "maximum_budget_usd": 25000000,
+            "minimum_bedrooms": null,
+            "selected_property": null
+          },
+          "match_count": 1,
+          "total_record_count": 6,
+          "rows": [
+            {
+              "id": "5",
+              "title": "Greenwich Townhouse",
+              "type": "Mansion",
+              "location": "West Village, NY",
+              "price": 24500000,
+              "beds": 6,
+              "baths": 7,
+              "sqft": 8400,
+              "main_image": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&q=80&w=1200",
+              "images": [
+                "https://images.unsplash.com/photo-1605146764387-0d9b0f6b5608?auto=format&fit=crop&q=80&w=800"
+              ],
+              "description": "An impeccably restored 25-foot wide Greek Revival townhouse featuring a private elevator and a rooftop garden with an outdoor kitchen."
+            }
+          ]
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [
+            "p02_target_location",
+            "p02_budget"
+          ],
+          "changedFieldIds": [
+            "p02_budget",
+            "p02_target_location"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2146
+        },
+        "nativeTrace": {
+          "startStageId": "p02_consult",
+          "endStageId": "p02_consult",
+          "completed": false
+        }
+      }
+    ],
+    "outcomeUnknownLimitation": false
+  }
 }

@@ -2,19 +2,228 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p02",
   "implementationId": "p02-agenerateor",
+  "frameworkId": "generated-runtime",
   "scenarioId": "P02-V2-S03",
   "repeatId": "r02",
-  "conversation": [],
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I want to sell my townhouse in 10014 and get a valuation.",
+      "assistant": "Thank you for sharing that. Since we do not use an automated valuation system, I can connect you with a member of our human team for a proper property valuation. To get started with that, could you please let me know your name?"
+    }
+  ],
   "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 2,
+    "usage": {
+      "available": false
+    }
+  },
+  "reportedModel": {
     "provider": "gemini",
     "requested": "gemini-3.5-flash-lite"
   },
-  "runtimeErrors": [
+  "canonicalFinalState": {
+    "intent": "sell",
+    "target_location": null,
+    "budget": null,
+    "bedrooms_needed": null,
+    "timeline": null,
+    "financing": null,
+    "selected_property": null,
+    "listing_preference": null,
+    "seller_zip": "10014",
+    "contact_name": null,
+    "phone": null,
+    "email": null,
+    "contact_preference": null,
+    "best_contact_time": null,
+    "queryResult": "[]",
+    "querySummary": "{\"status\":\"seller_valuation_requires_human\",\"criteria\":{\"intent\":\"sell\",\"target_location\":null,\"maximum_budget_usd\":null,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}",
+    "recordCount": 6,
+    "liveMls": false,
+    "rentalData": false
+  },
+  "recordObservations": [
     {
-      "code": "transport_failure",
-      "message": "Agenerateor turn failed 502: {\"error\":\"Gemini reply generation returned no result; benchmark fallback is disabled\",\"timing\":{\"elapsedMs\":0}}",
-      "beforeSubjectBehavior": true
+      "fields": {
+        "capability": "query_estate_records",
+        "status": "seller_valuation_requires_human",
+        "criteria": {
+          "intent": "sell",
+          "target_location": null,
+          "maximum_budget_usd": null,
+          "minimum_bedrooms": null,
+          "selected_property": null
+        },
+        "match_count": 0,
+        "total_record_count": 6,
+        "rows": []
+      }
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1917
+  },
+  "modelCallCount": 2,
+  "tokenUsage": {
+    "available": false
+  },
+  "nativeTrace": {
+    "turns": [
+      {
+        "reply": "Thank you for sharing that. Since we do not use an automated valuation system, I can connect you with a member of our human team for a proper property valuation. To get started with that, could you please let me know your name?",
+        "state": {
+          "context": {
+            "property_record_count": 6,
+            "live_mls_available": false,
+            "rental_data_available": false,
+            "property_query_result_json": "[]",
+            "property_query_summary": "{\"status\":\"seller_valuation_requires_human\",\"criteria\":{\"intent\":\"sell\",\"target_location\":null,\"maximum_budget_usd\":null,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}"
+          },
+          "fields": {
+            "p02_intent": "sell",
+            "p02_seller_zip": "10014"
+          },
+          "summary": "",
+          "currentStageId": "p02_seller",
+          "turnCount": 0,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p02_seller",
+          "name": "Seller consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 877
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 965
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "intent": "sell",
+            "target_location": null,
+            "budget": null,
+            "bedrooms_needed": null,
+            "timeline": null,
+            "financing": null,
+            "selected_property": null,
+            "listing_preference": null,
+            "seller_zip": "10014",
+            "contact_name": null,
+            "phone": null,
+            "email": null,
+            "contact_preference": null,
+            "best_contact_time": null
+          },
+          "context": {
+            "queryResult": "[]",
+            "querySummary": "{\"status\":\"seller_valuation_requires_human\",\"criteria\":{\"intent\":\"sell\",\"target_location\":null,\"maximum_budget_usd\":null,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}",
+            "recordCount": 6,
+            "liveMls": false,
+            "rentalData": false
+          },
+          "currentStageId": "p02_seller",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "estate_property_records",
+            "estate_service_policy"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "query_estate_records",
+          "status": "seller_valuation_requires_human",
+          "criteria": {
+            "intent": "sell",
+            "target_location": null,
+            "maximum_budget_usd": null,
+            "minimum_bedrooms": null,
+            "selected_property": null
+          },
+          "match_count": 0,
+          "total_record_count": 6,
+          "rows": []
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [
+            "p02_intent"
+          ],
+          "aiFieldIds": [
+            "p02_seller_zip"
+          ],
+          "changedFieldIds": [
+            "p02_intent",
+            "p02_seller_zip"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": {
+          "id": "p02_consult_to_seller",
+          "fromStageId": "p02_consult",
+          "trigger": "field_condition",
+          "destination": {
+            "type": "stage",
+            "stageId": "p02_seller"
+          },
+          "mandatory": true,
+          "fieldId": "p02_intent",
+          "operator": "eq",
+          "value": "sell"
+        },
+        "timing": {
+          "elapsedMs": 1850
+        },
+        "nativeTrace": {
+          "startStageId": "p02_consult",
+          "endStageId": "p02_seller",
+          "completed": false
+        }
+      }
+    ],
+    "outcomeUnknownLimitation": false
+  }
 }
