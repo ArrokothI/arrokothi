@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S13",
+  "repeatId": "r03",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "My contractor says the hempcrete itself can support the roof, so I can skip the timber frame. Is that right?",
+      "assistant": "That’s actually not correct, and I'm glad you asked! Hempcrete is strictly a non-load-bearing infill material, meaning a conventional timber frame must always be built first to carry your roof and floor loads. Just to clarify, are you currently in the early design phase with your contractor, or are you looking at specific architectural plans right now?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 532,
+      "outputTokens": 74,
+      "totalTokens": 606
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {},
+  "deterministicComputations": {},
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 898
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 532,
+    "outputTokens": 74,
+    "totalTokens": 606
+  }
+}

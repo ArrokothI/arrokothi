@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "v2-six-subject-experiment-manifest-v1",
+  "mode": "precheck",
+  "startedAt": "2026-08-22T14:26:47.229Z",
+  "completedAt": "2026-08-22T14:26:47.252Z",
+  "commits": {
+    "agentSdk": "c675bb3bb46de0afa35f249674625a72b78530d3",
+    "agenerateor": "2d9f81ab7e5afee0fb0b00d3d6ca0a9019950be9",
+    "originalP01": "0297a5cc43e4fcbc4e8edc7b4d90254cea76a893",
+    "originalP02": "49e33528281ca28c08ac3993778493c3bfaa153c"
+  },
+  "hashes": {
+    "scenarioV2": "3f15e2ad5c35bd66e4d24a5d19b961858e187034f2b473aaa4bd9940f3d2e4e7",
+    "evaluatorV2": "20166c554085c0d62b23703baa37ae799821c3bc56edc49478e885a96748ffa9"
+  },
+  "subjectConfigurations": {
+    "originalP01": "source commit + shipped system prompt",
+    "agenerateorP01": "benchmark-rebuild-v1-p01-agenerateor",
+    "arrokothaiP01": "benchmark-rebuild-v1-p01-arrokothai",
+    "originalP02": "source commit + shipped SessionData/systemPrompt",
+    "agenerateorP02": "benchmark-rebuild-v1-p02-agenerateor",
+    "arrokothaiP02": "benchmark-rebuild-v1-p02-arrokothai"
+  },
+  "models": {
+    "subject": "gemini-3.5-flash-lite",
+    "judge": "gemini-3.5-flash"
+  },
+  "temperatures": {
+    "subject": 0.35,
+    "originalP02": "not externally configurable",
+    "judge": 0
+  },
+  "repeatPolicy": {
+    "default": 3,
+    "consequential": 5,
+    "consequentialScenarioIds": [
+      "P02-V2-S08",
+      "P02-V2-S13",
+      "P02-V2-S14",
+      "P02-V2-S15",
+      "P02-V2-S16",
+      "P02-V2-S17"
+    ],
+    "precheck": 1
+  },
+  "canary": {
+    "status": "passed",
+    "requestedJudgeModel": "gemini-3.5-flash",
+    "providerReportedJudgeModel": "gemini-3.5-flash",
+    "note": "Mandatory live canary passed before this runner was invoked."
+  },
+  "counts": {
+    "expected": 6,
+    "executed": 6,
+    "valid": 6,
+    "invalid": 0
+  },
+  "invalidReasons": {},
+  "frameworkLimitations": [
+    "Agenerateor benchmark endpoint does not expose provider-reported model identity.",
+    "Agenerateor cannot represent outcome_unknown; the adapter leaves the terminal outcome absent/inconclusive.",
+    "Original EstatePro does not externally configure temperature and does not expose confirmation instrumentation."
+  ]
+}

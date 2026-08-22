@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S06",
+  "repeatId": "r01",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "Is hempcrete cheaper than drywall and fiberglass?",
+      "assistant": "Upfront, hemp-lime materials are about 15-20% more expensive than standard drywall and fiberglass batts because it serves as your insulation, vapor management, and rigid wall finish all in one 4-in-1 assembly. Over time, you often save money through 30-40% lower HVAC bills and extreme durability, which typically pays off that initial difference within 3 to 5 years. \n\nAre you looking at this for a new build or a renovation project?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 517,
+      "outputTokens": 103,
+      "totalTokens": 620
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {},
+  "deterministicComputations": {},
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1661
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 517,
+    "outputTokens": 103,
+    "totalTokens": 620
+  }
+}

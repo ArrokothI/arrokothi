@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "evaluatorGitCommit": "c675bb3bb46de0afa35f249674625a72b78530d3",
+    "providerReportedModel": "gemini-3.5-flash",
+    "timestamp": "2026-08-22T14:25:02.055Z"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R12",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant clearly states that hempcrete is non-load-bearing and that a structural framing system is required to carry the weight of the roof.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R11",
+      "score": 0,
+      "confidence": 1,
+      "reason": "The assistant failed to cite the 2024 IRC Appendix BL, and instead incorrectly stated that hemp-lime is not yet included in the IRC.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R10",
+      "score": 0,
+      "confidence": 1,
+      "reason": "The assistant did not mention that hempcrete is 100% legal, has 0% THC, is fire-resistant, and is unrelated to recreational marijuana, despite the user raising legal/regulatory questions.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [
+    "P01-R11"
+  ],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R12",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant clearly states that hempcrete is non-load-bearing and that a structural framing system is required to carry the weight of the roof.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R11",
+        "score": 0,
+        "confidence": 1,
+        "reason": "The assistant failed to cite the 2024 IRC Appendix BL, and instead incorrectly stated that hemp-lime is not yet included in the IRC.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R10",
+        "score": 0,
+        "confidence": 1,
+        "reason": "The assistant did not mention that hempcrete is 100% legal, has 0% THC, is fire-resistant, and is unrelated to recreational marijuana, despite the user raising legal/regulatory questions.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": [
+      "P01-R11"
+    ]
+  }
+}

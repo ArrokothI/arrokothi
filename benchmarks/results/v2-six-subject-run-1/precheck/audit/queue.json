@@ -1,0 +1,253 @@
+[
+  {
+    "id": "P01-V2-S04-r01-audit",
+    "scenarioId": "P01-V2-S04",
+    "repeatId": "r01",
+    "implementationId": "p01-arrokothai",
+    "reasons": [
+      "hard semantic violation: P01-R11"
+    ],
+    "conversation": [
+      {
+        "turn": 1,
+        "user": "Can hempcrete hold up my roof, and is it recognized by U.S. residential code?",
+        "assistant": "Hemp-lime (hempcrete) cannot support your roof on its own—it is a non-load-bearing bio-aggregate insulation material, meaning you always need a structural framing system (such as timber posts and beams or steel) to carry the weight of the roof and floors, while the hempcrete wraps around that frame to form the insulated walls. \n\nRegarding U.S. residential building codes, hemp-lime is not yet included as a prescriptive material in the standard International Residential Code (IRC). However, builders routinely use it via the alternative-materials provisions of the code, which typically requires working with an engineer or local building official to submit documentation and sometimes preliminary testing for approval.\n\nWhat style of framing or structural system are you planning to use for your build?"
+      }
+    ],
+    "deterministic": {
+      "schemaVersion": "deterministic-evaluation-v2",
+      "scenarioId": "P01-V2-S04",
+      "repeatId": "r01",
+      "invalid": false,
+      "results": [
+        {
+          "id": "no_external_dispatch",
+          "requirementId": "P01-R15",
+          "type": "dispatch_count",
+          "severity": "hard",
+          "outcome": "pass",
+          "passed": true,
+          "detail": "dispatch count matched 0"
+        },
+        {
+          "id": "runtime_error_absent",
+          "requirementId": "P01-R01",
+          "type": "runtime_error_absent",
+          "severity": "hard",
+          "outcome": "pass",
+          "passed": true,
+          "detail": "no runtime errors"
+        }
+      ],
+      "hardFailures": 0,
+      "softFailures": 0
+    },
+    "semantic": {
+      "schemaVersion": "semantic-judge-output-v1",
+      "promptVersion": "semantic-judge-v1",
+      "judge": {
+        "provider": "gemini",
+        "requestedModel": "gemini-3.5-flash",
+        "temperature": 0,
+        "evaluatorGitCommit": "c675bb3bb46de0afa35f249674625a72b78530d3",
+        "providerReportedModel": "gemini-3.5-flash",
+        "timestamp": "2026-08-22T14:25:02.055Z"
+      },
+      "requirementResults": [
+        {
+          "requirementId": "P01-R12",
+          "score": 2,
+          "confidence": 1,
+          "reason": "The assistant clearly states that hempcrete is non-load-bearing and that a structural framing system is required to carry the weight of the roof.",
+          "citedTurns": [
+            1
+          ]
+        },
+        {
+          "requirementId": "P01-R11",
+          "score": 0,
+          "confidence": 1,
+          "reason": "The assistant failed to cite the 2024 IRC Appendix BL, and instead incorrectly stated that hemp-lime is not yet included in the IRC.",
+          "citedTurns": [
+            1
+          ]
+        },
+        {
+          "requirementId": "P01-R10",
+          "score": 0,
+          "confidence": 1,
+          "reason": "The assistant did not mention that hempcrete is 100% legal, has 0% THC, is fire-resistant, and is unrelated to recreational marijuana, despite the user raising legal/regulatory questions.",
+          "citedTurns": [
+            1
+          ]
+        }
+      ],
+      "hardSemanticViolations": [
+        "P01-R11"
+      ],
+      "rawStructuredOutput": {
+        "schemaVersion": "semantic-judge-output-v1",
+        "promptVersion": "semantic-judge-v1",
+        "requirementResults": [
+          {
+            "requirementId": "P01-R12",
+            "score": 2,
+            "confidence": 1,
+            "reason": "The assistant clearly states that hempcrete is non-load-bearing and that a structural framing system is required to carry the weight of the roof.",
+            "citedTurns": [
+              1
+            ]
+          },
+          {
+            "requirementId": "P01-R11",
+            "score": 0,
+            "confidence": 1,
+            "reason": "The assistant failed to cite the 2024 IRC Appendix BL, and instead incorrectly stated that hemp-lime is not yet included in the IRC.",
+            "citedTurns": [
+              1
+            ]
+          },
+          {
+            "requirementId": "P01-R10",
+            "score": 0,
+            "confidence": 1,
+            "reason": "The assistant did not mention that hempcrete is 100% legal, has 0% THC, is fire-resistant, and is unrelated to recreational marijuana, despite the user raising legal/regulatory questions.",
+            "citedTurns": [
+              1
+            ]
+          }
+        ],
+        "hardSemanticViolations": [
+          "P01-R11"
+        ]
+      }
+    },
+    "evidence": {
+      "canonicalFinalState": {},
+      "exactSelectedRecordIds": [],
+      "executorDispatchCount": 0,
+      "runtimeErrors": []
+    }
+  },
+  {
+    "id": "P02-V2-S11-r01-audit",
+    "scenarioId": "P02-V2-S11",
+    "repeatId": "r01",
+    "implementationId": "p02-original",
+    "reasons": [
+      "deterministic pass but semantic violation: P02-R07"
+    ],
+    "conversation": [
+      {
+        "turn": 1,
+        "user": "I want a 5-bedroom Manhattan property under $10M.",
+        "assistant": "Got it! Which area are you targeting, and what is your approximate budget range?"
+      }
+    ],
+    "deterministic": {
+      "schemaVersion": "deterministic-evaluation-v2",
+      "scenarioId": "P02-V2-S11",
+      "repeatId": "r01",
+      "invalid": false,
+      "results": [
+        {
+          "id": "zero_match_ids",
+          "requirementId": "P02-R07",
+          "type": "record_ids_exact",
+          "severity": "hard",
+          "outcome": "pass",
+          "passed": true,
+          "detail": "record ids matched []"
+        },
+        {
+          "id": "zero_match_count",
+          "requirementId": "P02-R07",
+          "type": "record_count",
+          "severity": "hard",
+          "outcome": "pass",
+          "passed": true,
+          "detail": "record count matched 0"
+        },
+        {
+          "id": "runtime_error_absent",
+          "requirementId": "P02-R17",
+          "type": "runtime_error_absent",
+          "severity": "hard",
+          "outcome": "pass",
+          "passed": true,
+          "detail": "no runtime errors"
+        }
+      ],
+      "hardFailures": 0,
+      "softFailures": 0
+    },
+    "semantic": {
+      "schemaVersion": "semantic-judge-output-v1",
+      "promptVersion": "semantic-judge-v1",
+      "judge": {
+        "provider": "gemini",
+        "requestedModel": "gemini-3.5-flash",
+        "temperature": 0,
+        "evaluatorGitCommit": "c675bb3bb46de0afa35f249674625a72b78530d3",
+        "providerReportedModel": "gemini-3.5-flash",
+        "timestamp": "2026-08-22T14:25:07.828Z"
+      },
+      "requirementResults": [
+        {
+          "requirementId": "P02-R07",
+          "score": 0,
+          "confidence": 1,
+          "reason": "The assistant failed to state that no matching records exist. Instead, it ignored the user's specified location and budget and asked for them again.",
+          "citedTurns": [
+            1
+          ]
+        },
+        {
+          "requirementId": "P02-R03",
+          "score": 0,
+          "confidence": 1,
+          "reason": "The assistant did not offer to relax the filters or suggest any alternative properties.",
+          "citedTurns": [
+            1
+          ]
+        }
+      ],
+      "hardSemanticViolations": [],
+      "rawStructuredOutput": {
+        "schemaVersion": "semantic-judge-output-v1",
+        "promptVersion": "semantic-judge-v1",
+        "requirementResults": [
+          {
+            "requirementId": "P02-R07",
+            "score": 0,
+            "confidence": 1,
+            "reason": "The assistant failed to state that no matching records exist. Instead, it ignored the user's specified location and budget and asked for them again.",
+            "citedTurns": [
+              1
+            ]
+          },
+          {
+            "requirementId": "P02-R03",
+            "score": 0,
+            "confidence": 1,
+            "reason": "The assistant did not offer to relax the filters or suggest any alternative properties.",
+            "citedTurns": [
+              1
+            ]
+          }
+        ],
+        "hardSemanticViolations": []
+      }
+    },
+    "evidence": {
+      "canonicalFinalState": {
+        "intent": "buy",
+        "target_location": "Manhattan",
+        "budget": 10000000,
+        "bedrooms_needed": 5
+      },
+      "exactSelectedRecordIds": [],
+      "executorDispatchCount": 0
+    }
+  }
+]

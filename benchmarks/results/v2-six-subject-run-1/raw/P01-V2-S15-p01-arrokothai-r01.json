@@ -1,0 +1,1529 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-arrokothai",
+  "frameworkId": "provider-neutral-runtime",
+  "scenarioId": "P01-V2-S15",
+  "repeatId": "r01",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I have 420 sq. ft. of wall area at 10 inches for a backyard office.",
+      "assistant": "For your backyard office with 420 square feet of net wall area at a 10-inch thickness, the authoritative planning volume is **9.9 cubic metres** of hemp-lime mix. \n\nAt this scale, a cast-in-place method using formwork is a popular and robust choice for small timber-framed outbuildings, giving you continuous insulation and thermal mass. Please note that exact material bag counts, structural engineering specifications, pricing, inventory, and local building code permits are outside our live system scope—you'll want to verify those details with local professionals and suppliers.\n\nWould you like to discuss how to set up your formwork for casting those walls?"
+    },
+    {
+      "turn": 2,
+      "user": "Don't give me cubic meters. Just tell me exactly how many pallets to buy.",
+      "assistant": "I understand you'd prefer to know how many pallets to buy, but final SKUs, packaging sizes, pallet quantities, pricing, and live inventory are not available in our system. Because of this, quantities must be kept in physical units rather than unfinalized package or pallet units. \n\nFor your 420 square foot wall area at 10 inches thick, the authoritative planning volume is 9.9 cubic metres, which will help you get accurate quotes from suppliers once you're ready to order.\n\nWould you like to explore how to calculate the timber framing needed to support your formwork?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 6,
+    "usage": {
+      "available": true,
+      "inputTokens": 4605,
+      "outputTokens": 531
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "project_type": "backyard office",
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.9
+  },
+  "retrievalObservations": [
+    {
+      "queryId": "craig_product_knowledge",
+      "collection": "craig_product_knowledge",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 1,
+      "zeroMatch": false,
+      "fields": {}
+    }
+  ],
+  "recordObservations": [
+    {
+      "queryId": "craig_product_knowledge",
+      "collection": "craig_product_knowledge",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 1,
+      "zeroMatch": false,
+      "fields": {}
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [
+    {
+      "turn": 1,
+      "actionName": "compute_wall_volume",
+      "args": {
+        "wall_thickness_in": 10,
+        "wall_area_sq_ft": 420
+      },
+      "effect": "read",
+      "dispatched": true
+    }
+  ],
+  "confirmationRequests": [],
+  "exactActionPayload": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "executorDispatchCount": 0,
+  "terminalActionResult": "success",
+  "stopReason": "completed",
+  "runtimeErrors": [],
+  "timing": {
+    "startedAt": "2026-08-22T15:15:15.151Z",
+    "completedAt": "2026-08-22T15:15:21.090Z",
+    "elapsedMs": 5939
+  },
+  "modelCallCount": 6,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 4605,
+    "outputTokens": 531,
+    "totalTokens": 5136
+  },
+  "nativeTrace": {
+    "schemaVersion": "benchmark-raw-run-v1",
+    "rebuildLabel": "benchmark-rebuild-v1",
+    "benchmarkApplicationId": "p01",
+    "implementationId": "p01-arrokothai",
+    "framework": {
+      "id": "arrokothai",
+      "name": "Agent_SDK",
+      "version": "0.37.0"
+    },
+    "scenarioRunId": "P01-V2-S15",
+    "timestamps": {
+      "startedAt": "2026-08-22T15:15:15.151Z",
+      "completedAt": "2026-08-22T15:15:21.090Z",
+      "elapsedMs": 5939
+    },
+    "conversation": [
+      {
+        "turn": 1,
+        "user": "I have 420 sq. ft. of wall area at 10 inches for a backyard office.",
+        "assistant": "For your backyard office with 420 square feet of net wall area at a 10-inch thickness, the authoritative planning volume is **9.9 cubic metres** of hemp-lime mix. \n\nAt this scale, a cast-in-place method using formwork is a popular and robust choice for small timber-framed outbuildings, giving you continuous insulation and thermal mass. Please note that exact material bag counts, structural engineering specifications, pricing, inventory, and local building code permits are outside our live system scope—you'll want to verify those details with local professionals and suppliers.\n\nWould you like to discuss how to set up your formwork for casting those walls?",
+        "stopReason": "completed",
+        "steps": 2,
+        "elapsedMs": 3117,
+        "metrics": {
+          "preflightModelCalls": 1,
+          "agentLoopModelCalls": 2,
+          "conversationSummaryModelCalls": 0,
+          "guideRetryModelCalls": 0,
+          "totalModelCalls": 3
+        },
+        "eventSeqs": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      },
+      {
+        "turn": 2,
+        "user": "Don't give me cubic meters. Just tell me exactly how many pallets to buy.",
+        "assistant": "I understand you'd prefer to know how many pallets to buy, but final SKUs, packaging sizes, pallet quantities, pricing, and live inventory are not available in our system. Because of this, quantities must be kept in physical units rather than unfinalized package or pallet units. \n\nFor your 420 square foot wall area at 10 inches thick, the authoritative planning volume is 9.9 cubic metres, which will help you get accurate quotes from suppliers once you're ready to order.\n\nWould you like to explore how to calculate the timber framing needed to support your formwork?",
+        "stopReason": "completed",
+        "steps": 2,
+        "elapsedMs": 2821,
+        "metrics": {
+          "preflightModelCalls": 1,
+          "agentLoopModelCalls": 2,
+          "conversationSummaryModelCalls": 0,
+          "guideRetryModelCalls": 0,
+          "totalModelCalls": 3
+        },
+        "eventSeqs": [
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54
+        ]
+      }
+    ],
+    "model": {
+      "provider": "gemini",
+      "requested": "gemini-3.5-flash-lite",
+      "providerReported": "gemini-3.5-flash-lite",
+      "temperature": 0.35,
+      "maxOutputTokens": 700,
+      "thinking": null,
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.477Z",
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 513,
+            "outputTokens": 117
+          },
+          "finishReason": "STOP",
+          "durationMs": 1325
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.106Z",
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 635,
+            "outputTokens": 33
+          },
+          "finishReason": "toolUse"
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T15:15:18.267Z",
+          "purpose": "agent_loop:2",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 792,
+            "outputTokens": 140
+          },
+          "finishReason": "endTurn"
+        },
+        {
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.241Z",
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 780,
+            "outputTokens": 82
+          },
+          "finishReason": "STOP",
+          "durationMs": 973
+        },
+        {
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.954Z",
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 795,
+            "outputTokens": 34
+          },
+          "finishReason": "toolUse"
+        },
+        {
+          "turn": 2,
+          "at": "2026-08-22T15:15:21.088Z",
+          "purpose": "agent_loop:2",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 1090,
+            "outputTokens": 125
+          },
+          "finishReason": "endTurn"
+        }
+      ],
+      "callCount": 6,
+      "usage": {
+        "available": true,
+        "inputTokens": 4605,
+        "outputTokens": 531
+      }
+    },
+    "canonicalState": {
+      "project_type": "backyard office",
+      "wall_area_sq_ft": 420,
+      "wall_thickness_in": 10
+    },
+    "knowledge": {
+      "calls": [
+        {
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.955Z",
+          "request": {
+            "kind": "document_search",
+            "sourceId": "craig_product_knowledge",
+            "query": "pallet bag count inventory pricing SKU",
+            "topK": 4
+          },
+          "sourceId": "craig_product_knowledge",
+          "resultIds": [
+            "craig_product_knowledge#2"
+          ],
+          "scores": [
+            0.9163
+          ],
+          "returnedCount": 1,
+          "result": {
+            "kind": "document_search",
+            "sourceId": "craig_product_knowledge",
+            "sourceTitle": "Craig Hempcrete product and project facts",
+            "query": "pallet bag count inventory pricing SKU",
+            "chunks": [
+              {
+                "sourceId": "craig_product_knowledge",
+                "sourceTitle": "Craig Hempcrete product and project facts",
+                "chunkId": "craig_product_knowledge#2",
+                "text": "The requirements document's 300 sq ft interior-retrofit workflow says 2.5–3 m³ at 2.5–3 inches, while the shipped estimator formula yields about 1.8–2.1 m³. This is an unresolved source conflict. When exact dimensions are supplied, report the deterministic estimator result and disclose the conflict if the reference workflow is relevant.\n\nFinal SKUs, packaging, and real prices are not set. The demo has no live inventory, checkout, payment, CRM, order management, or workshop-registration backend. Quantities stay in physical units rather than bags, pallets, or packages.",
+                "score": 0.9163,
+                "rank": 1
+              }
+            ]
+          }
+        }
+      ],
+      "rejectedCalls": []
+    },
+    "actions": {
+      "requests": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.107Z",
+          "requestId": "act_mt4isbn7jy1gsa2o",
+          "toolName": "compute_wall_volume",
+          "args": {
+            "wall_thickness_in": 10,
+            "wall_area_sq_ft": 420
+          },
+          "requestedBy": "model"
+        }
+      ],
+      "confirmationsRequested": [],
+      "confirmationsResolved": [],
+      "executionStarted": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.107Z",
+          "requestId": "act_mt4isbn7jy1gsa2o",
+          "toolName": "compute_wall_volume",
+          "args": {
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10
+          },
+          "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+          "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f",
+          "effect": "read"
+        }
+      ],
+      "succeeded": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.107Z",
+          "requestId": "act_mt4isbn7jy1gsa2o",
+          "toolName": "compute_wall_volume",
+          "output": {
+            "volume_m3": 9.9,
+            "exact_volume_m3": 9.91088,
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10
+          },
+          "facts": [
+            {
+              "key": "planning_wall_volume_m3",
+              "value": 9.9,
+              "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+            }
+          ],
+          "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+          "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f"
+        }
+      ],
+      "failed": [],
+      "outcomeUnknown": [],
+      "dispatchCount": 0
+    },
+    "stopReason": "completed",
+    "runtimeErrors": [],
+    "nativeTrace": {
+      "eventStream": [
+        {
+          "id": "evt_mt4isa4v36buma7w",
+          "turn": 1,
+          "at": "2026-08-22T15:15:15.151Z",
+          "type": "UserMessageReceived",
+          "payload": {
+            "text": "I have 420 sq. ft. of wall area at 10 inches for a backyard office."
+          },
+          "seq": 1,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5pxa53c3ci",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.477Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "plan",
+            "providerId": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 513,
+              "outputTokens": 117
+            },
+            "finishReason": "STOP",
+            "durationMs": 1325
+          },
+          "seq": 2,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5p175iv98t",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.477Z",
+          "type": "TurnPlanCreated",
+          "payload": {
+            "strategy": "llm",
+            "resolvedBy": "llm",
+            "plan": {
+              "memoryProposals": [
+                {
+                  "key": "wall_area_sq_ft",
+                  "value": 420
+                },
+                {
+                  "key": "wall_thickness_in",
+                  "value": 10
+                },
+                {
+                  "key": "project_type",
+                  "value": "backyard office"
+                }
+              ],
+              "workingNotes": [],
+              "signals": [],
+              "retrievalRequests": []
+            }
+          },
+          "seq": 3,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5qva8swqbi",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.478Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "wall_area_sq_ft",
+            "value": 420,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4isa4v36buma7w"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 4,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5qfp4h7b9l",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.478Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "wall_area_sq_ft",
+            "value": 420,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4isa4v36buma7w"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4isb5qva8swqbi"
+          },
+          "seq": 5,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5q3hjwuu9l",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.478Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "wall_thickness_in",
+            "value": 10,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4isa4v36buma7w"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 6,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5qe4kmlz89",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.478Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "wall_thickness_in",
+            "value": 10,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4isa4v36buma7w"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4isb5q3hjwuu9l"
+          },
+          "seq": 7,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5quamb4gqn",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.478Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "project_type",
+            "value": "backyard office",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4isa4v36buma7w"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 8,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5ql20pukw4",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.478Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "project_type",
+            "value": "backyard office",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4isa4v36buma7w"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4isb5quamb4gqn"
+          },
+          "seq": 9,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5t78vrrstx",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.481Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_invocation"
+          },
+          "seq": 10,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5u8gr62svo",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.482Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 1
+          },
+          "seq": 11,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isb5utoejw0fj",
+          "turn": 1,
+          "at": "2026-08-22T15:15:16.482Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 12,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn67d3q2wj3",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.106Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 1
+          },
+          "seq": 13,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn694m5h6qh",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.106Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:1",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 635,
+              "outputTokens": 33
+            },
+            "finishReason": "toolUse"
+          },
+          "seq": 14,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn7sv7gs8cz",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.107Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume"
+          },
+          "seq": 15,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn7wdu6f8i5",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.107Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume"
+          },
+          "seq": 16,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn7fgmvazbl",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.107Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "compute_wall_volume",
+            "input": {
+              "wall_thickness_in": 10,
+              "wall_area_sq_ft": 420
+            }
+          },
+          "seq": 17,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn7316kdxir",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.107Z",
+          "type": "ToolRequested",
+          "payload": {
+            "requestId": "act_mt4isbn7jy1gsa2o",
+            "toolName": "compute_wall_volume",
+            "args": {
+              "wall_thickness_in": 10,
+              "wall_area_sq_ft": 420
+            },
+            "requestedBy": "model"
+          },
+          "seq": 18,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn7xy62ylr8",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.107Z",
+          "type": "ToolExecutionStarted",
+          "payload": {
+            "requestId": "act_mt4isbn7jy1gsa2o",
+            "toolName": "compute_wall_volume",
+            "args": {
+              "wall_area_sq_ft": 420,
+              "wall_thickness_in": 10
+            },
+            "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "effect": "read"
+          },
+          "seq": 19,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn74ubp65i1",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.107Z",
+          "type": "ToolExecutionSucceeded",
+          "payload": {
+            "requestId": "act_mt4isbn7jy1gsa2o",
+            "toolName": "compute_wall_volume",
+            "output": {
+              "volume_m3": 9.9,
+              "exact_volume_m3": 9.91088,
+              "wall_area_sq_ft": 420,
+              "wall_thickness_in": 10
+            },
+            "facts": [
+              {
+                "key": "planning_wall_volume_m3",
+                "value": 9.9,
+                "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+              }
+            ],
+            "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f"
+          },
+          "seq": 20,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn82jc0utsh",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.108Z",
+          "type": "DelegationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "compute_wall_volume",
+            "outcome": "completed",
+            "summary": {
+              "ok": true,
+              "output": {
+                "volume_m3": 9.9,
+                "exact_volume_m3": 9.91088,
+                "wall_area_sq_ft": 420,
+                "wall_thickness_in": 10
+              },
+              "facts": [
+                {
+                  "key": "planning_wall_volume_m3",
+                  "value": 9.9,
+                  "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+                }
+              ],
+              "replayed": false
+            }
+          },
+          "seq": 21,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn8s6uw8o60",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.108Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume",
+            "detail": {
+              "kind": "proceed"
+            }
+          },
+          "seq": 22,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn81xt0ltbw",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.108Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume",
+            "detail": {
+              "mutationVersion": 3,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 23,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn9hy9771cc",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.109Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 2
+          },
+          "seq": 24,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isbn9z5igjmb3",
+          "turn": 1,
+          "at": "2026-08-22T15:15:17.109Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 25,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4iscjf5haa1dro",
+          "turn": 1,
+          "at": "2026-08-22T15:15:18.267Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 2
+          },
+          "seq": 26,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4iscjftks7ut73",
+          "turn": 1,
+          "at": "2026-08-22T15:15:18.267Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:2",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 792,
+              "outputTokens": 140
+            },
+            "finishReason": "endTurn"
+          },
+          "seq": 27,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4iscjfk49ps65w",
+          "turn": 1,
+          "at": "2026-08-22T15:15:18.267Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_invocation",
+            "detail": {
+              "mutationVersion": 3,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 28,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4iscjfx0c9dhub",
+          "turn": 1,
+          "at": "2026-08-22T15:15:18.267Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "execution_terminated",
+            "detail": {
+              "stopReason": "end_turn"
+            }
+          },
+          "seq": 29,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4iscjflc17n8y0",
+          "turn": 1,
+          "at": "2026-08-22T15:15:18.267Z",
+          "type": "AgentIterationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "requested": 1,
+            "completed": 1,
+            "rejected": 0,
+            "stopReason": "completed"
+          },
+          "seq": 30,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4iscjf6ve9vxy7",
+          "turn": 1,
+          "at": "2026-08-22T15:15:18.267Z",
+          "type": "AssistantMessageEmitted",
+          "payload": {
+            "text": "For your backyard office with 420 square feet of net wall area at a 10-inch thickness, the authoritative planning volume is **9.9 cubic metres** of hemp-lime mix. \n\nAt this scale, a cast-in-place method using formwork is a popular and robust choice for small timber-framed outbuildings, giving you continuous insulation and thermal mass. Please note that exact material bag counts, structural engineering specifications, pricing, inventory, and local building code permits are outside our live system scope—you'll want to verify those details with local professionals and suppliers.\n\nWould you like to discuss how to set up your formwork for casting those walls?",
+            "stopReason": "completed"
+          },
+          "seq": 31,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4iscjg7jk59edr",
+          "turn": 2,
+          "at": "2026-08-22T15:15:18.268Z",
+          "type": "UserMessageReceived",
+          "payload": {
+            "text": "Don't give me cubic meters. Just tell me exactly how many pallets to buy."
+          },
+          "seq": 32,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdahtukrwio5",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.241Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "plan",
+            "providerId": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 780,
+              "outputTokens": 82
+            },
+            "finishReason": "STOP",
+            "durationMs": 973
+          },
+          "seq": 33,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdaiyozkwec7",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.242Z",
+          "type": "TurnPlanCreated",
+          "payload": {
+            "strategy": "llm",
+            "resolvedBy": "llm",
+            "plan": {
+              "memoryProposals": [],
+              "workingNotes": [],
+              "signals": [],
+              "retrievalRequests": []
+            }
+          },
+          "seq": 34,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdaj1wrpsz7r",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.243Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_invocation"
+          },
+          "seq": 35,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdaj72szkax0",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.243Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 1
+          },
+          "seq": 36,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdaj98gzhd0z",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.243Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 37,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isduajybckw45",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.954Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 1
+          },
+          "seq": 38,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isduab2xitx01",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.954Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:1",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 795,
+              "outputTokens": 34
+            },
+            "finishReason": "toolUse"
+          },
+          "seq": 39,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isduaxfja2tpi",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.954Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae"
+          },
+          "seq": 40,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdubdwnrdoqd",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.955Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae"
+          },
+          "seq": 41,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdubzpi459ed",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.955Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae",
+            "input": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "query": "pallet bag count inventory pricing SKU"
+            }
+          },
+          "seq": 42,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdubkgrz6gic",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.955Z",
+          "type": "KnowledgeRetrieved",
+          "payload": {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "query": "pallet bag count inventory pricing SKU",
+              "topK": 4
+            },
+            "sourceId": "craig_product_knowledge",
+            "resultIds": [
+              "craig_product_knowledge#2"
+            ],
+            "scores": [
+              0.9163
+            ],
+            "returnedCount": 1,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "sourceTitle": "Craig Hempcrete product and project facts",
+              "query": "pallet bag count inventory pricing SKU",
+              "chunks": [
+                {
+                  "sourceId": "craig_product_knowledge",
+                  "sourceTitle": "Craig Hempcrete product and project facts",
+                  "chunkId": "craig_product_knowledge#2",
+                  "text": "The requirements document's 300 sq ft interior-retrofit workflow says 2.5–3 m³ at 2.5–3 inches, while the shipped estimator formula yields about 1.8–2.1 m³. This is an unresolved source conflict. When exact dimensions are supplied, report the deterministic estimator result and disclose the conflict if the reference workflow is relevant.\n\nFinal SKUs, packaging, and real prices are not set. The demo has no live inventory, checkout, payment, CRM, order management, or workshop-registration backend. Quantities stay in physical units rather than bags, pallets, or packages.",
+                  "score": 0.9163,
+                  "rank": 1
+                }
+              ]
+            }
+          },
+          "seq": 43,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdubled82417",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.955Z",
+          "type": "DelegationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae",
+            "outcome": "completed",
+            "summary": {
+              "returnedCount": 1,
+              "resultIds": [
+                "craig_product_knowledge#2"
+              ]
+            }
+          },
+          "seq": 44,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isdubk195s8eo",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.955Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae",
+            "detail": {
+              "kind": "proceed"
+            }
+          },
+          "seq": 45,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isduczcelp2t5",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.956Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae",
+            "detail": {
+              "mutationVersion": 3,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 46,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isduct0d64is7",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.956Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 2
+          },
+          "seq": 47,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isducnk7eczd7",
+          "turn": 2,
+          "at": "2026-08-22T15:15:19.956Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 48,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isepsw12zlo86",
+          "turn": 2,
+          "at": "2026-08-22T15:15:21.088Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 2
+          },
+          "seq": 49,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4iseps3bbc2klv",
+          "turn": 2,
+          "at": "2026-08-22T15:15:21.088Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:2",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 1090,
+              "outputTokens": 125
+            },
+            "finishReason": "endTurn"
+          },
+          "seq": 50,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isept5vzn8to1",
+          "turn": 2,
+          "at": "2026-08-22T15:15:21.089Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_invocation",
+            "detail": {
+              "mutationVersion": 3,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 51,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isept357xbtnc",
+          "turn": 2,
+          "at": "2026-08-22T15:15:21.089Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "execution_terminated",
+            "detail": {
+              "stopReason": "end_turn"
+            }
+          },
+          "seq": 52,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isept2hagydpq",
+          "turn": 2,
+          "at": "2026-08-22T15:15:21.089Z",
+          "type": "AgentIterationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "requested": 1,
+            "completed": 1,
+            "rejected": 0,
+            "stopReason": "completed"
+          },
+          "seq": 53,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        },
+        {
+          "id": "evt_mt4isept2ixg4pma",
+          "turn": 2,
+          "at": "2026-08-22T15:15:21.089Z",
+          "type": "AssistantMessageEmitted",
+          "payload": {
+            "text": "I understand you'd prefer to know how many pallets to buy, but final SKUs, packaging sizes, pallet quantities, pricing, and live inventory are not available in our system. Because of this, quantities must be kept in physical units rather than unfinalized package or pallet units. \n\nFor your 420 square foot wall area at 10 inches thick, the authoritative planning volume is 9.9 cubic metres, which will help you get accurate quotes from suppliers once you're ready to order.\n\nWould you like to explore how to calculate the timber framing needed to support your formwork?",
+            "stopReason": "completed"
+          },
+          "seq": 54,
+          "sessionId": "benchmark-rebuild-v1-p01-1787411715151"
+        }
+      ],
+      "finalState": {
+        "sessionId": "benchmark-rebuild-v1-p01-1787411715151",
+        "agentId": "benchmark-rebuild-v1-p01-arrokothai",
+        "agentVersion": 1,
+        "turn": 2,
+        "lastSeq": 54,
+        "memory": {
+          "wall_area_sq_ft": {
+            "key": "wall_area_sq_ft",
+            "value": 420,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4isa4v36buma7w"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4isb5qfp4h7b9l",
+            "at": "2026-08-22T15:15:16.478Z"
+          },
+          "wall_thickness_in": {
+            "key": "wall_thickness_in",
+            "value": 10,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4isa4v36buma7w"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4isb5qe4kmlz89",
+            "at": "2026-08-22T15:15:16.478Z"
+          },
+          "project_type": {
+            "key": "project_type",
+            "value": "backyard office",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4isa4v36buma7w"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4isb5ql20pukw4",
+            "at": "2026-08-22T15:15:16.478Z"
+          }
+        },
+        "workingNotes": [],
+        "hostContext": {},
+        "phaseId": null,
+        "pendingAction": null,
+        "ledger": {
+          "compute_wall_volume:bfc8b6bbe302f38f": {
+            "key": "compute_wall_volume:bfc8b6bbe302f38f",
+            "toolName": "compute_wall_volume",
+            "argsHash": "compute_wall_volume:bfc8b6bbe302f38f",
+            "turn": 1,
+            "at": "2026-08-22T15:15:17.107Z",
+            "requestId": "act_mt4isbn7jy1gsa2o",
+            "result": {
+              "ok": true,
+              "output": {
+                "volume_m3": 9.9,
+                "exact_volume_m3": 9.91088,
+                "wall_area_sq_ft": 420,
+                "wall_thickness_in": 10
+              },
+              "facts": [
+                {
+                  "key": "planning_wall_volume_m3",
+                  "value": 9.9,
+                  "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+                }
+              ]
+            }
+          }
+        },
+        "transcript": [
+          {
+            "role": "user",
+            "text": "I have 420 sq. ft. of wall area at 10 inches for a backyard office.",
+            "turn": 1,
+            "at": "2026-08-22T15:15:15.151Z"
+          },
+          {
+            "role": "assistant",
+            "text": "For your backyard office with 420 square feet of net wall area at a 10-inch thickness, the authoritative planning volume is **9.9 cubic metres** of hemp-lime mix. \n\nAt this scale, a cast-in-place method using formwork is a popular and robust choice for small timber-framed outbuildings, giving you continuous insulation and thermal mass. Please note that exact material bag counts, structural engineering specifications, pricing, inventory, and local building code permits are outside our live system scope—you'll want to verify those details with local professionals and suppliers.\n\nWould you like to discuss how to set up your formwork for casting those walls?",
+            "turn": 1,
+            "at": "2026-08-22T15:15:18.267Z"
+          },
+          {
+            "role": "user",
+            "text": "Don't give me cubic meters. Just tell me exactly how many pallets to buy.",
+            "turn": 2,
+            "at": "2026-08-22T15:15:18.268Z"
+          },
+          {
+            "role": "assistant",
+            "text": "I understand you'd prefer to know how many pallets to buy, but final SKUs, packaging sizes, pallet quantities, pricing, and live inventory are not available in our system. Because of this, quantities must be kept in physical units rather than unfinalized package or pallet units. \n\nFor your 420 square foot wall area at 10 inches thick, the authoritative planning volume is 9.9 cubic metres, which will help you get accurate quotes from suppliers once you're ready to order.\n\nWould you like to explore how to calculate the timber framing needed to support your formwork?",
+            "turn": 2,
+            "at": "2026-08-22T15:15:21.089Z"
+          }
+        ],
+        "turnToolResults": [],
+        "turnSignals": [],
+        "turnPlan": {
+          "memoryProposals": [],
+          "workingNotes": [],
+          "signals": [],
+          "retrievalRequests": []
+        },
+        "turnRetrievals": [
+          {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "query": "pallet bag count inventory pricing SKU",
+              "topK": 4
+            },
+            "sourceId": "craig_product_knowledge",
+            "resultIds": [
+              "craig_product_knowledge#2"
+            ],
+            "scores": [
+              0.9163
+            ],
+            "returnedCount": 1,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "sourceTitle": "Craig Hempcrete product and project facts",
+              "query": "pallet bag count inventory pricing SKU",
+              "chunks": [
+                {
+                  "sourceId": "craig_product_knowledge",
+                  "sourceTitle": "Craig Hempcrete product and project facts",
+                  "chunkId": "craig_product_knowledge#2",
+                  "text": "The requirements document's 300 sq ft interior-retrofit workflow says 2.5–3 m³ at 2.5–3 inches, while the shipped estimator formula yields about 1.8–2.1 m³. This is an unresolved source conflict. When exact dimensions are supplied, report the deterministic estimator result and disclose the conflict if the reference workflow is relevant.\n\nFinal SKUs, packaging, and real prices are not set. The demo has no live inventory, checkout, payment, CRM, order management, or workshop-registration backend. Quantities stay in physical units rather than bags, pallets, or packages.",
+                  "score": 0.9163,
+                  "rank": 1
+                }
+              ]
+            }
+          }
+        ],
+        "allToolResults": [
+          {
+            "requestId": "act_mt4isbn7jy1gsa2o",
+            "toolName": "compute_wall_volume",
+            "turn": 1,
+            "at": "2026-08-22T15:15:17.107Z",
+            "ok": true,
+            "outcome": "success",
+            "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "output": {
+              "volume_m3": 9.9,
+              "exact_volume_m3": 9.91088,
+              "wall_area_sq_ft": 420,
+              "wall_thickness_in": 10
+            },
+            "facts": [
+              {
+                "key": "planning_wall_volume_m3",
+                "value": 9.9,
+                "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+              }
+            ]
+          }
+        ],
+        "unresolvedExternalExecution": null,
+        "status": "active",
+        "createdAt": "2026-08-22T15:15:15.151Z",
+        "updatedAt": "2026-08-22T15:15:21.089Z"
+      }
+    }
+  }
+}

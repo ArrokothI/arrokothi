@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S14",
+  "repeatId": "r01",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm in Seattle. Will the city approve my hempcrete walls under Appendix BL?",
+      "assistant": "Yes, you can certainly submit plans using the 2024 International Residential Code Appendix BL standard for hemp-lime construction in Seattle, though local building departments always have final jurisdiction. Hempcrete is 100% legal, contains 0% THC, is fire-resistant, and has nothing to do with recreational marijuana. Just keep in mind that our calculator numbers are planning estimates, not stamped engineering or permit-ready calculations. \n\nAre you currently in the early design phase with an architect, or are you ready to submit your permit package soon?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 526,
+      "outputTokens": 113,
+      "totalTokens": 639
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {},
+  "deterministicComputations": {},
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1330
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 526,
+    "outputTokens": 113,
+    "totalTokens": 639
+  }
+}

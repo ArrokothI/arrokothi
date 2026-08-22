@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "providerReportedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-22T14:25:35.422Z",
+    "evaluatorGitCommit": "c675bb3bb46de0afa35f249674625a72b78530d3",
+    "randomizationSeed": "v2-run-1:P01-V2-S04:r01:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S04",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly states that hemp-lime is recognized under the 2024 IRC Appendix BL. Candidate A incorrectly claims that hemp-lime is not yet included as a prescriptive material in the IRC, which directly contradicts the authoritative facts."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B aligns with the provided facts regarding the 2024 IRC Appendix BL and includes the required safety/legality facts (100% legal, 0% THC, fire-resistant). Candidate A fails to mention the 2024 IRC Appendix BL."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides accurate information regarding the building code, whereas Candidate A provides outdated/incorrect information about its inclusion in the IRC. However, Candidate B missed the caveat about local adoption/permitting."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a coherent tone and end with exactly one useful follow-up question to keep the conversation moving."
+    }
+  ],
+  "reason": "Candidate B is much better because it correctly identifies that hemp-lime is recognized under the 2024 IRC Appendix BL, whereas Candidate A incorrectly states it is not in the IRC. Candidate B also correctly includes the safety and legality facts (100% legal, 0% THC, fire-resistant) as required when legal/safety framing is raised, although it missed the caveat about local adoption/permitting.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly states that hemp-lime is recognized under the 2024 IRC Appendix BL. Candidate A incorrectly claims that hemp-lime is not yet included as a prescriptive material in the IRC, which directly contradicts the authoritative facts."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B aligns with the provided facts regarding the 2024 IRC Appendix BL and includes the required safety/legality facts (100% legal, 0% THC, fire-resistant). Candidate A fails to mention the 2024 IRC Appendix BL."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides accurate information regarding the building code, whereas Candidate A provides outdated/incorrect information about its inclusion in the IRC. However, Candidate B missed the caveat about local adoption/permitting."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a coherent tone and end with exactly one useful follow-up question to keep the conversation moving."
+      }
+    ],
+    "reason": "Candidate B is much better because it correctly identifies that hemp-lime is recognized under the 2024 IRC Appendix BL, whereas Candidate A incorrectly states it is not in the IRC. Candidate B also correctly includes the safety and legality facts (100% legal, 0% THC, fire-resistant) as required when legal/safety framing is raised, although it missed the caveat about local adoption/permitting."
+  }
+}

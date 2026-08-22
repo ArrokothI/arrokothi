@@ -1,0 +1,348 @@
+{
+  "schemaVersion": "benchmark-raw-run-v1",
+  "rebuildLabel": "benchmark-rebuild-v1",
+  "benchmarkApplicationId": "p01",
+  "implementationId": "p01-arrokothai",
+  "framework": {
+    "id": "arrokothai",
+    "name": "Agent_SDK",
+    "version": "0.37.0"
+  },
+  "scenarioRunId": "P01-V2-S17",
+  "timestamps": {
+    "startedAt": "2026-08-22T15:21:57.231Z",
+    "completedAt": "2026-08-22T15:21:57.891Z",
+    "elapsedMs": 659
+  },
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "What does a pallet cost today, and do you have 12 pallets in stock?",
+      "assistant": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+      "stopReason": "error",
+      "steps": 0,
+      "elapsedMs": 659,
+      "metrics": {
+        "preflightModelCalls": 0,
+        "agentLoopModelCalls": 1,
+        "conversationSummaryModelCalls": 0,
+        "guideRetryModelCalls": 0,
+        "totalModelCalls": 1
+      },
+      "eventSeqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    }
+  ],
+  "model": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "maxOutputTokens": 700,
+    "thinking": null,
+    "calls": [
+      {
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.890Z",
+        "purpose": "agent_loop:1",
+        "providerId": "strands:gemini",
+        "model": "gemini-3.5-flash-lite"
+      }
+    ],
+    "callCount": 1,
+    "usage": {
+      "available": false,
+      "inputTokens": 0,
+      "outputTokens": 0
+    }
+  },
+  "canonicalState": {},
+  "knowledge": {
+    "calls": [],
+    "rejectedCalls": []
+  },
+  "actions": {
+    "requests": [],
+    "confirmationsRequested": [],
+    "confirmationsResolved": [],
+    "executionStarted": [],
+    "succeeded": [],
+    "failed": [],
+    "outcomeUnknown": [],
+    "dispatchCount": 0
+  },
+  "stopReason": "error",
+  "runtimeErrors": [
+    {
+      "turn": 1,
+      "at": "2026-08-22T15:21:57.593Z",
+      "code": "HTTP_429_RATE_LIMIT",
+      "message": "Gemini 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500",
+      "detail": "planning pass failed; the response continued without new memory or retrieval"
+    },
+    {
+      "turn": 1,
+      "at": "2026-08-22T15:21:57.891Z",
+      "code": "agent_loop_failed",
+      "message": "agent-loop execution stopped before producing a successful terminal result",
+      "detail": "engine=strands-loop-v0.37; providerStopReason={\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\\\nPlease retry in 2.072131871s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\",\\n              \\\"location\\\": \\\"global\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"500\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"2s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+    }
+  ],
+  "nativeTrace": {
+    "eventStream": [
+      {
+        "id": "evt_mt4j0wdsmk61xkar",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.232Z",
+        "type": "UserMessageReceived",
+        "payload": {
+          "text": "What does a pallet cost today, and do you have 12 pallets in stock?"
+        },
+        "seq": 1,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0wntqxrf2gsc",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.593Z",
+        "type": "RuntimeError",
+        "payload": {
+          "code": "HTTP_429_RATE_LIMIT",
+          "message": "Gemini 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500",
+          "detail": "planning pass failed; the response continued without new memory or retrieval"
+        },
+        "seq": 2,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0wntdxvc3g34",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.593Z",
+        "type": "TurnPlanCreated",
+        "payload": {
+          "strategy": "llm",
+          "resolvedBy": "safe_empty",
+          "plan": {
+            "memoryProposals": [],
+            "workingNotes": [],
+            "signals": [],
+            "retrievalRequests": []
+          },
+          "detail": "planner failed or returned malformed structured output"
+        },
+        "seq": 3,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0wnwx6xyxsce",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.596Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_invocation"
+        },
+        "seq": 4,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0wnw3b3qr220",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.596Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_model",
+          "iteration": 1
+        },
+        "seq": 5,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0wnwdfw8924n",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.596Z",
+        "type": "AgentIterationStarted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "phaseId": null,
+          "capabilityNames": [
+            "knowledge_document_search_craig_product_knowledge_abceae",
+            "compute_wall_volume"
+          ]
+        },
+        "seq": 6,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0ww2279s4o5d",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.890Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_model",
+          "iteration": 1
+        },
+        "seq": 7,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0ww2qhixs3xe",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.890Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite"
+        },
+        "seq": 8,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0ww3mz2drbuf",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.891Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_invocation",
+          "detail": {
+            "mutationVersion": 1,
+            "runtimeContextKeysRead": []
+          }
+        },
+        "seq": 9,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0ww34pppbono",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.891Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_error",
+          "detail": {
+            "providerStopReason": "{\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\\\nPlease retry in 2.072131871s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\",\\n              \\\"location\\\": \\\"global\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"500\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"2s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+          }
+        },
+        "seq": 10,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0ww31sjigcks",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.891Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_terminated",
+          "detail": {
+            "stopReason": "error"
+          }
+        },
+        "seq": 11,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0ww30uvnyysk",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.891Z",
+        "type": "RuntimeError",
+        "payload": {
+          "code": "agent_loop_failed",
+          "message": "agent-loop execution stopped before producing a successful terminal result",
+          "detail": "engine=strands-loop-v0.37; providerStopReason={\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\\\nPlease retry in 2.072131871s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\",\\n              \\\"location\\\": \\\"global\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"500\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"2s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+        },
+        "seq": 12,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0ww3i37flew5",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.891Z",
+        "type": "AgentIterationCompleted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "requested": 0,
+          "completed": 0,
+          "rejected": 0,
+          "stopReason": "error"
+        },
+        "seq": 13,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      },
+      {
+        "id": "evt_mt4j0ww3enmsfxk0",
+        "turn": 1,
+        "at": "2026-08-22T15:21:57.891Z",
+        "type": "AssistantMessageEmitted",
+        "payload": {
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "stopReason": "error"
+        },
+        "seq": 14,
+        "sessionId": "benchmark-rebuild-v1-p01-1787412117232"
+      }
+    ],
+    "finalState": {
+      "sessionId": "benchmark-rebuild-v1-p01-1787412117232",
+      "agentId": "benchmark-rebuild-v1-p01-arrokothai",
+      "agentVersion": 1,
+      "turn": 1,
+      "lastSeq": 14,
+      "memory": {},
+      "workingNotes": [],
+      "hostContext": {},
+      "phaseId": null,
+      "pendingAction": null,
+      "ledger": {},
+      "transcript": [
+        {
+          "role": "user",
+          "text": "What does a pallet cost today, and do you have 12 pallets in stock?",
+          "turn": 1,
+          "at": "2026-08-22T15:21:57.232Z"
+        },
+        {
+          "role": "assistant",
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "turn": 1,
+          "at": "2026-08-22T15:21:57.891Z"
+        }
+      ],
+      "turnToolResults": [],
+      "turnSignals": [],
+      "turnPlan": {
+        "memoryProposals": [],
+        "workingNotes": [],
+        "signals": [],
+        "retrievalRequests": []
+      },
+      "turnRetrievals": [],
+      "allToolResults": [],
+      "unresolvedExternalExecution": null,
+      "status": "active",
+      "createdAt": "2026-08-22T15:21:57.232Z",
+      "updatedAt": "2026-08-22T15:21:57.891Z"
+    }
+  }
+}

@@ -1,0 +1,218 @@
+[
+  {
+    "requirementId": "P01-R15",
+    "implementationId": "p01-original",
+    "deterministicPass": 1,
+    "deterministicTotal": 1,
+    "semanticPoints": 0,
+    "semanticMax": 0,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R01",
+    "implementationId": "p01-original",
+    "deterministicPass": 1,
+    "deterministicTotal": 1,
+    "semanticPoints": 0,
+    "semanticMax": 0,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R12",
+    "implementationId": "p01-original",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 2,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R11",
+    "implementationId": "p01-original",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 1,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R10",
+    "implementationId": "p01-original",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 2,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R15",
+    "implementationId": "p01-agenerateor",
+    "deterministicPass": 1,
+    "deterministicTotal": 1,
+    "semanticPoints": 0,
+    "semanticMax": 0,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R01",
+    "implementationId": "p01-agenerateor",
+    "deterministicPass": 1,
+    "deterministicTotal": 1,
+    "semanticPoints": 0,
+    "semanticMax": 0,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R12",
+    "implementationId": "p01-agenerateor",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 2,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R11",
+    "implementationId": "p01-agenerateor",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 2,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R10",
+    "implementationId": "p01-agenerateor",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 0,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R15",
+    "implementationId": "p01-arrokothai",
+    "deterministicPass": 1,
+    "deterministicTotal": 1,
+    "semanticPoints": 0,
+    "semanticMax": 0,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R01",
+    "implementationId": "p01-arrokothai",
+    "deterministicPass": 1,
+    "deterministicTotal": 1,
+    "semanticPoints": 0,
+    "semanticMax": 0,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R12",
+    "implementationId": "p01-arrokothai",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 2,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P01-R11",
+    "implementationId": "p01-arrokothai",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 0,
+    "semanticMax": 2,
+    "hardViolations": 1
+  },
+  {
+    "requirementId": "P01-R10",
+    "implementationId": "p01-arrokothai",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 0,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P02-R07",
+    "implementationId": "p02-original",
+    "deterministicPass": 2,
+    "deterministicTotal": 2,
+    "semanticPoints": 0,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P02-R17",
+    "implementationId": "p02-original",
+    "deterministicPass": 1,
+    "deterministicTotal": 1,
+    "semanticPoints": 0,
+    "semanticMax": 0,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P02-R03",
+    "implementationId": "p02-original",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 0,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P02-R07",
+    "implementationId": "p02-agenerateor",
+    "deterministicPass": 2,
+    "deterministicTotal": 2,
+    "semanticPoints": 2,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P02-R17",
+    "implementationId": "p02-agenerateor",
+    "deterministicPass": 1,
+    "deterministicTotal": 1,
+    "semanticPoints": 0,
+    "semanticMax": 0,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P02-R03",
+    "implementationId": "p02-agenerateor",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 2,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P02-R07",
+    "implementationId": "p02-arrokothai",
+    "deterministicPass": 2,
+    "deterministicTotal": 2,
+    "semanticPoints": 2,
+    "semanticMax": 2,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P02-R17",
+    "implementationId": "p02-arrokothai",
+    "deterministicPass": 1,
+    "deterministicTotal": 1,
+    "semanticPoints": 0,
+    "semanticMax": 0,
+    "hardViolations": 0
+  },
+  {
+    "requirementId": "P02-R03",
+    "implementationId": "p02-arrokothai",
+    "deterministicPass": 0,
+    "deterministicTotal": 0,
+    "semanticPoints": 2,
+    "semanticMax": 2,
+    "hardViolations": 0
+  }
+]

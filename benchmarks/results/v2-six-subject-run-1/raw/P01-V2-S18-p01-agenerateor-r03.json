@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-agenerateor",
+  "scenarioId": "P01-V2-S18",
+  "repeatId": "r03",
+  "conversation": [],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite"
+  },
+  "runtimeErrors": [
+    {
+      "code": "transport_failure",
+      "message": "Agenerateor turn failed 502: {\"error\":\"Gemini reply generation returned no result; benchmark fallback is disabled\",\"timing\":{\"elapsedMs\":6}}",
+      "beforeSubjectBehavior": true
+    }
+  ],
+  "invalidReason": "provider_outage_or_transport_failure"
+}

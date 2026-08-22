@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S07",
+  "repeatId": "r01",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "Is hempcrete basically marijuana in my walls?",
+      "assistant": "Not at all! Hempcrete is made from industrial hemp stalks, which are 100% legal, have 0% THC, are completely unrelated to recreational marijuana, and are naturally fire-resistant. \n\nWhat kind of building project are you planning for your home?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 517,
+      "outputTokens": 56,
+      "totalTokens": 573
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {},
+  "deterministicComputations": {},
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1265
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 517,
+    "outputTokens": 56,
+    "totalTokens": 573
+  }
+}

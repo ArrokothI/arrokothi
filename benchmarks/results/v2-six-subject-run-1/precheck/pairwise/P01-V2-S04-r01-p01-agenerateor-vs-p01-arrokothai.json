@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "providerReportedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-22T14:25:39.682Z",
+    "evaluatorGitCommit": "c675bb3bb46de0afa35f249674625a72b78530d3",
+    "randomizationSeed": "v2-run-1:P01-V2-S04:r01:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S04",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Assistant B correctly states that hemp-lime construction is referenced in the 2024 IRC Appendix BL and includes the necessary caveat about local adoption. Assistant A incorrectly claims that hemp-lime is not yet included in the standard IRC."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Assistant B is truthful to the provided authoritative facts regarding the 2024 IRC Appendix BL. Assistant A provides outdated or incorrect information regarding the IRC."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Assistant B provides the correct code reference (2024 IRC Appendix BL), making it much more useful for a builder looking to reference the code for permitting."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both assistants maintain good conversational flow and end with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Assistant B followed all instructions, including referencing the 2024 IRC Appendix BL and noting the local adoption caveat. Assistant A incorrectly stated that hemp-lime is not included in the IRC, which contradicts the authoritative facts.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Assistant B correctly states that hemp-lime construction is referenced in the 2024 IRC Appendix BL and includes the necessary caveat about local adoption. Assistant A incorrectly claims that hemp-lime is not yet included in the standard IRC."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Assistant B is truthful to the provided authoritative facts regarding the 2024 IRC Appendix BL. Assistant A provides outdated or incorrect information regarding the IRC."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Assistant B provides the correct code reference (2024 IRC Appendix BL), making it much more useful for a builder looking to reference the code for permitting."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both assistants maintain good conversational flow and end with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Assistant B followed all instructions, including referencing the 2024 IRC Appendix BL and noting the local adoption caveat. Assistant A incorrectly stated that hemp-lime is not included in the IRC, which contradicts the authoritative facts."
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "providerReportedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-22T14:26:30.581Z",
+    "evaluatorGitCommit": "c675bb3bb46de0afa35f249674625a72b78530d3",
+    "randomizationSeed": "v2-run-1:P02-V2-S11:r01:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S11",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both assistants correctly identify that there are no matching properties in the database and do not hallucinate any listings."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "tie",
+      "reason": "Both assistants are perfectly grounded in the fact that zero matching records exist."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both assistants truthfully state that no matching properties are available."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "tie",
+      "reason": "Both assistants offer useful next steps, such as adjusting the search criteria or connecting with a human agent."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B is slightly more natural and conversational. Candidate A is a bit stiff and overly formal, using phrasing like 'zero properties matching that exact combination of five or more bedrooms'."
+    }
+  ],
+  "reason": "Both assistants successfully follow the negative constraints by truthfully stating that no matching properties exist without inventing any listings, and both remain markdown-free. Candidate B is preferred because its phrasing is more natural and conversational compared to the slightly stiff and robotic phrasing of Candidate A.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both assistants correctly identify that there are no matching properties in the database and do not hallucinate any listings."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "tie",
+        "reason": "Both assistants are perfectly grounded in the fact that zero matching records exist."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both assistants truthfully state that no matching properties are available."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "tie",
+        "reason": "Both assistants offer useful next steps, such as adjusting the search criteria or connecting with a human agent."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B is slightly more natural and conversational. Candidate A is a bit stiff and overly formal, using phrasing like 'zero properties matching that exact combination of five or more bedrooms'."
+      }
+    ],
+    "reason": "Both assistants successfully follow the negative constraints by truthfully stating that no matching properties exist without inventing any listings, and both remain markdown-free. Candidate B is preferred because its phrasing is more natural and conversational compared to the slightly stiff and robotic phrasing of Candidate A."
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-agenerateor",
+  "frameworkId": "generated-runtime",
+  "scenarioId": "P01-V2-S02",
+  "repeatId": "r02",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I just want to renovate one cold, damp bedroom, about 300 sq. ft. of wall area, to stop mold. Can I use this inside, and will it eat up my room space?",
+      "assistant": "Yes, hemp-lime can be used for an interior retrofit to help manage moisture and reduce mold risks by creating a breathable, vapor-permeable layer. For an interior retrofit like yours, the material is typically applied in a relatively thin layer, such as 2.5 to 3 inches thick using furring strips and hand-tamping, so it will only take up a modest amount of your room space. Note that our reference source notes a minor conflict for a 300 square foot interior retrofit where the workflow estimate of 2.5 to 3 cubic meters differs slightly from the estimator formula yielding about 1.8 to 2.1 cubic meters.\n\nWould you like to explore how to set up the furring strips for this thickness, or do you have a specific wall thickness in mind?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 2,
+    "usage": {
+      "available": false
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "project_type": "bedroom renovation",
+    "project_floor_area_sq_ft": null,
+    "wall_area_sq_ft": 300,
+    "wall_thickness_in": null,
+    "install_method": "interior_retrofit",
+    "existing_wall_type": null,
+    "user_priority": "stop mold and save room space",
+    "project_stage": null,
+    "jurisdiction": null,
+    "volume": null,
+    "volumeBasis": null,
+    "volumeStatus": "insufficient_dimensions",
+    "livePricing": false,
+    "liveInventory": false
+  },
+  "deterministicComputations": {},
+  "recordObservations": [
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "insufficient_dimensions",
+        "inputs": {
+          "wall_area_sq_ft": 300,
+          "wall_thickness_in": null
+        },
+        "output": null
+      }
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 2604
+  },
+  "modelCallCount": 2,
+  "tokenUsage": {
+    "available": false
+  },
+  "nativeTrace": {
+    "turns": [
+      {
+        "reply": "Yes, hemp-lime can be used for an interior retrofit to help manage moisture and reduce mold risks by creating a breathable, vapor-permeable layer. For an interior retrofit like yours, the material is typically applied in a relatively thin layer, such as 2.5 to 3 inches thick using furring strips and hand-tamping, so it will only take up a modest amount of your room space. Note that our reference source notes a minor conflict for a 300 square foot interior retrofit where the workflow estimate of 2.5 to 3 cubic meters differs slightly from the estimator formula yielding about 1.8 to 2.1 cubic meters.\n\nWould you like to explore how to set up the furring strips for this thickness, or do you have a specific wall thickness in mind?",
+        "state": {
+          "context": {
+            "computed_volume_status": "insufficient_dimensions",
+            "live_pricing_available": false,
+            "live_inventory_available": false
+          },
+          "fields": {
+            "p01_project_type": "bedroom renovation",
+            "p01_wall_area_sq_ft": 300,
+            "p01_install_method": "interior_retrofit",
+            "p01_user_priority": "stop mold and save room space"
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 1,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 1029
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1528
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "bedroom renovation",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 300,
+            "wall_thickness_in": null,
+            "install_method": "interior_retrofit",
+            "existing_wall_type": null,
+            "user_priority": "stop mold and save room space",
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": null,
+            "volumeBasis": null,
+            "volumeStatus": "insufficient_dimensions",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "insufficient_dimensions",
+          "inputs": {
+            "wall_area_sq_ft": 300,
+            "wall_thickness_in": null
+          },
+          "output": null
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [
+            "p01_project_type",
+            "p01_wall_area_sq_ft",
+            "p01_install_method",
+            "p01_user_priority"
+          ],
+          "changedFieldIds": [
+            "p01_project_type",
+            "p01_wall_area_sq_ft",
+            "p01_install_method",
+            "p01_user_priority"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2559
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      }
+    ],
+    "outcomeUnknownLimitation": false
+  }
+}

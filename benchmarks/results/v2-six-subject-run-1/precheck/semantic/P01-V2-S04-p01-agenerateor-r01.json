@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "evaluatorGitCommit": "c675bb3bb46de0afa35f249674625a72b78530d3",
+    "providerReportedModel": "gemini-3.5-flash",
+    "timestamp": "2026-08-22T14:24:54.738Z"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R12",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant explicitly states that hempcrete is non-load-bearing infill and that a conventional structural frame must carry the roof and other structural loads.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R11",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant correctly references the 2024 IRC Appendix BL and includes a caveat about local adoption and permitting.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R10",
+      "score": 0,
+      "confidence": 1,
+      "reason": "The assistant failed to mention that hempcrete is 100% legal, contains 0% THC, is fire-resistant, and is unrelated to recreational marijuana, despite safety and legal/code questions being raised.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R12",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant explicitly states that hempcrete is non-load-bearing infill and that a conventional structural frame must carry the roof and other structural loads.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R11",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant correctly references the 2024 IRC Appendix BL and includes a caveat about local adoption and permitting.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R10",
+        "score": 0,
+        "confidence": 1,
+        "reason": "The assistant failed to mention that hempcrete is 100% legal, contains 0% THC, is fire-resistant, and is unrelated to recreational marijuana, despite safety and legal/code questions being raised.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

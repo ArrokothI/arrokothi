@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S10",
+  "repeatId": "r02",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm doing a backyard office, 420 sq. ft. of wall at 10 inches, and I was planning on pre-cast blocks.",
+      "assistant": "Using pre-cast blocks for a 420 sq. ft. backyard office with 10-inch walls is a fantastic choice for speed, giving you roughly 10 to 12 m³ of material that skips the messy mixing phase on site. Just keep in mind these numbers are planning estimates rather than stamped engineering or permit advice, and your structural timber frame will carry all the heavy roof and floor loads while the hemp-lime acts as your breathable insulation infill. \n\nWould you prefer to stick with the 12-inch thickness for maximum thermal performance, or drop down to 8 inches to save a bit of floor space?"
+    },
+    {
+      "turn": 2,
+      "user": "Actually, I want the hands-on DIY experience. What if I cast it in place instead?",
+      "assistant": "Switching to cast-in-place for your backyard office gives you that wonderfully rewarding, hands-on DIY experience where you get to tamp every layer yourself, keeping the total volume right around 10 to 12 m³ for those 10-inch walls. Keep in mind these calculations are planning estimates rather than stamped engineering or permit advice, and your structural timber frame will still carry the roof and floor loads while the hempcrete acts strictly as your non-load-bearing insulation infill. \n\nDo you already have your temporary formwork and wall ties designed for the pour?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 2,
+    "usage": {
+      "available": true,
+      "inputTokens": 1239,
+      "outputTokens": 253,
+      "totalTokens": 1492
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10,
+    "install_method": "cast_in_situ"
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.91088
+  },
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 2385
+  },
+  "modelCallCount": 2,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 1239,
+    "outputTokens": 253,
+    "totalTokens": 1492
+  }
+}

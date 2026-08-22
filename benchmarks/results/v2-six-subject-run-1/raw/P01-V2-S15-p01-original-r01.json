@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S15",
+  "repeatId": "r01",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I have 420 sq. ft. of wall area at 10 inches for a backyard office.",
+      "assistant": "That is a fantastic size for a backyard office, and a 10-inch wall thickness will give you incredible thermal comfort and soundproofing. For 420 square feet at 10 inches deep, you will need roughly 10 to 11 cubic meters of hemp-lime material. Just keep in mind these numbers are planning estimates, not stamped engineering or permit advice. Since you are building a backyard office, are you leaning toward using quick pre-cast blocks or traditional cast-in-place framing?"
+    },
+    {
+      "turn": 2,
+      "user": "Don't give me cubic meters. Just tell me exactly how many pallets to buy.",
+      "assistant": "Because hemp-lime projects vary based on your exact framing layout and compaction, we don't sell pre-packaged pallets or final SKUs; instead, we supply raw ingredients by volume so you never get stuck with the wrong box counts. To help you plan your materials accurately for this 420-square-foot office, would you prefer to use pre-cast blocks or mix on-site with cast-in-place forms?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 2,
+    "usage": {
+      "available": true,
+      "inputTokens": 1188,
+      "outputTokens": 195,
+      "totalTokens": 1383
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.91088
+  },
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 2079
+  },
+  "modelCallCount": 2,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 1188,
+    "outputTokens": 195,
+    "totalTokens": 1383
+  }
+}

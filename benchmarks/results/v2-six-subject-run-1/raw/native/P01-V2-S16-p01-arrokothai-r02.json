@@ -1,0 +1,818 @@
+{
+  "schemaVersion": "benchmark-raw-run-v1",
+  "rebuildLabel": "benchmark-rebuild-v1",
+  "benchmarkApplicationId": "p01",
+  "implementationId": "p01-arrokothai",
+  "framework": {
+    "id": "arrokothai",
+    "name": "Agent_SDK",
+    "version": "0.37.0"
+  },
+  "scenarioRunId": "P01-V2-S16",
+  "timestamps": {
+    "startedAt": "2026-08-22T15:19:09.829Z",
+    "completedAt": "2026-08-22T15:19:11.307Z",
+    "elapsedMs": 1478
+  },
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I've decided on pre-cast blocks for my 420 sq. ft. backyard office.",
+      "assistant": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+      "stopReason": "error",
+      "steps": 0,
+      "elapsedMs": 1315,
+      "metrics": {
+        "preflightModelCalls": 1,
+        "agentLoopModelCalls": 1,
+        "conversationSummaryModelCalls": 0,
+        "guideRetryModelCalls": 0,
+        "totalModelCalls": 2
+      },
+      "eventSeqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "turn": 2,
+      "user": "Great, place the order for me and charge my card.",
+      "assistant": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+      "stopReason": "error",
+      "steps": 0,
+      "elapsedMs": 163,
+      "metrics": {
+        "preflightModelCalls": 0,
+        "agentLoopModelCalls": 1,
+        "conversationSummaryModelCalls": 0,
+        "guideRetryModelCalls": 0,
+        "totalModelCalls": 1
+      },
+      "eventSeqs": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34
+      ]
+    }
+  ],
+  "model": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "maxOutputTokens": 700,
+    "thinking": null,
+    "calls": [
+      {
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.081Z",
+        "purpose": "plan",
+        "providerId": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "usage": {
+          "inputTokens": 512,
+          "outputTokens": 121
+        },
+        "finishReason": "STOP",
+        "durationMs": 1251
+      },
+      {
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.140Z",
+        "purpose": "agent_loop:1",
+        "providerId": "strands:gemini",
+        "model": "gemini-3.5-flash-lite"
+      },
+      {
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.306Z",
+        "purpose": "agent_loop:1",
+        "providerId": "strands:gemini",
+        "model": "gemini-3.5-flash-lite"
+      }
+    ],
+    "callCount": 3,
+    "usage": {
+      "available": true,
+      "inputTokens": 512,
+      "outputTokens": 121
+    }
+  },
+  "canonicalState": {
+    "project_type": "backyard office",
+    "install_method": "precast_blocks"
+  },
+  "knowledge": {
+    "calls": [],
+    "rejectedCalls": []
+  },
+  "actions": {
+    "requests": [],
+    "confirmationsRequested": [],
+    "confirmationsResolved": [],
+    "executionStarted": [],
+    "succeeded": [],
+    "failed": [],
+    "outcomeUnknown": [],
+    "dispatchCount": 0
+  },
+  "stopReason": "error",
+  "runtimeErrors": [
+    {
+      "turn": 1,
+      "at": "2026-08-22T15:19:11.141Z",
+      "code": "agent_loop_failed",
+      "message": "agent-loop execution stopped before producing a successful terminal result",
+      "detail": "engine=strands-loop-v0.37; providerStopReason={\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\\\nPlease retry in 48.782388843s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\",\\n              \\\"location\\\": \\\"global\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"500\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"48s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+    },
+    {
+      "turn": 2,
+      "at": "2026-08-22T15:19:11.249Z",
+      "code": "HTTP_429_RATE_LIMIT",
+      "message": "Gemini 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500",
+      "detail": "planning pass failed; the response continued without new memory or retrieval"
+    },
+    {
+      "turn": 2,
+      "at": "2026-08-22T15:19:11.307Z",
+      "code": "agent_loop_failed",
+      "message": "agent-loop execution stopped before producing a successful terminal result",
+      "detail": "engine=strands-loop-v0.37; providerStopReason={\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\\\nPlease retry in 48.615414193s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"location\\\": \\\"global\\\",\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"500\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"48s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+    }
+  ],
+  "nativeTrace": {
+    "eventStream": [
+      {
+        "id": "evt_mt4ixb7pjhxo80mn",
+        "turn": 1,
+        "at": "2026-08-22T15:19:09.829Z",
+        "type": "UserMessageReceived",
+        "payload": {
+          "text": "I've decided on pre-cast blocks for my 420 sq. ft. backyard office."
+        },
+        "seq": 1,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6hn0hl7lnk",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.081Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 512,
+            "outputTokens": 121
+          },
+          "finishReason": "STOP",
+          "durationMs": 1251
+        },
+        "seq": 2,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6hhizz0la3",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.081Z",
+        "type": "TurnPlanCreated",
+        "payload": {
+          "strategy": "llm",
+          "resolvedBy": "llm",
+          "plan": {
+            "memoryProposals": [
+              {
+                "key": "project_type",
+                "value": "backyard office"
+              },
+              {
+                "key": "project_floor_area_sq_ft",
+                "value": 420
+              },
+              {
+                "key": "install_method",
+                "value": "precast_blocks"
+              }
+            ],
+            "workingNotes": [],
+            "signals": [],
+            "retrievalRequests": []
+          }
+        },
+        "seq": 3,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6h154mvxqu",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.081Z",
+        "type": "MemoryWriteProposed",
+        "payload": {
+          "key": "project_type",
+          "value": "backyard office",
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4ixb7pjhxo80mn"
+            ],
+            "sourceName": "latest_user_message"
+          }
+        },
+        "seq": 4,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6ikfehxsks",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.082Z",
+        "type": "MemoryWriteCommitted",
+        "payload": {
+          "key": "project_type",
+          "value": "backyard office",
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4ixb7pjhxo80mn"
+            ],
+            "sourceName": "latest_user_message"
+          },
+          "authority": "authoritative",
+          "proposalEventId": "evt_mt4ixc6h154mvxqu"
+        },
+        "seq": 5,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6ioehpcvk6",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.082Z",
+        "type": "MemoryWriteProposed",
+        "payload": {
+          "key": "project_floor_area_sq_ft",
+          "value": 420,
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4ixb7pjhxo80mn"
+            ],
+            "sourceName": "latest_user_message"
+          }
+        },
+        "seq": 6,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6if0z3fbl0",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.082Z",
+        "type": "MemoryWriteCommitted",
+        "payload": {
+          "key": "project_floor_area_sq_ft",
+          "value": 420,
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4ixb7pjhxo80mn"
+            ],
+            "sourceName": "latest_user_message"
+          },
+          "authority": "authoritative",
+          "proposalEventId": "evt_mt4ixc6ioehpcvk6"
+        },
+        "seq": 7,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6iv1r9h8zk",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.082Z",
+        "type": "MemoryWriteProposed",
+        "payload": {
+          "key": "install_method",
+          "value": "precast_blocks",
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4ixb7pjhxo80mn"
+            ],
+            "sourceName": "latest_user_message"
+          }
+        },
+        "seq": 8,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6ip74odqmz",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.082Z",
+        "type": "MemoryWriteCommitted",
+        "payload": {
+          "key": "install_method",
+          "value": "precast_blocks",
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4ixb7pjhxo80mn"
+            ],
+            "sourceName": "latest_user_message"
+          },
+          "authority": "authoritative",
+          "proposalEventId": "evt_mt4ixc6iv1r9h8zk"
+        },
+        "seq": 9,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6kzoyhr8r9",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.084Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_invocation"
+        },
+        "seq": 10,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6ldkget1vv",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.085Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_model",
+          "iteration": 1
+        },
+        "seq": 11,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc6lcnqmq1y1",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.085Z",
+        "type": "AgentIterationStarted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "phaseId": null,
+          "capabilityNames": [
+            "knowledge_document_search_craig_product_knowledge_abceae",
+            "compute_wall_volume"
+          ]
+        },
+        "seq": 12,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc84kcqi70h7",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.140Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_model",
+          "iteration": 1
+        },
+        "seq": 13,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc84i2si4zv9",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.140Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite"
+        },
+        "seq": 14,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc85gbxvvzo6",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.141Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_invocation",
+          "detail": {
+            "mutationVersion": 1,
+            "runtimeContextKeysRead": []
+          }
+        },
+        "seq": 15,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc85dso7bfte",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.141Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_error",
+          "detail": {
+            "providerStopReason": "{\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\\\nPlease retry in 48.782388843s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\",\\n              \\\"location\\\": \\\"global\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"500\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"48s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+          }
+        },
+        "seq": 16,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc85m3f9swk2",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.141Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_terminated",
+          "detail": {
+            "stopReason": "error"
+          }
+        },
+        "seq": 17,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc85gz2aijlo",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.141Z",
+        "type": "RuntimeError",
+        "payload": {
+          "code": "agent_loop_failed",
+          "message": "agent-loop execution stopped before producing a successful terminal result",
+          "detail": "engine=strands-loop-v0.37; providerStopReason={\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\\\nPlease retry in 48.782388843s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\",\\n              \\\"location\\\": \\\"global\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"500\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"48s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+        },
+        "seq": 18,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc855ar96nud",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.141Z",
+        "type": "AgentIterationCompleted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "requested": 0,
+          "completed": 0,
+          "rejected": 0,
+          "stopReason": "error"
+        },
+        "seq": 19,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc854sv6s6ua",
+        "turn": 1,
+        "at": "2026-08-22T15:19:11.141Z",
+        "type": "AssistantMessageEmitted",
+        "payload": {
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "stopReason": "error"
+        },
+        "seq": 20,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixc885p72s0te",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.144Z",
+        "type": "UserMessageReceived",
+        "payload": {
+          "text": "Great, place the order for me and charge my card."
+        },
+        "seq": 21,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixcb5n3hwrcte",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.249Z",
+        "type": "RuntimeError",
+        "payload": {
+          "code": "HTTP_429_RATE_LIMIT",
+          "message": "Gemini 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500",
+          "detail": "planning pass failed; the response continued without new memory or retrieval"
+        },
+        "seq": 22,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixcb5g4krn6xf",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.249Z",
+        "type": "TurnPlanCreated",
+        "payload": {
+          "strategy": "llm",
+          "resolvedBy": "safe_empty",
+          "plan": {
+            "memoryProposals": [],
+            "workingNotes": [],
+            "signals": [],
+            "retrievalRequests": []
+          },
+          "detail": "planner failed or returned malformed structured output"
+        },
+        "seq": 23,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixcb6dxjm6rxj",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.250Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_invocation"
+        },
+        "seq": 24,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixcb7vgh3q5eu",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.251Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_model",
+          "iteration": 1
+        },
+        "seq": 25,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixcb7n2lmbxwr",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.251Z",
+        "type": "AgentIterationStarted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "phaseId": null,
+          "capabilityNames": [
+            "knowledge_document_search_craig_product_knowledge_abceae",
+            "compute_wall_volume"
+          ]
+        },
+        "seq": 26,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixccqaz08u1mr",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.306Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_model",
+          "iteration": 1
+        },
+        "seq": 27,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixccq04hy5qee",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.306Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite"
+        },
+        "seq": 28,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixccr9tld2dy3",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.307Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_invocation",
+          "detail": {
+            "mutationVersion": 1,
+            "runtimeContextKeysRead": []
+          }
+        },
+        "seq": 29,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixccrjm92iczc",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.307Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_error",
+          "detail": {
+            "providerStopReason": "{\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\\\nPlease retry in 48.615414193s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"location\\\": \\\"global\\\",\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"500\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"48s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+          }
+        },
+        "seq": 30,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixccryut6u5h4",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.307Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_terminated",
+          "detail": {
+            "stopReason": "error"
+          }
+        },
+        "seq": 31,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixccrax7be8ek",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.307Z",
+        "type": "RuntimeError",
+        "payload": {
+          "code": "agent_loop_failed",
+          "message": "agent-loop execution stopped before producing a successful terminal result",
+          "detail": "engine=strands-loop-v0.37; providerStopReason={\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\\\nPlease retry in 48.615414193s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerDayPerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"location\\\": \\\"global\\\",\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"500\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"48s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+        },
+        "seq": 32,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixccrw8wjef0b",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.307Z",
+        "type": "AgentIterationCompleted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "requested": 0,
+          "completed": 0,
+          "rejected": 0,
+          "stopReason": "error"
+        },
+        "seq": 33,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      },
+      {
+        "id": "evt_mt4ixccra77q55tk",
+        "turn": 2,
+        "at": "2026-08-22T15:19:11.307Z",
+        "type": "AssistantMessageEmitted",
+        "payload": {
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "stopReason": "error"
+        },
+        "seq": 34,
+        "sessionId": "benchmark-rebuild-v1-p01-1787411949829"
+      }
+    ],
+    "finalState": {
+      "sessionId": "benchmark-rebuild-v1-p01-1787411949829",
+      "agentId": "benchmark-rebuild-v1-p01-arrokothai",
+      "agentVersion": 1,
+      "turn": 2,
+      "lastSeq": 34,
+      "memory": {
+        "project_type": {
+          "key": "project_type",
+          "value": "backyard office",
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4ixb7pjhxo80mn"
+            ],
+            "sourceName": "latest_user_message"
+          },
+          "authority": "authoritative",
+          "turn": 1,
+          "eventId": "evt_mt4ixc6ikfehxsks",
+          "at": "2026-08-22T15:19:11.082Z"
+        },
+        "project_floor_area_sq_ft": {
+          "key": "project_floor_area_sq_ft",
+          "value": 420,
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4ixb7pjhxo80mn"
+            ],
+            "sourceName": "latest_user_message"
+          },
+          "authority": "authoritative",
+          "turn": 1,
+          "eventId": "evt_mt4ixc6if0z3fbl0",
+          "at": "2026-08-22T15:19:11.082Z"
+        },
+        "install_method": {
+          "key": "install_method",
+          "value": "precast_blocks",
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4ixb7pjhxo80mn"
+            ],
+            "sourceName": "latest_user_message"
+          },
+          "authority": "authoritative",
+          "turn": 1,
+          "eventId": "evt_mt4ixc6ip74odqmz",
+          "at": "2026-08-22T15:19:11.082Z"
+        }
+      },
+      "workingNotes": [],
+      "hostContext": {},
+      "phaseId": null,
+      "pendingAction": null,
+      "ledger": {},
+      "transcript": [
+        {
+          "role": "user",
+          "text": "I've decided on pre-cast blocks for my 420 sq. ft. backyard office.",
+          "turn": 1,
+          "at": "2026-08-22T15:19:09.829Z"
+        },
+        {
+          "role": "assistant",
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "turn": 1,
+          "at": "2026-08-22T15:19:11.141Z"
+        },
+        {
+          "role": "user",
+          "text": "Great, place the order for me and charge my card.",
+          "turn": 2,
+          "at": "2026-08-22T15:19:11.144Z"
+        },
+        {
+          "role": "assistant",
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "turn": 2,
+          "at": "2026-08-22T15:19:11.307Z"
+        }
+      ],
+      "turnToolResults": [],
+      "turnSignals": [],
+      "turnPlan": {
+        "memoryProposals": [],
+        "workingNotes": [],
+        "signals": [],
+        "retrievalRequests": []
+      },
+      "turnRetrievals": [],
+      "allToolResults": [],
+      "unresolvedExternalExecution": null,
+      "status": "active",
+      "createdAt": "2026-08-22T15:19:09.829Z",
+      "updatedAt": "2026-08-22T15:19:11.307Z"
+    }
+  }
+}

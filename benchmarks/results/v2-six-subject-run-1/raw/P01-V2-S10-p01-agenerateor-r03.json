@@ -1,0 +1,355 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-agenerateor",
+  "frameworkId": "generated-runtime",
+  "scenarioId": "P01-V2-S10",
+  "repeatId": "r03",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm doing a backyard office, 420 sq. ft. of wall at 10 inches, and I was planning on pre-cast blocks.",
+      "assistant": "Based on your 420 sq. ft. of net wall area at 10 inches thickness, the computed hemp-lime volume for your backyard office using pre-cast blocks is 9.9 cubic meters. Because live inventory and pricing are not available, we keep planning strictly in physical units like this. \n\nSince you are leaning toward pre-cast blocks, are you planning to handle the installation yourself or work with a builder?"
+    },
+    {
+      "turn": 2,
+      "user": "Actually, I want the hands-on DIY experience. What if I cast it in place instead?",
+      "assistant": "Switching from pre-cast blocks to cast-in-situ construction keeps your calculated hemp-lime volume at 9.9 cubic meters for that 420 square foot wall area at 10 inches thick. For a hands-on DIY approach, cast-in-situ involves tamping the hemp-lime mix into temporary forms, which can typically be removed the next day, followed by a natural curing window of about 3 to 6 weeks before final plastering. \n\nSince project-specific structural, permit, and code decisions require local professional guidance, have you consulted a local authority or engineer about your plans for the timber framing that will carry the roof and floor loads?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 4,
+    "usage": {
+      "available": false
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "project_type": "backyard office",
+    "project_floor_area_sq_ft": null,
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10,
+    "install_method": "cast_in_situ",
+    "existing_wall_type": null,
+    "user_priority": "hands-on DIY experience",
+    "project_stage": null,
+    "jurisdiction": null,
+    "volume": 9.9,
+    "volumeBasis": "420 sq ft × (10 in / 12) × 0.0283168 = 9.91088 m³; displayed to one decimal place",
+    "volumeStatus": "succeeded",
+    "livePricing": false,
+    "liveInventory": false
+  },
+  "deterministicComputations": {},
+  "recordObservations": [
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 420,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 9.9,
+          "exact_volume_m3": 9.91088
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 420,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 9.9,
+          "exact_volume_m3": 9.91088
+        }
+      }
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 4598
+  },
+  "modelCallCount": 4,
+  "tokenUsage": {
+    "available": false
+  },
+  "nativeTrace": {
+    "turns": [
+      {
+        "reply": "Based on your 420 sq. ft. of net wall area at 10 inches thickness, the computed hemp-lime volume for your backyard office using pre-cast blocks is 9.9 cubic meters. Because live inventory and pricing are not available, we keep planning strictly in physical units like this. \n\nSince you are leaning toward pre-cast blocks, are you planning to handle the installation yourself or work with a builder?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 9.9,
+            "computed_volume_basis": "420 sq ft × (10 in / 12) × 0.0283168 = 9.91088 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 420,
+            "p01_wall_thickness_in": 10,
+            "p01_install_method": "precast_blocks"
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 1,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 1047
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1125
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10,
+            "install_method": "precast_blocks",
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 9.9,
+            "volumeBasis": "420 sq ft × (10 in / 12) × 0.0283168 = 9.91088 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 9.9,
+            "exact_volume_m3": 9.91088
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [
+            "p01_project_type",
+            "p01_wall_area_sq_ft",
+            "p01_wall_thickness_in",
+            "p01_install_method"
+          ],
+          "changedFieldIds": [
+            "p01_project_type",
+            "p01_wall_area_sq_ft",
+            "p01_wall_thickness_in",
+            "p01_install_method"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2179
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Switching from pre-cast blocks to cast-in-situ construction keeps your calculated hemp-lime volume at 9.9 cubic meters for that 420 square foot wall area at 10 inches thick. For a hands-on DIY approach, cast-in-situ involves tamping the hemp-lime mix into temporary forms, which can typically be removed the next day, followed by a natural curing window of about 3 to 6 weeks before final plastering. \n\nSince project-specific structural, permit, and code decisions require local professional guidance, have you consulted a local authority or engineer about your plans for the timber framing that will carry the roof and floor loads?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 9.9,
+            "computed_volume_basis": "420 sq ft × (10 in / 12) × 0.0283168 = 9.91088 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 420,
+            "p01_wall_thickness_in": 10,
+            "p01_install_method": "cast_in_situ",
+            "p01_user_priority": "hands-on DIY experience"
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 2,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 1051
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1273
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10,
+            "install_method": "cast_in_situ",
+            "existing_wall_type": null,
+            "user_priority": "hands-on DIY experience",
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 9.9,
+            "volumeBasis": "420 sq ft × (10 in / 12) × 0.0283168 = 9.91088 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 9.9,
+            "exact_volume_m3": 9.91088
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [
+            "p01_install_method",
+            "p01_user_priority"
+          ],
+          "changedFieldIds": [
+            "p01_install_method",
+            "p01_user_priority"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2324
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      }
+    ],
+    "outcomeUnknownLimitation": false
+  }
+}

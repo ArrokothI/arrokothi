@@ -1,0 +1,383 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-arrokothai",
+  "frameworkId": "provider-neutral-runtime",
+  "scenarioId": "P01-V2-S04",
+  "repeatId": "r02",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "Can hempcrete hold up my roof, and is it recognized by U.S. residential code?",
+      "assistant": "Hempcrete is a fantastic insulating material, but it cannot carry structural loads like a roof on its own—instead, it is used as a non-load-bearing infill wall around a structural timber, steel, or post-and-beam frame that takes the weight of the roof. \n\nRegarding U.S. residential building codes, hemp-lime (hempcrete) is not yet broadly integrated as a prescriptive standard in the International Residential Code (IRC). However, builders routinely use it via alternative methods or performance-based approvals (such as an Appendix AQ or equivalent local building official approval) by working with structural engineers who design the primary frame to meet code while treating the hempcrete as the continuous insulation and wall finish.\n\nWould you like to look at how a typical timber frame supports the roof while the hemp-lime is packed around it?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 2,
+    "usage": {
+      "available": true,
+      "inputTokens": 1035,
+      "outputTokens": 240
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {},
+  "retrievalObservations": [],
+  "recordObservations": [],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "confirmationRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "completed",
+  "runtimeErrors": [],
+  "timing": {
+    "startedAt": "2026-08-22T14:32:04.670Z",
+    "completedAt": "2026-08-22T14:32:07.090Z",
+    "elapsedMs": 2420
+  },
+  "modelCallCount": 2,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 1035,
+    "outputTokens": 240,
+    "totalTokens": 1275
+  },
+  "nativeTrace": {
+    "schemaVersion": "benchmark-raw-run-v1",
+    "rebuildLabel": "benchmark-rebuild-v1",
+    "benchmarkApplicationId": "p01",
+    "implementationId": "p01-arrokothai",
+    "framework": {
+      "id": "arrokothai",
+      "name": "Agent_SDK",
+      "version": "0.37.0"
+    },
+    "scenarioRunId": "P01-V2-S04",
+    "timestamps": {
+      "startedAt": "2026-08-22T14:32:04.670Z",
+      "completedAt": "2026-08-22T14:32:07.090Z",
+      "elapsedMs": 2420
+    },
+    "conversation": [
+      {
+        "turn": 1,
+        "user": "Can hempcrete hold up my roof, and is it recognized by U.S. residential code?",
+        "assistant": "Hempcrete is a fantastic insulating material, but it cannot carry structural loads like a roof on its own—instead, it is used as a non-load-bearing infill wall around a structural timber, steel, or post-and-beam frame that takes the weight of the roof. \n\nRegarding U.S. residential building codes, hemp-lime (hempcrete) is not yet broadly integrated as a prescriptive standard in the International Residential Code (IRC). However, builders routinely use it via alternative methods or performance-based approvals (such as an Appendix AQ or equivalent local building official approval) by working with structural engineers who design the primary frame to meet code while treating the hempcrete as the continuous insulation and wall finish.\n\nWould you like to look at how a typical timber frame supports the roof while the hemp-lime is packed around it?",
+        "stopReason": "completed",
+        "steps": 1,
+        "elapsedMs": 2420,
+        "metrics": {
+          "preflightModelCalls": 1,
+          "agentLoopModelCalls": 1,
+          "conversationSummaryModelCalls": 0,
+          "guideRetryModelCalls": 0,
+          "totalModelCalls": 2
+        },
+        "eventSeqs": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      }
+    ],
+    "model": {
+      "provider": "gemini",
+      "requested": "gemini-3.5-flash-lite",
+      "providerReported": "gemini-3.5-flash-lite",
+      "temperature": 0.35,
+      "maxOutputTokens": 700,
+      "thinking": null,
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T14:32:05.853Z",
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 510,
+            "outputTokens": 67
+          },
+          "finishReason": "STOP",
+          "durationMs": 1182
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T14:32:07.089Z",
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 525,
+            "outputTokens": 173
+          },
+          "finishReason": "endTurn"
+        }
+      ],
+      "callCount": 2,
+      "usage": {
+        "available": true,
+        "inputTokens": 1035,
+        "outputTokens": 240
+      }
+    },
+    "canonicalState": {},
+    "knowledge": {
+      "calls": [],
+      "rejectedCalls": []
+    },
+    "actions": {
+      "requests": [],
+      "confirmationsRequested": [],
+      "confirmationsResolved": [],
+      "executionStarted": [],
+      "succeeded": [],
+      "failed": [],
+      "outcomeUnknown": [],
+      "dispatchCount": 0
+    },
+    "stopReason": "completed",
+    "runtimeErrors": [],
+    "nativeTrace": {
+      "eventStream": [
+        {
+          "id": "evt_mt4h8rb2gub2mgp6",
+          "turn": 1,
+          "at": "2026-08-22T14:32:04.670Z",
+          "type": "UserMessageReceived",
+          "payload": {
+            "text": "Can hempcrete hold up my roof, and is it recognized by U.S. residential code?"
+          },
+          "seq": 1,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8s7xqivgzv4l",
+          "turn": 1,
+          "at": "2026-08-22T14:32:05.853Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "plan",
+            "providerId": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 510,
+              "outputTokens": 67
+            },
+            "finishReason": "STOP",
+            "durationMs": 1182
+          },
+          "seq": 2,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8s7xorbfrdxg",
+          "turn": 1,
+          "at": "2026-08-22T14:32:05.853Z",
+          "type": "TurnPlanCreated",
+          "payload": {
+            "strategy": "llm",
+            "resolvedBy": "llm",
+            "plan": {
+              "memoryProposals": [],
+              "workingNotes": [],
+              "signals": [],
+              "retrievalRequests": []
+            }
+          },
+          "seq": 3,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8s80k8gj1oq3",
+          "turn": 1,
+          "at": "2026-08-22T14:32:05.856Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_invocation"
+          },
+          "seq": 4,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8s80ntvp5vco",
+          "turn": 1,
+          "at": "2026-08-22T14:32:05.856Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 1
+          },
+          "seq": 5,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8s80fna07ta7",
+          "turn": 1,
+          "at": "2026-08-22T14:32:05.856Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 6,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8t69loz1fyag",
+          "turn": 1,
+          "at": "2026-08-22T14:32:07.089Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 1
+          },
+          "seq": 7,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8t69uhldf3u6",
+          "turn": 1,
+          "at": "2026-08-22T14:32:07.089Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:1",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 525,
+              "outputTokens": 173
+            },
+            "finishReason": "endTurn"
+          },
+          "seq": 8,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8t69ldhkjrxr",
+          "turn": 1,
+          "at": "2026-08-22T14:32:07.089Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_invocation",
+            "detail": {
+              "mutationVersion": 1,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 9,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8t6atdd03lcx",
+          "turn": 1,
+          "at": "2026-08-22T14:32:07.090Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "execution_terminated",
+            "detail": {
+              "stopReason": "end_turn"
+            }
+          },
+          "seq": 10,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8t6aycesfq0k",
+          "turn": 1,
+          "at": "2026-08-22T14:32:07.090Z",
+          "type": "AgentIterationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "requested": 0,
+            "completed": 0,
+            "rejected": 0,
+            "stopReason": "completed"
+          },
+          "seq": 11,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        },
+        {
+          "id": "evt_mt4h8t6agj78aa4z",
+          "turn": 1,
+          "at": "2026-08-22T14:32:07.090Z",
+          "type": "AssistantMessageEmitted",
+          "payload": {
+            "text": "Hempcrete is a fantastic insulating material, but it cannot carry structural loads like a roof on its own—instead, it is used as a non-load-bearing infill wall around a structural timber, steel, or post-and-beam frame that takes the weight of the roof. \n\nRegarding U.S. residential building codes, hemp-lime (hempcrete) is not yet broadly integrated as a prescriptive standard in the International Residential Code (IRC). However, builders routinely use it via alternative methods or performance-based approvals (such as an Appendix AQ or equivalent local building official approval) by working with structural engineers who design the primary frame to meet code while treating the hempcrete as the continuous insulation and wall finish.\n\nWould you like to look at how a typical timber frame supports the roof while the hemp-lime is packed around it?",
+            "stopReason": "completed"
+          },
+          "seq": 12,
+          "sessionId": "benchmark-rebuild-v1-p01-1787409124670"
+        }
+      ],
+      "finalState": {
+        "sessionId": "benchmark-rebuild-v1-p01-1787409124670",
+        "agentId": "benchmark-rebuild-v1-p01-arrokothai",
+        "agentVersion": 1,
+        "turn": 1,
+        "lastSeq": 12,
+        "memory": {},
+        "workingNotes": [],
+        "hostContext": {},
+        "phaseId": null,
+        "pendingAction": null,
+        "ledger": {},
+        "transcript": [
+          {
+            "role": "user",
+            "text": "Can hempcrete hold up my roof, and is it recognized by U.S. residential code?",
+            "turn": 1,
+            "at": "2026-08-22T14:32:04.670Z"
+          },
+          {
+            "role": "assistant",
+            "text": "Hempcrete is a fantastic insulating material, but it cannot carry structural loads like a roof on its own—instead, it is used as a non-load-bearing infill wall around a structural timber, steel, or post-and-beam frame that takes the weight of the roof. \n\nRegarding U.S. residential building codes, hemp-lime (hempcrete) is not yet broadly integrated as a prescriptive standard in the International Residential Code (IRC). However, builders routinely use it via alternative methods or performance-based approvals (such as an Appendix AQ or equivalent local building official approval) by working with structural engineers who design the primary frame to meet code while treating the hempcrete as the continuous insulation and wall finish.\n\nWould you like to look at how a typical timber frame supports the roof while the hemp-lime is packed around it?",
+            "turn": 1,
+            "at": "2026-08-22T14:32:07.090Z"
+          }
+        ],
+        "turnToolResults": [],
+        "turnSignals": [],
+        "turnPlan": {
+          "memoryProposals": [],
+          "workingNotes": [],
+          "signals": [],
+          "retrievalRequests": []
+        },
+        "turnRetrievals": [],
+        "allToolResults": [],
+        "unresolvedExternalExecution": null,
+        "status": "active",
+        "createdAt": "2026-08-22T14:32:04.670Z",
+        "updatedAt": "2026-08-22T14:32:07.090Z"
+      }
+    }
+  }
+}

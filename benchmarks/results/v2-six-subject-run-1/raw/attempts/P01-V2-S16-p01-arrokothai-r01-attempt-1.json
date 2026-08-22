@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-arrokothai",
+  "scenarioId": "P01-V2-S16",
+  "repeatId": "r01",
+  "conversation": [],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite"
+  },
+  "runtimeErrors": [
+    {
+      "code": "transport_failure",
+      "message": "live smoke failed; inspect /Users/rex-shih/Documents/Codex/projects/Agent_SDK/benchmarks/results/v2-six-subject-run-1/raw/native/P01-V2-S16-p01-arrokothai-r01.json",
+      "beforeSubjectBehavior": true
+    }
+  ],
+  "invalidReason": "provider_outage_or_transport_failure"
+}

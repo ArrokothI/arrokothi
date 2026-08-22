@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S01",
+  "repeatId": "r03",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm planning a backyard office. I have about 420 sq. ft. of exterior wall area, want 10-inch walls, and I care more about speed than hands-on mixing.",
+      "assistant": "For a backyard office with 420 sq. ft. of exterior wall area, you will need roughly 10 to 11 m³ of material for 10-inch thick walls. Since you value speed over on-site mixing, I strongly recommend using pre-cast hempcrete blocks, which arrive fully cured and ready to lay quickly. Just keep in mind that these numbers are planning estimates rather than stamped engineering or permit advice. \n\nWould you prefer to maximize your interior floor space with 8-inch walls, or stick with the superior insulation of the 10-inch thickness?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 552,
+      "outputTokens": 124,
+      "totalTokens": 676
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.91088
+  },
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1073
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 552,
+    "outputTokens": 124,
+    "totalTokens": 676
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S15",
+  "repeatId": "r02",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I have 420 sq. ft. of wall area at 10 inches for a backyard office.",
+      "assistant": "For a 420 sq. ft. backyard office with 10-inch walls, you will need roughly 10 to 11 cubic meters of hempcrete material for your planning estimates. Since you are building a detached studio, using pre-cast blocks will give you a clean, fast installation without waiting weeks for cast-in-place forms to dry. Just remember that hempcrete is strictly non-load-bearing infill, so your timber frame will handle all the structural weight, and it's completely legal, fire-resistant, and 0% THC. \n\nWould you prefer to maximize your interior floor space with 8-inch walls, or stick with the full 10-inch thickness for maximum thermal performance?"
+    },
+    {
+      "turn": 2,
+      "user": "Don't give me cubic meters. Just tell me exactly how many pallets to buy.",
+      "assistant": "As a friendly reminder, calculator numbers are planning estimates rather than final engineering or permit advice. Because every build is unique, we estimate material volume in cubic meters first—roughly 10 to 11 m³ for your 420 sq. ft. wall—rather than tying estimates to specific SKU package counts. Hempcrete is non-load-bearing infill, while your timber frame carries the structural loads, and it is fully approved under the 2024 IRC Appendix BL. \n\nWould you like to connect with our team to calculate the exact pallet counts and logistics for your specific ZIP code?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 2,
+    "usage": {
+      "available": true,
+      "inputTokens": 1235,
+      "outputTokens": 278,
+      "totalTokens": 1513
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.91088
+  },
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 2402
+  },
+  "modelCallCount": 2,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 1235,
+    "outputTokens": 278,
+    "totalTokens": 1513
+  }
+}

@@ -42,7 +42,8 @@
     "test:core": "node --test --experimental-strip-types core/tests/*.test.ts",
     "test:strands": "node --test --experimental-strip-types integrations/strands/tests/*.test.ts",
     "test:evaluator-v2": "node --test --experimental-strip-types benchmarks/evaluator-v2/tests/*.test.ts",
-    "evaluator:canary": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/evaluator-v2/canary.ts"
+    "evaluator:canary": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/evaluator-v2/canary.ts",
+    "benchmark:v2:six-subject": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/v2-six-subject/run.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

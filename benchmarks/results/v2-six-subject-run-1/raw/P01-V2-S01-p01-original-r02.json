@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S01",
+  "repeatId": "r02",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm planning a backyard office. I have about 420 sq. ft. of exterior wall area, want 10-inch walls, and I care more about speed than hands-on mixing.",
+      "assistant": "For a speed-focused backyard office with 10-inch exterior walls covering roughly 420 sq. ft., you will need about 10 to 12 m³ of material, and I strongly recommend using pre-cast hempcrete blocks since they arrive fully cured and save you weeks of mixing and drying time. Keep in mind that hempcrete is strictly non-load-bearing infill, meaning a conventional timber frame carries your roof and floor loads, and these numbers are just planning estimates rather than stamped engineering. Are you leaning toward a 12-inch wall for maximum thermal performance, or an 8-inch wall to preserve a bit more interior floor space?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 552,
+      "outputTokens": 139,
+      "totalTokens": 691
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.91088
+  },
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1065
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 552,
+    "outputTokens": 139,
+    "totalTokens": 691
+  }
+}

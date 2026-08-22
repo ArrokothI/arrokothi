@@ -1,0 +1,331 @@
+{
+  "schemaVersion": "benchmark-raw-run-v1",
+  "rebuildLabel": "benchmark-rebuild-v1",
+  "benchmarkApplicationId": "p01",
+  "implementationId": "p01-arrokothai",
+  "framework": {
+    "id": "arrokothai",
+    "name": "Agent_SDK",
+    "version": "0.37.0"
+  },
+  "scenarioRunId": "P01-V2-S07",
+  "timestamps": {
+    "startedAt": "2026-08-22T14:49:37.000Z",
+    "completedAt": "2026-08-22T14:49:38.995Z",
+    "elapsedMs": 1992
+  },
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "Is hempcrete basically marijuana in my walls?",
+      "assistant": "No, it’s not! Hempcrete is made from the woody inner core of the industrial hemp plant (called hurd or shiv) mixed with a lime-based binder and water. Industrial hemp is a different variety of the *Cannabis sativa* plant than marijuana; it has extremely low levels of THC (the compound that causes a high), meaning it has no psychoactive properties whatsoever and cannot be used as a drug. \n\nWould you like to explore how hemp-lime walls manage moisture and thermal insulation for a specific building project?",
+      "stopReason": "completed",
+      "steps": 1,
+      "elapsedMs": 1991,
+      "metrics": {
+        "preflightModelCalls": 1,
+        "agentLoopModelCalls": 1,
+        "conversationSummaryModelCalls": 0,
+        "guideRetryModelCalls": 0,
+        "totalModelCalls": 2
+      },
+      "eventSeqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    }
+  ],
+  "model": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "maxOutputTokens": 700,
+    "thinking": null,
+    "calls": [
+      {
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.108Z",
+        "purpose": "plan",
+        "providerId": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "usage": {
+          "inputTokens": 499,
+          "outputTokens": 66
+        },
+        "finishReason": "STOP",
+        "durationMs": 1102
+      },
+      {
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.994Z",
+        "purpose": "agent_loop:1",
+        "providerId": "strands:gemini",
+        "model": "gemini-3.5-flash-lite",
+        "usage": {
+          "inputTokens": 514,
+          "outputTokens": 109
+        },
+        "finishReason": "endTurn"
+      }
+    ],
+    "callCount": 2,
+    "usage": {
+      "available": true,
+      "inputTokens": 1013,
+      "outputTokens": 175
+    }
+  },
+  "canonicalState": {},
+  "knowledge": {
+    "calls": [],
+    "rejectedCalls": []
+  },
+  "actions": {
+    "requests": [],
+    "confirmationsRequested": [],
+    "confirmationsResolved": [],
+    "executionStarted": [],
+    "succeeded": [],
+    "failed": [],
+    "outcomeUnknown": [],
+    "dispatchCount": 0
+  },
+  "stopReason": "completed",
+  "runtimeErrors": [],
+  "nativeTrace": {
+    "eventStream": [
+      {
+        "id": "evt_mt4hvbalngsk38hb",
+        "turn": 1,
+        "at": "2026-08-22T14:49:37.004Z",
+        "type": "UserMessageReceived",
+        "payload": {
+          "text": "Is hempcrete basically marijuana in my walls?"
+        },
+        "seq": 1,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvc58ageisuad",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.108Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 499,
+            "outputTokens": 66
+          },
+          "finishReason": "STOP",
+          "durationMs": 1102
+        },
+        "seq": 2,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvc58kdvo12t3",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.108Z",
+        "type": "TurnPlanCreated",
+        "payload": {
+          "strategy": "llm",
+          "resolvedBy": "llm",
+          "plan": {
+            "memoryProposals": [],
+            "workingNotes": [],
+            "signals": [],
+            "retrievalRequests": []
+          }
+        },
+        "seq": 3,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvc5bpioa4oh6",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.111Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_invocation"
+        },
+        "seq": 4,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvc5e2kc4uarp",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.114Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_model",
+          "iteration": 1
+        },
+        "seq": 5,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvc5emo7lomkk",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.114Z",
+        "type": "AgentIterationStarted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "phaseId": null,
+          "capabilityNames": [
+            "knowledge_document_search_craig_product_knowledge_abceae",
+            "compute_wall_volume"
+          ]
+        },
+        "seq": 6,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvctupj1h6ysm",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.994Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_model",
+          "iteration": 1
+        },
+        "seq": 7,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvctu9jxz7xyx",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.994Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 514,
+            "outputTokens": 109
+          },
+          "finishReason": "endTurn"
+        },
+        "seq": 8,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvctvefxrirdf",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.995Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_invocation",
+          "detail": {
+            "mutationVersion": 1,
+            "runtimeContextKeysRead": []
+          }
+        },
+        "seq": 9,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvctvnwndci30",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.995Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_terminated",
+          "detail": {
+            "stopReason": "end_turn"
+          }
+        },
+        "seq": 10,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvctvv60p3msn",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.995Z",
+        "type": "AgentIterationCompleted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "requested": 0,
+          "completed": 0,
+          "rejected": 0,
+          "stopReason": "completed"
+        },
+        "seq": 11,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      },
+      {
+        "id": "evt_mt4hvctvta3oxxlo",
+        "turn": 1,
+        "at": "2026-08-22T14:49:38.995Z",
+        "type": "AssistantMessageEmitted",
+        "payload": {
+          "text": "No, it’s not! Hempcrete is made from the woody inner core of the industrial hemp plant (called hurd or shiv) mixed with a lime-based binder and water. Industrial hemp is a different variety of the *Cannabis sativa* plant than marijuana; it has extremely low levels of THC (the compound that causes a high), meaning it has no psychoactive properties whatsoever and cannot be used as a drug. \n\nWould you like to explore how hemp-lime walls manage moisture and thermal insulation for a specific building project?",
+          "stopReason": "completed"
+        },
+        "seq": 12,
+        "sessionId": "benchmark-rebuild-v1-p01-1787410177003"
+      }
+    ],
+    "finalState": {
+      "sessionId": "benchmark-rebuild-v1-p01-1787410177003",
+      "agentId": "benchmark-rebuild-v1-p01-arrokothai",
+      "agentVersion": 1,
+      "turn": 1,
+      "lastSeq": 12,
+      "memory": {},
+      "workingNotes": [],
+      "hostContext": {},
+      "phaseId": null,
+      "pendingAction": null,
+      "ledger": {},
+      "transcript": [
+        {
+          "role": "user",
+          "text": "Is hempcrete basically marijuana in my walls?",
+          "turn": 1,
+          "at": "2026-08-22T14:49:37.004Z"
+        },
+        {
+          "role": "assistant",
+          "text": "No, it’s not! Hempcrete is made from the woody inner core of the industrial hemp plant (called hurd or shiv) mixed with a lime-based binder and water. Industrial hemp is a different variety of the *Cannabis sativa* plant than marijuana; it has extremely low levels of THC (the compound that causes a high), meaning it has no psychoactive properties whatsoever and cannot be used as a drug. \n\nWould you like to explore how hemp-lime walls manage moisture and thermal insulation for a specific building project?",
+          "turn": 1,
+          "at": "2026-08-22T14:49:38.995Z"
+        }
+      ],
+      "turnToolResults": [],
+      "turnSignals": [],
+      "turnPlan": {
+        "memoryProposals": [],
+        "workingNotes": [],
+        "signals": [],
+        "retrievalRequests": []
+      },
+      "turnRetrievals": [],
+      "allToolResults": [],
+      "unresolvedExternalExecution": null,
+      "status": "active",
+      "createdAt": "2026-08-22T14:49:37.004Z",
+      "updatedAt": "2026-08-22T14:49:38.995Z"
+    }
+  }
+}

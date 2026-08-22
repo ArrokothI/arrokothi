@@ -1,0 +1,185 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-agenerateor",
+  "frameworkId": "generated-runtime",
+  "scenarioId": "P01-V2-S04",
+  "repeatId": "r02",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "Can hempcrete hold up my roof, and is it recognized by U.S. residential code?",
+      "assistant": "Hempcrete is non-load-bearing infill and cannot support your roof by itself; it requires a conventional structural frame, commonly timber framing, to carry roof, floor, wind, and seismic loads. \n\nRegarding building codes, hemp-lime construction is referenced in the 2024 International Residential Code Appendix BL. However, that model-code reference is not proof of local adoption or permit approval, so a specific project still requires local authority and qualified-professional review.\n\nWould you like to share what kind of structure you are planning to build, such as new construction or an interior retrofit?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 2,
+    "usage": {
+      "available": false
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "project_type": null,
+    "project_floor_area_sq_ft": null,
+    "wall_area_sq_ft": null,
+    "wall_thickness_in": null,
+    "install_method": null,
+    "existing_wall_type": null,
+    "user_priority": null,
+    "project_stage": null,
+    "jurisdiction": null,
+    "volume": null,
+    "volumeBasis": null,
+    "volumeStatus": "not_requested",
+    "livePricing": false,
+    "liveInventory": false
+  },
+  "deterministicComputations": {},
+  "recordObservations": [
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "not_requested",
+        "inputs": {
+          "wall_area_sq_ft": null,
+          "wall_thickness_in": null
+        },
+        "output": null
+      }
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 2150
+  },
+  "modelCallCount": 2,
+  "tokenUsage": {
+    "available": false
+  },
+  "nativeTrace": {
+    "turns": [
+      {
+        "reply": "Hempcrete is non-load-bearing infill and cannot support your roof by itself; it requires a conventional structural frame, commonly timber framing, to carry roof, floor, wind, and seismic loads. \n\nRegarding building codes, hemp-lime construction is referenced in the 2024 International Residential Code Appendix BL. However, that model-code reference is not proof of local adoption or permit approval, so a specific project still requires local authority and qualified-professional review.\n\nWould you like to share what kind of structure you are planning to build, such as new construction or an interior retrofit?",
+        "state": {
+          "context": {
+            "computed_volume_status": "not_requested",
+            "live_pricing_available": false,
+            "live_inventory_available": false
+          },
+          "fields": {},
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 1,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 949
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1126
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": null,
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": null,
+            "wall_thickness_in": null,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": null,
+            "volumeBasis": null,
+            "volumeStatus": "not_requested",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "not_requested",
+          "inputs": {
+            "wall_area_sq_ft": null,
+            "wall_thickness_in": null
+          },
+          "output": null
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2077
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      }
+    ],
+    "outcomeUnknownLimitation": false
+  }
+}

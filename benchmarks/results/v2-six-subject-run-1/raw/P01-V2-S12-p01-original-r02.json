@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S12",
+  "repeatId": "r02",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm scoping a backyard office with 420 sq. ft. of wall area at 10 inches.",
+      "assistant": "That 420 sq. ft. wall area at 10 inches (about 25 cm) translates to roughly 10 to 11 cubic meters of hempcrete material volume, which is a great size for a backyard workspace. For an efficient backyard build, I usually recommend using pre-cast hempcrete blocks since they arrive cured and let you skip the formwork stage entirely. Just keep in mind that these calculator numbers are planning estimates, not stamped engineering or permit advice. \n\nWould you prefer the extra thermal performance of a full 12-inch wall, or do you want to stick with the 10-inch thickness to save a bit of interior floor space?"
+    },
+    {
+      "turn": 2,
+      "user": "Before we continue - does this stuff have THC?",
+      "assistant": "Not at all! Hempcrete uses industrial hemp varieties, so it is 100% legal, contains 0% THC, is entirely unrelated to recreational marijuana, and is even fire-resistant. \n\nWould you like to know how the 2024 IRC Appendix BL covers hemp-lime for building permits?"
+    },
+    {
+      "turn": 3,
+      "user": "Thanks. So what volume were we looking at?",
+      "assistant": "For your 420 sq. ft. wall area at 10 inches thick, we are looking at roughly 10 to 11 cubic meters (about 13 to 14 cubic yards) of total material volume. Keep in mind that these numbers are helpful planning estimates rather than stamped engineering specifications. \n\nAre you leaning toward using pre-cast blocks for speed, or were you planning on a cast-in-place method?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 3,
+    "usage": {
+      "available": true,
+      "inputTokens": 1985,
+      "outputTokens": 301,
+      "totalTokens": 2286
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.91088
+  },
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 3403
+  },
+  "modelCallCount": 3,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 1985,
+    "outputTokens": 301,
+    "totalTokens": 2286
+  }
+}

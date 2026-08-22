@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S14",
+  "repeatId": "r03",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm in Seattle. Will the city approve my hempcrete walls under Appendix BL?",
+      "assistant": "Yes, Seattle can approve your hemp-lime build using the 2024 International Residential Code (IRC) Appendix BL, which officially standardizes hemp-lime construction at the national level. To make this smooth for your local building department, keep in mind that hempcrete acts as a non-load-bearing insulation infill, meaning a conventional timber frame carries your structural loads. Also, rest assured that hempcrete materials are 100% legal, 0% THC, fire-resistant, and completely unrelated to recreational marijuana. \n\nAre you currently in the early planning phase with your local permitting office, or are you still sketching out your design?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 526,
+      "outputTokens": 134,
+      "totalTokens": 660
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {},
+  "deterministicComputations": {},
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1160
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 526,
+    "outputTokens": 134,
+    "totalTokens": 660
+  }
+}

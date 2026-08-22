@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S05",
+  "repeatId": "r01",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I need the wall ready for finishing quickly. How does block installation compare with cast-in-situ curing?",
+      "assistant": "If you need your walls ready for finishing quickly, pre-cast hempcrete blocks are your best option because they arrive fully cured and ready for plastering almost immediately. In contrast, cast-in-situ (hand-packed) walls require formwork to stay in place for a day, followed by a 3 to 6-week drying period before you can apply a final finish. \n\nWould you prefer the speed of pre-cast blocks, or are you drawn to the seamless look of casting in place?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 530,
+      "outputTokens": 104,
+      "totalTokens": 634
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "install_method": "cast_in_situ"
+  },
+  "deterministicComputations": {},
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1186
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 530,
+    "outputTokens": 104,
+    "totalTokens": 634
+  }
+}

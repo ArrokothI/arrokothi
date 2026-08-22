@@ -1,0 +1,348 @@
+{
+  "schemaVersion": "benchmark-raw-run-v1",
+  "rebuildLabel": "benchmark-rebuild-v1",
+  "benchmarkApplicationId": "p01",
+  "implementationId": "p01-arrokothai",
+  "framework": {
+    "id": "arrokothai",
+    "name": "Agent_SDK",
+    "version": "0.37.0"
+  },
+  "scenarioRunId": "P01-V2-S19",
+  "timestamps": {
+    "startedAt": "2026-08-22T14:28:17.123Z",
+    "completedAt": "2026-08-22T14:28:17.185Z",
+    "elapsedMs": 62
+  },
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I've got 420 sq. ft. of wall at 10 inches for a backyard office. Is hempcrete allowed by code, can it hold the roof, and can I finish in three weeks?",
+      "assistant": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+      "stopReason": "error",
+      "steps": 0,
+      "elapsedMs": 62,
+      "metrics": {
+        "preflightModelCalls": 0,
+        "agentLoopModelCalls": 1,
+        "conversationSummaryModelCalls": 0,
+        "guideRetryModelCalls": 0,
+        "totalModelCalls": 1
+      },
+      "eventSeqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    }
+  ],
+  "model": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "maxOutputTokens": 700,
+    "thinking": null,
+    "calls": [
+      {
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.184Z",
+        "purpose": "agent_loop:1",
+        "providerId": "strands:gemini",
+        "model": "gemini-3.5-flash-lite"
+      }
+    ],
+    "callCount": 1,
+    "usage": {
+      "available": false,
+      "inputTokens": 0,
+      "outputTokens": 0
+    }
+  },
+  "canonicalState": {},
+  "knowledge": {
+    "calls": [],
+    "rejectedCalls": []
+  },
+  "actions": {
+    "requests": [],
+    "confirmationsRequested": [],
+    "confirmationsResolved": [],
+    "executionStarted": [],
+    "succeeded": [],
+    "failed": [],
+    "outcomeUnknown": [],
+    "dispatchCount": 0
+  },
+  "stopReason": "error",
+  "runtimeErrors": [
+    {
+      "turn": 1,
+      "at": "2026-08-22T14:28:17.155Z",
+      "code": "HTTP_429_RATE_LIMIT",
+      "message": "Gemini 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15,",
+      "detail": "planning pass failed; the response continued without new memory or retrieval"
+    },
+    {
+      "turn": 1,
+      "at": "2026-08-22T14:28:17.185Z",
+      "code": "agent_loop_failed",
+      "message": "agent-loop execution stopped before producing a successful terminal result",
+      "detail": "engine=strands-loop-v0.37; providerStopReason={\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.5-flash-lite\\\\nPlease retry in 42.727949527s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"location\\\": \\\"global\\\",\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"15\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"42s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+    }
+  ],
+  "nativeTrace": {
+    "eventStream": [
+      {
+        "id": "evt_mt4h3vqb2t4r76kp",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.123Z",
+        "type": "UserMessageReceived",
+        "payload": {
+          "text": "I've got 420 sq. ft. of wall at 10 inches for a backyard office. Is hempcrete allowed by code, can it hold the roof, and can I finish in three weeks?"
+        },
+        "seq": 1,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vr71arll4z7",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.155Z",
+        "type": "RuntimeError",
+        "payload": {
+          "code": "HTTP_429_RATE_LIMIT",
+          "message": "Gemini 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15,",
+          "detail": "planning pass failed; the response continued without new memory or retrieval"
+        },
+        "seq": 2,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vr7ikck9o8r",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.155Z",
+        "type": "TurnPlanCreated",
+        "payload": {
+          "strategy": "llm",
+          "resolvedBy": "safe_empty",
+          "plan": {
+            "memoryProposals": [],
+            "workingNotes": [],
+            "signals": [],
+            "retrievalRequests": []
+          },
+          "detail": "planner failed or returned malformed structured output"
+        },
+        "seq": 3,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vr8ea8u1shv",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.156Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_invocation"
+        },
+        "seq": 4,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vr85d44dq1y",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.156Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_model",
+          "iteration": 1
+        },
+        "seq": 5,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vr81bijwv9q",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.156Z",
+        "type": "AgentIterationStarted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "phaseId": null,
+          "capabilityNames": [
+            "knowledge_document_search_craig_product_knowledge_abceae",
+            "compute_wall_volume"
+          ]
+        },
+        "seq": 6,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vs0ojnayc51",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.184Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_model",
+          "iteration": 1
+        },
+        "seq": 7,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vs0mz1hihdp",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.184Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite"
+        },
+        "seq": 8,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vs1xhusm00f",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.185Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_invocation",
+          "detail": {
+            "mutationVersion": 1,
+            "runtimeContextKeysRead": []
+          }
+        },
+        "seq": 9,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vs1kkcld4t2",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.185Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_error",
+          "detail": {
+            "providerStopReason": "{\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.5-flash-lite\\\\nPlease retry in 42.727949527s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"location\\\": \\\"global\\\",\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"15\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"42s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+          }
+        },
+        "seq": 10,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vs11wsj6hpi",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.185Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_terminated",
+          "detail": {
+            "stopReason": "error"
+          }
+        },
+        "seq": 11,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vs12z8pxuda",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.185Z",
+        "type": "RuntimeError",
+        "payload": {
+          "code": "agent_loop_failed",
+          "message": "agent-loop execution stopped before producing a successful terminal result",
+          "detail": "engine=strands-loop-v0.37; providerStopReason={\"error\":{\"message\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 429,\\n    \\\"message\\\": \\\"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.5-flash-lite\\\\nPlease retry in 42.727949527s.\\\",\\n    \\\"status\\\": \\\"RESOURCE_EXHAUSTED\\\",\\n    \\\"details\\\": [\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.Help\\\",\\n        \\\"links\\\": [\\n          {\\n            \\\"description\\\": \\\"Learn more about Gemini API quotas\\\",\\n            \\\"url\\\": \\\"https://ai.google.dev/gemini-api/docs/rate-limits\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.QuotaFailure\\\",\\n        \\\"violations\\\": [\\n          {\\n            \\\"quotaMetric\\\": \\\"generativelanguage.googleapis.com/generate_content_free_tier_requests\\\",\\n            \\\"quotaId\\\": \\\"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\\\",\\n            \\\"quotaDimensions\\\": {\\n              \\\"location\\\": \\\"global\\\",\\n              \\\"model\\\": \\\"gemini-3.5-flash-lite\\\"\\n            },\\n            \\\"quotaValue\\\": \\\"15\\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\\"@type\\\": \\\"type.googleapis.com/google.rpc.RetryInfo\\\",\\n        \\\"retryDelay\\\": \\\"42s\\\"\\n      }\\n    ]\\n  }\\n}\\n\",\"code\":429,\"status\":\"Too Many Requests\"}}"
+        },
+        "seq": 12,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vs12j0wglml",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.185Z",
+        "type": "AgentIterationCompleted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "requested": 0,
+          "completed": 0,
+          "rejected": 0,
+          "stopReason": "error"
+        },
+        "seq": 13,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      },
+      {
+        "id": "evt_mt4h3vs1tl3iunm9",
+        "turn": 1,
+        "at": "2026-08-22T14:28:17.185Z",
+        "type": "AssistantMessageEmitted",
+        "payload": {
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "stopReason": "error"
+        },
+        "seq": 14,
+        "sessionId": "benchmark-rebuild-v1-p01-1787408897123"
+      }
+    ],
+    "finalState": {
+      "sessionId": "benchmark-rebuild-v1-p01-1787408897123",
+      "agentId": "benchmark-rebuild-v1-p01-arrokothai",
+      "agentVersion": 1,
+      "turn": 1,
+      "lastSeq": 14,
+      "memory": {},
+      "workingNotes": [],
+      "hostContext": {},
+      "phaseId": null,
+      "pendingAction": null,
+      "ledger": {},
+      "transcript": [
+        {
+          "role": "user",
+          "text": "I've got 420 sq. ft. of wall at 10 inches for a backyard office. Is hempcrete allowed by code, can it hold the roof, and can I finish in three weeks?",
+          "turn": 1,
+          "at": "2026-08-22T14:28:17.123Z"
+        },
+        {
+          "role": "assistant",
+          "text": "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
+          "turn": 1,
+          "at": "2026-08-22T14:28:17.185Z"
+        }
+      ],
+      "turnToolResults": [],
+      "turnSignals": [],
+      "turnPlan": {
+        "memoryProposals": [],
+        "workingNotes": [],
+        "signals": [],
+        "retrievalRequests": []
+      },
+      "turnRetrievals": [],
+      "allToolResults": [],
+      "unresolvedExternalExecution": null,
+      "status": "active",
+      "createdAt": "2026-08-22T14:28:17.123Z",
+      "updatedAt": "2026-08-22T14:28:17.185Z"
+    }
+  }
+}

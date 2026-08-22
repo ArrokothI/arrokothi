@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S05",
+  "repeatId": "r03",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I need the wall ready for finishing quickly. How does block installation compare with cast-in-situ curing?",
+      "assistant": "Pre-cast hempcrete blocks arrive fully cured, so you can install them and apply finishing plaster almost immediately once mortared. In contrast, cast-in-situ wet pouring requires stripping formwork the next day and waiting 3 to 6 weeks of active drying time before you can apply your final finish. \n\nAre you working with a strict project deadline, or do you prefer the seamless look of a monolithic pour?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 530,
+      "outputTokens": 85,
+      "totalTokens": 615
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "install_method": "cast_in_situ"
+  },
+  "deterministicComputations": {},
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1080
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 530,
+    "outputTokens": 85,
+    "totalTokens": 615
+  }
+}

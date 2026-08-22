@@ -1,0 +1,344 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-agenerateor",
+  "frameworkId": "generated-runtime",
+  "scenarioId": "P01-V2-S09",
+  "repeatId": "r02",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I have about 420 sq. ft. of exterior wall area and want 10-inch walls. What volume is that?",
+      "assistant": "Based on your 420 square feet of net wall area and a 10-inch wall thickness, the computed hemp-lime volume is 9.9 cubic meters. Keep in mind that hemp-lime is non-load-bearing infill, so it requires a conventional structural frame like timber to carry loads. \n\nWould you like to explore cast-in-situ tamping or pre-cast blocks for your installation method?"
+    },
+    {
+      "turn": 2,
+      "user": "Correction: I remeasured. It's 510 sq. ft., still 10 inches.",
+      "assistant": "With your updated measurement of 510 square feet and a 10-inch wall thickness, the computed hemp-lime volume is 12.0 cubic meters. Because hemp-lime serves as a non-load-bearing infill, a conventional structural frame such as timber framing is still needed to carry your roof, floor, and wind loads. \n\nWould you prefer to use cast-in-situ tamping into forms or pre-cast blocks for this installation?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 4,
+    "usage": {
+      "available": false
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "project_type": null,
+    "project_floor_area_sq_ft": null,
+    "wall_area_sq_ft": 510,
+    "wall_thickness_in": 10,
+    "install_method": null,
+    "existing_wall_type": null,
+    "user_priority": null,
+    "project_stage": null,
+    "jurisdiction": null,
+    "volume": 12,
+    "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+    "volumeStatus": "succeeded",
+    "livePricing": false,
+    "liveInventory": false
+  },
+  "deterministicComputations": {},
+  "recordObservations": [
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 420,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 9.9,
+          "exact_volume_m3": 9.91088
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 4021
+  },
+  "modelCallCount": 4,
+  "tokenUsage": {
+    "available": false
+  },
+  "nativeTrace": {
+    "turns": [
+      {
+        "reply": "Based on your 420 square feet of net wall area and a 10-inch wall thickness, the computed hemp-lime volume is 9.9 cubic meters. Keep in mind that hemp-lime is non-load-bearing infill, so it requires a conventional structural frame like timber to carry loads. \n\nWould you like to explore cast-in-situ tamping or pre-cast blocks for your installation method?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 9.9,
+            "computed_volume_basis": "420 sq ft × (10 in / 12) × 0.0283168 = 9.91088 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_wall_area_sq_ft": 420,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 1,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 830
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1067
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": null,
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 9.9,
+            "volumeBasis": "420 sq ft × (10 in / 12) × 0.0283168 = 9.91088 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 9.9,
+            "exact_volume_m3": 9.91088
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [
+            "p01_wall_area_sq_ft",
+            "p01_wall_thickness_in"
+          ],
+          "changedFieldIds": [
+            "p01_wall_area_sq_ft",
+            "p01_wall_thickness_in"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1898
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "With your updated measurement of 510 square feet and a 10-inch wall thickness, the computed hemp-lime volume is 12.0 cubic meters. Because hemp-lime serves as a non-load-bearing infill, a conventional structural frame such as timber framing is still needed to carry your roof, floor, and wind loads. \n\nWould you prefer to use cast-in-situ tamping into forms or pre-cast blocks for this installation?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 2,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 855
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1136
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": null,
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [
+            "p01_wall_area_sq_ft"
+          ],
+          "changedFieldIds": [
+            "p01_wall_area_sq_ft"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1992
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      }
+    ],
+    "outcomeUnknownLimitation": false
+  }
+}

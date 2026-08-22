@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p01",
+  "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
+  "scenarioId": "P01-V2-S01",
+  "repeatId": "r01",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm planning a backyard office. I have about 420 sq. ft. of exterior wall area, want 10-inch walls, and I care more about speed than hands-on mixing.",
+      "assistant": "For a backyard office with 420 square feet of exterior wall area and a 10-inch thickness, you will need roughly 10 to 11 cubic meters of material. Since you value speed over mixing, I strongly recommend using pre-cast hempcrete blocks, which arrive fully cured and ready to lay, cutting your installation time way down. \n\nAre you leaning toward a 12-inch wall for maximum thermal performance, or keeping it at 10 inches to maximize your interior floor space?"
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 552,
+      "outputTokens": 107,
+      "totalTokens": 659
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.91088
+  },
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1302
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 552,
+    "outputTokens": 107,
+    "totalTokens": 659
+  }
+}
