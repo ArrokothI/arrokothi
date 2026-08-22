@@ -58,6 +58,9 @@ describe("benchmark-rebuild-v1 P02 Arrokothai", () => {
     assert.equal(result.ok, true);
     assert.deepEqual(handoff.calls, [payload]);
     assert.equal(result.ok && result.output["transport"], "dry_run");
+    assert.equal(result.ok && result.output["visitor_contacted"], false);
+    assert.equal(result.ok && result.output["follow_up_scheduled"], false);
+    assert.equal(result.ok && result.output["future_outreach_guaranteed"], false);
   });
 
   test("the injected executor distinguishes failure and unknown outcome", async () => {

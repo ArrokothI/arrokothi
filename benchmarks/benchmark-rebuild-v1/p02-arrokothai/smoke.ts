@@ -14,7 +14,7 @@ const artifact = await runArrokothaiSmoke({
   definition: createEstateAgent(model.policy),
   turns: [
     { content: "I'm looking to buy on the Upper West Side with a budget of $20 million, at least four bedrooms, and I'm paying cash. Which recorded property matches?" },
-    { content: "Please connect me with a representative about Skyline Penthouse. I'm Taylor Kim, my phone is 555-0133, I prefer a text tomorrow afternoon, and I don't want to share email." },
+    { content: "Please connect me with a representative about Skyline Penthouse. I'm Taylor Kim, my phone is 212-555-0133, I prefer a text tomorrow afternoon, and I don't want to share email." },
     { content: "Yes, send those exact details." },
   ],
   executors: { [sendLeadToTeam.name]: handoff.executor },
@@ -42,4 +42,3 @@ console.log(JSON.stringify({
   actionDispatchCount: artifact.actions.dispatchCount,
   assistant: artifact.conversation.at(-1)?.assistant,
 }, null, 2));
-

@@ -5,7 +5,7 @@ import { ESTATE_PROPERTIES, ESTATE_ROOMS } from "./records.ts";
 export const sendLeadToTeam: ToolDefinition = {
   name: "send_lead_to_team",
   label: "send the confirmed lead details to the EstatePro team",
-  description: "Transmit the visitor's confirmed contact details and current real-estate criteria to a human EstatePro representative.",
+  description: "Transmit the visitor's confirmed contact details and current real-estate criteria to the EstatePro team. This handoff does not itself contact the visitor or schedule outreach.",
   effect: "external_side_effect",
   confirmation: "required",
   idempotency: "once_per_session",
@@ -56,8 +56,21 @@ export function createHandoffExecutor(
         }
         return {
           ok: true,
-          output: { delivered: true, transport: "dry_run", reference: `p02-${calls.length}`, idempotency_key: context.idempotencyKey },
-          facts: [{ key: "handoff_transmitted", value: true, description: "The configured dry-run transport accepted the confirmed payload." }],
+          output: {
+            delivered: true,
+            visitor_contacted: false,
+            follow_up_scheduled: false,
+            future_outreach_guaranteed: false,
+            transport: "dry_run",
+            reference: `p02-${calls.length}`,
+            idempotency_key: context.idempotencyKey,
+          },
+          facts: [
+            { key: "handoff_transmitted", value: true, description: "The configured dry-run transport accepted the confirmed payload." },
+            { key: "visitor_contacted", value: false, description: "No call, text, or email to the visitor was performed by this tool." },
+            { key: "follow_up_scheduled", value: false, description: "The preferred channel and time were transmitted as preferences, not booked or guaranteed." },
+            { key: "future_outreach_guaranteed", value: false, description: "The ToolResult does not establish that a representative will contact the visitor; it establishes only receipt by the team." },
+          ],
         };
       },
     },
@@ -93,6 +106,7 @@ export function createEstateAgent(model: ModelPolicy): AgentDefinition {
       "When no record matches, say so plainly and offer human follow-up without creating a near match.",
       "Treat the service-policy Knowledge and consequential ToolResult as authoritative for unavailable live data and external outcomes.",
       "For human follow-up, require a contact name and phone, omit a declined optional email, and request the handoff tool with the exact current structured facts so the runtime can present and freeze that payload for confirmation.",
+      "A successful handoff means only that the team received the request; do not say a representative will contact the visitor or claim that outreach happened, was scheduled, or is guaranteed.",
       "Do not repeat an optional email request after the visitor declines it.",
     ],
     memorySchema: {
