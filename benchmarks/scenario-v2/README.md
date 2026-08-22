@@ -2,10 +2,10 @@
 
 This directory contains the source-derived P01/P02 benchmark scenario register.
 
-The original applications are the primary semantic source:
+The original applications are external primary semantic sources, not vendored runtime dependencies:
 
-- P01: `Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts`, `app/api/chat/route.ts`, `app/components/HempcreteSite.tsx`, and the local requirement `.docx` files.
-- P02: `EstatePro/constants.tsx`, `components/AIConcierge.tsx`, `api/send-email.ts`, `App.tsx`, and `types.ts`.
+- P01 Craig-Hempcrete-DemoSitee at commit `0297a5cc43e4fcbc4e8edc7b4d90254cea76a893`: `app/lib/hempcretePrompt.ts`, `app/api/chat/route.ts`, `app/components/HempcreteSite.tsx`, and the requirement `.docx` files.
+- P02 EstatePro at commit `49e33528281ca28c08ac3993778493c3bfaa153c`: `constants.tsx`, `components/AIConcierge.tsx`, `api/send-email.ts`, `App.tsx`, and `types.ts`.
 
 Historical benchmark files remain in place under `benchmarks/p01-craig`, `benchmarks/p02-estate`, `benchmarks/results`, and `benchmarks/benchmark-rebuild-v1`.
 

@@ -1,4 +1,4 @@
-export { aggregateRepeatedRuns, tallyAssertionOutcomes } from "./aggregate.ts";
+export { aggregatePairwiseOutcomes, aggregateRepeatedRuns, tallyAssertionOutcomes } from "./aggregate.ts";
 export { createAuditQueue, createAuditQueueItem, renderAuditItem } from "./audit/queue.ts";
 export {
   deterministicRequirementOutcomes,
@@ -7,6 +7,7 @@ export {
 } from "./deterministic/assertions.ts";
 export { CALIBRATION_EXPECTED_SEMANTIC, CALIBRATION_FIXTURES } from "./fixtures/calibration.ts";
 export {
+  PAIRWISE_CRITERIA,
   PAIRWISE_PROMPT_VERSION,
   buildPairwiseJudgePrompt,
   deterministicPairOrder,
@@ -39,6 +40,7 @@ export type {
   NeutralModelMetadata,
   NeutralRawRunV2,
   NeutralRecordObservation,
+  PairwiseCriterion,
   PairwiseCriterionPreference,
   PairwiseJudgeOutput,
   RunInvalidReason,

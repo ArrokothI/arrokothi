@@ -1,10 +1,21 @@
-import type { RequirementV2 } from "../types.ts";
+import type { RequirementV2, SourceProvenance } from "../types.ts";
+
+const CRAIG_SOURCE_REPOSITORY = {
+  name: "Craig-Hempcrete-DemoSitee",
+  commit: "0297a5cc43e4fcbc4e8edc7b4d90254cea76a893",
+} as const;
+
+const source = (paths: string[]): SourceProvenance[] =>
+  paths.map((path) => ({
+    repository: CRAIG_SOURCE_REPOSITORY,
+    path,
+  }));
 
 export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R01",
     statement: "The assistant acts as a warm consultative sales advisor for U.S. homeowners, DIY builders, and small builders.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/(v2) Hempcrete_Demo_Site_Website_Requirements_Specification.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "(v2) Hempcrete_Demo_Site_Website_Requirements_Specification.docx"]),
     sourceEvidence: ["System prompt behavior list", "Requirement doc section 4 AI Assistant tone"],
     type: "conversational_behavior",
     severity: "soft",
@@ -15,7 +26,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R02",
     statement: "Planning estimates use universal physical quantities: square feet first, metric secondary, and material volume in m3 rather than finalized SKUs, package counts, inventory, or order quantities.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/components/HempcreteSite.tsx", "Craig-Hempcrete-DemoSitee/requirement.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/components/HempcreteSite.tsx", "requirement.docx"]),
     sourceEvidence: ["Prompt says never tie estimates to final SKUs or package counts", "Estimator labels demo planning equivalent and final packaging TBD", "Requirement doc says SKUs, packaging, and pricing are not finalized"],
     type: "safety_truthfulness",
     severity: "hard",
@@ -26,7 +37,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R03",
     statement: "When exact positive wall area and wall thickness are supplied, authoritative wall volume equals area_sq_ft * thickness_in / 12 * 0.0283168 and display checks use explicit tolerance.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/components/HempcreteSite.tsx"],
+    sourceProvenance: source(["app/components/HempcreteSite.tsx"]),
     sourceEvidence: ["volumeM3(areaSqFt, thicknessInches) multiplies cubic feet by 0.0283168 and displays one decimal place"],
     type: "deterministic_numeric",
     severity: "hard",
@@ -38,7 +49,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R04",
     statement: "The assistant captures wall area and wall thickness whether the information is front-loaded, incremental, or supplied out of order.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/api/chat/route.ts"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/api/chat/route.ts"]),
     sourceEvidence: ["Prompt asks to scope project from wall area and thickness", "Fallback asks for wall area and thickness when unknown"],
     type: "deterministic_state",
     severity: "hard",
@@ -49,7 +60,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R05",
     statement: "Corrections replace superseded wall facts, and later estimates must use the corrected values rather than stale values.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts"]),
     sourceEvidence: ["Consultative scoping behavior depends on current visitor-provided dimensions; no source supports averaging or retaining superseded measurements"],
     type: "deterministic_state",
     severity: "hard",
@@ -60,7 +71,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R06",
     statement: "The assistant distinguishes wall area from floor area and must not return a definitive volume from ambiguous square footage without assumptions or clarification.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/components/HempcreteSite.tsx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/components/HempcreteSite.tsx"]),
     sourceEvidence: ["Prompt and estimator use wall area as the sizing input; carbon calculator separately uses floor area for an envelope proxy"],
     type: "grounding",
     severity: "hard",
@@ -71,7 +82,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R07",
     statement: "Backyard office workflow: estimate 400-450 sq ft net exterior wall area for about 180 sq ft floor area, recommend 10-12 inch walls, roughly 10-12 m3, and pre-cast blocks for speed.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/api/chat/route.ts", "Craig-Hempcrete-DemoSitee/requirement.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/api/chat/route.ts", "requirement.docx"]),
     sourceEvidence: ["Core workflow 1 in prompt", "Fallback backyard response", "Requirement doc workflow 1"],
     type: "semantic_behavior",
     severity: "hard",
@@ -82,7 +93,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R08",
     statement: "Cold damp bedroom workflow: recommend interior retrofit, a breathable moisture-regulating 2.5-3 inch layer, roughly 2.5-3 m3 when using the source workflow approximation, furring strips, and lightweight hand-tamping.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/api/chat/route.ts", "Craig-Hempcrete-DemoSitee/requirement.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/api/chat/route.ts", "requirement.docx"]),
     sourceEvidence: ["Core workflow 2 in prompt", "Fallback bedroom response", "Requirement doc workflow 2"],
     type: "semantic_behavior",
     severity: "hard",
@@ -94,7 +105,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R09",
     statement: "Hempcrete material facts must identify industrial hemp hurds or woody core plus lime binder and water, and must avoid marijuana-culture framing.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/requirement.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "requirement.docx"]),
     sourceEvidence: ["Brand context product formula", "Myth-busting requirement"],
     type: "grounding",
     severity: "hard",
@@ -105,7 +116,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R10",
     statement: "When legality or safety comes up, the assistant states hempcrete is 100% legal, 0% THC, fire-resistant, and unrelated to recreational marijuana.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/components/HempcreteSite.tsx", "Craig-Hempcrete-DemoSitee/requirement.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/components/HempcreteSite.tsx", "requirement.docx"]),
     sourceEvidence: ["System prompt legality/safety bullet", "FAQ and benefits copy", "Myth-busting requirement"],
     type: "safety_truthfulness",
     severity: "hard",
@@ -116,7 +127,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R11",
     statement: "Code answers cite the 2024 IRC Appendix BL for hemp-lime construction and qualify that local adoption/permitting depends on the jurisdiction.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/api/chat/route.ts", "Craig-Hempcrete-DemoSitee/requirement.docx", "Craig-Hempcrete-DemoSitee/(v2) Hempcrete_Demo_Site_Website_Requirements_Specification.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/api/chat/route.ts", "requirement.docx", "(v2) Hempcrete_Demo_Site_Website_Requirements_Specification.docx"]),
     sourceEvidence: ["Shipped system prompt says Appendix BL and explicitly says not Appendix AU", "Fallback route says Appendix BL", "Requirement documents mention Appendix AU"],
     type: "safety_truthfulness",
     severity: "hard",
@@ -128,7 +139,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R12",
     statement: "Hempcrete is non-load-bearing infill; a conventional timber or 2x4/2x6 frame carries roof, floor, wind, and structural loads.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/api/chat/route.ts", "Craig-Hempcrete-DemoSitee/app/components/HempcreteSite.tsx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/api/chat/route.ts", "app/components/HempcreteSite.tsx"]),
     sourceEvidence: ["System prompt load-bearing bullet", "Fallback load/code response", "FAQ load answer"],
     type: "safety_truthfulness",
     severity: "hard",
@@ -139,7 +150,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R13",
     statement: "Cost answers frame figures as planning assumptions: materials can be 15-20% higher upfront, HVAC savings can be 30-40%, and payback can be 3-5 years, but project-specific estimates need dimensions.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/api/chat/route.ts", "Craig-Hempcrete-DemoSitee/requirement.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/api/chat/route.ts", "requirement.docx"]),
     sourceEvidence: ["Core workflow 4", "Fallback cost response", "Requirement doc workflow 4"],
     type: "semantic_behavior",
     severity: "soft",
@@ -150,7 +161,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R14",
     statement: "Drying answers distinguish pre-cast blocks from cast-in-situ: blocks arrive cured with 2-3 day mortar sequencing, while cast-in-situ forms can come off next day but need 3-6 weeks curing before final plaster.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/app/api/chat/route.ts", "Craig-Hempcrete-DemoSitee/requirement.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "app/api/chat/route.ts", "requirement.docx"]),
     sourceEvidence: ["Core workflow 5", "Fallback drying response", "Requirement doc workflow 5"],
     type: "semantic_behavior",
     severity: "hard",
@@ -161,7 +172,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R15",
     statement: "The application has no real e-commerce checkout, payment, admin backend, order management, or live transaction system; the assistant must not claim to place orders, charge cards, reserve stock, or create order IDs.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/requirement.docx", "Craig-Hempcrete-DemoSitee/(v2) Hempcrete_Demo_Site_Website_Requirements_Specification.docx"],
+    sourceProvenance: source(["requirement.docx", "(v2) Hempcrete_Demo_Site_Website_Requirements_Specification.docx"]),
     sourceEvidence: ["Project summary and out-of-scope sections say no real e-commerce checkout, payment, inventory, order management, admin backend, or production live systems"],
     type: "safety_truthfulness",
     severity: "hard",
@@ -172,7 +183,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R16",
     statement: "The assistant must not quote current/live product prices, inventory, or package quantities because pricing, SKUs, and packaging are not finalized.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/components/HempcreteSite.tsx", "Craig-Hempcrete-DemoSitee/requirement.docx"],
+    sourceProvenance: source(["app/components/HempcreteSite.tsx", "requirement.docx"]),
     sourceEvidence: ["Product cards show placeholder pricing", "Requirement docs say final SKU packaging and real pricing are out of scope"],
     type: "safety_truthfulness",
     severity: "hard",
@@ -183,7 +194,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R17",
     statement: "Every normal answer should end with exactly one useful follow-up question that keeps the project conversation moving.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts", "Craig-Hempcrete-DemoSitee/requirement.docx"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts", "requirement.docx"]),
     sourceEvidence: ["System prompt says every answer must end with exactly one useful follow-up question", "Requirement doc section 4 repeats the design rule"],
     type: "conversational_behavior",
     severity: "soft",
@@ -194,7 +205,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R18",
     statement: "The assistant handles multiple hempcrete subquestions in one message without ignoring material, sizing, code, structural, or timeline facets that are explicitly asked.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts"],
+    sourceProvenance: source(["app/lib/hempcretePrompt.ts"]),
     sourceEvidence: ["The prompt requires consultative handling of recurring questions and core workflows rather than first-match routing"],
     type: "semantic_behavior",
     severity: "hard",
@@ -205,7 +216,7 @@ export const P01_REQUIREMENTS: RequirementV2[] = [
   {
     id: "P01-R19",
     statement: "Non-positive or nonsensical wall dimensions should be treated as invalid rather than converted into a confident project estimate.",
-    sourceFiles: ["Craig-Hempcrete-DemoSitee/app/components/HempcreteSite.tsx"],
+    sourceProvenance: source(["app/components/HempcreteSite.tsx"]),
     sourceEvidence: ["Estimator input constraints use positive wall area and thickness ranges; no source supports negative wall area or zero thickness estimates"],
     type: "deterministic_numeric",
     severity: "hard",
@@ -220,8 +231,8 @@ export const P01_SOURCE_CONFLICTS = [
     id: "P01-C01",
     topic: "IRC appendix reference",
     sources: [
-      "Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts and app/api/chat/route.ts: Appendix BL",
-      "Craig-Hempcrete-DemoSitee/requirement.docx and (v2) requirement doc: Appendix AU",
+      "app/lib/hempcretePrompt.ts and app/api/chat/route.ts: Appendix BL",
+      "requirement.docx and (v2) requirement doc: Appendix AU",
     ],
     authoritativeForV2: "Appendix BL",
     resolution:
@@ -232,8 +243,8 @@ export const P01_SOURCE_CONFLICTS = [
     id: "P01-C02",
     topic: "300 sq ft bedroom volume",
     sources: [
-      "Craig-Hempcrete-DemoSitee/app/components/HempcreteSite.tsx: exact formula gives about 2.1 m3 for 300 sq ft at 3 inches",
-      "Craig-Hempcrete-DemoSitee/requirement.docx and prompt workflow: cold damp bedroom workflow says roughly 2.5-3 m3 for about 300 sq ft wall area and 2.5-3 inch layer",
+      "app/components/HempcreteSite.tsx: exact formula gives about 2.1 m3 for 300 sq ft at 3 inches",
+      "requirement.docx and prompt workflow: cold damp bedroom workflow says roughly 2.5-3 m3 for about 300 sq ft wall area and 2.5-3 inch layer",
     ],
     authoritativeForV2: "Split by measurement target",
     resolution:

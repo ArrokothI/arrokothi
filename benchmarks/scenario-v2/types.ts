@@ -13,10 +13,20 @@ export type RequirementType =
 
 export type Severity = "hard" | "soft";
 
+export interface SourceRepositoryIdentity {
+  name: "Craig-Hempcrete-DemoSitee" | "EstatePro" | string;
+  commit: string;
+}
+
+export interface SourceProvenance {
+  repository: SourceRepositoryIdentity;
+  path: string;
+}
+
 export interface RequirementV2 {
   id: string;
   statement: string;
-  sourceFiles: string[];
+  sourceProvenance: SourceProvenance[];
   sourceEvidence: string[];
   type: RequirementType;
   severity: Severity;
@@ -55,7 +65,7 @@ export interface ScenarioV2 {
     soft: string[];
   };
   notes: string[];
-  sourceProvenance: string[];
+  sourceProvenance: SourceProvenance[];
 }
 
 export type ScenarioDisposition =

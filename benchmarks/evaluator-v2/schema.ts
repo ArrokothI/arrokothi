@@ -195,8 +195,10 @@ export interface SemanticJudgeOutput {
   rawStructuredOutput?: unknown;
 }
 
+export type PairwiseCriterion = "correctness" | "grounding" | "correction_handling" | "truthfulness" | "usefulness" | "conversational_coherence";
+
 export interface PairwiseCriterionPreference {
-  criterion: "correctness" | "grounding" | "correction_handling" | "truthfulness" | "usefulness" | "conversational_coherence";
+  criterion: PairwiseCriterion;
   preference: "A" | "B" | "tie" | "both_bad";
   reason: string;
 }
@@ -207,6 +209,7 @@ export interface PairwiseJudgeOutput {
   judge: SemanticJudgeOutput["judge"] & { randomizationSeed: string };
   scenarioId: string;
   assignment: { A: string; B: string };
+  implementationAssignment?: { A?: string; B?: string };
   verdict: "A" | "B" | "tie" | "both_bad";
   criteria: PairwiseCriterionPreference[];
   reason: string;

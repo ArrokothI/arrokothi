@@ -218,7 +218,8 @@ export function evaluateDeterministicAssertion(
         : fail(assertion, `action args were ${stable(actual)}, expected subset ${stable(assertion.expectedSubset)}`);
     }
     case "confirmation_requested": {
-      const confirmations = run.confirmationRequests ?? [];
+      if (!run.confirmationRequests) return missing(assertion, "confirmation request trace is missing");
+      const confirmations = run.confirmationRequests;
       const found = assertion.actionName ? confirmations.some((request) => request.actionName === assertion.actionName) : confirmations.length > 0;
       return found === assertion.expected
         ? pass(assertion, `confirmation requested = ${found}`)

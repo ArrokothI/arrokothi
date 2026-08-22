@@ -11,6 +11,7 @@ import {
   P02_SCENARIOS,
 } from "../../scenario-v2/index.ts";
 import {
+  aggregatePairwiseOutcomes,
   aggregateRepeatedRuns,
   assertPromptBlindness,
   buildPairwiseJudgePrompt,
@@ -20,15 +21,24 @@ import {
   deterministicPairOrder,
   evaluateDeterministic,
   evaluateDeterministicAssertion,
+  PAIRWISE_CRITERIA,
   parsePairwiseJudgeOutput,
   parseSemanticJudgeOutput,
 } from "../index.ts";
+import { CALIBRATION_FIXTURES } from "../fixtures/calibration.ts";
 import type {
   DeterministicAssertionSpec,
   DeterministicEvaluation,
   NeutralRawRunV2,
+  PairwiseJudgeOutput,
   SemanticJudgeOutput,
 } from "../schema.ts";
+
+const judge = { provider: "offline", requestedModel: "judge", temperature: 0, timestamp: "2026-08-22T00:00:00.000Z" };
+const semanticValidation = (expectedRequirementIds: string[], hardRequirementIds: string[] = expectedRequirementIds) => ({
+  expectedRequirementIds,
+  hardRequirementIds,
+});
 
 const baseRun = (overrides: Partial<NeutralRawRunV2> = {}): NeutralRawRunV2 => ({
   schemaVersion: "neutral-raw-run-v2",
@@ -185,6 +195,25 @@ describe("evaluator-v2 deterministic assertions", () => {
     assert.equal(evaluateDeterministicAssertion(assertion, run).outcome, "pass");
   });
 
+  test("absent confirmation trace follows onMissing instead of proving no confirmation happened", () => {
+    const noConfirmationExpected: DeterministicAssertionSpec = {
+      id: "no_confirmation",
+      requirementId: "P02-R12",
+      type: "confirmation_requested",
+      severity: "hard",
+      description: "confirmation should not be requested",
+      expected: false,
+    };
+    const unavailableAllowed: DeterministicAssertionSpec = {
+      ...noConfirmationExpected,
+      id: "maybe_no_confirmation",
+      onMissing: "not_applicable",
+    };
+    assert.equal(evaluateDeterministicAssertion(noConfirmationExpected, baseRun()).outcome, "inconclusive");
+    assert.equal(evaluateDeterministicAssertion(unavailableAllowed, baseRun()).outcome, "not_applicable");
+    assert.equal(evaluateDeterministicAssertion(noConfirmationExpected, baseRun({ confirmationRequests: [] })).outcome, "pass");
+  });
+
   test("N/A handling and inconclusive missing instrumentation", () => {
     const nA: DeterministicAssertionSpec = {
       id: "maybe_confirmation",
@@ -267,6 +296,34 @@ describe("evaluator-v2 run validity and aggregation", () => {
     assert.equal(aggregates[0]?.repeats, 2);
     assert.equal(aggregates[0]?.runtimeInvalidRate, 0.5);
     assert.equal(aggregates[0]?.deterministicHardRequirementPassRate, 1);
+    assert.equal(aggregates[0]?.meanModelCalls, 3);
+    assert.equal(aggregates[0]?.meanDispatchCount, 1);
+  });
+
+  test("deterministic aggregation is requirement-weighted, not assertion-count weighted", () => {
+    const evaluation: DeterministicEvaluation = {
+      schemaVersion: "deterministic-evaluation-v2",
+      scenarioId: "S",
+      repeatId: "r1",
+      invalid: false,
+      results: [
+        { id: "r1-a", requirementId: "R1", type: "state_equals", severity: "hard", outcome: "pass", passed: true, detail: "ok" },
+        { id: "r1-b", requirementId: "R1", type: "state_equals", severity: "hard", outcome: "pass", passed: true, detail: "ok" },
+        { id: "r2-a", requirementId: "R2", type: "state_equals", severity: "hard", outcome: "hard_fail", passed: false, detail: "bad" },
+      ],
+      hardFailures: 1,
+      softFailures: 0,
+    };
+    const aggregates = aggregateRepeatedRuns([
+      {
+        scenarioId: "S",
+        implementationId: "I",
+        repeatId: "r1",
+        rawRun: baseRun({ scenarioId: "S", repeatId: "r1", implementationId: "I" }),
+        deterministic: evaluation,
+      },
+    ]);
+    assert.equal(aggregates[0]?.deterministicHardRequirementPassRate, 0.5);
   });
 });
 
@@ -319,7 +376,8 @@ describe("evaluator-v2 judge layers", () => {
         requirementResults: [{ requirementId: "P02-R07", score: 2, confidence: 0.9, reason: "No invention.", citedTurns: [1] }],
         hardSemanticViolations: [],
       }),
-      { provider: "offline", requestedModel: "judge", temperature: 0, timestamp: "2026-08-22T00:00:00.000Z" },
+      judge,
+      semanticValidation(["P02-R07"]),
     );
     assert.equal(output.requirementResults[0]?.score, 2);
 
@@ -328,14 +386,160 @@ describe("evaluator-v2 judge layers", () => {
         schemaVersion: "pairwise-judge-output-v1",
         promptVersion: "pairwise-judge-v1",
         verdict: "A",
-        criteria: [{ criterion: "correctness", preference: "A", reason: "More correct." }],
+        criteria: PAIRWISE_CRITERIA.map((criterion) => ({ criterion, preference: "A", reason: `${criterion} is better.` })),
         reason: "A is better.",
       }),
-      { provider: "offline", requestedModel: "judge", temperature: 0, timestamp: "2026-08-22T00:00:00.000Z", randomizationSeed: "s" },
+      { ...judge, randomizationSeed: "s" },
       "S",
       { A: "left", B: "right" },
+      PAIRWISE_CRITERIA,
+      { A: "impl-a", B: "impl-b" },
     );
     assert.equal(pairwise.verdict, "A");
+    assert.equal(pairwise.implementationAssignment?.A, "impl-a");
+  });
+
+  test("semantic judge output must cover expected requirements exactly once", () => {
+    const validEnvelope = {
+      schemaVersion: "semantic-judge-output-v1",
+      promptVersion: "semantic-judge-v1",
+      hardSemanticViolations: [],
+    };
+    assert.throws(() =>
+      parseSemanticJudgeOutput(
+        JSON.stringify({
+          ...validEnvelope,
+          requirementResults: [{ requirementId: "P02-R07", score: 2, confidence: 0.9, reason: "ok", citedTurns: [1] }],
+        }),
+        judge,
+        semanticValidation(["P02-R07", "P02-R08"]),
+      ),
+    );
+    assert.throws(() =>
+      parseSemanticJudgeOutput(
+        JSON.stringify({
+          ...validEnvelope,
+          requirementResults: [
+            { requirementId: "P02-R07", score: 2, confidence: 0.9, reason: "ok", citedTurns: [1] },
+            { requirementId: "P02-R07", score: 1, confidence: 0.9, reason: "dupe", citedTurns: [1] },
+          ],
+        }),
+        judge,
+        semanticValidation(["P02-R07"]),
+      ),
+    );
+    assert.throws(() =>
+      parseSemanticJudgeOutput(
+        JSON.stringify({
+          ...validEnvelope,
+          requirementResults: [
+            { requirementId: "P02-R07", score: 2, confidence: 0.9, reason: "ok", citedTurns: [1] },
+            { requirementId: "P02-R99", score: 2, confidence: 0.9, reason: "unknown", citedTurns: [1] },
+          ],
+        }),
+        judge,
+        semanticValidation(["P02-R07"]),
+      ),
+    );
+    assert.throws(() =>
+      parseSemanticJudgeOutput(
+        JSON.stringify({
+          ...validEnvelope,
+          requirementResults: [{ requirementId: "P02-R07", score: 0, confidence: 0.9, reason: "bad", citedTurns: [1] }],
+          hardSemanticViolations: ["P02-R08"],
+        }),
+        judge,
+        semanticValidation(["P02-R07"], ["P02-R07"]),
+      ),
+    );
+  });
+
+  test("pairwise judge output must cover criteria exactly once", () => {
+    const envelope = { schemaVersion: "pairwise-judge-output-v1", promptVersion: "pairwise-judge-v1", verdict: "A", reason: "A" };
+    const expected = ["correctness", "truthfulness"] as const;
+    assert.throws(() =>
+      parsePairwiseJudgeOutput(
+        JSON.stringify({ ...envelope, criteria: [{ criterion: "correctness", preference: "A", reason: "ok" }] }),
+        { ...judge, randomizationSeed: "s" },
+        "S",
+        { A: "left", B: "right" },
+        expected,
+      ),
+    );
+    assert.throws(() =>
+      parsePairwiseJudgeOutput(
+        JSON.stringify({
+          ...envelope,
+          criteria: [
+            { criterion: "correctness", preference: "A", reason: "ok" },
+            { criterion: "correctness", preference: "A", reason: "dupe" },
+            { criterion: "truthfulness", preference: "A", reason: "ok" },
+          ],
+        }),
+        { ...judge, randomizationSeed: "s" },
+        "S",
+        { A: "left", B: "right" },
+        expected,
+      ),
+    );
+    assert.throws(() =>
+      parsePairwiseJudgeOutput(
+        JSON.stringify({
+          ...envelope,
+          criteria: [
+            { criterion: "correctness", preference: "A", reason: "ok" },
+            { criterion: "grounding", preference: "A", reason: "unknown for this comparison" },
+            { criterion: "truthfulness", preference: "A", reason: "ok" },
+          ],
+        }),
+        { ...judge, randomizationSeed: "s" },
+        "S",
+        { A: "left", B: "right" },
+        expected,
+      ),
+    );
+  });
+
+  test("pairwise win/tie/loss aggregation uses stored implementation mapping", () => {
+    const outputs: PairwiseJudgeOutput[] = [
+      {
+        schemaVersion: "pairwise-judge-output-v1",
+        promptVersion: "pairwise-judge-v1",
+        judge: { ...judge, randomizationSeed: "s1" },
+        scenarioId: "S",
+        assignment: { A: "left", B: "right" },
+        implementationAssignment: { A: "impl-a", B: "impl-b" },
+        verdict: "A",
+        criteria: PAIRWISE_CRITERIA.map((criterion) => ({ criterion, preference: "A" as const, reason: "A" })),
+        reason: "A",
+      },
+      {
+        schemaVersion: "pairwise-judge-output-v1",
+        promptVersion: "pairwise-judge-v1",
+        judge: { ...judge, randomizationSeed: "s2" },
+        scenarioId: "S",
+        assignment: { A: "right", B: "left" },
+        implementationAssignment: { A: "impl-b", B: "impl-a" },
+        verdict: "tie",
+        criteria: PAIRWISE_CRITERIA.map((criterion) => ({ criterion, preference: "tie" as const, reason: "tie" })),
+        reason: "tie",
+      },
+    ];
+    const aggregates = aggregatePairwiseOutcomes(outputs);
+    assert.deepEqual(aggregates.find((item) => item.implementationId === "impl-a"), {
+      implementationId: "impl-a",
+      wins: 1,
+      ties: 1,
+      losses: 0,
+      bothBad: 0,
+    });
+    assert.deepEqual(aggregates.find((item) => item.implementationId === "impl-b"), {
+      implementationId: "impl-b",
+      wins: 0,
+      ties: 1,
+      losses: 1,
+      bothBad: 0,
+    });
   });
 
   test("malformed judge output handling", () => {
@@ -345,14 +549,15 @@ describe("evaluator-v2 judge layers", () => {
         requestedModel: "judge",
         temperature: 0,
         timestamp: "2026-08-22T00:00:00.000Z",
-      }),
+      }, semanticValidation(["P02-R07"])),
     );
     assert.throws(() =>
       parsePairwiseJudgeOutput(
         JSON.stringify({ schemaVersion: "pairwise-judge-output-v1", promptVersion: "pairwise-judge-v1", verdict: "C", criteria: [], reason: "" }),
-        { provider: "offline", requestedModel: "judge", temperature: 0, timestamp: "2026-08-22T00:00:00.000Z", randomizationSeed: "s" },
+        { ...judge, randomizationSeed: "s" },
         "S",
         { A: "left", B: "right" },
+        PAIRWISE_CRITERIA,
       ),
     );
   });
@@ -390,10 +595,23 @@ describe("scenario-v2 assets", () => {
     ] as const) {
       const requirementIds = new Set(requirements.map((requirement) => requirement.id));
       for (const requirement of requirements) {
-        assert.ok(requirement.sourceFiles.length > 0, `${requirement.id} missing source files`);
+        assert.ok(requirement.sourceProvenance.length > 0, `${requirement.id} missing source provenance`);
+        for (const provenance of requirement.sourceProvenance) {
+          assert.ok(provenance.repository.name, `${requirement.id} missing source repository name`);
+          assert.match(provenance.repository.commit, /^[0-9a-f]{40}$|^frozen-user-request-2026-08-22$/, `${requirement.id} missing frozen commit`);
+          assert.ok(provenance.path.length > 0, `${requirement.id} missing source path`);
+          assert.doesNotMatch(provenance.path, /^(Craig-Hempcrete-DemoSitee|EstatePro)\//, `${requirement.id} path should be repository-relative`);
+        }
         assert.ok(requirement.sourceEvidence.length > 0, `${requirement.id} missing source evidence`);
       }
       for (const scenario of scenarios) {
+        assert.ok(scenario.sourceProvenance.length > 0, `${scenario.id} missing source provenance`);
+        for (const provenance of scenario.sourceProvenance) {
+          assert.ok(provenance.repository.name, `${scenario.id} missing source repository name`);
+          assert.match(provenance.repository.commit, /^[0-9a-f]{40}$/, `${scenario.id} missing frozen commit`);
+          assert.ok(provenance.path.length > 0, `${scenario.id} missing source path`);
+          assert.doesNotMatch(provenance.path, /^(Craig-Hempcrete-DemoSitee|EstatePro)\//, `${scenario.id} path should be repository-relative`);
+        }
         assert.ok(scenario.expectedDeterministicAssertions.length > 0, `${scenario.id} missing deterministic assertions`);
         assert.ok(scenario.semanticRubric.length > 0, `${scenario.id} missing semantic rubric`);
         for (const requirementId of scenario.requirementIds) assert.ok(requirementIds.has(requirementId), `${scenario.id} references unknown ${requirementId}`);
@@ -419,6 +637,17 @@ describe("scenario-v2 assets", () => {
     const p02Covered = new Set(P02_SCENARIOS.flatMap((scenario) => scenario.requirementIds));
     assert.deepEqual(P01_REQUIREMENTS.filter((requirement) => !p01Covered.has(requirement.id)).map((requirement) => requirement.id), []);
     assert.deepEqual(P02_REQUIREMENTS.filter((requirement) => !p02Covered.has(requirement.id)).map((requirement) => requirement.id), []);
+  });
+
+  test("calibration fixtures reference the intended requirement ids", () => {
+    const requirementIds = new Set([...P01_REQUIREMENTS, ...P02_REQUIREMENTS].map((requirement) => requirement.id));
+    for (const fixture of CALIBRATION_FIXTURES) {
+      for (const requirementId of fixture.requirementIds) assert.ok(requirementIds.has(requirementId), `${fixture.id} references unknown ${requirementId}`);
+    }
+    assert.deepEqual(
+      CALIBRATION_FIXTURES.filter((fixture) => fixture.label === "correction_honored" || fixture.label === "correction_ignored").map((fixture) => fixture.requirementIds),
+      [["P02-R10"], ["P02-R10"]],
+    );
   });
 
   test("historical scenario audit covers every active historical scenario", () => {

@@ -121,7 +121,7 @@ export const CALIBRATION_FIXTURES: CalibrationFixture[] = [
   {
     id: "cal-p02-correction-honored",
     applicationId: "p02",
-    requirementIds: ["P02-R09"],
+    requirementIds: ["P02-R10"],
     label: "correction_honored",
     run: {
       ...base("cal-p02-correction-honored", "p02", "Got it, I will use West Village and $25M for the search."),
@@ -132,7 +132,7 @@ export const CALIBRATION_FIXTURES: CalibrationFixture[] = [
   {
     id: "cal-p02-correction-ignored",
     applicationId: "p02",
-    requirementIds: ["P02-R09"],
+    requirementIds: ["P02-R10"],
     label: "correction_ignored",
     run: {
       ...base("cal-p02-correction-ignored", "p02", "I will continue with TriBeCa and your $15M budget."),

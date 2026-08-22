@@ -1,13 +1,24 @@
 import type { DeterministicAssertionSpec } from "../../evaluator-v2/schema.ts";
-import type { ScenarioV2, SemanticRubricItem } from "../types.ts";
+import type { ScenarioV2, SemanticRubricItem, SourceProvenance } from "../types.ts";
 
-const source = [
-  "EstatePro/constants.tsx",
-  "EstatePro/components/AIConcierge.tsx",
-  "EstatePro/api/send-email.ts",
-  "EstatePro/App.tsx",
-  "EstatePro/types.ts",
-];
+const ESTATE_SOURCE_REPOSITORY = {
+  name: "EstatePro",
+  commit: "49e33528281ca28c08ac3993778493c3bfaa153c",
+} as const;
+
+const source = (paths: string[]): SourceProvenance[] =>
+  paths.map((path) => ({
+    repository: ESTATE_SOURCE_REPOSITORY,
+    path,
+  }));
+
+const scenarioSource = source([
+  "constants.tsx",
+  "components/AIConcierge.tsx",
+  "api/send-email.ts",
+  "App.tsx",
+  "types.ts",
+]);
 
 const stateEquals = (
   id: string,
@@ -159,7 +170,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R01", "P02-R02", "P02-R03", "P02-R09"], soft: ["P02-R17"] },
     notes: ["Retains historical turn; v2 adds exact record-id evaluation where the runner exposes selected records."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S02",
@@ -182,7 +193,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R01", "P02-R04", "P02-R09"], soft: ["P02-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S03",
@@ -204,7 +215,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R01", "P02-R05"], soft: ["P02-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S04",
@@ -228,7 +239,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R01", "P02-R03", "P02-R10"], soft: ["P02-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S05",
@@ -253,7 +264,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R03", "P02-R10"], soft: ["P02-R17"] },
     notes: ["Retains historical turns; adds exact selected-record expectation."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S06",
@@ -278,7 +289,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R01", "P02-R05", "P02-R10"], soft: ["P02-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S07",
@@ -302,7 +313,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R11"], soft: ["P02-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S08",
@@ -322,7 +333,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R11", "P02-R14", "P02-R15"], soft: ["P02-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S09",
@@ -356,7 +367,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R03", "P02-R06", "P02-R10"], soft: ["P02-R17"] },
     notes: ["Retains historical turns; deterministic fact can be supplied by an adapter as a source fact."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S10",
@@ -373,7 +384,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R02", "P02-R07", "P02-R08"], soft: ["P02-R17"] },
     notes: ["Retains historical turn but changes the evaluation contract to source-backed no-invention behavior."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S11",
@@ -390,7 +401,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R03", "P02-R07"], soft: ["P02-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S12",
@@ -406,7 +417,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R02", "P02-R06"], soft: ["P02-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S13",
@@ -437,7 +448,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R10", "P02-R12", "P02-R13", "P02-R14", "P02-R15"], soft: ["P02-R17"] },
     notes: ["Retains historical turns and failure setup; confirmation instrumentation is not required of original bespoke runs if unavailable."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S14",
@@ -461,7 +472,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R14", "P02-R15", "P02-R16"], soft: ["P02-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S15",
@@ -491,7 +502,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R11", "P02-R13", "P02-R14", "P02-R15"], soft: ["P02-R17"] },
     notes: ["Retains historical benchmark addition."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S16",
@@ -511,7 +522,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R12", "P02-R14", "P02-R15"], soft: ["P02-R17"] },
     notes: ["Retains historical adversarial turn; evaluation is action/payload based rather than substring based."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P02-V2-S17",
@@ -539,7 +550,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P02-R12", "P02-R13", "P02-R14", "P02-R15"], soft: ["P02-R17"] },
     notes: ["New v2 scenario because the neutral outcome taxonomy includes outcome_unknown."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
 ];
 

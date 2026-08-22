@@ -1,12 +1,23 @@
 import type { DeterministicAssertionSpec } from "../../evaluator-v2/schema.ts";
-import type { ScenarioV2, SemanticRubricItem } from "../types.ts";
+import type { ScenarioV2, SemanticRubricItem, SourceProvenance } from "../types.ts";
 
-const source = [
-  "Craig-Hempcrete-DemoSitee/app/lib/hempcretePrompt.ts",
-  "Craig-Hempcrete-DemoSitee/app/api/chat/route.ts",
-  "Craig-Hempcrete-DemoSitee/app/components/HempcreteSite.tsx",
-  "Craig-Hempcrete-DemoSitee/requirement.docx",
-];
+const CRAIG_SOURCE_REPOSITORY = {
+  name: "Craig-Hempcrete-DemoSitee",
+  commit: "0297a5cc43e4fcbc4e8edc7b4d90254cea76a893",
+} as const;
+
+const source = (paths: string[]): SourceProvenance[] =>
+  paths.map((path) => ({
+    repository: CRAIG_SOURCE_REPOSITORY,
+    path,
+  }));
+
+const scenarioSource = source([
+  "app/lib/hempcretePrompt.ts",
+  "app/api/chat/route.ts",
+  "app/components/HempcreteSite.tsx",
+  "requirement.docx",
+]);
 
 const volumeM3 = (areaSqFt: number, thicknessInches: number) => areaSqFt * (thicknessInches / 12) * 0.0283168;
 
@@ -99,7 +110,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R02", "P01-R03", "P01-R04", "P01-R07", "P01-R15"], soft: ["P01-R01", "P01-R17"] },
     notes: ["Retains historical turn; replaces regex volume/package checks with deterministic state/computation/action plus semantic rubrics."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S02",
@@ -123,7 +134,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R02", "P01-R08", "P01-R09"], soft: ["P01-R17"] },
     notes: ["Split from historical CRAIG-S02 to isolate the app's workflow prose from the shipped exact formula."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S03",
@@ -147,7 +158,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R03", "P01-R04"], soft: ["P01-R08"] },
     notes: ["New split scenario; changed for source correctness, not because of any framework result."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S04",
@@ -165,7 +176,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R10", "P01-R11", "P01-R12"], soft: ["P01-R17"] },
     notes: ["Retains historical turn; conflict resolved to Appendix BL in evaluation."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S05",
@@ -183,7 +194,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R14"], soft: ["P01-R17"] },
     notes: ["Retains historical turn; replaces phrase detectors with source-fact rubric."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S06",
@@ -201,7 +212,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R16"], soft: ["P01-R13", "P01-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S07",
@@ -218,7 +229,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R09", "P01-R10"], soft: ["P01-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S08",
@@ -240,7 +251,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R03", "P01-R04"], soft: ["P01-R07", "P01-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S09",
@@ -264,7 +275,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R03", "P01-R05"], soft: ["P01-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S10",
@@ -288,7 +299,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R04", "P01-R05", "P01-R14"], soft: ["P01-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S11",
@@ -305,7 +316,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R03", "P01-R06"], soft: ["P01-R17"] },
     notes: ["Retains historical turn; replaces regex-only no-bare-number check with semantic ambiguity rubric."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S12",
@@ -331,7 +342,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R03", "P01-R05", "P01-R10"], soft: ["P01-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S13",
@@ -348,7 +359,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R12", "P01-R15"], soft: ["P01-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S14",
@@ -365,7 +376,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R11"], soft: ["P01-R17"] },
     notes: ["Retains historical turn; Appendix BL is source-authoritative for v2."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S15",
@@ -385,7 +396,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R02", "P01-R16"], soft: ["P01-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S16",
@@ -405,7 +416,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R15", "P01-R16"], soft: ["P01-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S17",
@@ -422,7 +433,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R15", "P01-R16"], soft: ["P01-R17"] },
     notes: ["Retains historical turn."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S18",
@@ -456,7 +467,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R03", "P01-R05"], soft: ["P01-R09", "P01-R10", "P01-R17"] },
     notes: ["Retains historical turns."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S19",
@@ -480,7 +491,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R03", "P01-R11", "P01-R12", "P01-R14", "P01-R18"], soft: ["P01-R17"] },
     notes: ["Retains historical turn; volume is deterministic when computation is observable."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
   {
     id: "P01-V2-S20",
@@ -501,7 +512,7 @@ export const P01_SCENARIOS: ScenarioV2[] = [
     ],
     severity: { hard: ["P01-R03", "P01-R19"], soft: ["P01-R17"] },
     notes: ["Retains historical turn; source basis is positive input constraints and formula domain."],
-    sourceProvenance: source,
+    sourceProvenance: scenarioSource,
   },
 ];
 

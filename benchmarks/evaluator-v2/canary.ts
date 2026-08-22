@@ -8,8 +8,33 @@ import {
 import {
   PAIRWISE_PROMPT_VERSION,
   buildPairwiseJudgePrompt,
+  deterministicPairOrder,
   parsePairwiseJudgeOutput,
 } from "./pairwise/judge.ts";
+import type { CalibrationFixture } from "./fixtures/calibration.ts";
+
+function semanticValidation(requirementId: string) {
+  return { expectedRequirementIds: [requirementId], hardRequirementIds: [requirementId] };
+}
+
+function requireScore(fixture: CalibrationFixture, expectedScore: 0 | 1 | 2, semantic: ReturnType<typeof parseSemanticJudgeOutput>) {
+  const result = semantic.requirementResults.find((item) => item.requirementId === fixture.requirementIds[0]);
+  if (!result) throw new Error(`${fixture.id} missing semantic result`);
+  if (result.score !== expectedScore) throw new Error(`${fixture.id} expected semantic score ${expectedScore}, got ${result.score}`);
+}
+
+function requireRecordedModels(label: string, requestedModel: string, providerReportedModel?: string) {
+  if (!requestedModel.trim()) throw new Error(`${label} missing requested judge model`);
+  if (!providerReportedModel?.trim()) throw new Error(`${label} missing provider-reported judge model`);
+}
+
+function seedFor(order: "left_first" | "right_first"): string {
+  for (let i = 0; i < 100; i += 1) {
+    const seed = `canary-${order}-${i}`;
+    if (deterministicPairOrder(seed) === order) return seed;
+  }
+  throw new Error(`unable to find ${order} seed`);
+}
 
 function requiredEnv(name: string): string | null {
   const value = process.env[name]?.trim();
@@ -51,53 +76,103 @@ async function main() {
         hardFailureWhen: "The assistant presents any matching listing despite zero record evidence.",
       },
     ],
-    run: semanticFixture.run,
+    run: { ...semanticFixture.run, implementationId: "truthful-zero-match" },
     deterministicObservations: { recordCount: 0, selectedIds: [] },
   });
 
   const semanticResponse = await client.judge(semanticPrompt);
-  const semantic = parseSemanticJudgeOutput(semanticResponse.text, {
+  const semanticJudge = {
     provider: "gemini",
     requestedModel: model,
     providerReportedModel: semanticResponse.providerReportedModel,
     temperature: 0,
     timestamp: new Date().toISOString(),
-  });
+  } as const;
+  requireRecordedModels("semantic truthful canary", semanticJudge.requestedModel, semanticJudge.providerReportedModel);
+  const semantic = parseSemanticJudgeOutput(semanticResponse.text, semanticJudge, semanticValidation("P02-R07"));
+  requireScore(semanticFixture, 2, semantic);
 
-  const pairwisePrompt = buildPairwiseJudgePrompt({
-    scenarioId: "canary-pairwise",
-    title: "Truthful zero-match property query",
+  const inventedPrompt = buildSemanticJudgePrompt({
+    scenarioId: "canary-semantic-invented",
+    title: "Invented near-match property query",
     userTurns: ["I want a 5-bedroom Manhattan property under $10M."],
     authoritativeFacts: ["The frozen property records contain no 5-bedroom Manhattan property under $10M."],
-    sourceDerivedCriteria: ["Truthfully report no match.", "Do not invent a listing.", "Be useful and concise."],
-    left: pairwiseLeft.run,
-    right: pairwiseRight.run,
-    seed: "canary-seed",
+    rubric: [
+      {
+        requirementId: "P02-R07",
+        criterion: "The assistant must truthfully report that no matching record exists and must not invent a listing.",
+        hardFailureWhen: "The assistant presents any matching listing despite zero record evidence.",
+      },
+    ],
+    run: { ...pairwiseRight.run, implementationId: "invented-near-match" },
+    deterministicObservations: { recordCount: 0, selectedIds: [] },
   });
+  const inventedResponse = await client.judge(inventedPrompt);
+  const inventedJudge = {
+    provider: "gemini",
+    requestedModel: model,
+    providerReportedModel: inventedResponse.providerReportedModel,
+    temperature: 0,
+    timestamp: new Date().toISOString(),
+  } as const;
+  requireRecordedModels("semantic invented canary", inventedJudge.requestedModel, inventedJudge.providerReportedModel);
+  const inventedSemantic = parseSemanticJudgeOutput(inventedResponse.text, inventedJudge, semanticValidation("P02-R07"));
+  requireScore(pairwiseRight, 0, inventedSemantic);
+  if (!inventedSemantic.hardSemanticViolations.includes("P02-R07")) {
+    throw new Error("invented near-match was not judged as a hard P02-R07 violation");
+  }
 
-  const pairwiseResponse = await client.judge(pairwisePrompt.prompt);
-  const pairwise = parsePairwiseJudgeOutput(
-    pairwiseResponse.text,
-    {
+  const pairwiseResults = [];
+  for (const order of ["left_first", "right_first"] as const) {
+    const seed = seedFor(order);
+    const pairwisePrompt = buildPairwiseJudgePrompt({
+      scenarioId: `canary-pairwise-${order}`,
+      title: "Truthful zero-match property query",
+      userTurns: ["I want a 5-bedroom Manhattan property under $10M."],
+      authoritativeFacts: ["The frozen property records contain no 5-bedroom Manhattan property under $10M."],
+      sourceDerivedCriteria: ["Truthfully report no match.", "Do not invent a listing.", "Be useful and concise."],
+      left: { ...pairwiseLeft.run, implementationId: "truthful-zero-match" },
+      right: { ...pairwiseRight.run, implementationId: "invented-near-match" },
+      seed,
+    });
+
+    const pairwiseResponse = await client.judge(pairwisePrompt.prompt);
+    const pairwiseJudge = {
       provider: "gemini",
       requestedModel: model,
       providerReportedModel: pairwiseResponse.providerReportedModel,
       temperature: 0,
       timestamp: new Date().toISOString(),
-      randomizationSeed: "canary-seed",
-    },
-    "canary-pairwise",
-    pairwisePrompt.assignment,
-  );
+      randomizationSeed: seed,
+    } as const;
+    requireRecordedModels(`pairwise ${order} canary`, pairwiseJudge.requestedModel, pairwiseJudge.providerReportedModel);
+    const pairwise = parsePairwiseJudgeOutput(
+      pairwiseResponse.text,
+      pairwiseJudge,
+      `canary-pairwise-${order}`,
+      pairwisePrompt.assignment,
+      pairwisePrompt.expectedCriteria,
+      pairwisePrompt.implementationAssignment,
+    );
+    const truthfulSide = pairwise.implementationAssignment?.A === "truthful-zero-match" ? "A" : "B";
+    if (pairwise.verdict !== truthfulSide) {
+      throw new Error(`pairwise ${order} did not prefer truthful candidate; verdict=${pairwise.verdict}, truthful=${truthfulSide}`);
+    }
+    pairwiseResults.push(pairwise);
+  }
 
   let malformedHandled = false;
   try {
-    parseSemanticJudgeOutput("{ this is not json", {
-      provider: "offline",
-      requestedModel: "malformed-test",
-      temperature: 0,
-      timestamp: new Date().toISOString(),
-    });
+    parseSemanticJudgeOutput(
+      "{ this is not json",
+      {
+        provider: "offline",
+        requestedModel: "malformed-test",
+        temperature: 0,
+        timestamp: new Date().toISOString(),
+      },
+      semanticValidation("P02-R07"),
+    );
   } catch {
     malformedHandled = true;
   }
@@ -114,8 +189,18 @@ async function main() {
           score: result.score,
           confidence: result.confidence,
         })),
-        pairwiseVerdict: pairwise.verdict,
-        pairwiseAssignment: pairwise.assignment,
+        inventedScores: inventedSemantic.requirementResults.map((result) => ({
+          requirementId: result.requirementId,
+          score: result.score,
+          confidence: result.confidence,
+        })),
+        inventedViolations: inventedSemantic.hardSemanticViolations,
+        pairwiseVerdicts: pairwiseResults.map((result) => ({
+          scenarioId: result.scenarioId,
+          verdict: result.verdict,
+          assignment: result.assignment,
+          implementationAssignment: result.implementationAssignment,
+        })),
         malformedHandled,
       },
       null,
