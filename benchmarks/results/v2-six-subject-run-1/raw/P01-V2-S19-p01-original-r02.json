@@ -2,19 +2,53 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p01",
   "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
   "scenarioId": "P01-V2-S19",
   "repeatId": "r02",
-  "conversation": [],
-  "requestedModel": {
-    "provider": "gemini",
-    "requested": "gemini-3.5-flash-lite"
-  },
-  "runtimeErrors": [
+  "conversation": [
     {
-      "code": "transport_failure",
-      "message": "Gemini subject request failed: 429 {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\nPlease retry in 38.644175433s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",",
-      "beforeSubjectBehavior": true
+      "turn": 1,
+      "user": "I've got 420 sq. ft. of wall at 10 inches for a backyard office. Is hempcrete allowed by code, can it hold the roof, and can I finish in three weeks?",
+      "assistant": "Hempcrete is 100% legal, contains 0% THC, is fire-resistant, and is entirely unrelated to recreational marijuana. Under the 2024 International Residential Code Appendix BL, hemp-lime is officially recognized for construction, though these numbers are just planning estimates and not stamped engineering. Because hempcrete is strictly non-load-bearing infill, a conventional timber frame carries your roof and floor loads while the hempcrete wraps it in insulation. If you use pre-cast blocks, you can easily beat a three-week timeline since they arrive fully cured and ready to plaster right away. \n\nAre you leaning toward using pre-cast blocks to lock in that fast timeline, or were you planning on casting the walls in place?"
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 553,
+      "outputTokens": 154,
+      "totalTokens": 707
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.91088
+  },
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 1232
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 553,
+    "outputTokens": 154,
+    "totalTokens": 707
+  }
 }

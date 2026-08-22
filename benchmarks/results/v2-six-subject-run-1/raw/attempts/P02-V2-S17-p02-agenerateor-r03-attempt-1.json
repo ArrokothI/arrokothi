@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p02",
+  "implementationId": "p02-agenerateor",
+  "scenarioId": "P02-V2-S17",
+  "repeatId": "r03",
+  "conversation": [],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite"
+  },
+  "runtimeErrors": [
+    {
+      "code": "transport_failure",
+      "message": "Agenerateor turn failed 502: {\"error\":\"benchmark-rebuild-v1 requires GEMINI_API_KEY\",\"timing\":{\"elapsedMs\":0}}",
+      "beforeSubjectBehavior": true
+    }
+  ],
+  "invalidReason": "provider_outage_or_transport_failure"
+}

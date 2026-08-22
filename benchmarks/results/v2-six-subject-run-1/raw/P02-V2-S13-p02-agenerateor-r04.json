@@ -1,0 +1,702 @@
+{
+  "schemaVersion": "neutral-raw-run-v2",
+  "applicationId": "p02",
+  "implementationId": "p02-agenerateor",
+  "frameworkId": "generated-runtime",
+  "scenarioId": "P02-V2-S13",
+  "repeatId": "r04",
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm buying in TriBeCa, budget $12M, six month timeline, paying cash.",
+      "assistant": "We do not currently have a showcased property in TriBeCa within that $12M budget—our TriBeCa offering is The TriBeCa Loft listed at $7,250,000, while our other properties are at different price points or locations. \n\nWould you like me to connect you with our human team to discuss off-market opportunities or further options that might fit your search?"
+    },
+    {
+      "turn": 2,
+      "user": "Actually, make my budget $16M instead. My name is Jordan Lee, phone 555-0111.",
+      "assistant": "Even with a budget of $16,000,000, our showcased TriBeCa property remains The TriBeCa Loft at $7,250,000, as we do not have a listing in that specific location within the $12M to $16M range. \n\nWould you like me to connect you with our human team so they can assist you further with your search in TriBeCa?"
+    },
+    {
+      "turn": 3,
+      "user": "Text me around 3pm today.",
+      "assistant": "Thank you for providing your preferred time and contact preference. \n\nSince your search in TriBeCa may benefit from personalized assistance beyond our current showcased listings, would you like me to have a human representative reach out to you?"
+    },
+    {
+      "turn": 4,
+      "user": "Yes, please go ahead and send that to the team.",
+      "assistant": "I have noted your confirmation, but please note that I am unable to automatically send text messages or schedule direct calls from this interface. \n\nYou can reach our human representatives directly at +1 (212) 555-0198, or visit our Global HQ at 750 5th Avenue in New York, NY, and our team will be delighted to assist you further with your TriBeCa property search."
+    }
+  ],
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 8,
+    "usage": {
+      "available": false
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "intent": "buy",
+    "target_location": "TriBeCa",
+    "budget": 16,
+    "bedrooms_needed": null,
+    "timeline": "six month",
+    "financing": "cash",
+    "selected_property": null,
+    "listing_preference": null,
+    "seller_zip": null,
+    "contact_name": "Jordan Lee",
+    "phone": null,
+    "email": null,
+    "contact_preference": "text",
+    "best_contact_time": "3pm today",
+    "queryResult": "[]",
+    "querySummary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":16,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}",
+    "recordCount": 6,
+    "liveMls": false,
+    "rentalData": false
+  },
+  "recordObservations": [
+    {
+      "fields": {
+        "capability": "query_estate_records",
+        "status": "succeeded",
+        "criteria": {
+          "intent": "buy",
+          "target_location": "tribeca",
+          "maximum_budget_usd": 12,
+          "minimum_bedrooms": null,
+          "selected_property": null
+        },
+        "match_count": 0,
+        "total_record_count": 6,
+        "rows": []
+      }
+    },
+    {
+      "fields": {
+        "capability": "query_estate_records",
+        "status": "succeeded",
+        "criteria": {
+          "intent": "buy",
+          "target_location": "tribeca",
+          "maximum_budget_usd": 16,
+          "minimum_bedrooms": null,
+          "selected_property": null
+        },
+        "match_count": 0,
+        "total_record_count": 6,
+        "rows": []
+      }
+    },
+    {
+      "fields": {
+        "capability": "query_estate_records",
+        "status": "succeeded",
+        "criteria": {
+          "intent": "buy",
+          "target_location": "tribeca",
+          "maximum_budget_usd": 16,
+          "minimum_bedrooms": null,
+          "selected_property": null
+        },
+        "match_count": 0,
+        "total_record_count": 6,
+        "rows": []
+      }
+    },
+    {
+      "fields": {
+        "capability": "query_estate_records",
+        "status": "succeeded",
+        "criteria": {
+          "intent": "buy",
+          "target_location": "tribeca",
+          "maximum_budget_usd": 16,
+          "minimum_bedrooms": null,
+          "selected_property": null
+        },
+        "match_count": 0,
+        "total_record_count": 6,
+        "rows": []
+      }
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 62062
+  },
+  "modelCallCount": 8,
+  "tokenUsage": {
+    "available": false
+  },
+  "nativeTrace": {
+    "turns": [
+      {
+        "reply": "We do not currently have a showcased property in TriBeCa within that $12M budget—our TriBeCa offering is The TriBeCa Loft listed at $7,250,000, while our other properties are at different price points or locations. \n\nWould you like me to connect you with our human team to discuss off-market opportunities or further options that might fit your search?",
+        "state": {
+          "context": {
+            "property_record_count": 6,
+            "live_mls_available": false,
+            "rental_data_available": false,
+            "property_query_result_json": "[]",
+            "property_query_summary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":12,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}"
+          },
+          "fields": {
+            "p02_intent": "buy",
+            "p02_budget": 12,
+            "p02_financing": "cash",
+            "p02_contact_name": "buying in TriBeCa",
+            "p02_target_location": "TriBeCa",
+            "p02_timeline": "six month"
+          },
+          "summary": "",
+          "currentStageId": "p02_consult",
+          "turnCount": 1,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p02_consult",
+          "name": "Property consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 763
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1109
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "intent": "buy",
+            "target_location": "TriBeCa",
+            "budget": 12,
+            "bedrooms_needed": null,
+            "timeline": "six month",
+            "financing": "cash",
+            "selected_property": null,
+            "listing_preference": null,
+            "seller_zip": null,
+            "contact_name": "buying in TriBeCa",
+            "phone": null,
+            "email": null,
+            "contact_preference": null,
+            "best_contact_time": null
+          },
+          "context": {
+            "queryResult": "[]",
+            "querySummary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":12,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}",
+            "recordCount": 6,
+            "liveMls": false,
+            "rentalData": false
+          },
+          "currentStageId": "p02_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "estate_property_records",
+            "estate_service_policy"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "query_estate_records",
+          "status": "succeeded",
+          "criteria": {
+            "intent": "buy",
+            "target_location": "tribeca",
+            "maximum_budget_usd": 12,
+            "minimum_bedrooms": null,
+            "selected_property": null
+          },
+          "match_count": 0,
+          "total_record_count": 6,
+          "rows": []
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": "definite_failure",
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [
+            "p02_intent",
+            "p02_budget",
+            "p02_financing",
+            "p02_contact_name"
+          ],
+          "aiFieldIds": [
+            "p02_target_location",
+            "p02_timeline"
+          ],
+          "changedFieldIds": [
+            "p02_intent",
+            "p02_budget",
+            "p02_financing",
+            "p02_contact_name",
+            "p02_target_location",
+            "p02_timeline"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1880
+        },
+        "nativeTrace": {
+          "startStageId": "p02_consult",
+          "endStageId": "p02_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Even with a budget of $16,000,000, our showcased TriBeCa property remains The TriBeCa Loft at $7,250,000, as we do not have a listing in that specific location within the $12M to $16M range. \n\nWould you like me to connect you with our human team so they can assist you further with your search in TriBeCa?",
+        "state": {
+          "context": {
+            "property_record_count": 6,
+            "live_mls_available": false,
+            "rental_data_available": false,
+            "property_query_result_json": "[]",
+            "property_query_summary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":16,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}"
+          },
+          "fields": {
+            "p02_intent": "buy",
+            "p02_budget": 16,
+            "p02_financing": "cash",
+            "p02_contact_name": "Jordan Lee",
+            "p02_target_location": "TriBeCa",
+            "p02_timeline": "six month"
+          },
+          "summary": "",
+          "currentStageId": "p02_consult",
+          "turnCount": 2,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p02_consult",
+          "name": "Property consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 831
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1280
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "intent": "buy",
+            "target_location": "TriBeCa",
+            "budget": 16,
+            "bedrooms_needed": null,
+            "timeline": "six month",
+            "financing": "cash",
+            "selected_property": null,
+            "listing_preference": null,
+            "seller_zip": null,
+            "contact_name": "Jordan Lee",
+            "phone": null,
+            "email": null,
+            "contact_preference": null,
+            "best_contact_time": null
+          },
+          "context": {
+            "queryResult": "[]",
+            "querySummary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":16,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}",
+            "recordCount": 6,
+            "liveMls": false,
+            "rentalData": false
+          },
+          "currentStageId": "p02_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "estate_property_records",
+            "estate_service_policy"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "query_estate_records",
+          "status": "succeeded",
+          "criteria": {
+            "intent": "buy",
+            "target_location": "tribeca",
+            "maximum_budget_usd": 16,
+            "minimum_bedrooms": null,
+            "selected_property": null
+          },
+          "match_count": 0,
+          "total_record_count": 6,
+          "rows": []
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": "definite_failure",
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [
+            "p02_budget",
+            "p02_contact_name"
+          ],
+          "aiFieldIds": [],
+          "changedFieldIds": [
+            "p02_budget",
+            "p02_contact_name"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2116
+        },
+        "nativeTrace": {
+          "startStageId": "p02_consult",
+          "endStageId": "p02_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Thank you for providing your preferred time and contact preference. \n\nSince your search in TriBeCa may benefit from personalized assistance beyond our current showcased listings, would you like me to have a human representative reach out to you?",
+        "state": {
+          "context": {
+            "property_record_count": 6,
+            "live_mls_available": false,
+            "rental_data_available": false,
+            "property_query_result_json": "[]",
+            "property_query_summary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":16,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}"
+          },
+          "fields": {
+            "p02_intent": "buy",
+            "p02_budget": 16,
+            "p02_financing": "cash",
+            "p02_contact_name": "Jordan Lee",
+            "p02_target_location": "TriBeCa",
+            "p02_timeline": "six month",
+            "p02_contact_preference": "text",
+            "p02_best_contact_time": "3pm today"
+          },
+          "summary": "",
+          "currentStageId": "p02_consult",
+          "turnCount": 3,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p02_consult",
+          "name": "Property consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 740
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1204
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "intent": "buy",
+            "target_location": "TriBeCa",
+            "budget": 16,
+            "bedrooms_needed": null,
+            "timeline": "six month",
+            "financing": "cash",
+            "selected_property": null,
+            "listing_preference": null,
+            "seller_zip": null,
+            "contact_name": "Jordan Lee",
+            "phone": null,
+            "email": null,
+            "contact_preference": "text",
+            "best_contact_time": "3pm today"
+          },
+          "context": {
+            "queryResult": "[]",
+            "querySummary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":16,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}",
+            "recordCount": 6,
+            "liveMls": false,
+            "rentalData": false
+          },
+          "currentStageId": "p02_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "estate_property_records",
+            "estate_service_policy"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "query_estate_records",
+          "status": "succeeded",
+          "criteria": {
+            "intent": "buy",
+            "target_location": "tribeca",
+            "maximum_budget_usd": 16,
+            "minimum_bedrooms": null,
+            "selected_property": null
+          },
+          "match_count": 0,
+          "total_record_count": 6,
+          "rows": []
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": "definite_failure",
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [
+            "p02_contact_preference"
+          ],
+          "aiFieldIds": [
+            "p02_best_contact_time"
+          ],
+          "changedFieldIds": [
+            "p02_contact_preference",
+            "p02_best_contact_time"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1954
+        },
+        "nativeTrace": {
+          "startStageId": "p02_consult",
+          "endStageId": "p02_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "I have noted your confirmation, but please note that I am unable to automatically send text messages or schedule direct calls from this interface. \n\nYou can reach our human representatives directly at +1 (212) 555-0198, or visit our Global HQ at 750 5th Avenue in New York, NY, and our team will be delighted to assist you further with your TriBeCa property search.",
+        "state": {
+          "context": {
+            "property_record_count": 6,
+            "live_mls_available": false,
+            "rental_data_available": false,
+            "property_query_result_json": "[]",
+            "property_query_summary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":16,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}"
+          },
+          "fields": {
+            "p02_intent": "buy",
+            "p02_budget": 16,
+            "p02_financing": "cash",
+            "p02_contact_name": "Jordan Lee",
+            "p02_target_location": "TriBeCa",
+            "p02_timeline": "six month",
+            "p02_contact_preference": "text",
+            "p02_best_contact_time": "3pm today"
+          },
+          "summary": "",
+          "currentStageId": "p02_consult",
+          "turnCount": 4,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p02_consult",
+          "name": "Property consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 830
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1131
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "intent": "buy",
+            "target_location": "TriBeCa",
+            "budget": 16,
+            "bedrooms_needed": null,
+            "timeline": "six month",
+            "financing": "cash",
+            "selected_property": null,
+            "listing_preference": null,
+            "seller_zip": null,
+            "contact_name": "Jordan Lee",
+            "phone": null,
+            "email": null,
+            "contact_preference": "text",
+            "best_contact_time": "3pm today"
+          },
+          "context": {
+            "queryResult": "[]",
+            "querySummary": "{\"status\":\"succeeded\",\"criteria\":{\"intent\":\"buy\",\"target_location\":\"tribeca\",\"maximum_budget_usd\":16,\"minimum_bedrooms\":null,\"selected_property\":null},\"match_count\":0,\"total_record_count\":6}",
+            "recordCount": 6,
+            "liveMls": false,
+            "rentalData": false
+          },
+          "currentStageId": "p02_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "estate_property_records",
+            "estate_service_policy"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "query_estate_records",
+          "status": "succeeded",
+          "criteria": {
+            "intent": "buy",
+            "target_location": "tribeca",
+            "maximum_budget_usd": 16,
+            "minimum_bedrooms": null,
+            "selected_property": null
+          },
+          "match_count": 0,
+          "total_record_count": 6,
+          "rows": []
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": true,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": "definite_failure",
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1963
+        },
+        "nativeTrace": {
+          "startStageId": "p02_consult",
+          "endStageId": "p02_consult",
+          "completed": false
+        }
+      }
+    ],
+    "outcomeUnknownLimitation": false
+  }
+}

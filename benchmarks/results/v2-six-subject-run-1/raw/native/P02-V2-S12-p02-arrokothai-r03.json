@@ -1,0 +1,779 @@
+{
+  "schemaVersion": "benchmark-raw-run-v1",
+  "rebuildLabel": "benchmark-rebuild-v1",
+  "benchmarkApplicationId": "p02",
+  "implementationId": "p02-arrokothai",
+  "framework": {
+    "id": "arrokothai",
+    "name": "Agent_SDK",
+    "version": "0.37.0"
+  },
+  "scenarioRunId": "P02-V2-S12",
+  "timestamps": {
+    "startedAt": "2026-08-22T16:56:31.711Z",
+    "completedAt": "2026-08-22T16:56:34.174Z",
+    "elapsedMs": 2463
+  },
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "The Park Avenue Estate is $20M, right?",
+      "assistant": "Not quite—The Park Avenue Estate is listed at $32,000,000. \n\nWould you like me to share more details about its features, such as its 5 bedrooms and 7,200 square feet, or connect you with our team for more information?",
+      "stopReason": "completed",
+      "steps": 2,
+      "elapsedMs": 2462,
+      "metrics": {
+        "preflightModelCalls": 1,
+        "agentLoopModelCalls": 2,
+        "conversationSummaryModelCalls": 0,
+        "guideRetryModelCalls": 0,
+        "totalModelCalls": 3
+      },
+      "eventSeqs": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    }
+  ],
+  "model": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "maxOutputTokens": 700,
+    "thinking": null,
+    "calls": [
+      {
+        "turn": 1,
+        "at": "2026-08-22T16:56:32.748Z",
+        "purpose": "plan",
+        "providerId": "gemini",
+        "model": "gemini-3.5-flash-lite",
+        "usage": {
+          "inputTokens": 670,
+          "outputTokens": 69
+        },
+        "finishReason": "STOP",
+        "durationMs": 1036
+      },
+      {
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.458Z",
+        "purpose": "agent_loop:1",
+        "providerId": "strands:gemini",
+        "model": "gemini-3.5-flash-lite",
+        "usage": {
+          "inputTokens": 1833,
+          "outputTokens": 45
+        },
+        "finishReason": "toolUse"
+      },
+      {
+        "turn": 1,
+        "at": "2026-08-22T16:56:34.173Z",
+        "purpose": "agent_loop:2",
+        "providerId": "strands:gemini",
+        "model": "gemini-3.5-flash-lite",
+        "usage": {
+          "inputTokens": 2187,
+          "outputTokens": 62
+        },
+        "finishReason": "endTurn"
+      }
+    ],
+    "callCount": 3,
+    "usage": {
+      "available": true,
+      "inputTokens": 4690,
+      "outputTokens": 176
+    }
+  },
+  "canonicalState": {
+    "selected_property": "The Park Avenue Estate"
+  },
+  "knowledge": {
+    "calls": [
+      {
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.459Z",
+        "request": {
+          "kind": "record_query",
+          "sourceId": "estate_properties",
+          "filters": [
+            {
+              "op": "contains",
+              "value": "Park Avenue Estate",
+              "field": "title"
+            }
+          ],
+          "limit": 6
+        },
+        "sourceId": "estate_properties",
+        "resultIds": [
+          "estate_properties#6"
+        ],
+        "returnedCount": 1,
+        "totalMatched": 1,
+        "result": {
+          "kind": "record_query",
+          "sourceId": "estate_properties",
+          "sourceTitle": "EstatePro showcased sale properties",
+          "query": {
+            "filters": [
+              {
+                "op": "contains",
+                "value": "Park Avenue Estate",
+                "field": "title"
+              }
+            ],
+            "sort": [],
+            "limit": 6
+          },
+          "matches": [
+            {
+              "id": "6",
+              "title": "Park Avenue Estate",
+              "type": "Penthouse",
+              "location": "Upper East Side, NY",
+              "price": 32000000,
+              "beds": 5,
+              "baths": 6.5,
+              "sqft": 7200,
+              "main_image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&q=80&w=1200",
+              "images": [
+                "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=800"
+              ],
+              "description": "A white-glove Park Avenue duplex with grand proportions, offering a gallery, formal dining room, and staff quarters."
+            }
+          ],
+          "totalMatched": 1,
+          "totalRecords": 6
+        }
+      }
+    ],
+    "rejectedCalls": []
+  },
+  "actions": {
+    "requests": [],
+    "confirmationsRequested": [],
+    "confirmationsResolved": [],
+    "executionStarted": [],
+    "succeeded": [],
+    "failed": [],
+    "outcomeUnknown": [],
+    "dispatchCount": 0
+  },
+  "stopReason": "completed",
+  "runtimeErrors": [],
+  "nativeTrace": {
+    "eventStream": [
+      {
+        "id": "evt_mt4meiu72tetjova",
+        "turn": 1,
+        "at": "2026-08-22T16:56:31.711Z",
+        "type": "UserMessageReceived",
+        "payload": {
+          "text": "The Park Avenue Estate is $20M, right?"
+        },
+        "seq": 1,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mejn0znx0ablf",
+        "turn": 1,
+        "at": "2026-08-22T16:56:32.748Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 670,
+            "outputTokens": 69
+          },
+          "finishReason": "STOP",
+          "durationMs": 1036
+        },
+        "seq": 2,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mejn0uzkqply2",
+        "turn": 1,
+        "at": "2026-08-22T16:56:32.748Z",
+        "type": "TurnPlanCreated",
+        "payload": {
+          "strategy": "llm",
+          "resolvedBy": "llm",
+          "plan": {
+            "memoryProposals": [
+              {
+                "key": "selected_property",
+                "value": "The Park Avenue Estate"
+              }
+            ],
+            "workingNotes": [],
+            "signals": [],
+            "retrievalRequests": []
+          }
+        },
+        "seq": 3,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mejn09vkftov3",
+        "turn": 1,
+        "at": "2026-08-22T16:56:32.748Z",
+        "type": "MemoryWriteProposed",
+        "payload": {
+          "key": "selected_property",
+          "value": "The Park Avenue Estate",
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4meiu72tetjova"
+            ],
+            "sourceName": "latest_user_message"
+          }
+        },
+        "seq": 4,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mejn13bg43zpj",
+        "turn": 1,
+        "at": "2026-08-22T16:56:32.749Z",
+        "type": "MemoryWriteCommitted",
+        "payload": {
+          "key": "selected_property",
+          "value": "The Park Avenue Estate",
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4meiu72tetjova"
+            ],
+            "sourceName": "latest_user_message"
+          },
+          "authority": "authoritative",
+          "proposalEventId": "evt_mt4mejn09vkftov3"
+        },
+        "seq": 5,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mejn27dwo0fyj",
+        "turn": 1,
+        "at": "2026-08-22T16:56:32.750Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_invocation"
+        },
+        "seq": 6,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mejn3lpzoovfz",
+        "turn": 1,
+        "at": "2026-08-22T16:56:32.751Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_model",
+          "iteration": 1
+        },
+        "seq": 7,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mejn30wb5ykml",
+        "turn": 1,
+        "at": "2026-08-22T16:56:32.751Z",
+        "type": "AgentIterationStarted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "phaseId": null,
+          "capabilityNames": [
+            "knowledge_record_query_estate_properties_15bc1f",
+            "knowledge_record_query_estate_rooms_dd3ccb",
+            "knowledge_document_search_estate_service_policy_d064c4",
+            "send_lead_to_team"
+          ]
+        },
+        "seq": 8,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6qrrpvl52x",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.458Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_model",
+          "iteration": 1
+        },
+        "seq": 9,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6qidii7dxl",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.458Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 1833,
+            "outputTokens": 45
+          },
+          "finishReason": "toolUse"
+        },
+        "seq": 10,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6q1pzk9oa0",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.458Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_tool",
+          "iteration": 1,
+          "capabilityName": "knowledge_record_query_estate_properties_15bc1f"
+        },
+        "seq": 11,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6qv63rodrk",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.458Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "capability_requested",
+          "iteration": 1,
+          "capabilityName": "knowledge_record_query_estate_properties_15bc1f"
+        },
+        "seq": 12,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6q0xi04wb8",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.458Z",
+        "type": "DelegationRequested",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "category": "knowledge",
+          "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+          "input": {
+            "kind": "record_query",
+            "sourceId": "estate_properties",
+            "filters": [
+              {
+                "op": "contains",
+                "value": "Park Avenue Estate",
+                "field": "title"
+              }
+            ]
+          }
+        },
+        "seq": 13,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6r3zjlku1i",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.459Z",
+        "type": "KnowledgeRetrieved",
+        "payload": {
+          "request": {
+            "kind": "record_query",
+            "sourceId": "estate_properties",
+            "filters": [
+              {
+                "op": "contains",
+                "value": "Park Avenue Estate",
+                "field": "title"
+              }
+            ],
+            "limit": 6
+          },
+          "sourceId": "estate_properties",
+          "resultIds": [
+            "estate_properties#6"
+          ],
+          "returnedCount": 1,
+          "totalMatched": 1,
+          "result": {
+            "kind": "record_query",
+            "sourceId": "estate_properties",
+            "sourceTitle": "EstatePro showcased sale properties",
+            "query": {
+              "filters": [
+                {
+                  "op": "contains",
+                  "value": "Park Avenue Estate",
+                  "field": "title"
+                }
+              ],
+              "sort": [],
+              "limit": 6
+            },
+            "matches": [
+              {
+                "id": "6",
+                "title": "Park Avenue Estate",
+                "type": "Penthouse",
+                "location": "Upper East Side, NY",
+                "price": 32000000,
+                "beds": 5,
+                "baths": 6.5,
+                "sqft": 7200,
+                "main_image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&q=80&w=1200",
+                "images": [
+                  "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=800"
+                ],
+                "description": "A white-glove Park Avenue duplex with grand proportions, offering a gallery, formal dining room, and staff quarters."
+              }
+            ],
+            "totalMatched": 1,
+            "totalRecords": 6
+          }
+        },
+        "seq": 14,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6rxoptnkum",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.459Z",
+        "type": "DelegationCompleted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 1,
+          "category": "knowledge",
+          "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+          "outcome": "completed",
+          "summary": {
+            "returnedCount": 1,
+            "totalMatched": 1,
+            "resultIds": [
+              "estate_properties#6"
+            ]
+          }
+        },
+        "seq": 15,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6rht64iz5r",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.459Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "runtime_decision",
+          "iteration": 1,
+          "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+          "detail": {
+            "kind": "proceed"
+          }
+        },
+        "seq": 16,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6rvqy1yqda",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.459Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_tool",
+          "iteration": 1,
+          "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+          "detail": {
+            "mutationVersion": 3,
+            "runtimeContextKeysRead": []
+          }
+        },
+        "seq": 17,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6sy9hs490e",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.460Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "before_model",
+          "iteration": 2
+        },
+        "seq": 18,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mek6s4eh5nreb",
+        "turn": 1,
+        "at": "2026-08-22T16:56:33.460Z",
+        "type": "AgentIterationStarted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 2,
+          "phaseId": null,
+          "capabilityNames": [
+            "knowledge_record_query_estate_properties_15bc1f",
+            "knowledge_record_query_estate_rooms_dd3ccb",
+            "knowledge_document_search_estate_service_policy_d064c4",
+            "send_lead_to_team"
+          ]
+        },
+        "seq": 19,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mekql48ny57np",
+        "turn": 1,
+        "at": "2026-08-22T16:56:34.173Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_model",
+          "iteration": 2
+        },
+        "seq": 20,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mekqlfoi88p5k",
+        "turn": 1,
+        "at": "2026-08-22T16:56:34.173Z",
+        "type": "ModelCallCompleted",
+        "payload": {
+          "purpose": "agent_loop:2",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 2187,
+            "outputTokens": 62
+          },
+          "finishReason": "endTurn"
+        },
+        "seq": 21,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mekqlkee79e1p",
+        "turn": 1,
+        "at": "2026-08-22T16:56:34.173Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "after_invocation",
+          "detail": {
+            "mutationVersion": 3,
+            "runtimeContextKeysRead": []
+          }
+        },
+        "seq": 22,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mekqli40ara2a",
+        "turn": 1,
+        "at": "2026-08-22T16:56:34.173Z",
+        "type": "ExecutionLifecycleObserved",
+        "payload": {
+          "engine": "strands-loop-v0.37",
+          "event": "execution_terminated",
+          "detail": {
+            "stopReason": "end_turn"
+          }
+        },
+        "seq": 23,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mekqlmwqmhgvu",
+        "turn": 1,
+        "at": "2026-08-22T16:56:34.173Z",
+        "type": "AgentIterationCompleted",
+        "payload": {
+          "harness": "agent-harness-v0.37",
+          "iteration": 2,
+          "requested": 1,
+          "completed": 1,
+          "rejected": 0,
+          "stopReason": "completed"
+        },
+        "seq": 24,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      },
+      {
+        "id": "evt_mt4mekqllpcr9shp",
+        "turn": 1,
+        "at": "2026-08-22T16:56:34.173Z",
+        "type": "AssistantMessageEmitted",
+        "payload": {
+          "text": "Not quite—The Park Avenue Estate is listed at $32,000,000. \n\nWould you like me to share more details about its features, such as its 5 bedrooms and 7,200 square feet, or connect you with our team for more information?",
+          "stopReason": "completed"
+        },
+        "seq": 25,
+        "sessionId": "benchmark-rebuild-v1-p02-1787417791711"
+      }
+    ],
+    "finalState": {
+      "sessionId": "benchmark-rebuild-v1-p02-1787417791711",
+      "agentId": "benchmark-rebuild-v1-p02-arrokothai",
+      "agentVersion": 1,
+      "turn": 1,
+      "lastSeq": 25,
+      "memory": {
+        "selected_property": {
+          "key": "selected_property",
+          "value": "The Park Avenue Estate",
+          "writeMechanism": "planner_proposal",
+          "provenance": {
+            "kind": "user_claimed",
+            "sourceEventIds": [
+              "evt_mt4meiu72tetjova"
+            ],
+            "sourceName": "latest_user_message"
+          },
+          "authority": "authoritative",
+          "turn": 1,
+          "eventId": "evt_mt4mejn13bg43zpj",
+          "at": "2026-08-22T16:56:32.749Z"
+        }
+      },
+      "workingNotes": [],
+      "hostContext": {},
+      "phaseId": null,
+      "pendingAction": null,
+      "ledger": {},
+      "transcript": [
+        {
+          "role": "user",
+          "text": "The Park Avenue Estate is $20M, right?",
+          "turn": 1,
+          "at": "2026-08-22T16:56:31.711Z"
+        },
+        {
+          "role": "assistant",
+          "text": "Not quite—The Park Avenue Estate is listed at $32,000,000. \n\nWould you like me to share more details about its features, such as its 5 bedrooms and 7,200 square feet, or connect you with our team for more information?",
+          "turn": 1,
+          "at": "2026-08-22T16:56:34.173Z"
+        }
+      ],
+      "turnToolResults": [],
+      "turnSignals": [],
+      "turnPlan": {
+        "memoryProposals": [
+          {
+            "key": "selected_property",
+            "value": "The Park Avenue Estate"
+          }
+        ],
+        "workingNotes": [],
+        "signals": [],
+        "retrievalRequests": []
+      },
+      "turnRetrievals": [
+        {
+          "request": {
+            "kind": "record_query",
+            "sourceId": "estate_properties",
+            "filters": [
+              {
+                "op": "contains",
+                "value": "Park Avenue Estate",
+                "field": "title"
+              }
+            ],
+            "limit": 6
+          },
+          "sourceId": "estate_properties",
+          "resultIds": [
+            "estate_properties#6"
+          ],
+          "returnedCount": 1,
+          "totalMatched": 1,
+          "result": {
+            "kind": "record_query",
+            "sourceId": "estate_properties",
+            "sourceTitle": "EstatePro showcased sale properties",
+            "query": {
+              "filters": [
+                {
+                  "op": "contains",
+                  "value": "Park Avenue Estate",
+                  "field": "title"
+                }
+              ],
+              "sort": [],
+              "limit": 6
+            },
+            "matches": [
+              {
+                "id": "6",
+                "title": "Park Avenue Estate",
+                "type": "Penthouse",
+                "location": "Upper East Side, NY",
+                "price": 32000000,
+                "beds": 5,
+                "baths": 6.5,
+                "sqft": 7200,
+                "main_image": "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&q=80&w=1200",
+                "images": [
+                  "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=800"
+                ],
+                "description": "A white-glove Park Avenue duplex with grand proportions, offering a gallery, formal dining room, and staff quarters."
+              }
+            ],
+            "totalMatched": 1,
+            "totalRecords": 6
+          }
+        }
+      ],
+      "allToolResults": [],
+      "unresolvedExternalExecution": null,
+      "status": "active",
+      "createdAt": "2026-08-22T16:56:31.711Z",
+      "updatedAt": "2026-08-22T16:56:34.173Z"
+    }
+  }
+}

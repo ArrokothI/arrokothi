@@ -2,19 +2,1598 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p01",
   "implementationId": "p01-agenerateor",
+  "frameworkId": "generated-runtime",
   "scenarioId": "P01-V2-S18",
   "repeatId": "r01",
-  "conversation": [],
+  "conversation": [
+    {
+      "turn": 1,
+      "user": "I'm scoping a backyard office. About 420 sq. ft. of wall area, 10-inch walls.",
+      "assistant": "For your backyard office project with 420 square feet of net wall area at a 10-inch thickness, the computed hemp-lime material volume is 9.9 cubic meters. Keep in mind that hempcrete is a non-load-bearing infill material, so it requires a conventional structural frame like timber framing to carry loads. Additionally, final project-specific engineering, code adoption under the 2024 International Residential Code Appendix BL, and permit decisions should always be reviewed with a qualified local professional. \n\nWould you like to explore using cast-in-situ tamping or pre-cast blocks for your installation method?"
+    },
+    {
+      "turn": 2,
+      "user": "Correction: I remeasured, it's 510 sq. ft. Still 10 inches.",
+      "assistant": "Thanks for the correction on the net wall area. With 510 square feet of net wall area at a 10-inch thickness, the computed hemp-lime material volume is 12.0 cubic meters. \n\nWould you like to explore using cast-in-situ tamping or pre-cast blocks for your installation method?"
+    },
+    {
+      "turn": 3,
+      "user": "What is hempcrete actually made of?",
+      "assistant": "Hempcrete, or hemp-lime, is made from industrial hemp hurds, a lime-based binder, and water. It is 0% THC and completely unrelated to recreational marijuana, serving as a breathable, mold-resistant, pest-resistant, fire-resistant, and insulating infill material. \n\nWhat installation method are you leaning toward for your backyard office, such as cast-in-situ tamping or pre-cast blocks?"
+    },
+    {
+      "turn": 4,
+      "user": "Does it really resist fire?",
+      "assistant": "Yes, hemp-lime material is fire-resistant because the lime binder coats the hemp hurds and does not readily burn, helping protect the wall assembly. \n\nWould you like to explore cast-in-situ tamping or pre-cast blocks as your installation method for the backyard office?"
+    },
+    {
+      "turn": 5,
+      "user": "Is it true it has no VOCs?",
+      "assistant": "Yes, hemp-lime is zero-VOC, which helps maintain indoor air quality. Because it is breathable and non-toxic, it naturally resists mold and pests while providing continuous insulation.\n\nAre you leaning toward using cast-in-situ tamping or pre-cast blocks for your backyard office installation?"
+    },
+    {
+      "turn": 6,
+      "user": "What about pests and mold?",
+      "assistant": "Hemp-lime is naturally resistant to both pests and mold because the mineral lime binder coats and mineralizes the hemp hurds, leaving no organic food source for pests and allowing moisture to vapor-diffuse safely through the breathable wall assembly rather than getting trapped.\n\nWhich installation method are you planning to use for your backyard office, such as cast-in-situ tamping or pre-cast blocks?"
+    },
+    {
+      "turn": 7,
+      "user": "How does the lime binder cure over time?",
+      "assistant": "The lime binder cures through a process called carbonation, where it absorbs carbon dioxide from the air over time to harden back into a stone-like state. For cast-in-situ material, forms can typically come off the next day, while the natural curing process before final plastering takes about three to six weeks depending on weather conditions. \n\nAre you planning to use cast-in-situ tamping or pre-cast blocks for your backyard office?"
+    },
+    {
+      "turn": 8,
+      "user": "Is it heavy compared to concrete?",
+      "assistant": "Hempcrete is significantly lighter than conventional concrete because it is a low-density composite of woody hemp hurds and lime binder rather than dense aggregate and cement. \n\nAre you planning to use cast-in-situ tamping or pre-cast blocks for your backyard office installation?"
+    },
+    {
+      "turn": 9,
+      "user": "Can I plaster over it directly?",
+      "assistant": "Yes, you can apply breathable lime-based plasters directly to hemp-lime walls once the material has sufficiently cured and dried, usually maintaining the vapor-open nature of the assembly. \n\nAre you planning to use cast-in-situ tamping or pre-cast blocks for your backyard office installation?"
+    },
+    {
+      "turn": 10,
+      "user": "What tools would I need for the install?",
+      "assistant": "While I do not have a complete tool checklist for your installation, casting hemp-lime typically involves formwork and hand-tampers for cast-in-situ work, or standard masonry tools and lime mortar if you are using pre-cast blocks. For specific structural, engineering, or permit decisions, it is best to consult a qualified local professional.\n\nHave you decided whether you prefer cast-in-situ tamping or pre-cast blocks for your backyard office?"
+    },
+    {
+      "turn": 11,
+      "user": "Can you remind me what volume we ended up with at the same 10-inch thickness?",
+      "assistant": "Based on your net wall area of 510 square feet and a 10-inch thickness, the computed hemp-lime volume is 12.0 cubic meters.\n\nWould you like to explore either cast-in-situ tamping or pre-cast blocks for installing this volume in your backyard office?"
+    }
+  ],
   "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 22,
+    "usage": {
+      "available": false
+    }
+  },
+  "reportedModel": {
     "provider": "gemini",
     "requested": "gemini-3.5-flash-lite"
   },
-  "runtimeErrors": [
+  "canonicalFinalState": {
+    "project_type": "backyard office",
+    "project_floor_area_sq_ft": null,
+    "wall_area_sq_ft": 510,
+    "wall_thickness_in": 10,
+    "install_method": null,
+    "existing_wall_type": null,
+    "user_priority": null,
+    "project_stage": null,
+    "jurisdiction": null,
+    "volume": 12,
+    "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+    "volumeStatus": "succeeded",
+    "livePricing": false,
+    "liveInventory": false
+  },
+  "deterministicComputations": {},
+  "recordObservations": [
     {
-      "code": "transport_failure",
-      "message": "Agenerateor turn failed 502: {\"error\":\"Gemini reply generation returned no result; benchmark fallback is disabled\",\"timing\":{\"elapsedMs\":28}}",
-      "beforeSubjectBehavior": true
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 420,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 9.9,
+          "exact_volume_m3": 9.91088
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
+    },
+    {
+      "fields": {
+        "capability": "compute_wall_volume",
+        "status": "succeeded",
+        "inputs": {
+          "wall_area_sq_ft": 510,
+          "wall_thickness_in": 10
+        },
+        "output": {
+          "volume_m3": 12,
+          "exact_volume_m3": 12.03464
+        }
+      }
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 201913
+  },
+  "modelCallCount": 22,
+  "tokenUsage": {
+    "available": false
+  },
+  "nativeTrace": {
+    "turns": [
+      {
+        "reply": "For your backyard office project with 420 square feet of net wall area at a 10-inch thickness, the computed hemp-lime material volume is 9.9 cubic meters. Keep in mind that hempcrete is a non-load-bearing infill material, so it requires a conventional structural frame like timber framing to carry loads. Additionally, final project-specific engineering, code adoption under the 2024 International Residential Code Appendix BL, and permit decisions should always be reviewed with a qualified local professional. \n\nWould you like to explore using cast-in-situ tamping or pre-cast blocks for your installation method?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 9.9,
+            "computed_volume_basis": "420 sq ft × (10 in / 12) × 0.0283168 = 9.91088 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 420,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 1,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 1502
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1200
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 9.9,
+            "volumeBasis": "420 sq ft × (10 in / 12) × 0.0283168 = 9.91088 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 9.9,
+            "exact_volume_m3": 9.91088
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [
+            "p01_project_type",
+            "p01_wall_area_sq_ft",
+            "p01_wall_thickness_in"
+          ],
+          "changedFieldIds": [
+            "p01_project_type",
+            "p01_wall_area_sq_ft",
+            "p01_wall_thickness_in"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2709
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Thanks for the correction on the net wall area. With 510 square feet of net wall area at a 10-inch thickness, the computed hemp-lime material volume is 12.0 cubic meters. \n\nWould you like to explore using cast-in-situ tamping or pre-cast blocks for your installation method?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 2,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 1013
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1018
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [
+            "p01_wall_area_sq_ft"
+          ],
+          "changedFieldIds": [
+            "p01_wall_area_sq_ft"
+          ],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2032
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Hempcrete, or hemp-lime, is made from industrial hemp hurds, a lime-based binder, and water. It is 0% THC and completely unrelated to recreational marijuana, serving as a breathable, mold-resistant, pest-resistant, fire-resistant, and insulating infill material. \n\nWhat installation method are you leaning toward for your backyard office, such as cast-in-situ tamping or pre-cast blocks?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 3,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 794
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1022
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1818
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Yes, hemp-lime material is fire-resistant because the lime binder coats the hemp hurds and does not readily burn, helping protect the wall assembly. \n\nWould you like to explore cast-in-situ tamping or pre-cast blocks as your installation method for the backyard office?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 4,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 719
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1054
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1775
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Yes, hemp-lime is zero-VOC, which helps maintain indoor air quality. Because it is breathable and non-toxic, it naturally resists mold and pests while providing continuous insulation.\n\nAre you leaning toward using cast-in-situ tamping or pre-cast blocks for your backyard office installation?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 5,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 715
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1030
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1747
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Hemp-lime is naturally resistant to both pests and mold because the mineral lime binder coats and mineralizes the hemp hurds, leaving no organic food source for pests and allowing moisture to vapor-diffuse safely through the breathable wall assembly rather than getting trapped.\n\nWhich installation method are you planning to use for your backyard office, such as cast-in-situ tamping or pre-cast blocks?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 6,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 807
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1033
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1842
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "The lime binder cures through a process called carbonation, where it absorbs carbon dioxide from the air over time to harden back into a stone-like state. For cast-in-situ material, forms can typically come off the next day, while the natural curing process before final plastering takes about three to six weeks depending on weather conditions. \n\nAre you planning to use cast-in-situ tamping or pre-cast blocks for your backyard office?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 7,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 976
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1122
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2100
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Hempcrete is significantly lighter than conventional concrete because it is a low-density composite of woody hemp hurds and lime binder rather than dense aggregate and cement. \n\nAre you planning to use cast-in-situ tamping or pre-cast blocks for your backyard office installation?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 8,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 750
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 941
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1693
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Yes, you can apply breathable lime-based plasters directly to hemp-lime walls once the material has sufficiently cured and dried, usually maintaining the vapor-open nature of the assembly. \n\nAre you planning to use cast-in-situ tamping or pre-cast blocks for your backyard office installation?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 9,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 877
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1105
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1983
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "While I do not have a complete tool checklist for your installation, casting hemp-lime typically involves formwork and hand-tampers for cast-in-situ work, or standard masonry tools and lime mortar if you are using pre-cast blocks. For specific structural, engineering, or permit decisions, it is best to consult a qualified local professional.\n\nHave you decided whether you prefer cast-in-situ tamping or pre-cast blocks for your backyard office?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 10,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 972
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 1124
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 2098
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      },
+      {
+        "reply": "Based on your net wall area of 510 square feet and a 10-inch thickness, the computed hemp-lime volume is 12.0 cubic meters.\n\nWould you like to explore either cast-in-situ tamping or pre-cast blocks for installing this volume in your backyard office?",
+        "state": {
+          "context": {
+            "computed_volume_status": "succeeded",
+            "live_pricing_available": false,
+            "live_inventory_available": false,
+            "computed_wall_volume_m3": 12,
+            "computed_volume_basis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place"
+          },
+          "fields": {
+            "p01_project_type": "backyard office",
+            "p01_wall_area_sq_ft": 510,
+            "p01_wall_thickness_in": 10
+          },
+          "summary": "",
+          "currentStageId": "p01_consult",
+          "turnCount": 11,
+          "completedActionIds": [],
+          "actionResults": {},
+          "completed": false
+        },
+        "stage": {
+          "id": "p01_consult",
+          "name": "Project consultation"
+        },
+        "provider": {
+          "mode": "gemini",
+          "requestedModel": "gemini-3.5-flash-lite",
+          "configuredResponseModel": "gemini-3.5-flash-lite",
+          "providerReportedModel": null,
+          "temperature": 0.35,
+          "maxOutputTokens": 700,
+          "thinking": null
+        },
+        "modelCalls": [
+          {
+            "purpose": "field_extraction",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0,
+            "maxOutputTokens": 300,
+            "elapsedMs": 854
+          },
+          {
+            "purpose": "reply",
+            "model": "gemini-3.5-flash-lite",
+            "temperature": 0.35,
+            "maxOutputTokens": 700,
+            "elapsedMs": 946
+          }
+        ],
+        "canonicalState": {
+          "fields": {
+            "project_type": "backyard office",
+            "project_floor_area_sq_ft": null,
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10,
+            "install_method": null,
+            "existing_wall_type": null,
+            "user_priority": null,
+            "project_stage": null,
+            "jurisdiction": null
+          },
+          "context": {
+            "volume": 12,
+            "volumeBasis": "510 sq ft × (10 in / 12) × 0.0283168 = 12.03464 m³; displayed to one decimal place",
+            "volumeStatus": "succeeded",
+            "livePricing": false,
+            "liveInventory": false
+          },
+          "currentStageId": "p01_consult",
+          "completed": false,
+          "completedActionIds": [],
+          "actionResults": {}
+        },
+        "knowledge": {
+          "mode": "compiled_prompt_injection",
+          "authorizedIds": [
+            "craig_product_knowledge"
+          ]
+        },
+        "applicationObservation": {
+          "capability": "compute_wall_volume",
+          "status": "succeeded",
+          "inputs": {
+            "wall_area_sq_ft": 510,
+            "wall_thickness_in": 10
+          },
+          "output": {
+            "volume_m3": 12,
+            "exact_volume_m3": 12.03464
+          }
+        },
+        "actionResults": [],
+        "confirmation": {
+          "messageConfirmed": false,
+          "actionWasAvailable": false
+        },
+        "benchmarkSetup": {
+          "requestedTerminalActionResult": null,
+          "outcomeUnknownSupported": false
+        },
+        "extraction": {
+          "deterministicFieldIds": [],
+          "aiFieldIds": [],
+          "changedFieldIds": [],
+          "aiAttempted": true,
+          "aiError": false,
+          "rejected": []
+        },
+        "transition": null,
+        "timing": {
+          "elapsedMs": 1802
+        },
+        "nativeTrace": {
+          "startStageId": "p01_consult",
+          "endStageId": "p01_consult",
+          "completed": false
+        }
+      }
+    ],
+    "outcomeUnknownLimitation": false
+  }
 }

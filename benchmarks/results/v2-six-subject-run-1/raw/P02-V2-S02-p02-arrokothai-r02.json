@@ -2,19 +2,1611 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p02",
   "implementationId": "p02-arrokothai",
+  "frameworkId": "provider-neutral-runtime",
   "scenarioId": "P02-V2-S02",
   "repeatId": "r02",
-  "conversation": [],
-  "requestedModel": {
-    "provider": "gemini",
-    "requested": "gemini-3.5-flash-lite"
-  },
-  "runtimeErrors": [
+  "conversation": [
     {
-      "code": "transport_failure",
-      "message": "live smoke failed; inspect /Users/rex-shih/Documents/Codex/projects/Agent_SDK/benchmarks/results/v2-six-subject-run-1/raw/native/P02-V2-S02-p02-arrokothai-r02.json",
-      "beforeSubjectBehavior": true
+      "turn": 1,
+      "user": "I need a 2-bedroom rental in TriBeCa under $18,000 a month starting October.",
+      "assistant": "We currently showcase properties for sale rather than rental listings, so we don't have active rental properties matching your criteria in TriBeCa. \n\nHowever, our team would be glad to assist you further with your search or discuss how we can help. Would you like to connect with a representative? If so, please share your name and phone number."
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 4,
+    "usage": {
+      "available": true,
+      "inputTokens": 7261,
+      "outputTokens": 359
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "intent": "rent",
+    "target_location": "TriBeCa",
+    "budget": 18000,
+    "bedrooms_needed": 2,
+    "timeline": "October"
+  },
+  "retrievalObservations": [
+    {
+      "queryId": "estate_service_policy",
+      "collection": "estate_service_policy",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 0,
+      "zeroMatch": true,
+      "fields": {}
+    },
+    {
+      "queryId": "estate_properties",
+      "collection": "estate_properties",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 0,
+      "zeroMatch": true,
+      "fields": {}
+    },
+    {
+      "queryId": "estate_service_policy",
+      "collection": "estate_service_policy",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 0,
+      "zeroMatch": true,
+      "fields": {}
+    }
+  ],
+  "recordObservations": [
+    {
+      "queryId": "estate_service_policy",
+      "collection": "estate_service_policy",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 0,
+      "zeroMatch": true,
+      "fields": {}
+    },
+    {
+      "queryId": "estate_properties",
+      "collection": "estate_properties",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 0,
+      "zeroMatch": true,
+      "fields": {}
+    },
+    {
+      "queryId": "estate_service_policy",
+      "collection": "estate_service_policy",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 0,
+      "zeroMatch": true,
+      "fields": {}
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "confirmationRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "completed",
+  "runtimeErrors": [],
+  "timing": {
+    "startedAt": "2026-08-22T16:37:08.365Z",
+    "completedAt": "2026-08-22T16:37:11.543Z",
+    "elapsedMs": 3178
+  },
+  "modelCallCount": 4,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 7261,
+    "outputTokens": 359,
+    "totalTokens": 7620
+  },
+  "nativeTrace": {
+    "schemaVersion": "benchmark-raw-run-v1",
+    "rebuildLabel": "benchmark-rebuild-v1",
+    "benchmarkApplicationId": "p02",
+    "implementationId": "p02-arrokothai",
+    "framework": {
+      "id": "arrokothai",
+      "name": "Agent_SDK",
+      "version": "0.37.0"
+    },
+    "scenarioRunId": "P02-V2-S02",
+    "timestamps": {
+      "startedAt": "2026-08-22T16:37:08.365Z",
+      "completedAt": "2026-08-22T16:37:11.543Z",
+      "elapsedMs": 3178
+    },
+    "conversation": [
+      {
+        "turn": 1,
+        "user": "I need a 2-bedroom rental in TriBeCa under $18,000 a month starting October.",
+        "assistant": "We currently showcase properties for sale rather than rental listings, so we don't have active rental properties matching your criteria in TriBeCa. \n\nHowever, our team would be glad to assist you further with your search or discuss how we can help. Would you like to connect with a representative? If so, please share your name and phone number.",
+        "stopReason": "completed",
+        "steps": 3,
+        "elapsedMs": 3178,
+        "metrics": {
+          "preflightModelCalls": 1,
+          "agentLoopModelCalls": 3,
+          "conversationSummaryModelCalls": 0,
+          "guideRetryModelCalls": 0,
+          "totalModelCalls": 4
+        },
+        "eventSeqs": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51
+        ]
+      }
+    ],
+    "model": {
+      "provider": "gemini",
+      "requested": "gemini-3.5-flash-lite",
+      "providerReported": "gemini-3.5-flash-lite",
+      "temperature": 0.35,
+      "maxOutputTokens": 700,
+      "thinking": null,
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 683,
+            "outputTokens": 141
+          },
+          "finishReason": "STOP",
+          "durationMs": 1037
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.072Z",
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 1946,
+            "outputTokens": 113
+          },
+          "finishReason": "toolUse"
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.715Z",
+          "purpose": "agent_loop:2",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 2263,
+            "outputTokens": 34
+          },
+          "finishReason": "toolUse"
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:37:11.542Z",
+          "purpose": "agent_loop:3",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 2369,
+            "outputTokens": 71
+          },
+          "finishReason": "endTurn"
+        }
+      ],
+      "callCount": 4,
+      "usage": {
+        "available": true,
+        "inputTokens": 7261,
+        "outputTokens": 359
+      }
+    },
+    "canonicalState": {
+      "intent": "rent",
+      "target_location": "TriBeCa",
+      "budget": 18000,
+      "bedrooms_needed": 2,
+      "timeline": "October"
+    },
+    "knowledge": {
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.073Z",
+          "request": {
+            "kind": "document_search",
+            "sourceId": "estate_service_policy",
+            "query": "rentals",
+            "topK": 3
+          },
+          "sourceId": "estate_service_policy",
+          "resultIds": [],
+          "scores": [],
+          "returnedCount": 0,
+          "result": {
+            "kind": "document_search",
+            "sourceId": "estate_service_policy",
+            "sourceTitle": "EstatePro company and service policy",
+            "query": "rentals",
+            "chunks": []
+          }
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.074Z",
+          "request": {
+            "kind": "record_query",
+            "sourceId": "estate_properties",
+            "filters": [
+              {
+                "field": "location",
+                "value": "TriBeCa",
+                "op": "contains"
+              },
+              {
+                "op": "gte",
+                "field": "beds",
+                "value": 2
+              },
+              {
+                "field": "price",
+                "value": 18000,
+                "op": "lte"
+              }
+            ],
+            "limit": 6
+          },
+          "sourceId": "estate_properties",
+          "resultIds": [],
+          "returnedCount": 0,
+          "totalMatched": 0,
+          "result": {
+            "kind": "record_query",
+            "sourceId": "estate_properties",
+            "sourceTitle": "EstatePro showcased sale properties",
+            "query": {
+              "filters": [
+                {
+                  "field": "location",
+                  "value": "TriBeCa",
+                  "op": "contains"
+                },
+                {
+                  "op": "gte",
+                  "field": "beds",
+                  "value": 2
+                },
+                {
+                  "field": "price",
+                  "value": 18000,
+                  "op": "lte"
+                }
+              ],
+              "sort": [],
+              "limit": 6
+            },
+            "matches": [],
+            "totalMatched": 0,
+            "totalRecords": 6
+          }
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.716Z",
+          "request": {
+            "kind": "document_search",
+            "sourceId": "estate_service_policy",
+            "query": "rent or sell handling",
+            "topK": 3
+          },
+          "sourceId": "estate_service_policy",
+          "resultIds": [],
+          "scores": [],
+          "returnedCount": 0,
+          "result": {
+            "kind": "document_search",
+            "sourceId": "estate_service_policy",
+            "sourceTitle": "EstatePro company and service policy",
+            "query": "rent or sell handling",
+            "chunks": []
+          }
+        }
+      ],
+      "rejectedCalls": []
+    },
+    "actions": {
+      "requests": [],
+      "confirmationsRequested": [],
+      "confirmationsResolved": [],
+      "executionStarted": [],
+      "succeeded": [],
+      "failed": [],
+      "outcomeUnknown": [],
+      "dispatchCount": 0
+    },
+    "stopReason": "completed",
+    "runtimeErrors": [],
+    "nativeTrace": {
+      "eventStream": [
+        {
+          "id": "evt_mt4lpl72abdji332",
+          "turn": 1,
+          "at": "2026-08-22T16:37:08.366Z",
+          "type": "UserMessageReceived",
+          "payload": {
+            "text": "I need a 2-bedroom rental in TriBeCa under $18,000 a month starting October."
+          },
+          "seq": 1,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzvhav7ep1s",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "plan",
+            "providerId": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 683,
+              "outputTokens": 141
+            },
+            "finishReason": "STOP",
+            "durationMs": 1037
+          },
+          "seq": 2,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzv3qw50b40",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "TurnPlanCreated",
+          "payload": {
+            "strategy": "llm",
+            "resolvedBy": "llm",
+            "plan": {
+              "memoryProposals": [
+                {
+                  "key": "intent",
+                  "value": "rent"
+                },
+                {
+                  "key": "target_location",
+                  "value": "TriBeCa"
+                },
+                {
+                  "key": "budget",
+                  "value": 18000
+                },
+                {
+                  "key": "bedrooms_needed",
+                  "value": 2
+                },
+                {
+                  "key": "timeline",
+                  "value": "October"
+                }
+              ],
+              "workingNotes": [],
+              "signals": [],
+              "retrievalRequests": []
+            }
+          },
+          "seq": 3,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzvpc163zd9",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "intent",
+            "value": "rent",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 4,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzvac2818ob",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "intent",
+            "value": "rent",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lplzvpc163zd9"
+          },
+          "seq": 5,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzv95yqnzqs",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "target_location",
+            "value": "TriBeCa",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 6,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzvtky3mtnl",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "target_location",
+            "value": "TriBeCa",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lplzv95yqnzqs"
+          },
+          "seq": 7,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzv7dylakr3",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "budget",
+            "value": 18000,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 8,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzvf36oat1m",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "budget",
+            "value": 18000,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lplzv7dylakr3"
+          },
+          "seq": 9,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzvu4p0mxb0",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "bedrooms_needed",
+            "value": 2,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 10,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzv6e2573x4",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "bedrooms_needed",
+            "value": 2,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lplzvu4p0mxb0"
+          },
+          "seq": 11,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzvj90avp60",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "timeline",
+            "value": "October",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 12,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzvhzmwn087",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.403Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "timeline",
+            "value": "October",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lplzvj90avp60"
+          },
+          "seq": 13,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lplzyleeqps75",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.406Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_invocation"
+          },
+          "seq": 14,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpm00awd3cbu7",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.408Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 1
+          },
+          "seq": 15,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpm00zcwanznd",
+          "turn": 1,
+          "at": "2026-08-22T16:37:09.408Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_record_query_estate_properties_15bc1f",
+              "knowledge_record_query_estate_rooms_dd3ccb",
+              "knowledge_document_search_estate_service_policy_d064c4",
+              "send_lead_to_team"
+            ]
+          },
+          "seq": 16,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmigco3av836",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.072Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 1
+          },
+          "seq": 17,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmigpryt9401",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.072Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:1",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 1946,
+              "outputTokens": 113
+            },
+            "finishReason": "toolUse"
+          },
+          "seq": 18,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmigi8ipc6jy",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.072Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4"
+          },
+          "seq": 19,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmig87ilrwq2",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.072Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4"
+          },
+          "seq": 20,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmigcuou3opz",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.072Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "input": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "query": "rentals"
+            }
+          },
+          "seq": 21,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmih1ugq1co2",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.073Z",
+          "type": "KnowledgeRetrieved",
+          "payload": {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "query": "rentals",
+              "topK": 3
+            },
+            "sourceId": "estate_service_policy",
+            "resultIds": [],
+            "scores": [],
+            "returnedCount": 0,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "sourceTitle": "EstatePro company and service policy",
+              "query": "rentals",
+              "chunks": []
+            }
+          },
+          "seq": 22,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmihewuckdam",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.073Z",
+          "type": "DelegationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "outcome": "completed",
+            "summary": {
+              "returnedCount": 0,
+              "resultIds": []
+            }
+          },
+          "seq": 23,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmihjjx5xc9t",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.073Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "detail": {
+              "kind": "proceed"
+            }
+          },
+          "seq": 24,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmiifqji8pkx",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.074Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f"
+          },
+          "seq": 25,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmiifbdcgkug",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.074Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 1,
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f"
+          },
+          "seq": 26,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmii9633cil3",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.074Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+            "input": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "filters": [
+                {
+                  "field": "location",
+                  "value": "TriBeCa",
+                  "op": "contains"
+                },
+                {
+                  "op": "gte",
+                  "field": "beds",
+                  "value": 2
+                },
+                {
+                  "field": "price",
+                  "value": 18000,
+                  "op": "lte"
+                }
+              ]
+            }
+          },
+          "seq": 27,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmiiwkk1x1nn",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.074Z",
+          "type": "KnowledgeRetrieved",
+          "payload": {
+            "request": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "filters": [
+                {
+                  "field": "location",
+                  "value": "TriBeCa",
+                  "op": "contains"
+                },
+                {
+                  "op": "gte",
+                  "field": "beds",
+                  "value": 2
+                },
+                {
+                  "field": "price",
+                  "value": 18000,
+                  "op": "lte"
+                }
+              ],
+              "limit": 6
+            },
+            "sourceId": "estate_properties",
+            "resultIds": [],
+            "returnedCount": 0,
+            "totalMatched": 0,
+            "result": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "sourceTitle": "EstatePro showcased sale properties",
+              "query": {
+                "filters": [
+                  {
+                    "field": "location",
+                    "value": "TriBeCa",
+                    "op": "contains"
+                  },
+                  {
+                    "op": "gte",
+                    "field": "beds",
+                    "value": 2
+                  },
+                  {
+                    "field": "price",
+                    "value": 18000,
+                    "op": "lte"
+                  }
+                ],
+                "sort": [],
+                "limit": 6
+              },
+              "matches": [],
+              "totalMatched": 0,
+              "totalRecords": 6
+            }
+          },
+          "seq": 28,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmiibupuc2mh",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.074Z",
+          "type": "DelegationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+            "outcome": "completed",
+            "summary": {
+              "returnedCount": 0,
+              "totalMatched": 0,
+              "resultIds": []
+            }
+          },
+          "seq": 29,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmijohmbpnj4",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.074Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 1,
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+            "detail": {
+              "kind": "proceed"
+            }
+          },
+          "seq": 30,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmij58383yzv",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.075Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "detail": {
+              "mutationVersion": 5,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 31,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmijzy1f0wnt",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.075Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+            "detail": {
+              "mutationVersion": 5,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 32,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmij2u2okeb2",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.075Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 2
+          },
+          "seq": 33,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpmijg33aztp6",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.075Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_record_query_estate_properties_15bc1f",
+              "knowledge_record_query_estate_rooms_dd3ccb",
+              "knowledge_document_search_estate_service_policy_d064c4",
+              "send_lead_to_team"
+            ]
+          },
+          "seq": 34,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0b1opnfihe",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.715Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 2
+          },
+          "seq": 35,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0bqqd7h3fi",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.715Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:2",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 2263,
+              "outputTokens": 34
+            },
+            "finishReason": "toolUse"
+          },
+          "seq": 36,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0bfqjgwdb0",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.715Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 2,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4"
+          },
+          "seq": 37,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0bld8291jw",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.715Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 2,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4"
+          },
+          "seq": 38,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0bzbx4lr8w",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.715Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "input": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "query": "rent or sell handling"
+            }
+          },
+          "seq": 39,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0ckjmojcdk",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.716Z",
+          "type": "KnowledgeRetrieved",
+          "payload": {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "query": "rent or sell handling",
+              "topK": 3
+            },
+            "sourceId": "estate_service_policy",
+            "resultIds": [],
+            "scores": [],
+            "returnedCount": 0,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "sourceTitle": "EstatePro company and service policy",
+              "query": "rent or sell handling",
+              "chunks": []
+            }
+          },
+          "seq": 40,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0cva9i19mj",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.716Z",
+          "type": "DelegationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "outcome": "completed",
+            "summary": {
+              "returnedCount": 0,
+              "resultIds": []
+            }
+          },
+          "seq": 41,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0ctfngg1i9",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.716Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 2,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "detail": {
+              "kind": "proceed"
+            }
+          },
+          "seq": 42,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0c3hlit3yo",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.716Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 2,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "detail": {
+              "mutationVersion": 7,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 43,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0d3zs64z1m",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.717Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 3
+          },
+          "seq": 44,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpn0dvzlukudp",
+          "turn": 1,
+          "at": "2026-08-22T16:37:10.717Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 3,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_record_query_estate_properties_15bc1f",
+              "knowledge_record_query_estate_rooms_dd3ccb",
+              "knowledge_document_search_estate_service_policy_d064c4",
+              "send_lead_to_team"
+            ]
+          },
+          "seq": 45,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpnnal5rnyafd",
+          "turn": 1,
+          "at": "2026-08-22T16:37:11.542Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 3
+          },
+          "seq": 46,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpnnapchgyftg",
+          "turn": 1,
+          "at": "2026-08-22T16:37:11.542Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:3",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 2369,
+              "outputTokens": 71
+            },
+            "finishReason": "endTurn"
+          },
+          "seq": 47,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpnnah32iqili",
+          "turn": 1,
+          "at": "2026-08-22T16:37:11.542Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_invocation",
+            "detail": {
+              "mutationVersion": 7,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 48,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpnna8gbd0juh",
+          "turn": 1,
+          "at": "2026-08-22T16:37:11.542Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "execution_terminated",
+            "detail": {
+              "stopReason": "end_turn"
+            }
+          },
+          "seq": 49,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpnna43z8dg9n",
+          "turn": 1,
+          "at": "2026-08-22T16:37:11.542Z",
+          "type": "AgentIterationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 3,
+            "requested": 3,
+            "completed": 3,
+            "rejected": 0,
+            "stopReason": "completed"
+          },
+          "seq": 50,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        },
+        {
+          "id": "evt_mt4lpnna4fmzeahv",
+          "turn": 1,
+          "at": "2026-08-22T16:37:11.542Z",
+          "type": "AssistantMessageEmitted",
+          "payload": {
+            "text": "We currently showcase properties for sale rather than rental listings, so we don't have active rental properties matching your criteria in TriBeCa. \n\nHowever, our team would be glad to assist you further with your search or discuss how we can help. Would you like to connect with a representative? If so, please share your name and phone number.",
+            "stopReason": "completed"
+          },
+          "seq": 51,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416628365"
+        }
+      ],
+      "finalState": {
+        "sessionId": "benchmark-rebuild-v1-p02-1787416628365",
+        "agentId": "benchmark-rebuild-v1-p02-arrokothai",
+        "agentVersion": 1,
+        "turn": 1,
+        "lastSeq": 51,
+        "memory": {
+          "intent": {
+            "key": "intent",
+            "value": "rent",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lplzvac2818ob",
+            "at": "2026-08-22T16:37:09.403Z"
+          },
+          "target_location": {
+            "key": "target_location",
+            "value": "TriBeCa",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lplzvtky3mtnl",
+            "at": "2026-08-22T16:37:09.403Z"
+          },
+          "budget": {
+            "key": "budget",
+            "value": 18000,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lplzvf36oat1m",
+            "at": "2026-08-22T16:37:09.403Z"
+          },
+          "bedrooms_needed": {
+            "key": "bedrooms_needed",
+            "value": 2,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lplzv6e2573x4",
+            "at": "2026-08-22T16:37:09.403Z"
+          },
+          "timeline": {
+            "key": "timeline",
+            "value": "October",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lpl72abdji332"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lplzvhzmwn087",
+            "at": "2026-08-22T16:37:09.403Z"
+          }
+        },
+        "workingNotes": [],
+        "hostContext": {},
+        "phaseId": null,
+        "pendingAction": null,
+        "ledger": {},
+        "transcript": [
+          {
+            "role": "user",
+            "text": "I need a 2-bedroom rental in TriBeCa under $18,000 a month starting October.",
+            "turn": 1,
+            "at": "2026-08-22T16:37:08.366Z"
+          },
+          {
+            "role": "assistant",
+            "text": "We currently showcase properties for sale rather than rental listings, so we don't have active rental properties matching your criteria in TriBeCa. \n\nHowever, our team would be glad to assist you further with your search or discuss how we can help. Would you like to connect with a representative? If so, please share your name and phone number.",
+            "turn": 1,
+            "at": "2026-08-22T16:37:11.542Z"
+          }
+        ],
+        "turnToolResults": [],
+        "turnSignals": [],
+        "turnPlan": {
+          "memoryProposals": [
+            {
+              "key": "intent",
+              "value": "rent"
+            },
+            {
+              "key": "target_location",
+              "value": "TriBeCa"
+            },
+            {
+              "key": "budget",
+              "value": 18000
+            },
+            {
+              "key": "bedrooms_needed",
+              "value": 2
+            },
+            {
+              "key": "timeline",
+              "value": "October"
+            }
+          ],
+          "workingNotes": [],
+          "signals": [],
+          "retrievalRequests": []
+        },
+        "turnRetrievals": [
+          {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "query": "rentals",
+              "topK": 3
+            },
+            "sourceId": "estate_service_policy",
+            "resultIds": [],
+            "scores": [],
+            "returnedCount": 0,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "sourceTitle": "EstatePro company and service policy",
+              "query": "rentals",
+              "chunks": []
+            }
+          },
+          {
+            "request": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "filters": [
+                {
+                  "field": "location",
+                  "value": "TriBeCa",
+                  "op": "contains"
+                },
+                {
+                  "op": "gte",
+                  "field": "beds",
+                  "value": 2
+                },
+                {
+                  "field": "price",
+                  "value": 18000,
+                  "op": "lte"
+                }
+              ],
+              "limit": 6
+            },
+            "sourceId": "estate_properties",
+            "resultIds": [],
+            "returnedCount": 0,
+            "totalMatched": 0,
+            "result": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "sourceTitle": "EstatePro showcased sale properties",
+              "query": {
+                "filters": [
+                  {
+                    "field": "location",
+                    "value": "TriBeCa",
+                    "op": "contains"
+                  },
+                  {
+                    "op": "gte",
+                    "field": "beds",
+                    "value": 2
+                  },
+                  {
+                    "field": "price",
+                    "value": 18000,
+                    "op": "lte"
+                  }
+                ],
+                "sort": [],
+                "limit": 6
+              },
+              "matches": [],
+              "totalMatched": 0,
+              "totalRecords": 6
+            }
+          },
+          {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "query": "rent or sell handling",
+              "topK": 3
+            },
+            "sourceId": "estate_service_policy",
+            "resultIds": [],
+            "scores": [],
+            "returnedCount": 0,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "sourceTitle": "EstatePro company and service policy",
+              "query": "rent or sell handling",
+              "chunks": []
+            }
+          }
+        ],
+        "allToolResults": [],
+        "unresolvedExternalExecution": null,
+        "status": "active",
+        "createdAt": "2026-08-22T16:37:08.365Z",
+        "updatedAt": "2026-08-22T16:37:11.542Z"
+      }
+    }
+  }
 }

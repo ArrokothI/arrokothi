@@ -2,19 +2,624 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p01",
   "implementationId": "p01-arrokothai",
+  "frameworkId": "provider-neutral-runtime",
   "scenarioId": "P01-V2-S20",
   "repeatId": "r03",
-  "conversation": [],
-  "requestedModel": {
-    "provider": "gemini",
-    "requested": "gemini-3.5-flash-lite"
-  },
-  "runtimeErrors": [
+  "conversation": [
     {
-      "code": "transport_failure",
-      "message": "live smoke failed; inspect /Users/rex-shih/Documents/Codex/projects/Agent_SDK/benchmarks/results/v2-six-subject-run-1/raw/native/P01-V2-S20-p01-arrokothai-r03.json",
-      "beforeSubjectBehavior": true
+      "turn": 1,
+      "user": "My wall area is -200 sq. ft. and I want a zero-inch hempcrete wall. What's the volume?",
+      "assistant": "It looks like those numbers might be placeholders or typos—wall areas and thicknesses need to be positive values greater than zero (for example, a 200 sq. ft. wall that is 12 inches thick). \n\nWould you like to try running the calculation again with your actual positive wall dimensions in square feet and inches?"
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 3,
+    "usage": {
+      "available": true,
+      "inputTokens": 1687,
+      "outputTokens": 157
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {},
+  "retrievalObservations": [],
+  "recordObservations": [],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [
+    {
+      "turn": 1,
+      "actionName": "compute_wall_volume",
+      "args": {
+        "wall_area_sq_ft": -200,
+        "wall_thickness_in": 0
+      },
+      "effect": "read",
+      "dispatched": false
+    }
+  ],
+  "confirmationRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "completed",
+  "runtimeErrors": [],
+  "timing": {
+    "startedAt": "2026-08-22T16:35:12.984Z",
+    "completedAt": "2026-08-22T16:35:15.274Z",
+    "elapsedMs": 2291
+  },
+  "modelCallCount": 3,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 1687,
+    "outputTokens": 157,
+    "totalTokens": 1844
+  },
+  "nativeTrace": {
+    "schemaVersion": "benchmark-raw-run-v1",
+    "rebuildLabel": "benchmark-rebuild-v1",
+    "benchmarkApplicationId": "p01",
+    "implementationId": "p01-arrokothai",
+    "framework": {
+      "id": "arrokothai",
+      "name": "Agent_SDK",
+      "version": "0.37.0"
+    },
+    "scenarioRunId": "P01-V2-S20",
+    "timestamps": {
+      "startedAt": "2026-08-22T16:35:12.984Z",
+      "completedAt": "2026-08-22T16:35:15.274Z",
+      "elapsedMs": 2291
+    },
+    "conversation": [
+      {
+        "turn": 1,
+        "user": "My wall area is -200 sq. ft. and I want a zero-inch hempcrete wall. What's the volume?",
+        "assistant": "It looks like those numbers might be placeholders or typos—wall areas and thicknesses need to be positive values greater than zero (for example, a 200 sq. ft. wall that is 12 inches thick). \n\nWould you like to try running the calculation again with your actual positive wall dimensions in square feet and inches?",
+        "stopReason": "completed",
+        "steps": 2,
+        "elapsedMs": 2290,
+        "metrics": {
+          "preflightModelCalls": 1,
+          "agentLoopModelCalls": 2,
+          "conversationSummaryModelCalls": 0,
+          "guideRetryModelCalls": 0,
+          "totalModelCalls": 3
+        },
+        "eventSeqs": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ]
+      }
+    ],
+    "model": {
+      "provider": "gemini",
+      "requested": "gemini-3.5-flash-lite",
+      "providerReported": "gemini-3.5-flash-lite",
+      "temperature": 0.35,
+      "maxOutputTokens": 700,
+      "thinking": null,
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:35:13.955Z",
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 519,
+            "outputTokens": 57
+          },
+          "finishReason": "STOP",
+          "durationMs": 970
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.560Z",
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 534,
+            "outputTokens": 32
+          },
+          "finishReason": "toolUse"
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:35:15.274Z",
+          "purpose": "agent_loop:2",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 634,
+            "outputTokens": 68
+          },
+          "finishReason": "endTurn"
+        }
+      ],
+      "callCount": 3,
+      "usage": {
+        "available": true,
+        "inputTokens": 1687,
+        "outputTokens": 157
+      }
+    },
+    "canonicalState": {},
+    "knowledge": {
+      "calls": [],
+      "rejectedCalls": []
+    },
+    "actions": {
+      "requests": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.561Z",
+          "requestId": "act_mt4ln5dttzoefs0n",
+          "toolName": "compute_wall_volume",
+          "args": {
+            "wall_area_sq_ft": -200,
+            "wall_thickness_in": 0
+          },
+          "requestedBy": "model"
+        }
+      ],
+      "confirmationsRequested": [],
+      "confirmationsResolved": [],
+      "executionStarted": [],
+      "succeeded": [],
+      "failed": [],
+      "outcomeUnknown": [],
+      "dispatchCount": 0
+    },
+    "stopReason": "completed",
+    "runtimeErrors": [],
+    "nativeTrace": {
+      "eventStream": [
+        {
+          "id": "evt_mt4ln460xhezzo8w",
+          "turn": 1,
+          "at": "2026-08-22T16:35:12.984Z",
+          "type": "UserMessageReceived",
+          "payload": {
+            "text": "My wall area is -200 sq. ft. and I want a zero-inch hempcrete wall. What's the volume?"
+          },
+          "seq": 1,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln4x0hz21fwoq",
+          "turn": 1,
+          "at": "2026-08-22T16:35:13.955Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "plan",
+            "providerId": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 519,
+              "outputTokens": 57
+            },
+            "finishReason": "STOP",
+            "durationMs": 970
+          },
+          "seq": 2,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln4x06an8fwh3",
+          "turn": 1,
+          "at": "2026-08-22T16:35:13.956Z",
+          "type": "TurnPlanCreated",
+          "payload": {
+            "strategy": "llm",
+            "resolvedBy": "llm",
+            "plan": {
+              "memoryProposals": [],
+              "workingNotes": [],
+              "signals": [],
+              "retrievalRequests": []
+            }
+          },
+          "seq": 3,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln4x2fwkwdu2l",
+          "turn": 1,
+          "at": "2026-08-22T16:35:13.958Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_invocation"
+          },
+          "seq": 4,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln4x3686vgz3c",
+          "turn": 1,
+          "at": "2026-08-22T16:35:13.959Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 1
+          },
+          "seq": 5,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln4x3hz5ddstv",
+          "turn": 1,
+          "at": "2026-08-22T16:35:13.959Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 6,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dsdnuaz8hb",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.560Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 1
+          },
+          "seq": 7,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dsohujym0i",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.560Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:1",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 534,
+              "outputTokens": 32
+            },
+            "finishReason": "toolUse"
+          },
+          "seq": 8,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dtziopbyij",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.561Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume"
+          },
+          "seq": 9,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dttmkyjxec",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.561Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume"
+          },
+          "seq": 10,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dt6yzmawuv",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.561Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "compute_wall_volume",
+            "input": {
+              "wall_area_sq_ft": -200,
+              "wall_thickness_in": 0
+            }
+          },
+          "seq": 11,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dtu0eeafxy",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.561Z",
+          "type": "ToolRequested",
+          "payload": {
+            "requestId": "act_mt4ln5dttzoefs0n",
+            "toolName": "compute_wall_volume",
+            "args": {
+              "wall_area_sq_ft": -200,
+              "wall_thickness_in": 0
+            },
+            "requestedBy": "model"
+          },
+          "seq": 12,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5du7i0kbxgs",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.562Z",
+          "type": "ToolCallRejected",
+          "payload": {
+            "requestId": "act_mt4ln5dttzoefs0n",
+            "toolName": "compute_wall_volume",
+            "reason": "invalid_arguments",
+            "message": "arguments failed validation: wall_area_sq_ft: expected >= 0.01, received -200; wall_thickness_in: expected >= 0.01, received 0",
+            "args": {
+              "wall_area_sq_ft": -200,
+              "wall_thickness_in": 0
+            }
+          },
+          "seq": 13,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dulkk6tda1",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.562Z",
+          "type": "DelegationRejected",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "compute_wall_volume",
+            "code": "invalid_arguments",
+            "reason": "arguments failed validation: wall_area_sq_ft: expected >= 0.01, received -200; wall_thickness_in: expected >= 0.01, received 0"
+          },
+          "seq": 14,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dukrdwxbs9",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.562Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume",
+            "detail": {
+              "kind": "deny",
+              "code": "invalid_arguments",
+              "reason": "arguments failed validation: wall_area_sq_ft: expected >= 0.01, received -200; wall_thickness_in: expected >= 0.01, received 0"
+            }
+          },
+          "seq": 15,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dutt1agfte",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.562Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume",
+            "detail": {
+              "mutationVersion": 2,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 16,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dw8503dvdg",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.564Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 2
+          },
+          "seq": 17,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5dwq00agcvo",
+          "turn": 1,
+          "at": "2026-08-22T16:35:14.564Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 18,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5xmboxouw1q",
+          "turn": 1,
+          "at": "2026-08-22T16:35:15.274Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 2
+          },
+          "seq": 19,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5xmzi828g9t",
+          "turn": 1,
+          "at": "2026-08-22T16:35:15.274Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:2",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 634,
+              "outputTokens": 68
+            },
+            "finishReason": "endTurn"
+          },
+          "seq": 20,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5xmt1upfggq",
+          "turn": 1,
+          "at": "2026-08-22T16:35:15.274Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_invocation",
+            "detail": {
+              "mutationVersion": 2,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 21,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5xmup6inmk2",
+          "turn": 1,
+          "at": "2026-08-22T16:35:15.274Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "execution_terminated",
+            "detail": {
+              "stopReason": "end_turn"
+            }
+          },
+          "seq": 22,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5xm35nqc9x2",
+          "turn": 1,
+          "at": "2026-08-22T16:35:15.274Z",
+          "type": "AgentIterationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "requested": 1,
+            "completed": 0,
+            "rejected": 1,
+            "stopReason": "completed"
+          },
+          "seq": 23,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        },
+        {
+          "id": "evt_mt4ln5xmgbrp3pjq",
+          "turn": 1,
+          "at": "2026-08-22T16:35:15.274Z",
+          "type": "AssistantMessageEmitted",
+          "payload": {
+            "text": "It looks like those numbers might be placeholders or typos—wall areas and thicknesses need to be positive values greater than zero (for example, a 200 sq. ft. wall that is 12 inches thick). \n\nWould you like to try running the calculation again with your actual positive wall dimensions in square feet and inches?",
+            "stopReason": "completed"
+          },
+          "seq": 24,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416512984"
+        }
+      ],
+      "finalState": {
+        "sessionId": "benchmark-rebuild-v1-p01-1787416512984",
+        "agentId": "benchmark-rebuild-v1-p01-arrokothai",
+        "agentVersion": 1,
+        "turn": 1,
+        "lastSeq": 24,
+        "memory": {},
+        "workingNotes": [],
+        "hostContext": {},
+        "phaseId": null,
+        "pendingAction": null,
+        "ledger": {},
+        "transcript": [
+          {
+            "role": "user",
+            "text": "My wall area is -200 sq. ft. and I want a zero-inch hempcrete wall. What's the volume?",
+            "turn": 1,
+            "at": "2026-08-22T16:35:12.984Z"
+          },
+          {
+            "role": "assistant",
+            "text": "It looks like those numbers might be placeholders or typos—wall areas and thicknesses need to be positive values greater than zero (for example, a 200 sq. ft. wall that is 12 inches thick). \n\nWould you like to try running the calculation again with your actual positive wall dimensions in square feet and inches?",
+            "turn": 1,
+            "at": "2026-08-22T16:35:15.274Z"
+          }
+        ],
+        "turnToolResults": [],
+        "turnSignals": [],
+        "turnPlan": {
+          "memoryProposals": [],
+          "workingNotes": [],
+          "signals": [],
+          "retrievalRequests": []
+        },
+        "turnRetrievals": [],
+        "allToolResults": [],
+        "unresolvedExternalExecution": null,
+        "status": "active",
+        "createdAt": "2026-08-22T16:35:12.984Z",
+        "updatedAt": "2026-08-22T16:35:15.274Z"
+      }
+    }
+  }
 }

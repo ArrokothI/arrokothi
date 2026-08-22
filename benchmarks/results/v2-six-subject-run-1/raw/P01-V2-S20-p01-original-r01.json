@@ -2,19 +2,50 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p01",
   "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
   "scenarioId": "P01-V2-S20",
   "repeatId": "r01",
-  "conversation": [],
-  "requestedModel": {
-    "provider": "gemini",
-    "requested": "gemini-3.5-flash-lite"
-  },
-  "runtimeErrors": [
+  "conversation": [
     {
-      "code": "transport_failure",
-      "message": "Gemini subject request failed: 429 {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\nPlease retry in 59.183760962s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",",
-      "beforeSubjectBehavior": true
+      "turn": 1,
+      "user": "My wall area is -200 sq. ft. and I want a zero-inch hempcrete wall. What's the volume?",
+      "assistant": "A zero-inch thick wall won't give you any room for insulation, so we'll need a bit of thickness—usually 8 to 12 inches—to get all those wonderful thermal and moisture-regulating benefits! Just to clarify, are you looking to insulate a tiny backyard shed, or perhaps tackle an interior bedroom retrofit instead?"
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 537,
+      "outputTokens": 70,
+      "totalTokens": 607
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {
+    "wall_area_sq_ft": 200
+  },
+  "deterministicComputations": {},
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 977
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 537,
+    "outputTokens": 70,
+    "totalTokens": 607
+  }
 }

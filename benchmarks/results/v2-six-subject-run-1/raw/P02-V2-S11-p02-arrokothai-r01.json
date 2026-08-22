@@ -2,19 +2,1076 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p02",
   "implementationId": "p02-arrokothai",
+  "frameworkId": "provider-neutral-runtime",
   "scenarioId": "P02-V2-S11",
   "repeatId": "r01",
-  "conversation": [],
-  "requestedModel": {
-    "provider": "gemini",
-    "requested": "gemini-3.5-flash-lite"
-  },
-  "runtimeErrors": [
+  "conversation": [
     {
-      "code": "transport_failure",
-      "message": "live smoke failed; inspect /Users/rex-shih/Documents/Codex/projects/Agent_SDK/benchmarks/results/v2-six-subject-run-1/raw/native/P02-V2-S11-p02-arrokothai-r01.json",
-      "beforeSubjectBehavior": true
+      "turn": 1,
+      "user": "I want a 5-bedroom Manhattan property under $10M.",
+      "assistant": "We currently don't have any 5-bedroom properties in Manhattan under $10M in our showcased listings. \n\nWould you like me to connect you with our team so they can keep an eye out for matching listings or help you explore other options?"
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 3,
+    "usage": {
+      "available": true,
+      "inputTokens": 4714,
+      "outputTokens": 246
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "intent": "buy",
+    "target_location": "Manhattan",
+    "budget": 10000000,
+    "bedrooms_needed": 5
+  },
+  "retrievalObservations": [
+    {
+      "queryId": "estate_properties",
+      "collection": "estate_properties",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 0,
+      "zeroMatch": true,
+      "fields": {}
+    }
+  ],
+  "recordObservations": [
+    {
+      "queryId": "estate_properties",
+      "collection": "estate_properties",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 0,
+      "zeroMatch": true,
+      "fields": {}
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "confirmationRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "completed",
+  "runtimeErrors": [],
+  "timing": {
+    "startedAt": "2026-08-22T16:54:38.915Z",
+    "completedAt": "2026-08-22T16:54:41.314Z",
+    "elapsedMs": 2399
+  },
+  "modelCallCount": 3,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 4714,
+    "outputTokens": 246,
+    "totalTokens": 4960
+  },
+  "nativeTrace": {
+    "schemaVersion": "benchmark-raw-run-v1",
+    "rebuildLabel": "benchmark-rebuild-v1",
+    "benchmarkApplicationId": "p02",
+    "implementationId": "p02-arrokothai",
+    "framework": {
+      "id": "arrokothai",
+      "name": "Agent_SDK",
+      "version": "0.37.0"
+    },
+    "scenarioRunId": "P02-V2-S11",
+    "timestamps": {
+      "startedAt": "2026-08-22T16:54:38.915Z",
+      "completedAt": "2026-08-22T16:54:41.314Z",
+      "elapsedMs": 2399
+    },
+    "conversation": [
+      {
+        "turn": 1,
+        "user": "I want a 5-bedroom Manhattan property under $10M.",
+        "assistant": "We currently don't have any 5-bedroom properties in Manhattan under $10M in our showcased listings. \n\nWould you like me to connect you with our team so they can keep an eye out for matching listings or help you explore other options?",
+        "stopReason": "completed",
+        "steps": 2,
+        "elapsedMs": 2399,
+        "metrics": {
+          "preflightModelCalls": 1,
+          "agentLoopModelCalls": 2,
+          "conversationSummaryModelCalls": 0,
+          "guideRetryModelCalls": 0,
+          "totalModelCalls": 3
+        },
+        "eventSeqs": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    ],
+    "model": {
+      "provider": "gemini",
+      "requested": "gemini-3.5-flash-lite",
+      "providerReported": "gemini-3.5-flash-lite",
+      "temperature": 0.35,
+      "maxOutputTokens": 700,
+      "thinking": null,
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.812Z",
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 673,
+            "outputTokens": 110
+          },
+          "finishReason": "STOP",
+          "durationMs": 895
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.611Z",
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 1910,
+            "outputTokens": 83
+          },
+          "finishReason": "toolUse"
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:54:41.313Z",
+          "purpose": "agent_loop:2",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 2131,
+            "outputTokens": 53
+          },
+          "finishReason": "endTurn"
+        }
+      ],
+      "callCount": 3,
+      "usage": {
+        "available": true,
+        "inputTokens": 4714,
+        "outputTokens": 246
+      }
+    },
+    "canonicalState": {
+      "intent": "buy",
+      "target_location": "Manhattan",
+      "budget": 10000000,
+      "bedrooms_needed": 5
+    },
+    "knowledge": {
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.613Z",
+          "request": {
+            "kind": "record_query",
+            "sourceId": "estate_properties",
+            "filters": [
+              {
+                "op": "gte",
+                "field": "beds",
+                "value": 5
+              },
+              {
+                "op": "lte",
+                "field": "price",
+                "value": 10000000
+              },
+              {
+                "field": "location",
+                "op": "contains",
+                "value": "Manhattan"
+              }
+            ],
+            "limit": 6
+          },
+          "sourceId": "estate_properties",
+          "resultIds": [],
+          "returnedCount": 0,
+          "totalMatched": 0,
+          "result": {
+            "kind": "record_query",
+            "sourceId": "estate_properties",
+            "sourceTitle": "EstatePro showcased sale properties",
+            "query": {
+              "filters": [
+                {
+                  "op": "gte",
+                  "field": "beds",
+                  "value": 5
+                },
+                {
+                  "op": "lte",
+                  "field": "price",
+                  "value": 10000000
+                },
+                {
+                  "field": "location",
+                  "op": "contains",
+                  "value": "Manhattan"
+                }
+              ],
+              "sort": [],
+              "limit": 6
+            },
+            "matches": [],
+            "totalMatched": 0,
+            "totalRecords": 6
+          }
+        }
+      ],
+      "rejectedCalls": []
+    },
+    "actions": {
+      "requests": [],
+      "confirmationsRequested": [],
+      "confirmationsResolved": [],
+      "executionStarted": [],
+      "succeeded": [],
+      "failed": [],
+      "outcomeUnknown": [],
+      "dispatchCount": 0
+    },
+    "stopReason": "completed",
+    "runtimeErrors": [],
+    "nativeTrace": {
+      "eventStream": [
+        {
+          "id": "evt_mt4mc3t07xzk46ql",
+          "turn": 1,
+          "at": "2026-08-22T16:54:38.916Z",
+          "type": "UserMessageReceived",
+          "payload": {
+            "text": "I want a 5-bedroom Manhattan property under $10M."
+          },
+          "seq": 1,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hw7ic8gag3",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.812Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "plan",
+            "providerId": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 673,
+              "outputTokens": 110
+            },
+            "finishReason": "STOP",
+            "durationMs": 895
+          },
+          "seq": 2,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hw9pxnrkzm",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.812Z",
+          "type": "TurnPlanCreated",
+          "payload": {
+            "strategy": "llm",
+            "resolvedBy": "llm",
+            "plan": {
+              "memoryProposals": [
+                {
+                  "key": "intent",
+                  "value": "buy"
+                },
+                {
+                  "key": "target_location",
+                  "value": "Manhattan"
+                },
+                {
+                  "key": "budget",
+                  "value": 10000000
+                },
+                {
+                  "key": "bedrooms_needed",
+                  "value": 5
+                }
+              ],
+              "workingNotes": [],
+              "signals": [],
+              "retrievalRequests": []
+            }
+          },
+          "seq": 3,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hxydq2ipj3",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.813Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "intent",
+            "value": "buy",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 4,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hxvdv08iif",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.813Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "intent",
+            "value": "buy",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4mc4hxydq2ipj3"
+          },
+          "seq": 5,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hxhysopgrc",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.813Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "target_location",
+            "value": "Manhattan",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 6,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hx53pn8oml",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.813Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "target_location",
+            "value": "Manhattan",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4mc4hxhysopgrc"
+          },
+          "seq": 7,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hx5dkq94i4",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.813Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "budget",
+            "value": 10000000,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 8,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hx1y0fr18x",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.813Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "budget",
+            "value": 10000000,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4mc4hx5dkq94i4"
+          },
+          "seq": 9,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hx0gxuzsmw",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.813Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "bedrooms_needed",
+            "value": 5,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 10,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4hx6ur0qb8l",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.813Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "bedrooms_needed",
+            "value": 5,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4mc4hx0gxuzsmw"
+          },
+          "seq": 11,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4i0jz9cxigw",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.816Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_invocation"
+          },
+          "seq": 12,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4i1iyir4z7h",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.817Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 1
+          },
+          "seq": 13,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc4i2nbbyt7bu",
+          "turn": 1,
+          "at": "2026-08-22T16:54:39.818Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_record_query_estate_properties_15bc1f",
+              "knowledge_record_query_estate_rooms_dd3ccb",
+              "knowledge_document_search_estate_service_policy_d064c4",
+              "send_lead_to_team"
+            ]
+          },
+          "seq": 14,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc543s60xm47x",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.611Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 1
+          },
+          "seq": 15,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc543orv9fxjg",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.611Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:1",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 1910,
+              "outputTokens": 83
+            },
+            "finishReason": "toolUse"
+          },
+          "seq": 16,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc544m994lexi",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.612Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f"
+          },
+          "seq": 17,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc54516622gnt",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.613Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 1,
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f"
+          },
+          "seq": 18,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc5450k7a1p8l",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.613Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+            "input": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "filters": [
+                {
+                  "op": "gte",
+                  "field": "beds",
+                  "value": 5
+                },
+                {
+                  "op": "lte",
+                  "field": "price",
+                  "value": 10000000
+                },
+                {
+                  "field": "location",
+                  "op": "contains",
+                  "value": "Manhattan"
+                }
+              ]
+            }
+          },
+          "seq": 19,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc545edsegxbn",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.613Z",
+          "type": "KnowledgeRetrieved",
+          "payload": {
+            "request": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "filters": [
+                {
+                  "op": "gte",
+                  "field": "beds",
+                  "value": 5
+                },
+                {
+                  "op": "lte",
+                  "field": "price",
+                  "value": 10000000
+                },
+                {
+                  "field": "location",
+                  "op": "contains",
+                  "value": "Manhattan"
+                }
+              ],
+              "limit": 6
+            },
+            "sourceId": "estate_properties",
+            "resultIds": [],
+            "returnedCount": 0,
+            "totalMatched": 0,
+            "result": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "sourceTitle": "EstatePro showcased sale properties",
+              "query": {
+                "filters": [
+                  {
+                    "op": "gte",
+                    "field": "beds",
+                    "value": 5
+                  },
+                  {
+                    "op": "lte",
+                    "field": "price",
+                    "value": 10000000
+                  },
+                  {
+                    "field": "location",
+                    "op": "contains",
+                    "value": "Manhattan"
+                  }
+                ],
+                "sort": [],
+                "limit": 6
+              },
+              "matches": [],
+              "totalMatched": 0,
+              "totalRecords": 6
+            }
+          },
+          "seq": 20,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc546pptx0pef",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.614Z",
+          "type": "DelegationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+            "outcome": "completed",
+            "summary": {
+              "returnedCount": 0,
+              "totalMatched": 0,
+              "resultIds": []
+            }
+          },
+          "seq": 21,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc546tvzgsukb",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.614Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 1,
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+            "detail": {
+              "kind": "proceed"
+            }
+          },
+          "seq": 22,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc5462ag87jx0",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.614Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_record_query_estate_properties_15bc1f",
+            "detail": {
+              "mutationVersion": 3,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 23,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc547orlt6d8q",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.615Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 2
+          },
+          "seq": 24,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc547k7pzda5w",
+          "turn": 1,
+          "at": "2026-08-22T16:54:40.615Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_record_query_estate_properties_15bc1f",
+              "knowledge_record_query_estate_rooms_dd3ccb",
+              "knowledge_document_search_estate_service_policy_d064c4",
+              "send_lead_to_team"
+            ]
+          },
+          "seq": 25,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc5nlxaf5xixq",
+          "turn": 1,
+          "at": "2026-08-22T16:54:41.313Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 2
+          },
+          "seq": 26,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc5nlgt5cs1t5",
+          "turn": 1,
+          "at": "2026-08-22T16:54:41.313Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:2",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 2131,
+              "outputTokens": 53
+            },
+            "finishReason": "endTurn"
+          },
+          "seq": 27,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc5nl6or194u4",
+          "turn": 1,
+          "at": "2026-08-22T16:54:41.313Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_invocation",
+            "detail": {
+              "mutationVersion": 3,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 28,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc5nm5nelt7rg",
+          "turn": 1,
+          "at": "2026-08-22T16:54:41.314Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "execution_terminated",
+            "detail": {
+              "stopReason": "end_turn"
+            }
+          },
+          "seq": 29,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc5nmumnkjzyr",
+          "turn": 1,
+          "at": "2026-08-22T16:54:41.314Z",
+          "type": "AgentIterationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "requested": 1,
+            "completed": 1,
+            "rejected": 0,
+            "stopReason": "completed"
+          },
+          "seq": 30,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        },
+        {
+          "id": "evt_mt4mc5nmk1uzgp5o",
+          "turn": 1,
+          "at": "2026-08-22T16:54:41.314Z",
+          "type": "AssistantMessageEmitted",
+          "payload": {
+            "text": "We currently don't have any 5-bedroom properties in Manhattan under $10M in our showcased listings. \n\nWould you like me to connect you with our team so they can keep an eye out for matching listings or help you explore other options?",
+            "stopReason": "completed"
+          },
+          "seq": 31,
+          "sessionId": "benchmark-rebuild-v1-p02-1787417678915"
+        }
+      ],
+      "finalState": {
+        "sessionId": "benchmark-rebuild-v1-p02-1787417678915",
+        "agentId": "benchmark-rebuild-v1-p02-arrokothai",
+        "agentVersion": 1,
+        "turn": 1,
+        "lastSeq": 31,
+        "memory": {
+          "intent": {
+            "key": "intent",
+            "value": "buy",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4mc4hxvdv08iif",
+            "at": "2026-08-22T16:54:39.813Z"
+          },
+          "target_location": {
+            "key": "target_location",
+            "value": "Manhattan",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4mc4hx53pn8oml",
+            "at": "2026-08-22T16:54:39.813Z"
+          },
+          "budget": {
+            "key": "budget",
+            "value": 10000000,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4mc4hx1y0fr18x",
+            "at": "2026-08-22T16:54:39.813Z"
+          },
+          "bedrooms_needed": {
+            "key": "bedrooms_needed",
+            "value": 5,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4mc3t07xzk46ql"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4mc4hx6ur0qb8l",
+            "at": "2026-08-22T16:54:39.813Z"
+          }
+        },
+        "workingNotes": [],
+        "hostContext": {},
+        "phaseId": null,
+        "pendingAction": null,
+        "ledger": {},
+        "transcript": [
+          {
+            "role": "user",
+            "text": "I want a 5-bedroom Manhattan property under $10M.",
+            "turn": 1,
+            "at": "2026-08-22T16:54:38.916Z"
+          },
+          {
+            "role": "assistant",
+            "text": "We currently don't have any 5-bedroom properties in Manhattan under $10M in our showcased listings. \n\nWould you like me to connect you with our team so they can keep an eye out for matching listings or help you explore other options?",
+            "turn": 1,
+            "at": "2026-08-22T16:54:41.314Z"
+          }
+        ],
+        "turnToolResults": [],
+        "turnSignals": [],
+        "turnPlan": {
+          "memoryProposals": [
+            {
+              "key": "intent",
+              "value": "buy"
+            },
+            {
+              "key": "target_location",
+              "value": "Manhattan"
+            },
+            {
+              "key": "budget",
+              "value": 10000000
+            },
+            {
+              "key": "bedrooms_needed",
+              "value": 5
+            }
+          ],
+          "workingNotes": [],
+          "signals": [],
+          "retrievalRequests": []
+        },
+        "turnRetrievals": [
+          {
+            "request": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "filters": [
+                {
+                  "op": "gte",
+                  "field": "beds",
+                  "value": 5
+                },
+                {
+                  "op": "lte",
+                  "field": "price",
+                  "value": 10000000
+                },
+                {
+                  "field": "location",
+                  "op": "contains",
+                  "value": "Manhattan"
+                }
+              ],
+              "limit": 6
+            },
+            "sourceId": "estate_properties",
+            "resultIds": [],
+            "returnedCount": 0,
+            "totalMatched": 0,
+            "result": {
+              "kind": "record_query",
+              "sourceId": "estate_properties",
+              "sourceTitle": "EstatePro showcased sale properties",
+              "query": {
+                "filters": [
+                  {
+                    "op": "gte",
+                    "field": "beds",
+                    "value": 5
+                  },
+                  {
+                    "op": "lte",
+                    "field": "price",
+                    "value": 10000000
+                  },
+                  {
+                    "field": "location",
+                    "op": "contains",
+                    "value": "Manhattan"
+                  }
+                ],
+                "sort": [],
+                "limit": 6
+              },
+              "matches": [],
+              "totalMatched": 0,
+              "totalRecords": 6
+            }
+          }
+        ],
+        "allToolResults": [],
+        "unresolvedExternalExecution": null,
+        "status": "active",
+        "createdAt": "2026-08-22T16:54:38.915Z",
+        "updatedAt": "2026-08-22T16:54:41.314Z"
+      }
+    }
+  }
 }

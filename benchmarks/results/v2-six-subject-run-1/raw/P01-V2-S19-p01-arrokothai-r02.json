@@ -2,19 +2,1345 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p01",
   "implementationId": "p01-arrokothai",
+  "frameworkId": "provider-neutral-runtime",
   "scenarioId": "P01-V2-S19",
   "repeatId": "r02",
-  "conversation": [],
-  "requestedModel": {
-    "provider": "gemini",
-    "requested": "gemini-3.5-flash-lite"
-  },
-  "runtimeErrors": [
+  "conversation": [
     {
-      "code": "transport_failure",
-      "message": "live smoke failed; inspect /Users/rex-shih/Documents/Codex/projects/Agent_SDK/benchmarks/results/v2-six-subject-run-1/raw/native/P01-V2-S19-p01-arrokothai-r02.json",
-      "beforeSubjectBehavior": true
+      "turn": 1,
+      "user": "I've got 420 sq. ft. of wall at 10 inches for a backyard office. Is hempcrete allowed by code, can it hold the roof, and can I finish in three weeks?",
+      "assistant": "For your 420 sq. ft. backyard office with a 10-inch wall thickness, your authoritative planning volume is **9.9 m³**. \n\nHere is how your questions break down regarding code, structure, and timeline:\n\n* **Building Code:** Hemp-lime construction is referenced in Appendix BL of the 2024 International Residential Code. However, model-code inclusion is not proof of local adoption or permit approval; every specific project requires local authority and qualified professional review.\n* **Roof Support:** Hempcrete is non-load-bearing infill rather than structural block. It requires a conventional structural frame (commonly timber framing) to carry roof, floor, wind, and seismic loads.\n* **Timeline:** Finishing the entire build in three weeks is very tight. While cast-in-situ forms can often be removed the next day, hemp-lime naturally cures over about 3 to 6 weeks before final plaster can be applied (though pre-cast blocks can speed up initial masonry work). Furthermore, exact pricing, inventory, engineering, and local permitting timelines cannot be confirmed via live systems.\n\nWould you like to explore whether you are leaning toward cast-in-situ or pre-cast blocks for your backyard office frame?"
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 4,
+    "usage": {
+      "available": true,
+      "inputTokens": 3415,
+      "outputTokens": 464
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "project_type": "backyard office",
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "deterministicComputations": {
+    "wall_volume_m3": 9.9
+  },
+  "retrievalObservations": [
+    {
+      "queryId": "craig_product_knowledge",
+      "collection": "craig_product_knowledge",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 2,
+      "zeroMatch": false,
+      "fields": {}
+    }
+  ],
+  "recordObservations": [
+    {
+      "queryId": "craig_product_knowledge",
+      "collection": "craig_product_knowledge",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 2,
+      "zeroMatch": false,
+      "fields": {}
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [
+    {
+      "turn": 1,
+      "actionName": "compute_wall_volume",
+      "args": {
+        "wall_thickness_in": 10,
+        "wall_area_sq_ft": 420
+      },
+      "effect": "read",
+      "dispatched": true
+    }
+  ],
+  "confirmationRequests": [],
+  "exactActionPayload": {
+    "wall_area_sq_ft": 420,
+    "wall_thickness_in": 10
+  },
+  "executorDispatchCount": 0,
+  "terminalActionResult": "success",
+  "stopReason": "completed",
+  "runtimeErrors": [],
+  "timing": {
+    "startedAt": "2026-08-22T16:33:50.325Z",
+    "completedAt": "2026-08-22T16:33:53.815Z",
+    "elapsedMs": 3490
+  },
+  "modelCallCount": 4,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 3415,
+    "outputTokens": 464,
+    "totalTokens": 3879
+  },
+  "nativeTrace": {
+    "schemaVersion": "benchmark-raw-run-v1",
+    "rebuildLabel": "benchmark-rebuild-v1",
+    "benchmarkApplicationId": "p01",
+    "implementationId": "p01-arrokothai",
+    "framework": {
+      "id": "arrokothai",
+      "name": "Agent_SDK",
+      "version": "0.37.0"
+    },
+    "scenarioRunId": "P01-V2-S19",
+    "timestamps": {
+      "startedAt": "2026-08-22T16:33:50.325Z",
+      "completedAt": "2026-08-22T16:33:53.815Z",
+      "elapsedMs": 3490
+    },
+    "conversation": [
+      {
+        "turn": 1,
+        "user": "I've got 420 sq. ft. of wall at 10 inches for a backyard office. Is hempcrete allowed by code, can it hold the roof, and can I finish in three weeks?",
+        "assistant": "For your 420 sq. ft. backyard office with a 10-inch wall thickness, your authoritative planning volume is **9.9 m³**. \n\nHere is how your questions break down regarding code, structure, and timeline:\n\n* **Building Code:** Hemp-lime construction is referenced in Appendix BL of the 2024 International Residential Code. However, model-code inclusion is not proof of local adoption or permit approval; every specific project requires local authority and qualified professional review.\n* **Roof Support:** Hempcrete is non-load-bearing infill rather than structural block. It requires a conventional structural frame (commonly timber framing) to carry roof, floor, wind, and seismic loads.\n* **Timeline:** Finishing the entire build in three weeks is very tight. While cast-in-situ forms can often be removed the next day, hemp-lime naturally cures over about 3 to 6 weeks before final plaster can be applied (though pre-cast blocks can speed up initial masonry work). Furthermore, exact pricing, inventory, engineering, and local permitting timelines cannot be confirmed via live systems.\n\nWould you like to explore whether you are leaning toward cast-in-situ or pre-cast blocks for your backyard office frame?",
+        "stopReason": "completed",
+        "steps": 3,
+        "elapsedMs": 3490,
+        "metrics": {
+          "preflightModelCalls": 1,
+          "agentLoopModelCalls": 3,
+          "conversationSummaryModelCalls": 0,
+          "guideRetryModelCalls": 0,
+          "totalModelCalls": 4
+        },
+        "eventSeqs": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42
+        ]
+      }
+    ],
+    "model": {
+      "provider": "gemini",
+      "requested": "gemini-3.5-flash-lite",
+      "providerReported": "gemini-3.5-flash-lite",
+      "temperature": 0.35,
+      "maxOutputTokens": 700,
+      "thinking": null,
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.309Z",
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 535,
+            "outputTokens": 137
+          },
+          "finishReason": "STOP",
+          "durationMs": 984
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 657,
+            "outputTokens": 33
+          },
+          "finishReason": "toolUse"
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.527Z",
+          "purpose": "agent_loop:2",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 814,
+            "outputTokens": 36
+          },
+          "finishReason": "toolUse"
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:33:53.813Z",
+          "purpose": "agent_loop:3",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 1409,
+            "outputTokens": 258
+          },
+          "finishReason": "endTurn"
+        }
+      ],
+      "callCount": 4,
+      "usage": {
+        "available": true,
+        "inputTokens": 3415,
+        "outputTokens": 464
+      }
+    },
+    "canonicalState": {
+      "project_type": "backyard office",
+      "wall_area_sq_ft": 420,
+      "wall_thickness_in": 10
+    },
+    "knowledge": {
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.528Z",
+          "request": {
+            "kind": "document_search",
+            "sourceId": "craig_product_knowledge",
+            "query": "building code structural roof finish time three weeks",
+            "topK": 4
+          },
+          "sourceId": "craig_product_knowledge",
+          "resultIds": [
+            "craig_product_knowledge#0",
+            "craig_product_knowledge#1"
+          ],
+          "scores": [
+            2.7489,
+            0.9163
+          ],
+          "returnedCount": 2,
+          "result": {
+            "kind": "document_search",
+            "sourceId": "craig_product_knowledge",
+            "sourceTitle": "Craig Hempcrete product and project facts",
+            "query": "building code structural roof finish time three weeks",
+            "chunks": [
+              {
+                "sourceId": "craig_product_knowledge",
+                "sourceTitle": "Craig Hempcrete product and project facts",
+                "chunkId": "craig_product_knowledge#0",
+                "text": "Hempcrete, or hemp-lime, is made from industrial hemp hurds, a lime-based binder, and water. It is 0% THC and unrelated to recreational marijuana. The reference site describes it as breathable, zero-VOC, mold-resistant, pest-resistant, fire-resistant, and insulating.\n\nHempcrete is non-load-bearing infill. A conventional structural frame, commonly timber framing, carries roof, floor, wind, and seismic loads.\n\nThe shipped product cites hemp-lime construction in the 2024 International Residential Code Appendix BL. That model-code reference is not proof of local adoption or permit approval; a specific project still requires local authority and qualified-professional review.",
+                "score": 2.7489,
+                "rank": 1
+              },
+              {
+                "sourceId": "craig_product_knowledge",
+                "sourceTitle": "Craig Hempcrete product and project facts",
+                "chunkId": "craig_product_knowledge#1",
+                "text": "Interior retrofit uses a relatively thin breathable layer over a suitable existing assembly, commonly with furring strips and hand-tamping. Pre-cast blocks arrive cured and are laid with lime mortar; the reference planning window is about 2–3 days for mortar before plaster sequencing. Cast-in-situ material is tamped into forms; forms may come off the next day, while natural curing before final plaster is about 3–6 weeks depending on conditions.\n\nThe reference site's planning claims are about 15–20% higher upfront material cost than drywall plus fiberglass, possible 30–40% HVAC savings, and a 3–5 year payback. These are demo assumptions, not quotes or guarantees.\n\nFor the reference site's small 180 sq ft backyard-office concept, its prescribed early assumption is about 400–450 sq ft of net exterior wall area at 10–12 inches, with pre-cast blocks favored for speed. The actual wall volume must be computed from the selected wall area and thickness.",
+                "score": 0.9163,
+                "rank": 2
+              }
+            ]
+          }
+        }
+      ],
+      "rejectedCalls": []
+    },
+    "actions": {
+      "requests": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "requestId": "act_mt4lldn02q849wtq",
+          "toolName": "compute_wall_volume",
+          "args": {
+            "wall_thickness_in": 10,
+            "wall_area_sq_ft": 420
+          },
+          "requestedBy": "model"
+        }
+      ],
+      "confirmationsRequested": [],
+      "confirmationsResolved": [],
+      "executionStarted": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "requestId": "act_mt4lldn02q849wtq",
+          "toolName": "compute_wall_volume",
+          "args": {
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10
+          },
+          "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+          "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f",
+          "effect": "read"
+        }
+      ],
+      "succeeded": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "requestId": "act_mt4lldn02q849wtq",
+          "toolName": "compute_wall_volume",
+          "output": {
+            "volume_m3": 9.9,
+            "exact_volume_m3": 9.91088,
+            "wall_area_sq_ft": 420,
+            "wall_thickness_in": 10
+          },
+          "facts": [
+            {
+              "key": "planning_wall_volume_m3",
+              "value": 9.9,
+              "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+            }
+          ],
+          "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+          "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f"
+        }
+      ],
+      "failed": [],
+      "outcomeUnknown": [],
+      "dispatchCount": 0
+    },
+    "stopReason": "completed",
+    "runtimeErrors": [],
+    "nativeTrace": {
+      "eventStream": [
+        {
+          "id": "evt_mt4llcdxm64i6dms",
+          "turn": 1,
+          "at": "2026-08-22T16:33:50.325Z",
+          "type": "UserMessageReceived",
+          "payload": {
+            "text": "I've got 420 sq. ft. of wall at 10 inches for a backyard office. Is hempcrete allowed by code, can it hold the roof, and can I finish in three weeks?"
+          },
+          "seq": 1,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld590lgbv48e",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.309Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "plan",
+            "providerId": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 535,
+              "outputTokens": 137
+            },
+            "finishReason": "STOP",
+            "durationMs": 984
+          },
+          "seq": 2,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5a2zbnsdmq",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.310Z",
+          "type": "TurnPlanCreated",
+          "payload": {
+            "strategy": "llm",
+            "resolvedBy": "llm",
+            "plan": {
+              "memoryProposals": [
+                {
+                  "key": "project_type",
+                  "value": "backyard office"
+                },
+                {
+                  "key": "wall_area_sq_ft",
+                  "value": 420
+                },
+                {
+                  "key": "wall_thickness_in",
+                  "value": 10
+                }
+              ],
+              "workingNotes": [],
+              "signals": [],
+              "retrievalRequests": []
+            }
+          },
+          "seq": 3,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5btcf9r8g8",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.311Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "project_type",
+            "value": "backyard office",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4llcdxm64i6dms"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 4,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5bwf991fww",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.311Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "project_type",
+            "value": "backyard office",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4llcdxm64i6dms"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lld5btcf9r8g8"
+          },
+          "seq": 5,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5baw0aazxj",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.311Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "wall_area_sq_ft",
+            "value": 420,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4llcdxm64i6dms"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 6,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5br9islnnn",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.311Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "wall_area_sq_ft",
+            "value": 420,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4llcdxm64i6dms"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lld5baw0aazxj"
+          },
+          "seq": 7,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5byicsoj86",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.311Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "wall_thickness_in",
+            "value": 10,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4llcdxm64i6dms"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 8,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5bcws52kpq",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.311Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "wall_thickness_in",
+            "value": 10,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4llcdxm64i6dms"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lld5byicsoj86"
+          },
+          "seq": 9,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5h43ja2wn6",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.317Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_invocation"
+          },
+          "seq": 10,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5i75o3x0wg",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.318Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 1
+          },
+          "seq": 11,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lld5ifl8ru4eb",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.318Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 12,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn042iwtws6",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 1
+          },
+          "seq": 13,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn0oua1qtqk",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:1",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 657,
+              "outputTokens": 33
+            },
+            "finishReason": "toolUse"
+          },
+          "seq": 14,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn0h2zbwhf8",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume"
+          },
+          "seq": 15,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn0hyz71q16",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume"
+          },
+          "seq": 16,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn0gq6cu9i4",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "compute_wall_volume",
+            "input": {
+              "wall_thickness_in": 10,
+              "wall_area_sq_ft": 420
+            }
+          },
+          "seq": 17,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn0wacfqeij",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "type": "ToolRequested",
+          "payload": {
+            "requestId": "act_mt4lldn02q849wtq",
+            "toolName": "compute_wall_volume",
+            "args": {
+              "wall_thickness_in": 10,
+              "wall_area_sq_ft": 420
+            },
+            "requestedBy": "model"
+          },
+          "seq": 18,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn0vfeu1s9k",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "type": "ToolExecutionStarted",
+          "payload": {
+            "requestId": "act_mt4lldn02q849wtq",
+            "toolName": "compute_wall_volume",
+            "args": {
+              "wall_area_sq_ft": 420,
+              "wall_thickness_in": 10
+            },
+            "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "effect": "read"
+          },
+          "seq": 19,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn08bt2mzsc",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "type": "ToolExecutionSucceeded",
+          "payload": {
+            "requestId": "act_mt4lldn02q849wtq",
+            "toolName": "compute_wall_volume",
+            "output": {
+              "volume_m3": 9.9,
+              "exact_volume_m3": 9.91088,
+              "wall_area_sq_ft": 420,
+              "wall_thickness_in": 10
+            },
+            "facts": [
+              {
+                "key": "planning_wall_volume_m3",
+                "value": 9.9,
+                "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+              }
+            ],
+            "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f"
+          },
+          "seq": 20,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn0frj0acvb",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.948Z",
+          "type": "DelegationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "compute_wall_volume",
+            "outcome": "completed",
+            "summary": {
+              "ok": true,
+              "output": {
+                "volume_m3": 9.9,
+                "exact_volume_m3": 9.91088,
+                "wall_area_sq_ft": 420,
+                "wall_thickness_in": 10
+              },
+              "facts": [
+                {
+                  "key": "planning_wall_volume_m3",
+                  "value": 9.9,
+                  "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+                }
+              ],
+              "replayed": false
+            }
+          },
+          "seq": 21,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn1a9no526d",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.949Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume",
+            "detail": {
+              "kind": "proceed"
+            }
+          },
+          "seq": 22,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn1sjjd66tn",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.949Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 1,
+            "capabilityName": "compute_wall_volume",
+            "detail": {
+              "mutationVersion": 3,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 23,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn1z4tdb97a",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.949Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 2
+          },
+          "seq": 24,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lldn166tdbjh7",
+          "turn": 1,
+          "at": "2026-08-22T16:33:51.949Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 25,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle33t6dozp8m",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.527Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 2
+          },
+          "seq": 26,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle33ht969hqz",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.527Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:2",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 814,
+              "outputTokens": 36
+            },
+            "finishReason": "toolUse"
+          },
+          "seq": 27,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle33pt788sft",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.527Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 2,
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae"
+          },
+          "seq": 28,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle3354ud6cxi",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.527Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 2,
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae"
+          },
+          "seq": 29,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle33eh6n0sue",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.527Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae",
+            "input": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "query": "building code structural roof finish time three weeks"
+            }
+          },
+          "seq": 30,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle345gtf66ud",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.528Z",
+          "type": "KnowledgeRetrieved",
+          "payload": {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "query": "building code structural roof finish time three weeks",
+              "topK": 4
+            },
+            "sourceId": "craig_product_knowledge",
+            "resultIds": [
+              "craig_product_knowledge#0",
+              "craig_product_knowledge#1"
+            ],
+            "scores": [
+              2.7489,
+              0.9163
+            ],
+            "returnedCount": 2,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "sourceTitle": "Craig Hempcrete product and project facts",
+              "query": "building code structural roof finish time three weeks",
+              "chunks": [
+                {
+                  "sourceId": "craig_product_knowledge",
+                  "sourceTitle": "Craig Hempcrete product and project facts",
+                  "chunkId": "craig_product_knowledge#0",
+                  "text": "Hempcrete, or hemp-lime, is made from industrial hemp hurds, a lime-based binder, and water. It is 0% THC and unrelated to recreational marijuana. The reference site describes it as breathable, zero-VOC, mold-resistant, pest-resistant, fire-resistant, and insulating.\n\nHempcrete is non-load-bearing infill. A conventional structural frame, commonly timber framing, carries roof, floor, wind, and seismic loads.\n\nThe shipped product cites hemp-lime construction in the 2024 International Residential Code Appendix BL. That model-code reference is not proof of local adoption or permit approval; a specific project still requires local authority and qualified-professional review.",
+                  "score": 2.7489,
+                  "rank": 1
+                },
+                {
+                  "sourceId": "craig_product_knowledge",
+                  "sourceTitle": "Craig Hempcrete product and project facts",
+                  "chunkId": "craig_product_knowledge#1",
+                  "text": "Interior retrofit uses a relatively thin breathable layer over a suitable existing assembly, commonly with furring strips and hand-tamping. Pre-cast blocks arrive cured and are laid with lime mortar; the reference planning window is about 2–3 days for mortar before plaster sequencing. Cast-in-situ material is tamped into forms; forms may come off the next day, while natural curing before final plaster is about 3–6 weeks depending on conditions.\n\nThe reference site's planning claims are about 15–20% higher upfront material cost than drywall plus fiberglass, possible 30–40% HVAC savings, and a 3–5 year payback. These are demo assumptions, not quotes or guarantees.\n\nFor the reference site's small 180 sq ft backyard-office concept, its prescribed early assumption is about 400–450 sq ft of net exterior wall area at 10–12 inches, with pre-cast blocks favored for speed. The actual wall volume must be computed from the selected wall area and thickness.",
+                  "score": 0.9163,
+                  "rank": 2
+                }
+              ]
+            }
+          },
+          "seq": 31,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle35mgdistb6",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.529Z",
+          "type": "DelegationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae",
+            "outcome": "completed",
+            "summary": {
+              "returnedCount": 2,
+              "resultIds": [
+                "craig_product_knowledge#0",
+                "craig_product_knowledge#1"
+              ]
+            }
+          },
+          "seq": 32,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle36qwp6s3md",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.530Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 2,
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae",
+            "detail": {
+              "kind": "proceed"
+            }
+          },
+          "seq": 33,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle36hkw06o4d",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.530Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 2,
+            "capabilityName": "knowledge_document_search_craig_product_knowledge_abceae",
+            "detail": {
+              "mutationVersion": 5,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 34,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle370ekj1qmi",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.531Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 3
+          },
+          "seq": 35,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4lle37cefq77xd",
+          "turn": 1,
+          "at": "2026-08-22T16:33:52.531Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 3,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_document_search_craig_product_knowledge_abceae",
+              "compute_wall_volume"
+            ]
+          },
+          "seq": 36,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4llf2tn93lt9bx",
+          "turn": 1,
+          "at": "2026-08-22T16:33:53.813Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 3
+          },
+          "seq": 37,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4llf2tq6l39d72",
+          "turn": 1,
+          "at": "2026-08-22T16:33:53.813Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:3",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 1409,
+              "outputTokens": 258
+            },
+            "finishReason": "endTurn"
+          },
+          "seq": 38,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4llf2u8q4gsg1r",
+          "turn": 1,
+          "at": "2026-08-22T16:33:53.814Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_invocation",
+            "detail": {
+              "mutationVersion": 5,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 39,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4llf2ub98tbnhc",
+          "turn": 1,
+          "at": "2026-08-22T16:33:53.814Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "execution_terminated",
+            "detail": {
+              "stopReason": "end_turn"
+            }
+          },
+          "seq": 40,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4llf2u8i0hdf9u",
+          "turn": 1,
+          "at": "2026-08-22T16:33:53.814Z",
+          "type": "AgentIterationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 3,
+            "requested": 2,
+            "completed": 2,
+            "rejected": 0,
+            "stopReason": "completed"
+          },
+          "seq": 41,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        },
+        {
+          "id": "evt_mt4llf2uqt5trowl",
+          "turn": 1,
+          "at": "2026-08-22T16:33:53.814Z",
+          "type": "AssistantMessageEmitted",
+          "payload": {
+            "text": "For your 420 sq. ft. backyard office with a 10-inch wall thickness, your authoritative planning volume is **9.9 m³**. \n\nHere is how your questions break down regarding code, structure, and timeline:\n\n* **Building Code:** Hemp-lime construction is referenced in Appendix BL of the 2024 International Residential Code. However, model-code inclusion is not proof of local adoption or permit approval; every specific project requires local authority and qualified professional review.\n* **Roof Support:** Hempcrete is non-load-bearing infill rather than structural block. It requires a conventional structural frame (commonly timber framing) to carry roof, floor, wind, and seismic loads.\n* **Timeline:** Finishing the entire build in three weeks is very tight. While cast-in-situ forms can often be removed the next day, hemp-lime naturally cures over about 3 to 6 weeks before final plaster can be applied (though pre-cast blocks can speed up initial masonry work). Furthermore, exact pricing, inventory, engineering, and local permitting timelines cannot be confirmed via live systems.\n\nWould you like to explore whether you are leaning toward cast-in-situ or pre-cast blocks for your backyard office frame?",
+            "stopReason": "completed"
+          },
+          "seq": 42,
+          "sessionId": "benchmark-rebuild-v1-p01-1787416430325"
+        }
+      ],
+      "finalState": {
+        "sessionId": "benchmark-rebuild-v1-p01-1787416430325",
+        "agentId": "benchmark-rebuild-v1-p01-arrokothai",
+        "agentVersion": 1,
+        "turn": 1,
+        "lastSeq": 42,
+        "memory": {
+          "project_type": {
+            "key": "project_type",
+            "value": "backyard office",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4llcdxm64i6dms"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lld5bwf991fww",
+            "at": "2026-08-22T16:33:51.311Z"
+          },
+          "wall_area_sq_ft": {
+            "key": "wall_area_sq_ft",
+            "value": 420,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4llcdxm64i6dms"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lld5br9islnnn",
+            "at": "2026-08-22T16:33:51.311Z"
+          },
+          "wall_thickness_in": {
+            "key": "wall_thickness_in",
+            "value": 10,
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4llcdxm64i6dms"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lld5bcws52kpq",
+            "at": "2026-08-22T16:33:51.311Z"
+          }
+        },
+        "workingNotes": [],
+        "hostContext": {},
+        "phaseId": null,
+        "pendingAction": null,
+        "ledger": {
+          "compute_wall_volume:bfc8b6bbe302f38f": {
+            "key": "compute_wall_volume:bfc8b6bbe302f38f",
+            "toolName": "compute_wall_volume",
+            "argsHash": "compute_wall_volume:bfc8b6bbe302f38f",
+            "turn": 1,
+            "at": "2026-08-22T16:33:51.948Z",
+            "requestId": "act_mt4lldn02q849wtq",
+            "result": {
+              "ok": true,
+              "output": {
+                "volume_m3": 9.9,
+                "exact_volume_m3": 9.91088,
+                "wall_area_sq_ft": 420,
+                "wall_thickness_in": 10
+              },
+              "facts": [
+                {
+                  "key": "planning_wall_volume_m3",
+                  "value": 9.9,
+                  "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+                }
+              ]
+            }
+          }
+        },
+        "transcript": [
+          {
+            "role": "user",
+            "text": "I've got 420 sq. ft. of wall at 10 inches for a backyard office. Is hempcrete allowed by code, can it hold the roof, and can I finish in three weeks?",
+            "turn": 1,
+            "at": "2026-08-22T16:33:50.325Z"
+          },
+          {
+            "role": "assistant",
+            "text": "For your 420 sq. ft. backyard office with a 10-inch wall thickness, your authoritative planning volume is **9.9 m³**. \n\nHere is how your questions break down regarding code, structure, and timeline:\n\n* **Building Code:** Hemp-lime construction is referenced in Appendix BL of the 2024 International Residential Code. However, model-code inclusion is not proof of local adoption or permit approval; every specific project requires local authority and qualified professional review.\n* **Roof Support:** Hempcrete is non-load-bearing infill rather than structural block. It requires a conventional structural frame (commonly timber framing) to carry roof, floor, wind, and seismic loads.\n* **Timeline:** Finishing the entire build in three weeks is very tight. While cast-in-situ forms can often be removed the next day, hemp-lime naturally cures over about 3 to 6 weeks before final plaster can be applied (though pre-cast blocks can speed up initial masonry work). Furthermore, exact pricing, inventory, engineering, and local permitting timelines cannot be confirmed via live systems.\n\nWould you like to explore whether you are leaning toward cast-in-situ or pre-cast blocks for your backyard office frame?",
+            "turn": 1,
+            "at": "2026-08-22T16:33:53.814Z"
+          }
+        ],
+        "turnToolResults": [
+          {
+            "requestId": "act_mt4lldn02q849wtq",
+            "toolName": "compute_wall_volume",
+            "turn": 1,
+            "at": "2026-08-22T16:33:51.948Z",
+            "ok": true,
+            "outcome": "success",
+            "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "output": {
+              "volume_m3": 9.9,
+              "exact_volume_m3": 9.91088,
+              "wall_area_sq_ft": 420,
+              "wall_thickness_in": 10
+            },
+            "facts": [
+              {
+                "key": "planning_wall_volume_m3",
+                "value": 9.9,
+                "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+              }
+            ]
+          }
+        ],
+        "turnSignals": [],
+        "turnPlan": {
+          "memoryProposals": [
+            {
+              "key": "project_type",
+              "value": "backyard office"
+            },
+            {
+              "key": "wall_area_sq_ft",
+              "value": 420
+            },
+            {
+              "key": "wall_thickness_in",
+              "value": 10
+            }
+          ],
+          "workingNotes": [],
+          "signals": [],
+          "retrievalRequests": []
+        },
+        "turnRetrievals": [
+          {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "query": "building code structural roof finish time three weeks",
+              "topK": 4
+            },
+            "sourceId": "craig_product_knowledge",
+            "resultIds": [
+              "craig_product_knowledge#0",
+              "craig_product_knowledge#1"
+            ],
+            "scores": [
+              2.7489,
+              0.9163
+            ],
+            "returnedCount": 2,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "craig_product_knowledge",
+              "sourceTitle": "Craig Hempcrete product and project facts",
+              "query": "building code structural roof finish time three weeks",
+              "chunks": [
+                {
+                  "sourceId": "craig_product_knowledge",
+                  "sourceTitle": "Craig Hempcrete product and project facts",
+                  "chunkId": "craig_product_knowledge#0",
+                  "text": "Hempcrete, or hemp-lime, is made from industrial hemp hurds, a lime-based binder, and water. It is 0% THC and unrelated to recreational marijuana. The reference site describes it as breathable, zero-VOC, mold-resistant, pest-resistant, fire-resistant, and insulating.\n\nHempcrete is non-load-bearing infill. A conventional structural frame, commonly timber framing, carries roof, floor, wind, and seismic loads.\n\nThe shipped product cites hemp-lime construction in the 2024 International Residential Code Appendix BL. That model-code reference is not proof of local adoption or permit approval; a specific project still requires local authority and qualified-professional review.",
+                  "score": 2.7489,
+                  "rank": 1
+                },
+                {
+                  "sourceId": "craig_product_knowledge",
+                  "sourceTitle": "Craig Hempcrete product and project facts",
+                  "chunkId": "craig_product_knowledge#1",
+                  "text": "Interior retrofit uses a relatively thin breathable layer over a suitable existing assembly, commonly with furring strips and hand-tamping. Pre-cast blocks arrive cured and are laid with lime mortar; the reference planning window is about 2–3 days for mortar before plaster sequencing. Cast-in-situ material is tamped into forms; forms may come off the next day, while natural curing before final plaster is about 3–6 weeks depending on conditions.\n\nThe reference site's planning claims are about 15–20% higher upfront material cost than drywall plus fiberglass, possible 30–40% HVAC savings, and a 3–5 year payback. These are demo assumptions, not quotes or guarantees.\n\nFor the reference site's small 180 sq ft backyard-office concept, its prescribed early assumption is about 400–450 sq ft of net exterior wall area at 10–12 inches, with pre-cast blocks favored for speed. The actual wall volume must be computed from the selected wall area and thickness.",
+                  "score": 0.9163,
+                  "rank": 2
+                }
+              ]
+            }
+          }
+        ],
+        "allToolResults": [
+          {
+            "requestId": "act_mt4lldn02q849wtq",
+            "toolName": "compute_wall_volume",
+            "turn": 1,
+            "at": "2026-08-22T16:33:51.948Z",
+            "ok": true,
+            "outcome": "success",
+            "actionKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "idempotencyKey": "compute_wall_volume:bfc8b6bbe302f38f",
+            "output": {
+              "volume_m3": 9.9,
+              "exact_volume_m3": 9.91088,
+              "wall_area_sq_ft": 420,
+              "wall_thickness_in": 10
+            },
+            "facts": [
+              {
+                "key": "planning_wall_volume_m3",
+                "value": 9.9,
+                "description": "Runtime-computed planning volume: 9.9 m³ from 420 sq ft at 10 in."
+              }
+            ]
+          }
+        ],
+        "unresolvedExternalExecution": null,
+        "status": "active",
+        "createdAt": "2026-08-22T16:33:50.325Z",
+        "updatedAt": "2026-08-22T16:33:53.814Z"
+      }
+    }
+  }
 }

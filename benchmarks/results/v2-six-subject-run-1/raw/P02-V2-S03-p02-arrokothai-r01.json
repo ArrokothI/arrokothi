@@ -2,19 +2,947 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p02",
   "implementationId": "p02-arrokothai",
+  "frameworkId": "provider-neutral-runtime",
   "scenarioId": "P02-V2-S03",
   "repeatId": "r01",
-  "conversation": [],
-  "requestedModel": {
-    "provider": "gemini",
-    "requested": "gemini-3.5-flash-lite"
-  },
-  "runtimeErrors": [
+  "conversation": [
     {
-      "code": "transport_failure",
-      "message": "live smoke failed; inspect /Users/rex-shih/Documents/Codex/projects/Agent_SDK/benchmarks/results/v2-six-subject-run-1/raw/native/P02-V2-S03-p02-arrokothai-r01.json",
-      "beforeSubjectBehavior": true
+      "turn": 1,
+      "user": "I want to sell my townhouse in 10014 and get a valuation.",
+      "assistant": "EstatePro specializes in showcasing luxury sale properties and assisting sellers with valuation conversations, though we don't provide automated online valuations. \n\nSince you are looking to sell your townhouse in ZIP code 10014, I would be happy to connect you with our team so a specialist can reach out to discuss your property's value. \n\nTo get started, what is your name and the best phone number to reach you?"
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 3,
+    "usage": {
+      "available": true,
+      "inputTokens": 5034,
+      "outputTokens": 218
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": "gemini-3.5-flash-lite"
+  },
+  "canonicalFinalState": {
+    "intent": "sell",
+    "listing_preference": "townhouse",
+    "seller_zip": "10014"
+  },
+  "retrievalObservations": [
+    {
+      "queryId": "estate_service_policy",
+      "collection": "estate_service_policy",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 2,
+      "zeroMatch": false,
+      "fields": {}
+    }
+  ],
+  "recordObservations": [
+    {
+      "queryId": "estate_service_policy",
+      "collection": "estate_service_policy",
+      "selectedIds": [],
+      "rows": {},
+      "resultCount": 2,
+      "zeroMatch": false,
+      "fields": {}
+    }
+  ],
+  "exactSelectedRecordIds": [],
+  "actionRequests": [],
+  "confirmationRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "completed",
+  "runtimeErrors": [],
+  "timing": {
+    "startedAt": "2026-08-22T16:38:03.209Z",
+    "completedAt": "2026-08-22T16:38:05.738Z",
+    "elapsedMs": 2526
+  },
+  "modelCallCount": 3,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 5034,
+    "outputTokens": 218,
+    "totalTokens": 5252
+  },
+  "nativeTrace": {
+    "schemaVersion": "benchmark-raw-run-v1",
+    "rebuildLabel": "benchmark-rebuild-v1",
+    "benchmarkApplicationId": "p02",
+    "implementationId": "p02-arrokothai",
+    "framework": {
+      "id": "arrokothai",
+      "name": "Agent_SDK",
+      "version": "0.37.0"
+    },
+    "scenarioRunId": "P02-V2-S03",
+    "timestamps": {
+      "startedAt": "2026-08-22T16:38:03.209Z",
+      "completedAt": "2026-08-22T16:38:05.738Z",
+      "elapsedMs": 2526
+    },
+    "conversation": [
+      {
+        "turn": 1,
+        "user": "I want to sell my townhouse in 10014 and get a valuation.",
+        "assistant": "EstatePro specializes in showcasing luxury sale properties and assisting sellers with valuation conversations, though we don't provide automated online valuations. \n\nSince you are looking to sell your townhouse in ZIP code 10014, I would be happy to connect you with our team so a specialist can reach out to discuss your property's value. \n\nTo get started, what is your name and the best phone number to reach you?",
+        "stopReason": "completed",
+        "steps": 2,
+        "elapsedMs": 2526,
+        "metrics": {
+          "preflightModelCalls": 1,
+          "agentLoopModelCalls": 2,
+          "conversationSummaryModelCalls": 0,
+          "guideRetryModelCalls": 0,
+          "totalModelCalls": 3
+        },
+        "eventSeqs": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29
+        ]
+      }
+    ],
+    "model": {
+      "provider": "gemini",
+      "requested": "gemini-3.5-flash-lite",
+      "providerReported": "gemini-3.5-flash-lite",
+      "temperature": 0.35,
+      "maxOutputTokens": 700,
+      "thinking": null,
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.162Z",
+          "purpose": "plan",
+          "providerId": "gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 676,
+            "outputTokens": 97
+          },
+          "finishReason": "STOP",
+          "durationMs": 949
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.854Z",
+          "purpose": "agent_loop:1",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 1895,
+            "outputTokens": 33
+          },
+          "finishReason": "toolUse"
+        },
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:38:05.737Z",
+          "purpose": "agent_loop:2",
+          "providerId": "strands:gemini",
+          "model": "gemini-3.5-flash-lite",
+          "usage": {
+            "inputTokens": 2463,
+            "outputTokens": 88
+          },
+          "finishReason": "endTurn"
+        }
+      ],
+      "callCount": 3,
+      "usage": {
+        "available": true,
+        "inputTokens": 5034,
+        "outputTokens": 218
+      }
+    },
+    "canonicalState": {
+      "intent": "sell",
+      "listing_preference": "townhouse",
+      "seller_zip": "10014"
+    },
+    "knowledge": {
+      "calls": [
+        {
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.855Z",
+          "request": {
+            "kind": "document_search",
+            "sourceId": "estate_service_policy",
+            "query": "sell valuation rent",
+            "topK": 3
+          },
+          "sourceId": "estate_service_policy",
+          "resultIds": [
+            "estate_service_policy#0",
+            "estate_service_policy#1"
+          ],
+          "scores": [
+            0.5108,
+            0.5108
+          ],
+          "returnedCount": 2,
+          "result": {
+            "kind": "document_search",
+            "sourceId": "estate_service_policy",
+            "sourceTitle": "EstatePro company and service policy",
+            "query": "sell valuation rent",
+            "chunks": [
+              {
+                "sourceId": "estate_service_policy",
+                "sourceTitle": "EstatePro company and service policy",
+                "chunkId": "estate_service_policy#0",
+                "text": "EstatePro is a boutique luxury real-estate firm founded in Manhattan by Marcus Sterling. The site reports more than $4.2B in total sales volume and 98% client retention. Its public office contact is +1 (212) 555-0198 and its Global HQ is 750 5th Avenue, New York, NY.\n\nThe concrete property record set contains exactly six showcased sale properties. Neighborhood-card counts—TriBeCa 12, Upper East Side 8, Chelsea 15, and West Village 6—are marketing display figures, not additional property records.\n\nThe records contain sale prices only. There is no rental pricing or rental-availability data. There is no live MLS, current listing status, viewing calendar, automated valuation, booking, payment, CRM, text-message, or phone-call backend.\n\nFor a buyer, use exact record queries for budget, location, bedroom, property, and room constraints. A zero-row result means no recorded match; do not invent or alter a property to fill the gap.",
+                "score": 0.5108,
+                "rank": 1
+              },
+              {
+                "sourceId": "estate_service_policy",
+                "sourceTitle": "EstatePro company and service policy",
+                "chunkId": "estate_service_policy#1",
+                "text": "For a buyer, use exact record queries for budget, location, bedroom, property, and room constraints. A zero-row result means no recorded match; do not invent or alter a property to fill the gap.\n\nFor a renter, retain the criteria and explain the missing rental data. For a seller, collect the property's ZIP code and route toward a human valuation conversation rather than a purchase listing.\n\nEmail is optional. Human follow-up requires a name and phone number. The only consequential capability is transmission of the exact confirmed lead payload to a human representative; its ToolResult is the authority on success, failure, or unknown outcome.",
+                "score": 0.5108,
+                "rank": 2
+              }
+            ]
+          }
+        }
+      ],
+      "rejectedCalls": []
+    },
+    "actions": {
+      "requests": [],
+      "confirmationsRequested": [],
+      "confirmationsResolved": [],
+      "executionStarted": [],
+      "succeeded": [],
+      "failed": [],
+      "outcomeUnknown": [],
+      "dispatchCount": 0
+    },
+    "stopReason": "completed",
+    "runtimeErrors": [],
+    "nativeTrace": {
+      "eventStream": [
+        {
+          "id": "evt_mt4lqrikzx0n808i",
+          "turn": 1,
+          "at": "2026-08-22T16:38:03.212Z",
+          "type": "UserMessageReceived",
+          "payload": {
+            "text": "I want to sell my townhouse in 10014 and get a valuation."
+          },
+          "seq": 1,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs8ytg0h8plz",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.162Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "plan",
+            "providerId": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 676,
+              "outputTokens": 97
+            },
+            "finishReason": "STOP",
+            "durationMs": 949
+          },
+          "seq": 2,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs8yczcq8ee9",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.162Z",
+          "type": "TurnPlanCreated",
+          "payload": {
+            "strategy": "llm",
+            "resolvedBy": "llm",
+            "plan": {
+              "memoryProposals": [
+                {
+                  "key": "intent",
+                  "value": "sell"
+                },
+                {
+                  "key": "listing_preference",
+                  "value": "townhouse"
+                },
+                {
+                  "key": "seller_zip",
+                  "value": "10014"
+                }
+              ],
+              "workingNotes": [],
+              "signals": [],
+              "retrievalRequests": []
+            }
+          },
+          "seq": 3,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs8z8ank3fdv",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.163Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "intent",
+            "value": "sell",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lqrikzx0n808i"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 4,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs8zzhgx19k0",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.163Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "intent",
+            "value": "sell",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lqrikzx0n808i"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lqs8z8ank3fdv"
+          },
+          "seq": 5,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs8zf9u0u9tn",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.163Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "listing_preference",
+            "value": "townhouse",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lqrikzx0n808i"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 6,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs8zwp2l94iw",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.163Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "listing_preference",
+            "value": "townhouse",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lqrikzx0n808i"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lqs8zf9u0u9tn"
+          },
+          "seq": 7,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs8zncziiqi4",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.163Z",
+          "type": "MemoryWriteProposed",
+          "payload": {
+            "key": "seller_zip",
+            "value": "10014",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lqrikzx0n808i"
+              ],
+              "sourceName": "latest_user_message"
+            }
+          },
+          "seq": 8,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs8zkbq15jiv",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.163Z",
+          "type": "MemoryWriteCommitted",
+          "payload": {
+            "key": "seller_zip",
+            "value": "10014",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lqrikzx0n808i"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "proposalEventId": "evt_mt4lqs8zncziiqi4"
+          },
+          "seq": 9,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs93dhkcayw1",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.167Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_invocation"
+          },
+          "seq": 10,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs98fqo9gnwh",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.172Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 1
+          },
+          "seq": 11,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqs98v3ldxebm",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.172Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_record_query_estate_properties_15bc1f",
+              "knowledge_record_query_estate_rooms_dd3ccb",
+              "knowledge_document_search_estate_service_policy_d064c4",
+              "send_lead_to_team"
+            ]
+          },
+          "seq": 12,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss6b9zlf7pc",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.854Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 1
+          },
+          "seq": 13,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss6bohq5ovp",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.854Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:1",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 1895,
+              "outputTokens": 33
+            },
+            "finishReason": "toolUse"
+          },
+          "seq": 14,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss6u0x8tlqf",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.854Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4"
+          },
+          "seq": 15,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss6f8rt519a",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.854Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "capability_requested",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4"
+          },
+          "seq": 16,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss6qnxnrn14",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.854Z",
+          "type": "DelegationRequested",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "input": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "query": "sell valuation rent"
+            }
+          },
+          "seq": 17,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss7in1hjosx",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.855Z",
+          "type": "KnowledgeRetrieved",
+          "payload": {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "query": "sell valuation rent",
+              "topK": 3
+            },
+            "sourceId": "estate_service_policy",
+            "resultIds": [
+              "estate_service_policy#0",
+              "estate_service_policy#1"
+            ],
+            "scores": [
+              0.5108,
+              0.5108
+            ],
+            "returnedCount": 2,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "sourceTitle": "EstatePro company and service policy",
+              "query": "sell valuation rent",
+              "chunks": [
+                {
+                  "sourceId": "estate_service_policy",
+                  "sourceTitle": "EstatePro company and service policy",
+                  "chunkId": "estate_service_policy#0",
+                  "text": "EstatePro is a boutique luxury real-estate firm founded in Manhattan by Marcus Sterling. The site reports more than $4.2B in total sales volume and 98% client retention. Its public office contact is +1 (212) 555-0198 and its Global HQ is 750 5th Avenue, New York, NY.\n\nThe concrete property record set contains exactly six showcased sale properties. Neighborhood-card counts—TriBeCa 12, Upper East Side 8, Chelsea 15, and West Village 6—are marketing display figures, not additional property records.\n\nThe records contain sale prices only. There is no rental pricing or rental-availability data. There is no live MLS, current listing status, viewing calendar, automated valuation, booking, payment, CRM, text-message, or phone-call backend.\n\nFor a buyer, use exact record queries for budget, location, bedroom, property, and room constraints. A zero-row result means no recorded match; do not invent or alter a property to fill the gap.",
+                  "score": 0.5108,
+                  "rank": 1
+                },
+                {
+                  "sourceId": "estate_service_policy",
+                  "sourceTitle": "EstatePro company and service policy",
+                  "chunkId": "estate_service_policy#1",
+                  "text": "For a buyer, use exact record queries for budget, location, bedroom, property, and room constraints. A zero-row result means no recorded match; do not invent or alter a property to fill the gap.\n\nFor a renter, retain the criteria and explain the missing rental data. For a seller, collect the property's ZIP code and route toward a human valuation conversation rather than a purchase listing.\n\nEmail is optional. Human follow-up requires a name and phone number. The only consequential capability is transmission of the exact confirmed lead payload to a human representative; its ToolResult is the authority on success, failure, or unknown outcome.",
+                  "score": 0.5108,
+                  "rank": 2
+                }
+              ]
+            }
+          },
+          "seq": 18,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss7g9ifx24h",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.855Z",
+          "type": "DelegationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 1,
+            "category": "knowledge",
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "outcome": "completed",
+            "summary": {
+              "returnedCount": 2,
+              "resultIds": [
+                "estate_service_policy#0",
+                "estate_service_policy#1"
+              ]
+            }
+          },
+          "seq": 19,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss7ib9syvbx",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.855Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "runtime_decision",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "detail": {
+              "kind": "proceed"
+            }
+          },
+          "seq": 20,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss8slbamfgh",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.856Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_tool",
+            "iteration": 1,
+            "capabilityName": "knowledge_document_search_estate_service_policy_d064c4",
+            "detail": {
+              "mutationVersion": 3,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 21,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss9g2vp0fs3",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.857Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "before_model",
+            "iteration": 2
+          },
+          "seq": 22,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqss9p0pae0j0",
+          "turn": 1,
+          "at": "2026-08-22T16:38:04.857Z",
+          "type": "AgentIterationStarted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "phaseId": null,
+            "capabilityNames": [
+              "knowledge_record_query_estate_properties_15bc1f",
+              "knowledge_record_query_estate_rooms_dd3ccb",
+              "knowledge_document_search_estate_service_policy_d064c4",
+              "send_lead_to_team"
+            ]
+          },
+          "seq": 23,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqtgp0dhgnugf",
+          "turn": 1,
+          "at": "2026-08-22T16:38:05.737Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_model",
+            "iteration": 2
+          },
+          "seq": 24,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqtgp57t98y71",
+          "turn": 1,
+          "at": "2026-08-22T16:38:05.737Z",
+          "type": "ModelCallCompleted",
+          "payload": {
+            "purpose": "agent_loop:2",
+            "providerId": "strands:gemini",
+            "model": "gemini-3.5-flash-lite",
+            "usage": {
+              "inputTokens": 2463,
+              "outputTokens": 88
+            },
+            "finishReason": "endTurn"
+          },
+          "seq": 25,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqtgqd975mout",
+          "turn": 1,
+          "at": "2026-08-22T16:38:05.738Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "after_invocation",
+            "detail": {
+              "mutationVersion": 3,
+              "runtimeContextKeysRead": []
+            }
+          },
+          "seq": 26,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqtgqop36z0ac",
+          "turn": 1,
+          "at": "2026-08-22T16:38:05.738Z",
+          "type": "ExecutionLifecycleObserved",
+          "payload": {
+            "engine": "strands-loop-v0.37",
+            "event": "execution_terminated",
+            "detail": {
+              "stopReason": "end_turn"
+            }
+          },
+          "seq": 27,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqtgqeqha4xzm",
+          "turn": 1,
+          "at": "2026-08-22T16:38:05.738Z",
+          "type": "AgentIterationCompleted",
+          "payload": {
+            "harness": "agent-harness-v0.37",
+            "iteration": 2,
+            "requested": 1,
+            "completed": 1,
+            "rejected": 0,
+            "stopReason": "completed"
+          },
+          "seq": 28,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        },
+        {
+          "id": "evt_mt4lqtgqikf43mqn",
+          "turn": 1,
+          "at": "2026-08-22T16:38:05.738Z",
+          "type": "AssistantMessageEmitted",
+          "payload": {
+            "text": "EstatePro specializes in showcasing luxury sale properties and assisting sellers with valuation conversations, though we don't provide automated online valuations. \n\nSince you are looking to sell your townhouse in ZIP code 10014, I would be happy to connect you with our team so a specialist can reach out to discuss your property's value. \n\nTo get started, what is your name and the best phone number to reach you?",
+            "stopReason": "completed"
+          },
+          "seq": 29,
+          "sessionId": "benchmark-rebuild-v1-p02-1787416683212"
+        }
+      ],
+      "finalState": {
+        "sessionId": "benchmark-rebuild-v1-p02-1787416683212",
+        "agentId": "benchmark-rebuild-v1-p02-arrokothai",
+        "agentVersion": 1,
+        "turn": 1,
+        "lastSeq": 29,
+        "memory": {
+          "intent": {
+            "key": "intent",
+            "value": "sell",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lqrikzx0n808i"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lqs8zzhgx19k0",
+            "at": "2026-08-22T16:38:04.163Z"
+          },
+          "listing_preference": {
+            "key": "listing_preference",
+            "value": "townhouse",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lqrikzx0n808i"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lqs8zwp2l94iw",
+            "at": "2026-08-22T16:38:04.163Z"
+          },
+          "seller_zip": {
+            "key": "seller_zip",
+            "value": "10014",
+            "writeMechanism": "planner_proposal",
+            "provenance": {
+              "kind": "user_claimed",
+              "sourceEventIds": [
+                "evt_mt4lqrikzx0n808i"
+              ],
+              "sourceName": "latest_user_message"
+            },
+            "authority": "authoritative",
+            "turn": 1,
+            "eventId": "evt_mt4lqs8zkbq15jiv",
+            "at": "2026-08-22T16:38:04.163Z"
+          }
+        },
+        "workingNotes": [],
+        "hostContext": {},
+        "phaseId": null,
+        "pendingAction": null,
+        "ledger": {},
+        "transcript": [
+          {
+            "role": "user",
+            "text": "I want to sell my townhouse in 10014 and get a valuation.",
+            "turn": 1,
+            "at": "2026-08-22T16:38:03.212Z"
+          },
+          {
+            "role": "assistant",
+            "text": "EstatePro specializes in showcasing luxury sale properties and assisting sellers with valuation conversations, though we don't provide automated online valuations. \n\nSince you are looking to sell your townhouse in ZIP code 10014, I would be happy to connect you with our team so a specialist can reach out to discuss your property's value. \n\nTo get started, what is your name and the best phone number to reach you?",
+            "turn": 1,
+            "at": "2026-08-22T16:38:05.738Z"
+          }
+        ],
+        "turnToolResults": [],
+        "turnSignals": [],
+        "turnPlan": {
+          "memoryProposals": [
+            {
+              "key": "intent",
+              "value": "sell"
+            },
+            {
+              "key": "listing_preference",
+              "value": "townhouse"
+            },
+            {
+              "key": "seller_zip",
+              "value": "10014"
+            }
+          ],
+          "workingNotes": [],
+          "signals": [],
+          "retrievalRequests": []
+        },
+        "turnRetrievals": [
+          {
+            "request": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "query": "sell valuation rent",
+              "topK": 3
+            },
+            "sourceId": "estate_service_policy",
+            "resultIds": [
+              "estate_service_policy#0",
+              "estate_service_policy#1"
+            ],
+            "scores": [
+              0.5108,
+              0.5108
+            ],
+            "returnedCount": 2,
+            "result": {
+              "kind": "document_search",
+              "sourceId": "estate_service_policy",
+              "sourceTitle": "EstatePro company and service policy",
+              "query": "sell valuation rent",
+              "chunks": [
+                {
+                  "sourceId": "estate_service_policy",
+                  "sourceTitle": "EstatePro company and service policy",
+                  "chunkId": "estate_service_policy#0",
+                  "text": "EstatePro is a boutique luxury real-estate firm founded in Manhattan by Marcus Sterling. The site reports more than $4.2B in total sales volume and 98% client retention. Its public office contact is +1 (212) 555-0198 and its Global HQ is 750 5th Avenue, New York, NY.\n\nThe concrete property record set contains exactly six showcased sale properties. Neighborhood-card counts—TriBeCa 12, Upper East Side 8, Chelsea 15, and West Village 6—are marketing display figures, not additional property records.\n\nThe records contain sale prices only. There is no rental pricing or rental-availability data. There is no live MLS, current listing status, viewing calendar, automated valuation, booking, payment, CRM, text-message, or phone-call backend.\n\nFor a buyer, use exact record queries for budget, location, bedroom, property, and room constraints. A zero-row result means no recorded match; do not invent or alter a property to fill the gap.",
+                  "score": 0.5108,
+                  "rank": 1
+                },
+                {
+                  "sourceId": "estate_service_policy",
+                  "sourceTitle": "EstatePro company and service policy",
+                  "chunkId": "estate_service_policy#1",
+                  "text": "For a buyer, use exact record queries for budget, location, bedroom, property, and room constraints. A zero-row result means no recorded match; do not invent or alter a property to fill the gap.\n\nFor a renter, retain the criteria and explain the missing rental data. For a seller, collect the property's ZIP code and route toward a human valuation conversation rather than a purchase listing.\n\nEmail is optional. Human follow-up requires a name and phone number. The only consequential capability is transmission of the exact confirmed lead payload to a human representative; its ToolResult is the authority on success, failure, or unknown outcome.",
+                  "score": 0.5108,
+                  "rank": 2
+                }
+              ]
+            }
+          }
+        ],
+        "allToolResults": [],
+        "unresolvedExternalExecution": null,
+        "status": "active",
+        "createdAt": "2026-08-22T16:38:03.212Z",
+        "updatedAt": "2026-08-22T16:38:05.738Z"
+      }
+    }
+  }
 }
