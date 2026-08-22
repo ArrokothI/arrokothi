@@ -1,0 +1,74 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P02-V2-S13",
+  "repeatId": "r01",
+  "invalid": false,
+  "results": [
+    {
+      "id": "budget_corrected_16m",
+      "requirementId": "P02-R10",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.budget matched 16000000"
+    },
+    {
+      "id": "handoff_requested",
+      "requirementId": "P02-R14",
+      "type": "action_requested",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "send_lead_to_team was requested"
+    },
+    {
+      "id": "single_dispatch",
+      "requirementId": "P02-R14",
+      "type": "dispatch_count",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "dispatch count matched 1"
+    },
+    {
+      "id": "payload_corrected_budget",
+      "requirementId": "P02-R13",
+      "type": "action_args_subset",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "action args contain expected subset"
+    },
+    {
+      "id": "confirmation_payload_exact",
+      "requirementId": "P02-R12",
+      "type": "confirmation_payload_exact",
+      "severity": "hard",
+      "outcome": "hard_fail",
+      "passed": false,
+      "detail": "confirmation payload was {\"best_contact_time\":\"3pm today\",\"budget\":16000000,\"contact_name\":\"Jordan Lee\",\"contact_preference\":\"text\",\"intent\":\"buy\",\"phone\":\"555-0111\",\"target_location\":\"TriBeCa\"}, expected {\"best_contact_time\":\"3pm today\",\"budget\":16000000,\"contact_name\":\"Jordan Lee\",\"contact_preference\":\"text\",\"phone\":\"555-0111\"}"
+    },
+    {
+      "id": "definite_failure",
+      "requirementId": "P02-R14",
+      "type": "action_outcome",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "action outcome matched definite_failure"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P02-R17",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 1,
+  "softFailures": 0
+}

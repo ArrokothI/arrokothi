@@ -1,0 +1,47 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P01-V2-S09",
+  "repeatId": "r01",
+  "invalid": false,
+  "results": [
+    {
+      "id": "area_510",
+      "requirementId": "P01-R05",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.wall_area_sq_ft matched 510"
+    },
+    {
+      "id": "thickness_10",
+      "requirementId": "P01-R05",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.wall_thickness_in matched 10"
+    },
+    {
+      "id": "volume_510x10",
+      "requirementId": "P01-R03",
+      "type": "numeric_close",
+      "severity": "hard",
+      "outcome": "hard_fail",
+      "passed": false,
+      "detail": "9.9 is 2.134639999999999 away from 12.03464; tolerance 0.05"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P01-R01",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 1,
+  "softFailures": 0
+}

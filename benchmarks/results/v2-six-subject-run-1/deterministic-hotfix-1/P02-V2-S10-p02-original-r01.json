@@ -1,0 +1,38 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P02-V2-S10",
+  "repeatId": "r01",
+  "invalid": false,
+  "results": [
+    {
+      "id": "only_tribeca_record",
+      "requirementId": "P02-R08",
+      "type": "record_ids_exact",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "record ids matched [\"4\"]"
+    },
+    {
+      "id": "tribeca_record_count",
+      "requirementId": "P02-R08",
+      "type": "record_count",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "record count matched 1"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P02-R17",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 0,
+  "softFailures": 0
+}

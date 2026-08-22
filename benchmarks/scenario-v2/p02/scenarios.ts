@@ -91,13 +91,20 @@ const dispatchCount = (id: string, requirementId: string, expected: number): Det
   onMissing: "inconclusive",
 });
 
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.1): the canonical neutral action for the P02
+// handoff is "send_lead_to_team" (see benchmark-rebuild-v1/p02-arrokothai/application.ts and
+// every neutral raw run's actionRequests[].actionName). This spec previously hardcoded the
+// pre-neutralization action name "send_email", which never matches any neutral raw run and
+// silently forced action_requested/action_args_subset assertions to "not requested"/missing for
+// every implementation. This is a mechanical evaluator-contract fix only; it does not change
+// scenario turns, setup/outcome injection, requirement meaning, or hard/soft severity.
 const actionRequested = (id: string, expected: boolean): DeterministicAssertionSpec => ({
   id,
   requirementId: "P02-R14",
   type: expected ? "action_requested" : "action_not_requested",
   severity: "hard",
-  description: expected ? "send_email is requested" : "send_email is not requested",
-  actionName: "send_email",
+  description: expected ? "send_lead_to_team is requested" : "send_lead_to_team is not requested",
+  actionName: "send_lead_to_team",
   onMissing: "inconclusive",
 });
 
@@ -107,7 +114,7 @@ const actionSubset = (id: string, expectedSubset: Record<string, string | number
   type: "action_args_subset",
   severity: "hard",
   description: "handoff payload contains expected current values",
-  actionName: "send_email",
+  actionName: "send_lead_to_team",
   expectedSubset,
 });
 
@@ -437,8 +444,8 @@ export const P02_SCENARIOS: ScenarioV2[] = [
       stateEquals("budget_corrected_16m", "P02-R10", "budget", 16_000_000),
       actionRequested("handoff_requested", true),
       dispatchCount("single_dispatch", "P02-R14", 1),
-      actionSubset("payload_corrected_budget", { budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text", best_time: "3pm today" }),
-      confirmationPayload({ budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text", best_time: "3pm today" }),
+      actionSubset("payload_corrected_budget", { budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text", best_contact_time: "3pm today" }),
+      confirmationPayload({ budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text", best_contact_time: "3pm today" }),
       actionOutcome("definite_failure", "definite_failure"),
       runtimeOk,
     ],
@@ -492,7 +499,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
       stateAbsent("email_absent", "P02-R11", "email"),
       actionRequested("handoff_requested", true),
       dispatchCount("single_dispatch", "P02-R14", 1),
-      actionSubset("payload_success", { contact_name: "Taylor Kim", phone: "555-0133", intent: "buy", target_location: "Malibu", budget: 13_000_000, contact_preference: "text", best_time: "after 10am" }),
+      actionSubset("payload_success", { contact_name: "Taylor Kim", phone: "555-0133", intent: "buy", target_location: "Malibu", budget: 13_000_000, contact_preference: "text", best_contact_time: "after 10am" }),
       actionOutcome("success", "success"),
       runtimeOk,
     ],
@@ -540,7 +547,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     expectedDeterministicAssertions: [
       actionRequested("handoff_requested", true),
       dispatchCount("single_dispatch_unknown", "P02-R14", 1),
-      actionSubset("payload_unknown", { contact_name: "Priya Shah", phone: "555-0144", target_location: "Upper West Side", budget: 19_000_000, contact_preference: "text", best_time: "tomorrow morning" }),
+      actionSubset("payload_unknown", { contact_name: "Priya Shah", phone: "555-0144", target_location: "Upper West Side", budget: 19_000_000, contact_preference: "text", best_contact_time: "tomorrow morning" }),
       actionOutcome("unknown_outcome", "outcome_unknown"),
       runtimeOk,
     ],

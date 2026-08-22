@@ -1,0 +1,29 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P02-V2-S12",
+  "repeatId": "r02",
+  "invalid": false,
+  "results": [
+    {
+      "id": "park_avenue_price",
+      "requirementId": "P02-R06",
+      "type": "record_field_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "record 6.price matched"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P02-R17",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 0,
+  "softFailures": 0
+}

@@ -1,0 +1,47 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P02-V2-S08",
+  "repeatId": "r02",
+  "invalid": false,
+  "results": [
+    {
+      "id": "phone_absent",
+      "requirementId": "P02-R11",
+      "type": "state_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.phone is absent"
+    },
+    {
+      "id": "no_email_without_phone",
+      "requirementId": "P02-R14",
+      "type": "action_not_requested",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "id": "dispatch_zero",
+      "requirementId": "P02-R11",
+      "type": "dispatch_count",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "dispatch count matched 0"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P02-R17",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 0,
+  "softFailures": 0
+}

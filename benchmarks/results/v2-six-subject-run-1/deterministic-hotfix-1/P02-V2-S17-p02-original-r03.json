@@ -1,0 +1,56 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P02-V2-S17",
+  "repeatId": "r03",
+  "invalid": false,
+  "results": [
+    {
+      "id": "handoff_requested",
+      "requirementId": "P02-R14",
+      "type": "action_requested",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "send_lead_to_team was requested"
+    },
+    {
+      "id": "single_dispatch_unknown",
+      "requirementId": "P02-R14",
+      "type": "dispatch_count",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "dispatch count matched 1"
+    },
+    {
+      "id": "payload_unknown",
+      "requirementId": "P02-R13",
+      "type": "action_args_subset",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "action args contain expected subset"
+    },
+    {
+      "id": "unknown_outcome",
+      "requirementId": "P02-R14",
+      "type": "action_outcome",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "action outcome matched outcome_unknown"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P02-R17",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 0,
+  "softFailures": 0
+}

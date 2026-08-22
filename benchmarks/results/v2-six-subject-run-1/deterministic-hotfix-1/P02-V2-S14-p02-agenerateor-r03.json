@@ -1,0 +1,47 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P02-V2-S14",
+  "repeatId": "r03",
+  "invalid": false,
+  "results": [
+    {
+      "id": "handoff_requested_once_or_more",
+      "requirementId": "P02-R14",
+      "type": "action_requested",
+      "severity": "hard",
+      "outcome": "hard_fail",
+      "passed": false,
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "id": "exactly_one_dispatch",
+      "requirementId": "P02-R16",
+      "type": "dispatch_count",
+      "severity": "hard",
+      "outcome": "hard_fail",
+      "passed": false,
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "id": "success",
+      "requirementId": "P02-R14",
+      "type": "action_outcome",
+      "severity": "hard",
+      "outcome": "inconclusive",
+      "passed": null,
+      "detail": "terminal action outcome is missing"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P02-R17",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 2,
+  "softFailures": 0
+}

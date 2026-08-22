@@ -1,0 +1,74 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P02-V2-S04",
+  "repeatId": "r01",
+  "invalid": false,
+  "results": [
+    {
+      "id": "intent_buy",
+      "requirementId": "P02-R01",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.intent matched \"buy\""
+    },
+    {
+      "id": "financing_cash",
+      "requirementId": "P02-R03",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.financing matched \"cash\""
+    },
+    {
+      "id": "timeline_6mo",
+      "requirementId": "P02-R03",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "hard_fail",
+      "passed": false,
+      "detail": "state.timeline was \"6 months\", expected \"six-month\""
+    },
+    {
+      "id": "budget_25m",
+      "requirementId": "P02-R03",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.budget matched 25000000"
+    },
+    {
+      "id": "location_west_village",
+      "requirementId": "P02-R03",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "hard_fail",
+      "passed": false,
+      "detail": "state.target_location was \"West Village, NY\", expected \"West Village\""
+    },
+    {
+      "id": "name_maya",
+      "requirementId": "P02-R10",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.contact_name matched \"Maya Chen\""
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P02-R17",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 2,
+  "softFailures": 0
+}

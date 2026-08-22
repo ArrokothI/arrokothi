@@ -1,0 +1,794 @@
+{
+  "schemaVersion": "v2-six-subject-deterministic-hotfix-summary-v1",
+  "experimentId": "v2-six-subject-run-1",
+  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "hotfixDate": "2026-08-23",
+  "hotfixCommit": "981cd6d3ab05b1d3d0f2c51907d567ea08943557",
+  "hotfixCommitTimestamp": "2026-08-23T03:37:14+08:00",
+  "provenanceRecord": {
+    "generationTimeScenarioHash": "3f15e2ad5c35bd66e4d24a5d19b961858e187034f2b473aaa4bd9940f3d2e4e7",
+    "generationTimeEvaluatorHash": "20166c554085c0d62b23703baa37ae799821c3bc56edc49478e885a96748ffa9",
+    "postHotfixScenarioHash": "e58068d8486e32a8bd9984d24c6f2d61372f590f2fa452baf973df43eff26aa6",
+    "postHotfixEvaluatorHash": "9cefeb93012b224577de419ba9df324ff18a8826b971852201592a7f5b1da4e2"
+  },
+  "unitsEvaluated": 369,
+  "invalidUnits": [],
+  "deterministicRatesByApplicationAndImplementation": [
+    {
+      "applicationId": "p01",
+      "implementationId": "p01-agenerateor",
+      "hard": {
+        "tally": {
+          "pass": 144,
+          "hard_fail": 0,
+          "soft_fail": 0,
+          "inconclusive": 21,
+          "not_applicable": 0
+        },
+        "passRate": 1,
+        "hardFailRate": 0,
+        "softFailRate": 0,
+        "inconclusiveRate": 0.12727272727272726
+      },
+      "soft": {
+        "tally": {
+          "pass": 0,
+          "hard_fail": 0,
+          "soft_fail": 0,
+          "inconclusive": 0,
+          "not_applicable": 0
+        },
+        "passRate": null,
+        "hardFailRate": null,
+        "softFailRate": null,
+        "inconclusiveRate": null
+      }
+    },
+    {
+      "applicationId": "p01",
+      "implementationId": "p01-arrokothai",
+      "hard": {
+        "tally": {
+          "pass": 156,
+          "hard_fail": 6,
+          "soft_fail": 0,
+          "inconclusive": 3,
+          "not_applicable": 0
+        },
+        "passRate": 0.9629629629629629,
+        "hardFailRate": 0.037037037037037035,
+        "softFailRate": 0,
+        "inconclusiveRate": 0.01818181818181818
+      },
+      "soft": {
+        "tally": {
+          "pass": 0,
+          "hard_fail": 0,
+          "soft_fail": 0,
+          "inconclusive": 0,
+          "not_applicable": 0
+        },
+        "passRate": null,
+        "hardFailRate": null,
+        "softFailRate": null,
+        "inconclusiveRate": null
+      }
+    },
+    {
+      "applicationId": "p01",
+      "implementationId": "p01-original",
+      "hard": {
+        "tally": {
+          "pass": 147,
+          "hard_fail": 15,
+          "soft_fail": 0,
+          "inconclusive": 3,
+          "not_applicable": 0
+        },
+        "passRate": 0.9074074074074074,
+        "hardFailRate": 0.09259259259259259,
+        "softFailRate": 0,
+        "inconclusiveRate": 0.01818181818181818
+      },
+      "soft": {
+        "tally": {
+          "pass": 0,
+          "hard_fail": 0,
+          "soft_fail": 0,
+          "inconclusive": 0,
+          "not_applicable": 0
+        },
+        "passRate": null,
+        "hardFailRate": null,
+        "softFailRate": null,
+        "inconclusiveRate": null
+      }
+    },
+    {
+      "applicationId": "p02",
+      "implementationId": "p02-agenerateor",
+      "hard": {
+        "tally": {
+          "pass": 126,
+          "hard_fail": 46,
+          "soft_fail": 0,
+          "inconclusive": 21,
+          "not_applicable": 5
+        },
+        "passRate": 0.7325581395348837,
+        "hardFailRate": 0.26744186046511625,
+        "softFailRate": 0,
+        "inconclusiveRate": 0.10880829015544041
+      },
+      "soft": {
+        "tally": {
+          "pass": 0,
+          "hard_fail": 0,
+          "soft_fail": 0,
+          "inconclusive": 0,
+          "not_applicable": 0
+        },
+        "passRate": null,
+        "hardFailRate": null,
+        "softFailRate": null,
+        "inconclusiveRate": null
+      }
+    },
+    {
+      "applicationId": "p02",
+      "implementationId": "p02-arrokothai",
+      "hard": {
+        "tally": {
+          "pass": 178,
+          "hard_fail": 17,
+          "soft_fail": 0,
+          "inconclusive": 3,
+          "not_applicable": 0
+        },
+        "passRate": 0.9128205128205128,
+        "hardFailRate": 0.08717948717948718,
+        "softFailRate": 0,
+        "inconclusiveRate": 0.015151515151515152
+      },
+      "soft": {
+        "tally": {
+          "pass": 0,
+          "hard_fail": 0,
+          "soft_fail": 0,
+          "inconclusive": 0,
+          "not_applicable": 0
+        },
+        "passRate": null,
+        "hardFailRate": null,
+        "softFailRate": null,
+        "inconclusiveRate": null
+      }
+    },
+    {
+      "applicationId": "p02",
+      "implementationId": "p02-original",
+      "hard": {
+        "tally": {
+          "pass": 160,
+          "hard_fail": 19,
+          "soft_fail": 0,
+          "inconclusive": 14,
+          "not_applicable": 5
+        },
+        "passRate": 0.8938547486033519,
+        "hardFailRate": 0.10614525139664804,
+        "softFailRate": 0,
+        "inconclusiveRate": 0.07253886010362694
+      },
+      "soft": {
+        "tally": {
+          "pass": 0,
+          "hard_fail": 0,
+          "soft_fail": 0,
+          "inconclusive": 0,
+          "not_applicable": 0
+        },
+        "passRate": null,
+        "hardFailRate": null,
+        "softFailRate": null,
+        "inconclusiveRate": null
+      }
+    }
+  ],
+  "s13S15S17AuditTable": [
+    {
+      "unitId": "P02-V2-S13-p02-agenerateor-r01",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r01",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "inconclusive",
+      "hardFailures": 3
+    },
+    {
+      "unitId": "P02-V2-S13-p02-agenerateor-r02",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r02",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "inconclusive",
+      "hardFailures": 3
+    },
+    {
+      "unitId": "P02-V2-S13-p02-agenerateor-r03",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r03",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "inconclusive",
+      "hardFailures": 3
+    },
+    {
+      "unitId": "P02-V2-S13-p02-agenerateor-r04",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r04",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "inconclusive",
+      "hardFailures": 3
+    },
+    {
+      "unitId": "P02-V2-S13-p02-agenerateor-r05",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r05",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "inconclusive",
+      "hardFailures": 3
+    },
+    {
+      "unitId": "P02-V2-S13-p02-arrokothai-r01",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r01",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": "hard_fail",
+      "actionOutcome": "pass",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S13-p02-arrokothai-r02",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r02",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": "hard_fail",
+      "actionOutcome": "pass",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S13-p02-arrokothai-r03",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r03",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": "hard_fail",
+      "actionOutcome": "pass",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S13-p02-arrokothai-r04",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r04",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": "hard_fail",
+      "actionOutcome": "pass",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S13-p02-arrokothai-r05",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r05",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": "hard_fail",
+      "actionOutcome": "pass",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S13-p02-original-r01",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-original",
+      "repeatId": "r01",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S13-p02-original-r02",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-original",
+      "repeatId": "r02",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S13-p02-original-r03",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-original",
+      "repeatId": "r03",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S13-p02-original-r04",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-original",
+      "repeatId": "r04",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S13-p02-original-r05",
+      "scenarioId": "P02-V2-S13",
+      "implementationId": "p02-original",
+      "repeatId": "r05",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": "not_applicable",
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S15-p02-agenerateor-r01",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r01",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S15-p02-agenerateor-r02",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r02",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S15-p02-agenerateor-r03",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r03",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S15-p02-agenerateor-r04",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r04",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S15-p02-agenerateor-r05",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r05",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S15-p02-arrokothai-r01",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r01",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "hard_fail",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S15-p02-arrokothai-r02",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r02",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S15-p02-arrokothai-r03",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r03",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S15-p02-arrokothai-r04",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r04",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S15-p02-arrokothai-r05",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r05",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "hard_fail",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S15-p02-original-r01",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-original",
+      "repeatId": "r01",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S15-p02-original-r02",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-original",
+      "repeatId": "r02",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S15-p02-original-r03",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-original",
+      "repeatId": "r03",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "hard_fail",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S15-p02-original-r04",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-original",
+      "repeatId": "r04",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S15-p02-original-r05",
+      "scenarioId": "P02-V2-S15",
+      "implementationId": "p02-original",
+      "repeatId": "r05",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "hard_fail",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S17-p02-agenerateor-r01",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r01",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S17-p02-agenerateor-r02",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r02",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S17-p02-agenerateor-r03",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r03",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S17-p02-agenerateor-r04",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r04",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S17-p02-agenerateor-r05",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-agenerateor",
+      "repeatId": "r05",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S17-p02-arrokothai-r01",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r01",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S17-p02-arrokothai-r02",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r02",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S17-p02-arrokothai-r03",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r03",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S17-p02-arrokothai-r04",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r04",
+      "handoffRequested": "pass",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 1
+    },
+    {
+      "unitId": "P02-V2-S17-p02-arrokothai-r05",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-arrokothai",
+      "repeatId": "r05",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S17-p02-original-r01",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-original",
+      "repeatId": "r01",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S17-p02-original-r02",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-original",
+      "repeatId": "r02",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S17-p02-original-r03",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-original",
+      "repeatId": "r03",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    },
+    {
+      "unitId": "P02-V2-S17-p02-original-r04",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-original",
+      "repeatId": "r04",
+      "handoffRequested": "hard_fail",
+      "dispatchCount": "hard_fail",
+      "payloadSubset": "inconclusive",
+      "confirmationExact": null,
+      "actionOutcome": "inconclusive",
+      "hardFailures": 2
+    },
+    {
+      "unitId": "P02-V2-S17-p02-original-r05",
+      "scenarioId": "P02-V2-S17",
+      "implementationId": "p02-original",
+      "repeatId": "r05",
+      "handoffRequested": "pass",
+      "dispatchCount": "pass",
+      "payloadSubset": "pass",
+      "confirmationExact": null,
+      "actionOutcome": "pass",
+      "hardFailures": 0
+    }
+  ],
+  "provenance": {
+    "requestedModelExpected": "gemini-3.5-flash-lite",
+    "requestedModelMismatches": [],
+    "providerReportedMismatches": [],
+    "summaryByImplementation": [
+      {
+        "implementationId": "p01-agenerateor",
+        "matched": 0,
+        "unavailable": 60,
+        "mismatch": 0,
+        "requestedWrong": 0
+      },
+      {
+        "implementationId": "p01-arrokothai",
+        "matched": 60,
+        "unavailable": 0,
+        "mismatch": 0,
+        "requestedWrong": 0
+      },
+      {
+        "implementationId": "p01-original",
+        "matched": 60,
+        "unavailable": 0,
+        "mismatch": 0,
+        "requestedWrong": 0
+      },
+      {
+        "implementationId": "p02-agenerateor",
+        "matched": 0,
+        "unavailable": 63,
+        "mismatch": 0,
+        "requestedWrong": 0
+      },
+      {
+        "implementationId": "p02-arrokothai",
+        "matched": 63,
+        "unavailable": 0,
+        "mismatch": 0,
+        "requestedWrong": 0
+      },
+      {
+        "implementationId": "p02-original",
+        "matched": 63,
+        "unavailable": 0,
+        "mismatch": 0,
+        "requestedWrong": 0
+      }
+    ]
+  },
+  "noLiveCallsMade": {
+    "semantic": 0,
+    "pairwise": 0,
+    "subjectExecutions": 0
+  }
+}
