@@ -13,7 +13,7 @@ contracts.
 
 ## Install and verify
 
-Node 22.6 or newer is required.
+Node 22.9 or newer is required.
 
 ```bash
 npm install
@@ -25,11 +25,21 @@ npm run example:p02
 npm run studio
 ```
 
-All default examples and tests are offline. The optional live Strands/Gemini example reads a key at
-the application boundary:
+All default examples and tests are offline. The optional live Strands/Gemini example and the
+`--live` benchmarks (see [benchmarks/README.md](benchmarks/README.md)) read a key at the
+application boundary. Either export it in the shell:
 
 ```bash
 GEMINI_API_KEY=... npm run example:strands -- --live
+```
+
+or copy [.env.example](.env.example) to `.env` (git-ignored) and set `GEMINI_API_KEY` /
+`GEMINI_MODEL` there — the `example:strands`, `bench:p01`, and `bench:p02` npm scripts load it
+automatically via node's `--env-file-if-exists` flag:
+
+```bash
+cp .env.example .env   # then edit .env with your key/model
+npm run example:strands -- --live
 ```
 
 Credentials and provider objects are never serialized into `AgentDefinition`.

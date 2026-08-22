@@ -34,6 +34,15 @@ node --experimental-strip-types benchmarks/p01-craig/run.ts          # adapter s
 GEMINI_API_KEY=... node --experimental-strip-types benchmarks/p01-craig/run.ts --live
 ```
 
+Or set the key (and optionally `GEMINI_MODEL`, in place of `--model=`) once in a git-ignored `.env`
+file at the repo root (copy [`.env.example`](../.env.example)) and use the npm scripts, which load
+it automatically:
+
+```bash
+npm run bench:p01 -- --live
+npm run bench:p02 -- --live
+```
+
 | Mode | What it is | What it establishes |
 | --- | --- | --- |
 | `harness_selfcheck` (default) | No model is consulted. | The adapter works: scenarios load, state projects into canonical names, tool events are captured, every assertion executes. Every scenario grades `inconclusive`, because that is the correct grade for a run no model answered. **Not a measurement.** |

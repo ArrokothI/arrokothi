@@ -40,7 +40,8 @@ export function chooseProvider(argv: string[]): ProviderChoice {
     );
   }
 
-  const model = modelArg ?? "gemini-3.5-flash-lite";
+  // Precedence: --model=<id> CLI flag, then GEMINI_MODEL (e.g. from .env), then the default.
+  const model = modelArg ?? process.env["GEMINI_MODEL"] ?? "gemini-3.5-flash-lite";
   // Pacing is applied BETWEEN TURNS, but the two-pass harness issues at least two model calls per
   // turn back-to-back (plan + respond), plus one more per tool round trip - roughly 2.3 calls
   // per turn in practice. To stay under the protocol's conservative ~10 successful-calls/minute
@@ -62,7 +63,7 @@ export function describeUsage(script: string): string {
     "",
     "  (default)   harness self-check. Exercises the adapter with no model. NOT a measurement.",
     "  --live      run every turn against a real provider. Requires GEMINI_API_KEY.",
-    "  --model=    override the model id (default gemini-3.5-flash-lite).",
+    "  --model=    override the model id (default gemini-3.5-flash-lite, or GEMINI_MODEL if set).",
     "  --pace=     milliseconds between TURNS (default 15000 on --live; each turn is ~2.3 model calls).",
   ].join("\n");
 }
