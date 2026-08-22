@@ -1,6 +1,6 @@
 {
   "name": "@agent-sdk/example-p01-craig",
-  "version": "0.36.0",
+  "version": "0.36.1",
   "private": true,
   "type": "module",
   "exports": {

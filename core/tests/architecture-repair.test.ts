@@ -7,6 +7,7 @@ import {
   type WebSearchProvider,
   ReferenceLoopEngine,
   buildCapabilityCatalog,
+  createRecordQueryToolDefinition,
   defineAgent,
   knowledgeCapabilityName,
 } from "../src/index.ts";
@@ -179,7 +180,7 @@ describe("generic architecture repair", () => {
     assert.deepEqual(durable?.type === "KnowledgeRetrieved" ? durable.payload.result : undefined, observation);
   });
 
-  it("projects authored record field semantics into catalog, capability, and planner context", async () => {
+  it("projects authored record field semantics only to their implemented surfaces", async () => {
     const definition = defineAgent({
       id: "field-semantics",
       name: "Field Semantics",
@@ -197,6 +198,7 @@ describe("generic architecture repair", () => {
             supplier_region: {
               schema: { kind: "string" },
               description: "Contractual service region assigned by the supplier registry.",
+              examples: ["north-sector"],
             },
             active: { kind: "boolean" },
           },
@@ -214,6 +216,7 @@ describe("generic architecture repair", () => {
         name: "supplier_region",
         type: "string",
         description: "Contractual service region assigned by the supplier registry.",
+        examples: ["north-sector"],
       },
       { name: "active", type: "boolean" },
     ]);
@@ -226,6 +229,8 @@ describe("generic architecture repair", () => {
     const recordCapability = capabilities.capabilities.find((candidate) => candidate.implementation.kind === "knowledge")!;
     assert.match(recordCapability.modelSpec.description, /Contractual service region assigned by the supplier registry/);
     assert.match(JSON.stringify(recordCapability.modelSpec.input), /supplier_region/);
+    assert.doesNotMatch(recordCapability.modelSpec.description, /north-sector/);
+    assert.doesNotMatch(JSON.stringify(recordCapability.modelSpec.input), /north-sector/);
 
     const model = new ScriptedModelProvider([
       { purpose: "plan", json: { memory_writes: {}, working_notes: [], signals: [], retrieval_requests: [] } },
@@ -238,6 +243,12 @@ describe("generic architecture repair", () => {
     const sessionId = await built.runtime.createSession("field-semantics");
     await built.runtime.runTurn({ sessionId, message: "Inspect the supplier registry." });
     assert.match(model.requests.find((request) => request.purpose === "plan")!.system, /supplier_region \(string\) - Contractual service region/);
+    assert.match(model.requests.find((request) => request.purpose === "plan")!.system, /\[examples: "north-sector"\]/);
+
+    const source = definition.knowledge[0]!.source;
+    assert.equal(source.kind, "record_set");
+    const compatibilityTool = createRecordQueryToolDefinition(source);
+    assert.match(compatibilityTool.description, /\[examples: "north-sector"\]/);
   });
 
   it("does not implicitly dispatch a confirmed external action twice after definite failure", async () => {

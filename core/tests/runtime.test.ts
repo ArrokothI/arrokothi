@@ -4,6 +4,9 @@ import { ScriptedModelProvider } from "../src/testing/scripted-provider.ts";
 import { RecordingExecutor } from "../src/testing/fake-executors.ts";
 import { ModelProviderError } from "../src/provider/types.ts";
 import type { ModelProvider, ModelResponse } from "../src/provider/types.ts";
+import type { HarnessImplementation, HarnessServices, HarnessTurnInput, HarnessTurnResult } from "../src/harness/types.ts";
+import type { ToolDefinition } from "../src/tools/types.ts";
+import { attemptToolCall, resolvePendingConfirmation } from "../src/tools/authorize.ts";
 import { buildRuntime, callTool, interpret, reply, testDefinition } from "./helpers.ts";
 
 /** A model that never stops calling a tool - the classic runaway loop. */
@@ -105,7 +108,92 @@ describe("degradation is truthful", () => {
     const error = result.events.find((e) => e.type === "RuntimeError");
     assert.equal(error?.type === "RuntimeError" && error.payload.code, "empty_model_response");
   });
+
+  test("top-level runtime fallback does not deny an already recorded external action", async () => {
+    const action: ToolDefinition = {
+      name: "transmit_receipt",
+      label: "transmit the receipt",
+      description: "Transmit a synthetic receipt to an external system.",
+      effect: "external_side_effect",
+      confirmation: "required",
+      idempotency: "per_input",
+      argumentPolicies: { receipt_id: { kind: "model_composed" } },
+      input: { kind: "object", fields: { receipt_id: { required: true, schema: { kind: "string" } } } },
+      output: { kind: "object", additionalProperties: true, fields: {} },
+    };
+    const executor = new RecordingExecutor(() => ({ ok: true, output: { transmitted: true, receipt_id: "R-100" } }));
+    const { runtime, sessions } = buildRuntime(new ScriptedModelProvider([]), {
+      definition: testDefinition({ tools: [{ definition: action }] }),
+      harness: new ThrowAfterConfirmedActionHarness(action.name),
+      registerTools: (registry) => registry.register(action.name, executor),
+    });
+    const sessionId = await runtime.createSession("d4");
+    const pending = await runtime.runTurn({ sessionId, message: "Transmit receipt R-100." });
+    assert.equal(pending.stopReason, "awaiting_confirmation");
+
+    const result = await runtime.runTurn({ sessionId, message: "Yes, transmit that exact receipt." });
+
+    assert.equal(executor.callCount, 1, "the external executor succeeded before the later harness failure");
+    assert.equal(result.stopReason, "error");
+    assert.doesNotMatch(result.reply, /nothing (?:was )?(?:sent|saved|performed|executed|transmitted)/i);
+    assert.ok(result.events.some((event) => event.type === "ToolExecutionSucceeded"));
+    assert.equal(result.state.allToolResults.at(-1)?.ok, true);
+
+    const durable = await sessions.readEvents(sessionId);
+    assert.ok(durable.some((event) => event.type === "ToolExecutionSucceeded"));
+    const replayed = await runtime.replay(sessionId);
+    assert.equal(replayed.allToolResults.at(-1)?.outcome, "success");
+  });
+
+  test("top-level runtime fallback remains honest before any action executes", async () => {
+    const { runtime } = buildRuntime(new ScriptedModelProvider([]), { harness: new ThrowBeforeActionHarness() });
+    const sessionId = await runtime.createSession("d5");
+    const result = await runtime.runTurn({ sessionId, message: "Hello." });
+
+    assert.equal(result.stopReason, "error");
+    assert.match(result.reply, /went wrong|could not complete/i);
+    assert.ok(result.events.some((event) => event.type === "RuntimeError"));
+    assert.equal(result.events.some((event) => event.type === "ToolExecutionSucceeded"), false);
+  });
 });
+
+class ThrowAfterConfirmedActionHarness implements HarnessImplementation {
+  readonly name = "throw-after-confirmed-action";
+  private readonly toolName: string;
+
+  constructor(toolName: string) {
+    this.toolName = toolName;
+  }
+
+  async runTurn(input: HarnessTurnInput, services: HarnessServices): Promise<HarnessTurnResult> {
+    const deps = {
+      definition: services.definition,
+      tools: services.tools,
+      journal: input.journal,
+      confirmationResolver: services.confirmationResolver,
+      ids: services.ids,
+      clock: services.clock,
+      grants: new Set<string>(),
+    };
+    const confirmation = resolvePendingConfirmation(deps, input.userMessage, input.turn);
+    if (confirmation.resolved && confirmation.decision === "confirm") {
+      await attemptToolCall(deps, confirmation.action.toolName, confirmation.action.args, input.turn, "runtime");
+      throw new Error("synthetic later harness failure");
+    }
+    const outcome = await attemptToolCall(deps, this.toolName, { receipt_id: "R-100" }, input.turn, "model");
+    if (outcome.kind !== "awaiting_confirmation") throw new Error("synthetic fixture expected confirmation");
+    input.journal.append({ type: "AssistantMessageEmitted", turn: input.turn, payload: { text: outcome.promptText, stopReason: "awaiting_confirmation" } });
+    return { replyText: outcome.promptText, stopReason: "awaiting_confirmation", steps: 1 };
+  }
+}
+
+class ThrowBeforeActionHarness implements HarnessImplementation {
+  readonly name = "throw-before-action";
+
+  async runTurn(): Promise<HarnessTurnResult> {
+    throw new Error("synthetic early harness failure");
+  }
+}
 
 describe("traces record provider and model metadata", () => {
   test("every model call is evented with its provider and model", async () => {

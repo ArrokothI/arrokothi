@@ -3,11 +3,39 @@ import assert from "node:assert/strict";
 import type { RecordSetSource } from "../src/knowledge/types.ts";
 import { queryRecords } from "../src/knowledge/record-query.ts";
 import { DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, KnowledgeIndex, chunkDocument } from "../src/knowledge/in-memory.ts";
+import { defineAgent, validateDefinition } from "../src/definition/definition.ts";
 import { parseRecordQueryArgs, recordQueryTools } from "../src/tools/record-query-tool.ts";
 import { ScriptedModelProvider } from "../src/testing/scripted-provider.ts";
 import { PROPERTIES, buildRuntime, callTool, interpret, reply, testDefinition } from "./helpers.ts";
 
 const listings = testDefinition().knowledge[0]!.source as RecordSetSource;
+
+function metadataDefinition(fields: Record<string, unknown>) {
+  return defineAgent({
+    id: "record-metadata-validation",
+    name: "Record Metadata Validation",
+    goal: "Query synthetic inventory records.",
+    model: { providerId: "scripted", model: "scripted-model", temperature: 0 },
+    globalRules: [],
+    memorySchema: { fields: [] },
+    hostContextSchema: { fields: [] },
+    knowledge: [{
+      source: {
+        id: "synthetic_inventory",
+        kind: "record_set",
+        title: "Synthetic inventory",
+        fields: fields as RecordSetSource["fields"],
+        records: [{ item_code: "A-1", score: 7, active: true, status: "ready" }],
+      },
+    }],
+    tools: [],
+    policies: {},
+  });
+}
+
+function validationErrors(fields: Record<string, unknown>) {
+  return validateDefinition(metadataDefinition(fields)).filter((issue) => issue.severity === "error");
+}
 
 /** INVARIANT 6 - deterministic record-set filtering, especially the numeric budget constraint. */
 describe("invariant 6: deterministic record filtering", () => {
@@ -88,6 +116,100 @@ describe("invariant 6: deterministic record filtering", () => {
     const asSingle = parseRecordQueryArgs({ filters: { field: "price", op: "lte", value: 20_000_000 } });
     assert.deepEqual(asArray.filters, asObject.filters);
     assert.deepEqual(asArray.filters, asSingle.filters);
+  });
+});
+
+describe("record field metadata validation", () => {
+  test("valid primitive metadata examples pass", () => {
+    const errors = validationErrors({
+      item_code: {
+        schema: { kind: "string" },
+        description: "Stable item code assigned by the synthetic inventory system.",
+        examples: ["A-1", "B-2"],
+      },
+      score: {
+        schema: { kind: "number", min: 0 },
+        description: "Synthetic ranking score.",
+        examples: [7, 11],
+      },
+      active: {
+        schema: { kind: "boolean" },
+        description: "Whether the synthetic item is active.",
+        examples: [true, false],
+      },
+      status: {
+        schema: { kind: "enum", choices: ["ready", "hold"] },
+        description: "Synthetic processing state.",
+        examples: ["ready"],
+      },
+    });
+
+    assert.deepEqual(errors, []);
+  });
+
+  test("legacy bare ValueSchema fields still pass unchanged", () => {
+    const errors = validationErrors({
+      item_code: { kind: "string" },
+      score: { kind: "number" },
+      active: { kind: "boolean" },
+      status: { kind: "enum", choices: ["ready", "hold"] },
+    });
+
+    assert.deepEqual(errors, []);
+  });
+
+  test("examples must match the declared field schema", () => {
+    const errors = validationErrors({
+      score: {
+        schema: { kind: "number" },
+        description: "Synthetic ranking score.",
+        examples: ["high"],
+      },
+    });
+
+    assert.ok(errors.some((issue) => issue.path === "knowledge.synthetic_inventory.fields.score.examples[0]" && /expected number/.test(issue.message)));
+  });
+
+  test("enum examples must be declared choices", () => {
+    const errors = validationErrors({
+      status: {
+        schema: { kind: "enum", choices: ["ready", "hold"] },
+        description: "Synthetic processing state.",
+        examples: ["paused"],
+      },
+    });
+
+    assert.ok(errors.some((issue) => issue.path === "knowledge.synthetic_inventory.fields.status.examples[0]" && /expected one of ready \| hold/.test(issue.message)));
+  });
+
+  test("blank and non-string descriptions are rejected", () => {
+    const errors = validationErrors({
+      blank_description: {
+        schema: { kind: "string" },
+        description: "   ",
+        examples: ["A-1"],
+      },
+      invalid_description: {
+        schema: { kind: "string" },
+        description: 42,
+        examples: ["B-2"],
+      },
+    });
+
+    assert.ok(errors.some((issue) => issue.path === "knowledge.synthetic_inventory.fields.blank_description.description"));
+    assert.ok(errors.some((issue) => issue.path === "knowledge.synthetic_inventory.fields.invalid_description.description"));
+  });
+
+  test("examples for schemas outside the primitive examples contract are rejected", () => {
+    const errors = validationErrors({
+      tags: {
+        schema: { kind: "string_array" },
+        description: "Synthetic tags attached to the item.",
+        examples: ["fragile"],
+      },
+    });
+
+    assert.ok(errors.some((issue) => issue.path === "knowledge.synthetic_inventory.fields.tags.examples[0]" && /expected string\[\]/.test(issue.message)));
   });
 });
 

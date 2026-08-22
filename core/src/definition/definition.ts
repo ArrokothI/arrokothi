@@ -1,9 +1,188 @@
 import type { AgentDefinition, AgentRule, AgentRuleInput, DefinitionIssue } from "./types.ts";
 import { DEFAULT_POLICIES } from "./types.ts";
 import { hashValue } from "../util/hash.ts";
+import type { ValueSchema } from "../schema/value-schema.ts";
+import { describeIssues, validateValue } from "../schema/value-schema.ts";
 
 /** A goal longer than this is almost certainly a requirements document leaking into every prompt. */
 const GOAL_WARN_CHARS = 600;
+
+type IssueFn = (path: string, message: string) => void;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function validateIntegerOption(value: unknown, path: string, name: string, error: IssueFn): boolean {
+  if (value !== undefined && (!Number.isInteger(value) || (value as number) < 0)) {
+    error(path, `${name} must be a non-negative integer`);
+    return false;
+  }
+  return true;
+}
+
+function validateValueSchemaShape(schema: unknown, path: string, error: IssueFn): schema is ValueSchema {
+  if (!isRecord(schema)) {
+    error(path, "schema must be a JSON object");
+    return false;
+  }
+
+  const kind = schema["kind"];
+  if (typeof kind !== "string") {
+    error(`${path}.kind`, "schema kind is required");
+    return false;
+  }
+
+  switch (kind) {
+    case "string": {
+      let ok = true;
+      ok = validateIntegerOption(schema["minLength"], `${path}.minLength`, "minLength", error) && ok;
+      ok = validateIntegerOption(schema["maxLength"], `${path}.maxLength`, "maxLength", error) && ok;
+      if (typeof schema["minLength"] === "number" && typeof schema["maxLength"] === "number" && schema["minLength"] > schema["maxLength"]) {
+        error(path, `minLength (${schema["minLength"]}) is greater than maxLength (${schema["maxLength"]})`);
+        ok = false;
+      }
+      if (schema["pattern"] !== undefined) {
+        if (typeof schema["pattern"] !== "string") {
+          error(`${path}.pattern`, "pattern must be a string");
+          ok = false;
+        } else {
+          try {
+            new RegExp(schema["pattern"]);
+          } catch {
+            error(`${path}.pattern`, "pattern must be a valid regular expression");
+            ok = false;
+          }
+        }
+      }
+      return ok;
+    }
+
+    case "number": {
+      let ok = true;
+      const min = schema["min"];
+      const max = schema["max"];
+      if (min !== undefined && (typeof min !== "number" || !Number.isFinite(min))) {
+        error(`${path}.min`, "min must be a finite number");
+        ok = false;
+      }
+      if (max !== undefined && (typeof max !== "number" || !Number.isFinite(max))) {
+        error(`${path}.max`, "max must be a finite number");
+        ok = false;
+      }
+      if (typeof min === "number" && typeof max === "number" && min > max) {
+        error(path, `min (${min}) is greater than max (${max})`);
+        ok = false;
+      }
+      if (schema["integer"] !== undefined && typeof schema["integer"] !== "boolean") {
+        error(`${path}.integer`, "integer must be boolean");
+        ok = false;
+      }
+      return ok;
+    }
+
+    case "boolean":
+    case "any":
+      return true;
+
+    case "enum": {
+      const choices = schema["choices"];
+      if (!Array.isArray(choices) || choices.length === 0 || choices.some((choice) => typeof choice !== "string")) {
+        error(`${path}.choices`, "enum choices must be a non-empty string array");
+        return false;
+      }
+      return true;
+    }
+
+    case "string_array": {
+      let ok = validateIntegerOption(schema["maxItems"], `${path}.maxItems`, "maxItems", error);
+      const choices = schema["choices"];
+      if (choices !== undefined && (!Array.isArray(choices) || choices.some((choice) => typeof choice !== "string"))) {
+        error(`${path}.choices`, "choices must be a string array");
+        ok = false;
+      }
+      return ok;
+    }
+
+    case "array": {
+      const ok = validateIntegerOption(schema["maxItems"], `${path}.maxItems`, "maxItems", error);
+      return validateValueSchemaShape(schema["items"], `${path}.items`, error) && ok;
+    }
+
+    case "object": {
+      const fields = schema["fields"];
+      if (!isRecord(fields)) {
+        error(`${path}.fields`, "object schema fields must be an object");
+        return false;
+      }
+      let ok = true;
+      for (const [fieldName, spec] of Object.entries(fields)) {
+        const specPath = `${path}.fields.${fieldName}`;
+        if (!isRecord(spec)) {
+          error(specPath, "field spec must be an object");
+          ok = false;
+          continue;
+        }
+        if (spec["required"] !== undefined && typeof spec["required"] !== "boolean") {
+          error(`${specPath}.required`, "required must be boolean");
+          ok = false;
+        }
+        ok = validateValueSchemaShape(spec["schema"], `${specPath}.schema`, error) && ok;
+      }
+      if (schema["additionalProperties"] !== undefined && typeof schema["additionalProperties"] !== "boolean") {
+        error(`${path}.additionalProperties`, "additionalProperties must be boolean");
+        ok = false;
+      }
+      return ok;
+    }
+
+    default:
+      error(`${path}.kind`, `unknown schema kind "${kind}"`);
+      return false;
+  }
+}
+
+function validateRecordFieldDefinition(sourceId: string, fieldName: string, field: unknown, error: IssueFn): void {
+  const path = `knowledge.${sourceId}.fields.${fieldName}`;
+  if (!isRecord(field)) {
+    error(path, "record field must be a ValueSchema or { schema, description?, examples? }");
+    return;
+  }
+
+  const hasSchema = Object.hasOwn(field, "schema");
+  const hasMetadata = Object.hasOwn(field, "description") || Object.hasOwn(field, "examples");
+  if (!hasSchema) {
+    if (hasMetadata) error(path, "record field metadata must use { schema, description?, examples? }");
+    validateValueSchemaShape(field, path, error);
+    return;
+  }
+
+  const schemaOk = validateValueSchemaShape(field["schema"], `${path}.schema`, error);
+  if (field["description"] !== undefined && (typeof field["description"] !== "string" || !field["description"].trim())) {
+    error(`${path}.description`, "description must be a meaningful non-empty string");
+  }
+
+  if (field["examples"] === undefined) return;
+  if (!Array.isArray(field["examples"])) {
+    error(`${path}.examples`, "examples must be an array of strings, numbers, or booleans");
+    return;
+  }
+  if (!schemaOk) return;
+
+  const schema = field["schema"] as ValueSchema;
+  field["examples"].forEach((example, index) => {
+    const examplePath = `${path}.examples[${index}]`;
+    const primitive = typeof example === "string" || typeof example === "boolean" || (typeof example === "number" && Number.isFinite(example));
+    if (!primitive) {
+      error(examplePath, "example must be a JSON-serializable string, number, or boolean");
+      return;
+    }
+    const validation = validateValue(schema, example, { coerce: false });
+    if (!validation.ok) {
+      error(examplePath, `example does not match field schema: ${describeIssues(validation.issues)}`);
+    }
+  });
+}
 
 export interface DefineAgentInput extends Omit<AgentDefinition, "version" | "policies" | "knowledge" | "tools" | "globalRules"> {
   version?: number;
@@ -163,10 +342,24 @@ export function validateDefinition(def: AgentDefinition): DefinitionIssue[] {
       error(`knowledge.${src.id}.topK`, "topK must be a positive integer");
     }
     if (src.kind === "record_set") {
-      if (Object.keys(src.fields).length === 0) error(`knowledge.${src.id}`, "record_set declares no fields");
-      for (const [i, record] of src.records.entries()) {
+      if (!isRecord(src.fields)) {
+        error(`knowledge.${src.id}.fields`, "record_set fields must be an object");
+      } else {
+        if (Object.keys(src.fields).length === 0) error(`knowledge.${src.id}`, "record_set declares no fields");
+        for (const [fieldName, field] of Object.entries(src.fields)) {
+          validateRecordFieldDefinition(src.id, fieldName, field, error);
+        }
+      }
+      if (!Array.isArray(src.records)) {
+        error(`knowledge.${src.id}.records`, "record_set records must be an array");
+      } else for (const [i, record] of src.records.entries()) {
+        if (!isRecord(record)) {
+          error(`knowledge.${src.id}.records[${i}]`, "record must be an object");
+          continue;
+        }
+        const fieldMap = isRecord(src.fields) ? src.fields : {};
         for (const key of Object.keys(record)) {
-          if (!Object.prototype.hasOwnProperty.call(src.fields, key)) {
+          if (!Object.prototype.hasOwnProperty.call(fieldMap, key)) {
             warn(`knowledge.${src.id}.records[${i}]`, `record has undeclared field "${key}"; it cannot be filtered or sorted on`);
           }
         }

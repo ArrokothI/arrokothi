@@ -205,7 +205,7 @@ export class AgentRuntime {
       // message and the events written so far are still persisted, so the failure is inspectable.
       const message = error instanceof Error ? error.message : String(error);
       journal.append({ type: "RuntimeError", turn, payload: { code: "harness_threw", message } });
-      const text = "Something went wrong on my side and I could not complete that. Nothing was sent or saved.";
+      const text = "Something went wrong on my side and I could not complete that. Please check the session trace for any action results before retrying.";
       journal.append({ type: "AssistantMessageEmitted", turn, payload: { text, stopReason: "error" } });
       result = { replyText: text, stopReason: "error" as TurnStopReason, steps: 0 };
     }

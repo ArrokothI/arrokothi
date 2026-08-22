@@ -31,7 +31,7 @@ import {
 } from "@strands-agents/sdk";
 import { GoogleModel, type GoogleModelOptions } from "@strands-agents/sdk/models/google";
 
-export const STRANDS_INTEGRATION_VERSION = "0.36.0";
+export const STRANDS_INTEGRATION_VERSION = "0.36.1";
 export const SUPPORTED_STRANDS_SDK_VERSION = "1.14.0";
 
 const STATE_KEY = "agentSdk";

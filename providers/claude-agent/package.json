@@ -1,6 +1,6 @@
 {
   "name": "@agent-sdk/provider-claude-agent",
-  "version": "0.36.0",
+  "version": "0.36.1",
   "description": "Optional Claude Agent SDK execution harness adapter. Kept outside @agent-sdk/core.",
   "type": "module",
   "exports": {

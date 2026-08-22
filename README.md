@@ -1,4 +1,4 @@
-# Agent SDK v0.36
+# Agent SDK v0.36.1
 
 A provider-neutral agent control plane with one primary external-turn Harness and a canonical
 Strands execution engine.
@@ -19,26 +19,29 @@ Node 22.9 or newer is required.
 npm install
 npm test
 npm run typecheck
+npm run canary:gemini   # optional live provider/schema check; skips if credentials are absent
 npm run example:strands
 npm run example:p01
 npm run example:p02
 npm run studio
 ```
 
-All default examples and tests are offline. The optional live Strands/Gemini example and the
-`--live` benchmarks (see [benchmarks/README.md](benchmarks/README.md)) read a key at the
+All default examples and tests are offline. The optional live Gemini canary, Strands/Gemini example,
+and the `--live` benchmarks (see [benchmarks/README.md](benchmarks/README.md)) read a key at the
 application boundary. Either export it in the shell:
 
 ```bash
+GEMINI_API_KEY=... GEMINI_MODEL=gemini-3.5-flash-lite npm run canary:gemini
 GEMINI_API_KEY=... npm run example:strands -- --live
 ```
 
 or copy [.env.example](.env.example) to `.env` (git-ignored) and set `GEMINI_API_KEY` /
-`GEMINI_MODEL` there — the `example:strands`, `bench:p01`, and `bench:p02` npm scripts load it
-automatically via node's `--env-file-if-exists` flag:
+`GEMINI_MODEL` there - the `canary:gemini`, `example:strands`, `bench:p01`, and `bench:p02` npm
+scripts load it automatically via node's `--env-file-if-exists` flag:
 
 ```bash
 cp .env.example .env   # then edit .env with your key/model
+npm run canary:gemini
 npm run example:strands -- --live
 ```
 

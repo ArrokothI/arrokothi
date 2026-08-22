@@ -1,7 +1,7 @@
 {
   "name": "agent-sdk-workspace",
   "private": true,
-  "version": "0.36.0",
+  "version": "0.36.1",
   "description": "Provider-neutral agent control plane with a consolidated Harness and Strands execution engine.",
   "type": "module",
   "workspaces": [
@@ -32,6 +32,7 @@
     "example:strands": "node --env-file-if-exists=.env --experimental-strip-types examples/strands-gemini/main.ts",
     "example:p01": "node --env-file-if-exists=.env --experimental-strip-types examples/p01-craig/main.ts",
     "example:p02": "node --env-file-if-exists=.env --experimental-strip-types examples/p02-estate/main.ts",
+    "canary:gemini": "node --env-file-if-exists=.env --experimental-strip-types diagnostics/gemini-provider-canary.ts",
     "bench:p01": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p01-craig/run.ts",
     "bench:p02": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p02-estate/run.ts",
     "bench:triad-arrokothi": "node --env-file-if-exists=.env --experimental-strip-types --import ../Agenerateor/tests/register-ts-loader.mjs benchmarks/triad/runner/run-arrokothi.ts",
