@@ -1,0 +1,7 @@
+{
+  "name": "EstatePro",
+  "description": "A luxury real estate platform featuring high-end property listings and an advanced AI assistant that supports both text and real-time voice conversations.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
