@@ -57,6 +57,7 @@ export class TwoPassHarness implements HarnessImplementation {
       confirmationResolver: services.confirmationResolver,
       ids: services.ids,
       clock: services.clock,
+      durability: services.durability,
       grants,
     };
     const gateway = new CapabilityGateway({ services, deps, harnessName: this.name, turn });

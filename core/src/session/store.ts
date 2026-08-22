@@ -42,13 +42,42 @@ export interface SessionStore {
   createSession(input: CreateSessionInput): Promise<SessionRecord>;
   getSession(sessionId: string): Promise<SessionRecord | undefined>;
   listSessions(agentId?: string): Promise<SessionRecord[]>;
-  /** Appends atomically, assigning gapless `seq` values, and returns the stored events. */
-  append(sessionId: string, drafts: DraftEvent[]): Promise<SessionEvent[]>;
+  /**
+   * Appends atomically, assigning gapless `seq` values, and returns the stored events.
+   *
+   * When `expectedSeq` is supplied, comparison and append are one store operation: the append
+   * succeeds only when the current durable stream sequence still equals `expectedSeq`.
+   */
+  append(sessionId: string, drafts: DraftEvent[], options?: AppendEventsOptions): Promise<SessionEvent[]>;
   /** Events with `seq > fromSeq`, ascending. Omitting `fromSeq` returns the whole stream. */
   readEvents(sessionId: string, fromSeq?: number): Promise<SessionEvent[]>;
   saveSnapshot(sessionId: string, snapshot: SessionSnapshot): Promise<void>;
   loadSnapshot(sessionId: string): Promise<SessionSnapshot | undefined>;
   deleteSession?(sessionId: string): Promise<void>;
+}
+
+export interface AppendEventsOptions {
+  expectedSeq?: number;
+}
+
+export class SessionConcurrencyConflictError extends Error {
+  readonly code = "session_concurrency_conflict";
+  readonly sessionId: string;
+  readonly expectedSeq: number;
+  readonly actualSeq: number;
+
+  constructor(sessionId: string, expectedSeq: number, actualSeq: number) {
+    super(`session "${sessionId}" changed concurrently: expected seq ${expectedSeq}, found ${actualSeq}`);
+    this.name = "SessionConcurrencyConflictError";
+    this.sessionId = sessionId;
+    this.expectedSeq = expectedSeq;
+    this.actualSeq = actualSeq;
+  }
+}
+
+export function isSessionConcurrencyConflictError(error: unknown): error is SessionConcurrencyConflictError {
+  return error instanceof SessionConcurrencyConflictError
+    || (typeof error === "object" && error !== null && (error as { code?: unknown }).code === "session_concurrency_conflict");
 }
 
 /** Reference implementation. Used by tests, examples, and benchmarks; holds nothing on disk. */
@@ -81,10 +110,13 @@ export class InMemorySessionStore implements SessionStore {
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
 
-  async append(sessionId: string, drafts: DraftEvent[]): Promise<SessionEvent[]> {
+  async append(sessionId: string, drafts: DraftEvent[], options: AppendEventsOptions = {}): Promise<SessionEvent[]> {
     const record = this.sessions.get(sessionId);
     if (!record) throw new Error(`unknown session "${sessionId}"`);
     const stream = this.events.get(sessionId) ?? [];
+    if (options.expectedSeq !== undefined && stream.length !== options.expectedSeq) {
+      throw new SessionConcurrencyConflictError(sessionId, options.expectedSeq, stream.length);
+    }
     const stored = drafts.map((draft, i) => ({
       ...draft,
       seq: stream.length + i + 1,

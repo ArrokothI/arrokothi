@@ -173,6 +173,7 @@ class ThrowAfterConfirmedActionHarness implements HarnessImplementation {
       confirmationResolver: services.confirmationResolver,
       ids: services.ids,
       clock: services.clock,
+      durability: services.durability,
       grants: new Set<string>(),
     };
     const confirmation = resolvePendingConfirmation(deps, input.userMessage, input.turn);

@@ -1,6 +1,6 @@
 import type { HostContextValue } from "../context/types.ts";
 import type { MemoryPrimitive, MemoryProvenance, MemoryWriteMechanism, WorkingNote } from "../memory/types.ts";
-import type { AuthoritativeFact, ToolRejectionReason } from "../tools/types.ts";
+import type { AuthoritativeFact, ToolEffect, ToolRejectionReason } from "../tools/types.ts";
 import type { ConfirmationDecision } from "../confirmation/types.ts";
 import type { TransitionEvaluation, TransitionTiming } from "../flow/types.ts";
 import type { ModelUsage } from "../provider/types.ts";
@@ -238,7 +238,7 @@ export type ConfirmationResolvedEvent = EventBase<
 
 export type ToolExecutionStartedEvent = EventBase<
   "ToolExecutionStarted",
-  { requestId: string; toolName: string; args: Record<string, unknown>; actionKey: string; idempotencyKey: string }
+  { requestId: string; toolName: string; args: Record<string, unknown>; actionKey: string; idempotencyKey: string; effect?: ToolEffect }
 >;
 
 export type ToolExecutionSucceededEvent = EventBase<

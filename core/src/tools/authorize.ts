@@ -2,6 +2,7 @@ import type { AgentDefinition } from "../definition/types.ts";
 import type { ToolRegistry } from "./registry.ts";
 import type { ToolArgumentSource, ToolDefinition, ToolRejection, ToolResult } from "./types.ts";
 import type { TurnJournal } from "../runtime/journal.ts";
+import type { TurnDurability } from "../runtime/journal.ts";
 import type { ConfirmationResolver } from "../confirmation/types.ts";
 import type { Clock, IdGenerator } from "../util/ids.ts";
 import { describeIssues, validateObject } from "../schema/value-schema.ts";
@@ -36,6 +37,7 @@ export interface AuthorizeDeps {
   confirmationResolver: ConfirmationResolver;
   ids: IdGenerator;
   clock: Clock;
+  durability: TurnDurability;
   /**
    * Consent grants earned on THIS turn, keyed `toolName:argsHash`.
    *
@@ -254,6 +256,13 @@ export async function attemptToolCall(
   // external user turn. The exact prior observation is replayed to the loop with explicit
   // provenance instead of treating another model request as retry authorization.
   if (definitionForTool.effect === "external_side_effect") {
+    const unresolved = journal.state.unresolvedExternalExecution;
+    if (unresolved) {
+      return reject(
+        "external_outcome_unknown",
+        `session contains unresolved external execution ${unresolved.requestId} for "${unresolved.toolName}"; automatic dispatch is not authorized until that outcome is reconciled`,
+      );
+    }
     const priorThisTurn = deps.externalAttempts?.get(actionKey);
     if (priorThisTurn) {
       return { kind: "replayed", result: priorThisTurn.result, requestId };
@@ -330,7 +339,15 @@ export async function attemptToolCall(
     return reject("no_executor", `tool "${toolName}" is declared but no executor is registered for it`);
   }
 
-  journal.append({ type: "ToolExecutionStarted", turn, payload: { requestId, toolName, args: validatedArgs, actionKey, idempotencyKey: key } });
+  journal.append({
+    type: "ToolExecutionStarted",
+    turn,
+    payload: { requestId, toolName, args: validatedArgs, actionKey, idempotencyKey: key, effect: definitionForTool.effect },
+  });
+
+  if (definitionForTool.effect === "external_side_effect") {
+    await deps.durability.persistCheckpoint(journal);
+  }
 
   let result: ToolResult;
   try {
@@ -371,6 +388,7 @@ export async function attemptToolCall(
   }
 
   if (definitionForTool.effect === "external_side_effect") {
+    await deps.durability.persistCheckpoint(journal);
     deps.externalAttempts ??= new Map();
     deps.externalAttempts.set(actionKey, { result, requestId, idempotencyKey: key });
   }

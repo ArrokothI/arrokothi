@@ -44,7 +44,7 @@ export interface AgentHarnessOptions {
  * AgentLoopEngine owns only the temporary iterative mechanics inside the turn.
  */
 export class AgentHarness extends TwoPassHarness implements HarnessImplementation {
-  override readonly name = "agent-harness-v0.36";
+  override readonly name = "agent-harness-v0.37";
   readonly strategy: AgentHarnessStrategy;
   private readonly primaryOptions: AgentHarnessOptions;
 
@@ -73,6 +73,7 @@ export class AgentHarness extends TwoPassHarness implements HarnessImplementatio
       confirmationResolver: services.confirmationResolver,
       ids: services.ids,
       clock: services.clock,
+      durability: services.durability,
       grants,
     };
     const gateway = new CapabilityGateway({ services, deps, harnessName: this.name, turn: input.turn });

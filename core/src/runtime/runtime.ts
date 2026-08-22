@@ -11,9 +11,11 @@ import type { CompiledContext } from "../compiler/context-compiler.ts";
 import type { HostContextInput } from "../context/types.ts";
 import type { Clock, IdGenerator } from "../util/ids.ts";
 import { initialState, project, resume, snapshotOf } from "../session/state.ts";
+import { isSessionConcurrencyConflictError } from "../session/store.ts";
 import { observeHostContext as validateHostContext } from "../context/host-context.ts";
 import type { ContextObservation } from "../context/host-context.ts";
 import { TurnJournal } from "./journal.ts";
+import type { TurnDurability } from "./journal.ts";
 import { ConservativeConfirmationResolver } from "../confirmation/resolver.ts";
 import { AgentHarness } from "../harness/agent-harness.ts";
 import { assertValidDefinition } from "../definition/definition.ts";
@@ -76,6 +78,25 @@ export interface ObserveHostContextResult {
   events: SessionEvent[];
 }
 
+export class TurnPersistenceError extends Error {
+  readonly code = "turn_persistence_failed";
+  readonly phase: "checkpoint" | "final";
+  override readonly cause: unknown;
+
+  constructor(phase: "checkpoint" | "final", cause: unknown) {
+    const message = cause instanceof Error ? cause.message : String(cause);
+    super(`failed to persist ${phase} events: ${message}`);
+    this.name = "TurnPersistenceError";
+    this.phase = phase;
+    this.cause = cause;
+  }
+}
+
+function isTurnPersistenceError(error: unknown): error is TurnPersistenceError {
+  return error instanceof TurnPersistenceError
+    || (typeof error === "object" && error !== null && (error as { code?: unknown }).code === "turn_persistence_failed");
+}
+
 export class AgentRuntime {
   private readonly config: AgentRuntimeConfig;
   private readonly harness: HarnessImplementation;
@@ -90,8 +111,8 @@ export class AgentRuntime {
     assertValidDefinition(definition);
     this.config = { ...config, definition };
     // The bounded workflow strategy preserves the historical default behavior while routing all
-    // new construction through the primary v0.36 Harness. Legacy Harness classes remain available
-    // only for explicit compatibility use.
+    // new construction through the primary Harness. Legacy Harness classes remain available only
+    // for explicit compatibility use.
     this.harness = config.harness ?? new AgentHarness({ strategy: "workflow" });
     this.ids = config.ids ?? createRandomIds();
     this.clock = config.clock ?? createSystemClock();
@@ -151,8 +172,8 @@ export class AgentRuntime {
   /**
    * Runs one turn: load, process, persist, disappear.
    *
-   * Events are buffered in the journal and written in one append at the end, so a crash mid-turn
-   * leaves the stored session at the last completed turn rather than half-applied.
+   * Ordinary events are buffered until the final append. Consequential external executions flush
+   * explicit durable checkpoints before dispatch and after terminal outcomes.
    */
   async runTurn(input: RunTurnInput): Promise<RunTurnResult> {
     const state = await this.loadState(input.sessionId);
@@ -182,6 +203,10 @@ export class AgentRuntime {
       journal.append({ type: "HostContextObserved", turn, payload: observation });
     }
 
+    const durability: TurnDurability = {
+      persistCheckpoint: (target) => this.persist(input.sessionId, target, "checkpoint"),
+    };
+
     const services: HarnessServices = {
       definition: this.config.definition,
       model: this.config.model,
@@ -191,6 +216,7 @@ export class AgentRuntime {
       confirmationResolver: this.config.confirmationResolver ?? new ConservativeConfirmationResolver(),
       ids: this.ids,
       clock: this.clock,
+      durability,
       onContextCompiled: (context, purpose) => {
         contexts.push({ purpose, context });
         this.config.onContextCompiled?.(context, purpose);
@@ -201,6 +227,12 @@ export class AgentRuntime {
     try {
       result = await this.harness.runTurn({ journal, userMessage: input.message, turn, userEventId: userEvent.id, signal: input.signal }, services);
     } catch (error) {
+      if (isSessionConcurrencyConflictError(error)) {
+        return this.stoppedForConcurrencyConflict(input.sessionId, journal, contexts);
+      }
+      if (isTurnPersistenceError(error)) {
+        return this.stoppedForPersistenceFailure(input.sessionId, journal, contexts);
+      }
       // A harness that throws is a runtime error, recorded truthfully. The user gets an honest
       // message and the events written so far are still persisted, so the failure is inspectable.
       const message = error instanceof Error ? error.message : String(error);
@@ -210,14 +242,24 @@ export class AgentRuntime {
       result = { replyText: text, stopReason: "error" as TurnStopReason, steps: 0 };
     }
 
-    const stored = await this.persist(input.sessionId, journal);
+    try {
+      await this.persist(input.sessionId, journal, "final");
+    } catch (error) {
+      if (isSessionConcurrencyConflictError(error)) {
+        return this.stoppedForConcurrencyConflict(input.sessionId, journal, contexts);
+      }
+      if (isTurnPersistenceError(error)) {
+        return this.stoppedForPersistenceFailure(input.sessionId, journal, contexts);
+      }
+      throw error;
+    }
 
     return {
       reply: result.replyText,
       stopReason: result.stopReason,
       steps: result.steps,
       state: journal.state,
-      events: stored,
+      events: journal.events,
       contexts,
       metrics: result.metrics ?? metricsFromEvents(journal.events),
     };
@@ -238,31 +280,74 @@ export class AgentRuntime {
       this.clock.now().toISOString(),
     );
     journal.append({ type: "HostContextObserved", turn: state.turn, payload: observation });
-    const events = await this.persist(input.sessionId, journal);
+    const events = await this.persist(input.sessionId, journal, "final");
     return { state: journal.state, observation, events };
   }
 
   /**
-   * Persists the turn's events and, optionally, a snapshot.
-   *
-   * The store assigns real sequence numbers; the journal assigned provisional ones. If they diverge
-   * (another writer appended concurrently) the snapshot is skipped rather than saved wrong - a stale
-   * cache is recoverable, an incorrect one is not.
+   * Persists the journal's currently unpersisted drafts with expected-sequence protection and,
+   * optionally, saves a snapshot after the event write succeeds.
    */
-  private async persist(sessionId: string, journal: TurnJournal): Promise<SessionEvent[]> {
+  private async persist(sessionId: string, journal: TurnJournal, phase: "checkpoint" | "final"): Promise<SessionEvent[]> {
     const drafts = journal.pendingDrafts;
     if (!drafts.length) return [];
-    const stored = await this.config.sessions.append(sessionId, drafts);
+    let stored: SessionEvent[];
+    try {
+      stored = await this.config.sessions.append(sessionId, drafts, { expectedSeq: journal.expectedSeq });
+    } catch (error) {
+      journal.discardPending();
+      if (isSessionConcurrencyConflictError(error)) throw error;
+      throw new TurnPersistenceError(phase, error);
+    }
+
+    journal.markPersisted(stored);
 
     if (this.config.useSnapshots !== false) {
-      const provisional = journal.events;
-      const aligned = stored.length === provisional.length && stored.every((e, i) => e.seq === provisional[i]!.seq);
-      if (aligned) {
-        const snapshot: SessionSnapshot = snapshotOf(journal.state);
+      const snapshot: SessionSnapshot = snapshotOf(journal.state);
+      try {
         await this.config.sessions.saveSnapshot(sessionId, snapshot);
+      } catch {
+        // A snapshot is a cache. Event durability is the safety boundary; a cache write must not
+        // change whether an already-durable checkpoint may proceed.
       }
     }
     return stored;
+  }
+
+  private async stoppedForConcurrencyConflict(
+    sessionId: string,
+    journal: TurnJournal,
+    contexts: { purpose: string; context: CompiledContext }[],
+  ): Promise<RunTurnResult> {
+    const state = await this.loadState(sessionId);
+    const text = "This session changed while I was working, so I stopped before committing a stale turn. Reload the current session state before trying again.";
+    return {
+      reply: text,
+      stopReason: "error",
+      steps: 0,
+      state,
+      events: journal.events,
+      contexts,
+      metrics: metricsFromEvents(journal.events),
+    };
+  }
+
+  private async stoppedForPersistenceFailure(
+    sessionId: string,
+    journal: TurnJournal,
+    contexts: { purpose: string; context: CompiledContext }[],
+  ): Promise<RunTurnResult> {
+    const state = await this.loadState(sessionId);
+    const text = "I could not durably record the latest execution checkpoint. Check the session trace before retrying; ambiguous external outcomes are not retried automatically.";
+    return {
+      reply: text,
+      stopReason: "error",
+      steps: 0,
+      state,
+      events: journal.events,
+      contexts,
+      metrics: metricsFromEvents(journal.events),
+    };
   }
 }
 

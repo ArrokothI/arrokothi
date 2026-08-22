@@ -31,7 +31,7 @@ import {
 } from "@strands-agents/sdk";
 import { GoogleModel, type GoogleModelOptions } from "@strands-agents/sdk/models/google";
 
-export const STRANDS_INTEGRATION_VERSION = "0.36.1";
+export const STRANDS_INTEGRATION_VERSION = "0.37.0";
 export const SUPPORTED_STRANDS_SDK_VERSION = "1.14.0";
 
 const STATE_KEY = "agentSdk";
@@ -86,9 +86,9 @@ export function createStrandsGeminiEngine(options: StrandsGeminiOptions = {}): S
   });
 }
 
-/** Canonical v0.36 agentic engine. Strands types remain contained in this package. */
+/** Canonical v0.37 agentic engine. Strands types remain contained in this package. */
 export class StrandsLoopEngine implements AgentLoopEngine {
-  readonly name = "strands-loop-v0.36";
+  readonly name = "strands-loop-v0.37";
   private readonly options: StrandsLoopEngineOptions;
 
   constructor(options: StrandsLoopEngineOptions = {}) {

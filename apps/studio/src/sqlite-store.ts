@@ -1,6 +1,8 @@
 import { DatabaseSync } from "node:sqlite";
+import { SessionConcurrencyConflictError } from "@agent-sdk/core";
 import type {
   AgentDefinition,
+  AppendEventsOptions,
   CreateSessionInput,
   DefinitionStore,
   DraftEvent,
@@ -159,7 +161,7 @@ export class SqliteSessionStore implements SessionStore {
    * The sequence number is derived inside the transaction (`MAX(seq) + 1`), so two writers cannot
    * both claim the same slot - the append is where gaplessness is actually enforced, not the caller.
    */
-  async append(sessionId: string, drafts: DraftEvent[]): Promise<SessionEvent[]> {
+  async append(sessionId: string, drafts: DraftEvent[], options: AppendEventsOptions = {}): Promise<SessionEvent[]> {
     if (!drafts.length) return [];
     const stored: SessionEvent[] = [];
 
@@ -167,6 +169,9 @@ export class SqliteSessionStore implements SessionStore {
     try {
       const maxRow = this.db.prepare("SELECT COALESCE(MAX(seq), 0) AS m FROM session_events WHERE session_id = ?").get(sessionId);
       let seq = Number(maxRow?.["m"] ?? 0);
+      if (options.expectedSeq !== undefined && seq !== options.expectedSeq) {
+        throw new SessionConcurrencyConflictError(sessionId, options.expectedSeq, seq);
+      }
       const insert = this.db.prepare(
         "INSERT INTO session_events (session_id, seq, id, turn, event_type, json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
       );

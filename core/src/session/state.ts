@@ -39,6 +39,17 @@ export interface ToolResultRecord {
   replayed?: boolean;
 }
 
+export interface UnresolvedExternalExecution {
+  requestId: string;
+  toolName: string;
+  turn: number;
+  at: string;
+  actionKey: string;
+  idempotencyKey: string;
+  args: Record<string, unknown>;
+  reason: "started_without_terminal";
+}
+
 export interface RetrievalTraceRecord {
   request: RetrievalRequest;
   sourceId: string;
@@ -76,6 +87,13 @@ export interface SessionState {
   turnRetrievals: RetrievalTraceRecord[];
   /** Every tool result in the session, for the Studio's action ledger view. */
   allToolResults: ToolResultRecord[];
+  /**
+   * A durable external execution start without a matching durable terminal outcome.
+   *
+   * This is an unresolved/outcome-unknown safety fence. It is not proof that the remote action
+   * happened, failed, or succeeded.
+   */
+  unresolvedExternalExecution: UnresolvedExternalExecution | null;
   status: "active" | "error";
   createdAt: string;
   updatedAt: string;
@@ -112,6 +130,7 @@ export function initialState(params: {
     turnPlan: null,
     turnRetrievals: [],
     allToolResults: [],
+    unresolvedExternalExecution: null,
     status: "active",
     createdAt: params.createdAt,
     updatedAt: params.createdAt,
@@ -233,6 +252,23 @@ export function applyEvent(state: SessionState, event: SessionEvent): SessionSta
       return base; // `unrelated` / `ambiguous` leave the request outstanding.
     }
 
+    case "ToolExecutionStarted": {
+      if (event.payload.effect !== "external_side_effect") return base;
+      return {
+        ...base,
+        unresolvedExternalExecution: {
+          requestId: event.payload.requestId,
+          toolName: event.payload.toolName,
+          turn: event.turn,
+          at: event.at,
+          actionKey: event.payload.actionKey,
+          idempotencyKey: event.payload.idempotencyKey,
+          args: event.payload.args,
+          reason: "started_without_terminal",
+        },
+      };
+    }
+
     case "ToolExecutionSucceeded": {
       const record: ToolResultRecord = {
         requestId: event.payload.requestId,
@@ -266,6 +302,9 @@ export function applyEvent(state: SessionState, event: SessionEvent): SessionSta
         ledger,
         turnToolResults: [...base.turnToolResults, record],
         allToolResults: [...base.allToolResults, record],
+        unresolvedExternalExecution: terminalMatches(base.unresolvedExternalExecution, event.payload)
+          ? null
+          : base.unresolvedExternalExecution,
       };
     }
 
@@ -287,6 +326,9 @@ export function applyEvent(state: SessionState, event: SessionEvent): SessionSta
         ...base,
         turnToolResults: [...base.turnToolResults, record],
         allToolResults: [...base.allToolResults, record],
+        unresolvedExternalExecution: terminalMatches(base.unresolvedExternalExecution, event.payload)
+          ? null
+          : base.unresolvedExternalExecution,
       };
     }
 
@@ -306,6 +348,9 @@ export function applyEvent(state: SessionState, event: SessionEvent): SessionSta
         ...base,
         turnToolResults: [...base.turnToolResults, record],
         allToolResults: [...base.allToolResults, record],
+        unresolvedExternalExecution: terminalMatches(base.unresolvedExternalExecution, event.payload)
+          ? null
+          : base.unresolvedExternalExecution,
       };
     }
 
@@ -334,9 +379,23 @@ export function project(initial: SessionState, events: SessionEvent[]): SessionS
  * Events at or below `throughSeq` are skipped, so passing the whole stream is safe and idempotent.
  */
 export function resume(snapshot: SessionSnapshot, laterEvents: SessionEvent[]): SessionState {
-  return laterEvents.filter((e) => e.seq > snapshot.throughSeq).reduce(applyEvent, snapshot.state);
+  return laterEvents.filter((e) => e.seq > snapshot.throughSeq).reduce(applyEvent, normalizeSnapshotState(snapshot.state));
 }
 
 export function snapshotOf(state: SessionState): SessionSnapshot {
   return { state: structuredClone(state), throughSeq: state.lastSeq };
+}
+
+function terminalMatches(
+  unresolved: UnresolvedExternalExecution | null | undefined,
+  terminal: { requestId: string; actionKey: string; idempotencyKey: string },
+): boolean {
+  if (!unresolved) return false;
+  return unresolved.requestId === terminal.requestId
+    && unresolved.actionKey === terminal.actionKey
+    && unresolved.idempotencyKey === terminal.idempotencyKey;
+}
+
+function normalizeSnapshotState(state: SessionState): SessionState {
+  return { ...state, unresolvedExternalExecution: state.unresolvedExternalExecution ?? null };
 }

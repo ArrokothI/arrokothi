@@ -27,6 +27,7 @@ export class NativeAgentHarness extends TwoPassHarness {
       confirmationResolver: services.confirmationResolver,
       ids: services.ids,
       clock: services.clock,
+      durability: services.durability,
       grants,
     };
     const gateway = new CapabilityGateway({ services, deps, harnessName: this.name, turn: input.turn });

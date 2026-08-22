@@ -172,9 +172,9 @@ export type {
 
 // -- session -----------------------------------------------------------------
 export { applyEvent, project, resume, initialState, snapshotOf } from "./session/state.ts";
-export type { SessionState, SessionSnapshot, TranscriptEntry, ToolResultRecord, RetrievalTraceRecord } from "./session/state.ts";
-export { InMemorySessionStore } from "./session/store.ts";
-export type { SessionStore, SessionRecord, CreateSessionInput, DraftEvent } from "./session/store.ts";
+export type { SessionState, SessionSnapshot, TranscriptEntry, ToolResultRecord, RetrievalTraceRecord, UnresolvedExternalExecution } from "./session/state.ts";
+export { InMemorySessionStore, SessionConcurrencyConflictError, isSessionConcurrencyConflictError } from "./session/store.ts";
+export type { SessionStore, SessionRecord, CreateSessionInput, DraftEvent, AppendEventsOptions } from "./session/store.ts";
 export { isEventOfType } from "./session/events.ts";
 export type { SessionEvent, SessionEventType, SessionEventInput } from "./session/events.ts";
 
@@ -238,9 +238,10 @@ export type {
   AgentLoopStopReason,
 } from "./loop/types.ts";
 export type { RuntimeDecision } from "./runtime/decision.ts";
-export { AgentRuntime } from "./runtime/runtime.ts";
+export { AgentRuntime, TurnPersistenceError } from "./runtime/runtime.ts";
 export type { AgentRuntimeConfig, RunTurnInput, RunTurnResult, ObserveHostContextInput, ObserveHostContextResult } from "./runtime/runtime.ts";
 export { TurnJournal } from "./runtime/journal.ts";
+export type { TurnDurability } from "./runtime/journal.ts";
 
 // -- provider ----------------------------------------------------------------
 export { ModelProviderError } from "./provider/types.ts";

@@ -1,4 +1,4 @@
-# Agent SDK v0.36.1
+# Agent SDK v0.37.0
 
 A provider-neutral agent control plane with one primary external-turn Harness and a canonical
 Strands execution engine.
@@ -122,13 +122,13 @@ while `ContextCompiler` remains responsible for authoritative application contex
   deterministic record queries, coarse Flow, and one frozen-payload confirmation-gated handoff.
 
 They use only Agent_SDK concepts and injected executors; no bespoke runtime code from either
-reference application is imported. Benchmark history remains in `benchmarks/`, but v0.36 does not
+reference application is imported. Benchmark history remains in `benchmarks/`, but v0.37 does not
 claim or perform a new cross-builder comparison.
 
 ## Compatibility paths
 
 `TwoPassHarness`, `NativeAgentHarness`, and `ClaudeAgentHarness` remain temporarily available for
-regression/reference use. They are not the canonical v0.36 architecture. New applications should
+regression/reference use. They are not the canonical v0.37 architecture. New applications should
 use `AgentHarness`; agentic applications should inject `StrandsLoopEngine`.
 
 ## Repository layout
@@ -146,5 +146,6 @@ benchmarks/                   preserved historical self-checks/results
 docs/                         migration, roadmap, and architecture report
 ```
 
-See [v0.36 migration](docs/v0.36-migration.md), [the implementation report](docs/final-report.md),
-and [the v0.4 roadmap](docs/v0.4-roadmap.md). Earlier v0.2/v0.3 documents remain historical.
+See [v0.37 durability](docs/v0.37-durability.md), [v0.36 migration](docs/v0.36-migration.md),
+[the implementation report](docs/final-report.md), and [the v0.4 roadmap](docs/v0.4-roadmap.md).
+Earlier v0.2/v0.3 documents remain historical.

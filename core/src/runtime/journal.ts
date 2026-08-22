@@ -4,6 +4,10 @@ import type { SessionState } from "../session/state.ts";
 import { applyEvent } from "../session/state.ts";
 import type { Clock, IdGenerator } from "../util/ids.ts";
 
+export interface TurnDurability {
+  persistCheckpoint(journal: TurnJournal): Promise<SessionEvent[]>;
+}
+
 /**
  * The turn journal.
  *
@@ -12,19 +16,22 @@ import type { Clock, IdGenerator } from "../util/ids.ts";
  * every state write is an event *by construction*, not by discipline.
  *
  * Sequence numbers are assigned provisionally here (`lastSeq + 1`, ...) so the projection stays
- * live during the turn. The store assigns the real ones on persist, and the runtime verifies the two
- * agree before saving a snapshot.
+ * live during the turn. Runtime checkpoint writes mark the pending prefix durable, advance the
+ * expected sequence, and leave later drafts pending for the next checkpoint or final append.
  */
 export class TurnJournal {
   private current: SessionState;
+  private durable: SessionState;
   private readonly drafts: DraftEvent[] = [];
-  private readonly appended: SessionEvent[] = [];
+  private readonly pendingEvents: SessionEvent[] = [];
+  private readonly persistedEvents: SessionEvent[] = [];
   private readonly ids: IdGenerator;
   private readonly clock: Clock;
   private nextSeq: number;
 
   constructor(state: SessionState, ids: IdGenerator, clock: Clock) {
     this.current = state;
+    this.durable = state;
     this.ids = ids;
     this.clock = clock;
     this.nextSeq = state.lastSeq + 1;
@@ -36,11 +43,16 @@ export class TurnJournal {
 
   /** Events produced during this turn, in order. */
   get events(): SessionEvent[] {
-    return [...this.appended];
+    return [...this.persistedEvents, ...this.pendingEvents];
   }
 
   get pendingDrafts(): DraftEvent[] {
     return [...this.drafts];
+  }
+
+  /** Last durable sequence known to this turn. Used as the expected sequence for CAS appends. */
+  get expectedSeq(): number {
+    return this.durable.lastSeq;
   }
 
   /** Appends an event, folds it into the projection, and returns the stored form. */
@@ -57,8 +69,38 @@ export class TurnJournal {
     } as SessionEvent;
 
     this.drafts.push({ id: event.id, turn: event.turn, at: event.at, type: event.type, payload: event.payload });
-    this.appended.push(event);
+    this.pendingEvents.push(event);
     this.current = applyEvent(this.current, event);
     return event;
+  }
+
+  /**
+   * Marks all currently pending drafts durable. Runtime-owned checkpoint writes always flush the
+   * full pending prefix, so no provisional event is left behind with a stale sequence.
+   */
+  markPersisted(stored: SessionEvent[]): void {
+    if (stored.length !== this.drafts.length || stored.length !== this.pendingEvents.length) {
+      throw new Error(`checkpoint persisted ${stored.length} event(s), but journal has ${this.drafts.length} pending draft(s)`);
+    }
+    for (const [index, event] of stored.entries()) {
+      const draft = this.drafts[index]!;
+      if (event.id !== draft.id || event.type !== draft.type || event.turn !== draft.turn) {
+        throw new Error(`checkpoint event ${index} does not match the pending draft`);
+      }
+    }
+    this.persistedEvents.push(...stored);
+    this.drafts.length = 0;
+    this.pendingEvents.length = 0;
+    this.durable = stored.reduce(applyEvent, this.durable);
+    this.current = this.durable;
+    this.nextSeq = this.durable.lastSeq + 1;
+  }
+
+  /** Drops non-durable provisional events after a failed checkpoint/final CAS. */
+  discardPending(): void {
+    this.drafts.length = 0;
+    this.pendingEvents.length = 0;
+    this.current = this.durable;
+    this.nextSeq = this.durable.lastSeq + 1;
   }
 }

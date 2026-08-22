@@ -99,6 +99,7 @@ export class ClaudeAgentHarness extends TwoPassHarness {
       confirmationResolver: services.confirmationResolver,
       ids: services.ids,
       clock: services.clock,
+      durability: services.durability,
       grants: new Set<string>(),
     };
     const gateway = new CapabilityGateway({ services, deps, harnessName: this.name, turn: input.turn });

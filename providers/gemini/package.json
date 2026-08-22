@@ -1,6 +1,6 @@
 {
   "name": "@agent-sdk/provider-gemini",
-  "version": "0.36.1",
+  "version": "0.37.0",
   "description": "Gemini adapter for the provider-neutral ModelProvider interface. Lives outside core; reads its own credentials.",
   "type": "module",
   "exports": {

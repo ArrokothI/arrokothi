@@ -42,7 +42,7 @@ export interface AgentDefinition {
   planning?: PlanningPolicy;
   /** Serializable Harness preference. The application still injects the implementation. */
   execution?: {
-    /** `agentic` and `workflow` are the v0.36 primary strategies. Other values are legacy. */
+    /** `agentic` and `workflow` are the v0.37 primary strategies. Other values are legacy. */
     harness: "agentic" | "workflow" | "two_pass" | "native_agent" | "claude_agent";
     executionContextPolicy?: "fresh_each_turn" | "resume";
   };

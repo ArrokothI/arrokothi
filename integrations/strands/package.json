@@ -1,6 +1,6 @@
 {
   "name": "@agent-sdk/integration-strands",
-  "version": "0.36.1",
+  "version": "0.37.0",
   "description": "Strands-backed AgentLoopEngine integration for Agent_SDK.",
   "type": "module",
   "exports": {

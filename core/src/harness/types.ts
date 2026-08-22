@@ -4,6 +4,7 @@ import type { ToolRegistry } from "../tools/registry.ts";
 import type { KnowledgeProvider } from "../knowledge/types.ts";
 import type { ConfirmationResolver } from "../confirmation/types.ts";
 import type { TurnJournal } from "../runtime/journal.ts";
+import type { TurnDurability } from "../runtime/journal.ts";
 import type { Clock, IdGenerator } from "../util/ids.ts";
 import type { CompiledContext } from "../compiler/context-compiler.ts";
 
@@ -29,6 +30,8 @@ export interface HarnessServices {
   confirmationResolver: ConfirmationResolver;
   ids: IdGenerator;
   clock: Clock;
+  /** Runtime-owned partial durability boundary for execution safety checkpoints. */
+  durability: TurnDurability;
   /** Optional observer for compiled contexts, so the Studio and tests can inspect every prompt. */
   onContextCompiled?: (context: CompiledContext, purpose: string) => void;
 }
