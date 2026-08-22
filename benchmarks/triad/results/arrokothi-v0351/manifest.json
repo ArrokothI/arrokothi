@@ -1,0 +1,209 @@
+{
+  "runId": "arrokothi-v0351",
+  "evidenceType": "fresh-subject-only-rerun",
+  "utcStart": "2026-08-22T06:58:00.608Z",
+  "utcEnd": "2026-08-22T07:14:48.068Z",
+  "datasetRole": "retrospective-development",
+  "subjectVersion": "0.35.1",
+  "requestedModel": "gemini-3.5-flash-lite",
+  "modelMismatchCount": 0,
+  "fallbackCount": 0,
+  "runtimeErrorCount": 0,
+  "pacing": {
+    "minCallIntervalMs": 15000
+  },
+  "sideEffects": "emailDryRun only; no external side effects",
+  "baselineReuse": "results/baseline-2026-08-22",
+  "agentDefinitionHashes": {
+    "p01": "03b90ca8c823790e12d0978b58e28236a89bc08d4427d5413ce4d00bcfe98eb0",
+    "p02": "bc38739de31fa841f8b66d84834a54f7ec3aae7b334b656d5286508a183f2df0"
+  },
+  "canonicalSources": [
+    {
+      "id": "p01Scenarios",
+      "relativePath": "benchmarks/triad/canonical/p01/scenarios.ts",
+      "sha256": "3622b7107a97bd10850b22effb9653893d8649fbc0eb3939108caea4e18d9a3c"
+    },
+    {
+      "id": "p01Grading",
+      "relativePath": "benchmarks/triad/canonical/p01/grading.mjs",
+      "sha256": "55e76ed77c9d4a6788ffc33518bd4e5d5d412582e55573e150c3159c589e610a"
+    },
+    {
+      "id": "p02Scenarios",
+      "relativePath": "benchmarks/triad/canonical/p02/scenarios.ts",
+      "sha256": "4172f78b3611b8bb791af5992860e100b8363ea7414eb08537ff32a2c2364f47"
+    },
+    {
+      "id": "p02Grading",
+      "relativePath": "benchmarks/triad/canonical/p02/grading.mjs",
+      "sha256": "91dbca2973cf6fa777bf376a021758c1f7fd65236f7aadce95079b62cdcd5069"
+    }
+  ],
+  "repairSourceHashes": {
+    "core/src/harness/two-pass.ts": "7165180ef87c8622fd78037b0d2c8b048d4b9a6ae4fba0f042e253574d63dab3",
+    "core/src/loop/types.ts": "67f57362ea71855ff7e2f54fe46ef4302d64e41d1d76f0795b9956375dd93aa1",
+    "core/src/planning/turn-plan.ts": "78dc248f609980a1377c0302f64d5451bd21a806d7d410ca362dd6ead9d38003",
+    "core/src/schema/value-schema.ts": "f5753dce5a334e135e83c98aeea1ef62f942a61d94b032f30415bb1a69216a63",
+    "core/src/session/events.ts": "8da7255bf0a97ae682ceb438c751a58ab7d1d500e92c89781f97c4e38679cc76",
+    "providers/gemini/src/index.ts": "780b82895112efadf957eb4d3d13de5722114e49eac3fb202357cf7c7f121b37",
+    "integrations/strands/src/index.ts": "370462654641d2af777df2888cb1f41fd0f66aff55be504885fc4535e3594f28",
+    "benchmarks/triad/runner/run-arrokothi.ts": "4f5f780cdfbe967c8f97059d191bfb23e5fb2b4530ccd33e5579a066ffbe281c"
+  },
+  "dependencies": {
+    "@strands-agents/sdk": "1.14.0",
+    "@google/genai": "2.6.0"
+  },
+  "sourceRepositories": {
+    "agentSdk": {
+      "root": "/Users/rex-shih/Documents/Codex/projects/Agent_SDK",
+      "commit": "f465543ffe01706a974cbf7d66d726a8da0c4b34",
+      "statusShort": [
+        " M apps/studio/package.json",
+        " M benchmarks/package.json",
+        " D benchmarks/triad-v035/results/triad-v035-2026-08-22T04-55-01-423Z/canonical/craig/agenerateor-config.ts",
+        " D benchmarks/triad-v035/results/triad-v035-2026-08-22T04-55-01-423Z/canonical/craig/grading.mjs",
+        " D benchmarks/triad-v035/results/triad-v035-2026-08-22T04-55-01-423Z/canonical/craig/scenarios.ts",
+        " D benchmarks/triad-v035/results/triad-v035-2026-08-22T04-55-01-423Z/canonical/estate/agenerateor-config.ts",
+        " D benchmarks/triad-v035/results/triad-v035-2026-08-22T04-55-01-423Z/canonical/estate/grading.mjs",
+        " D benchmarks/triad-v035/results/triad-v035-2026-08-22T04-55-01-423Z/canonical/estate/scenarios.ts",
+        " M core/package.json",
+        " M core/src/harness/two-pass.ts",
+        " M core/src/loop/types.ts",
+        " M core/src/planning/turn-plan.ts",
+        " M core/src/schema/value-schema.ts",
+        " M core/src/session/events.ts",
+        " M examples/estate-like/package.json",
+        " M examples/minimal-agent/package.json",
+        " M examples/native-agent/package.json",
+        " M examples/p01-craig/package.json",
+        " M examples/p02-estate/package.json",
+        " M examples/strands-gemini/main.ts",
+        " M examples/strands-gemini/package.json",
+        " M integrations/strands/package.json",
+        " M integrations/strands/src/index.ts",
+        " M integrations/strands/tests/strands-loop.test.ts",
+        " M package-lock.json",
+        " M package.json",
+        " M providers/claude-agent/package.json",
+        " M providers/gemini/package.json",
+        " M providers/gemini/src/index.ts",
+        " M tsconfig.json",
+        "?? benchmarks/triad/",
+        "?? diagnostics/",
+        "?? providers/gemini/tests/"
+      ]
+    },
+    "craig": {
+      "root": "/Users/rex-shih/Documents/Codex/projects/Craig-Hempcrete-DemoSitee",
+      "commit": "0297a5cc43e4fcbc4e8edc7b4d90254cea76a893",
+      "statusShort": []
+    },
+    "estatePro": {
+      "root": "/Users/rex-shih/Documents/Codex/projects/EstatePro",
+      "commit": "49e33528281ca28c08ac3993778493c3bfaa153c",
+      "statusShort": [
+        " M .gitignore",
+        " M components/AIConcierge.tsx",
+        " M package-lock.json",
+        "?? .claude/",
+        "?? .env.example"
+      ]
+    },
+    "agenerateor": {
+      "root": "/Users/rex-shih/Documents/Codex/projects/Agenerateor",
+      "commit": "2a52f14e3679886c38f5d333b54d4f5c2bc094a7",
+      "statusShort": []
+    }
+  },
+  "semanticComparison": {
+    "p01": {
+      "absolute": {
+        "bespoke": {
+          "pass": 8,
+          "soft_fail": 4,
+          "hard_fail": 9,
+          "inconclusive": 0
+        },
+        "agenerateor": {
+          "pass": 20,
+          "soft_fail": 1,
+          "hard_fail": 0,
+          "inconclusive": 0
+        },
+        "arrokothi": {
+          "pass": 20,
+          "soft_fail": 0,
+          "hard_fail": 1,
+          "inconclusive": 0
+        }
+      },
+      "pairwise": {
+        "arrokothi_vs_bespoke": {
+          "arrokothi_better": 13,
+          "tie": 8
+        },
+        "arrokothi_vs_agenerateor": {
+          "tie": 19,
+          "arrokothi_better": 1,
+          "agenerateor_better": 1
+        },
+        "agenerateor_vs_bespoke": {
+          "agenerateor_better": 13,
+          "tie": 8
+        }
+      }
+    },
+    "p02": {
+      "absolute": {
+        "bespoke": {
+          "pass": 8,
+          "soft_fail": 0,
+          "hard_fail": 7,
+          "inconclusive": 0
+        },
+        "agenerateor": {
+          "pass": 11,
+          "soft_fail": 0,
+          "hard_fail": 4,
+          "inconclusive": 0
+        },
+        "arrokothi": {
+          "pass": 11,
+          "soft_fail": 0,
+          "hard_fail": 4,
+          "inconclusive": 0
+        }
+      },
+      "pairwise": {
+        "arrokothi_vs_bespoke": {
+          "bespoke_better": 1,
+          "tie_both_fail": 2,
+          "arrokothi_better": 4,
+          "tie": 7,
+          "mixed": 1
+        },
+        "arrokothi_vs_agenerateor": {
+          "agenerateor_better": 3,
+          "tie": 8,
+          "arrokothi_better": 4
+        },
+        "agenerateor_vs_bespoke": {
+          "tie": 8,
+          "agenerateor_better": 4,
+          "mixed": 1,
+          "tie_both_fail": 2
+        }
+      }
+    }
+  },
+  "aborted": false,
+  "completedScenarios": {
+    "p01": 21,
+    "p02": 15
+  },
+  "completedUserTurns": {
+    "p01": 37,
+    "p02": 31
+  }
+}

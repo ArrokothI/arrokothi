@@ -30,7 +30,8 @@ import { StrandsLoopEngine } from "../src/index.ts";
 
 type ScriptStep =
   | { kind: "text"; text: string }
-  | { kind: "tool"; name: string; input: Record<string, unknown>; id?: string };
+  | { kind: "tool"; name: string; input: Record<string, unknown>; id?: string }
+  | { kind: "error"; message: string };
 
 class ScriptedStrandsModel extends Model<BaseModelConfig> {
   private config: BaseModelConfig;
@@ -55,6 +56,7 @@ class ScriptedStrandsModel extends Model<BaseModelConfig> {
     this.calls.push({ messages: messages.map((message) => message.clone()), options });
     const step = this.steps.shift();
     if (!step) throw new Error("script exhausted");
+    if (step.kind === "error") throw new Error(step.message);
     yield { type: "modelMessageStartEvent", role: "assistant" };
     if (step.kind === "text") {
       yield { type: "modelContentBlockStartEvent" };
@@ -292,6 +294,18 @@ describe("StrandsLoopEngine", () => {
     const result = await built.engine.run(built.input);
     assert.equal(result.metrics.conversationSummaryCalls, 0);
     assert.ok(!built.traces.some((event) => event.kind === "conversation_compacted"));
+  });
+
+  it("preserves the provider error when Strands invocation throws", async () => {
+    const model = new ScriptedStrandsModel([{ kind: "error", message: "429 request quota reached" }]);
+    const built = loopInput(model);
+    const result = await built.engine.run(built.input);
+    assert.equal(result.stopReason, "error");
+    assert.equal(result.providerStopReason, "429 request quota reached");
+    assert.ok(built.traces.some((event) =>
+      event.kind === "lifecycle"
+      && event.event === "execution_error"
+      && event.detail?.["providerStopReason"] === "429 request quota reached"));
   });
 
   it("uses the actual SummarizingConversationManager when forced over its configured threshold", async () => {

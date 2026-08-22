@@ -1,0 +1,34 @@
+{
+  "evidenceType": "compact-framework-failure-archive",
+  "sourceRunId": "triad-v035-2026-08-22T04-55-01-423Z",
+  "utcStart": "2026-08-22T04:55:00.975Z",
+  "utcEnd": "2026-08-22T05:15:34.290Z",
+  "subjectVersion": "0.35.0",
+  "originalRunCommit": "0e242dac161de3e53e56764df06d067b4eaddf2f",
+  "repairSessionStartingHead": "f465543ffe01706a974cbf7d66d726a8da0c4b34",
+  "requestedModel": "gemini-3.5-flash-lite",
+  "modelMismatchCount": 0,
+  "semanticEvaluation": "framework-blocked / inconclusive",
+  "runtimeReliability": "failed due systematic provider integration defect",
+  "primaryOccurrences": 36,
+  "stabilityOccurrences": 8,
+  "agentDefinitionHashes": {
+    "p01": "03b90ca8c823790e12d0978b58e28236a89bc08d4427d5413ce4d00bcfe98eb0",
+    "p02": "bc38739de31fa841f8b66d84834a54f7ec3aae7b334b656d5286508a183f2df0"
+  },
+  "canonicalHashes": {
+    "p01Scenarios": "3622b7107a97bd10850b22effb9653893d8649fbc0eb3939108caea4e18d9a3c",
+    "p01Grading": "55e76ed77c9d4a6788ffc33518bd4e5d5d412582e55573e150c3159c589e610a",
+    "p02Scenarios": "4172f78b3611b8bb791af5992860e100b8363ea7414eb08537ff32a2c2364f47",
+    "p02Grading": "91dbca2973cf6fa777bf376a021758c1f7fd65236f7aadce95079b62cdcd5069"
+  },
+  "sourceRepositories": {
+    "craig": "0297a5cc43e4fcbc4e8edc7b4d90254cea76a893",
+    "estatePro": "49e33528281ca28c08ac3993778493c3bfaa153c",
+    "agenerateor": "2a52f14e3679886c38f5d333b54d4f5c2bc094a7"
+  },
+  "preservedTraces": [
+    "craig-s01-trace.json",
+    "estate-s01-trace.json"
+  ]
+}

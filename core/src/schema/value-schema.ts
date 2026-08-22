@@ -321,7 +321,19 @@ export function toJsonSchema(schema: ValueSchema): Record<string, unknown> {
       return out;
     }
     case "any":
-      return {};
+      return {
+        anyOf: [
+          { type: "string" },
+          { type: "number" },
+          { type: "boolean" },
+          {
+            type: "array",
+            items: {
+              anyOf: [{ type: "string" }, { type: "number" }, { type: "boolean" }],
+            },
+          },
+        ],
+      };
     case "object": {
       const properties: Record<string, unknown> = {};
       const required: string[] = [];
@@ -333,6 +345,7 @@ export function toJsonSchema(schema: ValueSchema): Record<string, unknown> {
       }
       const out: Record<string, unknown> = { type: "object", properties };
       if (required.length) out["required"] = required;
+      if (schema.additionalProperties === true) out["additionalProperties"] = true;
       return out;
     }
   }

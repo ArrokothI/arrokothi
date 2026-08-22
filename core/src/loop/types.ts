@@ -35,7 +35,7 @@ export interface AgentLoopLimits {
 export type AgentLoopTraceEvent =
   | {
       kind: "lifecycle";
-      event: "before_invocation" | "after_invocation" | "before_model" | "after_model" | "before_tool" | "after_tool";
+      event: "before_invocation" | "after_invocation" | "before_model" | "after_model" | "before_tool" | "after_tool" | "execution_error";
       iteration?: number;
       capabilityName?: string;
       detail?: Record<string, unknown>;

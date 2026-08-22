@@ -134,7 +134,10 @@ export class GeminiProvider implements ModelProvider {
         temperature: request.temperature ?? 0,
         maxOutputTokens: request.maxOutputTokens ?? 2048,
         ...(request.responseSchema
-          ? { responseMimeType: "application/json", responseSchema: toJsonSchema(request.responseSchema) }
+          ? {
+              responseMimeType: "application/json",
+              responseJsonSchema: toGeminiResponseJsonSchema(toJsonSchema(request.responseSchema)),
+            }
           : {}),
       },
     };
@@ -231,6 +234,22 @@ export class GeminiProvider implements ModelProvider {
       raw: payload,
     };
   }
+}
+
+/**
+ * Gemini structured output accepts a documented subset of JSON Schema. Core performs the complete
+ * validation after parsing, so unsupported advisory constraints are omitted at this provider
+ * boundary instead of turning a valid provider-neutral schema into HTTP 400 INVALID_ARGUMENT.
+ */
+function toGeminiResponseJsonSchema(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(toGeminiResponseJsonSchema);
+  if (!value || typeof value !== "object") return value;
+  const unsupported = new Set(["minLength", "maxLength", "pattern"]);
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => !unsupported.has(key))
+      .map(([key, child]) => [key, toGeminiResponseJsonSchema(child)]),
+  );
 }
 
 /** Convenience for applications: build a provider from the environment, or explain what is missing. */

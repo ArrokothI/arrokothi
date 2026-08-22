@@ -6,7 +6,7 @@ import { EMPTY_TURN_PLAN } from "./types.ts";
 const FILTER_OPS = ["eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "starts_with"];
 
 /** Provider-neutral structured-output schema for the single semantic planning call. */
-export function turnPlanSchema(maxRetrievalRequests: number): ObjectSchema {
+export function turnPlanSchema(maxRetrievalRequests: number, includeRetrievalPlanning = true): ObjectSchema {
   return {
     kind: "object",
     fields: {
@@ -28,7 +28,7 @@ export function turnPlanSchema(maxRetrievalRequests: number): ObjectSchema {
       retrieval_requests: {
         required: false,
         description: "Zero or more explicit document searches, web searches, or deterministic record queries.",
-        schema: {
+        schema: includeRetrievalPlanning ? {
           kind: "array",
           maxItems: maxRetrievalRequests,
           items: {
@@ -71,6 +71,12 @@ export function turnPlanSchema(maxRetrievalRequests: number): ObjectSchema {
               limit: { required: false, schema: { kind: "number", min: 1, integer: true } },
             },
           },
+        } : {
+          // The agentic Harness acquires evidence inside its capability loop. Constraining this to
+          // an empty array keeps that contract mechanically checkable and avoids projecting the
+          // unused polymorphic record-filter schema into provider structured-output requests.
+          kind: "string_array",
+          maxItems: 0,
         },
       },
     },

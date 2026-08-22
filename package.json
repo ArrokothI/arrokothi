@@ -1,7 +1,7 @@
 {
   "name": "agent-sdk-workspace",
   "private": true,
-  "version": "0.35.0",
+  "version": "0.35.1",
   "description": "Provider-neutral agent control plane with a consolidated Harness and Strands execution engine.",
   "type": "module",
   "workspaces": [
@@ -22,7 +22,7 @@
     "node": ">=22.9.0"
   },
   "scripts": {
-    "test": "node --test --experimental-strip-types core/tests/*.test.ts integrations/strands/tests/*.test.ts benchmarks/*.test.ts examples/*.test.ts",
+    "test": "node --test --experimental-strip-types core/tests/*.test.ts providers/gemini/tests/*.test.ts integrations/strands/tests/*.test.ts benchmarks/*.test.ts examples/*.test.ts",
     "test:watch": "node --test --watch --experimental-strip-types core/tests/*.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "studio": "node --experimental-strip-types --experimental-sqlite apps/studio/src/server.ts",
@@ -34,7 +34,7 @@
     "example:p02": "node --env-file-if-exists=.env --experimental-strip-types examples/p02-estate/main.ts",
     "bench:p01": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p01-craig/run.ts",
     "bench:p02": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/p02-estate/run.ts",
-    "bench:triad-v035": "node --env-file-if-exists=.env --experimental-strip-types --import ../Agenerateor/tests/register-ts-loader.mjs benchmarks/triad-v035/run.ts",
+    "bench:triad-arrokothi": "node --env-file-if-exists=.env --experimental-strip-types --import ../Agenerateor/tests/register-ts-loader.mjs benchmarks/triad/runner/run-arrokothi.ts",
     "bench:compare": "node --experimental-strip-types benchmarks/shared/compare.ts",
     "test:core": "node --test --experimental-strip-types core/tests/*.test.ts",
     "test:strands": "node --test --experimental-strip-types integrations/strands/tests/*.test.ts"

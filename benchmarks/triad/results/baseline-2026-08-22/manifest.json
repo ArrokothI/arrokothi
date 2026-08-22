@@ -1,0 +1,112 @@
+{
+  "evidenceType": "stored-baseline",
+  "sourceRunId": "triad-v035-2026-08-22T04-55-01-423Z",
+  "sourceUtcStart": "2026-08-22T04:55:00.975Z",
+  "sourceUtcEnd": "2026-08-22T05:15:34.290Z",
+  "migratedAt": "2026-08-22T06:50:28.239Z",
+  "datasetRole": "retrospective-development",
+  "requestedModel": "gemini-3.5-flash-lite",
+  "modelMismatchCount": 0,
+  "systems": [
+    "bespoke",
+    "agenerateor"
+  ],
+  "reuse": "Exact stored output reused; no model request was made by this migration.",
+  "agentDefinitionHashes": {
+    "p01": "03b90ca8c823790e12d0978b58e28236a89bc08d4427d5413ce4d00bcfe98eb0",
+    "p02": "bc38739de31fa841f8b66d84834a54f7ec3aae7b334b656d5286508a183f2df0"
+  },
+  "canonicalSources": [
+    {
+      "sourceRelativePath": "tests/benchmarks/real-agents/craig/scenarios.ts",
+      "copiedRelativePath": "canonical/p01/scenarios.ts",
+      "sha256": "3622b7107a97bd10850b22effb9653893d8649fbc0eb3939108caea4e18d9a3c"
+    },
+    {
+      "sourceRelativePath": "tests/benchmarks/real-agents/craig/grading.mjs",
+      "copiedRelativePath": "canonical/p01/grading.mjs",
+      "sha256": "55e76ed77c9d4a6788ffc33518bd4e5d5d412582e55573e150c3159c589e610a"
+    },
+    {
+      "sourceRelativePath": "tests/benchmarks/real-agents/craig/agenerateor-config.ts",
+      "copiedRelativePath": "canonical/p01/agenerateor-config.ts",
+      "sha256": "90b6bc8439e23f0dca947eb518a3c58dbd3afaa677804711d7a7e9e74b7a2ec8"
+    },
+    {
+      "sourceRelativePath": "tests/benchmarks/real-agents/craig/run-benchmark-r1.mjs",
+      "copiedRelativePath": "canonical/p01/run-benchmark-r1.mjs",
+      "sha256": "472d2a7d8bbffa825c439537902d0af70437cea115aba52fa92827de34cea647"
+    },
+    {
+      "sourceRelativePath": "tests/benchmarks/real-agents/estate/scenarios.ts",
+      "copiedRelativePath": "canonical/p02/scenarios.ts",
+      "sha256": "4172f78b3611b8bb791af5992860e100b8363ea7414eb08537ff32a2c2364f47"
+    },
+    {
+      "sourceRelativePath": "tests/benchmarks/real-agents/estate/grading.mjs",
+      "copiedRelativePath": "canonical/p02/grading.mjs",
+      "sha256": "91dbca2973cf6fa777bf376a021758c1f7fd65236f7aadce95079b62cdcd5069"
+    },
+    {
+      "sourceRelativePath": "tests/benchmarks/real-agents/estate/agenerateor-config.ts",
+      "copiedRelativePath": "canonical/p02/agenerateor-config.ts",
+      "sha256": "4305f710f204f1598fe5669ed2f1e7e9415648eb321fd2d4c4f8447608df4a26"
+    },
+    {
+      "sourceRelativePath": "tests/benchmarks/real-agents/estate/bespoke-chat-client.mjs",
+      "copiedRelativePath": "canonical/p02/bespoke-chat-client.mjs",
+      "sha256": "67e158a36ed05125e145e3c4ed79ed09bfdb48dce7c866c58a18fdae602c105c"
+    },
+    {
+      "sourceRelativePath": "tests/benchmarks/real-agents/estate/run-benchmark.mjs",
+      "copiedRelativePath": "canonical/p02/run-benchmark.mjs",
+      "sha256": "9d656dd7c5d1c13f2beff028a80f982e1d4c49de617271b96a1d56f05e19d344"
+    }
+  ],
+  "sourceRepositories": {
+    "agentSdk": {
+      "root": "/Users/rex-shih/Documents/Codex/projects/Agent_SDK",
+      "commit": "0e242dac161de3e53e56764df06d067b4eaddf2f",
+      "trackedDirty": [
+        " M package.json",
+        " M tsconfig.json",
+        "?? benchmarks/triad-v035/"
+      ],
+      "statusShort": [
+        " M package.json",
+        " M tsconfig.json",
+        "?? benchmarks/triad-v035/"
+      ]
+    },
+    "craig": {
+      "root": "/Users/rex-shih/Documents/Codex/projects/Craig-Hempcrete-DemoSitee",
+      "commit": "0297a5cc43e4fcbc4e8edc7b4d90254cea76a893",
+      "trackedDirty": [],
+      "statusShort": []
+    },
+    "estatePro": {
+      "root": "/Users/rex-shih/Documents/Codex/projects/EstatePro",
+      "commit": "49e33528281ca28c08ac3993778493c3bfaa153c",
+      "trackedDirty": [
+        " M .gitignore",
+        " M components/AIConcierge.tsx",
+        " M package-lock.json",
+        "?? .claude/",
+        "?? .env.example"
+      ],
+      "statusShort": [
+        " M .gitignore",
+        " M components/AIConcierge.tsx",
+        " M package-lock.json",
+        "?? .claude/",
+        "?? .env.example"
+      ]
+    },
+    "agenerateor": {
+      "root": "/Users/rex-shih/Documents/Codex/projects/Agenerateor",
+      "commit": "2a52f14e3679886c38f5d333b54d4f5c2bc094a7",
+      "trackedDirty": [],
+      "statusShort": []
+    }
+  }
+}

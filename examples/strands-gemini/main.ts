@@ -67,7 +67,7 @@ const definition = defineAgent({
   planning: { mode: "llm", extractWorkingNotes: true },
   execution: { harness: "agentic", executionContextPolicy: "fresh_each_turn" },
   globalRules: [
-    { id: "plan-source", kind: "invariant", scope: "planner", text: "Retrieve authoritative product evidence before answering product-limit questions." },
+    { id: "plan-source", kind: "invariant", scope: "planner", text: "Call the configured product-policy Knowledge capability exactly once before answering a product-limit question. After its result, answer without calling it again." },
     { id: "answer-source", kind: "invariant", scope: "response", text: "State only limits supported by a runtime observation." },
   ],
   memorySchema: {
@@ -84,7 +84,7 @@ const definition = defineAgent({
     },
   }],
   tools: [],
-  policies: { maxAgentIterations: 4 },
+  policies: { maxAgentIterations: 5, maxKnowledgeCallsPerTurn: 1, maxToolCallsPerTurn: 1 },
 });
 
 const live = process.argv.includes("--live");
@@ -111,15 +111,35 @@ const runtime = new AgentRuntime({
   model: planningModel,
   tools: new ToolRegistry(),
   knowledge: new KnowledgeIndex(definition.knowledge),
-  harness: new AgentHarness({ engine }),
+  harness: new AgentHarness({
+    engine,
+    validateTerminalResponse: (text) => /\b(?:five|5)\b/i.test(text) && !/\b50\b/.test(text)
+      ? { kind: "proceed" }
+      : {
+          kind: "guide",
+          code: "grounding_mismatch",
+          feedback: "Use the authoritative Knowledge result: the Team plan supports five active projects. Answer without another tool call.",
+        },
+  }),
   ids: createDeterministicIds(),
   clock: createFixedClock(),
 });
 
 const sessionId = await runtime.createSession(live ? "strands-gemini-live" : "strands-gemini-offline");
 const result = await runtime.runTurn({ sessionId, message: "How many active projects does the Team plan support?" });
+const runtimeErrors = result.events.filter((event) => event.type === "RuntimeError");
+const knowledgeCalls = result.events.filter((event) => event.type === "KnowledgeRetrieved").length;
+if (
+  result.stopReason !== "completed"
+  || runtimeErrors.length > 0
+  || knowledgeCalls !== 1
+  || !/\b(?:five|5)\b/i.test(result.reply)
+  || /\b50\b/.test(result.reply)
+) {
+  throw new Error(`Strands example failed verification: stopReason=${result.stopReason}; runtimeErrors=${runtimeErrors.length}; knowledgeCalls=${knowledgeCalls}`);
+}
 
 console.log(result.reply);
 console.log(`mode=${live ? "live" : "offline"}`);
 console.log(`model_calls=${result.metrics.totalModelCalls} (preflight=${result.metrics.preflightModelCalls}, loop=${result.metrics.agentLoopModelCalls}, summaries=${result.metrics.conversationSummaryModelCalls})`);
-console.log(`knowledge_calls=${result.events.filter((event) => event.type === "KnowledgeRetrieved").length}`);
+console.log(`knowledge_calls=${knowledgeCalls}`);

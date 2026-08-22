@@ -1,0 +1,16 @@
+{
+  "originalRunCommit": "0e242dac161de3e53e56764df06d067b4eaddf2f",
+  "repairSessionStartingHead": "f465543ffe01706a974cbf7d66d726a8da0c4b34",
+  "subjectVersion": "0.35.0",
+  "node": "25.2.1",
+  "npm": "11.6.2",
+  "dependencies": {
+    "@strands-agents/sdk": "1.14.0",
+    "@google/genai": "2.6.0"
+  },
+  "hashes": {
+    "package-lock.json": "b59eb9daaa63050e228eedaad260c71eca21d340eee2b485cf3c72d846f96e5c",
+    "package.json": "0c81e1c1b8b5551366bf4da2382164afe5a77fe3d13707bb5c7ca229729a9669",
+    "integrations/strands/src/index.ts": "a96f99b989e6747f03de66979e813ccd4af4091e8064b0a3a2062b451c339a01"
+  }
+}

@@ -180,7 +180,7 @@ export class TwoPassHarness implements HarnessImplementation {
       const response = await planningModel.generate({
         system: context.system,
         messages: context.messages,
-        responseSchema: turnPlanSchema(definition.policies.maxRetrievalRequests),
+        responseSchema: turnPlanSchema(definition.policies.maxRetrievalRequests, includeRetrievalPlanning),
         model: policy.model,
         temperature: policy.temperature ?? 0,
         maxOutputTokens: policy.maxOutputTokens,

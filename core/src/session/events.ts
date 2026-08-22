@@ -160,6 +160,7 @@ export type ExecutionLifecycleObservedEvent = EventBase<
       | "after_model"
       | "before_tool"
       | "after_tool"
+      | "execution_error"
       | "capability_requested"
       | "runtime_decision"
       | "guide_retry"

@@ -1,0 +1,35 @@
+{
+  "sourceRun": "triad-v035-2026-08-22T04-55-01-423Z",
+  "scenarioId": "CRAIG-S01",
+  "model": "gemini-3.5-flash-lite",
+  "replyProducedBeforeFailure": true,
+  "toolFlow": [
+    {
+      "iteration": 1,
+      "capability": "compute_wall_volume",
+      "input": { "wall_thickness_in": 10, "wall_area_sq_ft": 420 },
+      "observation": { "volume_m3": 9.9, "exact_volume_m3": 9.91088 }
+    },
+    {
+      "iteration": 2,
+      "capability": "knowledge_document_search_craig_product_guide_03d860",
+      "returnedCount": 2
+    },
+    {
+      "iteration": 3,
+      "capability": "knowledge_document_search_craig_product_guide_03d860",
+      "returnedCount": 2
+    }
+  ],
+  "successfulModelCalls": 4,
+  "rejectedAttempt": 1,
+  "lastSuccessfulUsage": { "inputTokens": 1110, "outputTokens": 397, "totalTokens": 1507 },
+  "failure": {
+    "code": "PROVIDER_HTTP_400",
+    "providerStatus": "INVALID_ARGUMENT",
+    "message": "Request contains an invalid argument."
+  },
+  "semanticEvaluation": "framework-blocked / inconclusive",
+  "runtimeReliability": "failed due systematic provider integration defect"
+}
+

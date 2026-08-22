@@ -31,7 +31,7 @@ import {
 } from "@strands-agents/sdk";
 import { GoogleModel, type GoogleModelOptions } from "@strands-agents/sdk/models/google";
 
-export const STRANDS_INTEGRATION_VERSION = "0.35.0";
+export const STRANDS_INTEGRATION_VERSION = "0.35.1";
 export const SUPPORTED_STRANDS_SDK_VERSION = "1.14.0";
 
 const STATE_KEY = "agentSdk";
@@ -168,8 +168,10 @@ export class StrandsLoopEngine implements AgentLoopEngine {
           outputTokens: input.limits.maxOutputTokens,
         },
       });
-    } catch {
+    } catch (error) {
       const stopReason = input.signal?.aborted ? "cancelled" : "error";
+      const providerStopReason = error instanceof Error ? error.message : String(error);
+      input.onTrace?.({ kind: "lifecycle", event: "execution_error", detail: { providerStopReason } });
       input.onTrace?.({ kind: "execution_terminated", stopReason });
       return {
         replyText: stopReason === "cancelled"
@@ -177,6 +179,7 @@ export class StrandsLoopEngine implements AgentLoopEngine {
           : "The execution engine stopped safely before completing this turn. Nothing unconfirmed was executed.",
         stopReason,
         metrics,
+        providerStopReason,
       };
     }
 
