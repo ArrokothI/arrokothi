@@ -125,6 +125,7 @@ async function main() {
   const missing: string[] = [];
   const genuineSubjectFailuresAtResume: string[] = [];
   const generatedRuns: NeutralRawRunV2[] = [];
+  const generatedUnitIds = new Set<string>();
   const pacer = new SubjectPacer();
 
   for (const unit of units) {
@@ -153,6 +154,7 @@ async function main() {
     run = withValidity(run, { expectedRequestedModel: SUBJECT_MODEL, requireProviderReportedModelMatch: true });
     await writeJson(unit.rawPath, run);
     generatedRuns.push(run);
+    generatedUnitIds.add(unit.id);
     pacer.after(run);
   }
 
@@ -169,7 +171,7 @@ async function main() {
     else if (isGenuineSubjectFailure(run)) genuineSubjectFailures.push(unit.id);
   }
   const resumeCompletedAt = new Date().toISOString();
-  const checkpointModelCalls = finalRuns.filter((run) => !generatedRuns.includes(run)).reduce((sum, run) => sum + (run.modelCallCount ?? 0), 0);
+  const checkpointModelCalls = finalRuns.filter((run) => !generatedUnitIds.has(`${run.scenarioId}-${run.implementationId}-${run.repeatId}`)).reduce((sum, run) => sum + (run.modelCallCount ?? 0), 0);
   const resumeModelCalls = generatedRuns.reduce((sum, run) => sum + (run.modelCallCount ?? 0), 0);
   const counts = {
     expectedSubjectUnits: units.length,

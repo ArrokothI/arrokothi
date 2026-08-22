@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "requestedModel": "gemini-3.5-flash-lite",
+  "providerReportedModel": "gemini-3.5-flash-lite",
+  "usage": {
+    "inputTokens": 21,
+    "outputTokens": 4
+  },
+  "startedAt": "2026-08-22T16:14:47.920Z",
+  "completedAt": "2026-08-22T16:14:48.653Z",
+  "apiModelCallCount": 1
+}

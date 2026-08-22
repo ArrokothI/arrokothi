@@ -8,6 +8,7 @@ if (!apiKey) throw new Error("A Gemini API key is required for the paid-project 
 
 const startedAt = new Date().toISOString();
 const response = await new GeminiProvider({ apiKey, model: requestedModel, maxRetries: 0 }).generate({
+  system: "You are a benchmark connectivity canary. Follow the user instruction exactly.",
   messages: [{ role: "user", content: "Reply with exactly: canary-ok" }],
   model: requestedModel,
   temperature: 0,

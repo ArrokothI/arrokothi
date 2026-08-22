@@ -2,19 +2,48 @@
   "schemaVersion": "neutral-raw-run-v2",
   "applicationId": "p01",
   "implementationId": "p01-original",
+  "frameworkId": "bespoke-original",
   "scenarioId": "P01-V2-S17",
   "repeatId": "r01",
-  "conversation": [],
-  "requestedModel": {
-    "provider": "gemini",
-    "requested": "gemini-3.5-flash-lite"
-  },
-  "runtimeErrors": [
+  "conversation": [
     {
-      "code": "transport_failure",
-      "message": "Gemini subject request failed: 429 {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\nPlease retry in 44.951633496s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",",
-      "beforeSubjectBehavior": true
+      "turn": 1,
+      "user": "What does a pallet cost today, and do you have 12 pallets in stock?",
+      "assistant": "As a digital sales advisor for our demo site, I don't track live retail pricing or live inventory, so I can't quote exact pallet costs today. Instead, we typically estimate material volume based on your square footage, using universal quantities like cubic meters rather than specific package SKUs. \n\nWhat are the approximate dimensions or square footage of the walls you are planning to build?"
     }
   ],
-  "invalidReason": "provider_outage_or_transport_failure"
+  "requestedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "temperature": 0.35,
+    "callCount": 1,
+    "usage": {
+      "available": true,
+      "inputTokens": 526,
+      "outputTokens": 78,
+      "totalTokens": 604
+    }
+  },
+  "reportedModel": {
+    "provider": "gemini",
+    "requested": "gemini-3.5-flash-lite",
+    "providerReported": [
+      "gemini-3.5-flash-lite"
+    ]
+  },
+  "canonicalFinalState": {},
+  "deterministicComputations": {},
+  "actionRequests": [],
+  "executorDispatchCount": 0,
+  "stopReason": "scenario_turns_complete",
+  "timing": {
+    "elapsedMs": 995
+  },
+  "modelCallCount": 1,
+  "tokenUsage": {
+    "available": true,
+    "inputTokens": 526,
+    "outputTokens": 78,
+    "totalTokens": 604
+  }
 }
