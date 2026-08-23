@@ -3,13 +3,13 @@
   "experimentId": "v2-six-subject-run-1",
   "hotfixVersion": "evaluator-v2-hotfix.2",
   "hotfixDate": "2026-08-23",
-  "hotfixCommit": "4c012df58d9e2be3eec1183414bdc7a8d4240945",
-  "hotfixCommitTimestamp": "2026-08-23T03:38:05+08:00",
+  "hotfixCommit": "2256c7f58c0c876da172e72a0716dc57e8ecb02d",
+  "hotfixCommitTimestamp": "2026-08-23T10:52:00+08:00",
   "provenanceRecord": {
     "generationTimeScenarioHash": "3f15e2ad5c35bd66e4d24a5d19b961858e187034f2b473aaa4bd9940f3d2e4e7",
     "generationTimeEvaluatorHash": "20166c554085c0d62b23703baa37ae799821c3bc56edc49478e885a96748ffa9",
     "postHotfixScenarioHash": "29cf6eeae7c70e232ba3b55516fc292ed95d494cc56d79bc2313ec72aef7eb94",
-    "postHotfixEvaluatorHash": "38f8a2402de293abed351ae4eb6b0c15119203122822430c3a15023619336a3e"
+    "postHotfixEvaluatorHash": "a001275fa4f8d863b95e162a6a55885f563dcd6451ab43959935b7983c6f9ff5"
   },
   "unitsEvaluated": 369,
   "invalidUnits": [],
