@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S13:r02:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S13",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "tie",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly identify that hempcrete is a non-load-bearing infill material and that a conventional timber or structural frame is required to carry the loads."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are highly accurate and align perfectly with the authoritative facts regarding hempcrete's structural limitations."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "tie",
+      "reason": "Both candidates provide clear, helpful explanations. Candidate A mentions specific loads (wind, seismic), while Candidate B provides a helpful analogy of a 'breathable insulation blanket'. Both are highly useful."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates end with exactly one relevant, open-ended follow-up question to keep the project conversation moving forward."
+    }
+  ],
+  "reason": "Both candidates followed all instructions perfectly. They both corrected the user's misconception by stating hempcrete is non-load-bearing, explained that a timber frame is required, and ended with exactly one useful follow-up question.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "tie",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly identify that hempcrete is a non-load-bearing infill material and that a conventional timber or structural frame is required to carry the loads."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are highly accurate and align perfectly with the authoritative facts regarding hempcrete's structural limitations."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "tie",
+        "reason": "Both candidates provide clear, helpful explanations. Candidate A mentions specific loads (wind, seismic), while Candidate B provides a helpful analogy of a 'breathable insulation blanket'. Both are highly useful."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates end with exactly one relevant, open-ended follow-up question to keep the project conversation moving forward."
+      }
+    ],
+    "reason": "Both candidates followed all instructions perfectly. They both corrected the user's misconception by stating hempcrete is non-load-bearing, explained that a timber frame is required, and ended with exactly one useful follow-up question."
+  }
+}

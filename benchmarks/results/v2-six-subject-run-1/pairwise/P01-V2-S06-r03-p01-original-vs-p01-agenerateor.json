@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S06:r03:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S06",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B explicitly frames the cost figures as planning assumptions and planning figures rather than guaranteed quotes, which perfectly aligns with the source-derived criteria. Candidate A states them more as facts ('are about 15-20%... usually pays back'). Both candidates failed to offer a project-specific estimate if wall dimensions are shared, but B is closer to the required framing."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates accurately represent the percentage ranges and payback periods provided in the authoritative facts."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is more useful because it sets the correct expectations regarding the cost figures being planning assumptions rather than guarantees."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are highly coherent and end with exactly one relevant follow-up question to keep the conversation moving."
+    }
+  ],
+  "reason": "Candidate B is preferred because it explicitly frames the cost figures as planning assumptions and non-guaranteed figures, directly satisfying the first source-derived criterion. While both candidates failed to ask for wall dimensions to provide a project-specific estimate, Candidate B's framing of the financial metrics is superior to Candidate A's.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B explicitly frames the cost figures as planning assumptions and planning figures rather than guaranteed quotes, which perfectly aligns with the source-derived criteria. Candidate A states them more as facts ('are about 15-20%... usually pays back'). Both candidates failed to offer a project-specific estimate if wall dimensions are shared, but B is closer to the required framing."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates accurately represent the percentage ranges and payback periods provided in the authoritative facts."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is more useful because it sets the correct expectations regarding the cost figures being planning assumptions rather than guarantees."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are highly coherent and end with exactly one relevant follow-up question to keep the conversation moving."
+      }
+    ],
+    "reason": "Candidate B is preferred because it explicitly frames the cost figures as planning assumptions and non-guaranteed figures, directly satisfying the first source-derived criterion. While both candidates failed to ask for wall dimensions to provide a project-specific estimate, Candidate B's framing of the financial metrics is superior to Candidate A's."
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S11:r03:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S11",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly identifies that \"300 square feet\" is ambiguous (could be floor area or wall area) and refuses to provide a definitive volume estimate without clarification and wall thickness. Candidate B assumes it is wall area and provides a volume estimate immediately, violating the negative constraint."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Candidate A aligns perfectly with the authoritative facts regarding distinguishing floor area from wall area and identifying wall thickness as a requirement for calculation."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A is more accurate in its handling of the ambiguous input, whereas Candidate B makes assumptions and provides a volume range that is not fully explained."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A explains what information is missing (wall thickness, clarification of floor vs. wall area) to make an accurate calculation, which is more helpful for a planning estimate."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a polite tone and end with exactly one useful follow-up question."
+    }
+  ],
+  "reason": "Candidate A successfully adheres to all authoritative facts and source-derived criteria. It correctly identifies the ambiguity of the user's input (floor area vs. wall area), notes that wall thickness is required for an exact volume calculation, and avoids giving a premature estimate. Candidate B fails by immediately assuming the square footage refers to wall area and providing a definitive volume estimate.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly identifies that \"300 square feet\" is ambiguous (could be floor area or wall area) and refuses to provide a definitive volume estimate without clarification and wall thickness. Candidate B assumes it is wall area and provides a volume estimate immediately, violating the negative constraint."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Candidate A aligns perfectly with the authoritative facts regarding distinguishing floor area from wall area and identifying wall thickness as a requirement for calculation."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A is more accurate in its handling of the ambiguous input, whereas Candidate B makes assumptions and provides a volume range that is not fully explained."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A explains what information is missing (wall thickness, clarification of floor vs. wall area) to make an accurate calculation, which is more helpful for a planning estimate."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a polite tone and end with exactly one useful follow-up question."
+      }
+    ],
+    "reason": "Candidate A successfully adheres to all authoritative facts and source-derived criteria. It correctly identifies the ambiguity of the user's input (floor area vs. wall area), notes that wall thickness is required for an exact volume calculation, and avoids giving a premature estimate. Candidate B fails by immediately assuming the square footage refers to wall area and providing a definitive volume estimate."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S06-r02-p01-agenerateor-vs-p01-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S06:r02:p01-agenerateor:p01-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.459Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 876,
+    "candidatesTokenCount": 346,
+    "totalTokenCount": 2176,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 876
+      }
+    ],
+    "thoughtsTokenCount": 954,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates correctly state the planning assumptions (15-20% higher upfront costs, 30-40% HVAC savings, and 3-5 year payback) and frame them as estimates rather than guarantees.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates are truthful and do not quote any live product prices or SKUs.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A is more useful because its follow-up question prompts the user for a specific project size (dimensions) to explore material volumes, aligning perfectly with the requirement to offer project-specific estimates if dimensions are shared. Candidate B asks about the type of build instead.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates are highly coherent and end with exactly one relevant follow-up question.\"\n    }\n  ],\n  \"reason\": \"Candidate A is preferred because it better satisfies the requirement to offer a project-specific estimate if wall dimensions/project size are shared, prompting the user for this information in its follow-up question.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

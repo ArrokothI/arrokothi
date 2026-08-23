@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S20:r02:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S20",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies both invalid inputs (the negative wall area and the zero-inch thickness) as physically impossible. Candidate A only addresses the zero-inch thickness and completely ignores the negative wall area."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B is more truthful by pointing out that both negative area and zero thickness are invalid for physical calculations, whereas Candidate A ignores the negative area value."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is more useful because it clearly explains why the calculation cannot be performed with the provided inputs and asks the user to provide valid, positive dimensions."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a polite tone and end with a single, relevant follow-up question to keep the conversation moving."
+    }
+  ],
+  "reason": "Candidate B is superior because it addresses both invalid inputs (negative area and zero thickness) provided by the user, in accordance with the authoritative facts and source-derived criteria. Candidate A fails to address the negative wall area.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies both invalid inputs (the negative wall area and the zero-inch thickness) as physically impossible. Candidate A only addresses the zero-inch thickness and completely ignores the negative wall area."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B is more truthful by pointing out that both negative area and zero thickness are invalid for physical calculations, whereas Candidate A ignores the negative area value."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is more useful because it clearly explains why the calculation cannot be performed with the provided inputs and asks the user to provide valid, positive dimensions."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a polite tone and end with a single, relevant follow-up question to keep the conversation moving."
+      }
+    ],
+    "reason": "Candidate B is superior because it addresses both invalid inputs (negative area and zero thickness) provided by the user, in accordance with the authoritative facts and source-derived criteria. Candidate A fails to address the negative wall area."
+  }
+}

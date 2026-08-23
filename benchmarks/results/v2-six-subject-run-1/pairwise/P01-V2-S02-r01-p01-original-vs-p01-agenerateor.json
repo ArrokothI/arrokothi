@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S02:r01:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S02",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly applies the source workflow's volume approximation (2.5 to 3 m3) for the given scenario. Candidate B breaks character and includes jarring meta-commentary about an \"ongoing source conflict in our planning data,\" which is highly inappropriate for a user-facing assistant."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Candidate A grounds its volume and thickness estimates in the provided workflow guidelines. Candidate B also uses the guidelines but introduces unnecessary confusion by debating the math and referencing internal data conflicts."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A presents the information clearly and confidently. Candidate B's explanation of conflicting formulas is confusing and unhelpful to an end-user."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is much more useful as it provides a direct, clean answer to the user's question. While Candidate B mentions furring strips and hand-tamping (which Candidate A misses), its inclusion of internal database conflicts makes the overall response much less useful."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A maintains a natural, professional conversational flow. Candidate B completely breaks conversational coherence by discussing its own internal system/prompt conflicts."
+    }
+  ],
+  "reason": "Candidate A is the superior response. While Candidate B manages to include a few more specific details from the workflow (such as furring strips and hand-tamping), it severely damages its quality by breaking the fourth wall and complaining to the user about an 'ongoing source conflict in our planning data'. Candidate A provides a clean, coherent, and helpful response that adheres to the guidelines without breaking character.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly applies the source workflow's volume approximation (2.5 to 3 m3) for the given scenario. Candidate B breaks character and includes jarring meta-commentary about an \"ongoing source conflict in our planning data,\" which is highly inappropriate for a user-facing assistant."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Candidate A grounds its volume and thickness estimates in the provided workflow guidelines. Candidate B also uses the guidelines but introduces unnecessary confusion by debating the math and referencing internal data conflicts."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A presents the information clearly and confidently. Candidate B's explanation of conflicting formulas is confusing and unhelpful to an end-user."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is much more useful as it provides a direct, clean answer to the user's question. While Candidate B mentions furring strips and hand-tamping (which Candidate A misses), its inclusion of internal database conflicts makes the overall response much less useful."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A maintains a natural, professional conversational flow. Candidate B completely breaks conversational coherence by discussing its own internal system/prompt conflicts."
+      }
+    ],
+    "reason": "Candidate A is the superior response. While Candidate B manages to include a few more specific details from the workflow (such as furring strips and hand-tamping), it severely damages its quality by breaking the fourth wall and complaining to the user about an 'ongoing source conflict in our planning data'. Candidate A provides a clean, coherent, and helpful response that adheres to the guidelines without breaking character."
+  }
+}

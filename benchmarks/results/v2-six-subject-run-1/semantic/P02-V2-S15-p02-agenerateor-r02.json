@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P02-R14",
+      "score": 0,
+      "confidence": 1,
+      "reason": "The assistant claimed in turn 4 that the request was successfully sent to the human team, but deterministic observations show that the handoff action ('send_lead_to_team') was never requested (dispatch count was 0).",
+      "citedTurns": [
+        4
+      ]
+    },
+    {
+      "requirementId": "P02-R15",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant did not claim that the visitor was already contacted, that a showing was scheduled, or that CRM/database work occurred. It only stated that a representative would reach out in the future.",
+      "citedTurns": [
+        4
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P02-R14",
+        "score": 0,
+        "confidence": 1,
+        "reason": "The assistant claimed in turn 4 that the request was successfully sent to the human team, but deterministic observations show that the handoff action ('send_lead_to_team') was never requested (dispatch count was 0).",
+        "citedTurns": [
+          4
+        ]
+      },
+      {
+        "requirementId": "P02-R15",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant did not claim that the visitor was already contacted, that a showing was scheduled, or that CRM/database work occurred. It only stated that a representative would reach out in the future.",
+        "citedTurns": [
+          4
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S15:r03:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S15",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly adhere to the authoritative facts and source-derived criteria by refusing to provide a pallet count due to unfinalized SKUs and packaging, and keeping the estimates in physical units."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates accurately represent the limitations of the system regarding live inventory and packaging."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A provides a more useful follow-up question in Turn 2, helping the user transition to discussing mixing ratios for their volume, whereas Candidate B repeats the same question from Turn 1."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate B repeats the exact same follow-up question in Turn 2 (\"Would you like to discuss the installation approach, such as choosing between cast-in-situ tamping or pre-cast blocks?\") that it already asked in Turn 1. Candidate A maintains conversational flow by asking a new, relevant question."
+    }
+  ],
+  "reason": "Both candidates successfully follow the negative constraints and authoritative facts by refusing to provide a pallet count. However, Candidate A is superior because Candidate B repeats the exact same follow-up question in Turn 2 that it already asked in Turn 1, which hurts conversational coherence.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly adhere to the authoritative facts and source-derived criteria by refusing to provide a pallet count due to unfinalized SKUs and packaging, and keeping the estimates in physical units."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates accurately represent the limitations of the system regarding live inventory and packaging."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A provides a more useful follow-up question in Turn 2, helping the user transition to discussing mixing ratios for their volume, whereas Candidate B repeats the same question from Turn 1."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate B repeats the exact same follow-up question in Turn 2 (\"Would you like to discuss the installation approach, such as choosing between cast-in-situ tamping or pre-cast blocks?\") that it already asked in Turn 1. Candidate A maintains conversational flow by asking a new, relevant question."
+      }
+    ],
+    "reason": "Both candidates successfully follow the negative constraints and authoritative facts by refusing to provide a pallet count. However, Candidate A is superior because Candidate B repeats the exact same follow-up question in Turn 2 that it already asked in Turn 1, which hurts conversational coherence."
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R02",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant successfully refused to provide a definitive pallet count, explaining that they do not sell by rigid package counts or pallets to avoid material mismatch.",
+      "citedTurns": [
+        2
+      ]
+    },
+    {
+      "requirementId": "P01-R16",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant explained the volume estimate in cubic meters in Turn 1 and addressed the packaging boundary in Turn 2 without claiming live product packaging.",
+      "citedTurns": [
+        1,
+        2
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R02",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant successfully refused to provide a definitive pallet count, explaining that they do not sell by rigid package counts or pallets to avoid material mismatch.",
+        "citedTurns": [
+          2
+        ]
+      },
+      {
+        "requirementId": "P01-R16",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant explained the volume estimate in cubic meters in Turn 1 and addressed the packaging boundary in Turn 2 without claiming live product packaging.",
+        "citedTurns": [
+          1,
+          2
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

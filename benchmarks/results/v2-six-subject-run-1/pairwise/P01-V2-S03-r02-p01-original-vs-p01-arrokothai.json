@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S03:r02:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S03",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly calculates the exact wall volume using the authoritative formula (300 * 3 / 12 * 0.0283168 = 2.12 cubic meters, rounded to 2.1). Candidate B incorrectly provides the generic 2.5 to 3 cubic meters range, which conflicts with the exact dimensions provided by the user."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it provides the precise calculation requested by the user based on their specific inputs, rather than a generic approximation."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are polite, coherent, and ask relevant follow-up questions regarding the installation process."
+    }
+  ],
+  "reason": "Candidate A correctly applies the authoritative calculator formula for the exact area and thickness provided, resulting in 2.1 cubic meters. Candidate B fails to perform the exact calculation and instead insists on the generic 2.5-3 m3 range, which is incorrect for these specific dimensions.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly calculates the exact wall volume using the authoritative formula (300 * 3 / 12 * 0.0283168 = 2.12 cubic meters, rounded to 2.1). Candidate B incorrectly provides the generic 2.5 to 3 cubic meters range, which conflicts with the exact dimensions provided by the user."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it provides the precise calculation requested by the user based on their specific inputs, rather than a generic approximation."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are polite, coherent, and ask relevant follow-up questions regarding the installation process."
+      }
+    ],
+    "reason": "Candidate A correctly applies the authoritative calculator formula for the exact area and thickness provided, resulting in 2.1 cubic meters. Candidate B fails to perform the exact calculation and instead insists on the generic 2.5-3 m3 range, which is incorrect for these specific dimensions."
+  }
+}

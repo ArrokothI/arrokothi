@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S05:r02:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S05",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "tie",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly and accurately explain the differences in curing and drying times between pre-cast blocks (arriving cured, 2-3 day mortar sequencing) and cast-in-situ (forms off next day, 3-6 weeks curing before plastering)."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates adhere to the facts and do not guarantee universal completion dates or make claims about e-commerce/ordering systems."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "tie",
+      "reason": "Both candidates provide highly useful, structured comparisons that directly address the user's need for speed, and both end with exactly one relevant follow-up question to keep the project moving."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both responses are coherent, well-structured, and easy to read."
+    }
+  ],
+  "reason": "Both candidates are excellent. They perfectly address all authoritative facts and source-derived criteria, providing accurate timelines for both pre-cast blocks and cast-in-situ methods, and ending with a single, useful follow-up question.",
+  "rawStructuredOutput": {
+    "verdict": "tie",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly and accurately explain the differences in curing and drying times between pre-cast blocks (arriving cured, 2-3 day mortar sequencing) and cast-in-situ (forms off next day, 3-6 weeks curing before plastering)."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates adhere to the facts and do not guarantee universal completion dates or make claims about e-commerce/ordering systems."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "tie",
+        "reason": "Both candidates provide highly useful, structured comparisons that directly address the user's need for speed, and both end with exactly one relevant follow-up question to keep the project moving."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both responses are coherent, well-structured, and easy to read."
+      }
+    ],
+    "reason": "Both candidates are excellent. They perfectly address all authoritative facts and source-derived criteria, providing accurate timelines for both pre-cast blocks and cast-in-situ methods, and ending with a single, useful follow-up question.",
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1"
+  }
+}

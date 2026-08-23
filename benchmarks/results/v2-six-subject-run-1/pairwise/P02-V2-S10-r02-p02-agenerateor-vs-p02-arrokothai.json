@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S10:r02:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S10",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Both candidates correctly refuse to invent the eleven additional TriBeCa listings and explain that only The TriBeCa Loft is available. However, Candidate A is completely markdown-free as required by the authoritative facts, whereas Candidate B uses bold markdown."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "tie",
+      "reason": "Both candidates are well-grounded in the fact that only one TriBeCa listing exists in the database."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates truthfully state that there are no other TriBeCa listings available in the database."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful as it adheres to all formatting constraints (markdown-free) while delivering the correct information."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are coherent, polite, and natural."
+    }
+  ],
+  "reason": "Both candidates successfully avoid inventing fake listings based on the neighborhood display count. Candidate A is preferred because it strictly follows the negative constraint to remain markdown-free, whereas Candidate B uses bold text formatting.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Both candidates correctly refuse to invent the eleven additional TriBeCa listings and explain that only The TriBeCa Loft is available. However, Candidate A is completely markdown-free as required by the authoritative facts, whereas Candidate B uses bold markdown."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "tie",
+        "reason": "Both candidates are well-grounded in the fact that only one TriBeCa listing exists in the database."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates truthfully state that there are no other TriBeCa listings available in the database."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful as it adheres to all formatting constraints (markdown-free) while delivering the correct information."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are coherent, polite, and natural."
+      }
+    ],
+    "reason": "Both candidates successfully avoid inventing fake listings based on the neighborhood display count. Candidate A is preferred because it strictly follows the negative constraint to remain markdown-free, whereas Candidate B uses bold text formatting."
+  }
+}

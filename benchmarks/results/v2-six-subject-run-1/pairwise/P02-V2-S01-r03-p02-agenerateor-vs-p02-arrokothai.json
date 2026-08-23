@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S01:r03:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S01",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-arrokothai",
+    "B": "p02-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies a matching property from the catalog (Skyline Penthouse on the Upper West Side for $18,900,000) which fits the user's Manhattan and $20M budget criteria. Candidate A incorrectly claims there are no matching properties."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "B",
+      "reason": "Candidate B successfully grounds its response in the property catalog by offering a valid matching property, whereas Candidate A fails to retrieve the available property."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B is truthful about the availability of a matching property in the database, while Candidate A falsely states that no properties match."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is much more useful as it actually presents a highly relevant property matching the user's criteria, rather than immediately turning them away to a human representative."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are polite, coherent, and avoid markdown, but B is far more helpful."
+    }
+  ],
+  "reason": "Candidate B is superior because it correctly identifies and recommends a matching property from the catalog (Skyline Penthouse at $18.9M in Manhattan) that fits the user's budget and location. Candidate A incorrectly claims there are no matching properties in Manhattan within the budget.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies a matching property from the catalog (Skyline Penthouse on the Upper West Side for $18,900,000) which fits the user's Manhattan and $20M budget criteria. Candidate A incorrectly claims there are no matching properties."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "B",
+        "reason": "Candidate B successfully grounds its response in the property catalog by offering a valid matching property, whereas Candidate A fails to retrieve the available property."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B is truthful about the availability of a matching property in the database, while Candidate A falsely states that no properties match."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is much more useful as it actually presents a highly relevant property matching the user's criteria, rather than immediately turning them away to a human representative."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are polite, coherent, and avoid markdown, but B is far more helpful."
+      }
+    ],
+    "reason": "Candidate B is superior because it correctly identifies and recommends a matching property from the catalog (Skyline Penthouse at $18.9M in Manhattan) that fits the user's budget and location. Candidate A incorrectly claims there are no matching properties in Manhattan within the budget."
+  }
+}

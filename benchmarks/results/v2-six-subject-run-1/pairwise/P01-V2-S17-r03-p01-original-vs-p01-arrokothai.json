@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S17:r03:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S17",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "tie",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly refuse to quote live prices or inventory, explaining that these are not available or finalized. Both correctly steer the user away from 'pallets' towards volume-based measurements."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful about the limitations of the system (no live database/demonstration site) and do not make up any fake pricing or inventory data."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "tie",
+      "reason": "Both candidates offer to help the user calculate the actual material volume needed for their project, which is the correct next step."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates end with exactly one relevant, open-ended follow-up question to keep the project conversation moving forward."
+    }
+  ],
+  "reason": "Both candidates followed all instructions perfectly. They both explained that inventory and pricing are unavailable/not finalized, addressed the issue with using 'pallets' as a unit, and ended with exactly one useful follow-up question to keep the conversation moving.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "tie",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly refuse to quote live prices or inventory, explaining that these are not available or finalized. Both correctly steer the user away from 'pallets' towards volume-based measurements."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful about the limitations of the system (no live database/demonstration site) and do not make up any fake pricing or inventory data."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "tie",
+        "reason": "Both candidates offer to help the user calculate the actual material volume needed for their project, which is the correct next step."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates end with exactly one relevant, open-ended follow-up question to keep the project conversation moving forward."
+      }
+    ],
+    "reason": "Both candidates followed all instructions perfectly. They both explained that inventory and pricing are unavailable/not finalized, addressed the issue with using 'pallets' as a unit, and ended with exactly one useful follow-up question to keep the conversation moving."
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S05:r01:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S05",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly includes the 2-3 day mortar sequencing detail for pre-cast blocks, whereas Candidate A incorrectly claims they are ready for plastering \"almost immediately\". Candidate A is slightly better on the cast-in-situ detail by mentioning the formwork stays in place for a day, but Candidate B's overall accuracy regarding the block sequencing makes it more correct."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B is more truthful to the facts by noting the 2-3 day wait time for mortar to set before plastering blocks, rather than claiming it can be done almost immediately."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides a more realistic timeline for both methods, helping the user plan their project timeline more accurately. Its follow-up question is also highly practical for moving the project forward."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are coherent, easy to read, and end with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate B is preferred because it accurately captures the 2-3 day mortar sequencing required for pre-cast blocks. Candidate A falsely suggests that blocks can be plastered almost immediately, which contradicts the authoritative facts. While Candidate A captures the detail that cast-in-situ formwork can come off after one day (which B misses), B's overall accuracy regarding the drying and curing timelines makes it the better response.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly includes the 2-3 day mortar sequencing detail for pre-cast blocks, whereas Candidate A incorrectly claims they are ready for plastering \"almost immediately\". Candidate A is slightly better on the cast-in-situ detail by mentioning the formwork stays in place for a day, but Candidate B's overall accuracy regarding the block sequencing makes it more correct."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B is more truthful to the facts by noting the 2-3 day wait time for mortar to set before plastering blocks, rather than claiming it can be done almost immediately."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides a more realistic timeline for both methods, helping the user plan their project timeline more accurately. Its follow-up question is also highly practical for moving the project forward."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are coherent, easy to read, and end with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate B is preferred because it accurately captures the 2-3 day mortar sequencing required for pre-cast blocks. Candidate A falsely suggests that blocks can be plastered almost immediately, which contradicts the authoritative facts. While Candidate A captures the detail that cast-in-situ formwork can come off after one day (which B misses), B's overall accuracy regarding the drying and curing timelines makes it the better response."
+  }
+}

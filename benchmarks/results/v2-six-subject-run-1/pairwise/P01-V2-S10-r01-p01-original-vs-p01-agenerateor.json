@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S10:r01:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S10",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A calculates the volume of the wall accurately (420 sq. ft. at 10 inches thick is exactly 350 cubic feet, which is approximately 9.9 cubic meters). Candidate B incorrectly estimates this as 11 to 12 cubic meters."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "tie",
+      "reason": "Both candidates successfully handle the user's change of mind from pre-cast blocks to cast-in-situ construction."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A is more truthful/accurate with the mathematical conversion of the physical dimensions provided by the user."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A provides precise volume estimates which are more useful for project planning than the inflated estimates provided by Candidate B."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a coherent, helpful tone and end each turn with exactly one relevant follow-up question to keep the project moving."
+    }
+  ],
+  "reason": "Candidate A is superior because it performs the volume calculation accurately (9.9 cubic meters for 420 sq. ft. at 10 inches depth). Candidate B incorrectly estimates the volume as 11 to 12 cubic meters. Both candidates successfully adhere to the specific domain facts regarding drying/curing times for cast-in-situ versus pre-cast blocks.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A calculates the volume of the wall accurately (420 sq. ft. at 10 inches thick is exactly 350 cubic feet, which is approximately 9.9 cubic meters). Candidate B incorrectly estimates this as 11 to 12 cubic meters."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "tie",
+        "reason": "Both candidates successfully handle the user's change of mind from pre-cast blocks to cast-in-situ construction."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A is more truthful/accurate with the mathematical conversion of the physical dimensions provided by the user."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A provides precise volume estimates which are more useful for project planning than the inflated estimates provided by Candidate B."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a coherent, helpful tone and end each turn with exactly one relevant follow-up question to keep the project moving."
+      }
+    ],
+    "reason": "Candidate A is superior because it performs the volume calculation accurately (9.9 cubic meters for 420 sq. ft. at 10 inches depth). Candidate B incorrectly estimates the volume as 11 to 12 cubic meters. Both candidates successfully adhere to the specific domain facts regarding drying/curing times for cast-in-situ versus pre-cast blocks."
+  }
+}

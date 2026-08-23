@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S16:r01:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S16",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly adhere to the negative constraints: they do not claim to place orders, process payments, or quote live prices/inventory, and they both explain that the system is a demo without a real backend."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates truthfully explain the limitations of the demo system."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides a helpful estimate of the material volume needed in Turn 1, and offers a clear path forward (connecting with a sales desk) in Turn 2."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate A repeats the exact same follow-up question in Turn 1 and Turn 2, which makes the conversation feel robotic. Candidate B flows naturally and asks distinct, relevant questions in each turn."
+    }
+  ],
+  "reason": "Both candidates successfully follow the negative constraints regarding the lack of an e-commerce backend and ending with a single follow-up question. However, Candidate B is much better because Candidate A repeats the exact same follow-up question in both turns, whereas Candidate B maintains a natural, coherent conversation.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly adhere to the negative constraints: they do not claim to place orders, process payments, or quote live prices/inventory, and they both explain that the system is a demo without a real backend."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates truthfully explain the limitations of the demo system."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides a helpful estimate of the material volume needed in Turn 1, and offers a clear path forward (connecting with a sales desk) in Turn 2."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate A repeats the exact same follow-up question in Turn 1 and Turn 2, which makes the conversation feel robotic. Candidate B flows naturally and asks distinct, relevant questions in each turn."
+      }
+    ],
+    "reason": "Both candidates successfully follow the negative constraints regarding the lack of an e-commerce backend and ending with a single follow-up question. However, Candidate B is much better because Candidate A repeats the exact same follow-up question in both turns, whereas Candidate B maintains a natural, coherent conversation."
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S05:r01:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S05",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-arrokothai",
+    "B": "p02-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly identifies and presents a property (Greenwich Townhouse) that fits the updated West Village location and $25M budget. Candidate B does not suggest any properties."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Candidate A successfully grounds its recommendation in the expected property records (Greenwich Townhouse for the West Village search). Candidate B does not recommend any properties to evaluate for grounding."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "A",
+      "reason": "Both candidates successfully update their context based on the user's correction. However, Candidate A demonstrates this better by actively updating the property recommendation to match the new criteria."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is much more useful as it actually provides property recommendations matching the user's criteria. Candidate B only asks repetitive questions about the user's timeline."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A flows naturally from a TriBeCa recommendation to a West Village recommendation. Candidate B asks almost the exact same question about timeline in both turns, which feels repetitive."
+    }
+  ],
+  "reason": "Candidate A is much better because it actually provides grounded property recommendations that match the user's initial and updated criteria (including the Greenwich Townhouse for the West Village/$25M search). Although Candidate A violates the negative constraint to remain 'markdown-free', Candidate B is of extremely low utility because it only asks repetitive questions about the user's timeline without providing any property information.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly identifies and presents a property (Greenwich Townhouse) that fits the updated West Village location and $25M budget. Candidate B does not suggest any properties."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Candidate A successfully grounds its recommendation in the expected property records (Greenwich Townhouse for the West Village search). Candidate B does not recommend any properties to evaluate for grounding."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "A",
+        "reason": "Both candidates successfully update their context based on the user's correction. However, Candidate A demonstrates this better by actively updating the property recommendation to match the new criteria."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is much more useful as it actually provides property recommendations matching the user's criteria. Candidate B only asks repetitive questions about the user's timeline."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A flows naturally from a TriBeCa recommendation to a West Village recommendation. Candidate B asks almost the exact same question about timeline in both turns, which feels repetitive."
+      }
+    ],
+    "reason": "Candidate A is much better because it actually provides grounded property recommendations that match the user's initial and updated criteria (including the Greenwich Townhouse for the West Village/$25M search). Although Candidate A violates the negative constraint to remain 'markdown-free', Candidate B is of extremely low utility because it only asks repetitive questions about the user's timeline without providing any property information."
+  }
+}

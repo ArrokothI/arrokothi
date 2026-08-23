@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S07:r03:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S07",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies the components of hempcrete (plant hurds/woody core, lime, and water) as required by the facts. Candidate A fails to mention the lime binder or water, only mentioning 'stalks'. While Candidate A adheres closer to the exact phrasing of the safety/legality facts, Candidate B's explanation is much more accurate and complete."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "B",
+      "reason": "Candidate B is better grounded in the material facts of hempcrete by specifying the woody inner core (hurds) and the lime/water binder."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B is highly accurate, explaining the botanical relationship and the actual THC threshold (<0.3%) of industrial hemp, whereas Candidate A's simplified '0% THC' is less botanically precise, though it matches the prompt's strict text."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides a much more educational and thorough response explaining why hempcrete is not marijuana, which directly addresses the user's underlying confusion."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a polite tone and end with exactly one relevant follow-up question to keep the conversation moving."
+    }
+  ],
+  "reason": "Candidate B is the superior response because it successfully satisfies the requirement to identify the material components of hempcrete (woody core/hurds, lime binder, and water). Candidate A completely fails this requirement by only mentioning 'industrial hemp stalks'. While Candidate B misses the exact mandated phrasing for the safety/legality constraints (stating '<0.3% THC' and 'legally distinct' instead of '0% THC' and '100% legal', and omitting 'fire-resistant'), its overall explanation is far more accurate, useful, and complete.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies the components of hempcrete (plant hurds/woody core, lime, and water) as required by the facts. Candidate A fails to mention the lime binder or water, only mentioning 'stalks'. While Candidate A adheres closer to the exact phrasing of the safety/legality facts, Candidate B's explanation is much more accurate and complete."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "B",
+        "reason": "Candidate B is better grounded in the material facts of hempcrete by specifying the woody inner core (hurds) and the lime/water binder."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B is highly accurate, explaining the botanical relationship and the actual THC threshold (<0.3%) of industrial hemp, whereas Candidate A's simplified '0% THC' is less botanically precise, though it matches the prompt's strict text."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides a much more educational and thorough response explaining why hempcrete is not marijuana, which directly addresses the user's underlying confusion."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a polite tone and end with exactly one relevant follow-up question to keep the conversation moving."
+      }
+    ],
+    "reason": "Candidate B is the superior response because it successfully satisfies the requirement to identify the material components of hempcrete (woody core/hurds, lime binder, and water). Candidate A completely fails this requirement by only mentioning 'industrial hemp stalks'. While Candidate B misses the exact mandated phrasing for the safety/legality constraints (stating '<0.3% THC' and 'legally distinct' instead of '0% THC' and '100% legal', and omitting 'fire-resistant'), its overall explanation is far more accurate, useful, and complete."
+  }
+}

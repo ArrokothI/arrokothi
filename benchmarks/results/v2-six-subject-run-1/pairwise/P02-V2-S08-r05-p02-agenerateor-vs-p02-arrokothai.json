@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S08:r05:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S08",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly recognizes that a phone number is required for team follow-up/handoff and informs the user of this limitation when they refuse to provide it. Candidate A incorrectly attempts to proceed with collecting the email address, even though the handoff cannot be completed without a phone number."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B is truthful about the system's limitations (requiring a phone number for follow-up). Candidate A implies that providing just an email address will allow them to send the details, which is false based on the authoritative facts."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides helpful alternative contact methods (phone and physical address) since the email handoff cannot be completed without a phone number. Candidate A leads the user into a dead-end path."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A followed the negative constraint to remain markdown-free, whereas Candidate B used markdown bolding and bullet points. However, Candidate B's conversational flow is much more logical given the system constraints."
+    }
+  ],
+  "reason": "Candidate B is much better because it adheres to the system constraints regarding the handoff endpoint. Since a phone number is strictly required for the handoff, Candidate B correctly handles the user's refusal by explaining the requirement and offering alternative contact info. Candidate A incorrectly attempts to collect the email address, which would result in a failed handoff. Candidate B used markdown despite the negative constraint, but its correctness and truthfulness make it the superior response.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly recognizes that a phone number is required for team follow-up/handoff and informs the user of this limitation when they refuse to provide it. Candidate A incorrectly attempts to proceed with collecting the email address, even though the handoff cannot be completed without a phone number."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B is truthful about the system's limitations (requiring a phone number for follow-up). Candidate A implies that providing just an email address will allow them to send the details, which is false based on the authoritative facts."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides helpful alternative contact methods (phone and physical address) since the email handoff cannot be completed without a phone number. Candidate A leads the user into a dead-end path."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A followed the negative constraint to remain markdown-free, whereas Candidate B used markdown bolding and bullet points. However, Candidate B's conversational flow is much more logical given the system constraints."
+      }
+    ],
+    "reason": "Candidate B is much better because it adheres to the system constraints regarding the handoff endpoint. Since a phone number is strictly required for the handoff, Candidate B correctly handles the user's refusal by explaining the requirement and offering alternative contact info. Candidate A incorrectly attempts to collect the email address, which would result in a failed handoff. Candidate B used markdown despite the negative constraint, but its correctness and truthfulness make it the superior response."
+  }
+}

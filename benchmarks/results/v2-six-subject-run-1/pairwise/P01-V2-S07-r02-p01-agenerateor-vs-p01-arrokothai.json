@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S07:r02:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S07",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly and fully defines hempcrete as being made from the woody core (hurds) mixed with a lime-based binder and water. Candidate B fails to mention the lime binder and water in its definition, only mentioning the hurds."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "tie",
+      "reason": "Both candidates are well-grounded in the provided facts, though they approach the THC content slightly differently (A refers to the low THC of the industrial hemp plant, while B refers to the 0% THC of the hurds)."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates provide truthful information regarding the distinction between industrial hemp and recreational marijuana."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it provides a clearer, more educational explanation of what hempcrete actually is, addressing the user's underlying confusion directly and ending with a highly relevant follow-up question."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A has a more natural, conversational flow and directly answers the user's question with a clear 'No, it's not!' before explaining why."
+    }
+  ],
+  "reason": "Candidate A is the superior response because it fulfills the core requirement of defining hempcrete as a mixture of industrial hemp hurds, a lime-based binder, and water. Candidate B fails to mention the lime binder and water. Additionally, Candidate A has a much more natural conversational tone and directly addresses the user's question.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly and fully defines hempcrete as being made from the woody core (hurds) mixed with a lime-based binder and water. Candidate B fails to mention the lime binder and water in its definition, only mentioning the hurds."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "tie",
+        "reason": "Both candidates are well-grounded in the provided facts, though they approach the THC content slightly differently (A refers to the low THC of the industrial hemp plant, while B refers to the 0% THC of the hurds)."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates provide truthful information regarding the distinction between industrial hemp and recreational marijuana."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it provides a clearer, more educational explanation of what hempcrete actually is, addressing the user's underlying confusion directly and ending with a highly relevant follow-up question."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A has a more natural, conversational flow and directly answers the user's question with a clear 'No, it's not!' before explaining why."
+      }
+    ],
+    "reason": "Candidate A is the superior response because it fulfills the core requirement of defining hempcrete as a mixture of industrial hemp hurds, a lime-based binder, and water. Candidate B fails to mention the lime binder and water. Additionally, Candidate A has a much more natural conversational tone and directly addresses the user's question."
+  }
+}

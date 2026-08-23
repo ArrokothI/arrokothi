@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R09",
+      "score": 0,
+      "confidence": 1,
+      "reason": "The assistant failed to identify industrial hemp hurds or woody core, and completely omitted the lime binder and water components, mentioning only 'industrial hemp stalks'.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R10",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant correctly stated that hempcrete is 100% legal, has 0% THC, is fire-resistant, and is entirely unrelated to recreational marijuana.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R09",
+        "score": 0,
+        "confidence": 1,
+        "reason": "The assistant failed to identify industrial hemp hurds or woody core, and completely omitted the lime binder and water components, mentioning only 'industrial hemp stalks'.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R10",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant correctly stated that hempcrete is 100% legal, has 0% THC, is fire-resistant, and is entirely unrelated to recreational marijuana.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

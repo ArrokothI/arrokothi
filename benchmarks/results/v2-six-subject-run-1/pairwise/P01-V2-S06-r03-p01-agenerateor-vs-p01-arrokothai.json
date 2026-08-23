@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S06:r03:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S06",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly includes all the required planning assumption figures (15-20% higher upfront cost, 30-40% HVAC savings, and 3-5 year payback period). Candidate A misses the HVAC savings and payback period percentages. Neither candidate explicitly offered a project-specific estimate if wall dimensions are shared, but B is much more complete regarding the required facts."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and do not hallucinate or quote live product/SKU prices."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is more useful as it provides the complete set of planning assumptions (including HVAC savings and payback period) to help the user make an informed comparison."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are coherent and end with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate B is preferred because it includes all the required planning assumption figures (15-20% higher upfront cost, 30-40% HVAC savings, and 3-5 year payback period) specified in the authoritative facts. Candidate A fails to mention the HVAC savings and payback period percentages. While both failed to explicitly offer a project-specific estimate if wall dimensions are shared, B is much more complete and aligned with the facts.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly includes all the required planning assumption figures (15-20% higher upfront cost, 30-40% HVAC savings, and 3-5 year payback period). Candidate A misses the HVAC savings and payback period percentages. Neither candidate explicitly offered a project-specific estimate if wall dimensions are shared, but B is much more complete regarding the required facts."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and do not hallucinate or quote live product/SKU prices."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is more useful as it provides the complete set of planning assumptions (including HVAC savings and payback period) to help the user make an informed comparison."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are coherent and end with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate B is preferred because it includes all the required planning assumption figures (15-20% higher upfront cost, 30-40% HVAC savings, and 3-5 year payback period) specified in the authoritative facts. Candidate A fails to mention the HVAC savings and payback period percentages. While both failed to explicitly offer a project-specific estimate if wall dimensions are shared, B is much more complete and aligned with the facts."
+  }
+}

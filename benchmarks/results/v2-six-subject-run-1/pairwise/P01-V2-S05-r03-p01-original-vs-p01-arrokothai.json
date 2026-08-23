@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S05:r03:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S05",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly includes the specific 2-3 day mortar sequencing detail for pre-cast blocks as outlined in the authoritative facts. Candidate A says \"almost immediately once mortared\", which is less precise."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and adhere to the provided facts."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides a more detailed and accurate timeline (2-3 days for mortar to set) which is highly useful for a user working under a tight deadline."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are coherent and end with exactly one relevant follow-up question to keep the conversation moving."
+    }
+  ],
+  "reason": "Candidate B is superior because it accurately incorporates all details from the authoritative facts, specifically the 2-3 day mortar sequencing timeline for pre-cast blocks. Candidate A misses this specific timeframe, making B more precise and helpful for the user's deadline-driven scenario.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly includes the specific 2-3 day mortar sequencing detail for pre-cast blocks as outlined in the authoritative facts. Candidate A says \"almost immediately once mortared\", which is less precise."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and adhere to the provided facts."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides a more detailed and accurate timeline (2-3 days for mortar to set) which is highly useful for a user working under a tight deadline."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are coherent and end with exactly one relevant follow-up question to keep the conversation moving."
+      }
+    ],
+    "reason": "Candidate B is superior because it accurately incorporates all details from the authoritative facts, specifically the 2-3 day mortar sequencing timeline for pre-cast blocks. Candidate A misses this specific timeframe, making B more precise and helpful for the user's deadline-driven scenario."
+  }
+}

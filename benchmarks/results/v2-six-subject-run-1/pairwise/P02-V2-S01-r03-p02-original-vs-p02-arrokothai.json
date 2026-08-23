@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S01:r03:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S01",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-arrokothai",
+    "B": "p02-original"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies and presents properties from the catalog that match the user's criteria (around $20M in Manhattan), whereas Candidate A incorrectly claims there are no matching properties."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "B",
+      "reason": "Candidate B successfully grounds its recommendations in the frozen property records, providing specific details like prices and locations that match the catalog."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B is truthful to the available inventory, while Candidate A falsely states that no properties match the budget and location."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is highly useful as it directly answers the user's request with matching listings, whereas Candidate A fails to provide any listings."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B keeps the conversation moving forward naturally by asking a follow-up question about the presented options."
+    }
+  ],
+  "reason": "Candidate B is much better because it successfully finds and recommends matching properties from the catalog that fit the user's budget of 'around $20M' in Manhattan. Candidate A incorrectly claims there are no matching properties, which is unhelpful and incorrect based on the available inventory.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies and presents properties from the catalog that match the user's criteria (around $20M in Manhattan), whereas Candidate A incorrectly claims there are no matching properties."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "B",
+        "reason": "Candidate B successfully grounds its recommendations in the frozen property records, providing specific details like prices and locations that match the catalog."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B is truthful to the available inventory, while Candidate A falsely states that no properties match the budget and location."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is highly useful as it directly answers the user's request with matching listings, whereas Candidate A fails to provide any listings."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B keeps the conversation moving forward naturally by asking a follow-up question about the presented options."
+      }
+    ],
+    "reason": "Candidate B is much better because it successfully finds and recommends matching properties from the catalog that fit the user's budget of 'around $20M' in Manhattan. Candidate A incorrectly claims there are no matching properties, which is unhelpful and incorrect based on the available inventory."
+  }
+}

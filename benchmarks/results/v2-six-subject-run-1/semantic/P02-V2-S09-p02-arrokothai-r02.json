@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P02-R06",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant correctly stated that the Grand Salon in the Skyline Penthouse is 1,400 sq ft in turn 2.",
+      "citedTurns": [
+        2
+      ]
+    },
+    {
+      "requirementId": "P02-R10",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant successfully resumed the Manhattan/$20M search in turn 3.",
+      "citedTurns": [
+        3
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P02-R06",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant correctly stated that the Grand Salon in the Skyline Penthouse is 1,400 sq ft in turn 2.",
+        "citedTurns": [
+          2
+        ]
+      },
+      {
+        "requirementId": "P02-R10",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant successfully resumed the Manhattan/$20M search in turn 3.",
+        "citedTurns": [
+          3
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

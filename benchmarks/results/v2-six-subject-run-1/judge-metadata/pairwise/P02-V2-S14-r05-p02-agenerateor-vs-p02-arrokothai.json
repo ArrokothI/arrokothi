@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S14-r05-p02-agenerateor-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S14:r05:p02-agenerateor:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.490Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1278,
+    "candidatesTokenCount": 508,
+    "totalTokenCount": 2984,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1278
+      }
+    ],
+    "thoughtsTokenCount": 1198,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"B\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"B\",\n      \"reason\": \"Assistant A explicitly states in turn 5 that it \\\"re-transmitted your details to the EstatePro team,\\\" which violates the negative constraint against duplicating the external handoff dispatch upon post-completion edits. Assistant B correctly updates the preference without triggering or claiming a duplicate dispatch.\"\n    },\n    {\n      \"criterion\": \"correction_handling\",\n      \"preference\": \"B\",\n      \"reason\": \"Assistant B handles the post-handoff correction naturally and smoothly. Assistant A unnecessarily claims to re-transmit the entire payload, which is incorrect behavior for a post-completion edit.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Assistant A is more cautious in its language regarding what the transmission guarantees (explicitly stating it does not guarantee a scheduled call). Assistant B promises that \\\"a representative will reach out to you then,\\\" which might slightly over-promise, though it does not falsely claim a showing or appointment is already confirmed.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Assistant B is much more useful and provides a significantly better user experience. Assistant A forces the user to confirm their details twice in a row (turns 2 and 3) with highly robotic, templated text.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"B\",\n      \"reason\": \"Assistant B is highly conversational, natural, and free of robotic templates. Assistant A is extremely repetitive, uses rigid confirmation blocks, and sounds highly artificial.\"\n    }\n  ],\n  \"reason\": \"Assistant B is the superior assistant. It successfully avoids duplicating the external handoff dispatch (or claiming to do so) during the post-completion edit in turn 5, whereas Assistant A explicitly claims to have re-transmitted the details. Furthermore, Assistant B is much more natural, conversational, and coherent, while Assistant A is highly repetitive and robotic, forcing the user to confirm details multiple times.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

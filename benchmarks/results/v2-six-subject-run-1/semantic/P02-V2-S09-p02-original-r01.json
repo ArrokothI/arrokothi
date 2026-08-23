@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P02-R06",
+      "score": 0,
+      "confidence": 1,
+      "reason": "The assistant failed to state that the Grand Salon in Skyline Penthouse is 1400 sqft, completely omitting the size and only describing it qualitatively.",
+      "citedTurns": [
+        2
+      ]
+    },
+    {
+      "requirementId": "P02-R10",
+      "score": 1,
+      "confidence": 0.9,
+      "reason": "Although the Manhattan location and budget constraints survived in the system state, the assistant did not naturally resume the search conversation, instead repeating the timeline question and ignoring the user's prompt about their search.",
+      "citedTurns": [
+        3
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P02-R06",
+        "score": 0,
+        "confidence": 1,
+        "reason": "The assistant failed to state that the Grand Salon in Skyline Penthouse is 1400 sqft, completely omitting the size and only describing it qualitatively.",
+        "citedTurns": [
+          2
+        ]
+      },
+      {
+        "requirementId": "P02-R10",
+        "score": 1,
+        "confidence": 0.9,
+        "reason": "Although the Manhattan location and budget constraints survived in the system state, the assistant did not naturally resume the search conversation, instead repeating the timeline question and ignoring the user's prompt about their search.",
+        "citedTurns": [
+          3
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

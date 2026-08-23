@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S02:r01:p02-original:p02-agenerateor"
+  },
+  "scenarioId": "P02-V2-S02",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly identifies that the system does not have rental listings, adhering to the fact that there are no authoritative rental records. Candidate B incorrectly implies that there are available rental properties to view, violating the constraint against fabricating availability."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A is truthful about the lack of rental listings in the database. Candidate B falsely suggests that they have listings matching the user's criteria ready to be viewed."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A manages expectations by clearly stating what is available (properties for sale) and offering to connect with a team member. Candidate B leads the user on with unavailable rental listings."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A provides a coherent and honest response to the user's request, whereas Candidate B's response is incoherent with the system's actual capabilities and data constraints."
+    }
+  ],
+  "reason": "Candidate A is much better because it truthfully states that the system does not maintain rental listings, in line with the authoritative facts. Candidate B violates the truthfulness guidelines by implying that there are available rental listings ready to be viewed, which the system does not have.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly identifies that the system does not have rental listings, adhering to the fact that there are no authoritative rental records. Candidate B incorrectly implies that there are available rental properties to view, violating the constraint against fabricating availability."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A is truthful about the lack of rental listings in the database. Candidate B falsely suggests that they have listings matching the user's criteria ready to be viewed."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A manages expectations by clearly stating what is available (properties for sale) and offering to connect with a team member. Candidate B leads the user on with unavailable rental listings."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A provides a coherent and honest response to the user's request, whereas Candidate B's response is incoherent with the system's actual capabilities and data constraints."
+      }
+    ],
+    "reason": "Candidate A is much better because it truthfully states that the system does not maintain rental listings, in line with the authoritative facts. Candidate B violates the truthfulness guidelines by implying that there are available rental listings ready to be viewed, which the system does not have."
+  }
+}

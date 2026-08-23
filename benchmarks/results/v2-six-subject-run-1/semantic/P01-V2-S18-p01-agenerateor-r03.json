@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R05",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant successfully updated the wall area to 510 sq ft and the volume to 12.0 cubic meters in Turn 2, and consistently maintained these corrected values throughout all subsequent turns without reverting to the initial 420 sq ft value.",
+      "citedTurns": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "requirementId": "P01-R09",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant accurately and truthfully answered all intervening questions regarding hempcrete composition, fire resistance, VOCs, pests/mold, curing, weight, plastering, and tools, while consistently maintaining the sizing context (510 sq ft, 10-inch thickness, 12.0 cubic meters) in each response.",
+      "citedTurns": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R05",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant successfully updated the wall area to 510 sq ft and the volume to 12.0 cubic meters in Turn 2, and consistently maintained these corrected values throughout all subsequent turns without reverting to the initial 420 sq ft value.",
+        "citedTurns": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      {
+        "requirementId": "P01-R09",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant accurately and truthfully answered all intervening questions regarding hempcrete composition, fire resistance, VOCs, pests/mold, curing, weight, plastering, and tools, while consistently maintaining the sizing context (510 sq ft, 10-inch thickness, 12.0 cubic meters) in each response.",
+        "citedTurns": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

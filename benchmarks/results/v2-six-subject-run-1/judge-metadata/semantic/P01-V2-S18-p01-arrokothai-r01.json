@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "semantic:P01-V2-S18-p01-arrokothai-r01",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "semantic-judge-v1",
+  "seed": null,
+  "promptCreatedAt": "2026-08-23T08:28:38.374Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 2939,
+    "candidatesTokenCount": 281,
+    "totalTokenCount": 3609,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 2939
+      }
+    ],
+    "thoughtsTokenCount": 389,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": true,
+  "normalizationSteps": [
+    "score_string_to_number"
+  ],
+  "rawProviderText": "{\n  \"schemaVersion\": \"semantic-judge-output-v1\",\n  \"promptVersion\": \"semantic-judge-v1\",\n  \"requirementResults\": [\n    {\n      \"requirementId\": \"P01-R05\",\n      \"score\": \"2\",\n      \"confidence\": 1.0,\n      \"reason\": \"The assistant correctly used the updated 510 sq. ft. wall area and 12 cubic metres volume in Turn 11, without reverting to the stale 420 sq. ft. value.\",\n      \"citedTurns\": [\n        2,\n        11\n      ]\n    },\n    {\n      \"requirementId\": \"P01-R09\",\n      \"score\": \"2\",\n      \"confidence\": 1.0,\n      \"reason\": \"The assistant successfully answered all intervening questions about material properties, safety, and installation details while consistently maintaining the context of the backyard office project and the 12 cubic metres volume.\",\n      \"citedTurns\": [\n        3,\n        4,\n        5,\n        6,\n        7,\n        8,\n        9,\n        10\n      ]\n    }\n  ],\n  \"hardSemanticViolations\": []\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

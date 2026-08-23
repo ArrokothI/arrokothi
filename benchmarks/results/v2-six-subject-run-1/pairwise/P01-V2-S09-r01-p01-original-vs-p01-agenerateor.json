@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S09:r01:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S09",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A calculates the exact volume based on the provided formula (420 * 10/12 * 0.0283168 = 9.91 m³ for Turn 1, and 510 * 10/12 * 0.0283168 = 12.03 m³ for Turn 2). Candidate B provides a wide range (10 to 11 m³ and 12 to 13 m³) which is less precise."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "tie",
+      "reason": "Both candidates successfully updated their calculations using the new 510 sq. ft. value and did not reference the old 420 sq. ft. value as current."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it provides precise calculations rather than broad ranges, which is more helpful for material estimation."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a coherent conversation and end each turn with exactly one relevant follow-up question to keep the project moving."
+    }
+  ],
+  "reason": "Candidate A is superior because it performs the exact mathematical calculation required by the prompt, whereas Candidate B provides an unnecessarily wide range of values. Both candidates followed the negative constraints and formatting guidelines perfectly.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A calculates the exact volume based on the provided formula (420 * 10/12 * 0.0283168 = 9.91 m³ for Turn 1, and 510 * 10/12 * 0.0283168 = 12.03 m³ for Turn 2). Candidate B provides a wide range (10 to 11 m³ and 12 to 13 m³) which is less precise."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "tie",
+        "reason": "Both candidates successfully updated their calculations using the new 510 sq. ft. value and did not reference the old 420 sq. ft. value as current."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it provides precise calculations rather than broad ranges, which is more helpful for material estimation."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a coherent conversation and end each turn with exactly one relevant follow-up question to keep the project moving."
+      }
+    ],
+    "reason": "Candidate A is superior because it performs the exact mathematical calculation required by the prompt, whereas Candidate B provides an unnecessarily wide range of values. Both candidates followed the negative constraints and formatting guidelines perfectly."
+  }
+}

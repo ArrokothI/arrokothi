@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S06:r01:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S06",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly offers to explore a project-specific estimate if the user provides wall dimensions, which aligns with the authoritative facts and source-derived criteria. Candidate B fails to offer a project-specific estimate based on wall dimensions."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful to the provided facts and do not quote live product prices or make false claims."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it prompts the user for wall dimensions to help move the project conversation forward with a specific estimate, whereas Candidate B asks a more general question and misses the dimension-based estimate offer."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are coherent, well-structured, and end with a single relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate A is preferred because it adheres to the requirement of offering a project-specific estimate if wall dimensions are shared. Candidate B fails to mention or ask for wall dimensions, instead asking a general question about a new build vs. retrofit.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly offers to explore a project-specific estimate if the user provides wall dimensions, which aligns with the authoritative facts and source-derived criteria. Candidate B fails to offer a project-specific estimate based on wall dimensions."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful to the provided facts and do not quote live product prices or make false claims."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it prompts the user for wall dimensions to help move the project conversation forward with a specific estimate, whereas Candidate B asks a more general question and misses the dimension-based estimate offer."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are coherent, well-structured, and end with a single relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate A is preferred because it adheres to the requirement of offering a project-specific estimate if wall dimensions are shared. Candidate B fails to mention or ask for wall dimensions, instead asking a general question about a new build vs. retrofit."
+  }
+}

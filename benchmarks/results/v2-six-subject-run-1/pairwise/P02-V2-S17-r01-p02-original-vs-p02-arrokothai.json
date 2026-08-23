@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S17:r01:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S17",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-original",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly captures all the user's details (name, phone, budget, location, contact preference, and time) and confirms them before proceeding. Candidate A completely fails to register the user's name and phone number provided in the first turn, repeatedly asking for them in subsequent turns."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B accurately reflects the information provided by the user. Candidate A fails to recognize that the user already provided their name and phone number."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B successfully gathers the lead information and transmits it to the team as requested. Candidate A gets stuck in a loop asking for information already provided, making it useless."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B flows naturally and responds logically to each user turn. Candidate A is highly incoherent, asking for the user's name and phone number right after the user has already provided them."
+    }
+  ],
+  "reason": "Candidate B is vastly superior. Candidate A completely ignores the user's inputs from the very first turn, repeatedly asking for the user's name and phone number which were already provided. Candidate B perfectly captures all details, confirms them, and successfully handles the handoff request.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly captures all the user's details (name, phone, budget, location, contact preference, and time) and confirms them before proceeding. Candidate A completely fails to register the user's name and phone number provided in the first turn, repeatedly asking for them in subsequent turns."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B accurately reflects the information provided by the user. Candidate A fails to recognize that the user already provided their name and phone number."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B successfully gathers the lead information and transmits it to the team as requested. Candidate A gets stuck in a loop asking for information already provided, making it useless."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B flows naturally and responds logically to each user turn. Candidate A is highly incoherent, asking for the user's name and phone number right after the user has already provided them."
+      }
+    ],
+    "reason": "Candidate B is vastly superior. Candidate A completely ignores the user's inputs from the very first turn, repeatedly asking for the user's name and phone number which were already provided. Candidate B perfectly captures all details, confirms them, and successfully handles the handoff request."
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R07",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant directly recommends pre-cast hempcrete blocks to address the user's preference for speed over hands-on mixing.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R01",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant adopts a warm, consultative tone, explaining the benefits of the blocks and framing the follow-up around the user's design choices.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R02",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant provides the estimate in cubic meters (roughly 10 to 11 cubic meters) and avoids any package, bag, pallet, or SKU-dependent counts.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R17",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The response ends with exactly one useful follow-up question regarding wall thickness and thermal performance.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R07",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant directly recommends pre-cast hempcrete blocks to address the user's preference for speed over hands-on mixing.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R01",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant adopts a warm, consultative tone, explaining the benefits of the blocks and framing the follow-up around the user's design choices.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R02",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant provides the estimate in cubic meters (roughly 10 to 11 cubic meters) and avoids any package, bag, pallet, or SKU-dependent counts.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R17",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The response ends with exactly one useful follow-up question regarding wall thickness and thermal performance.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

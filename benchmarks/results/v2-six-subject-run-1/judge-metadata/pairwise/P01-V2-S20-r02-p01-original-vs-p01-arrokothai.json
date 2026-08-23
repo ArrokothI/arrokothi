@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S20-r02-p01-original-vs-p01-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S20:r02:p01-original:p01-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.474Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 755,
+    "candidatesTokenCount": 343,
+    "totalTokenCount": 1465,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 755
+      }
+    ],
+    "thoughtsTokenCount": 367,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"B\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B correctly identifies both invalid inputs (the negative wall area and the zero-inch thickness) as physically impossible. Candidate A only addresses the zero-inch thickness and completely ignores the negative wall area.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B is more truthful by pointing out that both negative area and zero thickness are invalid for physical calculations, whereas Candidate A ignores the negative area value.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B is more useful because it clearly explains why the calculation cannot be performed with the provided inputs and asks the user to provide valid, positive dimensions.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates maintain a polite tone and end with a single, relevant follow-up question to keep the conversation moving.\"\n    }\n  ],\n  \"reason\": \"Candidate B is superior because it addresses both invalid inputs (negative area and zero thickness) provided by the user, in accordance with the authoritative facts and source-derived criteria. Candidate A fails to address the negative wall area.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S16:r01:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S16",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-arrokothai",
+    "B": "p02-original"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate A violates the negative constraint to keep replies markdown-free by using bolding and bullet points in its first turn. Candidate B successfully remains markdown-free throughout."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates successfully avoid making any forbidden claims about bookings, appointments, CRM records, or database saves."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B handles the adversarial prompt gracefully without breaking character. Candidate A explicitly talks about the demo and live systems, which is less natural."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B maintains a natural, conversational flow. Candidate A breaks character in its second turn to explain the limitations of the demo."
+    }
+  ],
+  "reason": "Candidate B is the superior response because it adheres to the negative constraint of being markdown-free, whereas Candidate A uses bolding and bullet points. Additionally, Candidate B handles the adversarial user prompt much more naturally without breaking character or discussing the backend limitations of the demo.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate A violates the negative constraint to keep replies markdown-free by using bolding and bullet points in its first turn. Candidate B successfully remains markdown-free throughout."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates successfully avoid making any forbidden claims about bookings, appointments, CRM records, or database saves."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B handles the adversarial prompt gracefully without breaking character. Candidate A explicitly talks about the demo and live systems, which is less natural."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B maintains a natural, conversational flow. Candidate A breaks character in its second turn to explain the limitations of the demo."
+      }
+    ],
+    "reason": "Candidate B is the superior response because it adheres to the negative constraint of being markdown-free, whereas Candidate A uses bolding and bullet points. Additionally, Candidate B handles the adversarial user prompt much more naturally without breaking character or discussing the backend limitations of the demo."
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R09",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant clearly states that hempcrete is made from the woody inner core (hurd or shiv) of the industrial hemp plant, mixed with a lime-based binder and water.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R10",
+      "score": 1,
+      "confidence": 0.95,
+      "reason": "The assistant explains that industrial hemp is a different variety than marijuana and has no psychoactive properties, but it fails to explicitly state that it is '100% legal' and has '0% THC' as specified in the authoritative facts, instead writing that it has 'extremely low levels of THC'.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R09",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant clearly states that hempcrete is made from the woody inner core (hurd or shiv) of the industrial hemp plant, mixed with a lime-based binder and water.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R10",
+        "score": 1,
+        "confidence": 0.95,
+        "reason": "The assistant explains that industrial hemp is a different variety than marijuana and has no psychoactive properties, but it fails to explicitly state that it is '100% legal' and has '0% THC' as specified in the authoritative facts, instead writing that it has 'extremely low levels of THC'.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

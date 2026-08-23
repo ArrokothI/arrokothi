@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P02-R04",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant truthfully states that EstatePro showcases sale properties rather than active rentals and does not fabricate any rental prices or availability.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P02-R01",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant addresses the rental request and offers assistance with the rental search, without converting the user to a buyer flow.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P02-R04",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant truthfully states that EstatePro showcases sale properties rather than active rentals and does not fabricate any rental prices or availability.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P02-R01",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant addresses the rental request and offers assistance with the rental search, without converting the user to a buyer flow.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

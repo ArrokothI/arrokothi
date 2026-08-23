@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S10:r03:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S10",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly includes the specific drying/curing timeline for cast-in-situ hempcrete (3 to 6 weeks before final plaster) as outlined in the authoritative facts. Candidate B only vaguely mentions \"allowing proper curing time between lifts\" and misses this key distinction."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "tie",
+      "reason": "Both candidates successfully handle the user's change of mind regarding the construction method, switching their guidance from pre-cast blocks to cast-in-place/cast-in-situ."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B provides a more precise volume calculation (9.9 cubic meters) compared to Candidate A's rougher estimate (10 to 12 cubic meters) for 420 sq. ft. at 10 inches thick (which equals exactly 350 cubic feet, or ~9.91 cubic meters)."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it provides the critical practical implication of the DIY method change: the 3-6 week drying period required before plastering can begin."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain excellent conversational flow and end each turn with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate A is preferred because it adheres closely to the authoritative facts regarding the drying/curing differences between pre-cast blocks and cast-in-situ construction, specifically mentioning the 3 to 6 weeks drying time before final plaster. Candidate B fails to mention this specific timeline.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly includes the specific drying/curing timeline for cast-in-situ hempcrete (3 to 6 weeks before final plaster) as outlined in the authoritative facts. Candidate B only vaguely mentions \"allowing proper curing time between lifts\" and misses this key distinction."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "tie",
+        "reason": "Both candidates successfully handle the user's change of mind regarding the construction method, switching their guidance from pre-cast blocks to cast-in-place/cast-in-situ."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B provides a more precise volume calculation (9.9 cubic meters) compared to Candidate A's rougher estimate (10 to 12 cubic meters) for 420 sq. ft. at 10 inches thick (which equals exactly 350 cubic feet, or ~9.91 cubic meters)."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it provides the critical practical implication of the DIY method change: the 3-6 week drying period required before plastering can begin."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain excellent conversational flow and end each turn with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate A is preferred because it adheres closely to the authoritative facts regarding the drying/curing differences between pre-cast blocks and cast-in-situ construction, specifically mentioning the 3 to 6 weeks drying time before final plaster. Candidate B fails to mention this specific timeline."
+  }
+}

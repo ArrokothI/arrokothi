@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R14",
+      "score": 1,
+      "confidence": 0.95,
+      "reason": "The assistant correctly explains that cast-in-situ formwork is removed after one day and requires 3-6 weeks of curing, and that pre-cast blocks arrive cured and are faster. However, it fails to mention the 2-3 day mortar sequencing detail for block installation as specified in the authoritative facts.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R14",
+        "score": 1,
+        "confidence": 0.95,
+        "reason": "The assistant correctly explains that cast-in-situ formwork is removed after one day and requires 3-6 weeks of curing, and that pre-cast blocks arrive cured and are faster. However, it fails to mention the 2-3 day mortar sequencing detail for block installation as specified in the authoritative facts.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S15-r03-p01-original-vs-p01-agenerateor",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S15:r03:p01-original:p01-agenerateor",
+  "promptCreatedAt": "2026-08-23T08:28:38.468Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1033,
+    "candidatesTokenCount": 334,
+    "totalTokenCount": 2301,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1033
+      }
+    ],
+    "thoughtsTokenCount": 934,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Both candidates correctly refuse to provide a definitive pallet count in accordance with the authoritative facts. However, Candidate A does so in a realistic, conversational manner, whereas Candidate B breaks the fourth wall by mentioning 'in this demo'.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates adhere to the truthfulness constraints regarding the lack of finalized SKUs, packaging, and e-commerce capabilities.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A provides a more helpful and natural explanation for why a pallet count cannot be provided, offering alternative ways to move the project forward without breaking character.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A maintains a coherent, professional persona. Candidate B's inclusion of 'in this demo' disrupts the conversational flow and immersion.\"\n    }\n  ],\n  \"reason\": \"Candidate A is superior because it handles the refusal naturally and professionally. Candidate B breaks character by explicitly mentioning 'in this demo', which results in a poorer user experience.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

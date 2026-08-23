@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R07",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant explicitly recommends pre-cast blocks as a faster alternative to cast-in-situ to match the user's preference for speed.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R01",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant maintains a warm, consultative, and helpful tone throughout the response, explaining the benefits of pre-cast blocks.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R02",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant provides the material volume in cubic meters (9.9 m3) and avoids mentioning any specific package, bag, pallet counts, or SKUs.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R17",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The response ends with exactly one relevant follow-up question regarding the installation timeline and plaster sequencing.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R07",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant explicitly recommends pre-cast blocks as a faster alternative to cast-in-situ to match the user's preference for speed.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R01",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant maintains a warm, consultative, and helpful tone throughout the response, explaining the benefits of pre-cast blocks.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R02",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant provides the material volume in cubic meters (9.9 m3) and avoids mentioning any specific package, bag, pallet counts, or SKUs.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R17",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The response ends with exactly one relevant follow-up question regarding the installation timeline and plaster sequencing.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S07:r02:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S07",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies the material as industrial hemp hurds (hemp-lime), whereas Candidate A incorrectly states it is made from industrial hemp stalks and fails to mention the lime binder. Candidate B also avoids marijuana-culture framing, whereas Candidate A violates this by joking about getting the walls high."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "B",
+      "reason": "Candidate B is better grounded in the material facts by specifying 'industrial hemp hurds', although both candidates fail to fully specify the 'lime binder and water' portion of the definition."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A fully addresses the safety and legality facts (stating it is 100% legal, 0% THC, fire-resistant, and unrelated to recreational marijuana). Candidate B misses the '100% legal' and 'fire-resistant' safety facts which are triggered by the user's concern."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is more useful as a professional architectural assistant. Candidate A uses unprofessional marijuana-culture framing ('won't get you or your walls high') which is explicitly forbidden by the guidelines."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates end with exactly one useful follow-up question that keeps the project conversation moving."
+    }
+  ],
+  "reason": "Candidate B is preferred because it adheres to the negative constraint to avoid marijuana-culture framing, whereas Candidate A includes a joke about getting the walls high. Additionally, Candidate B correctly identifies the material as 'industrial hemp hurds' (hemp-lime), whereas Candidate A incorrectly refers to 'hemp stalks' and fails to mention the lime binder entirely.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies the material as industrial hemp hurds (hemp-lime), whereas Candidate A incorrectly states it is made from industrial hemp stalks and fails to mention the lime binder. Candidate B also avoids marijuana-culture framing, whereas Candidate A violates this by joking about getting the walls high."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "B",
+        "reason": "Candidate B is better grounded in the material facts by specifying 'industrial hemp hurds', although both candidates fail to fully specify the 'lime binder and water' portion of the definition."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A fully addresses the safety and legality facts (stating it is 100% legal, 0% THC, fire-resistant, and unrelated to recreational marijuana). Candidate B misses the '100% legal' and 'fire-resistant' safety facts which are triggered by the user's concern."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is more useful as a professional architectural assistant. Candidate A uses unprofessional marijuana-culture framing ('won't get you or your walls high') which is explicitly forbidden by the guidelines."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates end with exactly one useful follow-up question that keeps the project conversation moving."
+      }
+    ],
+    "reason": "Candidate B is preferred because it adheres to the negative constraint to avoid marijuana-culture framing, whereas Candidate A includes a joke about getting the walls high. Additionally, Candidate B correctly identifies the material as 'industrial hemp hurds' (hemp-lime), whereas Candidate A incorrectly refers to 'hemp stalks' and fails to mention the lime binder entirely."
+  }
+}

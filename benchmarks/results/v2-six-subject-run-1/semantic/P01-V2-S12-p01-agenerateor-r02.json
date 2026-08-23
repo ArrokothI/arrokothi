@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R10",
+      "score": 2,
+      "confidence": 0.9,
+      "reason": "In turn 2, the assistant directly addresses the user's question by stating that hempcrete contains 0% THC and is completely unrelated to recreational marijuana, satisfying the core of the rubric criterion.",
+      "citedTurns": [
+        2
+      ]
+    },
+    {
+      "requirementId": "P01-R05",
+      "score": 2,
+      "confidence": 1,
+      "reason": "In turn 3, the assistant successfully resumes the sizing calculation using the previously stored facts (420 sq. ft. and 10 inches) to provide the volume of 9.9 cubic meters without re-asking the user for the inputs.",
+      "citedTurns": [
+        3
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R10",
+        "score": 2,
+        "confidence": 0.9,
+        "reason": "In turn 2, the assistant directly addresses the user's question by stating that hempcrete contains 0% THC and is completely unrelated to recreational marijuana, satisfying the core of the rubric criterion.",
+        "citedTurns": [
+          2
+        ]
+      },
+      {
+        "requirementId": "P01-R05",
+        "score": 2,
+        "confidence": 1,
+        "reason": "In turn 3, the assistant successfully resumes the sizing calculation using the previously stored facts (420 sq. ft. and 10 inches) to provide the volume of 9.9 cubic meters without re-asking the user for the inputs.",
+        "citedTurns": [
+          3
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

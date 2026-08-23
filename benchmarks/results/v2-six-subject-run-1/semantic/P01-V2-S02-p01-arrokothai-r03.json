@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R08",
+      "score": 1,
+      "confidence": 0.95,
+      "reason": "The assistant recommended an interior retrofit and a 3-inch breathable layer, but it failed to mention furring strips or lightweight hand-tamping, and it calculated a volume of 2.1 m3 instead of using the workflow's approximation of roughly 2.5-3 m3.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R09",
+      "score": 2,
+      "confidence": 0.95,
+      "reason": "The assistant correctly grounded the mold and moisture claims in the vapor-permeable and moisture-regulating behavior of hemp-lime without making any unsupported guarantees.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R08",
+        "score": 1,
+        "confidence": 0.95,
+        "reason": "The assistant recommended an interior retrofit and a 3-inch breathable layer, but it failed to mention furring strips or lightweight hand-tamping, and it calculated a volume of 2.1 m3 instead of using the workflow's approximation of roughly 2.5-3 m3.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R09",
+        "score": 2,
+        "confidence": 0.95,
+        "reason": "The assistant correctly grounded the mold and moisture claims in the vapor-permeable and moisture-regulating behavior of hemp-lime without making any unsupported guarantees.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

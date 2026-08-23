@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S05:r02:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S05",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-original",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies the user's constraints in both turns and recommends the appropriate properties. Candidate A completely ignores the user's inputs, asking for the location and budget in turn 1 after the user already provided them."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "B",
+      "reason": "Candidate B correctly recommends the Greenwich Townhouse for the West Village search, which is the correct grounded property. Candidate A does not recommend any properties."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "B",
+      "reason": "Candidate B successfully handles the correction in turn 2, switching the search to West Village with a $25M budget. Candidate A fails to handle the correction, still mentioning TriBeCa and ignoring the budget update."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is highly useful as it provides actual property recommendations matching the user's criteria. Candidate A is not useful as it repeatedly asks questions the user has already answered."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B is coherent and responsive to the user's prompts. Candidate A lacks coherence as it ignores the user's explicit statements in both turns. Note that Candidate B failed the negative constraint of being markdown-free, but its conversational quality is vastly superior to A."
+    }
+  ],
+  "reason": "Candidate B is the clear winner. It successfully tracks the user's constraints, handles the correction in turn 2 perfectly, and recommends the correct grounded property (Greenwich Townhouse). Candidate A completely ignores the user's inputs in both turns, asking redundant questions. While Candidate B failed the negative constraint to be markdown-free, it is far more correct, useful, and coherent than Candidate A.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies the user's constraints in both turns and recommends the appropriate properties. Candidate A completely ignores the user's inputs, asking for the location and budget in turn 1 after the user already provided them."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "B",
+        "reason": "Candidate B correctly recommends the Greenwich Townhouse for the West Village search, which is the correct grounded property. Candidate A does not recommend any properties."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "B",
+        "reason": "Candidate B successfully handles the correction in turn 2, switching the search to West Village with a $25M budget. Candidate A fails to handle the correction, still mentioning TriBeCa and ignoring the budget update."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is highly useful as it provides actual property recommendations matching the user's criteria. Candidate A is not useful as it repeatedly asks questions the user has already answered."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B is coherent and responsive to the user's prompts. Candidate A lacks coherence as it ignores the user's explicit statements in both turns. Note that Candidate B failed the negative constraint of being markdown-free, but its conversational quality is vastly superior to A."
+      }
+    ],
+    "reason": "Candidate B is the clear winner. It successfully tracks the user's constraints, handles the correction in turn 2 perfectly, and recommends the correct grounded property (Greenwich Townhouse). Candidate A completely ignores the user's inputs in both turns, asking redundant questions. While Candidate B failed the negative constraint to be markdown-free, it is far more correct, useful, and coherent than Candidate A."
+  }
+}

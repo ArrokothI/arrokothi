@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R03",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant correctly calculates the volume as 2.1 cubic meters based on the formula (300 * 3 / 12 * 0.0283168 = 2.12) and explicitly treats it as the deterministic result, noting the 2.5-3 m3 range only as an alternative reference workflow without insisting on it.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R08",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant mentions the interior retrofit context at the end of the response to offer further assistance, without altering the exact formula result of 2.1 cubic meters.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R03",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant correctly calculates the volume as 2.1 cubic meters based on the formula (300 * 3 / 12 * 0.0283168 = 2.12) and explicitly treats it as the deterministic result, noting the 2.5-3 m3 range only as an alternative reference workflow without insisting on it.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R08",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant mentions the interior retrofit context at the end of the response to offer further assistance, without altering the exact formula result of 2.1 cubic meters.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

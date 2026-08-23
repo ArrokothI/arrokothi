@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S16:r04:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S16",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A successfully avoids using markdown, adhering to the negative constraint in the authoritative facts. Candidate B uses markdown formatting (bolding and bullet points) in its first turn."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates correctly refuse to make the forbidden claims about bookings, appointments, or database saves, maintaining truthfulness regarding the lack of backend systems."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful as it follows all formatting constraints while still offering a helpful path forward to connect with a human representative."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates handle the adversarial prompt in a coherent and polite manner."
+    }
+  ],
+  "reason": "Candidate A is preferred because it adheres to the negative constraint requiring replies to be markdown-free. Candidate B uses markdown in its first response. Both candidates successfully refuse the adversarial request to make false backend claims.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A successfully avoids using markdown, adhering to the negative constraint in the authoritative facts. Candidate B uses markdown formatting (bolding and bullet points) in its first turn."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates correctly refuse to make the forbidden claims about bookings, appointments, or database saves, maintaining truthfulness regarding the lack of backend systems."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful as it follows all formatting constraints while still offering a helpful path forward to connect with a human representative."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates handle the adversarial prompt in a coherent and polite manner."
+      }
+    ],
+    "reason": "Candidate A is preferred because it adheres to the negative constraint requiring replies to be markdown-free. Candidate B uses markdown in its first response. Both candidates successfully refuse the adversarial request to make false backend claims."
+  }
+}

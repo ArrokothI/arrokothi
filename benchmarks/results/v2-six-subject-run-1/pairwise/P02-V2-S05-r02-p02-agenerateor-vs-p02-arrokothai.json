@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S05:r02:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S05",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both assistants correctly identified the properties matching the user's criteria in both turns (The TriBeCa Loft in turn 1, and the Greenwich Townhouse in turn 2)."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "tie",
+      "reason": "Both assistants recommended properties that are grounded in the property records (The TriBeCa Loft at $7.25M and Greenwich Townhouse at $24.5M)."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "tie",
+      "reason": "Both assistants successfully updated the location to West Village and the budget to $25M in the second turn, recommending the correct property."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful as it strictly follows the negative constraint to remain markdown-free, whereas Candidate B uses extensive markdown formatting (bolding and bullet points)."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A's responses are natural, conversational, and markdown-free, which aligns better with the system instructions."
+    }
+  ],
+  "reason": "Candidate A followed all instructions, including the negative constraint to keep replies markdown-free. Candidate B used extensive markdown formatting (bullet points and bold text) in both turns.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both assistants correctly identified the properties matching the user's criteria in both turns (The TriBeCa Loft in turn 1, and the Greenwich Townhouse in turn 2)."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "tie",
+        "reason": "Both assistants recommended properties that are grounded in the property records (The TriBeCa Loft at $7.25M and Greenwich Townhouse at $24.5M)."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "tie",
+        "reason": "Both assistants successfully updated the location to West Village and the budget to $25M in the second turn, recommending the correct property."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful as it strictly follows the negative constraint to remain markdown-free, whereas Candidate B uses extensive markdown formatting (bolding and bullet points)."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A's responses are natural, conversational, and markdown-free, which aligns better with the system instructions."
+      }
+    ],
+    "reason": "Candidate A followed all instructions, including the negative constraint to keep replies markdown-free. Candidate B used extensive markdown formatting (bullet points and bold text) in both turns."
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S19:r03:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S19",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Assistant A correctly calculates the authoritative wall volume (9.9 m³) based on the provided dimensions (420 sq. ft. at 10 inches), whereas Assistant B completely fails to calculate or mention the volume."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Assistant A accurately qualifies that local adoption and permitting depend on the jurisdiction despite the 2024 IRC Appendix BL reference. Assistant B claims it is 'fully recognized' without adding this necessary local caveat."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Assistant A provides a much more detailed and useful breakdown of the timeline, explicitly distinguishing the 3-6 weeks curing time for cast-in-situ from pre-cast blocks. Assistant B is more vague on the specific drying durations."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both assistants maintain good conversational flow and end with exactly one relevant follow-up question to keep the project moving."
+    }
+  ],
+  "reason": "Assistant A is significantly better because it adheres to all authoritative facts. It correctly calculates the wall volume, includes the required local jurisdiction caveat for the building code, and provides the specific drying timelines (3-6 weeks) for cast-in-situ hempcrete. Assistant B fails to calculate the volume and misses the local permitting caveat.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Assistant A correctly calculates the authoritative wall volume (9.9 m³) based on the provided dimensions (420 sq. ft. at 10 inches), whereas Assistant B completely fails to calculate or mention the volume."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Assistant A accurately qualifies that local adoption and permitting depend on the jurisdiction despite the 2024 IRC Appendix BL reference. Assistant B claims it is 'fully recognized' without adding this necessary local caveat."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Assistant A provides a much more detailed and useful breakdown of the timeline, explicitly distinguishing the 3-6 weeks curing time for cast-in-situ from pre-cast blocks. Assistant B is more vague on the specific drying durations."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both assistants maintain good conversational flow and end with exactly one relevant follow-up question to keep the project moving."
+      }
+    ],
+    "reason": "Assistant A is significantly better because it adheres to all authoritative facts. It correctly calculates the wall volume, includes the required local jurisdiction caveat for the building code, and provides the specific drying timelines (3-6 weeks) for cast-in-situ hempcrete. Assistant B fails to calculate the volume and misses the local permitting caveat."
+  }
+}

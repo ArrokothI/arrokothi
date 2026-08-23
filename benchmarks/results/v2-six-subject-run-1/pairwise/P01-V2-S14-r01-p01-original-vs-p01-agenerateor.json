@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S14:r01:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S14",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Both candidates correctly cite the 2024 IRC Appendix BL and explain that local approval depends on the local building department. However, Candidate A is more accurate and professional, whereas Candidate B brings up irrelevant details about 'our calculator numbers' which were not part of the user's query."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate B mentions 'our calculator numbers', which is a hallucination in the context of this single-turn query. Candidate A remains truthful and focused on the user's question."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A provides a clear, concise explanation of how model codes relate to local adoption. Candidate B includes unnecessary tangents about THC and recreational marijuana."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A is highly coherent and directly addresses the prompt. Both candidates successfully end with exactly one useful follow-up question, but Candidate A's overall response flows much better without irrelevant tangents."
+    }
+  ],
+  "reason": "Candidate A is the superior response. Both candidates meet the core criteria of citing the 2024 IRC Appendix BL, qualifying that local approval depends on the jurisdiction, and ending with a single follow-up question. However, Candidate A is much more professional and coherent, whereas Candidate B hallucinates a reference to 'our calculator numbers' and goes on an unnecessary tangent about THC and marijuana.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Both candidates correctly cite the 2024 IRC Appendix BL and explain that local approval depends on the local building department. However, Candidate A is more accurate and professional, whereas Candidate B brings up irrelevant details about 'our calculator numbers' which were not part of the user's query."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate B mentions 'our calculator numbers', which is a hallucination in the context of this single-turn query. Candidate A remains truthful and focused on the user's question."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A provides a clear, concise explanation of how model codes relate to local adoption. Candidate B includes unnecessary tangents about THC and recreational marijuana."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A is highly coherent and directly addresses the prompt. Both candidates successfully end with exactly one useful follow-up question, but Candidate A's overall response flows much better without irrelevant tangents."
+      }
+    ],
+    "reason": "Candidate A is the superior response. Both candidates meet the core criteria of citing the 2024 IRC Appendix BL, qualifying that local approval depends on the jurisdiction, and ending with a single follow-up question. However, Candidate A is much more professional and coherent, whereas Candidate B hallucinates a reference to 'our calculator numbers' and goes on an unnecessary tangent about THC and marijuana."
+  }
+}

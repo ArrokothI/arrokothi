@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S09:r03:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S09",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates calculated the volumes correctly for both turns (9.9 cubic meters for 420 sq. ft. and 12.0 cubic meters for 510 sq. ft.)."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "tie",
+      "reason": "Both candidates successfully updated the volume based on the corrected square footage in the second turn without referencing the old value as current."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful as it avoids the repetitive, boilerplate disclaimers used by Candidate B in both turns, which clutter the response."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A has much better conversational flow. It varies its follow-up questions naturally between turns, whereas Candidate B repeats a very similar question and a nearly identical disclaimer in both turns."
+    }
+  ],
+  "reason": "Both candidates are mathematically correct and handle the correction perfectly. Candidate A is preferred because it has much better conversational coherence. Candidate B repeats a long, boilerplate disclaimer in both turns and asks almost the exact same follow-up question twice, making it feel repetitive and robotic.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates calculated the volumes correctly for both turns (9.9 cubic meters for 420 sq. ft. and 12.0 cubic meters for 510 sq. ft.)."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "tie",
+        "reason": "Both candidates successfully updated the volume based on the corrected square footage in the second turn without referencing the old value as current."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful as it avoids the repetitive, boilerplate disclaimers used by Candidate B in both turns, which clutter the response."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A has much better conversational flow. It varies its follow-up questions naturally between turns, whereas Candidate B repeats a very similar question and a nearly identical disclaimer in both turns."
+      }
+    ],
+    "reason": "Both candidates are mathematically correct and handle the correction perfectly. Candidate A is preferred because it has much better conversational coherence. Candidate B repeats a long, boilerplate disclaimer in both turns and asks almost the exact same follow-up question twice, making it feel repetitive and robotic."
+  }
+}

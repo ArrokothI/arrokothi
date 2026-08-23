@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S02-r01-p01-agenerateor-vs-p01-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S02:r01:p01-agenerateor:p01-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.455Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1155,
+    "candidatesTokenCount": 452,
+    "totalTokenCount": 2306,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1155
+      }
+    ],
+    "thoughtsTokenCount": 699,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"B\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B correctly recommends a thin 2.5 to 3-inch breathable layer as specified in the source-derived criteria, whereas Candidate A recommends a 4-inch layer. Candidate B also correctly mentions furring strips and hand-tamping in the body of the response.\"\n    },\n    {\n      \"criterion\": \"grounding\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B is better grounded in the source-derived criteria regarding the recommended thickness (2.5-3 inches) and the application details (furring strips and hand-tamping).\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates are truthful to the provided facts, though Candidate B aligns better with the specific technical parameters of the workflow.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B is more useful because it provides the correct thickness recommendation for an interior retrofit, which directly answers the user's concern about how much room space will be lost.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates maintain good conversational flow and end with exactly one useful follow-up question.\"\n    }\n  ],\n  \"reason\": \"Candidate B is superior because it adheres strictly to the source-derived criteria by recommending a 2.5 to 3-inch thickness for the interior retrofit, whereas Candidate A recommends a 4-inch thickness. Candidate B also incorporates the required details about furring strips and hand-tamping into its explanation, and correctly references the 2.5 to 3 cubic meters volume approximation.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

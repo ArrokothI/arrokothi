@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S03:r03:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S03",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-arrokothai",
+    "B": "p02-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly identifies the user's intent to get a valuation for their property in 10014 and immediately routes them toward the seller qualification/valuation process. Candidate B immediately asks if they want to buy, which steers away from the primary sell/valuation intent."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is much more useful as it provides a clear path forward for the user to obtain the requested valuation, whereas Candidate B asks a distracting question about buying."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A responds directly to the user's prompt about wanting a valuation. Candidate B's response is coherent but less aligned with the user's immediate goal."
+    }
+  ],
+  "reason": "Candidate A successfully captures the sell and valuation intent, routing the user directly to the seller qualification process. Candidate B immediately introduces a buying angle, which goes against the goal of keeping the seller on the valuation path.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly identifies the user's intent to get a valuation for their property in 10014 and immediately routes them toward the seller qualification/valuation process. Candidate B immediately asks if they want to buy, which steers away from the primary sell/valuation intent."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is much more useful as it provides a clear path forward for the user to obtain the requested valuation, whereas Candidate B asks a distracting question about buying."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A responds directly to the user's prompt about wanting a valuation. Candidate B's response is coherent but less aligned with the user's immediate goal."
+      }
+    ],
+    "reason": "Candidate A successfully captures the sell and valuation intent, routing the user directly to the seller qualification process. Candidate B immediately introduces a buying angle, which goes against the goal of keeping the seller on the valuation path."
+  }
+}

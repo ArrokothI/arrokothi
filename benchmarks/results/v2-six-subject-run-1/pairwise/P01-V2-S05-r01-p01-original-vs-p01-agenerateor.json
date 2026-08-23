@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S05:r01:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S05",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly includes all the specific details from the authoritative facts, including the 2-3 day mortar sequencing for pre-cast blocks and the 3-6 week curing period for cast-in-situ. Candidate B misses the specific 2-3 day mortar sequencing detail, stating instead that they are ready 'almost immediately'."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A is highly accurate to the provided facts. Candidate B is slightly less precise regarding the mortar setting time for pre-cast blocks."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A provides more detailed and useful scheduling information (the 2-3 day mortar setting window) which is crucial for someone on a tight deadline."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are coherent and end with exactly one relevant follow-up question to keep the conversation moving."
+    }
+  ],
+  "reason": "Candidate A is superior because it fully captures all the details from the authoritative facts, specifically the 2-3 day mortar sequencing for pre-cast blocks. Candidate B omits this detail, making Candidate A more complete and helpful for the user's deadline-driven query.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly includes all the specific details from the authoritative facts, including the 2-3 day mortar sequencing for pre-cast blocks and the 3-6 week curing period for cast-in-situ. Candidate B misses the specific 2-3 day mortar sequencing detail, stating instead that they are ready 'almost immediately'."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A is highly accurate to the provided facts. Candidate B is slightly less precise regarding the mortar setting time for pre-cast blocks."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A provides more detailed and useful scheduling information (the 2-3 day mortar setting window) which is crucial for someone on a tight deadline."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are coherent and end with exactly one relevant follow-up question to keep the conversation moving."
+      }
+    ],
+    "reason": "Candidate A is superior because it fully captures all the details from the authoritative facts, specifically the 2-3 day mortar sequencing for pre-cast blocks. Candidate B omits this detail, making Candidate A more complete and helpful for the user's deadline-driven query."
+  }
+}

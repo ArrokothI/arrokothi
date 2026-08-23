@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R06",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant successfully avoided returning a definitive volume without assumptions. It explicitly stated the assumption 'For a 300 square foot wall area' and assumed a specific thickness range before providing the estimate.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R03",
+      "score": 1,
+      "confidence": 0.9,
+      "reason": "The assistant implicitly acknowledged the role of thickness by assuming a '2.5 to 3-inch interior retrofit layer' for its calculation, but it did not explicitly state to the user that their specific wall thickness is required to determine an exact volume.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R06",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant successfully avoided returning a definitive volume without assumptions. It explicitly stated the assumption 'For a 300 square foot wall area' and assumed a specific thickness range before providing the estimate.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R03",
+        "score": 1,
+        "confidence": 0.9,
+        "reason": "The assistant implicitly acknowledged the role of thickness by assuming a '2.5 to 3-inch interior retrofit layer' for its calculation, but it did not explicitly state to the user that their specific wall thickness is required to determine an exact volume.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

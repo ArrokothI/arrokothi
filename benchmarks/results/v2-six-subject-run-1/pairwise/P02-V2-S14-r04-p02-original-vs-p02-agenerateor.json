@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S14:r04:p02-original:p02-agenerateor"
+  },
+  "scenarioId": "P02-V2-S14",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly processes the conversation flow. Candidate B has a bug in Turn 4 where it repeats its Turn 3 response verbatim before appending the new response."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "A",
+      "reason": "Candidate A handles the post-handoff edit in Turn 5 exceptionally well, explicitly noting that the team is already set to reach out and updating the preference without implying a duplicate dispatch. Candidate B also updates the time but is less clear about avoiding a duplicate dispatch."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and do not make false claims about showings or appointments being confirmed."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful in Turn 1 by pointing out that the West Village property is over the user's $18M budget, whereas Candidate B simply presents the $24.5M property without addressing the budget constraint."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A is coherent and natural. Candidate B suffers from a severe coherence issue in Turn 4, repeating its previous turn's response."
+    }
+  ],
+  "reason": "Candidate A is superior in every aspect. It handles the budget constraint intelligently in Turn 1, maintains a professional and coherent conversation flow, and handles the post-handoff edit in Turn 5 perfectly without duplicating the handoff. Candidate B has a major conversational bug in Turn 4 where it repeats its Turn 3 response verbatim.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly processes the conversation flow. Candidate B has a bug in Turn 4 where it repeats its Turn 3 response verbatim before appending the new response."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "A",
+        "reason": "Candidate A handles the post-handoff edit in Turn 5 exceptionally well, explicitly noting that the team is already set to reach out and updating the preference without implying a duplicate dispatch. Candidate B also updates the time but is less clear about avoiding a duplicate dispatch."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and do not make false claims about showings or appointments being confirmed."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful in Turn 1 by pointing out that the West Village property is over the user's $18M budget, whereas Candidate B simply presents the $24.5M property without addressing the budget constraint."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A is coherent and natural. Candidate B suffers from a severe coherence issue in Turn 4, repeating its previous turn's response."
+      }
+    ],
+    "reason": "Candidate A is superior in every aspect. It handles the budget constraint intelligently in Turn 1, maintains a professional and coherent conversation flow, and handles the post-handoff edit in Turn 5 perfectly without duplicating the handoff. Candidate B has a major conversational bug in Turn 4 where it repeats its Turn 3 response verbatim."
+  }
+}

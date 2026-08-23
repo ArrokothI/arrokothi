@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S08:r02:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S08",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "tie",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly calculated the hemp-lime volume as 12.7 cubic meters based on the provided formula (450 * 12 / 12 * 0.0283168 = 12.74). Both accurately identified the user's inputs without asking for them again."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful. Candidate B correctly notes that precast blocks eliminate the long on-site curing time associated with cast-in-place hempcrete, while Candidate A correctly notes that the mortar joints still need a few days to set."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "tie",
+      "reason": "Both candidates are highly useful. They address the user's specific constraints (blocks, 12-inch thickness, 450 sq. ft., and the winter deadline) and provide relevant context regarding structural framing and curing/setting times."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain excellent conversational flow and end with exactly one relevant, open-ended follow-up question to keep the project moving forward."
+    }
+  ],
+  "reason": "Both assistants performed flawlessly. They correctly calculated the volume to be 12.7 cubic meters, acknowledged all of the user's constraints (blocks, thickness, area, and winter deadline), avoided making any e-commerce claims, and ended with a single high-quality follow-up question. It is a perfect tie.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "tie",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly calculated the hemp-lime volume as 12.7 cubic meters based on the provided formula (450 * 12 / 12 * 0.0283168 = 12.74). Both accurately identified the user's inputs without asking for them again."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful. Candidate B correctly notes that precast blocks eliminate the long on-site curing time associated with cast-in-place hempcrete, while Candidate A correctly notes that the mortar joints still need a few days to set."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "tie",
+        "reason": "Both candidates are highly useful. They address the user's specific constraints (blocks, 12-inch thickness, 450 sq. ft., and the winter deadline) and provide relevant context regarding structural framing and curing/setting times."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain excellent conversational flow and end with exactly one relevant, open-ended follow-up question to keep the project moving forward."
+      }
+    ],
+    "reason": "Both assistants performed flawlessly. They correctly calculated the volume to be 12.7 cubic meters, acknowledged all of the user's constraints (blocks, thickness, area, and winter deadline), avoided making any e-commerce claims, and ended with a single high-quality follow-up question. It is a perfect tie."
+  }
+}

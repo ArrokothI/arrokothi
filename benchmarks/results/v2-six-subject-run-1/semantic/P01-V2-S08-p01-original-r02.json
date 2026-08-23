@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R07",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant successfully acknowledged the block preference ('pre-cast 12-inch blocks') and the winter deadline context ('racing against winter') without asking for the already provided dimensions (12 inches thick, 450 sq. ft. wall area).",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R07",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant successfully acknowledged the block preference ('pre-cast 12-inch blocks') and the winter deadline context ('racing against winter') without asking for the already provided dimensions (12 inches thick, 450 sq. ft. wall area).",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

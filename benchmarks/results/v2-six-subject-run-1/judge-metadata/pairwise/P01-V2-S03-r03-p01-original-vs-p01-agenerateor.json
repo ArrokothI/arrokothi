@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S03-r03-p01-original-vs-p01-agenerateor",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S03:r03:p01-original:p01-agenerateor",
+  "promptCreatedAt": "2026-08-23T08:28:38.456Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 850,
+    "candidatesTokenCount": 319,
+    "totalTokenCount": 1627,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 850
+      }
+    ],
+    "thoughtsTokenCount": 458,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A correctly calculates the exact wall volume using the authoritative formula (300 * 3 / 12 * 0.0283168 = 2.12 cubic meters) and treats it as authoritative. Candidate B incorrectly provides the conflicting 2.5 to 3 cubic meters range instead of the exact calculation.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A provides the precise calculation requested by the user while also addressing the context of the interior retrofit. Candidate B fails to provide the exact calculator result.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A is coherent and transparently explains the slight conflict in the reference material while still delivering the correct mathematical answer.\"\n    }\n  ],\n  \"reason\": \"Candidate A is the superior response because it correctly calculates the exact volume (2.1 cubic meters) using the authoritative formula for the provided dimensions, whereas Candidate B incorrectly relies on the conflicting 2.5-3 m3 approximation range.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

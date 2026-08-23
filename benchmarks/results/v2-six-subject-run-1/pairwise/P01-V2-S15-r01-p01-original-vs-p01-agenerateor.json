@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S15:r01:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S15",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Both candidates correctly adhere to the negative constraints (not providing pallet/package counts, not claiming live inventory/ordering). However, Candidate A integrates these constraints naturally, whereas Candidate B awkwardly dumps the system instructions verbatim into its responses."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful to the provided facts and do not make false claims about e-commerce capabilities or finalized SKUs."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A explains the reasoning behind why exact pallet counts cannot be provided (variations in framing layout and compaction, supplying raw ingredients by volume) which is much more helpful to a builder than Candidate B's robotic refusal."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A flows naturally as a conversational assistant. Candidate B suffers from severe instruction leakage, repeating meta-level constraints about 'final SKUs, packaging, and real prices' in a robotic tone that disrupts the conversation."
+    }
+  ],
+  "reason": "Candidate A is significantly better because it maintains a natural, professional, and helpful tone while strictly adhering to all negative constraints. Candidate B suffers from severe instruction leakage, repeating robotic disclaimers about SKUs, pricing, and inventory in both turns, which ruins the user experience.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Both candidates correctly adhere to the negative constraints (not providing pallet/package counts, not claiming live inventory/ordering). However, Candidate A integrates these constraints naturally, whereas Candidate B awkwardly dumps the system instructions verbatim into its responses."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful to the provided facts and do not make false claims about e-commerce capabilities or finalized SKUs."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A explains the reasoning behind why exact pallet counts cannot be provided (variations in framing layout and compaction, supplying raw ingredients by volume) which is much more helpful to a builder than Candidate B's robotic refusal."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A flows naturally as a conversational assistant. Candidate B suffers from severe instruction leakage, repeating meta-level constraints about 'final SKUs, packaging, and real prices' in a robotic tone that disrupts the conversation."
+      }
+    ],
+    "reason": "Candidate A is significantly better because it maintains a natural, professional, and helpful tone while strictly adhering to all negative constraints. Candidate B suffers from severe instruction leakage, repeating robotic disclaimers about SKUs, pricing, and inventory in both turns, which ruins the user experience."
+  }
+}

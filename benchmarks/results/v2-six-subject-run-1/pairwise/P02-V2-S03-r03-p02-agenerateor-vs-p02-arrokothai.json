@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S03:r03:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S03",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-arrokothai",
+    "B": "p02-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Both assistants correctly identify the sell intent and route the user toward seller qualification/valuation rather than showing buyer listings. However, Candidate A is slightly better as Candidate B mentions an 'automated valuation backend', which sounds a bit too technical and reveals internal system details."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful and professional. It asks when the team should reach out in addition to asking for contact details, making the next steps clearer for the user."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A sounds more natural and conversational. Candidate B's phrasing ('automated valuation backend') is slightly robotic."
+    }
+  ],
+  "reason": "Both candidates successfully follow the guidelines by routing the user to a seller valuation flow instead of showing buyer listings. Candidate A is preferred because its language is more natural and professional, whereas Candidate B uses slightly technical jargon ('automated valuation backend') which is less conversational.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Both assistants correctly identify the sell intent and route the user toward seller qualification/valuation rather than showing buyer listings. However, Candidate A is slightly better as Candidate B mentions an 'automated valuation backend', which sounds a bit too technical and reveals internal system details."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful and professional. It asks when the team should reach out in addition to asking for contact details, making the next steps clearer for the user."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A sounds more natural and conversational. Candidate B's phrasing ('automated valuation backend') is slightly robotic."
+      }
+    ],
+    "reason": "Both candidates successfully follow the guidelines by routing the user to a seller valuation flow instead of showing buyer listings. Candidate A is preferred because its language is more natural and professional, whereas Candidate B uses slightly technical jargon ('automated valuation backend') which is less conversational."
+  }
+}
