@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S14-r03-p01-original-vs-p01-agenerateor",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S14:r03:p01-original:p01-agenerateor",
+  "promptCreatedAt": "2026-08-23T08:28:38.467Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 772,
+    "candidatesTokenCount": 351,
+    "totalTokenCount": 1761,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 772
+      }
+    ],
+    "thoughtsTokenCount": 638,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Model A correctly states that model codes like the 2024 IRC Appendix BL are not proof of local adoption or permit approval by the City of Seattle, and that local review is required. Model B starts with a misleadingly definitive 'Yes, Seattle can approve...', which glosses over the necessity of local jurisdictional adoption.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Model A is more truthful regarding the regulatory reality of building codes, making it clear that local adoption is not guaranteed just because a model code exists.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Model A provides safer and more accurate guidance for someone navigating the permitting process, preventing false expectations about automatic approval.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both models end with exactly one relevant follow-up question that keeps the project conversation moving.\"\n    }\n  ],\n  \"reason\": \"Model A is superior because it accurately qualifies that local adoption and permitting depend on the specific jurisdiction (Seattle) and its building department, whereas Model B gives an overly optimistic and potentially misleading 'Yes' confirmation.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

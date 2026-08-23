@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S09-r01-p01-original-vs-p01-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S09:r01:p01-original:p01-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.461Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1050,
+    "candidatesTokenCount": 421,
+    "totalTokenCount": 2557,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1050
+      }
+    ],
+    "thoughtsTokenCount": 1086,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": true,
+  "normalizationSteps": [
+    "unwrapped_outputSchema_echo"
+  ],
+  "rawProviderText": "{\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"instruction\": \"Compare two assistant conversations for the same user scenario. Judge only user-facing quality against the task facts and criteria. Return only structured JSON.\",\n  \"outputSchema\": {\n    \"schemaVersion\": \"pairwise-judge-output-v1\",\n    \"promptVersion\": \"pairwise-judge-v1\",\n    \"verdict\": \"B\",\n    \"criteria\": [\n      {\n        \"criterion\": \"correctness\",\n        \"preference\": \"B\",\n        \"reason\": \"Candidate B provides highly accurate calculations based on the authoritative formula (9.9 cubic meters for Turn 1 and 12 cubic meters for Turn 2). Candidate A provides wide ranges (10 to 11 cubic meters and 12 to 13 cubic meters) which are less precise.\"\n      },\n      {\n        \"criterion\": \"correction_handling\",\n        \"preference\": \"tie\",\n        \"reason\": \"Both candidates successfully updated their calculations in Turn 2 using the corrected 510 sq. ft. measurement instead of the stale 420 sq. ft. value.\"\n      },\n      {\n        \"criterion\": \"usefulness\",\n        \"preference\": \"B\",\n        \"reason\": \"Candidate B is more useful because its volume calculations are precise rather than broad estimates.\"\n      },\n      {\n        \"criterion\": \"conversational_coherence\",\n        \"preference\": \"tie\",\n        \"reason\": \"Both candidates maintain excellent conversational flow and end each turn with exactly one relevant follow-up question to keep the project moving.\"\n      }\n    ],\n    \"reason\": \"Candidate B is superior because it provides precise calculations that align perfectly with the authoritative formula, whereas Candidate A provides unnecessarily broad ranges. Both candidates followed all other instructions, including handling the correction properly and ending with exactly one useful follow-up question.\"\n  }\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

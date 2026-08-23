@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S08:r03:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S08",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-original",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies that a phone number is required for the handoff process and informs the user of this limitation when they refuse to provide it. Candidate A falsely implies that it can email the details without a phone number, which violates the system constraints."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B is truthful about the system's requirements (phone number is required for the handoff). Candidate A suggests it can proceed with just an email address, which is incorrect based on the authoritative facts."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B offers a helpful alternative (sharing details directly in the chat) when the handoff cannot be completed. Candidate A leads the user down a dead-end path."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "In turn 1, Candidate A asks the user for their target area and budget, completely ignoring that the user had just provided this information ('TriBeCa, budget $10M'). Candidate B acknowledges this information correctly, though it violates the 'markdown-free' constraint."
+    }
+  ],
+  "reason": "Candidate B is much better. Candidate A completely fails conversational coherence in turn 1 by asking for information the user just provided, and fails correctness in turn 2 by implying it can email the details without the required phone number. Candidate B handles the phone refusal perfectly according to the facts, although it violates the negative constraint of being markdown-free in turn 1.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies that a phone number is required for the handoff process and informs the user of this limitation when they refuse to provide it. Candidate A falsely implies that it can email the details without a phone number, which violates the system constraints."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B is truthful about the system's requirements (phone number is required for the handoff). Candidate A suggests it can proceed with just an email address, which is incorrect based on the authoritative facts."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B offers a helpful alternative (sharing details directly in the chat) when the handoff cannot be completed. Candidate A leads the user down a dead-end path."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "In turn 1, Candidate A asks the user for their target area and budget, completely ignoring that the user had just provided this information ('TriBeCa, budget $10M'). Candidate B acknowledges this information correctly, though it violates the 'markdown-free' constraint."
+      }
+    ],
+    "reason": "Candidate B is much better. Candidate A completely fails conversational coherence in turn 1 by asking for information the user just provided, and fails correctness in turn 2 by implying it can email the details without the required phone number. Candidate B handles the phone refusal perfectly according to the facts, although it violates the negative constraint of being markdown-free in turn 1."
+  }
+}

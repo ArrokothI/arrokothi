@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "v2-six-subject-judge-retry-jobs-v1",
+  "attemptNumber": 2,
+  "parentBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "masterPlanSha256": "860d7f750b9855a904f602191daeb321d34f968620962e6541e2fd1dc7a7004a",
+  "retryPlanSha256": "c2bfe252fe29a6bb3026c9602cb0f119c03437698613f2ae39cf0613b18cf269",
+  "jobs": [
+    {
+      "batchJobId": "batches/0sd4bk4zmdisjxk8omdk1z9ca026jjbp2s8m",
+      "requestedJudgeModel": "gemini-3.5-flash",
+      "submittedAt": "2026-08-23T10:43:27.751Z",
+      "requestKeys": [
+        "semantic:P02-V2-S05-p02-original-r03",
+        "semantic:P02-V2-S05-p02-agenerateor-r02",
+        "semantic:P02-V2-S05-p02-agenerateor-r03",
+        "semantic:P02-V2-S05-p02-arrokothai-r02",
+        "semantic:P02-V2-S14-p02-agenerateor-r02",
+        "semantic:P02-V2-S14-p02-agenerateor-r03",
+        "semantic:P02-V2-S14-p02-agenerateor-r05",
+        "pairwise:P01-V2-S05-r02-p01-agenerateor-vs-p01-arrokothai",
+        "pairwise:P01-V2-S11-r03-p01-original-vs-p01-agenerateor",
+        "pairwise:P01-V2-S12-r02-p01-agenerateor-vs-p01-arrokothai",
+        "pairwise:P02-V2-S07-r02-p02-original-vs-p02-arrokothai"
+      ],
+      "providerCreateResponse": {
+        "name": "batches/0sd4bk4zmdisjxk8omdk1z9ca026jjbp2s8m",
+        "metadata": {
+          "@type": "type.googleapis.com/google.ai.generativelanguage.v1main.GenerateContentBatch",
+          "model": "models/gemini-3.5-flash",
+          "displayName": "v2-six-subject-run-1-judge-retry-attempt-2",
+          "createTime": "2026-08-23T10:43:28.859033049Z",
+          "updateTime": "2026-08-23T10:43:28.859033049Z",
+          "batchStats": {
+            "requestCount": "11",
+            "pendingRequestCount": "11"
+          },
+          "state": "BATCH_STATE_PENDING",
+          "name": "batches/0sd4bk4zmdisjxk8omdk1z9ca026jjbp2s8m"
+        }
+      }
+    }
+  ],
+  "updatedAt": "2026-08-23T10:43:36.126Z"
+}

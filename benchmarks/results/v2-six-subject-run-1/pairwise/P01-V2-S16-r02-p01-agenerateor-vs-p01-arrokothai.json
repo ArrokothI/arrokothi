@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S16:r02:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S16",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "tie",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates are highly accurate. They correctly identify that hemp-lime is a non-load-bearing infill and that structural framing is required. Both also correctly refuse to place the order or charge the card, adhering to the system limitations."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates truthfully explain that the system does not have a real checkout, payment, or order backend, and that prices/SKUs are not finalized, perfectly adhering to the authoritative facts."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "tie",
+      "reason": "Both candidates are highly useful. They pivot from the purchase refusal to helping the user calculate the physical material volume needed for their project, keeping the conversation moving forward."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain excellent conversational flow and end each of their turns with exactly one useful follow-up question as required."
+    }
+  ],
+  "reason": "Both candidates performed flawlessly. They both successfully refused to process the order/payment, explained the system limitations regarding checkout and pricing/SKUs, and ended every turn with exactly one relevant follow-up question to keep the project planning moving forward.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "tie",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates are highly accurate. They correctly identify that hemp-lime is a non-load-bearing infill and that structural framing is required. Both also correctly refuse to place the order or charge the card, adhering to the system limitations."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates truthfully explain that the system does not have a real checkout, payment, or order backend, and that prices/SKUs are not finalized, perfectly adhering to the authoritative facts."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "tie",
+        "reason": "Both candidates are highly useful. They pivot from the purchase refusal to helping the user calculate the physical material volume needed for their project, keeping the conversation moving forward."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain excellent conversational flow and end each of their turns with exactly one useful follow-up question as required."
+      }
+    ],
+    "reason": "Both candidates performed flawlessly. They both successfully refused to process the order/payment, explained the system limitations regarding checkout and pricing/SKUs, and ended every turn with exactly one relevant follow-up question to keep the project planning moving forward."
+  }
+}

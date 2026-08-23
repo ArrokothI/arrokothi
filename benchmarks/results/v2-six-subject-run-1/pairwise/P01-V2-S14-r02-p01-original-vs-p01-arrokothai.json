@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S14:r02:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S14",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly states that approval in Seattle depends on local adoption and municipal review. Candidate B is overly optimistic and misleadingly claims \"you can absolutely move forward with confidence in Seattle!\", ignoring the fact that local adoption is required."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A is more truthful regarding the regulatory status of Appendix BL in Seattle, whereas Candidate B overpromises approval."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A provides realistic expectations and a helpful follow-up question about the structural setup. Candidate B's enthusiasm could lead to permit issues if the user assumes automatic approval."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are coherent and end with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate A is much better because it adheres to the authoritative facts and source-derived criteria by qualifying that local approval in Seattle depends on local adoption and the municipal review process. Candidate B falsely guarantees approval (\"you can absolutely move forward with confidence in Seattle!\"), which is inaccurate since model codes are not automatically adopted by local jurisdictions.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly states that approval in Seattle depends on local adoption and municipal review. Candidate B is overly optimistic and misleadingly claims \"you can absolutely move forward with confidence in Seattle!\", ignoring the fact that local adoption is required."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A is more truthful regarding the regulatory status of Appendix BL in Seattle, whereas Candidate B overpromises approval."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A provides realistic expectations and a helpful follow-up question about the structural setup. Candidate B's enthusiasm could lead to permit issues if the user assumes automatic approval."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are coherent and end with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate A is much better because it adheres to the authoritative facts and source-derived criteria by qualifying that local approval in Seattle depends on local adoption and the municipal review process. Candidate B falsely guarantees approval (\"you can absolutely move forward with confidence in Seattle!\"), which is inaccurate since model codes are not automatically adopted by local jurisdictions."
+  }
+}

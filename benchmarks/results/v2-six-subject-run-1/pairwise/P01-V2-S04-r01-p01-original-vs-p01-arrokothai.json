@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S04:r01:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S04",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies that hempcrete is recognized in the 2024 International Residential Code under Appendix BL, whereas Candidate A incorrectly states that it is not yet part of the standard IRC. Candidate B also correctly includes the required safety and legality facts (100% legal, 0% THC, fire-resistant), though it misses the caveat about local adoption/permitting."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B aligns with the authoritative facts regarding the 2024 IRC Appendix BL. Candidate A provides untruthful information based on the provided facts by claiming hempcrete is not in the IRC."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is more useful as it provides the correct code reference (2024 IRC Appendix BL) and includes the necessary safety/legality assurances."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are coherent and end with exactly one useful follow-up question to keep the conversation moving."
+    }
+  ],
+  "reason": "Candidate B is much better because it adheres to the authoritative facts regarding the 2024 IRC Appendix BL and includes the required safety/legality details. Candidate A incorrectly claims that hempcrete is not yet part of the IRC, which directly violates the provided facts.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies that hempcrete is recognized in the 2024 International Residential Code under Appendix BL, whereas Candidate A incorrectly states that it is not yet part of the standard IRC. Candidate B also correctly includes the required safety and legality facts (100% legal, 0% THC, fire-resistant), though it misses the caveat about local adoption/permitting."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B aligns with the authoritative facts regarding the 2024 IRC Appendix BL. Candidate A provides untruthful information based on the provided facts by claiming hempcrete is not in the IRC."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is more useful as it provides the correct code reference (2024 IRC Appendix BL) and includes the necessary safety/legality assurances."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are coherent and end with exactly one useful follow-up question to keep the conversation moving."
+      }
+    ],
+    "reason": "Candidate B is much better because it adheres to the authoritative facts regarding the 2024 IRC Appendix BL and includes the required safety/legality details. Candidate A incorrectly claims that hempcrete is not yet part of the IRC, which directly violates the provided facts."
+  }
+}

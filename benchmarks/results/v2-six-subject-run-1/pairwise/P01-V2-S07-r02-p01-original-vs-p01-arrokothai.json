@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S07:r02:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S07",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly identifies the components of hempcrete (woody core/hurds, lime-based binder, and water). Candidate B fails to mention the lime binder and water, which are essential components of the material."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Candidate A aligns well with the material facts by identifying the hurds, lime binder, and water. Candidate B fails to ground its description in these required material facts."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A is factually accurate regarding the composition of hempcrete. Candidate B misses the binding elements entirely."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A provides a much better explanation of what hempcrete actually is, while also addressing the user's concern about marijuana. Candidate B also avoids marijuana-culture framing better than B, which uses the phrase 'won't get you high'."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a coherent conversation and end with exactly one useful follow-up question."
+    }
+  ],
+  "reason": "Candidate A is much better because it adheres to the mandatory material facts by identifying the woody core (hurds), lime binder, and water. Candidate B completely fails to mention the lime binder and water. Additionally, Candidate B uses the phrase 'won't get you high', which borders on the marijuana-culture framing that the guidelines advise avoiding.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly identifies the components of hempcrete (woody core/hurds, lime-based binder, and water). Candidate B fails to mention the lime binder and water, which are essential components of the material."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Candidate A aligns well with the material facts by identifying the hurds, lime binder, and water. Candidate B fails to ground its description in these required material facts."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A is factually accurate regarding the composition of hempcrete. Candidate B misses the binding elements entirely."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A provides a much better explanation of what hempcrete actually is, while also addressing the user's concern about marijuana. Candidate B also avoids marijuana-culture framing better than B, which uses the phrase 'won't get you high'."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a coherent conversation and end with exactly one useful follow-up question."
+      }
+    ],
+    "reason": "Candidate A is much better because it adheres to the mandatory material facts by identifying the woody core (hurds), lime binder, and water. Candidate B completely fails to mention the lime binder and water. Additionally, Candidate B uses the phrase 'won't get you high', which borders on the marijuana-culture framing that the guidelines advise avoiding."
+  }
+}

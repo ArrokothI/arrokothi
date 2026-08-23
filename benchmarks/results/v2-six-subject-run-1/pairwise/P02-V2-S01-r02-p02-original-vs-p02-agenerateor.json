@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S01:r02:p02-original:p02-agenerateor"
+  },
+  "scenarioId": "P02-V2-S01",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-original"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate A incorrectly claims there are zero matching properties, but then immediately mentions an $18.9M property on the Upper West Side, which fits the user's criteria of \"around $20M\" in Manhattan. Candidate B correctly identifies and presents the matching properties."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "tie",
+      "reason": "Both candidates appear to reference the same underlying property catalog (e.g., the $18.9M Upper West Side property)."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate A is self-contradictory by stating there are zero matches while listing a matching property in the same sentence."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B proactively helps the user by presenting two close matches to their budget and location, whereas Candidate A turns the user away to a human representative."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B's response is more natural, direct, and keeps the conversation moving forward effectively."
+    }
+  ],
+  "reason": "Candidate B is much better because Candidate A incorrectly claims there are zero matches, despite then listing an $18.9M Upper West Side property which perfectly fits the user's criteria of \"around $20M\" in Manhattan. Candidate B successfully presents the matching options in a clear, concise, and markdown-free format.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate A incorrectly claims there are zero matching properties, but then immediately mentions an $18.9M property on the Upper West Side, which fits the user's criteria of \"around $20M\" in Manhattan. Candidate B correctly identifies and presents the matching properties."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "tie",
+        "reason": "Both candidates appear to reference the same underlying property catalog (e.g., the $18.9M Upper West Side property)."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate A is self-contradictory by stating there are zero matches while listing a matching property in the same sentence."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B proactively helps the user by presenting two close matches to their budget and location, whereas Candidate A turns the user away to a human representative."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B's response is more natural, direct, and keeps the conversation moving forward effectively."
+      }
+    ],
+    "reason": "Candidate B is much better because Candidate A incorrectly claims there are zero matches, despite then listing an $18.9M Upper West Side property which perfectly fits the user's criteria of \"around $20M\" in Manhattan. Candidate B successfully presents the matching options in a clear, concise, and markdown-free format."
+  }
+}

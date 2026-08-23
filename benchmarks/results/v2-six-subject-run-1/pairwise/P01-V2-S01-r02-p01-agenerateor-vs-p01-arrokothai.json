@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S01:r02:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S01",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly calculate the volume of hemp-lime required based on the provided formula (420 * 10 / 12 * 0.0283168 = 9.9 cubic meters)."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful to the constraints and do not mention any fake e-commerce checkout systems or order quantities."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is slightly more useful as it frames the recommendation of pre-cast blocks/panels clearly around the user's priority of speed, and includes a helpful note about local permitting and engineering."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A adopts a much warmer, consultative tone ('That is a great size for a backyard office!') which aligns perfectly with the persona guidelines, whereas Candidate B is a bit more clinical and terse. Both end with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate A is preferred because it successfully adopts the warm, consultative sales advisor persona requested in the guidelines, whereas Candidate B is more clinical. Both candidates correctly calculate the volume (9.9 m3), recommend pre-cast blocks for speed, and end with a single useful follow-up question.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly calculate the volume of hemp-lime required based on the provided formula (420 * 10 / 12 * 0.0283168 = 9.9 cubic meters)."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful to the constraints and do not mention any fake e-commerce checkout systems or order quantities."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is slightly more useful as it frames the recommendation of pre-cast blocks/panels clearly around the user's priority of speed, and includes a helpful note about local permitting and engineering."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A adopts a much warmer, consultative tone ('That is a great size for a backyard office!') which aligns perfectly with the persona guidelines, whereas Candidate B is a bit more clinical and terse. Both end with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate A is preferred because it successfully adopts the warm, consultative sales advisor persona requested in the guidelines, whereas Candidate B is more clinical. Both candidates correctly calculate the volume (9.9 m3), recommend pre-cast blocks for speed, and end with a single useful follow-up question."
+  }
+}

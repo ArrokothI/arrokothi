@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S13:r03:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S13",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both assistants correctly identify that hempcrete is non-load-bearing and that a conventional timber frame is required to support the roof and other structural loads."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both assistants provide accurate, truthful information regarding the structural limitations of hempcrete."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is slightly more useful because its follow-up question is more logical. Since the user was planning to skip the timber frame entirely based on the contractor's advice, Candidate B's question ('What type of timber framing... are you planning to use') is slightly premature, whereas Candidate A asks about the current design phase."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A directly addresses the contractor's claim ('That’s actually not correct...') which flows better conversationally than Candidate B's more abrupt, textbook-style opening."
+    }
+  ],
+  "reason": "Both candidates successfully meet all authoritative facts and source-derived criteria. Candidate A is preferred because it directly refutes the contractor's incorrect advice in a friendly manner, and its follow-up question is more logical given that the user was previously planning to skip the timber frame entirely.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both assistants correctly identify that hempcrete is non-load-bearing and that a conventional timber frame is required to support the roof and other structural loads."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both assistants provide accurate, truthful information regarding the structural limitations of hempcrete."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is slightly more useful because its follow-up question is more logical. Since the user was planning to skip the timber frame entirely based on the contractor's advice, Candidate B's question ('What type of timber framing... are you planning to use') is slightly premature, whereas Candidate A asks about the current design phase."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A directly addresses the contractor's claim ('That’s actually not correct...') which flows better conversationally than Candidate B's more abrupt, textbook-style opening."
+      }
+    ],
+    "reason": "Both candidates successfully meet all authoritative facts and source-derived criteria. Candidate A is preferred because it directly refutes the contractor's incorrect advice in a friendly manner, and its follow-up question is more logical given that the user was previously planning to skip the timber frame entirely."
+  }
+}

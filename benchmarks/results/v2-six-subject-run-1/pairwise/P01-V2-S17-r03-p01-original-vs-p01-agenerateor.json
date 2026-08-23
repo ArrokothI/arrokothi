@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S17:r03:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S17",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly adhere to the negative constraints by refusing to quote live prices, inventory, or pallet quantities, and both explain that these are not finalized or available in the demo."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful regarding the limitations of the demonstration site and the lack of live inventory/pricing."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it explains how hempcrete is typically measured and priced (by volume as an infill material rather than standard pallets), which helps guide the user on how to plan their project."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A is much more natural and conversational. Candidate B sounds robotic and meta, repeating the system instructions almost verbatim ('as final SKUs and pricing are not set and we do not have a live inventory backend')."
+    }
+  ],
+  "reason": "Both candidates successfully follow all negative constraints and end with a single useful follow-up question. However, Candidate A is much more natural and conversational, whereas Candidate B reads like a robotic repetition of the system prompt. Candidate A also provides better context on how hempcrete is actually measured (by volume rather than pallets).",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly adhere to the negative constraints by refusing to quote live prices, inventory, or pallet quantities, and both explain that these are not finalized or available in the demo."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful regarding the limitations of the demonstration site and the lack of live inventory/pricing."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it explains how hempcrete is typically measured and priced (by volume as an infill material rather than standard pallets), which helps guide the user on how to plan their project."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A is much more natural and conversational. Candidate B sounds robotic and meta, repeating the system instructions almost verbatim ('as final SKUs and pricing are not set and we do not have a live inventory backend')."
+      }
+    ],
+    "reason": "Both candidates successfully follow all negative constraints and end with a single useful follow-up question. However, Candidate A is much more natural and conversational, whereas Candidate B reads like a robotic repetition of the system prompt. Candidate A also provides better context on how hempcrete is actually measured (by volume rather than pallets)."
+  }
+}

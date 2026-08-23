@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S11:r03:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S11",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly identifies that the 300 square feet figure is ambiguous (likely floor area) and explains why floor area cannot be used directly to calculate wall volume without knowing wall height/area and thickness. Candidate B makes highly specific, arbitrary assumptions to provide a volume estimate, which is less helpful."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Candidate A aligns perfectly with the requirement to distinguish floor area from wall area and identify wall thickness as necessary before providing a volume calculation."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful regarding the physical requirements of calculating hempcrete volume."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it educates the user on why their input is ambiguous and what specific information is needed, rather than guessing an arbitrary scenario (like an interior retrofit) as Candidate B does."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates flow well and end with exactly one useful follow-up question to keep the conversation moving."
+    }
+  ],
+  "reason": "Candidate A is the superior response. It correctly identifies the ambiguity of the user's input (distinguishing floor area from wall area) and explains why wall thickness and net wall area are required for an accurate calculation. Instead of guessing arbitrary parameters to provide an estimate like Candidate B, Candidate A explains the concept clearly and asks the user for the necessary details to perform an accurate calculation, ending with a single, clear follow-up question.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly identifies that the 300 square feet figure is ambiguous (likely floor area) and explains why floor area cannot be used directly to calculate wall volume without knowing wall height/area and thickness. Candidate B makes highly specific, arbitrary assumptions to provide a volume estimate, which is less helpful."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Candidate A aligns perfectly with the requirement to distinguish floor area from wall area and identify wall thickness as necessary before providing a volume calculation."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful regarding the physical requirements of calculating hempcrete volume."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it educates the user on why their input is ambiguous and what specific information is needed, rather than guessing an arbitrary scenario (like an interior retrofit) as Candidate B does."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates flow well and end with exactly one useful follow-up question to keep the conversation moving."
+      }
+    ],
+    "reason": "Candidate A is the superior response. It correctly identifies the ambiguity of the user's input (distinguishing floor area from wall area) and explains why wall thickness and net wall area are required for an accurate calculation. Instead of guessing arbitrary parameters to provide an estimate like Candidate B, Candidate A explains the concept clearly and asks the user for the necessary details to perform an accurate calculation, ending with a single, clear follow-up question."
+  }
+}

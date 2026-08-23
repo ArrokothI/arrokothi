@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S19:r02:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S19",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Assistant A is more accurate in its closing question. Assistant B asks if the user is leaning toward cast-in-situ or pre-cast blocks for the \"backyard office frame\". Since hempcrete is a non-load-bearing infill and not the structural frame itself (as both assistants correctly pointed out earlier), referring to it as the frame is a conceptual error. Assistant A correctly refers to them as \"methods for your backyard office\"."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both assistants accurately calculate the volume (9.9 cubic meters) and correctly represent the facts regarding the 2024 IRC Appendix BL, the non-load-bearing nature of hempcrete, and the curing timelines."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Assistant A is slightly more useful because it avoids adding unnecessary disclaimers. Assistant B includes a disclaimer about pricing, inventory, and live systems which was not prompted by the user's query, making the response feel slightly more robotic."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Assistant A's response flows better and ends with a logically sound and well-phrased follow-up question."
+    }
+  ],
+  "reason": "Both assistants do an excellent job of addressing all the user's questions and adhering to the authoritative facts (calculating the volume correctly, citing Appendix BL, explaining the structural limitations, and detailing the timeline differences between cast-in-situ and pre-cast). However, Assistant A is preferred because Assistant B makes a minor conceptual error in its follow-up question by asking about using hempcrete blocks/situ for the \"backyard office frame\" (hempcrete is the infill, not the frame).",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Assistant A is more accurate in its closing question. Assistant B asks if the user is leaning toward cast-in-situ or pre-cast blocks for the \"backyard office frame\". Since hempcrete is a non-load-bearing infill and not the structural frame itself (as both assistants correctly pointed out earlier), referring to it as the frame is a conceptual error. Assistant A correctly refers to them as \"methods for your backyard office\"."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both assistants accurately calculate the volume (9.9 cubic meters) and correctly represent the facts regarding the 2024 IRC Appendix BL, the non-load-bearing nature of hempcrete, and the curing timelines."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Assistant A is slightly more useful because it avoids adding unnecessary disclaimers. Assistant B includes a disclaimer about pricing, inventory, and live systems which was not prompted by the user's query, making the response feel slightly more robotic."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Assistant A's response flows better and ends with a logically sound and well-phrased follow-up question."
+      }
+    ],
+    "reason": "Both assistants do an excellent job of addressing all the user's questions and adhering to the authoritative facts (calculating the volume correctly, citing Appendix BL, explaining the structural limitations, and detailing the timeline differences between cast-in-situ and pre-cast). However, Assistant A is preferred because Assistant B makes a minor conceptual error in its follow-up question by asking about using hempcrete blocks/situ for the \"backyard office frame\" (hempcrete is the infill, not the frame)."
+  }
+}

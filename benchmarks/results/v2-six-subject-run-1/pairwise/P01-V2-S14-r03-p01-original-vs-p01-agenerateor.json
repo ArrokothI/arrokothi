@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S14:r03:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S14",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Model A correctly states that model codes like the 2024 IRC Appendix BL are not proof of local adoption or permit approval by the City of Seattle, and that local review is required. Model B starts with a misleadingly definitive 'Yes, Seattle can approve...', which glosses over the necessity of local jurisdictional adoption."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Model A is more truthful regarding the regulatory reality of building codes, making it clear that local adoption is not guaranteed just because a model code exists."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Model A provides safer and more accurate guidance for someone navigating the permitting process, preventing false expectations about automatic approval."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both models end with exactly one relevant follow-up question that keeps the project conversation moving."
+    }
+  ],
+  "reason": "Model A is superior because it accurately qualifies that local adoption and permitting depend on the specific jurisdiction (Seattle) and its building department, whereas Model B gives an overly optimistic and potentially misleading 'Yes' confirmation.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Model A correctly states that model codes like the 2024 IRC Appendix BL are not proof of local adoption or permit approval by the City of Seattle, and that local review is required. Model B starts with a misleadingly definitive 'Yes, Seattle can approve...', which glosses over the necessity of local jurisdictional adoption."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Model A is more truthful regarding the regulatory reality of building codes, making it clear that local adoption is not guaranteed just because a model code exists."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Model A provides safer and more accurate guidance for someone navigating the permitting process, preventing false expectations about automatic approval."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both models end with exactly one relevant follow-up question that keeps the project conversation moving."
+      }
+    ],
+    "reason": "Model A is superior because it accurately qualifies that local adoption and permitting depend on the specific jurisdiction (Seattle) and its building department, whereas Model B gives an overly optimistic and potentially misleading 'Yes' confirmation."
+  }
+}

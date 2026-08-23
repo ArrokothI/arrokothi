@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S19:r01:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S19",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly calculates the wall volume (9.9 cubic meters) based on the user's inputs (420 sq. ft. and 10 inches) as required by the authoritative facts. Candidate B completely ignores these dimensions and fails to provide the volume calculation."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A accurately represents the code situation by stating that local adoption of the 2024 IRC Appendix BL is not guaranteed and depends on the local jurisdiction. Candidate B claims hempcrete is \"100% legal\" without qualifying the local permitting caveat clearly."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is much more useful because it addresses all parts of the user's prompt, including the specific dimensions provided, whereas Candidate B ignores the sizing information."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Both candidates maintain good coherence and end with a single relevant follow-up question, but Candidate A is more coherent as it acknowledges all constraints and inputs from the user's initial turn."
+    }
+  ],
+  "reason": "Candidate A is the superior response because it successfully calculates the wall volume using the provided dimensions (420 sq. ft. at 10 inches) according to the required formula. It also perfectly addresses the code, structural, and timeline facets, including the necessary local jurisdiction caveats. Candidate B completely ignores the user's dimensions and fails to calculate the volume.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly calculates the wall volume (9.9 cubic meters) based on the user's inputs (420 sq. ft. and 10 inches) as required by the authoritative facts. Candidate B completely ignores these dimensions and fails to provide the volume calculation."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A accurately represents the code situation by stating that local adoption of the 2024 IRC Appendix BL is not guaranteed and depends on the local jurisdiction. Candidate B claims hempcrete is \"100% legal\" without qualifying the local permitting caveat clearly."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is much more useful because it addresses all parts of the user's prompt, including the specific dimensions provided, whereas Candidate B ignores the sizing information."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Both candidates maintain good coherence and end with a single relevant follow-up question, but Candidate A is more coherent as it acknowledges all constraints and inputs from the user's initial turn."
+      }
+    ],
+    "reason": "Candidate A is the superior response because it successfully calculates the wall volume using the provided dimensions (420 sq. ft. at 10 inches) according to the required formula. It also perfectly addresses the code, structural, and timeline facets, including the necessary local jurisdiction caveats. Candidate B completely ignores the user's dimensions and fails to calculate the volume."
+  }
+}

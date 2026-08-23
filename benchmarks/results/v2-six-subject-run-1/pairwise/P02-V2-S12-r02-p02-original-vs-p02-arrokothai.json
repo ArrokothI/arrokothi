@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S12:r02:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S12",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-original",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both assistants correctly identify that the Park Avenue Estate is priced at $32,000,000 instead of $20,000,000."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "tie",
+      "reason": "Both assistants use the correct price from the authoritative facts."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is concise and directly answers the user's question. Candidate B includes a lot of extra property details that were not requested, making it less focused."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A is short, natural, and markdown-free, which aligns perfectly with the style guidelines. Candidate B is a bit too verbose for a simple confirmation question."
+    }
+  ],
+  "reason": "Both assistants correctly correct the user's price assumption using the authoritative facts. Candidate A is preferred because it keeps the response short, natural, and conversational, adhering better to the negative constraints than Candidate B, which dumps unnecessary property details.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both assistants correctly identify that the Park Avenue Estate is priced at $32,000,000 instead of $20,000,000."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "tie",
+        "reason": "Both assistants use the correct price from the authoritative facts."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is concise and directly answers the user's question. Candidate B includes a lot of extra property details that were not requested, making it less focused."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A is short, natural, and markdown-free, which aligns perfectly with the style guidelines. Candidate B is a bit too verbose for a simple confirmation question."
+      }
+    ],
+    "reason": "Both assistants correctly correct the user's price assumption using the authoritative facts. Candidate A is preferred because it keeps the response short, natural, and conversational, adhering better to the negative constraints than Candidate B, which dumps unnecessary property details."
+  }
+}

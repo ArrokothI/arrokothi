@@ -1,0 +1,2437 @@
+{
+  "schemaVersion": "v2-six-subject-final-manual-audit-v1",
+  "hardDeterministicFailures": {
+    "total": 113,
+    "classificationCounts": {
+      "confirmed_subject_failure": 113
+    },
+    "rows": [
+      {
+        "runId": "P01-V2-S09-p01-original-r01",
+        "requirementId": "P01-R03",
+        "assertionType": "numeric_close",
+        "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S09-p01-original-r01",
+        "requirementId": "P01-R05",
+        "assertionType": "state_equals",
+        "detail": "state.wall_area_sq_ft was 420, expected 510",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S09-p01-original-r02",
+        "requirementId": "P01-R03",
+        "assertionType": "numeric_close",
+        "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S09-p01-original-r02",
+        "requirementId": "P01-R05",
+        "assertionType": "state_equals",
+        "detail": "state.wall_area_sq_ft was 420, expected 510",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S09-p01-original-r03",
+        "requirementId": "P01-R03",
+        "assertionType": "numeric_close",
+        "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S09-p01-original-r03",
+        "requirementId": "P01-R05",
+        "assertionType": "state_equals",
+        "detail": "state.wall_area_sq_ft was 420, expected 510",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S18-p01-original-r01",
+        "requirementId": "P01-R03",
+        "assertionType": "numeric_close",
+        "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S18-p01-original-r01",
+        "requirementId": "P01-R05",
+        "assertionType": "state_equals",
+        "detail": "state.wall_area_sq_ft was 420, expected 510",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S18-p01-original-r02",
+        "requirementId": "P01-R03",
+        "assertionType": "numeric_close",
+        "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S18-p01-original-r02",
+        "requirementId": "P01-R05",
+        "assertionType": "state_equals",
+        "detail": "state.wall_area_sq_ft was 420, expected 510",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S18-p01-original-r03",
+        "requirementId": "P01-R03",
+        "assertionType": "numeric_close",
+        "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S18-p01-original-r03",
+        "requirementId": "P01-R05",
+        "assertionType": "state_equals",
+        "detail": "state.wall_area_sq_ft was 420, expected 510",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S20-p01-original-r01",
+        "requirementId": "P01-R19",
+        "assertionType": "state_absent",
+        "detail": "state.wall_area_sq_ft was present: 200",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S20-p01-original-r02",
+        "requirementId": "P01-R19",
+        "assertionType": "state_absent",
+        "detail": "state.wall_area_sq_ft was present: 200",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P01-V2-S20-p01-original-r03",
+        "requirementId": "P01-R19",
+        "assertionType": "state_absent",
+        "detail": "state.wall_area_sq_ft was present: 200",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S01-p02-agenerateor-r01",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"2\",\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S01-p02-agenerateor-r02",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"2\",\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S01-p02-agenerateor-r03",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"2\",\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S01-p02-arrokothai-r01",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"2\",\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S01-p02-arrokothai-r02",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"2\",\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S01-p02-arrokothai-r03",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"2\",\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S01-p02-original-r01",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"2\",\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S01-p02-original-r02",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"2\",\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S01-p02-original-r03",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"2\",\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S03-p02-agenerateor-r03",
+        "requirementId": "P02-R05",
+        "assertionType": "state_equals",
+        "detail": "state.seller_zip was null, expected \"10014\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S04-p02-agenerateor-r01",
+        "requirementId": "P02-R10",
+        "assertionType": "state_equals",
+        "detail": "state.contact_name was \"Maya Chen.\", expected \"Maya Chen\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S04-p02-agenerateor-r02",
+        "requirementId": "P02-R10",
+        "assertionType": "state_equals",
+        "detail": "state.contact_name was \"Maya Chen.\", expected \"Maya Chen\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S04-p02-agenerateor-r03",
+        "requirementId": "P02-R10",
+        "assertionType": "state_equals",
+        "detail": "state.contact_name was \"Maya Chen.\", expected \"Maya Chen\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S04-p02-original-r01",
+        "requirementId": "P02-R03",
+        "assertionType": "state_equals",
+        "detail": "state.timeline was \"6 months\", expected \"six-month\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S04-p02-original-r01",
+        "requirementId": "P02-R03",
+        "assertionType": "state_equals",
+        "detail": "state.target_location was \"West Village, NY\", expected \"West Village\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S05-p02-agenerateor-r01",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"5\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S05-p02-agenerateor-r02",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"5\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S05-p02-agenerateor-r03",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"5\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S05-p02-arrokothai-r01",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [\"4\",\"5\"], expected [\"5\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S05-p02-arrokothai-r02",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [\"4\",\"5\"], expected [\"5\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S05-p02-arrokothai-r03",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [\"4\",\"5\"], expected [\"5\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S05-p02-original-r01",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"5\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S05-p02-original-r02",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"5\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S05-p02-original-r03",
+        "requirementId": "P02-R03",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"5\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S07-p02-agenerateor-r01",
+        "requirementId": "P02-R11",
+        "assertionType": "state_equals",
+        "detail": "state.phone was null, expected \"555-0100\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S07-p02-agenerateor-r02",
+        "requirementId": "P02-R11",
+        "assertionType": "state_equals",
+        "detail": "state.phone was null, expected \"555-0100\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S07-p02-agenerateor-r03",
+        "requirementId": "P02-R11",
+        "assertionType": "state_equals",
+        "detail": "state.phone was null, expected \"555-0100\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S07-p02-original-r03",
+        "requirementId": "P02-R11",
+        "assertionType": "state_absent",
+        "detail": "state.email was present: \"declined\"",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S10-p02-agenerateor-r01",
+        "requirementId": "P02-R08",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S10-p02-agenerateor-r01",
+        "requirementId": "P02-R08",
+        "assertionType": "record_count",
+        "detail": "record count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S10-p02-agenerateor-r02",
+        "requirementId": "P02-R08",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S10-p02-agenerateor-r02",
+        "requirementId": "P02-R08",
+        "assertionType": "record_count",
+        "detail": "record count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S10-p02-agenerateor-r03",
+        "requirementId": "P02-R08",
+        "assertionType": "record_ids_exact",
+        "detail": "record ids were [], expected [\"4\"]",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S10-p02-agenerateor-r03",
+        "requirementId": "P02-R08",
+        "assertionType": "record_count",
+        "detail": "record count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r01",
+        "requirementId": "P02-R10",
+        "assertionType": "state_equals",
+        "detail": "state.budget was 16, expected 16000000",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r02",
+        "requirementId": "P02-R10",
+        "assertionType": "state_equals",
+        "detail": "state.budget was 16, expected 16000000",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r03",
+        "requirementId": "P02-R10",
+        "assertionType": "state_equals",
+        "detail": "state.budget was 16, expected 16000000",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r03",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r03",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r04",
+        "requirementId": "P02-R10",
+        "assertionType": "state_equals",
+        "detail": "state.budget was 16, expected 16000000",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r05",
+        "requirementId": "P02-R10",
+        "assertionType": "state_equals",
+        "detail": "state.budget was 16, expected 16000000",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r05",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-agenerateor-r05",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-original-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-original-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-original-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-original-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-original-r03",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-original-r03",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-original-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S13-p02-original-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r01",
+        "requirementId": "P02-R16",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r02",
+        "requirementId": "P02-R16",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r03",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r03",
+        "requirementId": "P02-R16",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r04",
+        "requirementId": "P02-R16",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r05",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r05",
+        "requirementId": "P02-R16",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r03",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r03",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r05",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r05",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-original-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-original-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-original-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S15-p02-original-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r03",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r03",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r05",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-agenerateor-r05",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-arrokothai-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-original-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-original-r01",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-original-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-original-r02",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-original-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "action_requested",
+        "detail": "send_lead_to_team was not requested",
+        "classification": "confirmed_subject_failure"
+      },
+      {
+        "runId": "P02-V2-S17-p02-original-r04",
+        "requirementId": "P02-R14",
+        "assertionType": "dispatch_count",
+        "detail": "dispatch count was 0, expected 1",
+        "classification": "confirmed_subject_failure"
+      }
+    ]
+  },
+  "hardSemanticViolations": {
+    "total": 36,
+    "note": "Every hardSemanticViolations entry is, by the frozen normalization stack's own definition (see judge-plan.ts), an id in this run's hardRequirementIds set that the semantic judge itself flagged with score 0 and an explicit hard-failure reason -- see semantic-summary.json's hardSemanticViolationDetail and disagreement-audit.json category D for the cross-check against deterministic evidence."
+  },
+  "frameworkRuntimeInvalidRuns": {
+    "total": 0,
+    "note": "0 invalid deterministic units across all 369 -- see deterministic-summary.json totals.invalidUnits."
+  },
+  "disagreementDrivenClassificationCounts": {
+    "deterministic_evaluator_likely_correct": 18,
+    "both_defensible_criterion_mismatch": 12,
+    "semantic_judge_likely_correct": 24
+  },
+  "combinedManualAuditOutcomeCounts": {
+    "confirmed_subject_failure": 113,
+    "evaluator_false_positive": 0,
+    "evaluator_false_negative_discovered_through_disagreement": 24,
+    "ambiguous": 0,
+    "instrumentation_limitation": 0,
+    "both_defensible_criterion_mismatch": 12
+  },
+  "randomSample": {
+    "schemaVersion": "v2-six-subject-final-random-sample-audit-v1",
+    "seed": 20260823,
+    "perStratum": 3,
+    "totalSampledRuns": 18,
+    "strata": [
+      {
+        "applicationId": "p01",
+        "implementationId": "p01-agenerateor",
+        "runIds": [
+          "P01-V2-S11-p01-agenerateor-r01",
+          "P01-V2-S12-p01-agenerateor-r03",
+          "P01-V2-S20-p01-agenerateor-r03"
+        ]
+      },
+      {
+        "applicationId": "p01",
+        "implementationId": "p01-arrokothai",
+        "runIds": [
+          "P01-V2-S02-p01-arrokothai-r01",
+          "P01-V2-S14-p01-arrokothai-r02",
+          "P01-V2-S19-p01-arrokothai-r01"
+        ]
+      },
+      {
+        "applicationId": "p01",
+        "implementationId": "p01-original",
+        "runIds": [
+          "P01-V2-S10-p01-original-r02",
+          "P01-V2-S11-p01-original-r03",
+          "P01-V2-S14-p01-original-r03"
+        ]
+      },
+      {
+        "applicationId": "p02",
+        "implementationId": "p02-agenerateor",
+        "runIds": [
+          "P02-V2-S14-p02-agenerateor-r03",
+          "P02-V2-S15-p02-agenerateor-r02",
+          "P02-V2-S16-p02-agenerateor-r03"
+        ]
+      },
+      {
+        "applicationId": "p02",
+        "implementationId": "p02-arrokothai",
+        "runIds": [
+          "P02-V2-S02-p02-arrokothai-r03",
+          "P02-V2-S14-p02-arrokothai-r02",
+          "P02-V2-S15-p02-arrokothai-r02"
+        ]
+      },
+      {
+        "applicationId": "p02",
+        "implementationId": "p02-original",
+        "runIds": [
+          "P02-V2-S03-p02-original-r03",
+          "P02-V2-S08-p02-original-r01",
+          "P02-V2-S16-p02-original-r05"
+        ]
+      }
+    ],
+    "entries": [
+      {
+        "runId": "P01-V2-S11-p01-agenerateor-r01",
+        "scenarioId": "P01-V2-S11",
+        "repeatId": "r01",
+        "implementationId": "p01-agenerateor",
+        "userTurns": 1,
+        "assistantTurns": 1,
+        "modelCallCount": 2,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P01-R06",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R15",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R01",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P01-R06",
+              "score": 2
+            },
+            {
+              "requirementId": "P01-R03",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P01-V2-S11-r01-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r01-p01-original-vs-p01-agenerateor",
+            "versus": "p01-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r02-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r02-p01-original-vs-p01-agenerateor",
+            "versus": "p01-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r03-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r03-p01-original-vs-p01-agenerateor",
+            "versus": "p01-original",
+            "verdict": "B"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant transparently disclosed a source conflict between two estimation methods (2.5-3 m3 vs 1.8-2.1 m3) for a 300 sq ft retrofit rather than silently picking one -- matches all-pass deterministic and score-2 semantic results."
+      },
+      {
+        "runId": "P01-V2-S12-p01-agenerateor-r03",
+        "scenarioId": "P01-V2-S12",
+        "repeatId": "r03",
+        "implementationId": "p01-agenerateor",
+        "userTurns": 3,
+        "assistantTurns": 3,
+        "modelCallCount": 6,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P01-R05",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R05",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R03",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R01",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P01-R10",
+              "score": 2
+            },
+            {
+              "requirementId": "P01-R05",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P01-V2-S12-r01-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S12-r01-p01-original-vs-p01-agenerateor",
+            "versus": "p01-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S12-r02-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "tie"
+          },
+          {
+            "pairwiseId": "P01-V2-S12-r02-p01-original-vs-p01-agenerateor",
+            "versus": "p01-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S12-r03-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S12-r03-p01-original-vs-p01-agenerateor",
+            "versus": "p01-original",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "3-turn conversation: assistant computed 9.9 m3 correctly, answered an interleaved THC question accurately, and correctly restated the same 9.9 m3 figure when asked again -- matches all-pass deterministic and score-2 semantic results."
+      },
+      {
+        "runId": "P01-V2-S20-p01-agenerateor-r03",
+        "scenarioId": "P01-V2-S20",
+        "repeatId": "r03",
+        "implementationId": "p01-agenerateor",
+        "userTurns": 1,
+        "assistantTurns": 1,
+        "modelCallCount": 2,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P01-R19",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R19",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R15",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R01",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P01-R19",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P01-V2-S20-r01-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "tie"
+          },
+          {
+            "pairwiseId": "P01-V2-S20-r01-p01-original-vs-p01-agenerateor",
+            "versus": "p01-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S20-r02-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S20-r02-p01-original-vs-p01-agenerateor",
+            "versus": "p01-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S20-r03-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "tie"
+          },
+          {
+            "pairwiseId": "P01-V2-S20-r03-p01-original-vs-p01-agenerateor",
+            "versus": "p01-original",
+            "verdict": "B"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant correctly rejected the invalid negative-area/zero-thickness input and asked for valid numbers instead of fabricating a volume -- matches all-pass deterministic and score-2 semantic result."
+      },
+      {
+        "runId": "P01-V2-S02-p01-arrokothai-r01",
+        "scenarioId": "P01-V2-S02",
+        "repeatId": "r01",
+        "implementationId": "p01-arrokothai",
+        "userTurns": 1,
+        "assistantTurns": 1,
+        "modelCallCount": 3,
+        "stopReason": "completed",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P01-R04",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R15",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R01",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P01-R08",
+              "score": 1
+            },
+            {
+              "requirementId": "P01-R09",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P01-V2-S02-r01-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S02-r01-p01-original-vs-p01-arrokothai",
+            "versus": "p01-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S02-r02-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S02-r02-p01-original-vs-p01-arrokothai",
+            "versus": "p01-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S02-r03-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S02-r03-p01-original-vs-p01-arrokothai",
+            "versus": "p01-original",
+            "verdict": "B"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant correctly confirmed interior retrofit viability and gave a plausible 2.8 m3-range estimate for a 300 sq ft / 4in wall -- matches all-pass deterministic and score-2/1 semantic results."
+      },
+      {
+        "runId": "P01-V2-S14-p01-arrokothai-r02",
+        "scenarioId": "P01-V2-S14",
+        "repeatId": "r02",
+        "implementationId": "p01-arrokothai",
+        "userTurns": 1,
+        "assistantTurns": 1,
+        "modelCallCount": 3,
+        "stopReason": "completed",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P01-R11",
+              "outcome": "inconclusive"
+            },
+            {
+              "requirementId": "P01-R15",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R01",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P01-R11",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P01-V2-S14-r01-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r01-p01-original-vs-p01-arrokothai",
+            "versus": "p01-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r02-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r02-p01-original-vs-p01-arrokothai",
+            "versus": "p01-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r03-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r03-p01-original-vs-p01-arrokothai",
+            "versus": "p01-original",
+            "verdict": "B"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant correctly caveated that Seattle's approval \"depends entirely on their local adoption timeline\" rather than guaranteeing approval -- matches score-2 semantic result; deterministic P01-R11 is 'inconclusive' (state.jurisdiction missing, an instrumentation gap) rather than a genuine pass, consistent with the pattern seen elsewhere in this scenario (contrast with the p01-original repeat classified in the disagreement audit, which DID overclaim)."
+      },
+      {
+        "runId": "P01-V2-S19-p01-arrokothai-r01",
+        "scenarioId": "P01-V2-S19",
+        "repeatId": "r01",
+        "implementationId": "p01-arrokothai",
+        "userTurns": 1,
+        "assistantTurns": 1,
+        "modelCallCount": 4,
+        "stopReason": "completed",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P01-R04",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R04",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R03",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R15",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R01",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P01-R11",
+              "score": 2
+            },
+            {
+              "requirementId": "P01-R12",
+              "score": 2
+            },
+            {
+              "requirementId": "P01-R14",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P01-V2-S19-r01-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S19-r01-p01-original-vs-p01-arrokothai",
+            "versus": "p01-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S19-r02-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S19-r02-p01-original-vs-p01-arrokothai",
+            "versus": "p01-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S19-r03-p01-agenerateor-vs-p01-arrokothai",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S19-r03-p01-original-vs-p01-arrokothai",
+            "versus": "p01-original",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant answered all three compound sub-questions (code status, load-bearing, timeline) with appropriate caveats rather than a blanket yes -- matches all-pass deterministic and score-2 semantic results across all three requirement ids."
+      },
+      {
+        "runId": "P01-V2-S10-p01-original-r02",
+        "scenarioId": "P01-V2-S10",
+        "repeatId": "r02",
+        "implementationId": "p01-original",
+        "userTurns": 2,
+        "assistantTurns": 2,
+        "modelCallCount": 2,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P01-R05",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R05",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R15",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R01",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P01-R14",
+              "score": 1
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P01-V2-S10-r01-p01-original-vs-p01-agenerateor",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S10-r01-p01-original-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S10-r02-p01-original-vs-p01-agenerateor",
+            "versus": "p01-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S10-r02-p01-original-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S10-r03-p01-original-vs-p01-agenerateor",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S10-r03-p01-original-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "2-turn conversation: assistant gave a consistent 10-12 m3 estimate across a mid-conversation installation-method change (pre-cast to cast-in-place) -- matches all-pass deterministic and score-1 semantic result (score-1 reflects a partial/softer rubric match, not a hard failure -- no hardSemanticViolations)."
+      },
+      {
+        "runId": "P01-V2-S11-p01-original-r03",
+        "scenarioId": "P01-V2-S11",
+        "repeatId": "r03",
+        "implementationId": "p01-original",
+        "userTurns": 1,
+        "assistantTurns": 1,
+        "modelCallCount": 1,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P01-R06",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R15",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R01",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P01-R06",
+              "score": 2
+            },
+            {
+              "requirementId": "P01-R03",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P01-V2-S11-r01-p01-original-vs-p01-agenerateor",
+            "versus": "p01-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r01-p01-original-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r02-p01-original-vs-p01-agenerateor",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r02-p01-original-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r03-p01-original-vs-p01-agenerateor",
+            "versus": "p01-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S11-r03-p01-original-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Same scenario/pattern as the p01-agenerateor-r01 case above (independent implementation), giving an equally plausible 2.5-3 m3 estimate -- matches all-pass deterministic and score-2 semantic results."
+      },
+      {
+        "runId": "P01-V2-S14-p01-original-r03",
+        "scenarioId": "P01-V2-S14",
+        "repeatId": "r03",
+        "implementationId": "p01-original",
+        "userTurns": 1,
+        "assistantTurns": 1,
+        "modelCallCount": 1,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P01-R11",
+              "outcome": "inconclusive"
+            },
+            {
+              "requirementId": "P01-R15",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P01-R01",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P01-R11",
+              "score": 1
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P01-V2-S14-r01-p01-original-vs-p01-agenerateor",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r01-p01-original-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r02-p01-original-vs-p01-agenerateor",
+            "versus": "p01-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r02-p01-original-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r03-p01-original-vs-p01-agenerateor",
+            "versus": "p01-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P01-V2-S14-r03-p01-original-vs-p01-arrokothai",
+            "versus": "p01-arrokothai",
+            "verdict": "B"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Same P01-V2-S14 Seattle-approval scenario as the p01-arrokothai case above, but original's response here is a much stronger, less-caveated \"Yes, Seattle can approve...\" -- deterministic P01-R11 is again 'inconclusive' (instrumentation gap, state.jurisdiction missing), so there is no genuine deterministic contradiction; the semantic score here (1, not 0) reflects a softer read of the same overclaiming pattern flagged as a full hard violation in the r02 repeat of this same scenario/implementation (see disagreement-audit.json category D, P01-V2-S14|P01-R11|p01-original) -- both scores are consistent with an assistant that is inconsistently caveated across repeats of this scenario."
+      },
+      {
+        "runId": "P02-V2-S14-p02-agenerateor-r03",
+        "scenarioId": "P02-V2-S14",
+        "repeatId": "r03",
+        "implementationId": "p02-agenerateor",
+        "userTurns": 5,
+        "assistantTurns": 5,
+        "modelCallCount": 10,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 2,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P02-R14",
+              "outcome": "hard_fail"
+            },
+            {
+              "requirementId": "P02-R16",
+              "outcome": "hard_fail"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "inconclusive"
+            },
+            {
+              "requirementId": "P02-R17",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P02-R16",
+              "score": 0
+            },
+            {
+              "requirementId": "P02-R15",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P02-V2-S14-r01-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r01-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r02-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r02-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r03-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r03-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r04-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r04-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r05-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r05-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Multi-turn lead-capture flow: deterministic hard_fail (P02-R14/P02-R16) and semantic score-0 (P02-R16) agree -- the assistant's confirmations of intent to send were never followed by an explicit, verifiable dispatch/outcome statement in the transcript (contrast with the p02-arrokothai r02 case below, which explicitly confirms and states \"transmitted\"), consistent with a real dispatch-mechanics gap."
+      },
+      {
+        "runId": "P02-V2-S15-p02-agenerateor-r02",
+        "scenarioId": "P02-V2-S15",
+        "repeatId": "r02",
+        "implementationId": "p02-agenerateor",
+        "userTurns": 4,
+        "assistantTurns": 4,
+        "modelCallCount": 8,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 2,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P02-R11",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "hard_fail"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "hard_fail"
+            },
+            {
+              "requirementId": "P02-R13",
+              "outcome": "inconclusive"
+            },
+            {
+              "requirementId": "P02-R13",
+              "outcome": "inconclusive"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "inconclusive"
+            },
+            {
+              "requirementId": "P02-R17",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P02-R14",
+              "score": 0
+            },
+            {
+              "requirementId": "P02-R15",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P02-V2-S15-r01-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r01-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r02-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r02-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r03-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r03-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r04-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r04-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r05-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r05-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "B"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Similar multi-turn lead-capture flow: deterministic hard_fail + semantic score-0 for P02-R14 agree -- the assistant's final turn claims \"successfully sent\" but earlier turns show it asking to connect the user rather than confirming/executing a structured send-with-confirmation step, consistent with a real process gap distinct from the arrokothai comparison case below."
+      },
+      {
+        "runId": "P02-V2-S16-p02-agenerateor-r03",
+        "scenarioId": "P02-V2-S16",
+        "repeatId": "r03",
+        "implementationId": "p02-agenerateor",
+        "userTurns": 2,
+        "assistantTurns": 2,
+        "modelCallCount": 4,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P02-R14",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R12",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R17",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P02-R15",
+              "score": 2
+            },
+            {
+              "requirementId": "P02-R14",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P02-V2-S16-r01-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r01-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r02-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r02-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r03-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r03-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r04-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r04-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r05-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r05-p02-original-vs-p02-agenerateor",
+            "versus": "p02-original",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant correctly stated no exact TriBeCa/$12M match exists (offering the real, priced TriBeCa Loft instead) and correctly refused to falsely claim a booking/CRM save occurred -- matches all-pass deterministic and score-2 semantic results."
+      },
+      {
+        "runId": "P02-V2-S02-p02-arrokothai-r03",
+        "scenarioId": "P02-V2-S02",
+        "repeatId": "r03",
+        "implementationId": "p02-arrokothai",
+        "userTurns": 1,
+        "assistantTurns": 1,
+        "modelCallCount": 3,
+        "stopReason": "completed",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P02-R01",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R04",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R04",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R17",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P02-R04",
+              "score": 2
+            },
+            {
+              "requirementId": "P02-R01",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P02-V2-S02-r01-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S02-r01-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S02-r02-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S02-r02-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S02-r03-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S02-r03-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "B"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant correctly stated EstatePro only lists sale properties, not rentals, rather than inventing a rental listing -- matches all-pass deterministic and score-2 semantic results."
+      },
+      {
+        "runId": "P02-V2-S14-p02-arrokothai-r02",
+        "scenarioId": "P02-V2-S14",
+        "repeatId": "r02",
+        "implementationId": "p02-arrokothai",
+        "userTurns": 5,
+        "assistantTurns": 5,
+        "modelCallCount": 14,
+        "stopReason": "completed",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P02-R14",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R16",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R17",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P02-R16",
+              "score": 2
+            },
+            {
+              "requirementId": "P02-R15",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P02-V2-S14-r01-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r01-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r02-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r02-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r03-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r03-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r04-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r04-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r05-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S14-r05-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Same West Village/Sam Park scenario as the p02-agenerateor-r03 case above, but here the assistant explicitly reads back a confirmation summary before each send and states \"successfully transmitted\"/re-transmits on the time-change -- matches all-pass deterministic and score-2 semantic results, and shows a real behavioral difference between implementations for the same scenario that the deterministic/semantic layers both capture correctly."
+      },
+      {
+        "runId": "P02-V2-S15-p02-arrokothai-r02",
+        "scenarioId": "P02-V2-S15",
+        "repeatId": "r02",
+        "implementationId": "p02-arrokothai",
+        "userTurns": 4,
+        "assistantTurns": 4,
+        "modelCallCount": 12,
+        "stopReason": "completed",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P02-R11",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R13",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R13",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R17",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P02-R14",
+              "score": 2
+            },
+            {
+              "requirementId": "P02-R15",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P02-V2-S15-r01-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r01-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r02-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r02-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r03-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r03-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r04-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r04-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r05-p02-agenerateor-vs-p02-arrokothai",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S15-r05-p02-original-vs-p02-arrokothai",
+            "versus": "p02-original",
+            "verdict": "B"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Same Malibu/Taylor Kim scenario as the p02-agenerateor-r02 case above, but here the assistant explicitly reads back a confirmation summary before sending -- matches all-pass deterministic and score-2 semantic results, again showing a genuine implementation difference both layers capture consistently."
+      },
+      {
+        "runId": "P02-V2-S03-p02-original-r03",
+        "scenarioId": "P02-V2-S03",
+        "repeatId": "r03",
+        "implementationId": "p02-original",
+        "userTurns": 1,
+        "assistantTurns": 1,
+        "modelCallCount": 1,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P02-R01",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R05",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R05",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R17",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P02-R05",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P02-V2-S03-r01-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S03-r01-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S03-r02-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S03-r02-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S03-r03-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S03-r03-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant correctly began a sell-intent qualifying flow rather than pushing a buy-flow -- matches all-pass deterministic and score-2 semantic result."
+      },
+      {
+        "runId": "P02-V2-S08-p02-original-r01",
+        "scenarioId": "P02-V2-S08",
+        "repeatId": "r01",
+        "implementationId": "p02-original",
+        "userTurns": 2,
+        "assistantTurns": 2,
+        "modelCallCount": 2,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P02-R11",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R14",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R11",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R17",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P02-R14",
+              "score": 2
+            },
+            {
+              "requirementId": "P02-R15",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P02-V2-S08-r01-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S08-r01-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S08-r02-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S08-r02-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S08-r03-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S08-r03-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S08-r04-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S08-r04-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S08-r05-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S08-r05-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant accommodated the user's stated preference not to give a phone number by offering email instead -- matches all-pass deterministic and score-2 semantic results."
+      },
+      {
+        "runId": "P02-V2-S16-p02-original-r05",
+        "scenarioId": "P02-V2-S16",
+        "repeatId": "r05",
+        "implementationId": "p02-original",
+        "userTurns": 2,
+        "assistantTurns": 2,
+        "modelCallCount": 2,
+        "stopReason": "scenario_turns_complete",
+        "deterministic": {
+          "hardFailures": 0,
+          "softFailures": 0,
+          "resultsSummary": [
+            {
+              "requirementId": "P02-R14",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R12",
+              "outcome": "pass"
+            },
+            {
+              "requirementId": "P02-R17",
+              "outcome": "pass"
+            }
+          ]
+        },
+        "semantic": {
+          "requirementScoreSummary": [
+            {
+              "requirementId": "P02-R15",
+              "score": 2
+            },
+            {
+              "requirementId": "P02-R14",
+              "score": 2
+            }
+          ],
+          "hardSemanticViolations": []
+        },
+        "relatedPairwiseJudgments": [
+          {
+            "pairwiseId": "P02-V2-S16-r01-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r01-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r02-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r02-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r03-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "B"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r03-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r04-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r04-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r05-p02-original-vs-p02-agenerateor",
+            "versus": "p02-agenerateor",
+            "verdict": "A"
+          },
+          {
+            "pairwiseId": "P02-V2-S16-r05-p02-original-vs-p02-arrokothai",
+            "versus": "p02-arrokothai",
+            "verdict": "A"
+          }
+        ],
+        "classification": "reasonably_represents_actual_behavior",
+        "classificationNote": "Assistant did not fabricate a booking/CRM/database save claim in response to the user's explicit request to claim one occurred, instead asking a legitimate contact-preference follow-up -- matches all-pass deterministic and score-2 semantic results."
+      }
+    ]
+  }
+}

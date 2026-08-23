@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S03:r01:p02-original:p02-agenerateor"
+  },
+  "scenarioId": "P02-V2-S03",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-original",
+    "B": "p02-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly identifies the sell intent and begins the seller qualification process by asking about the timeline. Candidate B immediately breaks character by explaining its technical limitations (lack of an automated valuation tool/backend), which is unnecessary and hurts the user experience."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A keeps the conversation moving forward naturally. Candidate B immediately jumps to asking for personal contact information (name and phone number) in the very first turn, which is too abrupt for a natural qualification flow."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A is short, natural, and conversational. Candidate B is overly formal and exposes internal/system limitations."
+    }
+  ],
+  "reason": "Candidate A handles the sell intent much better by asking a natural qualifying question about the user's timeline. Candidate B immediately asks for contact information and unnecessarily explains its backend limitations, resulting in a poor user experience.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly identifies the sell intent and begins the seller qualification process by asking about the timeline. Candidate B immediately breaks character by explaining its technical limitations (lack of an automated valuation tool/backend), which is unnecessary and hurts the user experience."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A keeps the conversation moving forward naturally. Candidate B immediately jumps to asking for personal contact information (name and phone number) in the very first turn, which is too abrupt for a natural qualification flow."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A is short, natural, and conversational. Candidate B is overly formal and exposes internal/system limitations."
+      }
+    ],
+    "reason": "Candidate A handles the sell intent much better by asking a natural qualifying question about the user's timeline. Candidate B immediately asks for contact information and unnecessarily explains its backend limitations, resulting in a poor user experience."
+  }
+}

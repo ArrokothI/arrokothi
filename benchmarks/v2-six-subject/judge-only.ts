@@ -2,13 +2,18 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   assertNoKnownMechanicalDefects, PAIRWISE_PROMPT_VERSION, SEMANTIC_PROMPT_VERSION, assertPromptBlindness, buildPairwiseJudgePrompt,
-  buildSemanticJudgePrompt, classifyRunValidity, evaluateDeterministic, parsePairwiseJudgeOutput,
-  parseSemanticJudgeOutput, type DeterministicEvaluation, type NeutralRawRunV2,
+  buildSemanticJudgePrompt, classifyRunValidity, evaluateDeterministic,
+  type DeterministicEvaluation, type NeutralRawRunV2,
 } from "../evaluator-v2/index.ts";
 import {
   AGENT_ROOT, JUDGE_MODEL, OUTPUT, SUBJECT_MODEL, authoritativeFacts, criteriaFor, expectedUnits,
   gitCommit, implementations, pathFor, readJson, runKey, writeJson,
 } from "./orchestration.ts";
+import {
+  assertNoExistingJobs, BATCH_DIR, JOBS_PATH, PLAN_PATH, classifyBatchState, extractInlineResponses, loadFrozenJudgePlan,
+  resolveResponseKey, validateAndParseResponseItem, validateBatchEnvelope,
+  type JudgeBatchPlan, type JudgeRequest, type ValidatedResponseItem,
+} from "./judge-plan.ts";
 
 const apiKey = process.env.GEMINI_API_KEY?.trim();
 if (!apiKey) throw new Error("GEMINI_API_KEY is required");
@@ -16,22 +21,8 @@ if (process.env.BENCHMARK_JUDGE_MODEL?.trim() !== JUDGE_MODEL) throw new Error(`
 const submit = process.argv.includes("--submit-batch");
 const collect = process.argv.includes("--collect-batch");
 if (submit && collect) throw new Error("Use --submit-batch and --collect-batch in separate invocations");
-const BATCH_DIR = join(OUTPUT, "judge-batch");
-const PLAN_PATH = join(BATCH_DIR, "plan.json");
-const JOBS_PATH = join(BATCH_DIR, "jobs.json");
 const MAX_INLINE_BYTES = 8 * 1024 * 1024;
 
-type RequestKind = "semantic" | "pairwise";
-interface JudgeRequest {
-  key: string;
-  kind: RequestKind;
-  id: string;
-  prompt: string;
-  promptVersion: typeof SEMANTIC_PROMPT_VERSION | typeof PAIRWISE_PROMPT_VERSION;
-  seed?: string;
-  createdAt: string;
-  parse: Record<string, unknown>;
-}
 interface BatchJob {
   batchJobId: string;
   requestedJudgeModel: string;
@@ -39,12 +30,6 @@ interface BatchJob {
   requestKeys: string[];
   providerCreateResponse: unknown;
 }
-interface GeminiResponse {
-  modelVersion?: string;
-  usageMetadata?: Record<string, unknown>;
-  candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-}
-
 async function frozenRuns() {
   const manifest = await readJson<{ rawArtifactsFrozen?: boolean }>(join(OUTPUT, "manifest.json"));
   if (!manifest?.rawArtifactsFrozen) throw new Error("Judge-only requires a generate-only manifest with rawArtifactsFrozen=true");
@@ -59,8 +44,12 @@ async function frozenRuns() {
   return runs;
 }
 
-async function preparePlan(runs: NeutralRawRunV2[]) {
+async function ensureOutputDirs() {
   await Promise.all(["deterministic", "semantic", "pairwise", "judge-metadata", "aggregate", "audit"].map((dir) => mkdir(join(OUTPUT, dir), { recursive: true })));
+}
+
+async function preparePlan(runs: NeutralRawRunV2[]) {
+  await ensureOutputDirs();
   const deterministic = new Map<string, DeterministicEvaluation>();
   for (const run of runs) {
     const unit = expectedUnits().find((candidate) => candidate.id === `${run.scenarioId}-${run.implementationId}-${run.repeatId}`)!;
@@ -153,9 +142,9 @@ async function geminiFetch(path: string, init?: RequestInit) {
   return JSON.parse(body) as Record<string, any>;
 }
 
-async function submitBatches(plan: Awaited<ReturnType<typeof preparePlan>>) {
+async function submitBatches(plan: JudgeBatchPlan) {
   const existing = await readJson<{ jobs: BatchJob[] }>(JOBS_PATH);
-  if (existing?.jobs.length) throw new Error("Batch jobs already recorded; refusing non-idempotent resubmission");
+  assertNoExistingJobs(existing);
   const jobs: BatchJob[] = [];
   for (const [index, group] of chunks(plan.requests).entries()) {
     const submittedAt = new Date().toISOString();
@@ -176,72 +165,149 @@ async function submitBatches(plan: Awaited<ReturnType<typeof preparePlan>>) {
   return jobs;
 }
 
-function inlineResponses(status: Record<string, any>) {
-  return status.dest?.inlinedResponses?.inlinedResponses
-    ?? status.output?.inlinedResponses?.inlinedResponses
-    ?? status.response?.output?.inlinedResponses?.inlinedResponses
-    ?? [];
+interface PendingJobStatus {
+  batchJobId: string;
+  state: unknown;
 }
 
-function responseText(response: GeminiResponse) {
-  return response.candidates?.[0]?.content?.parts?.map((part) => part.text).filter(Boolean).join("").trim() ?? "";
+interface CollectedForWrite extends ValidatedResponseItem {
+  request: JudgeRequest;
+  batchJobId: string;
+  submittedAt: string;
+  receivedAt: string;
 }
 
-async function collectBatches(plan: Awaited<ReturnType<typeof preparePlan>>) {
+// EVAL-HOTFIX-2026-08-23 (collection-infrastructure fix): two-pass validate-then-write, fixed
+// against the documented BATCH_STATE_* enum (see judge-plan.ts's classifyBatchState() for the
+// state-handling rationale — the previous JOB_STATE_* checks never matched any real API
+// response). PASS 1 fetches every job's status and validates every returned envelope/response
+// without writing any output file; if ANY job is still pending, or ANY response fails validation
+// for ANY job, NOTHING is written — this prevents a partially-written semantic/pairwise result
+// set from ever existing on disk. PASS 2 only runs once every job that reported SUCCEEDED has had
+// every one of its responses fully validated.
+async function collectBatches(plan: JudgeBatchPlan) {
   const stored = await readJson<{ jobs: BatchJob[] }>(JOBS_PATH);
   if (!stored?.jobs.length) throw new Error("No submitted judge batch jobs were recorded");
   const byKey = new Map(plan.requests.map((request) => [request.key, request]));
-  let pending = 0;
+
+  const pendingJobs: PendingJobStatus[] = [];
+  const toWrite: CollectedForWrite[] = [];
+  let positionalFallbackCount = 0;
+
+  // ---- PASS 1: fetch + validate every job/response; write nothing yet. ----
   for (const job of stored.jobs) {
     const status = await geminiFetch(job.batchJobId);
-    const state = status.state ?? status.metadata?.state;
+    const state = status.metadata?.state ?? status.state;
     await writeJson(join(BATCH_DIR, `${job.batchJobId.replaceAll("/", "_")}-status.json`), status);
-    if (state !== "JOB_STATE_SUCCEEDED") {
-      if (["JOB_STATE_FAILED", "JOB_STATE_CANCELLED", "JOB_STATE_EXPIRED"].includes(state)) throw new Error(`Judge batch ${job.batchJobId} ended in ${state}`);
-      pending++;
+
+    const classification = classifyBatchState(state);
+    if (classification.kind === "pending") {
+      pendingJobs.push({ batchJobId: job.batchJobId, state });
       continue;
     }
-    const responses = inlineResponses(status);
-    if (responses.length !== job.requestKeys.length) throw new Error(`Judge batch ${job.batchJobId} returned ${responses.length}/${job.requestKeys.length} inline responses`);
+    if (classification.kind === "terminal_failure") {
+      throw new Error(`Judge batch ${job.batchJobId} ended in terminal failure state ${classification.state}. STOPPING — status evidence preserved in ${job.batchJobId.replaceAll("/", "_")}-status.json.`);
+    }
+    if (classification.kind === "unknown") {
+      throw new Error(`Judge batch ${job.batchJobId} returned an unrecognized/unspecified state (${JSON.stringify(classification.state)}); refusing to guess success or failure. Status evidence preserved.`);
+    }
+
+    // classification.kind === "succeeded"
+    validateBatchEnvelope(status, { batchJobId: job.batchJobId, expectedRequestCount: job.requestKeys.length });
+    const responses = extractInlineResponses(status);
+    if (responses.length !== job.requestKeys.length) {
+      throw new Error(`Judge batch ${job.batchJobId} returned ${responses.length}/${job.requestKeys.length} inline responses.`);
+    }
+
+    const seenKeysThisJob = new Set<string>();
     for (let index = 0; index < responses.length; index++) {
       const item = responses[index];
-      const key = item.metadata?.key ?? job.requestKeys[index];
-      const request = byKey.get(key);
-      if (!request) throw new Error(`Unknown judge batch response key: ${key}`);
-      if (item.error) throw new Error(`Judge batch item ${key} failed: ${JSON.stringify(item.error)}`);
-      const response = (item.response ?? item.output?.response) as GeminiResponse;
-      const reported = response?.modelVersion;
-      if (reported !== JUDGE_MODEL) throw new Error(`Judge batch item ${key} reported ${String(reported)} instead of ${JUDGE_MODEL}`);
+      const resolved = resolveResponseKey(item, index, job.requestKeys);
+      if (seenKeysThisJob.has(resolved.key)) throw new Error(`Judge batch ${job.batchJobId}: duplicate response key ${resolved.key} at index ${index}.`);
+      seenKeysThisJob.add(resolved.key);
+      if (resolved.usedPositionalFallback) positionalFallbackCount++;
+
+      const request = byKey.get(resolved.key);
+      if (!request) throw new Error(`Judge batch ${job.batchJobId}: unknown response key ${resolved.key} is not present in the frozen plan.`);
+
       const receivedAt = new Date().toISOString();
-      const judge = { provider: "gemini", requestedModel: JUDGE_MODEL, providerReportedModel: reported, temperature: 0, timestamp: receivedAt, evaluatorGitCommit: gitCommit(AGENT_ROOT) };
-      const text = responseText(response);
-      if (!text) throw new Error(`Judge batch item ${key} returned no text`);
-      if (request.kind === "semantic") {
-        const output = parseSemanticJudgeOutput(text, judge, request.parse as any);
-        await writeJson(pathFor("semantic", request.id), output);
-      } else {
-        const output = parsePairwiseJudgeOutput(text, { ...judge, randomizationSeed: request.seed! }, (request.parse as any).scenarioId, (request.parse as any).assignment, (request.parse as any).expectedCriteria, (request.parse as any).implementationAssignment);
-        await writeJson(pathFor("pairwise", request.id), output);
-      }
-      await writeJson(pathFor(`judge-metadata/${request.kind}`, request.id), {
-        schemaVersion: "v2-six-subject-judge-call-metadata-v1", requestKey: key, batchJobId: job.batchJobId,
-        requestedJudgeModel: JUDGE_MODEL, providerReportedJudgeModel: reported, usageMetadata: response.usageMetadata ?? null,
-        promptVersion: request.promptVersion, seed: request.seed ?? null,
-        promptCreatedAt: request.createdAt, batchSubmittedAt: job.submittedAt, responseReceivedAt: receivedAt,
-      });
+      const validated = validateAndParseResponseItem(
+        item,
+        request,
+        JUDGE_MODEL,
+        { provider: "gemini", requestedModel: JUDGE_MODEL, temperature: 0, timestamp: receivedAt, evaluatorGitCommit: gitCommit(AGENT_ROOT) },
+        resolved.usedPositionalFallback,
+      );
+      toWrite.push({ ...validated, request, batchJobId: job.batchJobId, submittedAt: job.submittedAt, receivedAt });
     }
+
+    const missingKeys = job.requestKeys.filter((key) => !seenKeysThisJob.has(key));
+    if (missingKeys.length) throw new Error(`Judge batch ${job.batchJobId}: missing response(s) for key(s): ${missingKeys.slice(0, 10).join(", ")}`);
   }
-  return pending;
+
+  if (pendingJobs.length) {
+    return { pending: pendingJobs.length, pendingJobs, written: 0, positionalFallbackCount: 0, items: [] as CollectedForWrite[] };
+  }
+
+  // ---- PASS 2: every job succeeded and every response validated; now write. ----
+  for (const collected of toWrite) {
+    if (collected.kind === "semantic") await writeJson(pathFor("semantic", collected.request.id), collected.parsedOutput);
+    else await writeJson(pathFor("pairwise", collected.request.id), collected.parsedOutput);
+    await writeJson(pathFor(`judge-metadata/${collected.kind}`, collected.request.id), {
+      schemaVersion: "v2-six-subject-judge-call-metadata-v1", requestKey: collected.key, batchJobId: collected.batchJobId,
+      requestedJudgeModel: JUDGE_MODEL, providerReportedJudgeModel: collected.reportedModelVersion, usageMetadata: collected.usageMetadata,
+      usedPositionalFallback: collected.usedPositionalFallback,
+      // Original provider text is always preserved here, never overwritten in place, alongside
+      // whether/what narrow offline normalization (see judge-plan.ts) was applied before strict
+      // parsing — see hotfix "offline recovery analysis" notes.
+      rawProviderText: collected.rawProviderText, normalizationApplied: collected.normalizationApplied, normalizationSteps: collected.normalizationSteps,
+      promptVersion: collected.request.promptVersion, seed: collected.request.seed ?? null,
+      promptCreatedAt: collected.request.createdAt, batchSubmittedAt: collected.submittedAt, responseReceivedAt: collected.receivedAt,
+    });
+  }
+
+  return { pending: 0, pendingJobs: [] as PendingJobStatus[], written: toWrite.length, positionalFallbackCount, items: toWrite };
 }
 
-const runs = await frozenRuns();
-const plan = await preparePlan(runs);
+// EVAL-HOTFIX-2026-08-23 (judge-run submission-infrastructure fix): submit and collect load and
+// verify the EXISTING frozen plan.json — via loadFrozenJudgePlan() in judge-plan.ts — and never
+// call preparePlan(). Only plain prepare mode (neither flag) rebuilds/rewrites plan.json. This is
+// the whole point of the fix: a whole-file SHA-256 pinned at freeze time must still match
+// immediately before submission, which is impossible if the run that submits also re-stamps
+// fresh preparedAt/createdAt timestamps into the file first.
 if (submit) {
+  const plan = await loadFrozenJudgePlan();
   const jobs = await submitBatches(plan);
   process.stdout.write(`${JSON.stringify({ status: "submitted", requests: plan.requests.length, jobs: jobs.map((job) => job.batchJobId) }, null, 2)}\n`);
 } else if (collect) {
-  const pending = await collectBatches(plan);
-  process.stdout.write(`${JSON.stringify({ status: pending ? "pending" : "collected", pendingJobs: pending }, null, 2)}\n`);
+  await ensureOutputDirs();
+  const plan = await loadFrozenJudgePlan();
+  const result = await collectBatches(plan);
+  if (result.pending) {
+    process.stdout.write(`${JSON.stringify({ status: "pending", pendingJobs: result.pendingJobs }, null, 2)}\n`);
+  } else {
+    const modelVersionCounts: Record<string, number> = {};
+    let usageMissing = 0;
+    const usageTotals: Record<string, number> = {};
+    for (const item of result.items) {
+      modelVersionCounts[item.reportedModelVersion] = (modelVersionCounts[item.reportedModelVersion] ?? 0) + 1;
+      if (!item.usageMetadata) { usageMissing++; continue; }
+      for (const [usageKey, usageValue] of Object.entries(item.usageMetadata)) {
+        if (typeof usageValue === "number") usageTotals[usageKey] = (usageTotals[usageKey] ?? 0) + usageValue;
+      }
+    }
+    process.stdout.write(`${JSON.stringify({
+      status: "collected",
+      writtenSemantic: result.items.filter((item) => item.kind === "semantic").length,
+      writtenPairwise: result.items.filter((item) => item.kind === "pairwise").length,
+      positionalFallbackCount: result.positionalFallbackCount,
+      modelVersionCounts,
+      usageMissing,
+      usageTotals,
+    }, null, 2)}\n`);
+  }
 } else {
+  const runs = await frozenRuns();
+  const plan = await preparePlan(runs);
   process.stdout.write(`${JSON.stringify({ status: "prepared", requests: plan.requests.length, plan: PLAN_PATH, note: "No judge batch was submitted; pass --submit-batch only after reviewing the frozen plan." }, null, 2)}\n`);
 }

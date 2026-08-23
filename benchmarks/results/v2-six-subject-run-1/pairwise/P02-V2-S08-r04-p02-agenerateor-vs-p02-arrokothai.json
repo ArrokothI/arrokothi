@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S08:r04:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S08",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-arrokothai",
+    "B": "p02-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B adheres to the negative constraint of being markdown-free, whereas Candidate A uses bolding and bullet points in its first turn."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates correctly identify that they cannot proceed with the email handoff/follow-up without the required phone number, avoiding any false claims of success."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "tie",
+      "reason": "Both candidates offer to provide the property details directly within the chat since the email handoff cannot be completed."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B is natural, concise, and avoids markdown, making it more aligned with the stylistic guidelines."
+    }
+  ],
+  "reason": "Candidate B is preferred because it strictly adheres to the 'markdown-free' constraint outlined in the authoritative facts. Candidate A uses bolding and bullet points in its first response. Both candidates correctly handle the phone refusal by not claiming a successful handoff.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B adheres to the negative constraint of being markdown-free, whereas Candidate A uses bolding and bullet points in its first turn."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates correctly identify that they cannot proceed with the email handoff/follow-up without the required phone number, avoiding any false claims of success."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "tie",
+        "reason": "Both candidates offer to provide the property details directly within the chat since the email handoff cannot be completed."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B is natural, concise, and avoids markdown, making it more aligned with the stylistic guidelines."
+      }
+    ],
+    "reason": "Candidate B is preferred because it strictly adheres to the 'markdown-free' constraint outlined in the authoritative facts. Candidate A uses bolding and bullet points in its first response. Both candidates correctly handle the phone refusal by not claiming a successful handoff."
+  }
+}

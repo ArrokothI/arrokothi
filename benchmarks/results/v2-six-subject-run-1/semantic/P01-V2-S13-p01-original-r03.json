@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R12",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant correctly refutes the contractor's claim, stating that hempcrete is strictly a non-load-bearing infill material and that a conventional timber frame is required to carry the roof and floor loads.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R12",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant correctly refutes the contractor's claim, stating that hempcrete is strictly a non-load-bearing infill material and that a conventional timber frame is required to carry the roof and floor loads.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

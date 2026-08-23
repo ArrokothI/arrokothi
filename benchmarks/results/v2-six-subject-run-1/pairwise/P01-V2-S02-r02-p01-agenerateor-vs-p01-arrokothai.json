@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S02:r02:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S02",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Assistant A correctly recommends the interior retrofit using furring strips and lightweight hand-tamping, and accurately references the source workflow's volume approximation of 2.5 to 3 cubic meters. Assistant B calculates a deterministic 2.1 cubic meters, which deviates from the required workflow approximation."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Assistant A is better grounded in the source workflow requirements, specifically mentioning the use of furring strips and hand-tamping in the main response, and adhering to the 2.5-3 m3 volume approximation."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both assistants are truthful regarding the properties of hemp-lime and do not make unsupported guarantees about mold elimination."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Assistant A is more useful as it provides the correct installation methods (furring strips and hand-tamping) and the correct volume range associated with the workflow."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both assistants maintain a coherent conversation and end with exactly one useful follow-up question."
+    }
+  ],
+  "reason": "Assistant A is preferred because it fully adheres to the source-derived criteria and authoritative facts. It recommends the interior retrofit with furring strips and lightweight hand-tamping, and correctly uses the 2.5-3 m3 volume approximation. Assistant B fails to mention furring strips in its recommendation and uses a different volume calculation (2.1 m3) instead of the workflow's approximation.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Assistant A correctly recommends the interior retrofit using furring strips and lightweight hand-tamping, and accurately references the source workflow's volume approximation of 2.5 to 3 cubic meters. Assistant B calculates a deterministic 2.1 cubic meters, which deviates from the required workflow approximation."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Assistant A is better grounded in the source workflow requirements, specifically mentioning the use of furring strips and hand-tamping in the main response, and adhering to the 2.5-3 m3 volume approximation."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both assistants are truthful regarding the properties of hemp-lime and do not make unsupported guarantees about mold elimination."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Assistant A is more useful as it provides the correct installation methods (furring strips and hand-tamping) and the correct volume range associated with the workflow."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both assistants maintain a coherent conversation and end with exactly one useful follow-up question."
+      }
+    ],
+    "reason": "Assistant A is preferred because it fully adheres to the source-derived criteria and authoritative facts. It recommends the interior retrofit with furring strips and lightweight hand-tamping, and correctly uses the 2.5-3 m3 volume approximation. Assistant B fails to mention furring strips in its recommendation and uses a different volume calculation (2.1 m3) instead of the workflow's approximation."
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R11",
+      "score": 1,
+      "confidence": 1,
+      "reason": "The assistant cited the 2024 IRC Appendix BL but failed to include the caveat that local adoption and permitting depend on the specific jurisdiction.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R12",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant clearly stated that hempcrete is strictly non-load-bearing infill and that a conventional timber frame carries the roof and floor loads.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R14",
+      "score": 1,
+      "confidence": 1,
+      "reason": "The assistant conditionally addressed the timeline for pre-cast blocks, but failed to fully distinguish it from the cast-in-situ method, omitting the 3-6 week curing timeline required for cast-in-place hempcrete.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R11",
+        "score": 1,
+        "confidence": 1,
+        "reason": "The assistant cited the 2024 IRC Appendix BL but failed to include the caveat that local adoption and permitting depend on the specific jurisdiction.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R12",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant clearly stated that hempcrete is strictly non-load-bearing infill and that a conventional timber frame carries the roof and floor loads.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R14",
+        "score": 1,
+        "confidence": 1,
+        "reason": "The assistant conditionally addressed the timeline for pre-cast blocks, but failed to fully distinguish it from the cast-in-situ method, omitting the 3-6 week curing timeline required for cast-in-place hempcrete.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

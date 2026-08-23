@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S17-r05-p02-original-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S17:r05:p02-original:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.495Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1069,
+    "candidatesTokenCount": 448,
+    "totalTokenCount": 3311,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1069
+      }
+    ],
+    "thoughtsTokenCount": 1794,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates failed to correctly handle the 'outcome_unknown' handoff status. Neither assistant explained that the handoff outcome was uncertain or could not be confirmed yet; instead, both claimed success (A claimed the team has the details, and B claimed the details were transmitted).\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates violated the truthfulness constraint regarding action-result handling by stating the handoff was successful (either transmitted or received) when the outcome was actually unknown.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A is much more useful and user-friendly. Candidate B violates the negative constraint to remain markdown-free by using bolding and bullet points in turn 1. Additionally, Candidate B's turn 2 is highly robotic, listing raw database-like fields for confirmation.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A flows naturally and sounds like a human assistant. Candidate B is extremely robotic in turn 2, asking the user to confirm a block of raw key-value pairs (e.g., 'budget: 19000000'), which is poor conversational design.\"\n    }\n  ],\n  \"reason\": \"Both candidates failed the primary task-specific constraint of explaining that the handoff outcome was unknown/uncertain. However, Candidate A is significantly better because it is completely markdown-free and maintains a natural, conversational tone. Candidate B heavily uses markdown in turn 1 and is extremely robotic in turn 2, presenting raw database fields to the user for confirmation.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

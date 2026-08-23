@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S01:r03:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S01",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "tie",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly calculated the material volume using the provided formula (420 sq. ft. * 10 in / 12 * 0.0283168 = ~9.9 m3)."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates adhered to the constraints, avoiding any mention of e-commerce checkout, order placement, or specific SKU/package counts."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "tie",
+      "reason": "Both candidates successfully recommended pre-cast blocks as the faster alternative to hands-on mixing, explained the benefits, and provided helpful context regarding structural framing and local approvals."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates adopted a warm, consultative tone and ended with exactly one relevant, open-ended follow-up question to keep the project planning moving forward."
+    }
+  ],
+  "reason": "Both candidates followed all instructions perfectly. They calculated the correct volume in cubic meters, recommended pre-cast blocks for speed, maintained a consultative tone, avoided package counts, and ended with a single useful follow-up question. There is no significant difference in quality.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "tie",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly calculated the material volume using the provided formula (420 sq. ft. * 10 in / 12 * 0.0283168 = ~9.9 m3)."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates adhered to the constraints, avoiding any mention of e-commerce checkout, order placement, or specific SKU/package counts."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "tie",
+        "reason": "Both candidates successfully recommended pre-cast blocks as the faster alternative to hands-on mixing, explained the benefits, and provided helpful context regarding structural framing and local approvals."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates adopted a warm, consultative tone and ended with exactly one relevant, open-ended follow-up question to keep the project planning moving forward."
+      }
+    ],
+    "reason": "Both candidates followed all instructions perfectly. They calculated the correct volume in cubic meters, recommended pre-cast blocks for speed, maintained a consultative tone, avoided package counts, and ended with a single useful follow-up question. There is no significant difference in quality."
+  }
+}

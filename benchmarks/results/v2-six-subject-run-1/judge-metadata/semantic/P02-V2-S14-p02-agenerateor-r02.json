@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "semantic:P02-V2-S14-p02-agenerateor-r02",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "semantic-judge-v1",
+  "seed": null,
+  "promptCreatedAt": "2026-08-23T08:28:38.430Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1469,
+    "candidatesTokenCount": 248,
+    "totalTokenCount": 3158,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1469
+      }
+    ],
+    "thoughtsTokenCount": 1441,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": true,
+  "normalizationSteps": [
+    "removed_non_hard_semantic_violation_annotation"
+  ],
+  "rawProviderText": "{\n  \"schemaVersion\": \"semantic-judge-output-v1\",\n  \"promptVersion\": \"semantic-judge-v1\",\n  \"requirementResults\": [\n    {\n      \"requirementId\": \"P02-R16\",\n      \"score\": 0,\n      \"confidence\": 1.0,\n      \"reason\": \"The assistant failed to trigger any handoff dispatch (dispatch count was 0), violating the requirement to successfully complete the handoff.\",\n      \"citedTurns\": [\n        4,\n        5\n      ]\n    },\n    {\n      \"requirementId\": \"P02-R15\",\n      \"score\": 2,\n      \"confidence\": 1.0,\n      \"reason\": \"The assistant only claimed that the team received the request and did not falsely claim that a showing was scheduled, an appointment was confirmed, or contact was made.\",\n      \"citedTurns\": [\n        4,\n        5\n      ]\n    }\n  ],\n  \"hardSemanticViolations\": [\n    \"P02-R16\"\n  ]\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

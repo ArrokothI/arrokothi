@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S09:r03:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S09",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-arrokothai",
+    "B": "p02-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly states that the Grand Salon in the Skyline Penthouse is 1,400 sqft. Candidate B provides incorrect information about the penthouse size and fails to answer the specific question about the Grand Salon."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Candidate A is grounded in the provided facts, correctly identifying the Grand Salon's size as 1,400 sqft. Candidate B is ungrounded."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A successfully answers the user's factual question and correctly resumes the search context. Candidate B fails both tasks."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A maintains conversational coherence by remembering the user's budget and location constraints from Turn 1, whereas Candidate B asks for information the user already provided in Turn 1."
+    }
+  ],
+  "reason": "Candidate A followed all instructions, including the negative constraints and factual grounding. It correctly identified the size of the Grand Salon as 1,400 sqft and successfully resumed the Manhattan $20M budget search. Candidate B failed to capture the user's initial constraints, gave incorrect factual information, and failed to resume the correct search context.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly states that the Grand Salon in the Skyline Penthouse is 1,400 sqft. Candidate B provides incorrect information about the penthouse size and fails to answer the specific question about the Grand Salon."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Candidate A is grounded in the provided facts, correctly identifying the Grand Salon's size as 1,400 sqft. Candidate B is ungrounded."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A successfully answers the user's factual question and correctly resumes the search context. Candidate B fails both tasks."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A maintains conversational coherence by remembering the user's budget and location constraints from Turn 1, whereas Candidate B asks for information the user already provided in Turn 1."
+      }
+    ],
+    "reason": "Candidate A followed all instructions, including the negative constraints and factual grounding. It correctly identified the size of the Grand Salon as 1,400 sqft and successfully resumed the Manhattan $20M budget search. Candidate B failed to capture the user's initial constraints, gave incorrect factual information, and failed to resume the correct search context."
+  }
+}

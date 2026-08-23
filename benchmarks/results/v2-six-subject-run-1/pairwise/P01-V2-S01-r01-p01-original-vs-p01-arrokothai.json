@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S01:r01:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S01",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B calculates the exact volume (9.9 cubic meters) based on the provided formula (420 * 10 / 12 * 0.0283168 = 9.91), whereas Candidate A estimates \"10 to 11 cubic meters\"."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and do not make false claims about e-commerce checkout or order placement."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides a more useful follow-up question regarding structural timber framing. Candidate A asks if the user wants to change their wall thickness to 12 inches, despite the user already explicitly stating they want 10-inch walls."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B acknowledges the user's specific input of 10-inch walls better in its follow-up, whereas Candidate A asks a question that slightly backtracks on the user's already stated preference."
+    }
+  ],
+  "reason": "Candidate B is superior because it calculates the exact material volume using the authoritative formula, and its follow-up question is more progressive and relevant. Candidate A asks if the user wants to change their wall thickness, ignoring the fact that the user already specified 10-inch walls in the prompt.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B calculates the exact volume (9.9 cubic meters) based on the provided formula (420 * 10 / 12 * 0.0283168 = 9.91), whereas Candidate A estimates \"10 to 11 cubic meters\"."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and do not make false claims about e-commerce checkout or order placement."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides a more useful follow-up question regarding structural timber framing. Candidate A asks if the user wants to change their wall thickness to 12 inches, despite the user already explicitly stating they want 10-inch walls."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B acknowledges the user's specific input of 10-inch walls better in its follow-up, whereas Candidate A asks a question that slightly backtracks on the user's already stated preference."
+      }
+    ],
+    "reason": "Candidate B is superior because it calculates the exact material volume using the authoritative formula, and its follow-up question is more progressive and relevant. Candidate A asks if the user wants to change their wall thickness, ignoring the fact that the user already specified 10-inch walls in the prompt."
+  }
+}

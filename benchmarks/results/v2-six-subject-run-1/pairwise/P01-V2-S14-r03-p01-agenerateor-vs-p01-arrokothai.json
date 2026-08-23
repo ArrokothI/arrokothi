@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S14:r03:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S14",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both models correctly cite the 2024 IRC Appendix BL and state that local approval in Seattle depends on local adoption and the building department."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both models are truthful and accurately represent the status of model codes versus local jurisdiction adoption."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Model B is more useful as it names the specific local department in Seattle (Seattle Department of Construction and Inspections - SDCI) and provides helpful context regarding the structural nature of hempcrete (non-load-bearing infill) which is crucial for permit applications."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both models end with exactly one relevant, open-ended follow-up question that keeps the project conversation moving."
+    }
+  ],
+  "reason": "Both models successfully met all the authoritative facts and source-derived criteria. Model B is preferred because it is more specific and useful, naming the Seattle Department of Construction and Inspections (SDCI) and providing relevant technical context about hempcrete construction to help the user prepare for the permitting process.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both models correctly cite the 2024 IRC Appendix BL and state that local approval in Seattle depends on local adoption and the building department."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both models are truthful and accurately represent the status of model codes versus local jurisdiction adoption."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Model B is more useful as it names the specific local department in Seattle (Seattle Department of Construction and Inspections - SDCI) and provides helpful context regarding the structural nature of hempcrete (non-load-bearing infill) which is crucial for permit applications."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both models end with exactly one relevant, open-ended follow-up question that keeps the project conversation moving."
+      }
+    ],
+    "reason": "Both models successfully met all the authoritative facts and source-derived criteria. Model B is preferred because it is more specific and useful, naming the Seattle Department of Construction and Inspections (SDCI) and providing relevant technical context about hempcrete construction to help the user prepare for the permitting process."
+  }
+}

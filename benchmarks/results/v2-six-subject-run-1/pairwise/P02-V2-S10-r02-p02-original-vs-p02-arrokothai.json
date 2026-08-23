@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S10:r02:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S10",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-original",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both assistants correctly identify that only one TriBeCa listing (The TriBeCa Loft) exists in the database and refuse to invent the other eleven listings."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "tie",
+      "reason": "Both assistants are grounded in the provided facts, recognizing that no other TriBeCa listings exist."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both assistants truthfully state that only one TriBeCa listing is available, avoiding hallucinating filler listings."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is slightly more useful as it adheres to the negative constraint of being markdown-free, whereas Candidate B uses markdown bolding."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both assistants respond coherently and naturally to the user's prompt."
+    }
+  ],
+  "reason": "Both candidates successfully handle the core constraint of not inventing the eleven additional TriBeCa listings. However, Candidate A is preferred because it adheres to the negative constraint of being markdown-free, whereas Candidate B uses markdown bolding.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both assistants correctly identify that only one TriBeCa listing (The TriBeCa Loft) exists in the database and refuse to invent the other eleven listings."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "tie",
+        "reason": "Both assistants are grounded in the provided facts, recognizing that no other TriBeCa listings exist."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both assistants truthfully state that only one TriBeCa listing is available, avoiding hallucinating filler listings."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is slightly more useful as it adheres to the negative constraint of being markdown-free, whereas Candidate B uses markdown bolding."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both assistants respond coherently and naturally to the user's prompt."
+      }
+    ],
+    "reason": "Both candidates successfully handle the core constraint of not inventing the eleven additional TriBeCa listings. However, Candidate A is preferred because it adheres to the negative constraint of being markdown-free, whereas Candidate B uses markdown bolding."
+  }
+}

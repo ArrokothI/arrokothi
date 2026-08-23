@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S12:r02:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S12",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly calculates the authoritative wall volume using the provided formula (420 * 10 / 12 * 0.0283168 = 9.91 cubic meters) and outputs '9.9 cubic metres'. Candidate B provides an inaccurate range of 'roughly 10 to 11 cubic meters'."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A is more precise and truthful regarding the mathematical calculation of the volume."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "While Candidate B does a better job of including all four required elements on the safety/legality turn (100% legal, 0% THC, fire-resistant, unrelated to marijuana), Candidate A is ultimately more useful because it provides the correct, precise volume calculation for the user's project."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain excellent conversational flow, successfully resume the sizing conversation after the interruption, and end every turn with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate A is the superior response because it correctly calculates the authoritative wall volume (9.9 cubic meters) based on the user's inputs. Candidate B fails to use the exact formula and provides an inaccurate estimate of 10 to 11 cubic meters. Although Candidate B is more complete in addressing the safety/legality requirements on turn 2, Candidate A's mathematical correctness on the primary scoping task makes it the better option.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly calculates the authoritative wall volume using the provided formula (420 * 10 / 12 * 0.0283168 = 9.91 cubic meters) and outputs '9.9 cubic metres'. Candidate B provides an inaccurate range of 'roughly 10 to 11 cubic meters'."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A is more precise and truthful regarding the mathematical calculation of the volume."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "While Candidate B does a better job of including all four required elements on the safety/legality turn (100% legal, 0% THC, fire-resistant, unrelated to marijuana), Candidate A is ultimately more useful because it provides the correct, precise volume calculation for the user's project."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain excellent conversational flow, successfully resume the sizing conversation after the interruption, and end every turn with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate A is the superior response because it correctly calculates the authoritative wall volume (9.9 cubic meters) based on the user's inputs. Candidate B fails to use the exact formula and provides an inaccurate estimate of 10 to 11 cubic meters. Although Candidate B is more complete in addressing the safety/legality requirements on turn 2, Candidate A's mathematical correctness on the primary scoping task makes it the better option."
+  }
+}

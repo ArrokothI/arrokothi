@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S12:r01:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S12",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly calculated the volume as 9.9 cubic meters. However, both candidates failed to fully satisfy the authoritative fact regarding legality/safety, as both omitted stating that hempcrete is \"100% legal\" and \"fire-resistant\" when the THC question arose."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and accurate regarding the physical properties and calculations."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Both candidates successfully resumed the conversation with the stored sizing facts without re-asking. However, Candidate B is more useful as it provides a more natural progression of the project discussion."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B is much more coherent. Candidate A repeats almost the exact same follow-up question in Turn 2 and Turn 3 (\"casting this material in place using temporary forms or using pre-cast blocks\"), whereas Candidate B adapts its follow-up questions naturally to keep the conversation moving forward without sounding repetitive."
+    }
+  ],
+  "reason": "Both candidates failed to include the \"100% legal\" and \"fire-resistant\" details required by the authoritative facts when the THC question was asked. However, Candidate B is significantly better because Candidate A repeats the exact same follow-up question in Turn 2 and Turn 3, whereas Candidate B maintains a natural, non-repetitive conversational flow.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly calculated the volume as 9.9 cubic meters. However, both candidates failed to fully satisfy the authoritative fact regarding legality/safety, as both omitted stating that hempcrete is \"100% legal\" and \"fire-resistant\" when the THC question arose."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and accurate regarding the physical properties and calculations."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Both candidates successfully resumed the conversation with the stored sizing facts without re-asking. However, Candidate B is more useful as it provides a more natural progression of the project discussion."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B is much more coherent. Candidate A repeats almost the exact same follow-up question in Turn 2 and Turn 3 (\"casting this material in place using temporary forms or using pre-cast blocks\"), whereas Candidate B adapts its follow-up questions naturally to keep the conversation moving forward without sounding repetitive."
+      }
+    ],
+    "reason": "Both candidates failed to include the \"100% legal\" and \"fire-resistant\" details required by the authoritative facts when the THC question was asked. However, Candidate B is significantly better because Candidate A repeats the exact same follow-up question in Turn 2 and Turn 3, whereas Candidate B maintains a natural, non-repetitive conversational flow."
+  }
+}

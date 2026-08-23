@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R08",
+      "score": 2,
+      "confidence": 0.95,
+      "reason": "The assistant correctly recommended an interior retrofit using furring strips, hand-tamping, and a 2.5-3 inch layer. It also addressed the volume, noting that reference workflows approximate up to 3 cubic meters.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R09",
+      "score": 2,
+      "confidence": 0.95,
+      "reason": "The assistant grounded the mold and moisture claims in the breathable, mold-resistant properties of hemp-lime without making any absolute or unsupported guarantees.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R08",
+        "score": 2,
+        "confidence": 0.95,
+        "reason": "The assistant correctly recommended an interior retrofit using furring strips, hand-tamping, and a 2.5-3 inch layer. It also addressed the volume, noting that reference workflows approximate up to 3 cubic meters.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R09",
+        "score": 2,
+        "confidence": 0.95,
+        "reason": "The assistant grounded the mold and moisture claims in the breathable, mold-resistant properties of hemp-lime without making any absolute or unsupported guarantees.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

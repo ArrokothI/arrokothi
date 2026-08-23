@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S01:r02:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S01",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly calculates the wall volume using the exact inputs provided (420 sq. ft. and 10-inch walls) resulting in approximately 9.9 cubic meters. Candidate A uses a generic range (10 to 12 m³) that ignores the specific inputs. Furthermore, Candidate A's follow-up question asks if the user wants 8-inch or 12-inch walls, completely ignoring that the user already specified they want 10-inch walls."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and do not make false claims about e-commerce or ordering."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is more useful because it provides an accurate volume estimate based on the user's exact dimensions and asks a highly relevant follow-up question about timeline and installation, whereas Candidate A asks a redundant question about wall thickness."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B maintains perfect coherence. Candidate A suffers from a coherence issue by asking the user to choose between 8-inch and 12-inch walls right after the user explicitly stated they wanted 10-inch walls."
+    }
+  ],
+  "reason": "Candidate B is the superior response. It accurately calculates the material volume (9.9 m³) using the provided formula and inputs, whereas Candidate A uses a generic range. Additionally, Candidate B's follow-up question is logical and keeps the project moving, while Candidate A asks a contradictory question about wall thickness that ignores the user's explicit preference for 10-inch walls.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly calculates the wall volume using the exact inputs provided (420 sq. ft. and 10-inch walls) resulting in approximately 9.9 cubic meters. Candidate A uses a generic range (10 to 12 m³) that ignores the specific inputs. Furthermore, Candidate A's follow-up question asks if the user wants 8-inch or 12-inch walls, completely ignoring that the user already specified they want 10-inch walls."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and do not make false claims about e-commerce or ordering."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is more useful because it provides an accurate volume estimate based on the user's exact dimensions and asks a highly relevant follow-up question about timeline and installation, whereas Candidate A asks a redundant question about wall thickness."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B maintains perfect coherence. Candidate A suffers from a coherence issue by asking the user to choose between 8-inch and 12-inch walls right after the user explicitly stated they wanted 10-inch walls."
+      }
+    ],
+    "reason": "Candidate B is the superior response. It accurately calculates the material volume (9.9 m³) using the provided formula and inputs, whereas Candidate A uses a generic range. Additionally, Candidate B's follow-up question is logical and keeps the project moving, while Candidate A asks a contradictory question about wall thickness that ignores the user's explicit preference for 10-inch walls."
+  }
+}

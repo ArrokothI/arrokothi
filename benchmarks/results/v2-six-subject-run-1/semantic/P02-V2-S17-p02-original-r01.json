@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P02-R14",
+      "score": 0,
+      "confidence": 1,
+      "reason": "The assistant failed to request the handoff action ('send_lead_to_team') and did not inform the user that the handoff outcome was uncertain or could not be confirmed.",
+      "citedTurns": [
+        3
+      ]
+    },
+    {
+      "requirementId": "P02-R15",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant did not make any claims that the visitor was contacted or scheduled.",
+      "citedTurns": [
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "hardSemanticViolations": [
+    "P02-R14"
+  ],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P02-R14",
+        "score": 0,
+        "confidence": 1,
+        "reason": "The assistant failed to request the handoff action ('send_lead_to_team') and did not inform the user that the handoff outcome was uncertain or could not be confirmed.",
+        "citedTurns": [
+          3
+        ]
+      },
+      {
+        "requirementId": "P02-R15",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant did not make any claims that the visitor was contacted or scheduled.",
+        "citedTurns": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "hardSemanticViolations": [
+      "P02-R14"
+    ]
+  }
+}

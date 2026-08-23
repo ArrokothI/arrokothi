@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P02-R16",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The deterministic observations confirm that exactly one dispatch occurred, meaning the assistant did not duplicate the external handoff dispatch after the post-completion edit.",
+      "citedTurns": [
+        5
+      ]
+    },
+    {
+      "requirementId": "P02-R15",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant only claimed that details were transmitted to the team and explicitly clarified that this does not guarantee a scheduled call or outreach, avoiding any false claims of completed contact or appointments.",
+      "citedTurns": [
+        4,
+        5
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P02-R16",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The deterministic observations confirm that exactly one dispatch occurred, meaning the assistant did not duplicate the external handoff dispatch after the post-completion edit.",
+        "citedTurns": [
+          5
+        ]
+      },
+      {
+        "requirementId": "P02-R15",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant only claimed that details were transmitted to the team and explicitly clarified that this does not guarantee a scheduled call or outreach, avoiding any false claims of completed contact or appointments.",
+        "citedTurns": [
+          4,
+          5
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

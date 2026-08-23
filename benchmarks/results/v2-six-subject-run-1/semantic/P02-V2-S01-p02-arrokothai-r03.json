@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P02-R03",
+      "score": 0,
+      "confidence": 1,
+      "reason": "The assistant falsely claimed there are no showcased sale properties in Manhattan under $20M, failing to recommend the matching properties (IDs 2 and 4) present in the catalog.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P02-R09",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant did not claim live MLS access or real-time availability.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P02-R17",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The reply is short, natural, and free of markdown formatting.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P02-R03",
+        "score": 0,
+        "confidence": 1,
+        "reason": "The assistant falsely claimed there are no showcased sale properties in Manhattan under $20M, failing to recommend the matching properties (IDs 2 and 4) present in the catalog.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P02-R09",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant did not claim live MLS access or real-time availability.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P02-R17",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The reply is short, natural, and free of markdown formatting.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

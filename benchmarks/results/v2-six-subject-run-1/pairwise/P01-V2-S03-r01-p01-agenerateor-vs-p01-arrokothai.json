@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S03:r01:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S03",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both assistants correctly calculate the volume as approximately 2.1 cubic meters using the authoritative formula (300 * 3 / 12 * 0.0283168 = 2.12 m³)."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides the correct calculation directly and transitions naturally to the interior retrofit context. Candidate A includes unnecessary meta-commentary about a 'source conflict in our reference material', which is confusing and less helpful to an end-user."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B is much more natural and conversational. Candidate A sounds robotic by referencing its internal documentation conflicts."
+    }
+  ],
+  "reason": "Both assistants correctly calculate the exact volume of 2.1 cubic meters. However, Candidate B is much better written and more natural. Candidate A includes awkward meta-commentary about internal source conflicts, which detracts from the user experience.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both assistants correctly calculate the volume as approximately 2.1 cubic meters using the authoritative formula (300 * 3 / 12 * 0.0283168 = 2.12 m³)."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides the correct calculation directly and transitions naturally to the interior retrofit context. Candidate A includes unnecessary meta-commentary about a 'source conflict in our reference material', which is confusing and less helpful to an end-user."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B is much more natural and conversational. Candidate A sounds robotic by referencing its internal documentation conflicts."
+      }
+    ],
+    "reason": "Both assistants correctly calculate the exact volume of 2.1 cubic meters. However, Candidate B is much better written and more natural. Candidate A includes awkward meta-commentary about internal source conflicts, which detracts from the user experience."
+  }
+}

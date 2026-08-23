@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S14:r03:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S14",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly and explicitly states that approval depends on the local adoption timeline and the discretion of the local building department (Seattle Department of Construction and Inspections - SDCI). Candidate A is too definitive with its opening 'Yes, Seattle can approve...', which glosses over the local adoption requirement."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B is more accurate regarding the legal status of model codes, explaining that they are not automatically active until formally adopted or accepted via alternative pathways."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides highly useful local context by naming the specific local department (SDCI) and suggesting a practical next step (calculating material volume) in its follow-up question."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a coherent conversation and successfully end with exactly one useful follow-up question as required by the guidelines."
+    }
+  ],
+  "reason": "Candidate B is superior because it accurately addresses the core constraint: that local approval under Appendix BL depends on local adoption and the local building department (SDCI). Candidate A is too quick to say 'Yes' without properly qualifying the jurisdictional adoption process. Both candidates followed the negative constraint of ending with exactly one follow-up question.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly and explicitly states that approval depends on the local adoption timeline and the discretion of the local building department (Seattle Department of Construction and Inspections - SDCI). Candidate A is too definitive with its opening 'Yes, Seattle can approve...', which glosses over the local adoption requirement."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B is more accurate regarding the legal status of model codes, explaining that they are not automatically active until formally adopted or accepted via alternative pathways."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides highly useful local context by naming the specific local department (SDCI) and suggesting a practical next step (calculating material volume) in its follow-up question."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a coherent conversation and successfully end with exactly one useful follow-up question as required by the guidelines."
+      }
+    ],
+    "reason": "Candidate B is superior because it accurately addresses the core constraint: that local approval under Appendix BL depends on local adoption and the local building department (SDCI). Candidate A is too quick to say 'Yes' without properly qualifying the jurisdictional adoption process. Both candidates followed the negative constraint of ending with exactly one follow-up question."
+  }
+}

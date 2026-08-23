@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S14:r02:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S14",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both candidates correctly cite the 2024 IRC Appendix BL and explain that local approval in Seattle depends on local adoption and the building department."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and accurately represent the status of model codes versus local municipal adoption."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is slightly more useful because it avoids robotic phrasing. Candidate B starts with 'The reference material notes that...', which sounds like an AI meta-commentary rather than a natural response."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A flows more naturally. Both candidates successfully end with exactly one relevant follow-up question to keep the conversation moving."
+    }
+  ],
+  "reason": "Both candidates met all the authoritative facts and source-derived criteria perfectly. However, Candidate A is preferred because Candidate B includes the phrase 'The reference material notes that...', which makes the response sound robotic and less natural than Candidate A.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both candidates correctly cite the 2024 IRC Appendix BL and explain that local approval in Seattle depends on local adoption and the building department."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and accurately represent the status of model codes versus local municipal adoption."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is slightly more useful because it avoids robotic phrasing. Candidate B starts with 'The reference material notes that...', which sounds like an AI meta-commentary rather than a natural response."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A flows more naturally. Both candidates successfully end with exactly one relevant follow-up question to keep the conversation moving."
+      }
+    ],
+    "reason": "Both candidates met all the authoritative facts and source-derived criteria perfectly. However, Candidate A is preferred because Candidate B includes the phrase 'The reference material notes that...', which makes the response sound robotic and less natural than Candidate A."
+  }
+}

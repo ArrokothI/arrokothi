@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S12:r02:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S12",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Both candidates correctly identify the price of the Park Avenue Estate as $32,000,000. However, Candidate A correctly identifies the property type (duplex), whereas Candidate B incorrectly refers to the Park Avenue Estate as a penthouse (which likely confuses it with the Skyline Penthouse)."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Candidate A is better grounded as it does not mischaracterize the estate as a penthouse, unlike Candidate B."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A provides accurate details about the property while correcting the user's price assumption."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates are coherent, polite, and keep their responses markdown-free and natural."
+    }
+  ],
+  "reason": "Both candidates successfully correct the user's price assumption using the correct figure of $32,000,000. However, Candidate A is preferred because it accurately describes the property, whereas Candidate B incorrectly refers to the Park Avenue Estate as a penthouse.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Both candidates correctly identify the price of the Park Avenue Estate as $32,000,000. However, Candidate A correctly identifies the property type (duplex), whereas Candidate B incorrectly refers to the Park Avenue Estate as a penthouse (which likely confuses it with the Skyline Penthouse)."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Candidate A is better grounded as it does not mischaracterize the estate as a penthouse, unlike Candidate B."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A provides accurate details about the property while correcting the user's price assumption."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates are coherent, polite, and keep their responses markdown-free and natural."
+      }
+    ],
+    "reason": "Both candidates successfully correct the user's price assumption using the correct figure of $32,000,000. However, Candidate A is preferred because it accurately describes the property, whereas Candidate B incorrectly refers to the Park Avenue Estate as a penthouse."
+  }
+}

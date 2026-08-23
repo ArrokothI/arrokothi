@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R06",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant explicitly stated the assumption of 'wall area' and noted that the volume depends on the thickness (e.g., 3-inch retrofit vs. thicker application) before providing an estimated range, avoiding an unqualified definitive volume.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R03",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant identified wall thickness ('3-inch interior retrofit or a thicker application') as a key factor required to determine the volume.",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R06",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant explicitly stated the assumption of 'wall area' and noted that the volume depends on the thickness (e.g., 3-inch retrofit vs. thicker application) before providing an estimated range, avoiding an unqualified definitive volume.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R03",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant identified wall thickness ('3-inch interior retrofit or a thicker application') as a key factor required to determine the volume.",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

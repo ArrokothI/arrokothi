@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S02:r03:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S02",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly uses the source workflow's approximation of 2.5 to 3 m³ of material for the volume. Candidate B calculates its own volume (1.8 to 2.1 m³) and only mentions the 3 m³ as an afterthought, which deviates from the expected workflow approximation."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Candidate A is well-grounded in the source criteria, including the specific volume approximation and the recommendation of a 2.5 to 3-inch thickness with furring strips and hand-tamping."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and include appropriate disclaimers regarding planning estimates and professional review."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it directly provides the expected planning estimates without overcomplicating the volume calculation, and it proactively addresses the marijuana-culture framing as required by the facts."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A's follow-up question is much better for keeping the project conversation moving forward (asking about the existing wall construction) compared to Candidate B's generic yes/no question."
+    }
+  ],
+  "reason": "Candidate A followed all instructions perfectly, including using the exact 2.5 to 3 m³ volume approximation from the source workflow. It also asked a much better follow-up question to keep the project conversation moving.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly uses the source workflow's approximation of 2.5 to 3 m³ of material for the volume. Candidate B calculates its own volume (1.8 to 2.1 m³) and only mentions the 3 m³ as an afterthought, which deviates from the expected workflow approximation."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Candidate A is well-grounded in the source criteria, including the specific volume approximation and the recommendation of a 2.5 to 3-inch thickness with furring strips and hand-tamping."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and include appropriate disclaimers regarding planning estimates and professional review."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it directly provides the expected planning estimates without overcomplicating the volume calculation, and it proactively addresses the marijuana-culture framing as required by the facts."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A's follow-up question is much better for keeping the project conversation moving forward (asking about the existing wall construction) compared to Candidate B's generic yes/no question."
+      }
+    ],
+    "reason": "Candidate A followed all instructions perfectly, including using the exact 2.5 to 3 m³ volume approximation from the source workflow. It also asked a much better follow-up question to keep the project conversation moving."
+  }
+}

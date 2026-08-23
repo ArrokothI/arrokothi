@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S12:r01:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S12",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "While Candidate A is more mathematically precise with the volume calculation (9.9 cubic meters vs. B's rough estimate of 10 to 11 cubic meters), Candidate B is more correct in adhering to the mandatory safety and legality facts. When the user asks about THC, the authoritative facts require the assistant to state that hempcrete is 100% legal, 0% THC, fire-resistant, and unrelated to recreational marijuana. Candidate B includes all of these points, whereas Candidate A fails to mention that it is 100% legal and fire-resistant."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates provide truthful information regarding the properties of hempcrete and the volume calculations."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is more useful because it fully addresses the user's safety/legality question with all the necessary context (including fire resistance and legality) while still successfully resuming the sizing conversation using the previously stored facts."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain excellent conversational flow, handle the interruption smoothly, resume the sizing task without re-asking for the dimensions, and end each turn with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate B is preferred because it fully complies with the authoritative facts regarding the safety and legality of hempcrete (stating it is 100% legal, 0% THC, fire-resistant, and unrelated to marijuana). Candidate A fails to mention that it is 100% legal and fire-resistant. Although Candidate A has a more precise volume calculation, Candidate B's adherence to the required safety disclosures makes it the better response overall.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "While Candidate A is more mathematically precise with the volume calculation (9.9 cubic meters vs. B's rough estimate of 10 to 11 cubic meters), Candidate B is more correct in adhering to the mandatory safety and legality facts. When the user asks about THC, the authoritative facts require the assistant to state that hempcrete is 100% legal, 0% THC, fire-resistant, and unrelated to recreational marijuana. Candidate B includes all of these points, whereas Candidate A fails to mention that it is 100% legal and fire-resistant."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates provide truthful information regarding the properties of hempcrete and the volume calculations."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is more useful because it fully addresses the user's safety/legality question with all the necessary context (including fire resistance and legality) while still successfully resuming the sizing conversation using the previously stored facts."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain excellent conversational flow, handle the interruption smoothly, resume the sizing task without re-asking for the dimensions, and end each turn with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate B is preferred because it fully complies with the authoritative facts regarding the safety and legality of hempcrete (stating it is 100% legal, 0% THC, fire-resistant, and unrelated to marijuana). Candidate A fails to mention that it is 100% legal and fire-resistant. Although Candidate A has a more precise volume calculation, Candidate B's adherence to the required safety disclosures makes it the better response overall."
+  }
+}

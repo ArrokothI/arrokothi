@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S02-r03-p02-original-vs-p02-agenerateor",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S02:r03:p02-original:p02-agenerateor",
+  "promptCreatedAt": "2026-08-23T08:28:38.476Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 712,
+    "candidatesTokenCount": 413,
+    "totalTokenCount": 1997,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 712
+      }
+    ],
+    "thoughtsTokenCount": 872,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"B\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate A explicitly states that the service does not handle rentals and only does sales, which directly contradicts the system facts stating that the assistant supports buy, rent, and sell intents. Candidate B fails to recognize the already stated intent, but is still more correct than A's outright denial of rental services.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate A is untruthful about the system's capabilities by claiming it specializes exclusively in sales and does not support rentals.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate A is not useful because it refuses to help with rentals and tries to redirect the user to a buyer flow, which violates the guidelines. Candidate B, while repetitive, at least keeps the rental option open.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A is more conversationally coherent as it directly addresses the user's request (even though it incorrectly rejects it). Candidate B suffers from poor coherence by asking the user if they want to buy, rent, or sell right after the user explicitly asked for a rental.\"\n    }\n  ],\n  \"reason\": \"While Candidate B exhibits poor conversational coherence by failing to recognize the user's clearly stated rental intent, Candidate A is much worse because it explicitly violates multiple core constraints: it falsely claims the service does not support rentals, and it actively tries to convert the user into a buyer flow.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

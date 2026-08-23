@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S12:r03:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S12",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Assistant A correctly calculates the wall volume as 9.9 cubic meters (420 * 10 / 12 * 0.0283168 = 9.91). Assistant B provides an incorrect and overly broad estimate of 10 to 12 cubic meters (350 to 425 cubic feet)."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Assistant A's calculations are accurate to the formula. Assistant B's volume range is inaccurate."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Assistant A provides the precise volume required for the project. While Assistant A missed the '100% legal' and 'fire-resistant' descriptors in its Turn 2 response to the THC question, Assistant B preemptively answered this question in Turn 1 before the user even asked it, which reduces its conversational utility."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Assistant B suffers from a coherence issue by preemptively answering the THC/legality question in Turn 1 before the user asks it in Turn 2. Assistant A follows a natural flow, answering the user's interruption on Turn 2 and resuming the sizing calculation on Turn 3."
+    }
+  ],
+  "reason": "Assistant A is much better because it calculates the exact volume correctly (9.9 cubic meters). Assistant B provides an incorrect volume range and preemptively answers the user's Turn 2 question about THC in Turn 1, which ruins the conversational flow.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Assistant A correctly calculates the wall volume as 9.9 cubic meters (420 * 10 / 12 * 0.0283168 = 9.91). Assistant B provides an incorrect and overly broad estimate of 10 to 12 cubic meters (350 to 425 cubic feet)."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Assistant A's calculations are accurate to the formula. Assistant B's volume range is inaccurate."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Assistant A provides the precise volume required for the project. While Assistant A missed the '100% legal' and 'fire-resistant' descriptors in its Turn 2 response to the THC question, Assistant B preemptively answered this question in Turn 1 before the user even asked it, which reduces its conversational utility."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Assistant B suffers from a coherence issue by preemptively answering the THC/legality question in Turn 1 before the user asks it in Turn 2. Assistant A follows a natural flow, answering the user's interruption on Turn 2 and resuming the sizing calculation on Turn 3."
+      }
+    ],
+    "reason": "Assistant A is much better because it calculates the exact volume correctly (9.9 cubic meters). Assistant B provides an incorrect volume range and preemptively answers the user's Turn 2 question about THC in Turn 1, which ruins the conversational flow."
+  }
+}

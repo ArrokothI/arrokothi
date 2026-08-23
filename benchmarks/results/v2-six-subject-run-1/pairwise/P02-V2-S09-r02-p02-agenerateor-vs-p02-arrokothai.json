@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S09:r02:p02-agenerateor:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S09",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Both candidates correctly state that the Grand Salon is 1,400 square feet. However, Candidate B is preferred as it does not hallucinate extra details about the room's features (ceilings, windows, lighting, etc.) that are not present in the authoritative facts."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "B",
+      "reason": "Candidate A includes ungrounded details about the Skyline Penthouse Grand Salon (double-height ceilings, reservoir views, smart lighting, custom millwork) which are not supported by the provided facts. Candidate B remains strictly grounded."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides a direct, concise answer to the user's factual question and successfully resumes the search context without unnecessary fluff."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates successfully follow the flow of the conversation, answering the factual question in turn 2 and resuming the Manhattan search context in turn 3."
+    }
+  ],
+  "reason": "Candidate B is superior because it adheres strictly to the authoritative facts and the instruction to keep replies short and natural. Candidate A introduces several ungrounded details about the property in turn 2 that are not supported by the provided facts.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Both candidates correctly state that the Grand Salon is 1,400 square feet. However, Candidate B is preferred as it does not hallucinate extra details about the room's features (ceilings, windows, lighting, etc.) that are not present in the authoritative facts."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "B",
+        "reason": "Candidate A includes ungrounded details about the Skyline Penthouse Grand Salon (double-height ceilings, reservoir views, smart lighting, custom millwork) which are not supported by the provided facts. Candidate B remains strictly grounded."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides a direct, concise answer to the user's factual question and successfully resumes the search context without unnecessary fluff."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates successfully follow the flow of the conversation, answering the factual question in turn 2 and resuming the Manhattan search context in turn 3."
+      }
+    ],
+    "reason": "Candidate B is superior because it adheres strictly to the authoritative facts and the instruction to keep replies short and natural. Candidate A introduces several ungrounded details about the property in turn 2 that are not supported by the provided facts."
+  }
+}

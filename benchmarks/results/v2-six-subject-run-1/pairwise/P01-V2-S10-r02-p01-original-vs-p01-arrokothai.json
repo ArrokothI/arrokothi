@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S10:r02:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S10",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A calculates the volume accurately (420 sq. ft. at 10 inches is approximately 9.9 cubic meters). Candidate B provides a vague estimate of 10 to 12 cubic meters."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "A",
+      "reason": "Candidate A successfully transitions the guidance to cast-in-situ, mentioning hand-tamping and the need to account for drying time. While neither candidate fully detailed the specific 3-6 week curing timeline before plastering, Candidate A at least mentions drying time, whereas Candidate B completely ignores drying/curing implications."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and do not make false claims about e-commerce or ordering systems."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful due to its precise volume calculation and better explanation of the implications of switching to cast-in-situ (formwork, mixing, and drying)."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a coherent conversation and end each turn with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate A is superior because it calculates the material volume accurately (9.9 m³), whereas Candidate B gives a vague range. Additionally, Candidate A addresses the drying/curing implications of switching to cast-in-situ by mentioning the need to allow for drying time, whereas Candidate B completely omits this aspect.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A calculates the volume accurately (420 sq. ft. at 10 inches is approximately 9.9 cubic meters). Candidate B provides a vague estimate of 10 to 12 cubic meters."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "A",
+        "reason": "Candidate A successfully transitions the guidance to cast-in-situ, mentioning hand-tamping and the need to account for drying time. While neither candidate fully detailed the specific 3-6 week curing timeline before plastering, Candidate A at least mentions drying time, whereas Candidate B completely ignores drying/curing implications."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and do not make false claims about e-commerce or ordering systems."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful due to its precise volume calculation and better explanation of the implications of switching to cast-in-situ (formwork, mixing, and drying)."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a coherent conversation and end each turn with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate A is superior because it calculates the material volume accurately (9.9 m³), whereas Candidate B gives a vague range. Additionally, Candidate A addresses the drying/curing implications of switching to cast-in-situ by mentioning the need to allow for drying time, whereas Candidate B completely omits this aspect."
+  }
+}

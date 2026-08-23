@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S07:r01:p01-agenerateor:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S07",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Assistant A successfully avoids marijuana-culture framing, whereas Assistant B includes a joke about not getting \"recreational benefits from your walls,\" which violates the negative constraint to avoid marijuana-culture framing. Additionally, Assistant A explicitly mentions that the material is legal, addressing the implicit legality concern in the user's prompt."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "tie",
+      "reason": "Both assistants correctly identify the ingredients of hempcrete (industrial hemp hurds/woody core, lime binder, and water) based on the provided facts."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both assistants provide truthful information regarding the THC content and nature of hempcrete."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Assistant A is more professional and directly addresses the legality and safety concerns without unnecessary joking. Both assistants end with a single useful follow-up question."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both assistants are coherent and flow well."
+    }
+  ],
+  "reason": "Assistant A is preferred because it strictly adheres to the negative constraint to avoid marijuana-culture framing. Assistant B makes a joke about getting \"recreational benefits\" from the walls, which violates this constraint. Additionally, Assistant A addresses the legality of the material, which is a key component of the safety/legality facts.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Assistant A successfully avoids marijuana-culture framing, whereas Assistant B includes a joke about not getting \"recreational benefits from your walls,\" which violates the negative constraint to avoid marijuana-culture framing. Additionally, Assistant A explicitly mentions that the material is legal, addressing the implicit legality concern in the user's prompt."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "tie",
+        "reason": "Both assistants correctly identify the ingredients of hempcrete (industrial hemp hurds/woody core, lime binder, and water) based on the provided facts."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both assistants provide truthful information regarding the THC content and nature of hempcrete."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Assistant A is more professional and directly addresses the legality and safety concerns without unnecessary joking. Both assistants end with a single useful follow-up question."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both assistants are coherent and flow well."
+      }
+    ],
+    "reason": "Assistant A is preferred because it strictly adheres to the negative constraint to avoid marijuana-culture framing. Assistant B makes a joke about getting \"recreational benefits\" from the walls, which violates this constraint. Additionally, Assistant A addresses the legality of the material, which is a key component of the safety/legality facts."
+  }
+}

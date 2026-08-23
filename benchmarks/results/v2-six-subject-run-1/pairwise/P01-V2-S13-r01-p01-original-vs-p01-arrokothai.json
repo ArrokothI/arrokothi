@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S13:r01:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S13",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "tie",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "tie",
+      "reason": "Both assistants correctly identify that hempcrete is a non-load-bearing infill material and that a conventional timber frame is required to support the roof and other structural loads."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both assistants are highly accurate and align perfectly with the authoritative facts regarding hempcrete's structural limitations."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "tie",
+      "reason": "Both assistants provide clear, direct corrections to the contractor's misinformation and explain the structural necessity of a frame. Both also end with a highly relevant follow-up question to keep the project moving."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both responses are coherent, well-structured, and maintain a helpful, professional tone."
+    }
+  ],
+  "reason": "Both candidates are excellent. They both successfully correct the user's contractor, state that hempcrete is non-load-bearing, explain that a timber frame is required for structural loads, and end with exactly one useful follow-up question to keep the conversation moving.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "tie",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "tie",
+        "reason": "Both assistants correctly identify that hempcrete is a non-load-bearing infill material and that a conventional timber frame is required to support the roof and other structural loads."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both assistants are highly accurate and align perfectly with the authoritative facts regarding hempcrete's structural limitations."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "tie",
+        "reason": "Both assistants provide clear, direct corrections to the contractor's misinformation and explain the structural necessity of a frame. Both also end with a highly relevant follow-up question to keep the project moving."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both responses are coherent, well-structured, and maintain a helpful, professional tone."
+      }
+    ],
+    "reason": "Both candidates are excellent. They both successfully correct the user's contractor, state that hempcrete is non-load-bearing, explain that a timber frame is required for structural loads, and end with exactly one useful follow-up question to keep the conversation moving."
+  }
+}

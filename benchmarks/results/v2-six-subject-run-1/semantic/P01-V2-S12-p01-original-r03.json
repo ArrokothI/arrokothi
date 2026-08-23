@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R10",
+      "score": 2,
+      "confidence": 1,
+      "reason": "On turn 2, the assistant directly answered that hempcrete has 0% THC, is 100% legal, and is unrelated to recreational marijuana.",
+      "citedTurns": [
+        2
+      ]
+    },
+    {
+      "requirementId": "P01-R05",
+      "score": 2,
+      "confidence": 1,
+      "reason": "On turn 3, the assistant successfully resumed the calculation using the previously provided 420 sq. ft. and 10-inch thickness without re-asking the user for these details.",
+      "citedTurns": [
+        3
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R10",
+        "score": 2,
+        "confidence": 1,
+        "reason": "On turn 2, the assistant directly answered that hempcrete has 0% THC, is 100% legal, and is unrelated to recreational marijuana.",
+        "citedTurns": [
+          2
+        ]
+      },
+      {
+        "requirementId": "P01-R05",
+        "score": 2,
+        "confidence": 1,
+        "reason": "On turn 3, the assistant successfully resumed the calculation using the previously provided 420 sq. ft. and 10-inch thickness without re-asking the user for these details.",
+        "citedTurns": [
+          3
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

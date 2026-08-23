@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S01:r02:p02-original:p02-arrokothai"
+  },
+  "scenarioId": "P02-V2-S01",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-original",
+    "B": "p02-arrokothai"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly identifies and presents properties that match the user's criteria (Manhattan, around $20M budget), whereas Candidate B incorrectly claims there are no matching properties in Manhattan under $20M."
+    },
+    {
+      "criterion": "grounding",
+      "preference": "A",
+      "reason": "Candidate A's recommendations are grounded in the expected property catalog matches for Manhattan, while Candidate B fails to surface these grounded records."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A accurately represents the available inventory. Candidate B falsely claims there are no properties in Manhattan under $20M."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A provides immediate, relevant property previews to the buyer, making it highly useful. Candidate B turns the user away unnecessarily."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A keeps the response short, natural, and markdown-free, directly answering the user's prompt and keeping them in the buying flow."
+    }
+  ],
+  "reason": "Candidate A successfully finds and presents grounded Manhattan property matches within the user's budget, keeping the response short and markdown-free. Candidate B incorrectly claims there are no matching properties in Manhattan under $20M, which contradicts the scenario's happy path and available inventory.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly identifies and presents properties that match the user's criteria (Manhattan, around $20M budget), whereas Candidate B incorrectly claims there are no matching properties in Manhattan under $20M."
+      },
+      {
+        "criterion": "grounding",
+        "preference": "A",
+        "reason": "Candidate A's recommendations are grounded in the expected property catalog matches for Manhattan, while Candidate B fails to surface these grounded records."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A accurately represents the available inventory. Candidate B falsely claims there are no properties in Manhattan under $20M."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A provides immediate, relevant property previews to the buyer, making it highly useful. Candidate B turns the user away unnecessarily."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A keeps the response short, natural, and markdown-free, directly answering the user's prompt and keeping them in the buying flow."
+      }
+    ],
+    "reason": "Candidate A successfully finds and presents grounded Manhattan property matches within the user's budget, keeping the response short and markdown-free. Candidate B incorrectly claims there are no matching properties in Manhattan under $20M, which contradicts the scenario's happy path and available inventory."
+  }
+}

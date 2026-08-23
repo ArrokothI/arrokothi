@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S20:r01:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S20",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies both the negative wall area and the zero-inch thickness as invalid physical measurements. Candidate A completely ignores the negative wall area value."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Candidate B is truthful about the physical impossibility of the inputs, whereas Candidate A glosses over the negative area."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B explicitly asks the user to provide valid, positive dimensions to proceed with the calculation, which directly aligns with the source-derived criteria. Candidate A asks about the project type instead of requesting valid dimensions."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B's response is more coherent as it directly addresses the nonsensical inputs provided by the user and asks for clarification, ending with exactly one useful follow-up question."
+    }
+  ],
+  "reason": "Candidate B is the superior response because it successfully identifies both invalid inputs (negative area and zero thickness) and asks the user for valid, positive dimensions to calculate the volume. Candidate A fails to address the negative area and does not ask for valid dimensions.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies both the negative wall area and the zero-inch thickness as invalid physical measurements. Candidate A completely ignores the negative wall area value."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Candidate B is truthful about the physical impossibility of the inputs, whereas Candidate A glosses over the negative area."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B explicitly asks the user to provide valid, positive dimensions to proceed with the calculation, which directly aligns with the source-derived criteria. Candidate A asks about the project type instead of requesting valid dimensions."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B's response is more coherent as it directly addresses the nonsensical inputs provided by the user and asks for clarification, ending with exactly one useful follow-up question."
+      }
+    ],
+    "reason": "Candidate B is the superior response because it successfully identifies both invalid inputs (negative area and zero thickness) and asks the user for valid, positive dimensions to calculate the volume. Candidate A fails to address the negative area and does not ask for valid dimensions."
+  }
+}

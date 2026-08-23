@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S10:r02:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S10",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p01-original",
+    "B": "p01-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Assistant B correctly calculates the volume (9.9 cubic meters) based on the 420 sq. ft. wall area and 10-inch thickness. Assistant A provides a rougher estimate (10 to 12 m³). Furthermore, Assistant B accurately incorporates the specific drying and curing timelines for both pre-cast blocks (2-3 days mortar sequencing) and cast-in-situ (forms off next day, 3-6 weeks curing before plaster), which is a key requirement."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "B",
+      "reason": "Assistant B handles the transition from pre-cast blocks to cast-in-situ perfectly, updating the construction guidance and highlighting the differences in curing times as required by the facts."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "B",
+      "reason": "Assistant B is more precise with its volume calculations and accurately reflects the physical constraints and curing times of the materials."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Assistant B provides highly useful, specific technical details regarding the curing process of cast-in-situ hempcrete, which is crucial for a DIYer planning their project timeline."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both assistants maintain a coherent, helpful tone and end each turn with exactly one relevant follow-up question to keep the project moving."
+    }
+  ],
+  "reason": "Assistant B is superior because it strictly adheres to all authoritative facts, particularly regarding the drying and curing differences between pre-cast blocks and cast-in-situ methods. Assistant A fails to mention these curing implications entirely.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Assistant B correctly calculates the volume (9.9 cubic meters) based on the 420 sq. ft. wall area and 10-inch thickness. Assistant A provides a rougher estimate (10 to 12 m³). Furthermore, Assistant B accurately incorporates the specific drying and curing timelines for both pre-cast blocks (2-3 days mortar sequencing) and cast-in-situ (forms off next day, 3-6 weeks curing before plaster), which is a key requirement."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "B",
+        "reason": "Assistant B handles the transition from pre-cast blocks to cast-in-situ perfectly, updating the construction guidance and highlighting the differences in curing times as required by the facts."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "B",
+        "reason": "Assistant B is more precise with its volume calculations and accurately reflects the physical constraints and curing times of the materials."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Assistant B provides highly useful, specific technical details regarding the curing process of cast-in-situ hempcrete, which is crucial for a DIYer planning their project timeline."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both assistants maintain a coherent, helpful tone and end each turn with exactly one relevant follow-up question to keep the project moving."
+      }
+    ],
+    "reason": "Assistant B is superior because it strictly adheres to all authoritative facts, particularly regarding the drying and curing differences between pre-cast blocks and cast-in-situ methods. Assistant A fails to mention these curing implications entirely."
+  }
+}

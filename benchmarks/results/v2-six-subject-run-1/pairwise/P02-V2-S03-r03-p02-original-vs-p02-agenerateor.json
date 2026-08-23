@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S03:r03:p02-original:p02-agenerateor"
+  },
+  "scenarioId": "P02-V2-S03",
+  "assignment": {
+    "A": "left",
+    "B": "right"
+  },
+  "implementationAssignment": {
+    "A": "p02-original",
+    "B": "p02-agenerateor"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B correctly identifies the sell intent and immediately routes the user toward the valuation and seller qualification process. Candidate A asks if the user wants to buy, which steers away from the primary request of getting a valuation."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B is much more useful as it explains how the valuation is handled (by a human team) and asks for the necessary contact details to proceed with the valuation. Candidate A delays the valuation process by asking an unnecessary question about buying."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "B",
+      "reason": "Candidate B acknowledges the specific ZIP code provided by the user and keeps the conversation focused on the user's goal of selling and getting a valuation."
+    }
+  ],
+  "reason": "Candidate B is the superior response because it directly addresses the user's intent to sell and get a valuation. It acknowledges the ZIP code and initiates the seller qualification process by asking for contact details to connect them with a team member. Candidate A focuses too much on whether the user wants to buy, which goes against the goal of routing sell intents directly to valuation/qualification.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B correctly identifies the sell intent and immediately routes the user toward the valuation and seller qualification process. Candidate A asks if the user wants to buy, which steers away from the primary request of getting a valuation."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B is much more useful as it explains how the valuation is handled (by a human team) and asks for the necessary contact details to proceed with the valuation. Candidate A delays the valuation process by asking an unnecessary question about buying."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "B",
+        "reason": "Candidate B acknowledges the specific ZIP code provided by the user and keeps the conversation focused on the user's goal of selling and getting a valuation."
+      }
+    ],
+    "reason": "Candidate B is the superior response because it directly addresses the user's intent to sell and get a valuation. It acknowledges the ZIP code and initiates the seller qualification process by asking for contact details to connect them with a team member. Candidate A focuses too much on whether the user wants to buy, which goes against the goal of routing sell intents directly to valuation/qualification."
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P02-V2-S08:r03:p02-original:p02-agenerateor"
+  },
+  "scenarioId": "P02-V2-S08",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p02-agenerateor",
+    "B": "p02-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A correctly processes the user's initial input (location and budget) in Turn 1, whereas Candidate B asks for information the user just provided. In Turn 2, Candidate A correctly identifies that a phone number is required for the handoff/follow-up, while Candidate B incorrectly implies that it can proceed with just an email address."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "A",
+      "reason": "Candidate A is truthful about the system requirements, stating that a phone number is required for follow-up. Candidate B falsely implies that the handoff can be completed with just an email address, violating the authoritative fact that name and phone are required."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A provides useful information about available inventory and clearly explains the requirements for human follow-up. Candidate B is not useful as it repeats questions already answered and fails to explain the contact requirements."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "A",
+      "reason": "Candidate A is highly coherent and responsive to the user's inputs. Candidate B lacks coherence, asking for the budget and area immediately after the user provided them."
+    }
+  ],
+  "reason": "Candidate A is superior in every aspect. It correctly acknowledges the user's budget and location in Turn 1, whereas Candidate B asks for them again. In Turn 2, Candidate A correctly adheres to the authoritative facts by explaining that a phone number is required for the handoff, while Candidate B incorrectly suggests it can proceed with just an email.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A correctly processes the user's initial input (location and budget) in Turn 1, whereas Candidate B asks for information the user just provided. In Turn 2, Candidate A correctly identifies that a phone number is required for the handoff/follow-up, while Candidate B incorrectly implies that it can proceed with just an email address."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "A",
+        "reason": "Candidate A is truthful about the system requirements, stating that a phone number is required for follow-up. Candidate B falsely implies that the handoff can be completed with just an email address, violating the authoritative fact that name and phone are required."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A provides useful information about available inventory and clearly explains the requirements for human follow-up. Candidate B is not useful as it repeats questions already answered and fails to explain the contact requirements."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "A",
+        "reason": "Candidate A is highly coherent and responsive to the user's inputs. Candidate B lacks coherence, asking for the budget and area immediately after the user provided them."
+      }
+    ],
+    "reason": "Candidate A is superior in every aspect. It correctly acknowledges the user's budget and location in Turn 1, whereas Candidate B asks for them again. In Turn 2, Candidate A correctly adheres to the authoritative facts by explaining that a phone number is required for the handoff, while Candidate B incorrectly suggests it can proceed with just an email."
+  }
+}

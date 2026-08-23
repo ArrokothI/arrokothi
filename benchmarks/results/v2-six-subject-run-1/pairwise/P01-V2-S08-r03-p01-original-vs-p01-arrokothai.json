@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S08:r03:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S08",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A calculates the authoritative wall volume exactly using the formula provided in the facts (450 * 12 / 12 * 0.0283168 = 12.74 m³), resulting in 12.7 cubic metres. Candidate B provides a less precise range of 12 to 14 m³."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and include appropriate disclaimers regarding the planning estimates."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it provides the exact calculated volume needed for planning, rather than a broad estimate."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain excellent conversational flow, address the user's constraints (blocks, winter deadline), and end with exactly one relevant follow-up question."
+    }
+  ],
+  "reason": "Candidate A is preferred because it correctly calculates the authoritative wall volume (12.7 m³) based on the exact dimensions provided by the user, whereas Candidate B provides a less accurate range of 12 to 14 m³.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A calculates the authoritative wall volume exactly using the formula provided in the facts (450 * 12 / 12 * 0.0283168 = 12.74 m³), resulting in 12.7 cubic metres. Candidate B provides a less precise range of 12 to 14 m³."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and include appropriate disclaimers regarding the planning estimates."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it provides the exact calculated volume needed for planning, rather than a broad estimate."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain excellent conversational flow, address the user's constraints (blocks, winter deadline), and end with exactly one relevant follow-up question."
+      }
+    ],
+    "reason": "Candidate A is preferred because it correctly calculates the authoritative wall volume (12.7 m³) based on the exact dimensions provided by the user, whereas Candidate B provides a less accurate range of 12 to 14 m³."
+  }
+}

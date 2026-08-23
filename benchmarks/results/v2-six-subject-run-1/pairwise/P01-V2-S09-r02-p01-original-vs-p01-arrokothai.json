@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S09:r02:p01-original:p01-arrokothai"
+  },
+  "scenarioId": "P01-V2-S09",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-arrokothai",
+    "B": "p01-original"
+  },
+  "verdict": "A",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "A",
+      "reason": "Candidate A calculates the volume precisely using the authoritative formula (420 * 10 / 12 * 0.0283168 = 9.91 m³; 510 * 10 / 12 * 0.0283168 = 12.03 m³). Candidate B provides less accurate ranges (10 to 11 m³ and 12 to 13 m³)."
+    },
+    {
+      "criterion": "correction_handling",
+      "preference": "tie",
+      "reason": "Both candidates successfully updated their calculations in Turn 2 using the corrected area of 510 sq. ft. without referencing the stale 420 sq. ft. value."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "A",
+      "reason": "Candidate A is more useful because it provides precise calculations rather than broad estimates, which is critical for material planning."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates maintain a coherent conversation and end each turn with exactly one relevant follow-up question to keep the project moving forward."
+    }
+  ],
+  "reason": "Candidate A is superior because it calculates the exact volume of material required based on the provided formula, whereas Candidate B only provides rough ranges. Both candidates successfully handled the user's correction and followed the formatting constraints, including ending with a single follow-up question.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "A",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "A",
+        "reason": "Candidate A calculates the volume precisely using the authoritative formula (420 * 10 / 12 * 0.0283168 = 9.91 m³; 510 * 10 / 12 * 0.0283168 = 12.03 m³). Candidate B provides less accurate ranges (10 to 11 m³ and 12 to 13 m³)."
+      },
+      {
+        "criterion": "correction_handling",
+        "preference": "tie",
+        "reason": "Both candidates successfully updated their calculations in Turn 2 using the corrected area of 510 sq. ft. without referencing the stale 420 sq. ft. value."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "A",
+        "reason": "Candidate A is more useful because it provides precise calculations rather than broad estimates, which is critical for material planning."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates maintain a coherent conversation and end each turn with exactly one relevant follow-up question to keep the project moving forward."
+      }
+    ],
+    "reason": "Candidate A is superior because it calculates the exact volume of material required based on the provided formula, whereas Candidate B only provides rough ranges. Both candidates successfully handled the user's correction and followed the formatting constraints, including ending with a single follow-up question."
+  }
+}

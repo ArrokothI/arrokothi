@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "semantic-judge-output-v1",
+  "promptVersion": "semantic-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash"
+  },
+  "requirementResults": [
+    {
+      "requirementId": "P01-R08",
+      "score": 2,
+      "confidence": 1,
+      "reason": "The assistant perfectly recommends an interior retrofit with a 2.5-3 inch thickness, furring strips, hand-tamping, and the correct volume approximation of 2.5-3 m³.",
+      "citedTurns": [
+        1
+      ]
+    },
+    {
+      "requirementId": "P01-R09",
+      "score": 1,
+      "confidence": 0.9,
+      "reason": "The assistant claims the material will 'naturally regulate moisture and stop mold' but does not ground this in the breathable or vapor-permeable behavior of hemp-lime, nor does it mention the basic material components (hemp hurds/lime binder/water).",
+      "citedTurns": [
+        1
+      ]
+    }
+  ],
+  "hardSemanticViolations": [],
+  "rawStructuredOutput": {
+    "schemaVersion": "semantic-judge-output-v1",
+    "promptVersion": "semantic-judge-v1",
+    "requirementResults": [
+      {
+        "requirementId": "P01-R08",
+        "score": 2,
+        "confidence": 1,
+        "reason": "The assistant perfectly recommends an interior retrofit with a 2.5-3 inch thickness, furring strips, hand-tamping, and the correct volume approximation of 2.5-3 m³.",
+        "citedTurns": [
+          1
+        ]
+      },
+      {
+        "requirementId": "P01-R09",
+        "score": 1,
+        "confidence": 0.9,
+        "reason": "The assistant claims the material will 'naturally regulate moisture and stop mold' but does not ground this in the breathable or vapor-permeable behavior of hemp-lime, nor does it mention the basic material components (hemp hurds/lime binder/water).",
+        "citedTurns": [
+          1
+        ]
+      }
+    ],
+    "hardSemanticViolations": []
+  }
+}

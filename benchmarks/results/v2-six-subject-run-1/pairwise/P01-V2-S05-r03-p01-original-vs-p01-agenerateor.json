@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "pairwise-judge-output-v1",
+  "promptVersion": "pairwise-judge-v1",
+  "judge": {
+    "provider": "gemini",
+    "requestedModel": "gemini-3.5-flash",
+    "temperature": 0,
+    "timestamp": "2026-08-23T00:00:00.000Z",
+    "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d",
+    "providerReportedModel": "gemini-3.5-flash",
+    "randomizationSeed": "v2-run-1:P01-V2-S05:r03:p01-original:p01-agenerateor"
+  },
+  "scenarioId": "P01-V2-S05",
+  "assignment": {
+    "A": "right",
+    "B": "left"
+  },
+  "implementationAssignment": {
+    "A": "p01-agenerateor",
+    "B": "p01-original"
+  },
+  "verdict": "B",
+  "criteria": [
+    {
+      "criterion": "correctness",
+      "preference": "B",
+      "reason": "Candidate B is more correct as it includes all the specific details from the authoritative facts, including the fact that cast-in-situ formwork can be stripped the next day. Candidate A omits this detail."
+    },
+    {
+      "criterion": "truthfulness",
+      "preference": "tie",
+      "reason": "Both candidates are truthful and accurately represent the curing and drying times for both methods."
+    },
+    {
+      "criterion": "usefulness",
+      "preference": "B",
+      "reason": "Candidate B provides a slightly more complete comparison by mentioning the formwork removal timeline alongside the overall curing timeline."
+    },
+    {
+      "criterion": "conversational_coherence",
+      "preference": "tie",
+      "reason": "Both candidates end with exactly one relevant, open-ended follow-up question to keep the project conversation moving."
+    }
+  ],
+  "reason": "Candidate B is the superior response because it fully addresses all elements of the authoritative facts, specifically mentioning that cast-in-situ formwork can be removed the next day before the 3-6 week curing period begins. Candidate A misses this detail. Both candidates successfully follow the formatting constraint of ending with exactly one useful follow-up question.",
+  "rawStructuredOutput": {
+    "schemaVersion": "pairwise-judge-output-v1",
+    "promptVersion": "pairwise-judge-v1",
+    "verdict": "B",
+    "criteria": [
+      {
+        "criterion": "correctness",
+        "preference": "B",
+        "reason": "Candidate B is more correct as it includes all the specific details from the authoritative facts, including the fact that cast-in-situ formwork can be stripped the next day. Candidate A omits this detail."
+      },
+      {
+        "criterion": "truthfulness",
+        "preference": "tie",
+        "reason": "Both candidates are truthful and accurately represent the curing and drying times for both methods."
+      },
+      {
+        "criterion": "usefulness",
+        "preference": "B",
+        "reason": "Candidate B provides a slightly more complete comparison by mentioning the formwork removal timeline alongside the overall curing timeline."
+      },
+      {
+        "criterion": "conversational_coherence",
+        "preference": "tie",
+        "reason": "Both candidates end with exactly one relevant, open-ended follow-up question to keep the project conversation moving."
+      }
+    ],
+    "reason": "Candidate B is the superior response because it fully addresses all elements of the authoritative facts, specifically mentioning that cast-in-situ formwork can be removed the next day before the 3-6 week curing period begins. Candidate A misses this detail. Both candidates successfully follow the formatting constraint of ending with exactly one useful follow-up question."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "semantic:P01-V2-S19-p01-original-r01",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "semantic-judge-v1",
+  "seed": null,
+  "promptCreatedAt": "2026-08-23T08:28:38.376Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1587,
+    "candidatesTokenCount": 323,
+    "totalTokenCount": 2527,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1587
+      }
+    ],
+    "thoughtsTokenCount": 617,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"semantic-judge-output-v1\",\n  \"promptVersion\": \"semantic-judge-v1\",\n  \"requirementResults\": [\n    {\n      \"requirementId\": \"P01-R11\",\n      \"score\": 1,\n      \"confidence\": 1.0,\n      \"reason\": \"The assistant correctly cited the 2024 IRC Appendix BL, but failed to include the local caveat that adoption and permitting depend on the local jurisdiction.\",\n      \"citedTurns\": [\n        1\n      ]\n    },\n    {\n      \"requirementId\": \"P01-R12\",\n      \"score\": 2,\n      \"confidence\": 1.0,\n      \"reason\": \"The assistant clearly explained that hempcrete is strictly non-load-bearing and that a conventional timber frame must carry the roof and floor loads.\",\n      \"citedTurns\": [\n        1\n      ]\n    },\n    {\n      \"requirementId\": \"P01-R14\",\n      \"score\": 2,\n      \"confidence\": 1.0,\n      \"reason\": \"The assistant answered the timeline question in method-conditional terms, distinguishing pre-cast blocks from cast-in-situ and noting the 3-6 weeks drying time required for the latter.\",\n      \"citedTurns\": [\n        1\n      ]\n    }\n  ],\n  \"hardSemanticViolations\": []\n}",
+  "sourceProviderEvidencePath": "benchmarks/results/v2-six-subject-run-1/judge-batch/batches_l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5-status.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}
