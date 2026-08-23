@@ -1,0 +1,2550 @@
+{
+  "schemaVersion": "v2-six-subject-final-deterministic-summary-v1",
+  "totals": {
+    "scenarioRuns": 369,
+    "deterministicAssertionCount": 1461,
+    "invalidUnits": 0,
+    "runtimeFrameworkInvalidCount": 0,
+    "provenanceModelMismatchCount": 0
+  },
+  "note": "All 1461 assertions in this rubric have severity 'hard' -- no 'soft' severity assertions exist, so softFailRate is structurally 0/null throughout. runtime/framework-invalid and provenance/model-mismatch counts are 0 (0 invalid deterministic units; subject provider-reported model identity, where captured, always matched the requested model -- see efficiency-summary.json's modelIdentity note for the 123/369 runs where usage/model-identity instrumentation was unavailable).",
+  "byApplicationImplementation": [
+    {
+      "applicationId": "p01",
+      "implementationId": "p01-agenerateor",
+      "totalAssertions": 192,
+      "tally": {
+        "pass": 192,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 192; inconclusiveRate denominator = that + inconclusive = 192; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "applicationId": "p01",
+      "implementationId": "p01-arrokothai",
+      "totalAssertions": 192,
+      "tally": {
+        "pass": 189,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 3,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.015625,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 189; inconclusiveRate denominator = that + inconclusive = 192; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "applicationId": "p01",
+      "implementationId": "p01-original",
+      "totalAssertions": 192,
+      "tally": {
+        "pass": 174,
+        "hard_fail": 15,
+        "soft_fail": 0,
+        "inconclusive": 3,
+        "not_applicable": 0
+      },
+      "passRate": 0.9206349206349206,
+      "hardFailRate": 0.07936507936507936,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.015625,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 189; inconclusiveRate denominator = that + inconclusive = 192; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "applicationId": "p02",
+      "implementationId": "p02-agenerateor",
+      "totalAssertions": 295,
+      "tally": {
+        "pass": 170,
+        "hard_fail": 64,
+        "soft_fail": 0,
+        "inconclusive": 56,
+        "not_applicable": 5
+      },
+      "passRate": 0.7264957264957265,
+      "hardFailRate": 0.27350427350427353,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.19310344827586207,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 234; inconclusiveRate denominator = that + inconclusive = 290; not_applicable (5) excluded from all rate denominators"
+    },
+    {
+      "applicationId": "p02",
+      "implementationId": "p02-arrokothai",
+      "totalAssertions": 295,
+      "tally": {
+        "pass": 287,
+        "hard_fail": 7,
+        "soft_fail": 0,
+        "inconclusive": 1,
+        "not_applicable": 0
+      },
+      "passRate": 0.9761904761904762,
+      "hardFailRate": 0.023809523809523808,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.003389830508474576,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 294; inconclusiveRate denominator = that + inconclusive = 295; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "applicationId": "p02",
+      "implementationId": "p02-original",
+      "totalAssertions": 295,
+      "tally": {
+        "pass": 230,
+        "hard_fail": 27,
+        "soft_fail": 0,
+        "inconclusive": 33,
+        "not_applicable": 5
+      },
+      "passRate": 0.8949416342412452,
+      "hardFailRate": 0.10505836575875487,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.11379310344827587,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 257; inconclusiveRate denominator = that + inconclusive = 290; not_applicable (5) excluded from all rate denominators"
+    }
+  ],
+  "byScenario": [
+    {
+      "scenarioId": "P01-V2-S01",
+      "totalAssertions": 45,
+      "tally": {
+        "pass": 45,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 45; inconclusiveRate denominator = that + inconclusive = 45; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S02",
+      "totalAssertions": 27,
+      "tally": {
+        "pass": 27,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 27; inconclusiveRate denominator = that + inconclusive = 27; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S03",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 36,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S04",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 18,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S05",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 18,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S06",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 18,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S07",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 18,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S08",
+      "totalAssertions": 45,
+      "tally": {
+        "pass": 45,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 45; inconclusiveRate denominator = that + inconclusive = 45; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S09",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 30,
+        "hard_fail": 6,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.8333333333333334,
+      "hardFailRate": 0.16666666666666666,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S10",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 36,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S11",
+      "totalAssertions": 27,
+      "tally": {
+        "pass": 27,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 27; inconclusiveRate denominator = that + inconclusive = 27; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S12",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 36,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S13",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 18,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S14",
+      "totalAssertions": 27,
+      "tally": {
+        "pass": 21,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 6,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.2222222222222222,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 21; inconclusiveRate denominator = that + inconclusive = 27; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S15",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 18,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S16",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 18,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S17",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 18,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S18",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 30,
+        "hard_fail": 6,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.8333333333333334,
+      "hardFailRate": 0.16666666666666666,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S19",
+      "totalAssertions": 45,
+      "tally": {
+        "pass": 45,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 45; inconclusiveRate denominator = that + inconclusive = 45; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P01-V2-S20",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 33,
+        "hard_fail": 3,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.9166666666666666,
+      "hardFailRate": 0.08333333333333333,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S01",
+      "totalAssertions": 45,
+      "tally": {
+        "pass": 36,
+        "hard_fail": 9,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.8,
+      "hardFailRate": 0.2,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 45; inconclusiveRate denominator = that + inconclusive = 45; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S02",
+      "totalAssertions": 45,
+      "tally": {
+        "pass": 42,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 3,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.06666666666666667,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 42; inconclusiveRate denominator = that + inconclusive = 45; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S03",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 35,
+        "hard_fail": 1,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.9722222222222222,
+      "hardFailRate": 0.027777777777777776,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S04",
+      "totalAssertions": 63,
+      "tally": {
+        "pass": 58,
+        "hard_fail": 5,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.9206349206349206,
+      "hardFailRate": 0.07936507936507936,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 63; inconclusiveRate denominator = that + inconclusive = 63; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S05",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 27,
+        "hard_fail": 9,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.75,
+      "hardFailRate": 0.25,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S06",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 36,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S07",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 32,
+        "hard_fail": 4,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.8888888888888888,
+      "hardFailRate": 0.1111111111111111,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S08",
+      "totalAssertions": 60,
+      "tally": {
+        "pass": 60,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 60; inconclusiveRate denominator = that + inconclusive = 60; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S09",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 30,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 6,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.16666666666666666,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 30; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S10",
+      "totalAssertions": 27,
+      "tally": {
+        "pass": 21,
+        "hard_fail": 6,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.7777777777777778,
+      "hardFailRate": 0.2222222222222222,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 27; inconclusiveRate denominator = that + inconclusive = 27; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S11",
+      "totalAssertions": 27,
+      "tally": {
+        "pass": 27,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 27; inconclusiveRate denominator = that + inconclusive = 27; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S12",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 15,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 3,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.16666666666666666,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 15; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S13",
+      "totalAssertions": 120,
+      "tally": {
+        "pass": 60,
+        "hard_fail": 23,
+        "soft_fail": 0,
+        "inconclusive": 27,
+        "not_applicable": 10
+      },
+      "passRate": 0.7228915662650602,
+      "hardFailRate": 0.27710843373493976,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.24545454545454545,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 83; inconclusiveRate denominator = that + inconclusive = 110; not_applicable (10) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S14",
+      "totalAssertions": 60,
+      "tally": {
+        "pass": 45,
+        "hard_fail": 10,
+        "soft_fail": 0,
+        "inconclusive": 5,
+        "not_applicable": 0
+      },
+      "passRate": 0.8181818181818182,
+      "hardFailRate": 0.18181818181818182,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.08333333333333333,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 55; inconclusiveRate denominator = that + inconclusive = 60; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S15",
+      "totalAssertions": 105,
+      "tally": {
+        "pass": 70,
+        "hard_fail": 14,
+        "soft_fail": 0,
+        "inconclusive": 21,
+        "not_applicable": 0
+      },
+      "passRate": 0.8333333333333334,
+      "hardFailRate": 0.16666666666666666,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.2,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 84; inconclusiveRate denominator = that + inconclusive = 105; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S16",
+      "totalAssertions": 45,
+      "tally": {
+        "pass": 45,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 45; inconclusiveRate denominator = that + inconclusive = 45; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "scenarioId": "P02-V2-S17",
+      "totalAssertions": 90,
+      "tally": {
+        "pass": 48,
+        "hard_fail": 17,
+        "soft_fail": 0,
+        "inconclusive": 25,
+        "not_applicable": 0
+      },
+      "passRate": 0.7384615384615385,
+      "hardFailRate": 0.26153846153846155,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.2777777777777778,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 65; inconclusiveRate denominator = that + inconclusive = 90; not_applicable (0) excluded from all rate denominators"
+    }
+  ],
+  "byRequirementId": [
+    {
+      "requirementId": "P01-R01",
+      "totalAssertions": 180,
+      "tally": {
+        "pass": 180,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 180; inconclusiveRate denominator = that + inconclusive = 180; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P01-R03",
+      "totalAssertions": 63,
+      "tally": {
+        "pass": 57,
+        "hard_fail": 6,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.9047619047619048,
+      "hardFailRate": 0.09523809523809523,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 63; inconclusiveRate denominator = that + inconclusive = 63; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P01-R04",
+      "totalAssertions": 81,
+      "tally": {
+        "pass": 81,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 81; inconclusiveRate denominator = that + inconclusive = 81; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P01-R05",
+      "totalAssertions": 72,
+      "tally": {
+        "pass": 66,
+        "hard_fail": 6,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.9166666666666666,
+      "hardFailRate": 0.08333333333333333,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 72; inconclusiveRate denominator = that + inconclusive = 72; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P01-R06",
+      "totalAssertions": 9,
+      "tally": {
+        "pass": 9,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 9; inconclusiveRate denominator = that + inconclusive = 9; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P01-R11",
+      "totalAssertions": 9,
+      "tally": {
+        "pass": 3,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 6,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.6666666666666666,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 3; inconclusiveRate denominator = that + inconclusive = 9; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P01-R15",
+      "totalAssertions": 144,
+      "tally": {
+        "pass": 144,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 144; inconclusiveRate denominator = that + inconclusive = 144; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P01-R19",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 15,
+        "hard_fail": 3,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.8333333333333334,
+      "hardFailRate": 0.16666666666666666,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R01",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 35,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 1,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.027777777777777776,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 35; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R03",
+      "totalAssertions": 72,
+      "tally": {
+        "pass": 52,
+        "hard_fail": 20,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.7222222222222222,
+      "hardFailRate": 0.2777777777777778,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 72; inconclusiveRate denominator = that + inconclusive = 72; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R04",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 16,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 2,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.1111111111111111,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 16; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R05",
+      "totalAssertions": 36,
+      "tally": {
+        "pass": 35,
+        "hard_fail": 1,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.9722222222222222,
+      "hardFailRate": 0.027777777777777776,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 36; inconclusiveRate denominator = that + inconclusive = 36; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R06",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 9,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 9,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.5,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 9; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R07",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 18,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R08",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 12,
+        "hard_fail": 6,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.6666666666666666,
+      "hardFailRate": 0.3333333333333333,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R10",
+      "totalAssertions": 69,
+      "tally": {
+        "pass": 61,
+        "hard_fail": 8,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.8840579710144928,
+      "hardFailRate": 0.11594202898550725,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 69; inconclusiveRate denominator = that + inconclusive = 69; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R11",
+      "totalAssertions": 72,
+      "tally": {
+        "pass": 68,
+        "hard_fail": 4,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.9444444444444444,
+      "hardFailRate": 0.05555555555555555,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 72; inconclusiveRate denominator = that + inconclusive = 72; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R12",
+      "totalAssertions": 30,
+      "tally": {
+        "pass": 20,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 10
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 20; inconclusiveRate denominator = that + inconclusive = 20; not_applicable (10) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R13",
+      "totalAssertions": 90,
+      "tally": {
+        "pass": 42,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 48,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.5333333333333333,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 42; inconclusiveRate denominator = that + inconclusive = 90; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R14",
+      "totalAssertions": 204,
+      "tally": {
+        "pass": 120,
+        "hard_fail": 54,
+        "soft_fail": 0,
+        "inconclusive": 30,
+        "not_applicable": 0
+      },
+      "passRate": 0.6896551724137931,
+      "hardFailRate": 0.3103448275862069,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.14705882352941177,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 174; inconclusiveRate denominator = that + inconclusive = 204; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R16",
+      "totalAssertions": 15,
+      "tally": {
+        "pass": 10,
+        "hard_fail": 5,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.6666666666666666,
+      "hardFailRate": 0.3333333333333333,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 15; inconclusiveRate denominator = that + inconclusive = 15; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "requirementId": "P02-R17",
+      "totalAssertions": 189,
+      "tally": {
+        "pass": 189,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 189; inconclusiveRate denominator = that + inconclusive = 189; not_applicable (0) excluded from all rate denominators"
+    }
+  ],
+  "byAssertionType": [
+    {
+      "assertionType": "action_args_subset",
+      "totalAssertions": 45,
+      "tally": {
+        "pass": 21,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 24,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.5333333333333333,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 21; inconclusiveRate denominator = that + inconclusive = 45; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "action_not_requested",
+      "totalAssertions": 39,
+      "tally": {
+        "pass": 39,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 39; inconclusiveRate denominator = that + inconclusive = 39; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "action_outcome",
+      "totalAssertions": 60,
+      "tally": {
+        "pass": 30,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 30,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.5,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 30; inconclusiveRate denominator = that + inconclusive = 60; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "action_payload_time_preference_equals",
+      "totalAssertions": 45,
+      "tally": {
+        "pass": 21,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 24,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.5333333333333333,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 21; inconclusiveRate denominator = that + inconclusive = 45; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "action_requested",
+      "totalAssertions": 60,
+      "tally": {
+        "pass": 31,
+        "hard_fail": 29,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.5166666666666667,
+      "hardFailRate": 0.48333333333333334,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 60; inconclusiveRate denominator = that + inconclusive = 60; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "confirmation_payload_matches_action_payload",
+      "totalAssertions": 15,
+      "tally": {
+        "pass": 5,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 10
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 5; inconclusiveRate denominator = that + inconclusive = 5; not_applicable (10) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "contains_source_fact",
+      "totalAssertions": 9,
+      "tally": {
+        "pass": 3,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 6,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.6666666666666666,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 3; inconclusiveRate denominator = that + inconclusive = 9; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "dispatch_count",
+      "totalAssertions": 234,
+      "tally": {
+        "pass": 204,
+        "hard_fail": 30,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.8717948717948718,
+      "hardFailRate": 0.1282051282051282,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 234; inconclusiveRate denominator = that + inconclusive = 234; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "numeric_close",
+      "totalAssertions": 63,
+      "tally": {
+        "pass": 57,
+        "hard_fail": 6,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.9047619047619048,
+      "hardFailRate": 0.09523809523809523,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 63; inconclusiveRate denominator = that + inconclusive = 63; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "record_count",
+      "totalAssertions": 18,
+      "tally": {
+        "pass": 15,
+        "hard_fail": 3,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.8333333333333334,
+      "hardFailRate": 0.16666666666666666,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 18; inconclusiveRate denominator = that + inconclusive = 18; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "record_field_equals",
+      "totalAssertions": 9,
+      "tally": {
+        "pass": 6,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 3,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.3333333333333333,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 6; inconclusiveRate denominator = that + inconclusive = 9; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "record_ids_exact",
+      "totalAssertions": 54,
+      "tally": {
+        "pass": 33,
+        "hard_fail": 21,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.6111111111111112,
+      "hardFailRate": 0.3888888888888889,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 54; inconclusiveRate denominator = that + inconclusive = 54; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "runtime_error_absent",
+      "totalAssertions": 369,
+      "tally": {
+        "pass": 369,
+        "hard_fail": 0,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 1,
+      "hardFailRate": 0,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 369; inconclusiveRate denominator = that + inconclusive = 369; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "state_absent",
+      "totalAssertions": 66,
+      "tally": {
+        "pass": 62,
+        "hard_fail": 4,
+        "soft_fail": 0,
+        "inconclusive": 0,
+        "not_applicable": 0
+      },
+      "passRate": 0.9393939393939394,
+      "hardFailRate": 0.06060606060606061,
+      "softFailRate": 0,
+      "inconclusiveRate": 0,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 66; inconclusiveRate denominator = that + inconclusive = 66; not_applicable (0) excluded from all rate denominators"
+    },
+    {
+      "assertionType": "state_equals",
+      "totalAssertions": 375,
+      "tally": {
+        "pass": 346,
+        "hard_fail": 20,
+        "soft_fail": 0,
+        "inconclusive": 9,
+        "not_applicable": 0
+      },
+      "passRate": 0.9453551912568307,
+      "hardFailRate": 0.0546448087431694,
+      "softFailRate": 0,
+      "inconclusiveRate": 0.024,
+      "denominatorNote": "denominator for passRate/hardFailRate/softFailRate = pass+hard_fail+soft_fail = 366; inconclusiveRate denominator = that + inconclusive = 375; not_applicable (0) excluded from all rate denominators"
+    }
+  ],
+  "hardFailures": [
+    {
+      "runId": "P01-V2-S09-p01-original-r01",
+      "application": "p01",
+      "scenario": "P01-V2-S09",
+      "repeat": "r01",
+      "implementation": "p01-original",
+      "requirementId": "P01-R05",
+      "assertionId": "area_510",
+      "assertionType": "state_equals",
+      "detail": "state.wall_area_sq_ft was 420, expected 510"
+    },
+    {
+      "runId": "P01-V2-S09-p01-original-r01",
+      "application": "p01",
+      "scenario": "P01-V2-S09",
+      "repeat": "r01",
+      "implementation": "p01-original",
+      "requirementId": "P01-R03",
+      "assertionId": "volume_510x10",
+      "assertionType": "numeric_close",
+      "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05"
+    },
+    {
+      "runId": "P01-V2-S09-p01-original-r02",
+      "application": "p01",
+      "scenario": "P01-V2-S09",
+      "repeat": "r02",
+      "implementation": "p01-original",
+      "requirementId": "P01-R05",
+      "assertionId": "area_510",
+      "assertionType": "state_equals",
+      "detail": "state.wall_area_sq_ft was 420, expected 510"
+    },
+    {
+      "runId": "P01-V2-S09-p01-original-r02",
+      "application": "p01",
+      "scenario": "P01-V2-S09",
+      "repeat": "r02",
+      "implementation": "p01-original",
+      "requirementId": "P01-R03",
+      "assertionId": "volume_510x10",
+      "assertionType": "numeric_close",
+      "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05"
+    },
+    {
+      "runId": "P01-V2-S09-p01-original-r03",
+      "application": "p01",
+      "scenario": "P01-V2-S09",
+      "repeat": "r03",
+      "implementation": "p01-original",
+      "requirementId": "P01-R05",
+      "assertionId": "area_510",
+      "assertionType": "state_equals",
+      "detail": "state.wall_area_sq_ft was 420, expected 510"
+    },
+    {
+      "runId": "P01-V2-S09-p01-original-r03",
+      "application": "p01",
+      "scenario": "P01-V2-S09",
+      "repeat": "r03",
+      "implementation": "p01-original",
+      "requirementId": "P01-R03",
+      "assertionId": "volume_510x10",
+      "assertionType": "numeric_close",
+      "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05"
+    },
+    {
+      "runId": "P01-V2-S18-p01-original-r01",
+      "application": "p01",
+      "scenario": "P01-V2-S18",
+      "repeat": "r01",
+      "implementation": "p01-original",
+      "requirementId": "P01-R05",
+      "assertionId": "area_still_510",
+      "assertionType": "state_equals",
+      "detail": "state.wall_area_sq_ft was 420, expected 510"
+    },
+    {
+      "runId": "P01-V2-S18-p01-original-r01",
+      "application": "p01",
+      "scenario": "P01-V2-S18",
+      "repeat": "r01",
+      "implementation": "p01-original",
+      "requirementId": "P01-R03",
+      "assertionId": "volume_510x10",
+      "assertionType": "numeric_close",
+      "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05"
+    },
+    {
+      "runId": "P01-V2-S18-p01-original-r02",
+      "application": "p01",
+      "scenario": "P01-V2-S18",
+      "repeat": "r02",
+      "implementation": "p01-original",
+      "requirementId": "P01-R05",
+      "assertionId": "area_still_510",
+      "assertionType": "state_equals",
+      "detail": "state.wall_area_sq_ft was 420, expected 510"
+    },
+    {
+      "runId": "P01-V2-S18-p01-original-r02",
+      "application": "p01",
+      "scenario": "P01-V2-S18",
+      "repeat": "r02",
+      "implementation": "p01-original",
+      "requirementId": "P01-R03",
+      "assertionId": "volume_510x10",
+      "assertionType": "numeric_close",
+      "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05"
+    },
+    {
+      "runId": "P01-V2-S18-p01-original-r03",
+      "application": "p01",
+      "scenario": "P01-V2-S18",
+      "repeat": "r03",
+      "implementation": "p01-original",
+      "requirementId": "P01-R05",
+      "assertionId": "area_still_510",
+      "assertionType": "state_equals",
+      "detail": "state.wall_area_sq_ft was 420, expected 510"
+    },
+    {
+      "runId": "P01-V2-S18-p01-original-r03",
+      "application": "p01",
+      "scenario": "P01-V2-S18",
+      "repeat": "r03",
+      "implementation": "p01-original",
+      "requirementId": "P01-R03",
+      "assertionId": "volume_510x10",
+      "assertionType": "numeric_close",
+      "detail": "9.91088 is 2.123759999999999 away from 12.03464; tolerance 0.05"
+    },
+    {
+      "runId": "P01-V2-S20-p01-original-r01",
+      "application": "p01",
+      "scenario": "P01-V2-S20",
+      "repeat": "r01",
+      "implementation": "p01-original",
+      "requirementId": "P01-R19",
+      "assertionId": "negative_area_not_committed",
+      "assertionType": "state_absent",
+      "detail": "state.wall_area_sq_ft was present: 200"
+    },
+    {
+      "runId": "P01-V2-S20-p01-original-r02",
+      "application": "p01",
+      "scenario": "P01-V2-S20",
+      "repeat": "r02",
+      "implementation": "p01-original",
+      "requirementId": "P01-R19",
+      "assertionId": "negative_area_not_committed",
+      "assertionType": "state_absent",
+      "detail": "state.wall_area_sq_ft was present: 200"
+    },
+    {
+      "runId": "P01-V2-S20-p01-original-r03",
+      "application": "p01",
+      "scenario": "P01-V2-S20",
+      "repeat": "r03",
+      "implementation": "p01-original",
+      "requirementId": "P01-R19",
+      "assertionId": "negative_area_not_committed",
+      "assertionType": "state_absent",
+      "detail": "state.wall_area_sq_ft was present: 200"
+    },
+    {
+      "runId": "P02-V2-S01-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S01",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R03",
+      "assertionId": "manhattan_under_20m",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"2\",\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S01-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S01",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R03",
+      "assertionId": "manhattan_under_20m",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"2\",\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S01-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S01",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R03",
+      "assertionId": "manhattan_under_20m",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"2\",\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S01-p02-arrokothai-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S01",
+      "repeat": "r01",
+      "implementation": "p02-arrokothai",
+      "requirementId": "P02-R03",
+      "assertionId": "manhattan_under_20m",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"2\",\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S01-p02-arrokothai-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S01",
+      "repeat": "r02",
+      "implementation": "p02-arrokothai",
+      "requirementId": "P02-R03",
+      "assertionId": "manhattan_under_20m",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"2\",\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S01-p02-arrokothai-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S01",
+      "repeat": "r03",
+      "implementation": "p02-arrokothai",
+      "requirementId": "P02-R03",
+      "assertionId": "manhattan_under_20m",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"2\",\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S01-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S01",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R03",
+      "assertionId": "manhattan_under_20m",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"2\",\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S01-p02-original-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S01",
+      "repeat": "r02",
+      "implementation": "p02-original",
+      "requirementId": "P02-R03",
+      "assertionId": "manhattan_under_20m",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"2\",\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S01-p02-original-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S01",
+      "repeat": "r03",
+      "implementation": "p02-original",
+      "requirementId": "P02-R03",
+      "assertionId": "manhattan_under_20m",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"2\",\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S03-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S03",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R05",
+      "assertionId": "seller_zip_10014",
+      "assertionType": "state_equals",
+      "detail": "state.seller_zip was null, expected \"10014\""
+    },
+    {
+      "runId": "P02-V2-S04-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S04",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R10",
+      "assertionId": "name_maya",
+      "assertionType": "state_equals",
+      "detail": "state.contact_name was \"Maya Chen.\", expected \"Maya Chen\""
+    },
+    {
+      "runId": "P02-V2-S04-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S04",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R10",
+      "assertionId": "name_maya",
+      "assertionType": "state_equals",
+      "detail": "state.contact_name was \"Maya Chen.\", expected \"Maya Chen\""
+    },
+    {
+      "runId": "P02-V2-S04-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S04",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R10",
+      "assertionId": "name_maya",
+      "assertionType": "state_equals",
+      "detail": "state.contact_name was \"Maya Chen.\", expected \"Maya Chen\""
+    },
+    {
+      "runId": "P02-V2-S04-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S04",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R03",
+      "assertionId": "location_west_village",
+      "assertionType": "state_equals",
+      "detail": "state.target_location was \"West Village, NY\", expected \"West Village\""
+    },
+    {
+      "runId": "P02-V2-S04-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S04",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R03",
+      "assertionId": "timeline_6mo",
+      "assertionType": "state_equals",
+      "detail": "state.timeline was \"6 months\", expected \"six-month\""
+    },
+    {
+      "runId": "P02-V2-S05-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S05",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R03",
+      "assertionId": "west_village_match",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"5\"]"
+    },
+    {
+      "runId": "P02-V2-S05-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S05",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R03",
+      "assertionId": "west_village_match",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"5\"]"
+    },
+    {
+      "runId": "P02-V2-S05-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S05",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R03",
+      "assertionId": "west_village_match",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"5\"]"
+    },
+    {
+      "runId": "P02-V2-S05-p02-arrokothai-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S05",
+      "repeat": "r01",
+      "implementation": "p02-arrokothai",
+      "requirementId": "P02-R03",
+      "assertionId": "west_village_match",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [\"4\",\"5\"], expected [\"5\"]"
+    },
+    {
+      "runId": "P02-V2-S05-p02-arrokothai-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S05",
+      "repeat": "r02",
+      "implementation": "p02-arrokothai",
+      "requirementId": "P02-R03",
+      "assertionId": "west_village_match",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [\"4\",\"5\"], expected [\"5\"]"
+    },
+    {
+      "runId": "P02-V2-S05-p02-arrokothai-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S05",
+      "repeat": "r03",
+      "implementation": "p02-arrokothai",
+      "requirementId": "P02-R03",
+      "assertionId": "west_village_match",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [\"4\",\"5\"], expected [\"5\"]"
+    },
+    {
+      "runId": "P02-V2-S05-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S05",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R03",
+      "assertionId": "west_village_match",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"5\"]"
+    },
+    {
+      "runId": "P02-V2-S05-p02-original-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S05",
+      "repeat": "r02",
+      "implementation": "p02-original",
+      "requirementId": "P02-R03",
+      "assertionId": "west_village_match",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"5\"]"
+    },
+    {
+      "runId": "P02-V2-S05-p02-original-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S05",
+      "repeat": "r03",
+      "implementation": "p02-original",
+      "requirementId": "P02-R03",
+      "assertionId": "west_village_match",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"5\"]"
+    },
+    {
+      "runId": "P02-V2-S07-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S07",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R11",
+      "assertionId": "phone_captured",
+      "assertionType": "state_equals",
+      "detail": "state.phone was null, expected \"555-0100\""
+    },
+    {
+      "runId": "P02-V2-S07-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S07",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R11",
+      "assertionId": "phone_captured",
+      "assertionType": "state_equals",
+      "detail": "state.phone was null, expected \"555-0100\""
+    },
+    {
+      "runId": "P02-V2-S07-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S07",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R11",
+      "assertionId": "phone_captured",
+      "assertionType": "state_equals",
+      "detail": "state.phone was null, expected \"555-0100\""
+    },
+    {
+      "runId": "P02-V2-S07-p02-original-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S07",
+      "repeat": "r03",
+      "implementation": "p02-original",
+      "requirementId": "P02-R11",
+      "assertionId": "email_blank",
+      "assertionType": "state_absent",
+      "detail": "state.email was present: \"declined\""
+    },
+    {
+      "runId": "P02-V2-S10-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S10",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R08",
+      "assertionId": "only_tribeca_record",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S10-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S10",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R08",
+      "assertionId": "tribeca_record_count",
+      "assertionType": "record_count",
+      "detail": "record count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S10-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S10",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R08",
+      "assertionId": "only_tribeca_record",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S10-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S10",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R08",
+      "assertionId": "tribeca_record_count",
+      "assertionType": "record_count",
+      "detail": "record count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S10-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S10",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R08",
+      "assertionId": "only_tribeca_record",
+      "assertionType": "record_ids_exact",
+      "detail": "record ids were [], expected [\"4\"]"
+    },
+    {
+      "runId": "P02-V2-S10-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S10",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R08",
+      "assertionId": "tribeca_record_count",
+      "assertionType": "record_count",
+      "detail": "record count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R10",
+      "assertionId": "budget_corrected_16m",
+      "assertionType": "state_equals",
+      "detail": "state.budget was 16, expected 16000000"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R10",
+      "assertionId": "budget_corrected_16m",
+      "assertionType": "state_equals",
+      "detail": "state.budget was 16, expected 16000000"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R10",
+      "assertionId": "budget_corrected_16m",
+      "assertionType": "state_equals",
+      "detail": "state.budget was 16, expected 16000000"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r04",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R10",
+      "assertionId": "budget_corrected_16m",
+      "assertionType": "state_equals",
+      "detail": "state.budget was 16, expected 16000000"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r04",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r04",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r05",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r05",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R10",
+      "assertionId": "budget_corrected_16m",
+      "assertionType": "state_equals",
+      "detail": "state.budget was 16, expected 16000000"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r05",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r05",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S13-p02-agenerateor-r05",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r05",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S13-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S13-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S13-p02-original-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r02",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S13-p02-original-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r02",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S13-p02-original-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r03",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S13-p02-original-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r03",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S13-p02-original-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r04",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S13-p02-original-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S13",
+      "repeat": "r04",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R16",
+      "assertionId": "exactly_one_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested_once_or_more",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R16",
+      "assertionId": "exactly_one_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested_once_or_more",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R16",
+      "assertionId": "exactly_one_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested_once_or_more",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r04",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R16",
+      "assertionId": "exactly_one_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r04",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested_once_or_more",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r05",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r05",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R16",
+      "assertionId": "exactly_one_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S14-p02-agenerateor-r05",
+      "application": "p02",
+      "scenario": "P02-V2-S14",
+      "repeat": "r05",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested_once_or_more",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r04",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r04",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r05",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r05",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S15-p02-agenerateor-r05",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r05",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S15-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S15-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S15-p02-original-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r04",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S15-p02-original-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S15",
+      "repeat": "r04",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r01",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch_unknown",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r02",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch_unknown",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r03",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r03",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch_unknown",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r04",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r04",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch_unknown",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r05",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r05",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S17-p02-agenerateor-r05",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r05",
+      "implementation": "p02-agenerateor",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch_unknown",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S17-p02-arrokothai-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r04",
+      "implementation": "p02-arrokothai",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch_unknown",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S17-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S17-p02-original-r01",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r01",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch_unknown",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S17-p02-original-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r02",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S17-p02-original-r02",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r02",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch_unknown",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "runId": "P02-V2-S17-p02-original-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r04",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "handoff_requested",
+      "assertionType": "action_requested",
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "runId": "P02-V2-S17-p02-original-r04",
+      "application": "p02",
+      "scenario": "P02-V2-S17",
+      "repeat": "r04",
+      "implementation": "p02-original",
+      "requirementId": "P02-R14",
+      "assertionId": "single_dispatch_unknown",
+      "assertionType": "dispatch_count",
+      "detail": "dispatch count was 0, expected 1"
+    }
+  ]
+}

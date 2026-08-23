@@ -1,0 +1,670 @@
+{
+  "schemaVersion": "v2-six-subject-final-pairwise-summary-v1",
+  "note": "A/B are randomized per-record blind labels resolved back to real implementation ids via each record's own implementationAssignment before aggregation -- raw A/B labels are never reported. 'left'/'right' below are a fixed canonical ordering (original < agenerateor < arrokothai) used only to give each app x pair bucket a stable, non-randomized identity across records whose live A/B assignment varies.",
+  "totalRecords": 369,
+  "assignmentInversionRecordsChecked": 369,
+  "byApplicationPair": [
+    {
+      "applicationId": "p01",
+      "pair": "agenerateor-vs-arrokothai",
+      "leftImplementation": "p01-agenerateor",
+      "rightImplementation": "p01-arrokothai",
+      "wins": {
+        "p01-agenerateor": 18,
+        "p01-arrokothai": 30
+      },
+      "ties": 12,
+      "bothBad": 0,
+      "totalComparisons": 60,
+      "winRateExcludingTiesAndBothBad": {
+        "leftImplWinRate": 0.375,
+        "rightImplWinRate": 0.625,
+        "denominator": 48,
+        "note": "excludes ties and both_bad from the denominator entirely"
+      },
+      "winRateIncludingTiesAsHalf_SECONDARY_DESCRIPTIVE_ONLY": {
+        "leftImplWinRate": 0.4,
+        "rightImplWinRate": 0.6,
+        "denominator": 60,
+        "note": "ties credited as 0.5 to each side; both_bad excluded from this denominator (neither side 'wins' a mutual failure)"
+      },
+      "bothBadRate": 0
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-agenerateor",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-agenerateor",
+      "wins": {
+        "p01-original": 17,
+        "p01-agenerateor": 41
+      },
+      "ties": 2,
+      "bothBad": 0,
+      "totalComparisons": 60,
+      "winRateExcludingTiesAndBothBad": {
+        "leftImplWinRate": 0.29310344827586204,
+        "rightImplWinRate": 0.7068965517241379,
+        "denominator": 58,
+        "note": "excludes ties and both_bad from the denominator entirely"
+      },
+      "winRateIncludingTiesAsHalf_SECONDARY_DESCRIPTIVE_ONLY": {
+        "leftImplWinRate": 0.3,
+        "rightImplWinRate": 0.7,
+        "denominator": 60,
+        "note": "ties credited as 0.5 to each side; both_bad excluded from this denominator (neither side 'wins' a mutual failure)"
+      },
+      "bothBadRate": 0
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-arrokothai",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-arrokothai",
+      "wins": {
+        "p01-original": 11,
+        "p01-arrokothai": 44
+      },
+      "ties": 5,
+      "bothBad": 0,
+      "totalComparisons": 60,
+      "winRateExcludingTiesAndBothBad": {
+        "leftImplWinRate": 0.2,
+        "rightImplWinRate": 0.8,
+        "denominator": 55,
+        "note": "excludes ties and both_bad from the denominator entirely"
+      },
+      "winRateIncludingTiesAsHalf_SECONDARY_DESCRIPTIVE_ONLY": {
+        "leftImplWinRate": 0.225,
+        "rightImplWinRate": 0.775,
+        "denominator": 60,
+        "note": "ties credited as 0.5 to each side; both_bad excluded from this denominator (neither side 'wins' a mutual failure)"
+      },
+      "bothBadRate": 0
+    },
+    {
+      "applicationId": "p02",
+      "pair": "agenerateor-vs-arrokothai",
+      "leftImplementation": "p02-agenerateor",
+      "rightImplementation": "p02-arrokothai",
+      "wins": {
+        "p02-agenerateor": 38,
+        "p02-arrokothai": 20
+      },
+      "ties": 3,
+      "bothBad": 2,
+      "totalComparisons": 63,
+      "winRateExcludingTiesAndBothBad": {
+        "leftImplWinRate": 0.6551724137931034,
+        "rightImplWinRate": 0.3448275862068966,
+        "denominator": 58,
+        "note": "excludes ties and both_bad from the denominator entirely"
+      },
+      "winRateIncludingTiesAsHalf_SECONDARY_DESCRIPTIVE_ONLY": {
+        "leftImplWinRate": 0.6475409836065574,
+        "rightImplWinRate": 0.3524590163934426,
+        "denominator": 61,
+        "note": "ties credited as 0.5 to each side; both_bad excluded from this denominator (neither side 'wins' a mutual failure)"
+      },
+      "bothBadRate": 0.031746031746031744
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-agenerateor",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-agenerateor",
+      "wins": {
+        "p02-original": 20,
+        "p02-agenerateor": 40
+      },
+      "ties": 0,
+      "bothBad": 3,
+      "totalComparisons": 63,
+      "winRateExcludingTiesAndBothBad": {
+        "leftImplWinRate": 0.3333333333333333,
+        "rightImplWinRate": 0.6666666666666666,
+        "denominator": 60,
+        "note": "excludes ties and both_bad from the denominator entirely"
+      },
+      "winRateIncludingTiesAsHalf_SECONDARY_DESCRIPTIVE_ONLY": {
+        "leftImplWinRate": 0.3333333333333333,
+        "rightImplWinRate": 0.6666666666666666,
+        "denominator": 60,
+        "note": "ties credited as 0.5 to each side; both_bad excluded from this denominator (neither side 'wins' a mutual failure)"
+      },
+      "bothBadRate": 0.047619047619047616
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-arrokothai",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-arrokothai",
+      "wins": {
+        "p02-original": 20,
+        "p02-arrokothai": 42
+      },
+      "ties": 1,
+      "bothBad": 0,
+      "totalComparisons": 63,
+      "winRateExcludingTiesAndBothBad": {
+        "leftImplWinRate": 0.3225806451612903,
+        "rightImplWinRate": 0.6774193548387096,
+        "denominator": 62,
+        "note": "excludes ties and both_bad from the denominator entirely"
+      },
+      "winRateIncludingTiesAsHalf_SECONDARY_DESCRIPTIVE_ONLY": {
+        "leftImplWinRate": 0.3253968253968254,
+        "rightImplWinRate": 0.6746031746031746,
+        "denominator": 63,
+        "note": "ties credited as 0.5 to each side; both_bad excluded from this denominator (neither side 'wins' a mutual failure)"
+      },
+      "bothBadRate": 0
+    }
+  ],
+  "criterionPreferences": [
+    {
+      "applicationId": "p01",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "conversational_coherence",
+      "leftImplementation": "p01-agenerateor",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-agenerateor": 2,
+        "p01-arrokothai": 21,
+        "tie": 37,
+        "both_bad": 0
+      },
+      "totalJudgments": 60
+    },
+    {
+      "applicationId": "p01",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "correction_handling",
+      "leftImplementation": "p01-agenerateor",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-agenerateor": 1,
+        "p01-arrokothai": 0,
+        "tie": 8,
+        "both_bad": 0
+      },
+      "totalJudgments": 9
+    },
+    {
+      "applicationId": "p01",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "correctness",
+      "leftImplementation": "p01-agenerateor",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-agenerateor": 17,
+        "p01-arrokothai": 12,
+        "tie": 31,
+        "both_bad": 0
+      },
+      "totalJudgments": 60
+    },
+    {
+      "applicationId": "p01",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "grounding",
+      "leftImplementation": "p01-agenerateor",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-agenerateor": 5,
+        "p01-arrokothai": 3,
+        "tie": 4,
+        "both_bad": 0
+      },
+      "totalJudgments": 12
+    },
+    {
+      "applicationId": "p01",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "truthfulness",
+      "leftImplementation": "p01-agenerateor",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-agenerateor": 4,
+        "p01-arrokothai": 1,
+        "tie": 49,
+        "both_bad": 0
+      },
+      "totalJudgments": 54
+    },
+    {
+      "applicationId": "p01",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "usefulness",
+      "leftImplementation": "p01-agenerateor",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-agenerateor": 18,
+        "p01-arrokothai": 28,
+        "tie": 14,
+        "both_bad": 0
+      },
+      "totalJudgments": 60
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-agenerateor",
+      "criterion": "conversational_coherence",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-agenerateor",
+      "preferenceCounts": {
+        "p01-original": 14,
+        "p01-agenerateor": 15,
+        "tie": 31,
+        "both_bad": 0
+      },
+      "totalJudgments": 60
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-agenerateor",
+      "criterion": "correction_handling",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-agenerateor",
+      "preferenceCounts": {
+        "p01-original": 0,
+        "p01-agenerateor": 2,
+        "tie": 7,
+        "both_bad": 0
+      },
+      "totalJudgments": 9
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-agenerateor",
+      "criterion": "correctness",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-agenerateor",
+      "preferenceCounts": {
+        "p01-original": 9,
+        "p01-agenerateor": 42,
+        "tie": 9,
+        "both_bad": 0
+      },
+      "totalJudgments": 60
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-agenerateor",
+      "criterion": "grounding",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-agenerateor",
+      "preferenceCounts": {
+        "p01-original": 3,
+        "p01-agenerateor": 6,
+        "tie": 3,
+        "both_bad": 0
+      },
+      "totalJudgments": 12
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-agenerateor",
+      "criterion": "truthfulness",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-agenerateor",
+      "preferenceCounts": {
+        "p01-original": 3,
+        "p01-agenerateor": 21,
+        "tie": 30,
+        "both_bad": 0
+      },
+      "totalJudgments": 54
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-agenerateor",
+      "criterion": "usefulness",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-agenerateor",
+      "preferenceCounts": {
+        "p01-original": 16,
+        "p01-agenerateor": 41,
+        "tie": 3,
+        "both_bad": 0
+      },
+      "totalJudgments": 60
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-arrokothai",
+      "criterion": "conversational_coherence",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-original": 2,
+        "p01-arrokothai": 15,
+        "tie": 43,
+        "both_bad": 0
+      },
+      "totalJudgments": 60
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-arrokothai",
+      "criterion": "correction_handling",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-original": 0,
+        "p01-arrokothai": 1,
+        "tie": 8,
+        "both_bad": 0
+      },
+      "totalJudgments": 9
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-arrokothai",
+      "criterion": "correctness",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-original": 10,
+        "p01-arrokothai": 44,
+        "tie": 6,
+        "both_bad": 0
+      },
+      "totalJudgments": 60
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-arrokothai",
+      "criterion": "grounding",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-original": 4,
+        "p01-arrokothai": 5,
+        "tie": 3,
+        "both_bad": 0
+      },
+      "totalJudgments": 12
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-arrokothai",
+      "criterion": "truthfulness",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-original": 4,
+        "p01-arrokothai": 24,
+        "tie": 26,
+        "both_bad": 0
+      },
+      "totalJudgments": 54
+    },
+    {
+      "applicationId": "p01",
+      "pair": "original-vs-arrokothai",
+      "criterion": "usefulness",
+      "leftImplementation": "p01-original",
+      "rightImplementation": "p01-arrokothai",
+      "preferenceCounts": {
+        "p01-original": 11,
+        "p01-arrokothai": 44,
+        "tie": 5,
+        "both_bad": 0
+      },
+      "totalJudgments": 60
+    },
+    {
+      "applicationId": "p02",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "conversational_coherence",
+      "leftImplementation": "p02-agenerateor",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-agenerateor": 27,
+        "p02-arrokothai": 16,
+        "tie": 20,
+        "both_bad": 0
+      },
+      "totalJudgments": 63
+    },
+    {
+      "applicationId": "p02",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "correction_handling",
+      "leftImplementation": "p02-agenerateor",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-agenerateor": 6,
+        "p02-arrokothai": 7,
+        "tie": 6,
+        "both_bad": 0
+      },
+      "totalJudgments": 19
+    },
+    {
+      "applicationId": "p02",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "correctness",
+      "leftImplementation": "p02-agenerateor",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-agenerateor": 31,
+        "p02-arrokothai": 21,
+        "tie": 9,
+        "both_bad": 2
+      },
+      "totalJudgments": 63
+    },
+    {
+      "applicationId": "p02",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "grounding",
+      "leftImplementation": "p02-agenerateor",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-agenerateor": 4,
+        "p02-arrokothai": 2,
+        "tie": 15,
+        "both_bad": 0
+      },
+      "totalJudgments": 21
+    },
+    {
+      "applicationId": "p02",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "truthfulness",
+      "leftImplementation": "p02-agenerateor",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-agenerateor": 3,
+        "p02-arrokothai": 11,
+        "tie": 26,
+        "both_bad": 2
+      },
+      "totalJudgments": 42
+    },
+    {
+      "applicationId": "p02",
+      "pair": "agenerateor-vs-arrokothai",
+      "criterion": "usefulness",
+      "leftImplementation": "p02-agenerateor",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-agenerateor": 36,
+        "p02-arrokothai": 20,
+        "tie": 5,
+        "both_bad": 2
+      },
+      "totalJudgments": 63
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-agenerateor",
+      "criterion": "conversational_coherence",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-agenerateor",
+      "preferenceCounts": {
+        "p02-original": 18,
+        "p02-agenerateor": 44,
+        "tie": 1,
+        "both_bad": 0
+      },
+      "totalJudgments": 63
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-agenerateor",
+      "criterion": "correction_handling",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-agenerateor",
+      "preferenceCounts": {
+        "p02-original": 1,
+        "p02-agenerateor": 15,
+        "tie": 3,
+        "both_bad": 0
+      },
+      "totalJudgments": 19
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-agenerateor",
+      "criterion": "correctness",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-agenerateor",
+      "preferenceCounts": {
+        "p02-original": 12,
+        "p02-agenerateor": 37,
+        "tie": 11,
+        "both_bad": 3
+      },
+      "totalJudgments": 63
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-agenerateor",
+      "criterion": "grounding",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-agenerateor",
+      "preferenceCounts": {
+        "p02-original": 0,
+        "p02-agenerateor": 11,
+        "tie": 10,
+        "both_bad": 0
+      },
+      "totalJudgments": 21
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-agenerateor",
+      "criterion": "truthfulness",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-agenerateor",
+      "preferenceCounts": {
+        "p02-original": 4,
+        "p02-agenerateor": 14,
+        "tie": 21,
+        "both_bad": 3
+      },
+      "totalJudgments": 42
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-agenerateor",
+      "criterion": "usefulness",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-agenerateor",
+      "preferenceCounts": {
+        "p02-original": 20,
+        "p02-agenerateor": 43,
+        "tie": 0,
+        "both_bad": 0
+      },
+      "totalJudgments": 63
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-arrokothai",
+      "criterion": "conversational_coherence",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-original": 21,
+        "p02-arrokothai": 39,
+        "tie": 3,
+        "both_bad": 0
+      },
+      "totalJudgments": 63
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-arrokothai",
+      "criterion": "correction_handling",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-original": 3,
+        "p02-arrokothai": 13,
+        "tie": 3,
+        "both_bad": 0
+      },
+      "totalJudgments": 19
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-arrokothai",
+      "criterion": "correctness",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-original": 13,
+        "p02-arrokothai": 42,
+        "tie": 8,
+        "both_bad": 0
+      },
+      "totalJudgments": 63
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-arrokothai",
+      "criterion": "grounding",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-original": 3,
+        "p02-arrokothai": 10,
+        "tie": 8,
+        "both_bad": 0
+      },
+      "totalJudgments": 21
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-arrokothai",
+      "criterion": "truthfulness",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-original": 3,
+        "p02-arrokothai": 26,
+        "tie": 13,
+        "both_bad": 0
+      },
+      "totalJudgments": 42
+    },
+    {
+      "applicationId": "p02",
+      "pair": "original-vs-arrokothai",
+      "criterion": "usefulness",
+      "leftImplementation": "p02-original",
+      "rightImplementation": "p02-arrokothai",
+      "preferenceCounts": {
+        "p02-original": 20,
+        "p02-arrokothai": 42,
+        "tie": 1,
+        "both_bad": 0
+      },
+      "totalJudgments": 63
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "v2-six-subject-final-analysis-freeze-v1",
+  "experimentId": "v2-six-subject-run-1",
+  "provenance": {
+    "subjectGeneration": {
+      "commits": {
+        "agentSdk": "7b580b47ba58aa748d710e9427b4d3208e3f8425",
+        "agenerateor": "2d9f81ab7e5afee0fb0b00d3d6ca0a9019950be9",
+        "originalP01": "0297a5cc43e4fcbc4e8edc7b4d90254cea76a893",
+        "originalP02": "49e33528281ca28c08ac3993778493c3bfaa153c"
+      },
+      "hashes": {
+        "scenarioV2": "3f15e2ad5c35bd66e4d24a5d19b961858e187034f2b473aaa4bd9940f3d2e4e7",
+        "evaluatorV2": "20166c554085c0d62b23703baa37ae799821c3bc56edc49478e885a96748ffa9"
+      },
+      "models": {
+        "subject": "gemini-3.5-flash-lite",
+        "judge": null
+      },
+      "temperatures": {
+        "subject": 0.35,
+        "originalP02": "not externally configurable"
+      }
+    },
+    "evaluatorScenarioHashesAtDeterministicRun": {
+      "generationTimeScenarioHash": "3f15e2ad5c35bd66e4d24a5d19b961858e187034f2b473aaa4bd9940f3d2e4e7",
+      "generationTimeEvaluatorHash": "20166c554085c0d62b23703baa37ae799821c3bc56edc49478e885a96748ffa9",
+      "postHotfixScenarioHash": "35a570cf4a7d9f8b44e746d09b826c43368852445c44e864f28a752698d87491",
+      "postHotfixEvaluatorHash": "f42808721ec970b8d062f245c754dcdf0a2c0b2f963df62fc3b13e69903f9197"
+    },
+    "evaluatorScenarioCodeUnchangedSinceDeterministicRun": true,
+    "judgePlanSha256": "860d7f750b9855a904f602191daeb321d34f968620962e6541e2fd1dc7a7004a",
+    "judgeMaterializationAggregateSha256": "5f44cfd95545f74c36394411b61a09c0acc6e25a001490e4b5a2ad334d6770f5",
+    "judgeMaterializationCounts": {
+      "semanticOutputCount": 369,
+      "pairwiseOutputCount": 369,
+      "semanticMetadataCount": 369,
+      "pairwiseMetadataCount": 369,
+      "selectedAttempt1Count": 737,
+      "selectedAttempt2Count": 1
+    },
+    "analysisCodeCommit": "72fb54126005913d8001d8ba9651355a439d0e63"
+  },
+  "seeds": {
+    "bootstrapSeed": 20260823,
+    "bootstrapResamples": 2000,
+    "randomSampleSeed": 20260823,
+    "randomSamplePerStratum": 3,
+    "scoreStringRecoverySampleSeed": 20260823
+  },
+  "counts": {
+    "deterministicRuns": 369,
+    "semanticRuns": 369,
+    "pairwiseComparisons": 369,
+    "rawSubjectRuns": 369,
+    "hardDeterministicFailures": 113,
+    "hardSemanticViolations": 36,
+    "disagreementA": 17,
+    "disagreementB": 17,
+    "disagreementC": 4,
+    "disagreementD": 16,
+    "randomSampleRuns": 18
+  },
+  "fileHashes": [
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/aggregate-results.json",
+      "sha256": "7b8ac5d15094f2cbdd203e16b9a13d3e2537e5fe7a0c282e508f3d57f6eac0c8"
+    },
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/deterministic-summary.json",
+      "sha256": "ed7a7dd56bc6ea3f5db233b80010f94a800d656b45ba879a7d4f7d7d7622b73d"
+    },
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/disagreement-audit.json",
+      "sha256": "14d58960a3e4326f057c149bc87e830b4c162ff173d58fb11b7b3b9ddc46f440"
+    },
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/efficiency-summary.json",
+      "sha256": "0420d846500d58715b07964722b0151d02949c210ccb5e55bb7cea82bea9be25"
+    },
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/judge-usage-cost.json",
+      "sha256": "d47956de3660ba80371ee6fb093f581ba9652f8a7445115324ce46384734a21b"
+    },
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/manual-audit.json",
+      "sha256": "7a4972c957f1dd8fd5b094efb39ad696df73271954afe64b7530507eddef3428"
+    },
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/normalization-sensitivity.json",
+      "sha256": "e699644fdfc28d36621ed311f3c3d89724e73753978dddb861f5440e94e3339a"
+    },
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/pairwise-summary.json",
+      "sha256": "a4d76ab43822dec9f3c5025147a8e7be5b7941236f16773560c5e9541d7b2c92"
+    },
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/RESULTS.md",
+      "sha256": "14107227df4576b5a68c5c99ac49c4a5eb53f87311ad439752bc1e45778b4669"
+    },
+    {
+      "path": "benchmarks/results/v2-six-subject-run-1/final-analysis/semantic-summary.json",
+      "sha256": "a411bedb052ee1c50670954b2e76dee18afd5675367e40d99cebe34b6b0d8117"
+    }
+  ],
+  "aggregateFileCount": 10,
+  "aggregateSha256": "100e10353af9552e5fad0b2ff9f76cf455bf4fae3649b561e1deb446a2b8e4f7",
+  "createdAt": "2026-08-23T13:51:58.115Z"
+}
