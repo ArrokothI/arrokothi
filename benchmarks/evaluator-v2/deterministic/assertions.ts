@@ -115,10 +115,74 @@ function canonicalizeTimePreference(value: string): string {
   return out.trim();
 }
 
-function sourceValue(run: NeutralRawRunV2, source: "state" | "computation" | "action_payload", key: string): unknown {
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 1): a canonical, evaluation-time
+// computation resolver. It never inspects `implementationId`/`frameworkId` — it only reacts to
+// whether `run.nativeTrace` structurally contains the recognized shape below (an eventStream of
+// tool-execution events carrying named "facts"), which any implementation's native trace could in
+// principle have. When multiple authoritative successful-tool facts share the same key, the
+// LATEST one in the event stream is the current value — a stale earlier turn's fact must never
+// shadow a later, corrected one. Only `ToolExecutionSucceeded` events are consulted; a failed or
+// otherwise non-successful tool event never contributes a fact. If no such structural evidence
+// exists at all, this falls back to `run.deterministicComputations[key]` unchanged from before
+// hotfix.4 — a run whose native trace doesn't have this shape (i.e. every implementation except
+// the one whose runtime happens to emit it today) is completely unaffected.
+interface AuthoritativeToolFact {
+  key: string;
+  value: JsonValue;
+}
+interface AuthoritativeToolEvent {
+  type?: string;
+  payload?: { facts?: AuthoritativeToolFact[] };
+}
+
+function authoritativeToolFactValues(run: NeutralRawRunV2, keys: readonly string[]): JsonValue[] {
+  const trace = run.nativeTrace as { eventStream?: unknown; nativeTrace?: { eventStream?: unknown } } | undefined;
+  const eventStream = trace?.eventStream ?? trace?.nativeTrace?.eventStream;
+  if (!Array.isArray(eventStream)) return [];
+  const keySet = new Set(keys);
+  const values: JsonValue[] = [];
+  for (const event of eventStream as AuthoritativeToolEvent[]) {
+    if (!event || typeof event !== "object") continue;
+    if (event.type !== "ToolExecutionSucceeded") continue;
+    const facts = event.payload?.facts;
+    if (!Array.isArray(facts)) continue;
+    for (const fact of facts) {
+      if (fact && typeof fact === "object" && keySet.has(fact.key)) values.push(fact.value);
+    }
+  }
+  return values;
+}
+
+export function resolveComputationValue(run: NeutralRawRunV2, key: string, factAliases: readonly string[] = [key]): JsonValue | undefined {
+  const authoritative = authoritativeToolFactValues(run, factAliases);
+  if (authoritative.length > 0) return authoritative.at(-1);
+  return run.deterministicComputations?.[key];
+}
+
+function sourceValue(run: NeutralRawRunV2, source: "state" | "computation" | "action_payload", key: string, computationFactAliases?: string[]): unknown {
   if (source === "state") return run.canonicalFinalState?.[key];
-  if (source === "computation") return run.deterministicComputations?.[key];
+  if (source === "computation") return resolveComputationValue(run, key, computationFactAliases);
   return run.exactActionPayload?.[key];
+}
+
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 2): resolves a numeric assertion's value,
+// consulting the assertion-declared `fallback` ONLY when the primary source/key yields no numeric
+// value. If the primary resolves (via resolveComputationValue() above when source is
+// "computation"), the fallback is never even read — a primary/fallback disagreement always
+// resolves to the primary, and nothing here maps arbitrary state fields to computation fields
+// implicitly; the mapping is only whatever a specific assertion explicitly declares.
+function resolveNumericSource(
+  run: NeutralRawRunV2,
+  source: "state" | "computation" | "action_payload",
+  key: string,
+  fallback: { source: "state" | "computation" | "action_payload"; key: string } | undefined,
+  computationFactAliases?: string[],
+): { value: number | null; usedFallback: boolean } {
+  const primary = numeric(sourceValue(run, source, key, computationFactAliases));
+  if (primary !== null) return { value: primary, usedFallback: false };
+  if (!fallback) return { value: null, usedFallback: false };
+  const fallbackValue = numeric(sourceValue(run, fallback.source, fallback.key));
+  return { value: fallbackValue, usedFallback: fallbackValue !== null };
 }
 
 function allRecordIds(run: NeutralRawRunV2): string[] | null {
@@ -134,6 +198,19 @@ function allRows(run: NeutralRawRunV2): Record<string, Record<string, JsonValue>
     Object.assign(rows, observation.rows ?? {});
   }
   return rows;
+}
+
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 4): merges the `fields` bag every
+// recordObservations entry may carry (used today for derived per-row synthetic facts such as
+// "<property>_<room>_size") into one lookup, exactly mirroring how allRows() already merges
+// `.rows` across observations. This does not invent any new data — it only widens where
+// `contains_source_fact` looks for an already-recorded value from where it happened to be filed.
+function allObservationFields(run: NeutralRawRunV2): Record<string, JsonValue> {
+  const fields: Record<string, JsonValue> = {};
+  for (const observation of run.recordObservations ?? []) {
+    Object.assign(fields, observation.fields ?? {});
+  }
+  return fields;
 }
 
 function recordCount(run: NeutralRawRunV2): number | null {
@@ -184,19 +261,21 @@ export function evaluateDeterministicAssertion(
         : fail(assertion, `state.${assertion.key} was ${stable(actual)}, expected one of ${stable(assertion.expected)}`);
     }
     case "numeric_close": {
-      const actual = numeric(sourceValue(run, assertion.source, assertion.key));
-      if (actual === null) return missing(assertion, `${assertion.source}.${assertion.key} is not numeric`);
-      const delta = Math.abs(actual - assertion.expected);
+      const resolved = resolveNumericSource(run, assertion.source, assertion.key, assertion.fallback, assertion.computationFactAliases);
+      if (resolved.value === null) return missing(assertion, `${assertion.source}.${assertion.key} is not numeric${assertion.fallback ? ` (fallback ${assertion.fallback.source}.${assertion.fallback.key} also not numeric)` : ""}`);
+      const delta = Math.abs(resolved.value - assertion.expected);
+      const provenance = resolved.usedFallback ? ` (via fallback ${assertion.fallback!.source}.${assertion.fallback!.key}, primary ${assertion.source}.${assertion.key} unavailable)` : "";
       return delta <= assertion.tolerance
-        ? pass(assertion, `${actual} within ${assertion.tolerance} of ${assertion.expected}`)
-        : fail(assertion, `${actual} is ${delta} away from ${assertion.expected}; tolerance ${assertion.tolerance}`);
+        ? pass(assertion, `${resolved.value} within ${assertion.tolerance} of ${assertion.expected}${provenance}`)
+        : fail(assertion, `${resolved.value} is ${delta} away from ${assertion.expected}; tolerance ${assertion.tolerance}${provenance}`);
     }
     case "numeric_range": {
-      const actual = numeric(sourceValue(run, assertion.source, assertion.key));
-      if (actual === null) return missing(assertion, `${assertion.source}.${assertion.key} is not numeric`);
-      return actual >= assertion.min && actual <= assertion.max
-        ? pass(assertion, `${actual} within [${assertion.min}, ${assertion.max}]`)
-        : fail(assertion, `${actual} outside [${assertion.min}, ${assertion.max}]`);
+      const resolved = resolveNumericSource(run, assertion.source, assertion.key, assertion.fallback, assertion.computationFactAliases);
+      if (resolved.value === null) return missing(assertion, `${assertion.source}.${assertion.key} is not numeric${assertion.fallback ? ` (fallback ${assertion.fallback.source}.${assertion.fallback.key} also not numeric)` : ""}`);
+      const provenance = resolved.usedFallback ? ` (via fallback ${assertion.fallback!.source}.${assertion.fallback!.key}, primary ${assertion.source}.${assertion.key} unavailable)` : "";
+      return resolved.value >= assertion.min && resolved.value <= assertion.max
+        ? pass(assertion, `${resolved.value} within [${assertion.min}, ${assertion.max}]${provenance}`)
+        : fail(assertion, `${resolved.value} outside [${assertion.min}, ${assertion.max}]${provenance}`);
     }
     case "record_ids_exact": {
       const ids = allRecordIds(run);
@@ -368,7 +447,11 @@ export function evaluateDeterministicAssertion(
       return errors.length === 0 ? pass(assertion, "no runtime errors") : fail(assertion, `runtime errors: ${stable(errors)}`);
     }
     case "contains_source_fact": {
-      const actual = run.deterministicComputations?.[assertion.key] ?? run.canonicalFinalState?.[assertion.key];
+      // EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 4): also checks the merged
+      // recordObservations[].fields bag (allObservationFields()) — the same generic per-row
+      // synthetic-fact location record_field_equals-adjacent lookups already use. This widens
+      // WHERE an already-recorded fact is found, never invents one.
+      const actual = run.deterministicComputations?.[assertion.key] ?? run.canonicalFinalState?.[assertion.key] ?? allObservationFields(run)[assertion.key];
       if (actual === undefined) return missing(assertion, `source fact ${assertion.key} is missing`);
       if (assertion.expected === undefined) return pass(assertion, `source fact ${assertion.key} is present`);
       return equalValue(actual, assertion.expected)

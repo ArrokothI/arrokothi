@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.3",
+  "hotfixVersion": "evaluator-v2-hotfix.4",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P02-V2-S09",
   "repeatId": "r02",
@@ -30,7 +30,7 @@
       "severity": "hard",
       "outcome": "inconclusive",
       "passed": null,
-      "detail": "source fact skyline_grand_salon_size is missing"
+      "detail": "source fact skyline_penthouse_grand_salon_size is missing"
     },
     {
       "id": "runtime_error_absent",

@@ -31,9 +31,30 @@ import {
 //   - issue 3: record_field_equals gained an opt-in numeric_or_currency compare mode, used by
 //     P02-V2-S12, so a numeric price and its formatted-currency-string equivalent are recognized
 //     as the same fact.
+// evaluator-v2-hotfix.4 supersedes .3 on the same date/branch/PR (eliminate KNOWN FALSE
+// deterministic observations before judge-only builds semantic prompts):
+//   - issue 1: resolveComputationValue() resolves a "computation" source from the LATEST
+//     authoritative ToolExecutionSucceeded fact in nativeTrace when present (evidence-driven,
+//     never implementation-name-based), instead of trusting a possibly-stale
+//     deterministicComputations value. Fixes P01-V2-S09/S18 arrokothai's stale 9.9 m3.
+//   - issue 2: numeric_close/numeric_range gained an explicit, opt-in `fallback` source, used
+//     only when the primary is unavailable. All 7 P01 volume scenarios declare
+//     fallback: {source:"state", key:"volume"}, fixing agenerateor's empty
+//     deterministicComputations (its volume was already correctly present under
+//     canonicalFinalState.volume).
+//   - issue 3: a semantic-judge contamination gate (deterministic/gate.ts,
+//     assertNoKnownMechanicalDefects()) recomputes each evaluation fresh and rejects any
+//     evaluation about to be embedded in a judge prompt that disagrees with a fresh
+//     recomputation — a pure freshness invariant, not a registry of scenario/implementation
+//     names. Wired into judge-only.ts's preparePlan().
+//   - issue 4: contains_source_fact also checks the merged recordObservations[].fields bag, and
+//     P02-V2-S09's grand_salon_size_fact assertion key was corrected to
+//     "skyline_penthouse_grand_salon_size" (the key the adapter's already-existing, unmodified
+//     synthesis logic actually uses) — the raw arrokothai artifact already contained this fact
+//     under that key.
 // Output is written to the same deterministic-hotfix-1/ location established by .1; only the
 // hotfixVersion string and content change.
-const HOTFIX_VERSION = "evaluator-v2-hotfix.3";
+const HOTFIX_VERSION = "evaluator-v2-hotfix.4";
 const HOTFIX_DATE = "2026-08-23";
 const HOTFIX_OUTPUT = join(OUTPUT, "deterministic-hotfix-1");
 

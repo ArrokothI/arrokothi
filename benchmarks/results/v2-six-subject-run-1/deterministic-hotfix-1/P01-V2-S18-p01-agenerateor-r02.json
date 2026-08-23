@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.3",
+  "hotfixVersion": "evaluator-v2-hotfix.4",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P01-V2-S18",
   "repeatId": "r02",
@@ -28,9 +28,9 @@
       "requirementId": "P01-R03",
       "type": "numeric_close",
       "severity": "hard",
-      "outcome": "inconclusive",
-      "passed": null,
-      "detail": "computation.wall_volume_m3 is not numeric"
+      "outcome": "pass",
+      "passed": true,
+      "detail": "12 within 0.05 of 12.03464 (via fallback state.volume, primary computation.wall_volume_m3 unavailable)"
     },
     {
       "id": "runtime_error_absent",

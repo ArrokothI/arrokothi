@@ -395,7 +395,15 @@ export const P02_SCENARIOS: ScenarioV2[] = [
         type: "contains_source_fact",
         severity: "hard",
         description: "Grand Salon in Skyline Penthouse is 1400 sqft",
-        key: "skyline_grand_salon_size",
+        // EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 4): corrected to match the key the
+        // neutral adapter's synthesized per-room fact actually uses —
+        // `${property}_${room}_size` lowercased/underscored (adaptArrokothai() in
+        // v2-six-subject/adapters.ts, unchanged) — which is "skyline_penthouse_grand_salon_size",
+        // not "skyline_grand_salon_size". The raw arrokothai artifact for this scenario already
+        // carries the correct value under the correct-per-adapter key
+        // (recordObservations[].fields), it was simply never matched due to this key typo/gap.
+        // Mechanical rename only; the checked value ("1400 sqft") is unchanged.
+        key: "skyline_penthouse_grand_salon_size",
         expected: "1400 sqft",
       },
       runtimeOk,

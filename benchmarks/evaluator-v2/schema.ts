@@ -120,6 +120,26 @@ export type DeterministicAssertionType =
   | "contains_source_fact"
   | "custom";
 
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 2): an explicit, narrowly-scoped,
+// reviewable fallback source for a numeric assertion. Used ONLY when the primary source/key is
+// unavailable (see resolveNumericSource() in deterministic/assertions.ts) — if the primary value
+// is present, the fallback is never consulted, so a primary/fallback disagreement always resolves
+// to the primary. Must be declared explicitly per-assertion; there is no global/implicit state-to-
+// computation aliasing.
+export interface NumericFallbackSource {
+  source: "state" | "computation" | "action_payload";
+  key: string;
+}
+
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 1): a native tool-execution fact is not
+// guaranteed to be keyed identically to the canonical computation key an assertion checks (e.g.
+// the P01 compute_wall_volume tool emits a fact keyed "planning_wall_volume_m3", not
+// "wall_volume_m3"). Rather than have resolveComputationValue() guess at naming conventions,
+// `computationFactAliases` (below, on numeric_close/numeric_range) lets an assertion explicitly
+// declare which native-trace fact key(s) — in addition to its own canonical `key` — represent the
+// same fact. Optional; defaults to `[key]` (search only the assertion's own key) when omitted, so
+// existing assertions are unaffected.
+
 export interface BaseDeterministicAssertion {
   id: string;
   requirementId: string;
@@ -133,8 +153,8 @@ export type DeterministicAssertionSpec =
   | (BaseDeterministicAssertion & { type: "state_equals"; key: string; expected: JsonValue })
   | (BaseDeterministicAssertion & { type: "state_absent"; key: string })
   | (BaseDeterministicAssertion & { type: "state_one_of"; key: string; expected: JsonValue[] })
-  | (BaseDeterministicAssertion & { type: "numeric_close"; source: "state" | "computation" | "action_payload"; key: string; expected: number; tolerance: number })
-  | (BaseDeterministicAssertion & { type: "numeric_range"; source: "state" | "computation" | "action_payload"; key: string; min: number; max: number })
+  | (BaseDeterministicAssertion & { type: "numeric_close"; source: "state" | "computation" | "action_payload"; key: string; expected: number; tolerance: number; fallback?: NumericFallbackSource; computationFactAliases?: string[] })
+  | (BaseDeterministicAssertion & { type: "numeric_range"; source: "state" | "computation" | "action_payload"; key: string; min: number; max: number; fallback?: NumericFallbackSource; computationFactAliases?: string[] })
   | (BaseDeterministicAssertion & { type: "record_ids_exact"; expectedIds: string[] })
   | (BaseDeterministicAssertion & { type: "record_count"; expected: number })
   | (BaseDeterministicAssertion & { type: "record_field_equals"; recordId: string; field: string; expected: JsonValue; compare?: "numeric_or_currency" })

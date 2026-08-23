@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.3",
+  "hotfixVersion": "evaluator-v2-hotfix.4",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P01-V2-S09",
   "repeatId": "r02",
@@ -28,9 +28,9 @@
       "requirementId": "P01-R03",
       "type": "numeric_close",
       "severity": "hard",
-      "outcome": "hard_fail",
-      "passed": false,
-      "detail": "9.9 is 2.134639999999999 away from 12.03464; tolerance 0.05"
+      "outcome": "pass",
+      "passed": true,
+      "detail": "12 within 0.05 of 12.03464"
     },
     {
       "id": "runtime_error_absent",
@@ -42,6 +42,6 @@
       "detail": "no runtime errors"
     }
   ],
-  "hardFailures": 1,
+  "hardFailures": 0,
   "softFailures": 0
 }
