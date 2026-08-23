@@ -46,7 +46,8 @@
     "evaluator:canary": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/evaluator-v2/canary.ts",
     "benchmark:v2:six-subject": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/v2-six-subject/run.ts",
     "benchmark:v2:generate-only": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/v2-six-subject/run.ts --generate-only",
-    "benchmark:v2:judge-only": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/v2-six-subject/run.ts --judge-only"
+    "benchmark:v2:judge-only": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/v2-six-subject/run.ts --judge-only",
+    "benchmark:v2:review:arrokothai": "node --experimental-strip-types benchmarks/v2-six-subject/render-arrokothai-conversation-review.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",
