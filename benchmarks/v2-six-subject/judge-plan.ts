@@ -323,6 +323,34 @@ export interface ValidatedResponseItem {
 // pattern and passes everything else through unchanged for the strict parser to reject.
 // =====================================================================================
 
+// =====================================================================================
+// FROZEN NORMALIZATION STACK (v2-six-subject-run-1, decided 2026-08-23 in the FINAL OFFLINE
+// PROTOCOL-NORMALIZATION AUDIT). No new normalization rule may be added to this experiment after
+// this point. The complete, frozen set is exactly:
+//
+//   SEMANTIC (applied in order):
+//     1. score_string_to_number — requirementResults[].score given as the exact JSON string
+//        "0"/"1"/"2" is replaced with the corresponding number.
+//     2. removed_non_hard_semantic_violation_annotation — hardSemanticViolations entries that are
+//        a genuinely expected requirement id but not in this rubric's hard-capable set are
+//        removed (see normalizeHardSemanticViolations below).
+//
+//   PAIRWISE (applied in order):
+//     1. trimmed_trailing_stray_delimiters — a complete top-level JSON value followed only by
+//        stray trailing delimiters/whitespace is recovered (extractLeadingJsonValue).
+//     2. unwrapped_outputSchema_echo — a complete pairwise shape echoed under an `outputSchema`
+//        wrapper key is unwrapped (unwrapPairwiseSchemaEcho).
+//     3. injected_missing_schema_version / injected_missing_prompt_version — the fixed protocol
+//        constants schemaVersion="pairwise-judge-output-v1" and promptVersion=<the request's own
+//        frozen promptVersion> are injected ONLY when entirely absent and only when doing so makes
+//        the object a complete pairwise shape (injectMissingPairwiseFixedMetadata).
+//
+// Nothing else. In particular: no case-normalization of verdict/preference values, no
+// score/verdict inference from prose, no deduplication, no repair of genuinely truncated JSON,
+// and no correction of a present-but-wrong field (schemaVersion, promptVersion, or otherwise) —
+// all of those remain hard rejections, exactly as before this audit.
+// =====================================================================================
+
 const SEMANTIC_SCORE_STRING_TO_NUMBER: Record<string, 0 | 1 | 2> = { "0": 0, "1": 1, "2": 2 };
 
 /**
@@ -334,30 +362,82 @@ const SEMANTIC_SCORE_STRING_TO_NUMBER: Record<string, 0 | 1 | 2> = { "0": 0, "1"
  * input is passed through unchanged (returns applied: false); the strict parser reports the
  * original parse error, unmodified.
  */
-export function normalizeSemanticJudgeSerialization(raw: string): { normalizedText: string; applied: boolean } {
+/**
+ * ONLY transformation: `hardSemanticViolations` entries are filtered against the request's own
+ * frozen `expectedRequirementIds`/`hardRequirementIds` sets — NOT invented, NOT looked up
+ * elsewhere. An id is removed if and only if it is (a) a genuinely expected requirement id for
+ * this request AND (b) not among the ids the frozen rubric ever marked hard-capable
+ * (`hardFailureWhen` set). This is a purely mechanical fact: the field's frozen domain excludes
+ * that id, so its presence is an invalid use of a valid id, not a judgment call about whether the
+ * violation "really was hard." An id that is not even in expectedRequirementIds (genuinely
+ * unknown) is left untouched so the strict parser's existing unknown-id rejection still fires.
+ * Duplicate ids are also left untouched — deduplication is not part of this rule and stays
+ * rejected exactly as before. requirementResults (score/confidence/reason/citedTurns) is never
+ * touched by this function.
+ */
+export function normalizeHardSemanticViolations(
+  violations: readonly unknown[],
+  expectedRequirementIds: readonly string[],
+  hardRequirementIds: readonly string[],
+): { violations: unknown[]; applied: boolean } {
+  let applied = false;
+  const kept = violations.filter((entry) => {
+    if (typeof entry !== "string") return true; // not our concern; leave for the strict parser's own type check
+    if (hardRequirementIds.includes(entry)) return true; // valid hard id -> keep
+    if (expectedRequirementIds.includes(entry)) {
+      applied = true;
+      return false; // expected-but-non-hard -> omit the invalid annotation
+    }
+    return true; // truly unknown id -> keep, so the strict parser still rejects it
+  });
+  return { violations: kept, applied };
+}
+
+export function normalizeSemanticJudgeSerialization(
+  raw: string,
+  expectedRequirementIds: readonly string[] = [],
+  hardRequirementIds: readonly string[] = [],
+): { normalizedText: string; applied: boolean; steps: string[] } {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
   } catch {
-    return { normalizedText: raw, applied: false };
+    return { normalizedText: raw, applied: false, steps: [] };
   }
-  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return { normalizedText: raw, applied: false };
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return { normalizedText: raw, applied: false, steps: [] };
   const record = parsed as Record<string, unknown>;
-  if (!Array.isArray(record.requirementResults)) return { normalizedText: raw, applied: false };
 
-  let applied = false;
-  const normalizedResults = record.requirementResults.map((entry) => {
-    if (entry && typeof entry === "object" && !Array.isArray(entry)) {
-      const item = entry as Record<string, unknown>;
-      if (typeof item.score === "string" && Object.prototype.hasOwnProperty.call(SEMANTIC_SCORE_STRING_TO_NUMBER, item.score)) {
-        applied = true;
-        return { ...item, score: SEMANTIC_SCORE_STRING_TO_NUMBER[item.score] };
+  const steps: string[] = [];
+  let next: Record<string, unknown> = record;
+
+  if (Array.isArray(record.requirementResults)) {
+    let scoreApplied = false;
+    const normalizedResults = record.requirementResults.map((entry) => {
+      if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+        const item = entry as Record<string, unknown>;
+        if (typeof item.score === "string" && Object.prototype.hasOwnProperty.call(SEMANTIC_SCORE_STRING_TO_NUMBER, item.score)) {
+          scoreApplied = true;
+          return { ...item, score: SEMANTIC_SCORE_STRING_TO_NUMBER[item.score] };
+        }
       }
+      return entry;
+    });
+    if (scoreApplied) {
+      next = { ...next, requirementResults: normalizedResults };
+      steps.push("score_string_to_number");
     }
-    return entry;
-  });
-  if (!applied) return { normalizedText: raw, applied: false };
-  return { normalizedText: JSON.stringify({ ...record, requirementResults: normalizedResults }), applied: true };
+  }
+
+  if (Array.isArray(record.hardSemanticViolations)) {
+    const filtered = normalizeHardSemanticViolations(record.hardSemanticViolations, expectedRequirementIds, hardRequirementIds);
+    if (filtered.applied) {
+      next = { ...next, hardSemanticViolations: filtered.violations };
+      steps.push("removed_non_hard_semantic_violation_annotation");
+    }
+  }
+
+  if (steps.length === 0) return { normalizedText: raw, applied: false, steps: [] };
+  return { normalizedText: JSON.stringify(next), applied: true, steps };
 }
 
 /**
@@ -444,13 +524,49 @@ export function unwrapPairwiseSchemaEcho(parsed: unknown): { value: unknown; app
 }
 
 /**
- * Composes both pairwise recovery steps: (1) trim stray trailing delimiters if direct parsing
- * fails, (2) unwrap an echoed `outputSchema` wrapper if the (possibly trimmed) top level isn't
- * already a complete shape. Either, both, or neither may apply; `steps` records exactly which.
- * Malformed input that neither step can resolve is returned unchanged (steps: []) for the strict
- * parser to reject with its own error — this function never throws and never guesses.
+ * `schemaVersion` ("pairwise-judge-output-v1") and `promptVersion` (the request's own frozen
+ * `promptVersion`) are protocol constants fixed before judging — their correct values are never
+ * in doubt. This injects EITHER field ONLY when it is entirely ABSENT from the object (not when
+ * present-but-wrong — a wrong value is a different, unsafe-to-normalize problem and is left for
+ * the strict parser to reject on its own terms). It also only actually applies the injection if
+ * doing so makes the object a complete pairwise shape — i.e. verdict/criteria/reason were already
+ * present and valid. If the object is incomplete for some OTHER reason (missing verdict, no
+ * criteria array, etc.), injecting metadata alone would not make it complete, so this refuses and
+ * returns the object unchanged, leaving the strict parser to report the real, underlying problem.
  */
-export function normalizePairwiseJudgeSerialization(raw: string): { normalizedText: string; applied: boolean; steps: string[] } {
+export function injectMissingPairwiseFixedMetadata(parsed: unknown, expectedPromptVersion: string): { value: unknown; applied: boolean; steps: string[] } {
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return { value: parsed, applied: false, steps: [] };
+  if (isCompletePairwiseShape(parsed)) return { value: parsed, applied: false, steps: [] }; // nothing missing
+
+  const record = parsed as Record<string, unknown>;
+  const steps: string[] = [];
+  const next: Record<string, unknown> = { ...record };
+  if (!("schemaVersion" in record)) {
+    next.schemaVersion = "pairwise-judge-output-v1";
+    steps.push("injected_missing_schema_version");
+  }
+  if (!("promptVersion" in record)) {
+    next.promptVersion = expectedPromptVersion;
+    steps.push("injected_missing_prompt_version");
+  }
+  if (steps.length === 0) return { value: parsed, applied: false, steps: [] }; // both present -> incomplete for some other, unsafe-to-touch reason
+
+  if (!isCompletePairwiseShape(next)) return { value: parsed, applied: false, steps: [] }; // injecting metadata alone didn't complete the shape -> refuse, let the strict parser report the real problem (e.g. missing verdict)
+  return { value: next, applied: true, steps };
+}
+
+/**
+ * Composes all three approved pairwise recovery steps, in order: (1) trim stray trailing
+ * delimiters if direct parsing fails, (2) unwrap an echoed `outputSchema` wrapper if the
+ * (possibly trimmed) top level isn't already a complete shape, (3) inject missing
+ * schemaVersion/promptVersion metadata if the (possibly unwrapped) object is otherwise complete
+ * but lacks one or both of those fields. Any, all, or none may apply; `steps` records exactly
+ * which. Malformed input none of these three steps can resolve is returned unchanged (steps: [])
+ * for the strict parser to reject with its own error — this function never throws and never
+ * guesses. This is the frozen, complete pairwise normalization stack for this experiment; no
+ * further rule may be added without a fresh, evidence-driven audit.
+ */
+export function normalizePairwiseJudgeSerialization(raw: string, expectedPromptVersion: string): { normalizedText: string; applied: boolean; steps: string[] } {
   const steps: string[] = [];
   let workingText = raw;
 
@@ -471,9 +587,16 @@ export function normalizePairwiseJudgeSerialization(raw: string): { normalizedTe
 
   const unwrapped = unwrapPairwiseSchemaEcho(parsed);
   if (unwrapped.applied) steps.push("unwrapped_outputSchema_echo");
+  let value = unwrapped.value;
+
+  const metadataInjected = injectMissingPairwiseFixedMetadata(value, expectedPromptVersion);
+  if (metadataInjected.applied) {
+    steps.push(...metadataInjected.steps);
+    value = metadataInjected.value;
+  }
 
   if (steps.length === 0) return { normalizedText: raw, applied: false, steps: [] };
-  return { normalizedText: JSON.stringify(unwrapped.value), applied: true, steps };
+  return { normalizedText: JSON.stringify(value), applied: true, steps };
 }
 
 /**
@@ -523,14 +646,16 @@ export function validateAndParseResponseItem(
   let normalizationApplied = false;
   const normalizationSteps: string[] = [];
   if (request.kind === "semantic") {
-    const normalized = normalizeSemanticJudgeSerialization(text);
+    const expectedRequirementIds = ((request.parse as any).expectedRequirementIds ?? []) as readonly string[];
+    const hardRequirementIds = ((request.parse as any).hardRequirementIds ?? []) as readonly string[];
+    const normalized = normalizeSemanticJudgeSerialization(text, expectedRequirementIds, hardRequirementIds);
     if (normalized.applied) {
       workingText = normalized.normalizedText;
       normalizationApplied = true;
-      normalizationSteps.push("score_string_to_number");
+      normalizationSteps.push(...normalized.steps);
     }
   } else {
-    const normalized = normalizePairwiseJudgeSerialization(text);
+    const normalized = normalizePairwiseJudgeSerialization(text, request.promptVersion);
     if (normalized.applied) {
       workingText = normalized.normalizedText;
       normalizationApplied = true;

@@ -9,6 +9,8 @@ import { readFile } from "node:fs/promises";
 import { describe, test } from "node:test";
 import {
   extractLeadingJsonValue,
+  injectMissingPairwiseFixedMetadata,
+  normalizeHardSemanticViolations,
   normalizePairwiseJudgeSerialization,
   normalizeSemanticJudgeSerialization,
   unwrapPairwiseSchemaEcho,
@@ -22,6 +24,20 @@ function semanticRequest(expectedIds: string[]): JudgeRequest {
   return {
     key: "semantic:x", kind: "semantic", id: "x", prompt: "{}", promptVersion: "semantic-judge-v1", createdAt: "t",
     parse: { expectedRequirementIds: expectedIds, hardRequirementIds: [] },
+  };
+}
+
+function semanticRequestWithHard(expectedIds: string[], hardIds: string[]): JudgeRequest {
+  return {
+    key: "semantic:x", kind: "semantic", id: "x", prompt: "{}", promptVersion: "semantic-judge-v1", createdAt: "t",
+    parse: { expectedRequirementIds: expectedIds, hardRequirementIds: hardIds },
+  };
+}
+
+function pairwiseRequestFor(...expectedCriteria: string[]): JudgeRequest {
+  return {
+    key: "pairwise:x", kind: "pairwise", id: "x", prompt: "{}", promptVersion: "pairwise-judge-v1", createdAt: "t", seed: "s",
+    parse: { scenarioId: "S", assignment: { A: "l", B: "r" }, expectedCriteria, implementationAssignment: { A: "l", B: "r" } },
   };
 }
 
@@ -124,7 +140,7 @@ describe("judge-recovery: normalizeSemanticJudgeSerialization — the narrow sco
   test("malformed (non-JSON) semantic text is passed through unchanged, not silently repaired", () => {
     const raw = "{not json";
     const result = normalizeSemanticJudgeSerialization(raw);
-    assert.deepEqual(result, { normalizedText: raw, applied: false });
+    assert.deepEqual(result, { normalizedText: raw, applied: false, steps: [] });
   });
 });
 
@@ -216,6 +232,7 @@ describe("judge-recovery: normalizePairwiseJudgeSerialization + validateAndParse
     "pairwise:P01-V2-S18-r02-p01-agenerateor-vs-p01-arrokothai": ["correctness", "grounding", "correction_handling", "truthfulness", "usefulness", "conversational_coherence"],
     "pairwise:P01-V2-S12-r03-p01-original-vs-p01-arrokothai": ["correctness", "truthfulness", "usefulness", "conversational_coherence"],
     "pairwise:P02-V2-S16-r04-p02-original-vs-p02-agenerateor": ["correctness", "truthfulness", "usefulness", "conversational_coherence"],
+    "pairwise:P02-V2-S07-r02-p02-original-vs-p02-arrokothai": ["correctness", "correction_handling", "usefulness", "conversational_coherence"],
   };
 
   const pairwiseRequest = (key: string): JudgeRequest => ({
@@ -231,7 +248,7 @@ describe("judge-recovery: normalizePairwiseJudgeSerialization + validateAndParse
     const cases = await fixture("pairwise-category-a-schema-echo.json");
     assert.equal(cases.length, 4);
     for (const { key, text } of cases) {
-      const normalized = normalizePairwiseJudgeSerialization(text);
+      const normalized = normalizePairwiseJudgeSerialization(text, "pairwise-judge-v1");
       assert.equal(normalized.applied, true, key);
       assert.deepEqual(normalized.steps, ["unwrapped_outputSchema_echo"], key);
       const item = validateAndParseResponseItem(respondingWith(text), pairwiseRequest(key), "gemini-3.5-flash", judgeFields, false);
@@ -245,7 +262,7 @@ describe("judge-recovery: normalizePairwiseJudgeSerialization + validateAndParse
     const cases = await fixture("pairwise-category-a-trailing-brace.json");
     assert.equal(cases.length, 2);
     for (const { key, text } of cases) {
-      const normalized = normalizePairwiseJudgeSerialization(text);
+      const normalized = normalizePairwiseJudgeSerialization(text, "pairwise-judge-v1");
       assert.equal(normalized.applied, true, key);
       assert.deepEqual(normalized.steps, ["trimmed_trailing_stray_delimiters"], key);
       const item = validateAndParseResponseItem(respondingWith(text), pairwiseRequest(key), "gemini-3.5-flash", judgeFields, false);
@@ -257,21 +274,29 @@ describe("judge-recovery: normalizePairwiseJudgeSerialization + validateAndParse
   test("category B (genuinely truncated JSON, P01-V2-S11-r03): NOT recovered -- remains rejected, not guessed at", async () => {
     const cases = await fixture("pairwise-category-b-truncated.json");
     const { key, text } = cases[0]!;
-    const normalized = normalizePairwiseJudgeSerialization(text);
+    const normalized = normalizePairwiseJudgeSerialization(text, "pairwise-judge-v1");
     assert.equal(normalized.applied, false, key);
     assert.throws(() => validateAndParseResponseItem(respondingWith(text), pairwiseRequest(key), "gemini-3.5-flash", judgeFields, false));
   });
 
-  test("category B (trailing brace trims clean, but the recovered object is missing required schemaVersion/promptVersion, P02-V2-S07-r02): NOT recovered end to end -- the strict parser still rejects it", async () => {
+  test("category B (trailing brace trims clean, and the recovered object is missing only the fixed schemaVersion/promptVersion metadata, P02-V2-S07-r02): recovered end to end via trim + fixed-metadata injection", async () => {
     const cases = await fixture("pairwise-category-b-missing-schema-fields.json");
     const { key, text } = cases[0]!;
-    // The trailing-delimiter trim alone succeeds structurally (there IS a complete top-level
-    // object once the stray brace is trimmed) -- but that object never becomes a "complete
-    // pairwise shape" because schemaVersion/promptVersion are absent, so unwrapPairwiseSchemaEcho
-    // (which requires isCompletePairwiseShape) does not treat it as a recovered answer, and the
-    // strict parser rejects it for the missing schemaVersion, exactly as it should: nothing here
-    // infers or backfills those missing identity fields.
-    assert.throws(() => validateAndParseResponseItem(respondingWith(text), pairwiseRequest(key), "gemini-3.5-flash", judgeFields, false), /schemaVersion/);
+    // The trailing-delimiter trim succeeds structurally (there IS a complete top-level object once
+    // the stray brace is trimmed), and the only thing missing from that object is the fixed
+    // schemaVersion/promptVersion metadata -- both protocol constants whose correct values are
+    // never in doubt (schemaVersion is always "pairwise-judge-output-v1"; promptVersion is always
+    // the request's own frozen promptVersion). verdict/criteria/preference/reasons are left
+    // completely untouched. This is the approved, narrow fixed-metadata injection rule -- it does
+    // not infer or repair any actual judgment content, only completes known-constant identity
+    // fields that the strict parser would otherwise reject on.
+    const normalized = normalizePairwiseJudgeSerialization(text, "pairwise-judge-v1");
+    assert.equal(normalized.applied, true, key);
+    assert.deepEqual(normalized.steps, ["trimmed_trailing_stray_delimiters", "injected_missing_schema_version", "injected_missing_prompt_version"], key);
+    const item = validateAndParseResponseItem(respondingWith(text), pairwiseRequest(key), "gemini-3.5-flash", judgeFields, false);
+    assert.equal(item.normalizationApplied, true);
+    assert.equal(item.rawProviderText, text, "original raw text must be preserved unchanged alongside the normalized parse");
+    assert.equal((item.parsedOutput as any).verdict, "B");
   });
 });
 
@@ -280,20 +305,172 @@ describe("judge-recovery: adversarial -- ambiguous malformed pairwise responses 
     const text = JSON.stringify({ schemaVersion: "pairwise-judge-output-v1", promptVersion: "pairwise-judge-v1", verdict: "A", criteria: [], reason: "first" })
       + "\n"
       + JSON.stringify({ schemaVersion: "pairwise-judge-output-v1", promptVersion: "pairwise-judge-v1", verdict: "B", criteria: [], reason: "second" });
-    const normalized = normalizePairwiseJudgeSerialization(text);
+    const normalized = normalizePairwiseJudgeSerialization(text, "pairwise-judge-v1");
     assert.equal(normalized.applied, false);
     assert.throws(() => validateAndParseResponseItem(respondingWith(text), { key: "pairwise:x", kind: "pairwise", id: "x", prompt: "{}", promptVersion: "pairwise-judge-v1", createdAt: "t", seed: "s", parse: { scenarioId: "S", assignment: { A: "l", B: "r" }, expectedCriteria: [], implementationAssignment: {} } }, "gemini-3.5-flash", judgeFields, false));
   });
 
   test("verdict missing entirely, with prose explaining a preference: never inferred from prose", () => {
     const text = JSON.stringify({ schemaVersion: "pairwise-judge-output-v1", promptVersion: "pairwise-judge-v1", criteria: [], reason: "Candidate A is clearly better because..." });
-    const normalized = normalizePairwiseJudgeSerialization(text);
+    const normalized = normalizePairwiseJudgeSerialization(text, "pairwise-judge-v1");
     assert.equal(normalized.applied, false);
   });
 
   test("a verdict value outside the closed enum (case variant with ambiguous intent) is not coerced -- no case-normalization rule was introduced since none was needed by the actual evidence", () => {
     const text = JSON.stringify({ schemaVersion: "pairwise-judge-output-v1", promptVersion: "pairwise-judge-v1", verdict: "left", criteria: [{ criterion: "correctness", preference: "A", reason: "r" }], reason: "overall" });
-    const normalized = normalizePairwiseJudgeSerialization(text);
+    const normalized = normalizePairwiseJudgeSerialization(text, "pairwise-judge-v1");
     assert.equal(normalized.applied, false);
+  });
+});
+
+// FINAL OFFLINE PROTOCOL-NORMALIZATION AUDIT (2026-08-23): the two rules below were derived from
+// auditing the exact remaining 5 semantic + 2 pairwise still-invalid keys after retry attempt 2
+// (see judge-batch/retry-attempt-2-validation-report.json). Both rules are purely mechanical
+// domain-exclusion / known-constant completion -- neither infers, reinterprets, or repairs actual
+// judgment content (scores, reasons, verdicts, preferences are never touched).
+describe("judge-recovery: normalizeHardSemanticViolations -- narrow expected-but-non-hard id removal", () => {
+  test("PASS: an id that is expected but NOT hard-capable for this rubric is removed", () => {
+    const result = normalizeHardSemanticViolations(["P02-R05"], ["P02-R05", "P02-R09"], []);
+    assert.equal(result.applied, true);
+    assert.deepEqual(result.violations, []);
+  });
+
+  test("PASS: a valid hard-capable id (present in hardRequirementIds) is left in place", () => {
+    const result = normalizeHardSemanticViolations(["P02-R09"], ["P02-R05", "P02-R09"], ["P02-R09"]);
+    assert.equal(result.applied, false);
+    assert.deepEqual(result.violations, ["P02-R09"]);
+  });
+
+  test("FAIL: an id that is not even in expectedRequirementIds (truly unknown) is NOT removed -- left for the strict parser to reject on its own", () => {
+    const result = normalizeHardSemanticViolations(["P99-R99"], ["P02-R05", "P02-R09"], ["P02-R09"]);
+    assert.equal(result.applied, false);
+    assert.deepEqual(result.violations, ["P99-R99"]);
+    const raw = semanticText([{ requirementId: "P02-R05", score: 2, confidence: 0.9, reason: "ok", citedTurns: [1] }], { hardSemanticViolations: ["P99-R99"] });
+    assert.throws(
+      () => validateAndParseResponseItem(respondingWith(raw), semanticRequestWithHard(["P02-R05"], ["P02-R09"]), "gemini-3.5-flash", judgeFields, false),
+      /non-hard or unknown requirement id/,
+    );
+  });
+
+  test("FAIL: a duplicate hard-violation id is still rejected end to end -- normalization does not dedupe", () => {
+    const raw = semanticText([{ requirementId: "P02-R09", score: 0, confidence: 0.9, reason: "ok", citedTurns: [1] }], { hardSemanticViolations: ["P02-R09", "P02-R09"] });
+    assert.throws(
+      () => validateAndParseResponseItem(respondingWith(raw), semanticRequestWithHard(["P02-R09"], ["P02-R09"]), "gemini-3.5-flash", judgeFields, false),
+      /duplicate hardSemanticViolations/,
+    );
+  });
+
+  test("mixed: one valid hard id + one expected-but-non-hard id -- only the valid hard id is kept, and the response is recovered end to end", () => {
+    const result = normalizeHardSemanticViolations(["P02-R09", "P02-R05"], ["P02-R05", "P02-R09"], ["P02-R09"]);
+    assert.equal(result.applied, true);
+    assert.deepEqual(result.violations, ["P02-R09"]);
+
+    const raw = semanticText(
+      [
+        { requirementId: "P02-R05", score: 2, confidence: 0.9, reason: "ok", citedTurns: [1] },
+        { requirementId: "P02-R09", score: 0, confidence: 0.9, reason: "hard fail", citedTurns: [2] },
+      ],
+      { hardSemanticViolations: ["P02-R09", "P02-R05"] },
+    );
+    const item = validateAndParseResponseItem(respondingWith(raw), semanticRequestWithHard(["P02-R05", "P02-R09"], ["P02-R09"]), "gemini-3.5-flash", judgeFields, false);
+    assert.equal(item.normalizationApplied, true);
+    assert.deepEqual(item.normalizationSteps, ["removed_non_hard_semantic_violation_annotation"]);
+    assert.equal(item.rawProviderText, raw, "original raw text must be preserved unchanged alongside the normalized parse");
+    assert.deepEqual((item.parsedOutput as any).hardSemanticViolations, ["P02-R09"]);
+  });
+});
+
+describe("judge-recovery: injectMissingPairwiseFixedMetadata -- narrow fixed-metadata completion", () => {
+  const validJudgment = { verdict: "B", criteria: [{ criterion: "correctness", preference: "B", reason: "r" }], reason: "overall" };
+
+  test("PASS: only schemaVersion missing -- injected, promptVersion left as-is", () => {
+    const parsed = { ...validJudgment, promptVersion: "pairwise-judge-v1" };
+    const result = injectMissingPairwiseFixedMetadata(parsed, "pairwise-judge-v1");
+    assert.equal(result.applied, true);
+    assert.deepEqual(result.steps, ["injected_missing_schema_version"]);
+    assert.equal((result.value as any).schemaVersion, "pairwise-judge-output-v1");
+    assert.equal((result.value as any).promptVersion, "pairwise-judge-v1");
+  });
+
+  test("PASS: only promptVersion missing -- injected, schemaVersion left as-is", () => {
+    const parsed = { ...validJudgment, schemaVersion: "pairwise-judge-output-v1" };
+    const result = injectMissingPairwiseFixedMetadata(parsed, "pairwise-judge-v1");
+    assert.equal(result.applied, true);
+    assert.deepEqual(result.steps, ["injected_missing_prompt_version"]);
+    assert.equal((result.value as any).promptVersion, "pairwise-judge-v1");
+  });
+
+  test("PASS: both missing, judgment content otherwise valid -- both injected", () => {
+    const result = injectMissingPairwiseFixedMetadata(validJudgment, "pairwise-judge-v1");
+    assert.equal(result.applied, true);
+    assert.deepEqual(result.steps, ["injected_missing_schema_version", "injected_missing_prompt_version"]);
+    assert.equal((result.value as any).schemaVersion, "pairwise-judge-output-v1");
+    assert.equal((result.value as any).promptVersion, "pairwise-judge-v1");
+    assert.deepEqual((result.value as any).verdict, "B");
+    assert.deepEqual((result.value as any).criteria, validJudgment.criteria);
+    assert.equal((result.value as any).reason, "overall");
+  });
+
+  test("FAIL: schemaVersion present but WRONG -- not touched, not treated as missing", () => {
+    const parsed = { ...validJudgment, schemaVersion: "pairwise-judge-output-v0", promptVersion: "pairwise-judge-v1" };
+    const result = injectMissingPairwiseFixedMetadata(parsed, "pairwise-judge-v1");
+    assert.equal(result.applied, false);
+    assert.deepEqual(result.value, parsed);
+  });
+
+  test("FAIL: promptVersion present but WRONG -- not touched, not treated as missing", () => {
+    const parsed = { ...validJudgment, schemaVersion: "pairwise-judge-output-v1", promptVersion: "some-other-version" };
+    const result = injectMissingPairwiseFixedMetadata(parsed, "pairwise-judge-v1");
+    assert.equal(result.applied, false);
+    assert.deepEqual(result.value, parsed);
+  });
+
+  test("FAIL: verdict missing -- metadata injection alone cannot complete the shape, refuses", () => {
+    const parsed = { criteria: [{ criterion: "correctness", preference: "B", reason: "r" }], reason: "overall" };
+    const result = injectMissingPairwiseFixedMetadata(parsed, "pairwise-judge-v1");
+    assert.equal(result.applied, false);
+    assert.deepEqual(result.value, parsed);
+  });
+
+  test("FAIL: a criterion the request expects is missing entirely -- metadata gets completed (structurally valid, just incomplete relative to what THIS request expected), but validateAndParseResponseItem still rejects it for the missing expected criterion; judgment content is never invented to paper over it", () => {
+    const text = JSON.stringify({ verdict: "B", criteria: [], reason: "overall" }); // schemaVersion/promptVersion both absent too
+    assert.throws(
+      () => validateAndParseResponseItem(respondingWith(text), pairwiseRequestFor("correctness"), "gemini-3.5-flash", judgeFields, false),
+      /missing pairwise criteri/i,
+    );
+  });
+
+  test("FAIL: duplicate/unknown criteria still rejected end to end even after metadata injection", () => {
+    const text = JSON.stringify({
+      verdict: "B",
+      criteria: [
+        { criterion: "correctness", preference: "B", reason: "r1" },
+        { criterion: "correctness", preference: "A", reason: "r2 (duplicate criterion)" },
+      ],
+      reason: "overall",
+    });
+    assert.throws(
+      () => validateAndParseResponseItem(respondingWith(text), pairwiseRequestFor("correctness"), "gemini-3.5-flash", judgeFields, false),
+      /duplicate|unexpected|unknown/i,
+    );
+  });
+
+  test("end to end: schemaVersion + promptVersion both missing, judgment otherwise complete -- recovered via validateAndParseResponseItem", () => {
+    const text = JSON.stringify(validJudgment);
+    const item = validateAndParseResponseItem(respondingWith(text), pairwiseRequestFor("correctness"), "gemini-3.5-flash", judgeFields, false);
+    assert.equal(item.normalizationApplied, true);
+    assert.deepEqual(item.normalizationSteps, ["injected_missing_schema_version", "injected_missing_prompt_version"]);
+    assert.equal(item.rawProviderText, text, "original raw text must be preserved unchanged alongside the normalized parse");
+    assert.equal((item.parsedOutput as any).verdict, "B");
+  });
+
+  test("end to end: schemaVersion present but WRONG -- rejected, never silently corrected", () => {
+    const text = JSON.stringify({ ...validJudgment, schemaVersion: "pairwise-judge-output-v0", promptVersion: "pairwise-judge-v1" });
+    assert.throws(() => validateAndParseResponseItem(respondingWith(text), pairwiseRequestFor("correctness"), "gemini-3.5-flash", judgeFields, false), /schemaVersion/);
+  });
+
+  test("end to end: promptVersion present but WRONG -- rejected, never silently corrected", () => {
+    const text = JSON.stringify({ ...validJudgment, schemaVersion: "pairwise-judge-output-v1", promptVersion: "some-other-version" });
+    assert.throws(() => validateAndParseResponseItem(respondingWith(text), pairwiseRequestFor("correctness"), "gemini-3.5-flash", judgeFields, false), /promptVersion/);
   });
 });
