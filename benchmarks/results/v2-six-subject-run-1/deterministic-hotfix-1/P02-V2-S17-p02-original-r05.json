@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.2",
+  "hotfixVersion": "evaluator-v2-hotfix.3",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P02-V2-S17",
   "repeatId": "r05",
@@ -31,6 +31,15 @@
       "outcome": "pass",
       "passed": true,
       "detail": "action args contain expected subset"
+    },
+    {
+      "id": "payload_best_contact_time",
+      "requirementId": "P02-R13",
+      "type": "action_payload_time_preference_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "best_contact_time \"tomorrow morning\" matches \"tomorrow morning\" after canonicalization (\"tomorrow morning\")"
     },
     {
       "id": "unknown_outcome",

@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.2",
+  "hotfixVersion": "evaluator-v2-hotfix.3",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P02-V2-S15",
   "repeatId": "r02",
@@ -40,6 +40,15 @@
       "outcome": "inconclusive",
       "passed": null,
       "detail": "action args are missing"
+    },
+    {
+      "id": "payload_best_contact_time",
+      "requirementId": "P02-R13",
+      "type": "action_payload_time_preference_equals",
+      "severity": "hard",
+      "outcome": "inconclusive",
+      "passed": null,
+      "detail": "best_contact_time is missing from the dispatched action payload"
     },
     {
       "id": "success",

@@ -113,6 +113,7 @@ export type DeterministicAssertionType =
   | "confirmation_requested"
   | "confirmation_payload_exact"
   | "confirmation_payload_matches_action_payload"
+  | "action_payload_time_preference_equals"
   | "action_outcome"
   | "stop_reason"
   | "runtime_error_absent"
@@ -136,7 +137,7 @@ export type DeterministicAssertionSpec =
   | (BaseDeterministicAssertion & { type: "numeric_range"; source: "state" | "computation" | "action_payload"; key: string; min: number; max: number })
   | (BaseDeterministicAssertion & { type: "record_ids_exact"; expectedIds: string[] })
   | (BaseDeterministicAssertion & { type: "record_count"; expected: number })
-  | (BaseDeterministicAssertion & { type: "record_field_equals"; recordId: string; field: string; expected: JsonValue })
+  | (BaseDeterministicAssertion & { type: "record_field_equals"; recordId: string; field: string; expected: JsonValue; compare?: "numeric_or_currency" })
   | (BaseDeterministicAssertion & { type: "action_not_requested"; actionName: string })
   | (BaseDeterministicAssertion & { type: "action_requested"; actionName: string })
   | (BaseDeterministicAssertion & { type: "dispatch_count"; expected: number })
@@ -145,6 +146,7 @@ export type DeterministicAssertionSpec =
   | (BaseDeterministicAssertion & { type: "confirmation_requested"; actionName?: string; expected: boolean })
   | (BaseDeterministicAssertion & { type: "confirmation_payload_exact"; expected: Record<string, JsonValue> })
   | (BaseDeterministicAssertion & { type: "confirmation_payload_matches_action_payload"; actionName?: string })
+  | (BaseDeterministicAssertion & { type: "action_payload_time_preference_equals"; actionName?: string; field: string; expected: string })
   | (BaseDeterministicAssertion & { type: "action_outcome"; expected: TerminalActionOutcome })
   | (BaseDeterministicAssertion & { type: "stop_reason"; expected: string | string[] })
   | (BaseDeterministicAssertion & { type: "runtime_error_absent" })

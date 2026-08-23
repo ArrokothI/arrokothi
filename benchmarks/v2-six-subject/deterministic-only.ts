@@ -16,13 +16,24 @@ import {
   EXPERIMENT_ID, OUTPUT, ROOT, SUBJECT_MODEL, expectedUnits, gitCommit, gitCommitTimestamp, readJson, scenarios, treeHash, writeJson,
 } from "./orchestration.ts";
 
-// evaluator-v2-hotfix.2 supersedes .1 on the same date/branch/PR: it additionally fixes
-// confirmation_payload_exact (issue 1, now confirmation_payload_matches_action_payload) and
-// removes best_contact_time from the P02-V2-S13/S15/S17 deterministic hard payload subset
-// (issue 2, now covered by a contact_time_preserved semantic rubric item). Output is written to
-// the same deterministic-hotfix-1/ location established by .1; only the hotfixVersion string and
-// content change.
-const HOTFIX_VERSION = "evaluator-v2-hotfix.2";
+// evaluator-v2-hotfix.3 supersedes .2 on the same date/branch/PR (freeze-boundary audit):
+//   - issue 0: reverted hotfix.2's contact_time_preserved semantic rubric addition on
+//     P02-V2-S13/S15/S17 — the frozen semantic rubric contract must not expand post hoc.
+//     semanticRubric arrays are now structurally identical to the generation-time baseline
+//     (commit 7b580b47ba58aa748d710e9427b4d3208e3f8425) for every P01/P02 scenario.
+//   - issue 1: best_contact_time returns to deterministic evaluation (P02-R13 is a deterministic
+//     action requirement) via a new, narrow, documented, symmetric canonicalizer
+//     (action_payload_time_preference_equals / canonicalizeTimePreference() in
+//     deterministic/assertions.ts) instead of a semantic rubric item.
+//   - issue 2: confirmation_payload_matches_action_payload's missing-data semantics now
+//     distinguish "instrumentation genuinely unavailable" (not_applicable/inconclusive) from
+//     "instrumentation available but no confirmation happened before a dispatch" (hard fail).
+//   - issue 3: record_field_equals gained an opt-in numeric_or_currency compare mode, used by
+//     P02-V2-S12, so a numeric price and its formatted-currency-string equivalent are recognized
+//     as the same fact.
+// Output is written to the same deterministic-hotfix-1/ location established by .1; only the
+// hotfixVersion string and content change.
+const HOTFIX_VERSION = "evaluator-v2-hotfix.3";
 const HOTFIX_DATE = "2026-08-23";
 const HOTFIX_OUTPUT = join(OUTPUT, "deterministic-hotfix-1");
 
@@ -155,7 +166,7 @@ async function main() {
       hard: { tally: value.hard, ...rate(value.hard) },
       soft: { tally: value.soft, ...rate(value.soft) },
     };
-  }).sort((a, b) => (a.applicationId + a.implementationId).localeCompare(b.applicationId + b.implementationId));
+  }).sort((a, b) => (`${a.applicationId}${a.implementationId}`).localeCompare(`${b.applicationId}${b.implementationId}`));
 
   // S13/S15/S17 audit table: one row per unit, with the assertions the hotfix directly touches.
   const auditScenarioIds = new Set(["P02-V2-S13", "P02-V2-S15", "P02-V2-S17"]);
@@ -201,8 +212,18 @@ async function main() {
     experimentId: EXPERIMENT_ID,
     hotfixVersion: HOTFIX_VERSION,
     hotfixDate: HOTFIX_DATE,
-    hotfixCommit: gitCommit(ROOT),
-    hotfixCommitTimestamp: gitCommitTimestamp(ROOT),
+    // EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.3, issue 6): a Git commit's SHA depends on its
+    // own contents, so a tracked file can never correctly contain the SHA of the commit that
+    // contains that exact version of the file — attempting it (as hotfix.1/.2 did, each requiring
+    // an extra "record accurate hash" follow-up commit) is inherently self-referential and was
+    // stopped here. This field honestly records the commit HEAD pointed to at generation time —
+    // necessarily a PRIOR commit, not the one this file will be committed in — for local
+    // reproduction convenience only. The authoritative provenance chain (implementationCommit /
+    // provenanceCommit) is recorded in HOTFIX-2026-08-23.md via a documentation-only follow-up
+    // commit made AFTER the implementation commit exists, which is not self-referential because
+    // it points at an already-existing prior commit.
+    observedAtCommit: gitCommit(ROOT),
+    observedAtCommitTimestamp: gitCommitTimestamp(ROOT),
     provenanceRecord: {
       generationTimeScenarioHash: generationTimeManifest?.hashes?.scenarioV2 ?? null,
       generationTimeEvaluatorHash: generationTimeManifest?.hashes?.evaluatorV2 ?? null,

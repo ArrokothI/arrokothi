@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.2",
+  "hotfixVersion": "evaluator-v2-hotfix.3",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P02-V2-S13",
   "repeatId": "r05",
@@ -42,13 +42,22 @@
       "detail": "action args are missing"
     },
     {
+      "id": "payload_best_contact_time",
+      "requirementId": "P02-R13",
+      "type": "action_payload_time_preference_equals",
+      "severity": "hard",
+      "outcome": "inconclusive",
+      "passed": null,
+      "detail": "best_contact_time is missing from the dispatched action payload"
+    },
+    {
       "id": "confirmation_matches_dispatched_payload",
       "requirementId": "P02-R12",
       "type": "confirmation_payload_matches_action_payload",
       "severity": "hard",
       "outcome": "not_applicable",
       "passed": null,
-      "detail": "confirmation payload and dispatched action payload are both missing"
+      "detail": "confirmation instrumentation is unavailable for this run (confirmationRequests is absent, not merely empty)"
     },
     {
       "id": "definite_failure",
