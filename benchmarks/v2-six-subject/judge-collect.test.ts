@@ -82,12 +82,48 @@ describe("judge-collect: validateBatchEnvelope", () => {
     const status = { batchStats: { requestCount: 5, pendingRequestCount: 0 } };
     assert.deepEqual(validateBatchEnvelope(status, { batchJobId: "batches/x", expectedRequestCount: 5 }), { requestCount: 5, pendingRequestCount: 0 });
   });
+
+  test("the REAL observed shape -- requestCount + successfulRequestCount, no pendingRequestCount field at all -- validates cleanly", () => {
+    // Exactly what batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5 returned.
+    const status = { metadata: { batchStats: { requestCount: "738", successfulRequestCount: "738" } } };
+    const result = validateBatchEnvelope(status, { batchJobId: "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5", expectedRequestCount: 738 });
+    assert.deepEqual(result, { requestCount: 738, pendingRequestCount: 0 });
+  });
+
+  test("a mismatched successfulRequestCount is rejected even when requestCount matches", () => {
+    const status = { metadata: { batchStats: { requestCount: "738", successfulRequestCount: "700" } } };
+    assert.throws(() => validateBatchEnvelope(status, { batchJobId: "batches/x", expectedRequestCount: 738 }), /successfulRequestCount 700 does not match/);
+  });
 });
 
 describe("judge-collect: extractInlineResponses", () => {
-  test("reads dest.inlinedResponses.inlinedResponses", () => {
+  test("reads metadata.output.inlinedResponses.inlinedResponses -- the REAL shape observed against batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5", () => {
+    // This is the exact nesting the live Gemini GenerateContent Batch API returned for our real
+    // submitted batch (metadata.state / metadata.batchStats / metadata.output are siblings under
+    // the "type.googleapis.com/google.ai.generativelanguage.v1main.GenerateContentBatch" shape).
+    // An earlier version of extractInlineResponses did not check this path at all and crashed the
+    // first real --collect-batch invocation with "returned 0/738 inline responses" even though
+    // the batch had genuinely succeeded and all 738 responses were present.
+    const status = {
+      metadata: {
+        "@type": "type.googleapis.com/google.ai.generativelanguage.v1main.GenerateContentBatch",
+        state: "BATCH_STATE_SUCCEEDED",
+        batchStats: { requestCount: "738", successfulRequestCount: "738" },
+        output: { inlinedResponses: { inlinedResponses: [{ metadata: { key: "semantic:a" } }] } },
+      },
+    };
+    assert.deepEqual(extractInlineResponses(status), [{ metadata: { key: "semantic:a" } }]);
+  });
+  test("reads dest.inlinedResponses.inlinedResponses (defensive fallback path, no direct evidence)", () => {
     const status = { dest: { inlinedResponses: { inlinedResponses: [{ a: 1 }] } } };
     assert.deepEqual(extractInlineResponses(status), [{ a: 1 }]);
+  });
+  test("metadata.output takes priority over the defensive fallback paths when both are present", () => {
+    const status = {
+      metadata: { output: { inlinedResponses: { inlinedResponses: [{ real: true }] } } },
+      dest: { inlinedResponses: { inlinedResponses: [{ real: false }] } },
+    };
+    assert.deepEqual(extractInlineResponses(status), [{ real: true }]);
   });
   test("falls back to [] when nothing matches", () => {
     assert.deepEqual(extractInlineResponses({}), []);

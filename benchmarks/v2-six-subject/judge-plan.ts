@@ -226,11 +226,30 @@ export function validateBatchEnvelope(status: Record<string, any>, expectation: 
   if (pendingRequestCount !== 0) {
     throw new Error(`Judge batch ${expectation.batchJobId}: reported SUCCEEDED but batchStats.pendingRequestCount is ${pendingRequestCount}, not 0. Refusing to trust a self-contradictory status.`);
   }
+  // The real API observed (batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5) reports
+  // successfulRequestCount instead of/alongside pendingRequestCount on a SUCCEEDED batch, with no
+  // pendingRequestCount field at all. When present, it must also agree with the expected count.
+  if (batchStats.successfulRequestCount !== undefined) {
+    const successfulRequestCount = Number(batchStats.successfulRequestCount);
+    if (!Number.isFinite(successfulRequestCount) || successfulRequestCount !== expectation.expectedRequestCount) {
+      throw new Error(`Judge batch ${expectation.batchJobId}: batchStats.successfulRequestCount ${String(batchStats.successfulRequestCount)} does not match the ${expectation.expectedRequestCount} requests actually submitted for this job.`);
+    }
+  }
   return { requestCount, pendingRequestCount };
 }
 
+// EVAL-HOTFIX-2026-08-23 (judge-run collection fix, discovered live against the real batch
+// batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5): the actual Gemini GenerateContent Batch API
+// nests inline responses at `metadata.output.inlinedResponses.inlinedResponses` (matching the
+// "type.googleapis.com/google.ai.generativelanguage.v1main.GenerateContentBatch" status shape —
+// `metadata.state`, `metadata.batchStats`, and `metadata.output` are all siblings). The
+// pre-existing candidate paths below (dest.*, top-level output.*, response.output.*) were never
+// observed against a real response and are kept only as defensive fallbacks for possible API
+// shape variants; `metadata.output.*` is checked first because it is the path with direct
+// evidence.
 export function extractInlineResponses(status: Record<string, any>): any[] {
-  return status.dest?.inlinedResponses?.inlinedResponses
+  return status.metadata?.output?.inlinedResponses?.inlinedResponses
+    ?? status.dest?.inlinedResponses?.inlinedResponses
     ?? status.output?.inlinedResponses?.inlinedResponses
     ?? status.response?.output?.inlinedResponses?.inlinedResponses
     ?? [];
