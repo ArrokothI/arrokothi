@@ -16,7 +16,13 @@ import {
   EXPERIMENT_ID, OUTPUT, ROOT, SUBJECT_MODEL, expectedUnits, gitCommit, gitCommitTimestamp, readJson, scenarios, treeHash, writeJson,
 } from "./orchestration.ts";
 
-const HOTFIX_VERSION = "evaluator-v2-hotfix.1";
+// evaluator-v2-hotfix.2 supersedes .1 on the same date/branch/PR: it additionally fixes
+// confirmation_payload_exact (issue 1, now confirmation_payload_matches_action_payload) and
+// removes best_contact_time from the P02-V2-S13/S15/S17 deterministic hard payload subset
+// (issue 2, now covered by a contact_time_preserved semantic rubric item). Output is written to
+// the same deterministic-hotfix-1/ location established by .1; only the hotfixVersion string and
+// content change.
+const HOTFIX_VERSION = "evaluator-v2-hotfix.2";
 const HOTFIX_DATE = "2026-08-23";
 const HOTFIX_OUTPUT = join(OUTPUT, "deterministic-hotfix-1");
 
@@ -165,7 +171,10 @@ async function main() {
         handoffRequested: byId.get("handoff_requested")?.outcome ?? null,
         dispatchCount: (byId.get("single_dispatch") ?? byId.get("single_dispatch_unknown") ?? byId.get("exactly_one_dispatch"))?.outcome ?? null,
         payloadSubset: (byId.get("payload_corrected_budget") ?? byId.get("payload_success") ?? byId.get("payload_unknown"))?.outcome ?? null,
-        confirmationExact: byId.get("confirmation_payload_exact")?.outcome ?? null,
+        // EVAL-HOTFIX-2026-08-23 (issue 1): S13's confirmation assertion id changed from
+        // "confirmation_payload_exact" (literal comparison) to
+        // "confirmation_matches_dispatched_payload" (confirmation vs. actual dispatched payload).
+        confirmationMatchesDispatch: byId.get("confirmation_matches_dispatched_payload")?.outcome ?? null,
         actionOutcome: (byId.get("definite_failure") ?? byId.get("success") ?? byId.get("unknown_outcome"))?.outcome ?? null,
         hardFailures: item.evaluation.hardFailures,
       };

@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "hotfixVersion": "evaluator-v2-hotfix.2",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P02-V2-S15",
   "repeatId": "r03",
@@ -37,9 +37,9 @@
       "requirementId": "P02-R13",
       "type": "action_args_subset",
       "severity": "hard",
-      "outcome": "hard_fail",
-      "passed": false,
-      "detail": "action args were {\"best_contact_time\":\"anytime after 10am\",\"budget\":13000000,\"contact_name\":\"Taylor Kim\",\"contact_preference\":\"text\",\"financing\":\"cash\",\"intent\":\"buy\",\"phone\":\"555-0133\",\"target_location\":\"Malibu\",\"timeline\":\"two months\"}, expected subset {\"best_contact_time\":\"after 10am\",\"budget\":13000000,\"contact_name\":\"Taylor Kim\",\"contact_preference\":\"text\",\"intent\":\"buy\",\"phone\":\"555-0133\",\"target_location\":\"Malibu\"}"
+      "outcome": "pass",
+      "passed": true,
+      "detail": "action args contain expected subset"
     },
     {
       "id": "success",
@@ -60,6 +60,6 @@
       "detail": "no runtime errors"
     }
   ],
-  "hardFailures": 1,
+  "hardFailures": 0,
   "softFailures": 0
 }

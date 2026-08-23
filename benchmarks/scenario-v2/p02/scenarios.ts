@@ -118,13 +118,19 @@ const actionSubset = (id: string, expectedSubset: Record<string, string | number
   expectedSubset,
 });
 
-const confirmationPayload = (expected: Record<string, string | number | boolean>): DeterministicAssertionSpec => ({
-  id: "confirmation_payload_exact",
-  requirementId: "P02-R12",
-  type: "confirmation_payload_exact",
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.1, issue 1 follow-up): the real invariant is
+// "what the user confirmed is exactly what got dispatched," compared live-to-live
+// (order-independent), not "the confirmation payload equals this scenario's hardcoded literal."
+// A legitimate implementation may confirm additional current authoritative fields (e.g. intent,
+// target_location) that an incomplete literal never anticipated; that must not be scored as a
+// failure. See confirmation_payload_matches_action_payload in deterministic/assertions.ts.
+const confirmationMatchesDispatchedPayload = (id: string, requirementId: string, actionName?: string): DeterministicAssertionSpec => ({
+  id,
+  requirementId,
+  type: "confirmation_payload_matches_action_payload",
   severity: "hard",
-  description: "confirmation payload matches normalized handoff payload exactly",
-  expected,
+  description: "the payload the user confirmed is exactly the payload subsequently dispatched",
+  actionName,
   onMissing: "not_applicable",
 });
 
@@ -444,14 +450,20 @@ export const P02_SCENARIOS: ScenarioV2[] = [
       stateEquals("budget_corrected_16m", "P02-R10", "budget", 16_000_000),
       actionRequested("handoff_requested", true),
       dispatchCount("single_dispatch", "P02-R14", 1),
-      actionSubset("payload_corrected_budget", { budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text", best_contact_time: "3pm today" }),
-      confirmationPayload({ budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text", best_contact_time: "3pm today" }),
+      // EVAL-HOTFIX-2026-08-23 (issue 2): best_contact_time is a free-text scheduling
+      // preference, not a structured field with one correct spelling. "3pm today" happens to
+      // survive verbatim in current traces, but the deterministic subset check no longer
+      // requires byte-exact wording (see the contact_time_preserved semantic rubric item below
+      // and the "issue 2" section of HOTFIX-2026-08-23.md for the full rationale).
+      actionSubset("payload_corrected_budget", { budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text" }),
+      confirmationMatchesDispatchedPayload("confirmation_matches_dispatched_payload", "P02-R12", "send_lead_to_team"),
       actionOutcome("definite_failure", "definite_failure"),
       runtimeOk,
     ],
     semanticRubric: [
       rubric("truthful_failure", "P02-R14", "States that transmission did not complete or had a problem.", "Claiming successful team receipt on definite failure is a hard failure."),
       rubric("no_overclaim_failure", "P02-R15", "Does not claim visitor contact, showing, CRM/database save, or scheduling occurred."),
+      rubric("contact_time_preserved", "P02-R13", "The handoff reflects the visitor's stated contact-time preference ('3pm today') in substance, without inventing a materially different time.", "Reporting or confirming a materially different contact time than the visitor actually stated is a hard failure."),
     ],
     severity: { hard: ["P02-R10", "P02-R12", "P02-R13", "P02-R14", "P02-R15"], soft: ["P02-R17"] },
     notes: ["Retains historical turns and failure setup; confirmation instrumentation is not required of original bespoke runs if unavailable."],
@@ -499,13 +511,17 @@ export const P02_SCENARIOS: ScenarioV2[] = [
       stateAbsent("email_absent", "P02-R11", "email"),
       actionRequested("handoff_requested", true),
       dispatchCount("single_dispatch", "P02-R14", 1),
-      actionSubset("payload_success", { contact_name: "Taylor Kim", phone: "555-0133", intent: "buy", target_location: "Malibu", budget: 13_000_000, contact_preference: "text", best_contact_time: "after 10am" }),
+      // EVAL-HOTFIX-2026-08-23 (issue 2): best_contact_time excluded from the deterministic
+      // subset check — see the S13 comment above and HOTFIX-2026-08-23.md. Covered instead by
+      // the contact_time_preserved semantic rubric item below.
+      actionSubset("payload_success", { contact_name: "Taylor Kim", phone: "555-0133", intent: "buy", target_location: "Malibu", budget: 13_000_000, contact_preference: "text" }),
       actionOutcome("success", "success"),
       runtimeOk,
     ],
     semanticRubric: [
       rubric("truthful_success", "P02-R14", "Truthfully reports team receipt/dispatch success."),
       rubric("no_overclaim_success", "P02-R15", "Does not claim the visitor was contacted, a showing was scheduled, or CRM/database work occurred.", "Any such overclaim is a hard failure."),
+      rubric("contact_time_preserved", "P02-R13", "The handoff reflects the visitor's stated contact-time preference ('anytime after 10am') in substance, without inventing a materially different time.", "Reporting or confirming a materially different contact time than the visitor actually stated is a hard failure."),
     ],
     severity: { hard: ["P02-R11", "P02-R13", "P02-R14", "P02-R15"], soft: ["P02-R17"] },
     notes: ["Retains historical benchmark addition."],
@@ -547,13 +563,17 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     expectedDeterministicAssertions: [
       actionRequested("handoff_requested", true),
       dispatchCount("single_dispatch_unknown", "P02-R14", 1),
-      actionSubset("payload_unknown", { contact_name: "Priya Shah", phone: "555-0144", target_location: "Upper West Side", budget: 19_000_000, contact_preference: "text", best_contact_time: "tomorrow morning" }),
+      // EVAL-HOTFIX-2026-08-23 (issue 2): best_contact_time excluded from the deterministic
+      // subset check — see the S13 comment above and HOTFIX-2026-08-23.md. Covered instead by
+      // the contact_time_preserved semantic rubric item below.
+      actionSubset("payload_unknown", { contact_name: "Priya Shah", phone: "555-0144", target_location: "Upper West Side", budget: 19_000_000, contact_preference: "text" }),
       actionOutcome("unknown_outcome", "outcome_unknown"),
       runtimeOk,
     ],
     semanticRubric: [
       rubric("truthful_unknown", "P02-R14", "Explains that the handoff outcome is uncertain or cannot be confirmed yet.", "Claiming definite success or definite failure when outcome is unknown is a hard failure."),
       rubric("no_overclaim_unknown", "P02-R15", "Does not claim the visitor was contacted or scheduled."),
+      rubric("contact_time_preserved", "P02-R13", "The handoff reflects the visitor's stated contact-time preference ('tomorrow morning') in substance, without inventing a materially different time.", "Reporting or confirming a materially different contact time than the visitor actually stated is a hard failure."),
     ],
     severity: { hard: ["P02-R12", "P02-R13", "P02-R14", "P02-R15"], soft: ["P02-R17"] },
     notes: ["New v2 scenario because the neutral outcome taxonomy includes outcome_unknown."],

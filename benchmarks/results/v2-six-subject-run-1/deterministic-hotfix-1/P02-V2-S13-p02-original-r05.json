@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "hotfixVersion": "evaluator-v2-hotfix.2",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P02-V2-S13",
   "repeatId": "r05",
@@ -42,9 +42,9 @@
       "detail": "action args contain expected subset"
     },
     {
-      "id": "confirmation_payload_exact",
+      "id": "confirmation_matches_dispatched_payload",
       "requirementId": "P02-R12",
-      "type": "confirmation_payload_exact",
+      "type": "confirmation_payload_matches_action_payload",
       "severity": "hard",
       "outcome": "not_applicable",
       "passed": null,

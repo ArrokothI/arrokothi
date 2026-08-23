@@ -1,15 +1,15 @@
 {
   "schemaVersion": "v2-six-subject-deterministic-hotfix-summary-v1",
   "experimentId": "v2-six-subject-run-1",
-  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "hotfixVersion": "evaluator-v2-hotfix.2",
   "hotfixDate": "2026-08-23",
-  "hotfixCommit": "e5bf1eeb12906b46619d23153005348594254fa1",
-  "hotfixCommitTimestamp": "2026-08-23T03:37:40+08:00",
+  "hotfixCommit": "4c012df58d9e2be3eec1183414bdc7a8d4240945",
+  "hotfixCommitTimestamp": "2026-08-23T03:38:05+08:00",
   "provenanceRecord": {
     "generationTimeScenarioHash": "3f15e2ad5c35bd66e4d24a5d19b961858e187034f2b473aaa4bd9940f3d2e4e7",
     "generationTimeEvaluatorHash": "20166c554085c0d62b23703baa37ae799821c3bc56edc49478e885a96748ffa9",
-    "postHotfixScenarioHash": "e58068d8486e32a8bd9984d24c6f2d61372f590f2fa452baf973df43eff26aa6",
-    "postHotfixEvaluatorHash": "860e1131b21c4fc55e4428ad315ef4efb3bb2e9b962a6c6dc76547ff249e233c"
+    "postHotfixScenarioHash": "29cf6eeae7c70e232ba3b55516fc292ed95d494cc56d79bc2313ec72aef7eb94",
+    "postHotfixEvaluatorHash": "38f8a2402de293abed351ae4eb6b0c15119203122822430c3a15023619336a3e"
   },
   "unitsEvaluated": 369,
   "invalidUnits": [],
@@ -139,14 +139,14 @@
       "implementationId": "p02-arrokothai",
       "hard": {
         "tally": {
-          "pass": 178,
-          "hard_fail": 17,
+          "pass": 185,
+          "hard_fail": 10,
           "soft_fail": 0,
           "inconclusive": 3,
           "not_applicable": 0
         },
-        "passRate": 0.9128205128205128,
-        "hardFailRate": 0.08717948717948718,
+        "passRate": 0.9487179487179487,
+        "hardFailRate": 0.05128205128205128,
         "softFailRate": 0,
         "inconclusiveRate": 0.015151515151515152
       },
@@ -169,14 +169,14 @@
       "implementationId": "p02-original",
       "hard": {
         "tally": {
-          "pass": 160,
-          "hard_fail": 19,
+          "pass": 162,
+          "hard_fail": 17,
           "soft_fail": 0,
           "inconclusive": 14,
           "not_applicable": 5
         },
-        "passRate": 0.8938547486033519,
-        "hardFailRate": 0.10614525139664804,
+        "passRate": 0.9050279329608939,
+        "hardFailRate": 0.09497206703910614,
         "softFailRate": 0,
         "inconclusiveRate": 0.07253886010362694
       },
@@ -204,7 +204,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "inconclusive",
       "hardFailures": 3
     },
@@ -216,7 +216,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "inconclusive",
       "hardFailures": 3
     },
@@ -228,7 +228,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "inconclusive",
       "hardFailures": 3
     },
@@ -240,7 +240,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "inconclusive",
       "hardFailures": 3
     },
@@ -252,7 +252,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "inconclusive",
       "hardFailures": 3
     },
@@ -264,9 +264,9 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": "hard_fail",
+      "confirmationMatchesDispatch": "pass",
       "actionOutcome": "pass",
-      "hardFailures": 1
+      "hardFailures": 0
     },
     {
       "unitId": "P02-V2-S13-p02-arrokothai-r02",
@@ -276,9 +276,9 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": "hard_fail",
+      "confirmationMatchesDispatch": "pass",
       "actionOutcome": "pass",
-      "hardFailures": 1
+      "hardFailures": 0
     },
     {
       "unitId": "P02-V2-S13-p02-arrokothai-r03",
@@ -288,9 +288,9 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": "hard_fail",
+      "confirmationMatchesDispatch": "pass",
       "actionOutcome": "pass",
-      "hardFailures": 1
+      "hardFailures": 0
     },
     {
       "unitId": "P02-V2-S13-p02-arrokothai-r04",
@@ -300,9 +300,9 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": "hard_fail",
+      "confirmationMatchesDispatch": "pass",
       "actionOutcome": "pass",
-      "hardFailures": 1
+      "hardFailures": 0
     },
     {
       "unitId": "P02-V2-S13-p02-arrokothai-r05",
@@ -312,9 +312,9 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": "hard_fail",
+      "confirmationMatchesDispatch": "pass",
       "actionOutcome": "pass",
-      "hardFailures": 1
+      "hardFailures": 0
     },
     {
       "unitId": "P02-V2-S13-p02-original-r01",
@@ -324,7 +324,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -336,7 +336,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -348,7 +348,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -360,7 +360,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -372,7 +372,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": "not_applicable",
+      "confirmationMatchesDispatch": "not_applicable",
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -384,7 +384,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -396,7 +396,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -408,7 +408,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -420,7 +420,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -432,7 +432,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -443,10 +443,10 @@
       "repeatId": "r01",
       "handoffRequested": "pass",
       "dispatchCount": "pass",
-      "payloadSubset": "hard_fail",
-      "confirmationExact": null,
+      "payloadSubset": "pass",
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
-      "hardFailures": 1
+      "hardFailures": 0
     },
     {
       "unitId": "P02-V2-S15-p02-arrokothai-r02",
@@ -456,7 +456,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -468,7 +468,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -480,7 +480,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -491,10 +491,10 @@
       "repeatId": "r05",
       "handoffRequested": "pass",
       "dispatchCount": "pass",
-      "payloadSubset": "hard_fail",
-      "confirmationExact": null,
+      "payloadSubset": "pass",
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
-      "hardFailures": 1
+      "hardFailures": 0
     },
     {
       "unitId": "P02-V2-S15-p02-original-r01",
@@ -504,7 +504,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -516,7 +516,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -527,10 +527,10 @@
       "repeatId": "r03",
       "handoffRequested": "pass",
       "dispatchCount": "pass",
-      "payloadSubset": "hard_fail",
-      "confirmationExact": null,
+      "payloadSubset": "pass",
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
-      "hardFailures": 1
+      "hardFailures": 0
     },
     {
       "unitId": "P02-V2-S15-p02-original-r04",
@@ -540,7 +540,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -551,10 +551,10 @@
       "repeatId": "r05",
       "handoffRequested": "pass",
       "dispatchCount": "pass",
-      "payloadSubset": "hard_fail",
-      "confirmationExact": null,
+      "payloadSubset": "pass",
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
-      "hardFailures": 1
+      "hardFailures": 0
     },
     {
       "unitId": "P02-V2-S17-p02-agenerateor-r01",
@@ -564,7 +564,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -576,7 +576,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -588,7 +588,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -600,7 +600,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -612,7 +612,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -624,7 +624,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -636,7 +636,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -648,7 +648,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -660,7 +660,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "hard_fail",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 1
     },
@@ -672,7 +672,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -684,7 +684,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -696,7 +696,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -708,7 +708,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     },
@@ -720,7 +720,7 @@
       "handoffRequested": "hard_fail",
       "dispatchCount": "hard_fail",
       "payloadSubset": "inconclusive",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "inconclusive",
       "hardFailures": 2
     },
@@ -732,7 +732,7 @@
       "handoffRequested": "pass",
       "dispatchCount": "pass",
       "payloadSubset": "pass",
-      "confirmationExact": null,
+      "confirmationMatchesDispatch": null,
       "actionOutcome": "pass",
       "hardFailures": 0
     }

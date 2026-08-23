@@ -112,6 +112,7 @@ export type DeterministicAssertionType =
   | "action_args_subset"
   | "confirmation_requested"
   | "confirmation_payload_exact"
+  | "confirmation_payload_matches_action_payload"
   | "action_outcome"
   | "stop_reason"
   | "runtime_error_absent"
@@ -143,6 +144,7 @@ export type DeterministicAssertionSpec =
   | (BaseDeterministicAssertion & { type: "action_args_subset"; actionName?: string; expectedSubset: Record<string, JsonValue> })
   | (BaseDeterministicAssertion & { type: "confirmation_requested"; actionName?: string; expected: boolean })
   | (BaseDeterministicAssertion & { type: "confirmation_payload_exact"; expected: Record<string, JsonValue> })
+  | (BaseDeterministicAssertion & { type: "confirmation_payload_matches_action_payload"; actionName?: string })
   | (BaseDeterministicAssertion & { type: "action_outcome"; expected: TerminalActionOutcome })
   | (BaseDeterministicAssertion & { type: "stop_reason"; expected: string | string[] })
   | (BaseDeterministicAssertion & { type: "runtime_error_absent" })

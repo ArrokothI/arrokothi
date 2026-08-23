@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "hotfixVersion": "evaluator-v2-hotfix.2",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P02-V2-S13",
   "repeatId": "r03",
@@ -42,13 +42,13 @@
       "detail": "action args are missing"
     },
     {
-      "id": "confirmation_payload_exact",
+      "id": "confirmation_matches_dispatched_payload",
       "requirementId": "P02-R12",
-      "type": "confirmation_payload_exact",
+      "type": "confirmation_payload_matches_action_payload",
       "severity": "hard",
       "outcome": "not_applicable",
       "passed": null,
-      "detail": "confirmation payload is missing"
+      "detail": "confirmation payload and dispatched action payload are both missing"
     },
     {
       "id": "definite_failure",

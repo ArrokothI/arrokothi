@@ -1,5 +1,5 @@
 {
-  "hotfixVersion": "evaluator-v2-hotfix.1",
+  "hotfixVersion": "evaluator-v2-hotfix.2",
   "schemaVersion": "deterministic-evaluation-v2",
   "scenarioId": "P02-V2-S13",
   "repeatId": "r05",
@@ -42,13 +42,13 @@
       "detail": "action args contain expected subset"
     },
     {
-      "id": "confirmation_payload_exact",
+      "id": "confirmation_matches_dispatched_payload",
       "requirementId": "P02-R12",
-      "type": "confirmation_payload_exact",
+      "type": "confirmation_payload_matches_action_payload",
       "severity": "hard",
-      "outcome": "hard_fail",
-      "passed": false,
-      "detail": "confirmation payload was {\"best_contact_time\":\"3pm today\",\"budget\":16000000,\"contact_name\":\"Jordan Lee\",\"contact_preference\":\"text\",\"intent\":\"buy\",\"phone\":\"555-0111\",\"target_location\":\"TriBeCa\"}, expected {\"best_contact_time\":\"3pm today\",\"budget\":16000000,\"contact_name\":\"Jordan Lee\",\"contact_preference\":\"text\",\"phone\":\"555-0111\"}"
+      "outcome": "pass",
+      "passed": true,
+      "detail": "confirmation payload exactly matches the dispatched action payload"
     },
     {
       "id": "definite_failure",
@@ -69,6 +69,6 @@
       "detail": "no runtime errors"
     }
   ],
-  "hardFailures": 1,
+  "hardFailures": 0,
   "softFailures": 0
 }
