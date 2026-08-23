@@ -9,6 +9,7 @@ import {
   AGENT_ROOT, JUDGE_MODEL, OUTPUT, SUBJECT_MODEL, authoritativeFacts, criteriaFor, expectedUnits,
   gitCommit, implementations, pathFor, readJson, runKey, writeJson,
 } from "./orchestration.ts";
+import { assertNoExistingJobs, BATCH_DIR, JOBS_PATH, PLAN_PATH, loadFrozenJudgePlan, type JudgeBatchPlan, type JudgeRequest } from "./judge-plan.ts";
 
 const apiKey = process.env.GEMINI_API_KEY?.trim();
 if (!apiKey) throw new Error("GEMINI_API_KEY is required");
@@ -16,22 +17,8 @@ if (process.env.BENCHMARK_JUDGE_MODEL?.trim() !== JUDGE_MODEL) throw new Error(`
 const submit = process.argv.includes("--submit-batch");
 const collect = process.argv.includes("--collect-batch");
 if (submit && collect) throw new Error("Use --submit-batch and --collect-batch in separate invocations");
-const BATCH_DIR = join(OUTPUT, "judge-batch");
-const PLAN_PATH = join(BATCH_DIR, "plan.json");
-const JOBS_PATH = join(BATCH_DIR, "jobs.json");
 const MAX_INLINE_BYTES = 8 * 1024 * 1024;
 
-type RequestKind = "semantic" | "pairwise";
-interface JudgeRequest {
-  key: string;
-  kind: RequestKind;
-  id: string;
-  prompt: string;
-  promptVersion: typeof SEMANTIC_PROMPT_VERSION | typeof PAIRWISE_PROMPT_VERSION;
-  seed?: string;
-  createdAt: string;
-  parse: Record<string, unknown>;
-}
 interface BatchJob {
   batchJobId: string;
   requestedJudgeModel: string;
@@ -59,8 +46,12 @@ async function frozenRuns() {
   return runs;
 }
 
-async function preparePlan(runs: NeutralRawRunV2[]) {
+async function ensureOutputDirs() {
   await Promise.all(["deterministic", "semantic", "pairwise", "judge-metadata", "aggregate", "audit"].map((dir) => mkdir(join(OUTPUT, dir), { recursive: true })));
+}
+
+async function preparePlan(runs: NeutralRawRunV2[]) {
+  await ensureOutputDirs();
   const deterministic = new Map<string, DeterministicEvaluation>();
   for (const run of runs) {
     const unit = expectedUnits().find((candidate) => candidate.id === `${run.scenarioId}-${run.implementationId}-${run.repeatId}`)!;
@@ -153,9 +144,9 @@ async function geminiFetch(path: string, init?: RequestInit) {
   return JSON.parse(body) as Record<string, any>;
 }
 
-async function submitBatches(plan: Awaited<ReturnType<typeof preparePlan>>) {
+async function submitBatches(plan: JudgeBatchPlan) {
   const existing = await readJson<{ jobs: BatchJob[] }>(JOBS_PATH);
-  if (existing?.jobs.length) throw new Error("Batch jobs already recorded; refusing non-idempotent resubmission");
+  assertNoExistingJobs(existing);
   const jobs: BatchJob[] = [];
   for (const [index, group] of chunks(plan.requests).entries()) {
     const submittedAt = new Date().toISOString();
@@ -187,7 +178,7 @@ function responseText(response: GeminiResponse) {
   return response.candidates?.[0]?.content?.parts?.map((part) => part.text).filter(Boolean).join("").trim() ?? "";
 }
 
-async function collectBatches(plan: Awaited<ReturnType<typeof preparePlan>>) {
+async function collectBatches(plan: JudgeBatchPlan) {
   const stored = await readJson<{ jobs: BatchJob[] }>(JOBS_PATH);
   if (!stored?.jobs.length) throw new Error("No submitted judge batch jobs were recorded");
   const byKey = new Map(plan.requests.map((request) => [request.key, request]));
@@ -234,14 +225,23 @@ async function collectBatches(plan: Awaited<ReturnType<typeof preparePlan>>) {
   return pending;
 }
 
-const runs = await frozenRuns();
-const plan = await preparePlan(runs);
+// EVAL-HOTFIX-2026-08-23 (judge-run submission-infrastructure fix): submit and collect load and
+// verify the EXISTING frozen plan.json — via loadFrozenJudgePlan() in judge-plan.ts — and never
+// call preparePlan(). Only plain prepare mode (neither flag) rebuilds/rewrites plan.json. This is
+// the whole point of the fix: a whole-file SHA-256 pinned at freeze time must still match
+// immediately before submission, which is impossible if the run that submits also re-stamps
+// fresh preparedAt/createdAt timestamps into the file first.
 if (submit) {
+  const plan = await loadFrozenJudgePlan();
   const jobs = await submitBatches(plan);
   process.stdout.write(`${JSON.stringify({ status: "submitted", requests: plan.requests.length, jobs: jobs.map((job) => job.batchJobId) }, null, 2)}\n`);
 } else if (collect) {
+  await ensureOutputDirs();
+  const plan = await loadFrozenJudgePlan();
   const pending = await collectBatches(plan);
   process.stdout.write(`${JSON.stringify({ status: pending ? "pending" : "collected", pendingJobs: pending }, null, 2)}\n`);
 } else {
+  const runs = await frozenRuns();
+  const plan = await preparePlan(runs);
   process.stdout.write(`${JSON.stringify({ status: "prepared", requests: plan.requests.length, plan: PLAN_PATH, note: "No judge batch was submitted; pass --submit-batch only after reviewing the frozen plan." }, null, 2)}\n`);
 }
