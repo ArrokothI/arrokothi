@@ -304,6 +304,176 @@ export interface ValidatedResponseItem {
   reportedModelVersion: string;
   usageMetadata: Record<string, unknown> | null;
   parsedOutput: SemanticJudgeOutput | PairwiseJudgeOutput;
+  rawProviderText: string;
+  normalizationApplied: boolean;
+  normalizationSteps: string[];
+}
+
+// =====================================================================================
+// Offline recovery: narrow, evidence-driven serialization normalizers.
+//
+// The original Gemini batch request used responseMimeType: "application/json" but did NOT
+// provide a provider-level responseSchema — the prompt described the expected shape in prose/
+// JSON-example form, but the API never mechanically constrained field types. That explains (but
+// does not justify guessing around) the serialization deviations normalized here. Both
+// normalizers below were derived from auditing the ACTUAL 98 malformed responses returned by
+// batch batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5 (see
+// judge-batch/collection-attempt-2-failure-report.json) — they are not speculative, and neither
+// infers or guesses content; each only recognizes one exact, general, mechanical serialization
+// pattern and passes everything else through unchanged for the strict parser to reject.
+// =====================================================================================
+
+const SEMANTIC_SCORE_STRING_TO_NUMBER: Record<string, 0 | 1 | 2> = { "0": 0, "1": 1, "2": 2 };
+
+/**
+ * ONLY transformation: requirementResults[].score given as the exact JSON string "0", "1", or
+ * "2" is replaced with the corresponding number. Every other field (requirementId, confidence,
+ * reason, citedTurns, hardSemanticViolations, schemaVersion, promptVersion) is left byte-for-byte
+ * untouched. A score of any other string ("2.0", "two", "", "3", etc.), or null, or any other
+ * type, is left as-is — the strict parser will (correctly) still reject it. Malformed/non-JSON
+ * input is passed through unchanged (returns applied: false); the strict parser reports the
+ * original parse error, unmodified.
+ */
+export function normalizeSemanticJudgeSerialization(raw: string): { normalizedText: string; applied: boolean } {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { normalizedText: raw, applied: false };
+  }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return { normalizedText: raw, applied: false };
+  const record = parsed as Record<string, unknown>;
+  if (!Array.isArray(record.requirementResults)) return { normalizedText: raw, applied: false };
+
+  let applied = false;
+  const normalizedResults = record.requirementResults.map((entry) => {
+    if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+      const item = entry as Record<string, unknown>;
+      if (typeof item.score === "string" && Object.prototype.hasOwnProperty.call(SEMANTIC_SCORE_STRING_TO_NUMBER, item.score)) {
+        applied = true;
+        return { ...item, score: SEMANTIC_SCORE_STRING_TO_NUMBER[item.score] };
+      }
+    }
+    return entry;
+  });
+  if (!applied) return { normalizedText: raw, applied: false };
+  return { normalizedText: JSON.stringify({ ...record, requirementResults: normalizedResults }), applied: true };
+}
+
+/**
+ * Scans for the end of the first complete top-level JSON value (object or array) starting at
+ * index 0, tracking string/escape state so braces inside string literals are never miscounted.
+ * Returns the index one past the closing delimiter, or null if the text never returns to depth 0
+ * (i.e. it is genuinely incomplete/truncated — never guessed at).
+ */
+function findLeadingJsonValueEnd(text: string): number | null {
+  const trimmed = text;
+  let i = 0;
+  while (i < trimmed.length && /\s/.test(trimmed[i]!)) i++;
+  if (i >= trimmed.length || (trimmed[i] !== "{" && trimmed[i] !== "[")) return null;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (; i < trimmed.length; i++) {
+    const ch = trimmed[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === "\\") escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') { inString = true; continue; }
+    if (ch === "{" || ch === "[") depth++;
+    else if (ch === "}" || ch === "]") {
+      depth--;
+      if (depth === 0) return i + 1;
+    }
+  }
+  return null; // never closed -> genuinely incomplete; do not guess
+}
+
+/**
+ * Recovers a JSON value followed ONLY by stray trailing whitespace and/or extra closing
+ * delimiters (`}`/`]`) — the exact shape observed (e.g. a duplicated closing brace appended after
+ * an otherwise-complete, valid object). Deliberately does NOT accept trailing content that is
+ * anything else (a second competing object, prose, etc.) — that case is left unrecovered and
+ * falls through to the strict parser's normal rejection.
+ */
+export function extractLeadingJsonValue(text: string): string | null {
+  const end = findLeadingJsonValueEnd(text);
+  if (end === null) return null;
+  const leading = text.slice(0, end);
+  const trailing = text.slice(end);
+  if (!/^[\s}\]]*$/.test(trailing)) return null; // trailing content is more than stray delimiters/whitespace -> do not touch
+  try {
+    JSON.parse(leading);
+  } catch {
+    return null;
+  }
+  return leading;
+}
+
+function isCompletePairwiseShape(value: unknown): value is Record<string, unknown> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  return (
+    record.schemaVersion === "pairwise-judge-output-v1" &&
+    typeof record.promptVersion === "string" &&
+    typeof record.verdict === "string" &&
+    Array.isArray(record.criteria) &&
+    typeof record.reason === "string"
+  );
+}
+
+/**
+ * ONLY transformation: if the top-level object is NOT itself a complete pairwise-judge-output-v1
+ * shape, but it has an `outputSchema` property that IS a complete one (schemaVersion,
+ * promptVersion, verdict, criteria, reason all present and correctly typed), unwrap it — the
+ * model echoed the prompt's own `outputSchema` template key instead of returning only an
+ * instance of it. Nothing is inferred: every field of the recovered object came verbatim from the
+ * model's own response. If the top-level object is already a complete shape, or `outputSchema` is
+ * absent/incomplete, this returns the input unchanged and the strict parser judges it as-is.
+ */
+export function unwrapPairwiseSchemaEcho(parsed: unknown): { value: unknown; applied: boolean } {
+  if (isCompletePairwiseShape(parsed)) return { value: parsed, applied: false };
+  if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+    const outputSchema = (parsed as Record<string, unknown>).outputSchema;
+    if (isCompletePairwiseShape(outputSchema)) return { value: outputSchema, applied: true };
+  }
+  return { value: parsed, applied: false };
+}
+
+/**
+ * Composes both pairwise recovery steps: (1) trim stray trailing delimiters if direct parsing
+ * fails, (2) unwrap an echoed `outputSchema` wrapper if the (possibly trimmed) top level isn't
+ * already a complete shape. Either, both, or neither may apply; `steps` records exactly which.
+ * Malformed input that neither step can resolve is returned unchanged (steps: []) for the strict
+ * parser to reject with its own error — this function never throws and never guesses.
+ */
+export function normalizePairwiseJudgeSerialization(raw: string): { normalizedText: string; applied: boolean; steps: string[] } {
+  const steps: string[] = [];
+  let workingText = raw;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(workingText);
+  } catch {
+    const recovered = extractLeadingJsonValue(raw);
+    if (recovered === null) return { normalizedText: raw, applied: false, steps: [] };
+    workingText = recovered;
+    steps.push("trimmed_trailing_stray_delimiters");
+    try {
+      parsed = JSON.parse(workingText);
+    } catch {
+      return { normalizedText: raw, applied: false, steps: [] };
+    }
+  }
+
+  const unwrapped = unwrapPairwiseSchemaEcho(parsed);
+  if (unwrapped.applied) steps.push("unwrapped_outputSchema_echo");
+
+  if (steps.length === 0) return { normalizedText: raw, applied: false, steps: [] };
+  return { normalizedText: JSON.stringify(unwrapped.value), applied: true, steps };
 }
 
 /**
@@ -344,13 +514,37 @@ export function validateAndParseResponseItem(
     throw new Error(`Judge batch item ${request.key} returned empty output text.`);
   }
 
+  // Narrow, evidence-driven normalization BEFORE strict parsing (see the normalizers' own doc
+  // comments above). The original raw provider text is always preserved in the returned record
+  // (rawProviderText) alongside whether/what normalization was applied — the original is never
+  // replaced in place, only used to derive the text handed to the strict parser below, which
+  // still fully re-validates the result and rejects anything outside the narrow allowed cases.
+  let workingText = text;
+  let normalizationApplied = false;
+  const normalizationSteps: string[] = [];
+  if (request.kind === "semantic") {
+    const normalized = normalizeSemanticJudgeSerialization(text);
+    if (normalized.applied) {
+      workingText = normalized.normalizedText;
+      normalizationApplied = true;
+      normalizationSteps.push("score_string_to_number");
+    }
+  } else {
+    const normalized = normalizePairwiseJudgeSerialization(text);
+    if (normalized.applied) {
+      workingText = normalized.normalizedText;
+      normalizationApplied = true;
+      normalizationSteps.push(...normalized.steps);
+    }
+  }
+
   const judge = { ...judgeCommonFields, providerReportedModel: reportedModelVersion };
   let parsedOutput: SemanticJudgeOutput | PairwiseJudgeOutput;
   if (request.kind === "semantic") {
-    parsedOutput = parseSemanticJudgeOutput(text, judge, request.parse as any);
+    parsedOutput = parseSemanticJudgeOutput(workingText, judge, request.parse as any);
   } else {
     parsedOutput = parsePairwiseJudgeOutput(
-      text,
+      workingText,
       { ...judge, randomizationSeed: request.seed! },
       (request.parse as any).scenarioId,
       (request.parse as any).assignment,
@@ -366,5 +560,8 @@ export function validateAndParseResponseItem(
     reportedModelVersion,
     usageMetadata: (response.usageMetadata as Record<string, unknown>) ?? null,
     parsedOutput,
+    rawProviderText: text,
+    normalizationApplied,
+    normalizationSteps,
   };
 }

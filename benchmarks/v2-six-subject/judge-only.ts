@@ -257,6 +257,10 @@ async function collectBatches(plan: JudgeBatchPlan) {
       schemaVersion: "v2-six-subject-judge-call-metadata-v1", requestKey: collected.key, batchJobId: collected.batchJobId,
       requestedJudgeModel: JUDGE_MODEL, providerReportedJudgeModel: collected.reportedModelVersion, usageMetadata: collected.usageMetadata,
       usedPositionalFallback: collected.usedPositionalFallback,
+      // Original provider text is always preserved here, never overwritten in place, alongside
+      // whether/what narrow offline normalization (see judge-plan.ts) was applied before strict
+      // parsing — see hotfix "offline recovery analysis" notes.
+      rawProviderText: collected.rawProviderText, normalizationApplied: collected.normalizationApplied, normalizationSteps: collected.normalizationSteps,
       promptVersion: collected.request.promptVersion, seed: collected.request.seed ?? null,
       promptCreatedAt: collected.request.createdAt, batchSubmittedAt: collected.submittedAt, responseReceivedAt: collected.receivedAt,
     });
