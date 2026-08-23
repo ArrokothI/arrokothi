@@ -70,6 +70,12 @@ const recordField = (
   recordId: string,
   field: string,
   expected: string | number | boolean,
+  // EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.3, issue 3): opt-in, narrowly scoped
+  // numeric/currency-equivalence comparison — "32000000" and "$32,000,000" are the same fact
+  // represented differently by different neutral-run adapters, not different facts. Only applies
+  // when both this literal and the run's actual value parse as valid numeric/currency forms; any
+  // non-numeric value (either side) falls back to the original exact comparison.
+  compare?: "numeric_or_currency",
 ): DeterministicAssertionSpec => ({
   id,
   requirementId,
@@ -79,6 +85,7 @@ const recordField = (
   recordId,
   field,
   expected,
+  compare,
 });
 
 const dispatchCount = (id: string, requirementId: string, expected: number): DeterministicAssertionSpec => ({
@@ -91,13 +98,20 @@ const dispatchCount = (id: string, requirementId: string, expected: number): Det
   onMissing: "inconclusive",
 });
 
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.1): the canonical neutral action for the P02
+// handoff is "send_lead_to_team" (see benchmark-rebuild-v1/p02-arrokothai/application.ts and
+// every neutral raw run's actionRequests[].actionName). This spec previously hardcoded the
+// pre-neutralization action name "send_email", which never matches any neutral raw run and
+// silently forced action_requested/action_args_subset assertions to "not requested"/missing for
+// every implementation. This is a mechanical evaluator-contract fix only; it does not change
+// scenario turns, setup/outcome injection, requirement meaning, or hard/soft severity.
 const actionRequested = (id: string, expected: boolean): DeterministicAssertionSpec => ({
   id,
   requirementId: "P02-R14",
   type: expected ? "action_requested" : "action_not_requested",
   severity: "hard",
-  description: expected ? "send_email is requested" : "send_email is not requested",
-  actionName: "send_email",
+  description: expected ? "send_lead_to_team is requested" : "send_lead_to_team is not requested",
+  actionName: "send_lead_to_team",
   onMissing: "inconclusive",
 });
 
@@ -107,18 +121,43 @@ const actionSubset = (id: string, expectedSubset: Record<string, string | number
   type: "action_args_subset",
   severity: "hard",
   description: "handoff payload contains expected current values",
-  actionName: "send_email",
+  actionName: "send_lead_to_team",
   expectedSubset,
 });
 
-const confirmationPayload = (expected: Record<string, string | number | boolean>): DeterministicAssertionSpec => ({
-  id: "confirmation_payload_exact",
-  requirementId: "P02-R12",
-  type: "confirmation_payload_exact",
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.1, issue 1 follow-up): the real invariant is
+// "what the user confirmed is exactly what got dispatched," compared live-to-live
+// (order-independent), not "the confirmation payload equals this scenario's hardcoded literal."
+// A legitimate implementation may confirm additional current authoritative fields (e.g. intent,
+// target_location) that an incomplete literal never anticipated; that must not be scored as a
+// failure. See confirmation_payload_matches_action_payload in deterministic/assertions.ts.
+const confirmationMatchesDispatchedPayload = (id: string, requirementId: string, actionName?: string): DeterministicAssertionSpec => ({
+  id,
+  requirementId,
+  type: "confirmation_payload_matches_action_payload",
   severity: "hard",
-  description: "confirmation payload matches normalized handoff payload exactly",
-  expected,
+  description: "the payload the user confirmed is exactly the payload subsequently dispatched",
+  actionName,
   onMissing: "not_applicable",
+});
+
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.3, issue 1): P02-R13 is a deterministic action
+// requirement, so best_contact_time stays in the deterministic layer via a narrow, documented,
+// symmetric canonicalizer (canonicalizeTimePreference() in deterministic/assertions.ts) rather
+// than moving to the semantic judge (hotfix.2's approach, reverted — see hotfix.3 notes in
+// HOTFIX-2026-08-23.md). `expected` here is always the untouched, frozen generation-time literal
+// for this field; only the comparison strictness changed, never the expected value itself. This
+// is a separate assertion from actionSubset() specifically so a missing/failing time preference
+// cannot be masked by the rest of the payload passing under one combined subset check.
+const timePreferenceEquals = (id: string, requirementId: string, field: string, expected: string, actionName?: string): DeterministicAssertionSpec => ({
+  id,
+  requirementId,
+  type: "action_payload_time_preference_equals",
+  severity: "hard",
+  description: `${field} matches the frozen expected preference after narrow, general, symmetric time-preference canonicalization`,
+  actionName,
+  field,
+  expected,
 });
 
 const actionOutcome = (id: string, expected: "success" | "definite_failure" | "outcome_unknown"): DeterministicAssertionSpec => ({
@@ -356,7 +395,15 @@ export const P02_SCENARIOS: ScenarioV2[] = [
         type: "contains_source_fact",
         severity: "hard",
         description: "Grand Salon in Skyline Penthouse is 1400 sqft",
-        key: "skyline_grand_salon_size",
+        // EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 4): corrected to match the key the
+        // neutral adapter's synthesized per-room fact actually uses —
+        // `${property}_${room}_size` lowercased/underscored (adaptArrokothai() in
+        // v2-six-subject/adapters.ts, unchanged) — which is "skyline_penthouse_grand_salon_size",
+        // not "skyline_grand_salon_size". The raw arrokothai artifact for this scenario already
+        // carries the correct value under the correct-per-adapter key
+        // (recordObservations[].fields), it was simply never matched due to this key typo/gap.
+        // Mechanical rename only; the checked value ("1400 sqft") is unchanged.
+        key: "skyline_penthouse_grand_salon_size",
         expected: "1400 sqft",
       },
       runtimeOk,
@@ -411,7 +458,7 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     requirementIds: ["P02-R02", "P02-R06", "P02-R17"],
     turns: [{ role: "user", content: "The Park Avenue Estate is $20M, right?" }],
     applicability: "User asserts incorrect source-backed fact.",
-    expectedDeterministicAssertions: [recordField("park_avenue_price", "P02-R06", "6", "price", "$32,000,000"), runtimeOk],
+    expectedDeterministicAssertions: [recordField("park_avenue_price", "P02-R06", "6", "price", "$32,000,000", "numeric_or_currency"), runtimeOk],
     semanticRubric: [
       rubric("corrects_price", "P02-R06", "Corrects the user using the configured $32,000,000 price.", "Affirming $20M as correct is a hard failure."),
     ],
@@ -437,8 +484,9 @@ export const P02_SCENARIOS: ScenarioV2[] = [
       stateEquals("budget_corrected_16m", "P02-R10", "budget", 16_000_000),
       actionRequested("handoff_requested", true),
       dispatchCount("single_dispatch", "P02-R14", 1),
-      actionSubset("payload_corrected_budget", { budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text", best_time: "3pm today" }),
-      confirmationPayload({ budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text", best_time: "3pm today" }),
+      actionSubset("payload_corrected_budget", { budget: 16_000_000, contact_name: "Jordan Lee", phone: "555-0111", contact_preference: "text" }),
+      timePreferenceEquals("payload_best_contact_time", "P02-R13", "best_contact_time", "3pm today", "send_lead_to_team"),
+      confirmationMatchesDispatchedPayload("confirmation_matches_dispatched_payload", "P02-R12", "send_lead_to_team"),
       actionOutcome("definite_failure", "definite_failure"),
       runtimeOk,
     ],
@@ -492,7 +540,8 @@ export const P02_SCENARIOS: ScenarioV2[] = [
       stateAbsent("email_absent", "P02-R11", "email"),
       actionRequested("handoff_requested", true),
       dispatchCount("single_dispatch", "P02-R14", 1),
-      actionSubset("payload_success", { contact_name: "Taylor Kim", phone: "555-0133", intent: "buy", target_location: "Malibu", budget: 13_000_000, contact_preference: "text", best_time: "after 10am" }),
+      actionSubset("payload_success", { contact_name: "Taylor Kim", phone: "555-0133", intent: "buy", target_location: "Malibu", budget: 13_000_000, contact_preference: "text" }),
+      timePreferenceEquals("payload_best_contact_time", "P02-R13", "best_contact_time", "after 10am", "send_lead_to_team"),
       actionOutcome("success", "success"),
       runtimeOk,
     ],
@@ -540,7 +589,8 @@ export const P02_SCENARIOS: ScenarioV2[] = [
     expectedDeterministicAssertions: [
       actionRequested("handoff_requested", true),
       dispatchCount("single_dispatch_unknown", "P02-R14", 1),
-      actionSubset("payload_unknown", { contact_name: "Priya Shah", phone: "555-0144", target_location: "Upper West Side", budget: 19_000_000, contact_preference: "text", best_time: "tomorrow morning" }),
+      actionSubset("payload_unknown", { contact_name: "Priya Shah", phone: "555-0144", target_location: "Upper West Side", budget: 19_000_000, contact_preference: "text" }),
+      timePreferenceEquals("payload_best_contact_time", "P02-R13", "best_contact_time", "tomorrow morning", "send_lead_to_team"),
       actionOutcome("unknown_outcome", "outcome_unknown"),
       runtimeOk,
     ],

@@ -1,0 +1,74 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.4",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P02-V2-S15",
+  "repeatId": "r03",
+  "invalid": false,
+  "results": [
+    {
+      "id": "email_absent",
+      "requirementId": "P02-R11",
+      "type": "state_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.email is absent"
+    },
+    {
+      "id": "handoff_requested",
+      "requirementId": "P02-R14",
+      "type": "action_requested",
+      "severity": "hard",
+      "outcome": "hard_fail",
+      "passed": false,
+      "detail": "send_lead_to_team was not requested"
+    },
+    {
+      "id": "single_dispatch",
+      "requirementId": "P02-R14",
+      "type": "dispatch_count",
+      "severity": "hard",
+      "outcome": "hard_fail",
+      "passed": false,
+      "detail": "dispatch count was 0, expected 1"
+    },
+    {
+      "id": "payload_success",
+      "requirementId": "P02-R13",
+      "type": "action_args_subset",
+      "severity": "hard",
+      "outcome": "inconclusive",
+      "passed": null,
+      "detail": "action args are missing"
+    },
+    {
+      "id": "payload_best_contact_time",
+      "requirementId": "P02-R13",
+      "type": "action_payload_time_preference_equals",
+      "severity": "hard",
+      "outcome": "inconclusive",
+      "passed": null,
+      "detail": "best_contact_time is missing from the dispatched action payload"
+    },
+    {
+      "id": "success",
+      "requirementId": "P02-R14",
+      "type": "action_outcome",
+      "severity": "hard",
+      "outcome": "inconclusive",
+      "passed": null,
+      "detail": "terminal action outcome is missing"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P02-R17",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 2,
+  "softFailures": 0
+}

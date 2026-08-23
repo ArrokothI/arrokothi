@@ -4,7 +4,9 @@ export {
   deterministicRequirementOutcomes,
   evaluateDeterministic,
   evaluateDeterministicAssertion,
+  resolveComputationValue,
 } from "./deterministic/assertions.ts";
+export { assertNoKnownMechanicalDefects } from "./deterministic/gate.ts";
 export { CALIBRATION_EXPECTED_SEMANTIC, CALIBRATION_FIXTURES } from "./fixtures/calibration.ts";
 export {
   PAIRWISE_CRITERIA,
@@ -40,6 +42,7 @@ export type {
   NeutralModelMetadata,
   NeutralRawRunV2,
   NeutralRecordObservation,
+  NumericFallbackSource,
   PairwiseCriterion,
   PairwiseCriterionPreference,
   PairwiseJudgeOutput,

@@ -1,0 +1,83 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.4",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P02-V2-S13",
+  "repeatId": "r03",
+  "invalid": false,
+  "results": [
+    {
+      "id": "budget_corrected_16m",
+      "requirementId": "P02-R10",
+      "type": "state_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "state.budget matched 16000000"
+    },
+    {
+      "id": "handoff_requested",
+      "requirementId": "P02-R14",
+      "type": "action_requested",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "send_lead_to_team was requested"
+    },
+    {
+      "id": "single_dispatch",
+      "requirementId": "P02-R14",
+      "type": "dispatch_count",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "dispatch count matched 1"
+    },
+    {
+      "id": "payload_corrected_budget",
+      "requirementId": "P02-R13",
+      "type": "action_args_subset",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "action args contain expected subset"
+    },
+    {
+      "id": "payload_best_contact_time",
+      "requirementId": "P02-R13",
+      "type": "action_payload_time_preference_equals",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "best_contact_time \"3pm today\" matches \"3pm today\" after canonicalization (\"3pm today\")"
+    },
+    {
+      "id": "confirmation_matches_dispatched_payload",
+      "requirementId": "P02-R12",
+      "type": "confirmation_payload_matches_action_payload",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "confirmation payload exactly matches the dispatched action payload"
+    },
+    {
+      "id": "definite_failure",
+      "requirementId": "P02-R14",
+      "type": "action_outcome",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "action outcome matched definite_failure"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P02-R17",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 0,
+  "softFailures": 0
+}

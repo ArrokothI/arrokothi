@@ -1,0 +1,29 @@
+{
+  "hotfixVersion": "evaluator-v2-hotfix.4",
+  "schemaVersion": "deterministic-evaluation-v2",
+  "scenarioId": "P01-V2-S13",
+  "repeatId": "r02",
+  "invalid": false,
+  "results": [
+    {
+      "id": "no_external_dispatch",
+      "requirementId": "P01-R15",
+      "type": "dispatch_count",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "dispatch count matched 0"
+    },
+    {
+      "id": "runtime_error_absent",
+      "requirementId": "P01-R01",
+      "type": "runtime_error_absent",
+      "severity": "hard",
+      "outcome": "pass",
+      "passed": true,
+      "detail": "no runtime errors"
+    }
+  ],
+  "hardFailures": 0,
+  "softFailures": 0
+}

@@ -86,7 +86,18 @@ function invalidRun(scenario: ScenarioV2, implementationId: string, repeatId: st
   };
 }
 
-function isGenuineSubjectFailure(run: NeutralRawRunV2) {
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.1): this is an OPERATIONAL trace signal, not a
+// benchmark-performance measure. It previously ran under the name isGenuineSubjectFailure /
+// "Genuine subject failures" and was reported as if every definite_failure run were a real
+// subject defect. Several scenarios (e.g. P02-V2-S13) deliberately inject
+// setup.terminalActionResult="definite_failure" via the neutral executor and *expect* the
+// subject to observe and truthfully report that outcome — for those units this signal firing is
+// the correct, scored-as-pass behavior, checked by evaluator-v2's action_outcome assertion.
+// Do not read this counter as pass/fail benchmark performance; use evaluator-v2's deterministic
+// hard/soft requirement pass rates for that. This function/counter is retained only to flag
+// units worth a human glance (e.g. confirming an injected-failure scenario really did inject it,
+// or spotting an unexpected runtime error), and is renamed accordingly.
+function hasOperationalTerminalFailureSignal(run: NeutralRawRunV2) {
   return !run.invalidReason && (run.terminalActionResult === "definite_failure" || (run.runtimeErrors ?? []).some((error) => !error.beforeSubjectBehavior));
 }
 
@@ -123,7 +134,7 @@ async function main() {
   const alreadyValid: string[] = [];
   const infrastructureInvalid: string[] = [];
   const missing: string[] = [];
-  const genuineSubjectFailuresAtResume: string[] = [];
+  const operationalTerminalFailureSignalAtResume: string[] = [];
   const generatedRuns: NeutralRawRunV2[] = [];
   const generatedUnitIds = new Set<string>();
   const pacer = new SubjectPacer();
@@ -134,11 +145,11 @@ async function main() {
       const validity = classifyRunValidity(run, { expectedRequestedModel: SUBJECT_MODEL, requireProviderReportedModelMatch: true });
       if (validity.valid) {
         alreadyValid.push(unit.id);
-        if (isGenuineSubjectFailure(run)) genuineSubjectFailuresAtResume.push(unit.id);
+        if (hasOperationalTerminalFailureSignal(run)) operationalTerminalFailureSignalAtResume.push(unit.id);
         continue;
       }
       if (!validity.reason || !INFRASTRUCTURE_REASONS.has(validity.reason)) {
-        genuineSubjectFailuresAtResume.push(unit.id);
+        operationalTerminalFailureSignalAtResume.push(unit.id);
         continue;
       }
       infrastructureInvalid.push(unit.id);
@@ -161,14 +172,14 @@ async function main() {
   const finalRuns: NeutralRawRunV2[] = [];
   const remainingInvalid: string[] = [];
   const remainingMissing: string[] = [];
-  const genuineSubjectFailures: string[] = [];
+  const operationalTerminalFailureSignalUnits: string[] = [];
   for (const unit of units) {
     const run = await readJson<NeutralRawRunV2>(unit.rawPath);
     if (!run) { remainingMissing.push(unit.id); continue; }
     finalRuns.push(run);
     const validity = classifyRunValidity(run, { expectedRequestedModel: SUBJECT_MODEL, requireProviderReportedModelMatch: true });
     if (!validity.valid) remainingInvalid.push(unit.id);
-    else if (isGenuineSubjectFailure(run)) genuineSubjectFailures.push(unit.id);
+    else if (hasOperationalTerminalFailureSignal(run)) operationalTerminalFailureSignalUnits.push(unit.id);
   }
   const resumeCompletedAt = new Date().toISOString();
   const checkpointModelCalls = finalRuns.filter((run) => !generatedUnitIds.has(`${run.scenarioId}-${run.implementationId}-${run.repeatId}`)).reduce((sum, run) => sum + (run.modelCallCount ?? 0), 0);
@@ -178,7 +189,7 @@ async function main() {
     alreadyValidUnitsReused: alreadyValid.length,
     infrastructureInvalidUnitsRerun: infrastructureInvalid.length,
     missingUnitsGenerated: missing.length,
-    genuineSubjectFailures: genuineSubjectFailures.length,
+    operationalTerminalFailureSignalUnits: operationalTerminalFailureSignalUnits.length,
     remainingInvalidUnits: remainingInvalid.length,
     remainingMissingUnits: remainingMissing.length,
   };
@@ -191,7 +202,7 @@ async function main() {
     models: { subject: SUBJECT_MODEL, judge: null }, temperatures: { subject: 0.35, originalP02: "not externally configurable" },
     repeatPolicy: { default: 3, consequential: 5 }, canary,
     counts,
-    units: { alreadyValid, infrastructureInvalidRerun: infrastructureInvalid, missingGenerated: missing, genuineSubjectFailures, genuineSubjectFailuresAtResume, remainingInvalid, remainingMissing, unexpectedRawArtifacts },
+    units: { alreadyValid, infrastructureInvalidRerun: infrastructureInvalid, missingGenerated: missing, operationalTerminalFailureSignalUnits, operationalTerminalFailureSignalAtResume, remainingInvalid, remainingMissing, unexpectedRawArtifacts },
     flashLiteCalls: { canaryApiModelCalls: 1, checkpointArtifactModelCalls: checkpointModelCalls, resumeArtifactModelCalls: resumeModelCalls, totalFrozenArtifactModelCalls: checkpointModelCalls + resumeModelCalls, note: "Counts are observable logical model calls recorded by raw artifacts; provider-internal retry transports are unavailable." },
     rawArtifactsFrozen: remainingInvalid.length === 0 && remainingMissing.length === 0,
     judgeBatchStarted: false,
@@ -204,7 +215,7 @@ async function main() {
     `| Already-valid units reused | ${counts.alreadyValidUnitsReused} |\n` +
     `| Infrastructure-invalid units rerun | ${counts.infrastructureInvalidUnitsRerun} |\n` +
     `| Missing units generated | ${counts.missingUnitsGenerated} |\n` +
-    `| Genuine subject failures | ${counts.genuineSubjectFailures} |\n` +
+    `| Operational terminal-failure/error signal units (NOT a performance measure; see code comment) | ${counts.operationalTerminalFailureSignalUnits} |\n` +
     `| Remaining invalid units | ${counts.remainingInvalidUnits} |\n` +
     `| Remaining missing units | ${counts.remainingMissingUnits} |\n\n` +
     `Flash-Lite calls: canary ${manifest.flashLiteCalls.canaryApiModelCalls}; reused checkpoint artifacts ${checkpointModelCalls}; resume-generated artifacts ${resumeModelCalls}; frozen artifact total ${checkpointModelCalls + resumeModelCalls}.\n\n` +

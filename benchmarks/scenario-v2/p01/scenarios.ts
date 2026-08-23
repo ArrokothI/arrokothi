@@ -46,6 +46,15 @@ const stateAbsent = (id: string, requirementId: string, key: string): Determinis
   onMissing: "not_applicable",
 });
 
+// EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 2): `computation.wall_volume_m3` is the
+// primary, authoritative source (and, per hotfix.4 issue 1, is itself resolved from the LATEST
+// matching native-trace tool fact when available, not a possibly-stale
+// deterministicComputations value — see resolveComputationValue()). `state.volume` is declared as
+// an explicit, narrowly-scoped fallback: some implementations' neutral projection carries the
+// same already-computed volume fact under a differently-named canonical state field instead of
+// deterministicComputations. The fallback is consulted ONLY when the primary is unavailable, and
+// this applies uniformly to every P01 volume scenario and every implementation — it is not
+// scenario- or implementation-specific.
 const volumeClose = (id: string, requirementId: string, area: number, thickness: number): DeterministicAssertionSpec => ({
   id,
   requirementId,
@@ -56,6 +65,11 @@ const volumeClose = (id: string, requirementId: string, area: number, thickness:
   key: "wall_volume_m3",
   expected: volumeM3(area, thickness),
   tolerance: 0.05,
+  fallback: { source: "state", key: "volume" },
+  // The compute_wall_volume tool's native fact is keyed "planning_wall_volume_m3", not
+  // "wall_volume_m3" — declared explicitly (see ComputationFactAliases doc in schema.ts) rather
+  // than guessed at by resolveComputationValue().
+  computationFactAliases: ["wall_volume_m3", "planning_wall_volume_m3"],
 });
 
 const noDispatch = (id: string, requirementId = "P01-R15"): DeterministicAssertionSpec => ({

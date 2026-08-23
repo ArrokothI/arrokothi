@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
-  PAIRWISE_PROMPT_VERSION, SEMANTIC_PROMPT_VERSION, assertPromptBlindness, buildPairwiseJudgePrompt,
+  assertNoKnownMechanicalDefects, PAIRWISE_PROMPT_VERSION, SEMANTIC_PROMPT_VERSION, assertPromptBlindness, buildPairwiseJudgePrompt,
   buildSemanticJudgePrompt, classifyRunValidity, evaluateDeterministic, parsePairwiseJudgeOutput,
   parseSemanticJudgeOutput, type DeterministicEvaluation, type NeutralRawRunV2,
 } from "../evaluator-v2/index.ts";
@@ -65,6 +65,13 @@ async function preparePlan(runs: NeutralRawRunV2[]) {
   for (const run of runs) {
     const unit = expectedUnits().find((candidate) => candidate.id === `${run.scenarioId}-${run.implementationId}-${run.repeatId}`)!;
     const evaluation = evaluateDeterministic(unit.scenario.id, unit.scenario.expectedDeterministicAssertions, run);
+    // EVAL-HOTFIX-2026-08-23 (evaluator-v2-hotfix.4, issue 3): semantic-judge contamination gate.
+    // `evaluation` was just computed with the current evaluator, so this call is checked against
+    // itself here as a standing invariant — it exists so that if this code path is ever changed
+    // to read a cached/on-disk deterministic evaluation instead of recomputing it (or an older
+    // deterministic-hotfix-*/*.json is ever fed in by mistake), any resulting drift from what the
+    // current evaluator would produce is caught before it can reach a semantic judge prompt.
+    assertNoKnownMechanicalDefects(unit.scenario, run, evaluation);
     deterministic.set(runKey(run), evaluation);
     await writeJson(pathFor("deterministic", unit.id), evaluation);
   }
