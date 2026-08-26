@@ -6,7 +6,7 @@
 <header class="topbar">
   <div class="brand">
     <strong>Agent SDK Studio</strong>
-    <span class="muted">experimental v0.35</span>
+    <span class="muted">local development studio</span>
   </div>
   <div class="status" id="status">connecting…</div>
 </header>
@@ -54,8 +54,6 @@
           <select id="f-harness">
             <option value="agentic">AgentHarness / Strands agentic</option>
             <option value="workflow">AgentHarness / workflow</option>
-            <option value="native_agent">Legacy Native Agent</option>
-            <option value="claude_agent">Experimental Claude Agent</option>
           </select>
         </label>
         <div class="row">
@@ -80,7 +78,7 @@
             <label class="grow">Max parallel reads <input id="f-maxparallelreads" type="number" min="1" /></label>
           </div>
         </fieldset>
-        <label>Global rules (legacy text, or <code>invariant:id: text</code> / <code>default:id: text</code>) <textarea id="f-rules" rows="4"></textarea></label>
+        <label>Global rules (plain invariants, or <code>invariant:id: text</code> / <code>default:id: text</code>) <textarea id="f-rules" rows="4"></textarea></label>
         <fieldset>
           <legend>Deterministic policies</legend>
           <div class="row">

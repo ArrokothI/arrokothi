@@ -9,7 +9,6 @@ import {
   AgentRuntime,
   AgentHarness,
   KnowledgeIndex,
-  NativeAgentHarness,
   ReferenceLoopEngine,
   ToolRegistry,
   createRandomIds,
@@ -22,7 +21,6 @@ import {
 } from "@agent-sdk/core";
 import { StaticModelProvider } from "@agent-sdk/core/testing";
 import { GeminiProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";
-import { ClaudeAgentHarness } from "@agent-sdk/provider-claude-agent";
 import { createStrandsGeminiEngine } from "@agent-sdk/integration-strands";
 import { SqliteDefinitionStore, SqliteSessionStore, openDatabase } from "./sqlite-store.ts";
 import { DryRunRegistry, registerStudioExecutors } from "./executors.ts";
@@ -102,17 +100,15 @@ function buildRuntime(
 ): AgentRuntime {
   const knowledge = new KnowledgeIndex(definition.knowledge, { webSearch });
   const tools = registerStudioExecutors(new ToolRegistry(definition.tools), definition, knowledge, dryRun);
-  const harness = definition.execution?.harness === "native_agent"
-    ? new NativeAgentHarness()
-    : definition.execution?.harness === "claude_agent"
-      ? new ClaudeAgentHarness({ executionContextPolicy: "fresh_each_turn" })
-      : definition.execution?.harness === "workflow" || definition.execution?.harness === "two_pass"
-        ? new AgentHarness({ strategy: "workflow" })
-        : new AgentHarness({
-            engine: studioGeminiApiKey
-              ? createStrandsGeminiEngine({ apiKey: studioGeminiApiKey })
-              : new ReferenceLoopEngine(),
-          });
+  const strategy = definition.execution?.harness ?? "workflow";
+  const harness = strategy === "workflow"
+    ? new AgentHarness({ strategy: "workflow" })
+    : new AgentHarness({
+        strategy: "agentic",
+        engine: studioGeminiApiKey
+          ? createStrandsGeminiEngine({ apiKey: studioGeminiApiKey })
+          : new ReferenceLoopEngine(),
+      });
   return new AgentRuntime({
     definition,
     sessions,
@@ -192,7 +188,6 @@ async function handleApi(req: IncomingMessage, res: ServerResponse, url: URL): P
       harnesses: {
         primary: "AgentHarness",
         agenticEngine: studioGeminiApiKey ? "StrandsLoopEngine" : "ReferenceLoopEngine (offline)",
-        claudeConfigured: !!process.env["ANTHROPIC_API_KEY"],
         webSearchConfigured: !!webSearch,
       },
       database: DB_PATH,

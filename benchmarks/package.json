@@ -2,7 +2,7 @@
   "name": "@agent-sdk/benchmarks",
   "version": "0.37.0",
   "private": true,
-  "description": "P01/P02 benchmark adapters. Consume only neutral requirements/scenarios/evaluation contracts.",
+  "description": "Canonical six-subject benchmark implementation and retained run evidence.",
   "type": "module",
   "dependencies": {
     "@agent-sdk/core": "*",

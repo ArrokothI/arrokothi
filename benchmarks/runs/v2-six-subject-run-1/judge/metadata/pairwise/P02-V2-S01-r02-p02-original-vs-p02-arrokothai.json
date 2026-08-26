@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S01-r02-p02-original-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S01:r02:p02-original:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.475Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 789,
+    "candidatesTokenCount": 407,
+    "totalTokenCount": 1775,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 789
+      }
+    ],
+    "thoughtsTokenCount": 579,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A correctly identifies and presents properties that match the user's criteria (Manhattan, around $20M budget), whereas Candidate B incorrectly claims there are no matching properties in Manhattan under $20M.\"\n    },\n    {\n      \"criterion\": \"grounding\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A's recommendations are grounded in the expected property catalog matches for Manhattan, while Candidate B fails to surface these grounded records.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A accurately represents the available inventory. Candidate B falsely claims there are no properties in Manhattan under $20M.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A provides immediate, relevant property previews to the buyer, making it highly useful. Candidate B turns the user away unnecessarily.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A keeps the response short, natural, and markdown-free, directly answering the user's prompt and keeping them in the buying flow.\"\n    }\n  ],\n  \"reason\": \"Candidate A successfully finds and presents grounded Manhattan property matches within the user's budget, keeping the response short and markdown-free. Candidate B incorrectly claims there are no matching properties in Manhattan under $20M, which contradicts the scenario's happy path and available inventory.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

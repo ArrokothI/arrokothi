@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S17-r02-p02-original-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S17:r02:p02-original:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.494Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1086,
+    "candidatesTokenCount": 421,
+    "totalTokenCount": 2566,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1086
+      }
+    ],
+    "thoughtsTokenCount": 1059,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A correctly confirms the lead details before attempting the handoff. Candidate B fails to confirm the details and makes definitive claims about the agent contacting the user, which violates the guidelines for unknown handoff outcomes.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate B falsely promises that an agent will text the user tomorrow morning and claims 'you are all set'. Since the handoff outcome is unknown, these definite claims of future contact are untruthful. Candidate A truthfully states that the details have been transmitted for review without making false promises about guaranteed contact.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A is much more useful as it presents a structured confirmation of the user's details (name, phone, budget, timeline, etc.) before sending them to the team, ensuring data accuracy.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"A\",\n      \"reason\": \"Both candidates are coherent, but Candidate A handles the multi-turn flow of gathering, confirming, and transmitting the lead information in a much more professional and logical manner.\"\n    }\n  ],\n  \"reason\": \"Candidate A is significantly better because it adheres to the truthfulness guidelines regarding handoff outcomes. When the outcome is unknown, the assistant must not guarantee that the user will be contacted or that an appointment is scheduled. Candidate B violates this by repeatedly promising that an agent will text the user tomorrow morning. Candidate A also correctly confirms the lead details before transmitting them.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

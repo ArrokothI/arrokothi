@@ -59,7 +59,7 @@ export type ToolResult =
   | { ok: true; output: Record<string, unknown>; facts?: AuthoritativeFact[] }
   | {
       ok: false;
-      /** Omitted by legacy executors and interpreted as a definite failure. */
+      /** When omitted, the result is interpreted as a definite failure. */
       outcome?: "definite_failure";
       error: { code: string; message: string };
       retryable?: boolean;

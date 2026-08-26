@@ -12,7 +12,7 @@ import type {
  * It is deliberately non-primary: production agentic execution should inject StrandsLoopEngine.
  */
 export class ReferenceLoopEngine implements AgentLoopEngine {
-  readonly name = "reference-loop-v0.37";
+  readonly name = "reference-loop";
 
   async run(input: AgentLoopInput): Promise<AgentLoopResult> {
     if (!input.modelProvider) throw new Error("ReferenceLoopEngine requires AgentLoopInput.modelProvider");
@@ -23,12 +23,13 @@ export class ReferenceLoopEngine implements AgentLoopEngine {
       metrics.iterations = iteration;
       if (input.signal?.aborted) return this.finish(input, "I stopped this run because it was cancelled.", "cancelled", metrics);
 
+      const context = input.refreshContext?.(iteration) ?? input.context;
       const catalog = input.capabilities();
       input.onTrace?.({ kind: "iteration_started", iteration, capabilityNames: catalog.capabilities.map((item) => item.name) });
       const started = Date.now();
       const response = await input.modelProvider.generate({
-        system: input.context.system,
-        messages: [...input.context.messages, ...inner],
+        system: context.system,
+        messages: [...context.messages, ...inner],
         tools: catalog.capabilities.length ? catalog.capabilities.map((item) => item.modelSpec) : undefined,
         model: input.modelPolicy.model,
         temperature: input.modelPolicy.temperature,

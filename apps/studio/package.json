@@ -10,7 +10,6 @@
   "dependencies": {
     "@agent-sdk/core": "*",
     "@agent-sdk/provider-gemini": "*",
-    "@agent-sdk/provider-claude-agent": "*",
     "@agent-sdk/integration-strands": "*",
     "@agent-sdk/example-minimal-agent": "*",
     "@agent-sdk/example-estate-like": "*"

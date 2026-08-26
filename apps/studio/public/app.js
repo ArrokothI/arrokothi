@@ -85,7 +85,7 @@ function fillForm(def) {
   $("f-temperature").value = def.model?.temperature ?? "";
   $("f-maxtokens").value = def.model?.maxOutputTokens ?? "";
   $("f-planner-mode").value = def.planning?.mode ?? "llm";
-  $("f-harness").value = def.execution?.harness ?? "agentic";
+  $("f-harness").value = def.execution?.harness ?? "workflow";
   $("f-planner-provider").value = def.planning?.model?.providerId ?? "";
   $("f-planner-model").value = def.planning?.model?.model ?? "";
   $("f-rules").value = (def.globalRules ?? []).map((rule) =>
@@ -597,7 +597,7 @@ function renderState(state, dryRunLedger = []) {
       ]))
     : el("div", { className: "empty", textContent: "nothing committed yet" })));
 
-  host.append(section("PreflightPlan (TurnPlan compatibility field)", state.turnPlan
+  host.append(section("Preflight plan", state.turnPlan
     ? el("pre", { textContent: JSON.stringify(state.turnPlan, null, 2) })
     : el("div", { className: "empty", textContent: "no plan for this turn" })));
 

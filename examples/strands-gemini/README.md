@@ -1,6 +1,6 @@
 # Strands + Gemini
 
-This v0.37 example wires an Agent_SDK `AgentDefinition`, Durable Session, semantic Preflight,
+This example wires an Agent_SDK `AgentDefinition`, durable Session, semantic Preflight,
 Agent_SDK document Knowledge, `CapabilityGateway`, and the canonical `StrandsLoopEngine` together.
 
 The default command is deterministic and makes no network request:

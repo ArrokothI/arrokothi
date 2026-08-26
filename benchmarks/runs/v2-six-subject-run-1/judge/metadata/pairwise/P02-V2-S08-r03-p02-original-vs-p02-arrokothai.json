@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S08-r03-p02-original-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S08:r03:p02-original:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.482Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 898,
+    "candidatesTokenCount": 430,
+    "totalTokenCount": 2367,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 898
+      }
+    ],
+    "thoughtsTokenCount": 1039,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"B\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B correctly identifies that a phone number is required for the handoff process and informs the user of this limitation when they refuse to provide it. Candidate A falsely implies that it can email the details without a phone number, which violates the system constraints.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B is truthful about the system's requirements (phone number is required for the handoff). Candidate A suggests it can proceed with just an email address, which is incorrect based on the authoritative facts.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B offers a helpful alternative (sharing details directly in the chat) when the handoff cannot be completed. Candidate A leads the user down a dead-end path.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"B\",\n      \"reason\": \"In turn 1, Candidate A asks the user for their target area and budget, completely ignoring that the user had just provided this information ('TriBeCa, budget $10M'). Candidate B acknowledges this information correctly, though it violates the 'markdown-free' constraint.\"\n    }\n  ],\n  \"reason\": \"Candidate B is much better. Candidate A completely fails conversational coherence in turn 1 by asking for information the user just provided, and fails correctness in turn 2 by implying it can email the details without the required phone number. Candidate B handles the phone refusal perfectly according to the facts, although it violates the negative constraint of being markdown-free in turn 1.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

@@ -27,7 +27,7 @@ export interface RecordSetSource {
   description?: string;
   /**
    * Declared field types and optional source-authored semantics. A query referencing anything else
-   * is an error, not an empty result. The legacy shorthand (`field: ValueSchema`) remains valid.
+   * is an error, not an empty result. A bare `ValueSchema` is the concise declaration form.
    */
   fields: Record<string, RecordField>;
   records: Record<string, unknown>[];
@@ -44,7 +44,7 @@ export interface RecordFieldMetadata {
   examples?: (string | number | boolean)[];
 }
 
-/** Backward-compatible field declaration: a bare schema or a schema with authored semantics. */
+/** Field declaration: a bare schema or a schema with authored semantics. */
 export type RecordField = ValueSchema | RecordFieldMetadata;
 
 export function recordFieldSchema(field: RecordField): ValueSchema {

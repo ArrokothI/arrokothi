@@ -147,7 +147,7 @@ describe("record field metadata validation", () => {
     assert.deepEqual(errors, []);
   });
 
-  test("legacy bare ValueSchema fields still pass unchanged", () => {
+  test("bare ValueSchema fields remain the concise form", () => {
     const errors = validationErrors({
       item_code: { kind: "string" },
       score: { kind: "number" },

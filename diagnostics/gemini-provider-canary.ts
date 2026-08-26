@@ -8,8 +8,8 @@ import {
   createDeterministicIds,
   createFixedClock,
   defineAgent,
-  parseTurnPlan,
-  turnPlanSchema,
+  parsePreflightPlan,
+  preflightPlanSchema,
   validateObject,
   type ObjectSchema,
 } from "@agent-sdk/core";
@@ -114,13 +114,13 @@ await runCheck("record_filter_comparand_projection", async () => {
         "The filter value field is JSON text on the provider wire when needed.",
       ].join(" "),
     }],
-    responseSchema: turnPlanSchema(3),
+    responseSchema: preflightPlanSchema(3),
     model: requestedModel,
     temperature: 0,
     maxOutputTokens: 512,
     purpose: "canary:record_filter_projection",
   });
-  const parsed = parseTurnPlan(response.json, 3);
+  const parsed = parsePreflightPlan(response.json, 3);
   if (!parsed.ok) throw new CanaryFailure("model_output_validation", `turn plan rejected after Gemini normalization: ${parsed.message}`);
   const request = parsed.plan.retrievalRequests.find((candidate) => candidate.kind === "record_query");
   if (!request) throw new CanaryFailure("model_output_validation", "Gemini did not return a record_query retrieval request");

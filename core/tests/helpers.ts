@@ -151,7 +151,7 @@ export function buildRuntime(
   return { runtime, sessions, tools, knowledge, definition };
 }
 
-/** Legacy test-fixture alias: planning-pass JSON for a scripted step. */
+/** Planning-pass test fixture: planning-pass JSON for a scripted step. */
 export const interpret = (memory_writes: Record<string, unknown>, signals: string[] = [], working_notes: string[] = []) => ({
   purpose: "interpret" as const,
   json: { memory_writes, signals, working_notes },

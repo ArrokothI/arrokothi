@@ -13,15 +13,17 @@ import type {
 import { CapabilityGateway } from "../capabilities/gateway.ts";
 import { attemptToolCall, resolvePendingConfirmation } from "../tools/authorize.ts";
 import { compileContext } from "../compiler/context-compiler.ts";
-import { TwoPassHarness, type TwoPassOptions } from "./two-pass.ts";
+import { WorkflowCoordinator, type WorkflowOptions } from "./workflow.ts";
 
 export type AgentHarnessStrategy = "agentic" | "workflow";
+
+export type AgentPreflightOptions = WorkflowOptions;
 
 export interface AgentHarnessOptions {
   strategy?: AgentHarnessStrategy;
   /** Required for the primary agentic strategy; StrandsLoopEngine is the canonical implementation. */
   engine?: AgentLoopEngine;
-  preflight?: TwoPassOptions;
+  preflight?: AgentPreflightOptions;
   /**
    * Deterministic/application-owned policy seam evaluated before CapabilityGateway.
    * It may proceed, deny, guide, or transform. Confirmation is Gateway-owned because only the
@@ -43,8 +45,8 @@ export interface AgentHarnessOptions {
  * compilation, the CapabilityGateway boundary, and terminal accounting. An injected
  * AgentLoopEngine owns only the temporary iterative mechanics inside the turn.
  */
-export class AgentHarness extends TwoPassHarness implements HarnessImplementation {
-  override readonly name = "agent-harness-v0.37";
+export class AgentHarness extends WorkflowCoordinator implements HarnessImplementation {
+  override readonly name = "agent-harness";
   readonly strategy: AgentHarnessStrategy;
   private readonly primaryOptions: AgentHarnessOptions;
 
@@ -91,17 +93,14 @@ export class AgentHarness extends TwoPassHarness implements HarnessImplementatio
     const preflightEvents = input.journal.events.slice(beforePreflight);
     await this.applyTransitions(input, services, "pre_response");
 
-    const context = compileContext({
+    const compileAgentLoopContext = () => compileContext({
       definition: services.definition,
       state: input.journal.state,
       now: services.clock.now(),
       instructionMode: "agent_loop",
-      taskInstruction: [
-        "Choose the next safe step using the current observations and available capabilities, or provide the final user-facing response.",
-        "Treat authoritative capability observations as truth for what that operation observed. Do not claim facts the observations do not establish.",
-        "A denial is final for that request. Guidance describes a safe alternative. A confirmation pause is not a completed action.",
-      ].join("\n\n"),
+      taskInstruction: AGENT_LOOP_TASK,
     });
+    const context = compileAgentLoopContext();
     services.onContextCompiled?.(context, "agent-loop:start");
 
     const restrictedHostContext = Object.fromEntries(
@@ -114,6 +113,11 @@ export class AgentHarness extends TwoPassHarness implements HarnessImplementatio
 
     const result = await engine.run({
       context,
+      refreshContext: (iteration) => {
+        const refreshed = compileAgentLoopContext();
+        services.onContextCompiled?.(refreshed, `agent-loop:iteration:${iteration}`);
+        return refreshed;
+      },
       modelPolicy: services.definition.model,
       modelProvider: services.model,
       capabilities: () => gateway.catalog(),
@@ -329,6 +333,12 @@ export class AgentHarness extends TwoPassHarness implements HarnessImplementatio
     }
   }
 }
+
+const AGENT_LOOP_TASK = [
+  "Choose the next safe step using the current observations and available capabilities, or provide the final user-facing response.",
+  "Treat authoritative capability observations as truth for what that operation observed. Do not claim facts the observations do not establish.",
+  "A denial is final for that request. Guidance describes a safe alternative. A confirmation pause is not a completed action.",
+].join("\n\n");
 
 function safeDecisionDetail(decision: RuntimeDecision): Record<string, unknown> {
   if (decision.kind === "proceed") return { kind: decision.kind };

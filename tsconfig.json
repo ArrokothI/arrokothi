@@ -16,6 +16,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["core/**/*.ts", "providers/**/*.ts", "integrations/**/*.ts", "apps/**/*.ts", "benchmarks/**/*.ts", "examples/**/*.ts"],
-  "exclude": ["benchmarks/triad/canonical/**", "benchmarks/triad/results/**", "benchmarks/triad-v035/results/**"]
+  "include": ["core/**/*.ts", "providers/**/*.ts", "integrations/**/*.ts", "apps/**/*.ts", "benchmarks/**/*.ts", "examples/**/*.ts"]
 }

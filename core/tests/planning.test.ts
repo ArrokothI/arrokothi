@@ -1,7 +1,7 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { ScriptedModelProvider } from "../src/testing/scripted-provider.ts";
-import { TwoPassHarness } from "../src/harness/two-pass.ts";
+import { AgentHarness } from "../src/harness/agent-harness.ts";
 import { compileContext } from "../src/compiler/context-compiler.ts";
 import { initialState } from "../src/session/state.ts";
 import { buildRuntime, plan, reply, testDefinition } from "./helpers.ts";
@@ -31,8 +31,8 @@ function planningDefinition(overrides = {}) {
   });
 }
 
-describe("Interpret + Plan", () => {
-  test("records a structured TurnPlan and permits zero retrieval operations", async () => {
+describe("semantic preflight", () => {
+  test("records a structured preflight plan and permits zero retrieval operations", async () => {
     const model = new ScriptedModelProvider([plan({ memory_writes: { intent: "buy" } }), reply("Hello.")]);
     const { runtime } = buildRuntime(model, { definition: planningDefinition() });
     const sessionId = await runtime.createSession("plan-zero");
@@ -221,7 +221,10 @@ describe("Interpret + Plan", () => {
     const hybridModel = new ScriptedModelProvider([plan(), reply("Hybrid fallback complete.")]);
     const hybridRuntime = buildRuntime(hybridModel, {
       definition: hybridDefinition,
-      harness: new TwoPassHarness({ deterministicPlanner: { plan: () => ({ kind: "unknown", reason: "not machine-checkable" }) } }),
+      harness: new AgentHarness({
+        strategy: "workflow",
+        preflight: { deterministicPlanner: { plan: () => ({ kind: "unknown", reason: "not machine-checkable" }) } },
+      }),
     }).runtime;
     const hybridSession = await hybridRuntime.createSession("plan-hybrid");
     const hybrid = await hybridRuntime.runTurn({ sessionId: hybridSession, message: "Find houses" });

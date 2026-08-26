@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S18-r02-p01-agenerateor-vs-p01-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S18:r02:p01-agenerateor:p01-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.471Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 3801,
+    "candidatesTokenCount": 619,
+    "totalTokenCount": 6788,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 3801
+      }
+    ],
+    "thoughtsTokenCount": 2368,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": true,
+  "normalizationSteps": [
+    "unwrapped_outputSchema_echo"
+  ],
+  "rawProviderText": "{\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"instruction\": \"Compare two assistant conversations for the same user scenario. Judge only user-facing quality against the task facts and criteria. Return only structured JSON.\",\n  \"outputSchema\": {\n    \"schemaVersion\": \"pairwise-judge-output-v1\",\n    \"promptVersion\": \"pairwise-judge-v1\",\n    \"verdict\": \"A\",\n    \"criteria\": [\n      {\n        \"criterion\": \"correctness\",\n        \"preference\": \"B\",\n        \"reason\": \"Candidate A makes a significant calculation error in Turn 10, stating the volume for 510 sq. ft. at 10 inches is 1.18 cubic meters, before correcting it back to 12 cubic meters in Turn 11. Candidate B maintains correct calculations throughout.\"\n      },\n      {\n        \"criterion\": \"grounding\",\n        \"preference\": \"B\",\n        \"reason\": \"Candidate A's volume calculation of 1.18 cubic meters in Turn 10 is ungrounded and incorrect based on the provided dimensions.\"\n      },\n      {\n        \"criterion\": \"correction_handling\",\n        \"preference\": \"tie\",\n        \"reason\": \"Both candidates successfully update the volume from 9.9 to 12.0 cubic meters in Turn 2 after the user provides the corrected wall area.\"\n      },\n      {\n        \"criterion\": \"truthfulness\",\n        \"preference\": \"tie\",\n        \"reason\": \"Both candidates are truthful regarding the properties of hempcrete, its legality, and its lack of THC.\"\n      },\n      {\n        \"criterion\": \"usefulness\",\n        \"preference\": \"A\",\n        \"reason\": \"Candidate A provides a helpful, detailed list of tools required for the installation in Turn 10. Candidate B lazily refuses to answer, claiming it does not have the information in its reference knowledge.\"\n      },\n      {\n        \"criterion\": \"conversational_coherence\",\n        \"preference\": \"A\",\n        \"reason\": \"Candidate A is highly engaging, natural, and varies its follow-up questions to match the context of each turn. Candidate B is extremely robotic and repetitive, asking virtually the exact same follow-up question about 'pre-cast blocks or cast-in-situ tamping' in all 11 turns.\"\n      }\n    ],\n    \"reason\": \"Candidate A is much better overall despite a mathematical slip-up in Turn 10 (which it corrects in Turn 11). Candidate B is incredibly repetitive, asking the exact same follow-up question in almost every single turn, and completely refuses to answer the question about tools in Turn 10. Candidate A provides a highly useful list of tools and maintains an engaging, natural conversation.\"\n  }\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S13-r04-p02-agenerateor-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S13:r04:p02-agenerateor:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.488Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1491,
+    "candidatesTokenCount": 560,
+    "totalTokenCount": 3594,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1491
+      }
+    ],
+    "thoughtsTokenCount": 1543,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A correctly gathers all the corrected lead details (including the updated budget of $16M, contact info, and 3pm text preference), presents them for confirmation in Turn 3, and then correctly reports a definite transmission failure in Turn 4. Candidate B fails to confirm the gathered details and gives a generic disclaimer in Turn 4 instead of reporting a transmission failure of the handoff payload.\"\n    },\n    {\n      \"criterion\": \"correction_handling\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A successfully updates the budget to 16,000,000 and includes all corrected details in the confirmation prompt. Candidate B acknowledges the budget change but does not perform a proper confirmation of the corrected lead details.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A accurately reports that the transmission to the team failed. Candidate B deflects by stating it cannot send text messages or schedule calls, which is not a truthful representation of a failed handoff transmission.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A is much more useful as it follows the correct handoff protocol, confirms the details, and clearly states that the transmission did not complete. Candidate B fails to execute the handoff flow properly.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A has a much more natural and coherent flow. Candidate B's Turn 3 and 4 responses are repetitive and do not smoothly transition based on the user's inputs. Note that Candidate A uses markdown bolding, which violates the 'markdown-free' guideline, but its conversational quality and task execution are far superior to B.\"\n    }\n  ],\n  \"reason\": \"Candidate A is much better because it correctly executes the handoff confirmation flow with all corrected details and properly reports a definite transmission failure when the user confirms. Candidate B fails to confirm the lead details and does not properly report a transmission failure, instead offering a generic disclaimer. Although Candidate A uses markdown (violating the markdown-free constraint), it is vastly superior in all core functional criteria.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

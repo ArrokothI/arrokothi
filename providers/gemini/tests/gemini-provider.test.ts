@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { turnPlanSchema } from "@agent-sdk/core";
+import { preflightPlanSchema } from "@agent-sdk/core";
 import { GeminiProvider, projectGeminiStructuredOutput } from "../src/index.ts";
 
 describe("GeminiProvider structured output", () => {
@@ -35,7 +35,7 @@ describe("GeminiProvider structured output", () => {
       messages: [{ role: "user", content: "Plan this turn." }],
       model: "gemini-test",
       purpose: "plan",
-      responseSchema: turnPlanSchema(4),
+      responseSchema: preflightPlanSchema(4),
     });
 
     const generationConfig = capturedBody?.["generationConfig"] as Record<string, unknown>;
@@ -105,7 +105,7 @@ describe("GeminiProvider structured output", () => {
       messages: [{ role: "user", content: "Query inventory." }],
       model: "gemini-test",
       purpose: "plan",
-      responseSchema: turnPlanSchema(4),
+      responseSchema: preflightPlanSchema(4),
     });
 
     const filters = ((result.json as Record<string, unknown>)["retrieval_requests"] as Record<string, unknown>[])[0]!["filters"];
@@ -119,7 +119,7 @@ describe("GeminiProvider structured output", () => {
   });
 
   it("projects and normalizes independently of transport", () => {
-    const projection = projectGeminiStructuredOutput(turnPlanSchema(1));
+    const projection = projectGeminiStructuredOutput(preflightPlanSchema(1));
     assert.doesNotMatch(JSON.stringify(projection.schema), /anyOf/);
     const normalized = projection.normalize({
       retrieval_requests: [{
@@ -152,7 +152,7 @@ describe("GeminiProvider structured output", () => {
       messages: [{ role: "user", content: "Plan without retrieval." }],
       model: "gemini-test",
       purpose: "plan",
-      responseSchema: turnPlanSchema(4, false),
+      responseSchema: preflightPlanSchema(4, false),
     });
 
     const generationConfig = capturedBody?.["generationConfig"] as Record<string, unknown>;

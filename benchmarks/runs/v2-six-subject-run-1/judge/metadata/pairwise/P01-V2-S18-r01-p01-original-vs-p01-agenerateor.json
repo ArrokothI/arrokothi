@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S18-r01-p01-original-vs-p01-agenerateor",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S18:r01:p01-original:p01-agenerateor",
+  "promptCreatedAt": "2026-08-23T08:28:38.470Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 3057,
+    "candidatesTokenCount": 543,
+    "totalTokenCount": 5430,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 3057
+      }
+    ],
+    "thoughtsTokenCount": 1830,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"B\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A provides the exact calculated volume (9.9 m³ and 12.0 m³) based on the formula, whereas Candidate B provides a slightly rounded-up range (10-11 m³ and 12-13 m³).\"\n    },\n    {\n      \"criterion\": \"grounding\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates are well-grounded in the provided facts and context.\"\n    },\n    {\n      \"criterion\": \"correction_handling\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates successfully handle the user's correction in Turn 2 and correctly recall the updated volume in Turn 11.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates provide accurate and truthful information regarding hempcrete properties.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B explicitly includes all required safety/legality elements in Turn 3 (100% legal, 0% THC, fire-resistant, unrelated to recreational marijuana), whereas Candidate A misses the '100% legal' statement. Candidate B also provides much more helpful and varied project advice.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate A suffers from extreme repetition, asking almost the exact same follow-up question about 'cast-in-situ tamping or pre-cast blocks' in all 11 turns. Candidate B provides natural, varied, and contextually relevant follow-up questions that keep the conversation moving forward.\"\n    }\n  ],\n  \"reason\": \"While Candidate A is slightly more precise with the mathematical volume calculation, Candidate B is vastly superior in conversational coherence and usefulness. Candidate A repeats the exact same follow-up question across all 11 turns, which makes for a very poor user experience. Candidate B also fully satisfies the safety/legality disclosure requirements in Turn 3, whereas Candidate A misses the '100% legal' detail.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

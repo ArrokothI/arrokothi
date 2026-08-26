@@ -110,9 +110,7 @@ export class AgentRuntime {
     };
     assertValidDefinition(definition);
     this.config = { ...config, definition };
-    // The bounded workflow strategy preserves the historical default behavior while routing all
-    // new construction through the primary Harness. Legacy Harness classes remain available only
-    // for explicit compatibility use.
+    // The bounded workflow strategy is the safe default when no iterative engine is injected.
     this.harness = config.harness ?? new AgentHarness({ strategy: "workflow" });
     this.ids = config.ids ?? createRandomIds();
     this.clock = config.clock ?? createSystemClock();

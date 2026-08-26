@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S06-r02-p02-original-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S06:r02:p02-original:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.479Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 774,
+    "candidatesTokenCount": 424,
+    "totalTokenCount": 1981,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 774
+      }
+    ],
+    "thoughtsTokenCount": 783,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Assistant A correctly processes the information provided by the user in both turns. Assistant B fails by asking for the target area and budget in turn 1 (which the user already provided), and then asking for the zip code in turn 2 (which the user also already provided).\"\n    },\n    {\n      \"criterion\": \"correction_handling\",\n      \"preference\": \"A\",\n      \"reason\": \"Assistant A successfully handles the change of intent from buying to selling, immediately acknowledging the zip code 10011 and moving to seller qualification. Assistant B acknowledges the change of intent but fails to register the zip code provided in the correction, asking for it again.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Assistant A is much more useful as it moves the user forward to the valuation and contact collection stage. Assistant B creates friction by repeating questions for information already given.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"A\",\n      \"reason\": \"Assistant A's responses flow naturally from the user's inputs. Assistant B lacks conversational coherence because it repeatedly ignores explicit details provided by the user in the immediate prompt.\"\n    }\n  ],\n  \"reason\": \"Assistant A is significantly better. Assistant B fails on basic information extraction in both turns, asking the user for their budget/area after they specified it in turn 1, and asking for the zip code after they specified it in turn 2. Assistant A correctly captures all details, handles the change of intent smoothly, and moves to the seller valuation flow.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

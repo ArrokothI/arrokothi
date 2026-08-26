@@ -29,14 +29,11 @@ export interface PreflightPlan {
   memoryProposals: MemoryWriteProposal[];
   workingNotes: WorkingNoteProposal[];
   signals: string[];
-  /** @deprecated Agentic execution acquires evidence iteratively through CapabilityGateway. */
+  /** Used by the workflow strategy; agentic execution acquires evidence iteratively. */
   retrievalRequests: RetrievalRequest[];
 }
 
-/** v0.2 compatibility name. TurnPlan now means the preflight plan, not a full tool trajectory. */
-export type TurnPlan = PreflightPlan;
-
-export const EMPTY_TURN_PLAN: PreflightPlan = {
+export const EMPTY_PREFLIGHT_PLAN: PreflightPlan = {
   memoryProposals: [],
   workingNotes: [],
   signals: [],
@@ -52,7 +49,7 @@ export interface DeterministicPlannerInput {
 }
 
 export type DeterministicPlanResult =
-  | { kind: "planned"; plan: TurnPlan; reason: string }
+  | { kind: "planned"; plan: PreflightPlan; reason: string }
   | { kind: "unknown"; reason: string };
 
 /** Optional code-injected strategy seam. It is not stored in serializable AgentDefinition. */
@@ -60,7 +57,7 @@ export interface DeterministicPlanner {
   plan(input: DeterministicPlannerInput): DeterministicPlanResult | Promise<DeterministicPlanResult>;
 }
 
-export interface TurnPlanValidationError {
+export interface PreflightPlanValidationError {
   code:
     | "malformed_plan"
     | "unknown_source"
