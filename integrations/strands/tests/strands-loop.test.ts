@@ -238,6 +238,77 @@ describe("StrandsLoopEngine", () => {
     assert.ok(Number(afterTool?.kind === "lifecycle" ? afterTool.detail?.["mutationVersion"] : 0) >= 3);
   });
 
+  it("refreshes the model context and capability envelope after an action-result Phase transition", async () => {
+    const advance = {
+      name: "advance_phase",
+      description: "Advance to the terminal phase.",
+      effect: "write" as const,
+      confirmation: "none" as const,
+      idempotency: "per_input" as const,
+      input: { kind: "object" as const, fields: {} },
+      output: { kind: "object" as const, additionalProperties: true, fields: {} },
+    };
+    const definition = defineAgent({
+      id: "strands-phase-refresh",
+      name: "Strands Phase Refresh",
+      goal: "Advance exactly once.",
+      model: { providerId: "test", model: "strands-test", temperature: 0 },
+      globalRules: [],
+      memorySchema: { fields: [] },
+      hostContextSchema: { fields: [] },
+      knowledge: [],
+      tools: [{ definition: advance }],
+      planning: { mode: "deterministic", extractWorkingNotes: false },
+      flow: {
+        initialPhaseId: "research",
+        phases: [
+          {
+            id: "research",
+            objective: "The advance action is available.",
+            toolNames: [advance.name],
+            transitions: [{ to: "done", on: "action_result", when: { kind: "tool_succeeded", tool: advance.name } }],
+          },
+          { id: "done", objective: "No actions are available.", toolNames: [], terminal: true },
+        ],
+      },
+    });
+    const model = new ScriptedStrandsModel([
+      { kind: "tool", name: advance.name, input: {}, id: "advance-1" },
+      { kind: "text", text: "Advanced once." },
+    ]);
+    let executions = 0;
+    const tools = new ToolRegistry(definition.tools);
+    tools.register(advance.name, {
+      async execute() {
+        executions++;
+        return { ok: true, output: {} };
+      },
+    });
+    const runtime = new AgentRuntime({
+      definition,
+      sessions: new InMemorySessionStore(),
+      model: new ScriptedModelProvider([]),
+      tools,
+      knowledge: new KnowledgeIndex([]),
+      harness: new AgentHarness({ engine: new StrandsLoopEngine({ model }) }),
+      ids: createDeterministicIds(),
+      clock: createFixedClock(),
+    });
+    const sessionId = await runtime.createSession("strands-phase-refresh");
+    const result = await runtime.runTurn({ sessionId, message: "Advance." });
+
+    assert.equal(executions, 1);
+    assert.equal(result.state.phaseId, "done");
+    const firstOptions = JSON.stringify(model.calls[0]?.options);
+    const secondOptions = JSON.stringify(model.calls[1]?.options);
+    assert.match(firstOptions, /Current phase \(research\)/);
+    assert.doesNotMatch(firstOptions, /Current phase \(done\)/);
+    assert.match(secondOptions, /Current phase \(done\)/);
+    assert.doesNotMatch(secondOptions, /Current phase \(research\)/);
+    assert.deepEqual(model.calls[0]?.options?.toolSpecs?.map((spec) => spec.name), [advance.name]);
+    assert.deepEqual(model.calls[1]?.options?.toolSpecs?.map((spec) => spec.name), []);
+  });
+
   it("maps deterministic Guide feedback into the existing loop and accounts for its retry", async () => {
     const model = new ScriptedStrandsModel([
       { kind: "tool", name: "lookup", input: { query: "public web" } },
@@ -379,6 +450,19 @@ describe("StrandsLoopEngine", () => {
       event.kind === "lifecycle"
       && event.event === "execution_error"
       && event.detail?.["providerStopReason"] === "429 request quota reached"));
+  });
+
+  it("maps an aborted Strands invocation to cancellation without a model call", async () => {
+    const model = new ScriptedStrandsModel([{ kind: "text", text: "This must not run." }]);
+    const controller = new AbortController();
+    controller.abort();
+    const built = loopInput(model, { signal: controller.signal });
+
+    const result = await built.engine.run(built.input);
+
+    assert.equal(result.stopReason, "cancelled");
+    assert.equal(model.calls.length, 0);
+    assert.ok(built.traces.some((event) => event.kind === "execution_terminated" && event.stopReason === "cancelled"));
   });
 
   it("uses the actual SummarizingConversationManager when forced over its configured threshold", async () => {

@@ -1,12 +1,11 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { OUTPUT, ROOT } from "./orchestration.ts";
 import { P01_SCENARIOS } from "./scenarios/p01/scenarios.ts";
 import { P02_SCENARIOS } from "./scenarios/p02/scenarios.ts";
 
-const HERE = path.dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = path.resolve(HERE, "../../..");
-const RESULT_ROOT = path.join(REPO_ROOT, "benchmarks/runs/v2-six-subject-run-1");
+const REPO_ROOT = ROOT;
+const RESULT_ROOT = OUTPUT;
 const RAW_DIR = path.join(RESULT_ROOT, "raw");
 const OUT_ROOT = path.join(RESULT_ROOT, "conversations/arrokothai");
 

@@ -85,7 +85,7 @@ function fillForm(def) {
   $("f-temperature").value = def.model?.temperature ?? "";
   $("f-maxtokens").value = def.model?.maxOutputTokens ?? "";
   $("f-planner-mode").value = def.planning?.mode ?? "llm";
-  $("f-harness").value = def.execution?.harness ?? "agentic";
+  $("f-harness").value = def.execution?.harness ?? "workflow";
   $("f-planner-provider").value = def.planning?.model?.providerId ?? "";
   $("f-planner-model").value = def.planning?.model?.model ?? "";
   $("f-rules").value = (def.globalRules ?? []).map((rule) =>

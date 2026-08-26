@@ -100,7 +100,8 @@ function buildRuntime(
 ): AgentRuntime {
   const knowledge = new KnowledgeIndex(definition.knowledge, { webSearch });
   const tools = registerStudioExecutors(new ToolRegistry(definition.tools), definition, knowledge, dryRun);
-  const harness = definition.execution?.harness === "workflow"
+  const strategy = definition.execution?.harness ?? "workflow";
+  const harness = strategy === "workflow"
     ? new AgentHarness({ strategy: "workflow" })
     : new AgentHarness({
         strategy: "agentic",

@@ -205,6 +205,20 @@ describe("AgentHarness with ReferenceLoopEngine", () => {
     const agentRequests = model.requests.filter((request) => request.purpose === "agent_loop");
     assert.ok(agentRequests[0]?.tools?.some((tool) => tool.name === advance.name));
     assert.ok(!agentRequests[1]?.tools?.some((tool) => tool.name === advance.name));
+    assert.match(agentRequests[0]!.system, /Current phase \(research\)/);
+    assert.doesNotMatch(agentRequests[0]!.system, /Current phase \(done\)/);
+    assert.match(agentRequests[1]!.system, /Current phase \(done\)/);
+    assert.doesNotMatch(agentRequests[1]!.system, /Current phase \(research\)/);
+    assert.deepEqual(
+      result.contexts
+        .filter(({ purpose }) => purpose.startsWith("agent-loop:iteration:"))
+        .map(({ context }) => context.phaseId),
+      ["research", "done", "done"],
+    );
+    const transitionIndex = result.events.findIndex((event) => event.type === "PhaseTransitioned");
+    const refreshedIterationIndex = result.events.findIndex((event) =>
+      event.type === "AgentIterationStarted" && event.payload.iteration === 2 && event.payload.phaseId === "done");
+    assert.ok(transitionIndex >= 0 && refreshedIterationIndex > transitionIndex);
   });
 
   it("persists PendingAction, then executes the frozen payload after confirmation", async () => {
@@ -286,6 +300,21 @@ describe("AgentHarness with ReferenceLoopEngine", () => {
     const result = await built.runtime.runTurn({ sessionId, message: "Keep searching." });
     assert.equal(result.stopReason, "max_iterations");
     assert.ok(result.events.some((event) => event.type === "RuntimeError" && event.payload.code === "max_agent_iterations_exceeded"));
+  });
+
+  it("honors cancellation before starting another model iteration", async () => {
+    const model = new ScriptedModelProvider([{ purpose: "agent_loop", text: "This must not run." }]);
+    const definition = testDefinition({ planning: { mode: "deterministic" }, knowledge: [] });
+    const built = buildRuntime(model, { definition, harness: referenceHarness() });
+    const sessionId = await built.runtime.createSession("reference-cancelled");
+    const controller = new AbortController();
+    controller.abort();
+
+    const result = await built.runtime.runTurn({ sessionId, message: "Stop now.", signal: controller.signal });
+
+    assert.equal(result.stopReason, "cancelled");
+    assert.equal(model.requests.filter((request) => request.purpose === "agent_loop").length, 0);
+    assert.ok(result.events.some((event) => event.type === "RuntimeError" && event.payload.code === "agent_loop_cancelled"));
   });
 
   it("runs GeminiProvider through the reference loop", async () => {

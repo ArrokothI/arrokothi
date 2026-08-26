@@ -75,6 +75,12 @@ export interface AgentLoopMetrics {
 export interface AgentLoopInput {
   /** Initial authoritative Agent_SDK projection. It is not durable storage or engine history. */
   context: CompiledContext;
+  /**
+   * Recompile authoritative state immediately before a model iteration. Engines must prefer this
+   * projection when present so Phase, memory, host context, and action results cannot drift from
+   * the capability catalog after an in-loop state transition.
+   */
+  refreshContext?(iteration: number): CompiledContext;
   modelPolicy: ModelPolicy;
   /** Used only by provider-neutral/reference engines; Strands resolves its own model implementation. */
   modelProvider?: ModelProvider;

@@ -153,10 +153,14 @@ export class StrandsLoopEngine implements AgentLoopEngine {
     });
 
     this.installHooks(agent, input, metrics);
-    agent.addMiddleware(InvokeModelStage.Input, (context) => ({
-      ...context,
-      toolSpecs: input.capabilities().capabilities.map((capability) => capabilitySpec(capability)),
-    }));
+    agent.addMiddleware(InvokeModelStage.Input, (context) => {
+      const refreshed = input.refreshContext?.(stateData(context.invocationState).currentIteration);
+      return {
+        ...context,
+        ...(refreshed ? { systemPrompt: refreshed.system } : {}),
+        toolSpecs: input.capabilities().capabilities.map((capability) => capabilitySpec(capability)),
+      };
+    });
 
     let result;
     try {

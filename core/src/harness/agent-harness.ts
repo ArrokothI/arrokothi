@@ -93,17 +93,14 @@ export class AgentHarness extends WorkflowCoordinator implements HarnessImplemen
     const preflightEvents = input.journal.events.slice(beforePreflight);
     await this.applyTransitions(input, services, "pre_response");
 
-    const context = compileContext({
+    const compileAgentLoopContext = () => compileContext({
       definition: services.definition,
       state: input.journal.state,
       now: services.clock.now(),
       instructionMode: "agent_loop",
-      taskInstruction: [
-        "Choose the next safe step using the current observations and available capabilities, or provide the final user-facing response.",
-        "Treat authoritative capability observations as truth for what that operation observed. Do not claim facts the observations do not establish.",
-        "A denial is final for that request. Guidance describes a safe alternative. A confirmation pause is not a completed action.",
-      ].join("\n\n"),
+      taskInstruction: AGENT_LOOP_TASK,
     });
+    const context = compileAgentLoopContext();
     services.onContextCompiled?.(context, "agent-loop:start");
 
     const restrictedHostContext = Object.fromEntries(
@@ -116,6 +113,11 @@ export class AgentHarness extends WorkflowCoordinator implements HarnessImplemen
 
     const result = await engine.run({
       context,
+      refreshContext: (iteration) => {
+        const refreshed = compileAgentLoopContext();
+        services.onContextCompiled?.(refreshed, `agent-loop:iteration:${iteration}`);
+        return refreshed;
+      },
       modelPolicy: services.definition.model,
       modelProvider: services.model,
       capabilities: () => gateway.catalog(),
@@ -331,6 +333,12 @@ export class AgentHarness extends WorkflowCoordinator implements HarnessImplemen
     }
   }
 }
+
+const AGENT_LOOP_TASK = [
+  "Choose the next safe step using the current observations and available capabilities, or provide the final user-facing response.",
+  "Treat authoritative capability observations as truth for what that operation observed. Do not claim facts the observations do not establish.",
+  "A denial is final for that request. Guidance describes a safe alternative. A confirmation pause is not a completed action.",
+].join("\n\n");
 
 function safeDecisionDetail(decision: RuntimeDecision): Record<string, unknown> {
   if (decision.kind === "proceed") return { kind: decision.kind };
