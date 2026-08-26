@@ -305,7 +305,71 @@ The exact class names are not important. The ownership boundaries are.
 
 ---
 
-## 7. Skills
+## 7. Semantic type vs implementation backend
+
+The semantic identity of an Executable and the implementation that executes it are separate concerns.
+
+For example, an `Agent` remains an Arrokoth Agent whether its iterative model/tool loop is implemented by Strands, a reference loop, or a future compatible executor. Likewise, an LLM call remains an LLM leaf whether the model is served by Gemini, a hosted API, an OpenAI-compatible endpoint, or a locally deployed model.
+
+Conceptually:
+
+```text
+Semantic type                 Implementation backend
+-------------                 ----------------------
+Agent                         Strands / reference / future adapter
+Workflow                      native scheduler / future durable adapter
+LLM call                      ModelProvider implementation
+Tool                          native / MCP / remote adapter
+Knowledge retrieval           LangChain / direct retrieval / future adapter
+Persistence                   memory / SQLite / Postgres / future store
+```
+
+The runtime contracts and invariants belong to Arrokoth. Concrete implementations may be replaced when they satisfy those contracts.
+
+### Agent executor vs Model Provider
+
+These are different layers:
+
+```text
+Agent executor
+  decides the iterative mechanism:
+  model → tool/action → observation → model → ... → stop
+
+Model Provider
+  performs one model inference:
+  normalized request → concrete model/API/local server → normalized response
+```
+
+An Agent executor may call a Model Provider many times during one Agent run. Keeping the two separate prevents a loop implementation from becoming the model abstraction and allows hosted and local/self-hosted models to be used without changing Agent semantics.
+
+Provider-specific credentials, payloads, SDK types, and transport behavior should remain outside the core contracts.
+
+### Knowledge retrieval boundary
+
+Arrokoth should own the provider-neutral knowledge/retrieval contract and the context/authorization rules around retrieval, not every retrieval algorithm.
+
+A concrete retrieval implementation may choose or combine:
+
+```text
+chunking
+embedding models
+lexical / vector / hybrid search
+query rewriting or expansion
+metadata filtering
+score fusion
+reranking
+LLM-assisted retrieval
+```
+
+Frameworks such as LangChain can remain convenient default implementations while those choices are immature or not strategically important. Their types and assumptions should not define the core contract. Over time, high-value retrieval paths may be replaced with direct or specialized implementations when benchmarks show a measurable quality, latency, cost, or control advantage.
+
+The same principle applies to context engineering more broadly:
+
+> **Visibility and authority policy belong to the kernel; selection, ranking, compression, and retrieval algorithms are replaceable implementations.**
+
+---
+
+## 8. Skills
 
 A Skill is not a third control-flow system.
 It is a reusable capability package that resolves into existing runtime concepts.
@@ -326,7 +390,7 @@ Several Skills may reuse the same Capability Profile.
 
 ---
 
-## 8. Mapping from the current codebase
+## 9. Mapping from the current codebase
 
 The current implementation already contains many reusable pieces.
 
@@ -335,9 +399,12 @@ Current concept                  Target role
 ------------------------------   --------------------------------------------
 AgentRuntime                     durable execution/session runtime
 AgentHarness                     split shared harness from agent-specific work
-AgentLoopEngine                  Agent composite executor
-StrandsLoopEngine                Agent executor adapter
+AgentLoopEngine                  Agent composite executor contract
+StrandsLoopEngine                primary Agent executor adapter, not Agent semantics
+ModelProvider                    provider-neutral single-inference boundary
 CapabilityGateway                shared authority/capability boundary
+KnowledgeRetriever               provider-neutral retrieval boundary
+LangChain retrieval              replaceable knowledge implementation
 Structured Memory               preserve and expand
 Working Notes                    preserve as non-authoritative agent memory
 ContextCompiler                  generalize to per-node/per-run context views
@@ -355,11 +422,11 @@ It should not remain an invisible second definition of Agent execution.
 
 ---
 
-## 9. Migration principle
+## 10. Migration principle
 
 We should reuse implementation where the concepts match and replace abstractions where they do not.
 
-The goal is not a rewrite for aesthetic reasons. The goal is to prevent two incompatible mental models from surviving inside the core.
+The goal is not a rewrite for aesthetic reasons. The goal is to prevent two incompatible mental models from surviving inside the core and to prevent one implementation dependency from becoming the architecture by accident.
 
 A compatibility adapter may translate older `Flow` / `Phase` definitions at the system boundary during migration, but the new core should have one vocabulary:
 
@@ -372,6 +439,9 @@ Authority: fixed per run, monotonically narrowed for children
 Capability exposure: dynamic inside authority
 Memory: structured / notes / artifacts
 Skill: packaged executable + resources + profile
+Implementation: replaceable behind explicit ports
 ```
+
+A default implementation is allowed to be opinionated and convenient. It must not become a semantic requirement unless the kernel genuinely depends on that behavior.
 
 That is the implementation model future features should build on.
