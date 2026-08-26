@@ -127,7 +127,9 @@ Agent: the LLM is the transition function.
 
 A plan is therefore different from a workflow graph. A workflow graph is normative control structure; an agent plan is mutable memory. The model may revise it, ignore it, or not create one at all.
 
-We may expose a structured `focus` field because it is useful for continuity across turns, but `focus` is still agent-owned state, not a workflow stage imposed by the runtime. (Rex's comment: this can somehow serve as Chain of Thought, the LLM decide its current `focus` first, so the subsequent content would not bias this focus too much. My current instinct is to enforce each agent LLM to write this `focus` first.)
+We may expose a structured `focus` field because it is useful for continuity across turns, but `focus` is still agent-owned state, not a workflow stage imposed by the runtime. 
+
+(Rex's comment: this can somehow serve as Chain of Thought, the LLM decide its current `focus` first, so the subsequent content would not bias this focus too much. My current instinct is to enforce each agent LLM to write this `focus` first.)
 
 ## 5. Completion: semantic vs operational
 
