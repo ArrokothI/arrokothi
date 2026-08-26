@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "semantic:P02-V2-S04-p02-original-r02",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "semantic-judge-v1",
+  "seed": null,
+  "promptCreatedAt": "2026-08-23T08:28:38.392Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1262,
+    "candidatesTokenCount": 156,
+    "totalTokenCount": 1706,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1262
+      }
+    ],
+    "thoughtsTokenCount": 288,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": true,
+  "normalizationSteps": [
+    "score_string_to_number"
+  ],
+  "rawProviderText": "{\n  \"schemaVersion\": \"semantic-judge-output-v1\",\n  \"promptVersion\": \"semantic-judge-v1\",\n  \"requirementResults\": [\n    {\n      \"requirementId\": \"P02-R10\",\n      \"score\": \"2\",\n      \"confidence\": 1.0,\n      \"reason\": \"The assistant did not re-ask for any of the fields already provided by the user (name, budget, timeline, location, financing). Instead, it immediately addressed the user by name and offered a property recommendation matching her criteria.\",\n      \"citedTurns\": [\n        1\n      ]\n    }\n  ],\n  \"hardSemanticViolations\": []\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

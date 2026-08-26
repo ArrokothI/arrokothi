@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S05-r02-p01-agenerateor-vs-p01-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S05:r02:p01-agenerateor:p01-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.458Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 909,
+    "candidatesTokenCount": 319,
+    "totalTokenCount": 1986,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 909
+      }
+    ],
+    "thoughtsTokenCount": 758,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": true,
+  "normalizationSteps": [
+    "injected_missing_schema_version",
+    "injected_missing_prompt_version"
+  ],
+  "rawProviderText": "{\n  \"verdict\": \"tie\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates correctly and accurately explain the differences in curing and drying times between pre-cast blocks (arriving cured, 2-3 day mortar sequencing) and cast-in-situ (forms off next day, 3-6 weeks curing before plastering).\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates adhere to the facts and do not guarantee universal completion dates or make claims about e-commerce/ordering systems.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates provide highly useful, structured comparisons that directly address the user's need for speed, and both end with exactly one relevant follow-up question to keep the project moving.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both responses are coherent, well-structured, and easy to read.\"\n    }\n  ],\n  \"reason\": \"Both candidates are excellent. They perfectly address all authoritative facts and source-derived criteria, providing accurate timelines for both pre-cast blocks and cast-in-situ methods, and ending with a single, useful follow-up question.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

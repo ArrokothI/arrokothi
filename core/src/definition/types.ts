@@ -42,11 +42,11 @@ export interface AgentDefinition {
   planning?: PlanningPolicy;
   /** Serializable Harness preference. The application still injects the implementation. */
   execution?: {
-    /** `agentic` and `workflow` are the v0.37 primary strategies. Other values are legacy. */
-    harness: "agentic" | "workflow" | "two_pass" | "native_agent" | "claude_agent";
+    /** The two supported strategies of the public `AgentHarness`. */
+    harness: "agentic" | "workflow";
     executionContextPolicy?: "fresh_each_turn" | "resume";
   };
-  /** Standing rules. Legacy strings remain supported and are treated as invariants. */
+  /** Standing rules. Plain strings are treated as invariants. */
   globalRules?: AgentRuleInput[];
   knowledge: KnowledgeBinding[];
   memorySchema: StructuredMemorySchema;

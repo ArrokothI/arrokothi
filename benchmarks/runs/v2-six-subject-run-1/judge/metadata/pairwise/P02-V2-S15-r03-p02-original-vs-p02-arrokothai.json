@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S15-r03-p02-original-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S15:r03:p02-original:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.491Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1289,
+    "candidatesTokenCount": 408,
+    "totalTokenCount": 3102,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1289
+      }
+    ],
+    "thoughtsTokenCount": 1405,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"B\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate A recommends a property in Greenwich, Connecticut for $15.75M, which violates the user's location (Malibu) and budget ($13M). Candidate B correctly recommends a property in Malibu within budget. Additionally, Candidate A has a duplicate response bug in turn 4.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates truthfully report the transmission of details to the team without making false claims about scheduled showings or guaranteed contact.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B is more useful because it accurately captures the user's criteria and confirms the correct details before transmitting them, whereas Candidate A suggests irrelevant properties.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"B\",\n      \"reason\": \"While Candidate B is quite robotic and repetitive in its confirmation prompts, Candidate A suffers from a severe generation bug in turn 4, outputting two conflicting closing statements back-to-back.\"\n    }\n  ],\n  \"reason\": \"Candidate B is the better assistant. Candidate A makes a poor property recommendation in the first turn (suggesting a property in Connecticut that is over budget, when the user specified Malibu), and its final turn contains a duplicate response bug. Candidate B, although overly robotic and using markdown (which violates the negative constraint), successfully and accurately handles the handoff process without hallucinating irrelevant properties or suffering from generation bugs.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

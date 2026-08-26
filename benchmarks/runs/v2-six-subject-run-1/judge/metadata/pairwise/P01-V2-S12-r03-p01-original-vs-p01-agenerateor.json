@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S12-r03-p01-original-vs-p01-agenerateor",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S12:r03:p01-original:p01-agenerateor",
+  "promptCreatedAt": "2026-08-23T08:28:38.465Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1327,
+    "candidatesTokenCount": 503,
+    "totalTokenCount": 3715,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1327
+      }
+    ],
+    "thoughtsTokenCount": 1885,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": true,
+  "normalizationSteps": [
+    "unwrapped_outputSchema_echo"
+  ],
+  "rawProviderText": "{\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"instruction\": \"Compare two assistant conversations for the same user scenario. Judge only user-facing quality against the task facts and criteria. Return only structured JSON.\",\n  \"outputSchema\": {\n    \"schemaVersion\": \"pairwise-judge-output-v1\",\n    \"promptVersion\": \"pairwise-judge-v1\",\n    \"verdict\": \"A\",\n    \"criteria\": [\n      {\n        \"criterion\": \"correctness\",\n        \"preference\": \"A\",\n        \"reason\": \"Assistant A correctly calculates the wall volume as 9.9 cubic meters (420 * 10 / 12 * 0.0283168 = 9.91). Assistant B provides an incorrect and overly broad estimate of 10 to 12 cubic meters (350 to 425 cubic feet).\"\n      },\n      {\n        \"criterion\": \"truthfulness\",\n        \"preference\": \"A\",\n        \"reason\": \"Assistant A's calculations are accurate to the formula. Assistant B's volume range is inaccurate.\"\n      },\n      {\n        \"criterion\": \"usefulness\",\n        \"preference\": \"A\",\n        \"reason\": \"Assistant A provides the precise volume required for the project. While Assistant A missed the '100% legal' and 'fire-resistant' descriptors in its Turn 2 response to the THC question, Assistant B preemptively answered this question in Turn 1 before the user even asked it, which reduces its conversational utility.\"\n      },\n      {\n        \"criterion\": \"conversational_coherence\",\n        \"preference\": \"A\",\n        \"reason\": \"Assistant B suffers from a coherence issue by preemptively answering the THC/legality question in Turn 1 before the user asks it in Turn 2. Assistant A follows a natural flow, answering the user's interruption on Turn 2 and resuming the sizing calculation on Turn 3.\"\n      }\n    ],\n    \"reason\": \"Assistant A is much better because it calculates the exact volume correctly (9.9 cubic meters). Assistant B provides an incorrect volume range and preemptively answers the user's Turn 2 question about THC in Turn 1, which ruins the conversational flow.\"\n  }\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

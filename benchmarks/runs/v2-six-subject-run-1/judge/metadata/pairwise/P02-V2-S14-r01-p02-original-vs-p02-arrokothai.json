@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S14-r01-p02-original-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S14:r01:p02-original:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.488Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1410,
+    "candidatesTokenCount": 502,
+    "totalTokenCount": 3485,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1410
+      }
+    ],
+    "thoughtsTokenCount": 1573,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A correctly captures and confirms the user's details. Candidate B fails to recognize that the user already provided their name in Turn 2, asking 'Can I get your name?' immediately after the user stated 'My name's Sam Park'.\"\n    },\n    {\n      \"criterion\": \"correction_handling\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A handles the post-completion edit in Turn 5 well, though it mentions transmitting the updated details again. Candidate B also updates the time but makes ungrounded promises about the agent calling.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A adheres strictly to the truthfulness guidelines by explicitly stating that the handoff does not guarantee outreach or schedule a direct call. Candidate B violates this by falsely claiming 'Our agent will call you around 5pm' and 'Our agent will be in touch then!'.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A is much more useful as it accurately gathers and confirms all the user's information, whereas Candidate B gets stuck asking for information already provided.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate B has a severe conversational coherence failure in Turn 2 by asking for the user's name right after it was provided.\"\n    }\n  ],\n  \"reason\": \"Candidate A is significantly better. Candidate B suffers from a major conversational coherence failure in Turn 2 by asking for the user's name immediately after it was provided. Furthermore, Candidate B violates the truthfulness guidelines by making false claims/guarantees about an agent calling the user, whereas Candidate A correctly includes the required disclaimer that outreach is not guaranteed. Although Candidate A uses markdown (which should be avoided), it is far superior in correctness, truthfulness, and coherence.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

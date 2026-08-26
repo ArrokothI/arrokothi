@@ -195,27 +195,22 @@ export { compileContext, compilePlannerContext, effectiveRules } from "./compile
 export type { CompiledContext, CompiledContextSection, CompileInput, CompilePlannerInput } from "./compiler/context-compiler.ts";
 
 // -- planning ----------------------------------------------------------------
-export { ConservativeDeterministicPlanner, parseTurnPlan, turnPlanSchema } from "./planning/turn-plan.ts";
-export { EMPTY_TURN_PLAN } from "./planning/types.ts";
+export { ConservativeDeterministicPlanner, parsePreflightPlan, preflightPlanSchema } from "./planning/preflight.ts";
+export { EMPTY_PREFLIGHT_PLAN } from "./planning/types.ts";
 export type {
   PlanningMode,
   PlanningPolicy,
   WorkingNoteProposal,
   PreflightPlan,
-  TurnPlan,
   DeterministicPlannerInput,
   DeterministicPlanResult,
   DeterministicPlanner,
-  TurnPlanValidationError,
+  PreflightPlanValidationError,
 } from "./planning/types.ts";
 
 // -- harness / runtime -------------------------------------------------------
 export { AgentHarness } from "./harness/agent-harness.ts";
-export { TwoPassHarness } from "./harness/two-pass.ts";
-export { NativeAgentHarness } from "./harness/native-agent.ts";
-export type { AgentHarnessOptions, AgentHarnessStrategy } from "./harness/agent-harness.ts";
-export type { TwoPassOptions } from "./harness/two-pass.ts";
-export type { NativeAgentOptions } from "./harness/native-agent.ts";
+export type { AgentHarnessOptions, AgentHarnessStrategy, AgentPreflightOptions } from "./harness/agent-harness.ts";
 export type {
   HarnessImplementation,
   HarnessServices,

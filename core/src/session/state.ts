@@ -6,7 +6,7 @@ import type { ActionLedger } from "../tools/idempotency.ts";
 import type { AuthoritativeFact } from "../tools/types.ts";
 import { commitValue } from "../memory/structured.ts";
 import { applyHostContext } from "../context/host-context.ts";
-import type { TurnPlan, TurnPlanValidationError } from "../planning/types.ts";
+import type { PreflightPlan, PreflightPlanValidationError } from "../planning/types.ts";
 import type { KnowledgeResult, RetrievalRequest } from "../knowledge/types.ts";
 
 /**
@@ -58,7 +58,7 @@ export interface RetrievalTraceRecord {
   returnedCount: number;
   totalMatched?: number;
   result?: KnowledgeResult;
-  error?: TurnPlanValidationError;
+  error?: PreflightPlanValidationError;
 }
 
 export interface SessionState {
@@ -82,7 +82,7 @@ export interface SessionState {
   /** Semantic routing signals observed on the current turn. */
   turnSignals: string[];
   /** Validated preflight plan for the current turn; not the full autonomous trajectory. */
-  turnPlan: TurnPlan | null;
+  turnPlan: PreflightPlan | null;
   /** Retrieval outcomes from the current turn, without duplicating document contents. */
   turnRetrievals: RetrievalTraceRecord[];
   /** Every tool result in the session, for the Studio's action ledger view. */

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P02-V2-S07-r01-p02-original-vs-p02-arrokothai",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P02-V2-S07:r01:p02-original:p02-arrokothai",
+  "promptCreatedAt": "2026-08-23T08:28:38.480Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 884,
+    "candidatesTokenCount": 378,
+    "totalTokenCount": 2024,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 884
+      }
+    ],
+    "thoughtsTokenCount": 762,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A correctly identifies a property within the user's budget ($10M) and in the requested location (TriBeCa). Candidate B suggests a property in the Upper West Side for $18.9M, which violates both the location and budget constraints.\"\n    },\n    {\n      \"criterion\": \"correction_handling\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates handle the user's refusal to provide an email address well, transitioning to text/phone communication without re-demanding the email.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A is more useful as it accurately captures the user's search criteria and prepares the lead handoff with the correct details.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"B\",\n      \"reason\": \"Candidate B is slightly more natural and conversational in its second turn, whereas Candidate A's confirmation message is somewhat robotic and structured like a database entry.\"\n    }\n  ],\n  \"reason\": \"Candidate A is much better because it respects the user's budget ($10M) and location (TriBeCa) in the first turn. Candidate B suggests a property that is nearly double the user's budget and in a completely different neighborhood. Both candidates handle the omission of the email address correctly.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

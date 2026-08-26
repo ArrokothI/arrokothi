@@ -14,7 +14,7 @@ export interface ScriptedStep {
   text?: string;
   toolCalls?: ModelToolCall[];
   /** Only match a request whose `purpose` equals this. Lets a script target one pass. */
-  /** `interpret` is retained as a test-fixture alias for the v0.2 `plan` purpose. */
+  /** `interpret` is retained as a test-fixture alias for the `plan` purpose. */
   purpose?: "plan" | "interpret" | "respond" | "agent" | "agent_loop";
   finishReason?: string;
   /** Throw instead of responding, to exercise provider-failure handling. */

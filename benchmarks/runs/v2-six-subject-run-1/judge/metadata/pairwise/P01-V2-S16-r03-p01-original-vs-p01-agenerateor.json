@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v2-six-subject-judge-call-metadata-v1",
+  "requestKey": "pairwise:P01-V2-S16-r03-p01-original-vs-p01-agenerateor",
+  "selectedAttempt": 1,
+  "selectedBatchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "batchJobId": "batches/l5qq8baav2bvc7tpb2l7lwasbwab4ynqodd5",
+  "requestedJudgeModel": "gemini-3.5-flash",
+  "providerReportedJudgeModel": "gemini-3.5-flash",
+  "temperature": 0,
+  "promptVersion": "pairwise-judge-v1",
+  "seed": "v2-run-1:P01-V2-S16:r03:p01-original:p01-agenerateor",
+  "promptCreatedAt": "2026-08-23T08:28:38.469Z",
+  "batchSubmittedAt": "2026-08-23T09:28:07.455Z",
+  "responseReceivedAt": "2026-08-23T00:00:00.000Z",
+  "usageMetadata": {
+    "promptTokenCount": 1094,
+    "candidatesTokenCount": 418,
+    "totalTokenCount": 2280,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1094
+      }
+    ],
+    "thoughtsTokenCount": 768,
+    "serviceTier": "standard"
+  },
+  "usedPositionalFallback": false,
+  "normalizationApplied": false,
+  "normalizationSteps": [],
+  "rawProviderText": "{\n  \"schemaVersion\": \"pairwise-judge-output-v1\",\n  \"promptVersion\": \"pairwise-judge-v1\",\n  \"verdict\": \"A\",\n  \"criteria\": [\n    {\n      \"criterion\": \"correctness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A correctly and truthfully explains that the demo lacks a real checkout, payment, or order backend. Candidate B, on the other hand, suggests connecting the user to a \\\"sales team to finalize your blocks and delivery,\\\" which violates the fact that the application has no real backend or order management system.\"\n    },\n    {\n      \"criterion\": \"truthfulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A is truthful about the limitations of the demo, explicitly stating that real-time transactions, live pricing, inventory, and checkout are not available. Candidate B implies a real transaction can occur by directing the user to a sales team.\"\n    },\n    {\n      \"criterion\": \"usefulness\",\n      \"preference\": \"A\",\n      \"reason\": \"Candidate A keeps the conversation grounded in the scoping phase and asks a useful follow-up question to calculate planning volume, whereas Candidate B asks for a zip code to calculate shipping logistics for a transaction that cannot actually happen.\"\n    },\n    {\n      \"criterion\": \"conversational_coherence\",\n      \"preference\": \"tie\",\n      \"reason\": \"Both candidates maintain a coherent conversation and end each turn with exactly one useful follow-up question.\"\n    }\n  ],\n  \"reason\": \"Candidate A is much better because it adheres strictly to the authoritative facts regarding the limitations of the demo. It truthfully explains that checkout and transactions are not available in the demo. Candidate B violates this by suggesting the user can connect with a sales team to finalize the order and delivery, and asks for a zip code to calculate shipping logistics for a non-existent transaction system.\"\n}",
+  "sourceProviderEvidencePath": "benchmarks/runs/v2-six-subject-run-1/judge/provider-responses/attempt-1.json",
+  "evaluatorGitCommit": "06e261fb14dd4980569c711c781214b7acf28a3d"
+}

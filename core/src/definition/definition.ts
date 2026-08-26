@@ -196,7 +196,7 @@ export interface DefineAgentInput extends Omit<AgentDefinition, "version" | "pol
 export function normalizeAgentRules(rules: AgentRuleInput[] = []): AgentRule[] {
   return rules.map((rule, index) =>
     typeof rule === "string"
-      ? { id: `legacy-rule-${index + 1}`, text: rule, kind: "invariant", scope: "both" }
+      ? { id: `rule-${index + 1}`, text: rule, kind: "invariant", scope: "both" }
       : { ...rule, scope: rule.scope ?? "both" },
   );
 }
@@ -262,11 +262,11 @@ export function validateDefinition(def: AgentDefinition): DefinitionIssue[] {
   }
   if (def.planning?.model && !def.planning.model.providerId) error("planning.model.providerId", "planner providerId is required");
   if (def.planning?.model && !def.planning.model.model) error("planning.model.model", "planner model is required");
-  if (def.execution && !["agentic", "workflow", "two_pass", "native_agent", "claude_agent"].includes(def.execution.harness)) {
+  if (def.execution && !["agentic", "workflow"].includes(def.execution.harness)) {
     error("execution.harness", `unknown Harness "${String(def.execution.harness)}"`);
   }
   if (def.execution?.executionContextPolicy === "resume") {
-    error("execution.executionContextPolicy", "v0.37 supports only fresh_each_turn; resume is deferred to v0.4");
+    error("execution.executionContextPolicy", "only fresh_each_turn is supported");
   }
 
   if (def.policies.maxSteps < 1) error("policies.maxSteps", "maxSteps must be at least 1");

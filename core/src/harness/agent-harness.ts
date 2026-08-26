@@ -13,15 +13,17 @@ import type {
 import { CapabilityGateway } from "../capabilities/gateway.ts";
 import { attemptToolCall, resolvePendingConfirmation } from "../tools/authorize.ts";
 import { compileContext } from "../compiler/context-compiler.ts";
-import { TwoPassHarness, type TwoPassOptions } from "./two-pass.ts";
+import { WorkflowCoordinator, type WorkflowOptions } from "./workflow.ts";
 
 export type AgentHarnessStrategy = "agentic" | "workflow";
+
+export type AgentPreflightOptions = WorkflowOptions;
 
 export interface AgentHarnessOptions {
   strategy?: AgentHarnessStrategy;
   /** Required for the primary agentic strategy; StrandsLoopEngine is the canonical implementation. */
   engine?: AgentLoopEngine;
-  preflight?: TwoPassOptions;
+  preflight?: AgentPreflightOptions;
   /**
    * Deterministic/application-owned policy seam evaluated before CapabilityGateway.
    * It may proceed, deny, guide, or transform. Confirmation is Gateway-owned because only the
@@ -43,8 +45,8 @@ export interface AgentHarnessOptions {
  * compilation, the CapabilityGateway boundary, and terminal accounting. An injected
  * AgentLoopEngine owns only the temporary iterative mechanics inside the turn.
  */
-export class AgentHarness extends TwoPassHarness implements HarnessImplementation {
-  override readonly name = "agent-harness-v0.37";
+export class AgentHarness extends WorkflowCoordinator implements HarnessImplementation {
+  override readonly name = "agent-harness";
   readonly strategy: AgentHarnessStrategy;
   private readonly primaryOptions: AgentHarnessOptions;
 

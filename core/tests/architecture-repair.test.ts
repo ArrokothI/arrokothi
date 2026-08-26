@@ -247,8 +247,8 @@ describe("generic architecture repair", () => {
 
     const source = definition.knowledge[0]!.source;
     assert.equal(source.kind, "record_set");
-    const compatibilityTool = createRecordQueryToolDefinition(source);
-    assert.match(compatibilityTool.description, /\[examples: "north-sector"\]/);
+    const queryTool = createRecordQueryToolDefinition(source);
+    assert.match(queryTool.description, /\[examples: "north-sector"\]/);
   });
 
   it("does not implicitly dispatch a confirmed external action twice after definite failure", async () => {

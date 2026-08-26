@@ -597,7 +597,7 @@ function renderState(state, dryRunLedger = []) {
       ]))
     : el("div", { className: "empty", textContent: "nothing committed yet" })));
 
-  host.append(section("PreflightPlan (TurnPlan compatibility field)", state.turnPlan
+  host.append(section("Preflight plan", state.turnPlan
     ? el("pre", { textContent: JSON.stringify(state.turnPlan, null, 2) })
     : el("div", { className: "empty", textContent: "no plan for this turn" })));
 

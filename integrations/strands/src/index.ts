@@ -86,9 +86,9 @@ export function createStrandsGeminiEngine(options: StrandsGeminiOptions = {}): S
   });
 }
 
-/** Canonical v0.37 agentic engine. Strands types remain contained in this package. */
+/** Canonical production agentic engine. Strands types remain contained in this package. */
 export class StrandsLoopEngine implements AgentLoopEngine {
-  readonly name = "strands-loop-v0.37";
+  readonly name = "strands-loop";
   private readonly options: StrandsLoopEngineOptions;
 
   constructor(options: StrandsLoopEngineOptions = {}) {

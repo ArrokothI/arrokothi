@@ -5,7 +5,7 @@ import type { ConfirmationDecision } from "../confirmation/types.ts";
 import type { TransitionEvaluation, TransitionTiming } from "../flow/types.ts";
 import type { ModelUsage } from "../provider/types.ts";
 import type { MemoryRejectionCode } from "../memory/structured.ts";
-import type { TurnPlan, TurnPlanValidationError } from "../planning/types.ts";
+import type { PreflightPlan, PreflightPlanValidationError } from "../planning/types.ts";
 import type { KnowledgeResult, RetrievalRequest } from "../knowledge/types.ts";
 
 /**
@@ -76,14 +76,14 @@ export type TurnPlanCreatedEvent = EventBase<
   {
     strategy: "llm" | "deterministic" | "hybrid";
     resolvedBy: "llm" | "deterministic" | "safe_empty";
-    plan: TurnPlan;
+    plan: PreflightPlan;
     detail?: string;
   }
 >;
 
 export type RetrievalRequestRejectedEvent = EventBase<
   "RetrievalRequestRejected",
-  { request: RetrievalRequest; error: TurnPlanValidationError }
+  { request: RetrievalRequest; error: PreflightPlanValidationError }
 >;
 
 export type KnowledgeRetrievedEvent = EventBase<
@@ -95,7 +95,7 @@ export type KnowledgeRetrievedEvent = EventBase<
     scores?: number[];
     returnedCount: number;
     totalMatched?: number;
-    /** Full authoritative evidence returned by this explicitly executed retrieval (v0.36+). */
+    /** Full authoritative evidence returned by this explicitly executed retrieval. */
     result?: KnowledgeResult;
   }
 >;

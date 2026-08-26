@@ -1,7 +1,7 @@
 import type { AuthorizeDeps, ToolAttemptOutcome } from "../tools/authorize.ts";
 import type { HarnessServices } from "../harness/types.ts";
 import type { KnowledgeResult, RetrievalRequest } from "../knowledge/types.ts";
-import type { TurnPlanValidationError } from "../planning/types.ts";
+import type { PreflightPlanValidationError } from "../planning/types.ts";
 import type { CapabilityCatalogSnapshot, CapabilityCategory, CapabilityOutcome } from "./types.ts";
 import { attemptToolCall } from "../tools/authorize.ts";
 import { buildCapabilityCatalog, knowledgeCapabilityName, retrievalFromCapability } from "./catalog.ts";
@@ -198,7 +198,7 @@ export class CapabilityGateway {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const code = /no WebSearchProvider/i.test(message) ? "web_search_unavailable" : "invalid_web_query";
-      return this.rejectKnowledge(request, iteration, capabilityName, { code, message } as TurnPlanValidationError);
+      return this.rejectKnowledge(request, iteration, capabilityName, { code, message } as PreflightPlanValidationError);
     }
   }
 
@@ -260,7 +260,7 @@ export class CapabilityGateway {
     this.deps.journal.append({ type: "DelegationRequested", turn: this.turn, payload: { harness: this.harnessName, iteration, category, capabilityName, input } });
   }
 
-  private rejectKnowledge(request: RetrievalRequest, iteration: number, capabilityName: string, error: TurnPlanValidationError): CapabilityOutcome {
+  private rejectKnowledge(request: RetrievalRequest, iteration: number, capabilityName: string, error: PreflightPlanValidationError): CapabilityOutcome {
     this.deps.journal.append({ type: "RetrievalRequestRejected", turn: this.turn, payload: { request, error } });
     return this.rejected(iteration, "knowledge", capabilityName, error.code, error.message);
   }
