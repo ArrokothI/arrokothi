@@ -58,6 +58,55 @@ The project should resist implementing multiple backends merely to prove theoret
 
 ---
 
+# Repository and package architecture
+
+The repository should communicate the same architecture as the code.
+
+The target monorepo convention is:
+
+```text
+packages/      supported reusable Arrokoth software
+apps/          deployable/reference products built from packages
+examples/      focused learning examples
+benchmarks/    behavioral, retrieval, cost, and conformance evidence
+docs/          architecture, roadmap, guides, and decisions
+scripts/       repository tooling and manual diagnostics
+```
+
+Inside `packages/`, package location does **not** determine whether something is semantically core. Instead:
+
+> **Everything under `packages/` is first-class supported Arrokoth software; only `packages/core` defines Arrokoth kernel semantics.**
+
+The intended shape is described in [`repository-structure-plan.md`](repository-structure-plan.md), roughly:
+
+```text
+packages/
+├── core/
+├── client/
+├── server/
+├── presets/
+│   └── node/
+├── agents/
+├── models/
+├── knowledge/
+├── tools/
+├── storage/
+├── sandbox/
+└── observability/
+
+apps/
+├── studio/
+└── cloud-api/        # future
+```
+
+Concrete implementations such as Strands, Gemini, LangChain, Postgres, MCP, or OpenTelemetry should be first-class packages when supported, but their dependency arrows must point toward the kernel rather than the kernel importing their framework-specific types.
+
+The repository restructure should be mostly mechanical and should not be mixed into the deepest part of the v0.4 semantic refactor. Stabilize conceptual ownership first, then move packages with minimal behavioral change.
+
+A batteries-included preset such as `@arrokoth/node` may later compose the recommended implementations for normal users, while advanced users can assemble `@arrokoth/core` with explicit implementation packages.
+
+---
+
 # v0.4 — Align the core with the new execution model
 
 The goal of v0.4 is architectural alignment, not maximum feature count.
@@ -179,6 +228,8 @@ Knowledge retrieval: provider-neutral contract, framework implementation hidden
 
 No new feature should need to understand both "Phase as Agent control" and "Executable node control" as competing mental models.
 No core semantic rule should depend on a Strands, LangChain, or model-provider-specific type.
+
+The v0.4 architecture should also make the subsequent package move mechanical: code ownership should already be clear enough to know what belongs in `packages/core` versus implementation packages.
 
 ---
 
@@ -330,12 +381,31 @@ execution adapter
 
 No external tool system should bypass the Authority Envelope or consequential-action rules.
 
+### 9. Establish public package and service surfaces
+
+Once the execution contracts are stable enough, begin exposing the kernel through reusable and remote-facing packages rather than requiring every application to embed internal runtime classes directly.
+
+The intended layers are conceptually:
+
+```text
+@arrokoth/core       embedded kernel contracts/runtime
+@arrokoth/client     remote API client
+@arrokoth/server     reusable runtime service
+@arrokoth/node       batteries-included preset (when useful)
+```
+
+High-level convenience APIs such as `agents.create()` or `agents.run()` should map onto the more fundamental `ExecutableDefinition` / `ExecutionRun` model rather than becoming a second execution model.
+
+The server/API should treat Runs as first-class resources with status, events, children, result, and cancellation.
+
 ## v0.5 outcome
 
 At the end of v0.5, Agent and Workflow should be fully composable peers over one runtime.
 The old Phase system should no longer be required for new application design.
 
 The implementation boundaries should also be empirically proven: at least one important backend should be replaceable without changing kernel semantics.
+
+The repository/package structure should make those boundaries visible to users and contributors, with applications consuming the same public surfaces intended for external developers.
 
 ---
 
@@ -496,7 +566,7 @@ OpenClaw, Hermes, sandbox providers, and future systems may become useful implem
 
 ## v0.6 outcome
 
-At the end of v0.6, Agent SDK should support a scalable ecosystem where:
+At the end of v0.6, Arrokoth Agent Kernel should support a scalable ecosystem where:
 
 - authority remains mechanically bounded;
 - LLM context stays narrow when capability catalogs become large;
@@ -546,6 +616,20 @@ Preserve and evolve components whose responsibilities remain valid, especially:
 
 Use mature external implementations for commodity mechanisms when they fit the contracts. Build custom mechanisms when they are part of Arrokoth's differentiation or when benchmarks show a real advantage.
 
+### First-class packages do not imply core semantics
+
+All supported reusable Arrokoth code should live under `packages/`, including implementation adapters.
+
+This is intentionally different from treating integrations as second-class extras. Strands, LangChain, model adapters, persistence adapters, and similar packages may be recommended and production-supported while remaining replaceable.
+
+Dependency direction and contracts—not folder distance from the root—define the architectural boundary.
+
+### Core should be independently testable, not production-complete by itself
+
+`packages/core` should include enough reference/fake implementations to test kernel contracts and execute deterministic examples, but it should not reimplement every production mechanism merely to prove independence.
+
+For example, a small reference Agent loop can validate the `AgentLoopEngine` contract while Strands remains the recommended production executor.
+
 ### Default first, optionality second
 
 Every replaceable layer should have one well-supported reference implementation before accumulating alternatives.
@@ -566,6 +650,8 @@ over:
 ```text
 many partially supported implementations
 ```
+
+A batteries-included preset may select these defaults for normal users without changing the kernel contracts.
 
 ### Model provider and Agent executor remain separate
 
@@ -633,19 +719,30 @@ v0.4
   keep Strands as primary Agent executor
   keep current working model provider(s)
   keep LangChain retrieval behavior working
-  clean adapter/package boundaries
+  establish clean ownership boundaries
+
+post-v0.4 mechanical repo migration
+  core/                 → packages/core/
+  integrations/strands/ → packages/agents/strands/
+  providers/gemini/     → packages/models/gemini/
+  keep apps/, examples/, benchmarks/, docs/ conceptually stable
+  move diagnostics into scripts/ or tests/ based on purpose
+  avoid behavior changes during directory moves
 
 v0.5 early
   implement recursive Agent/Workflow execution
   prove authority, lifecycle, cancellation, budget, and trace propagation
+  introduce client/server package surfaces when contracts are stable enough
 
 v0.5 middle
   add one second Agent executor as a conformance test
   broaden model-provider/local-model options where useful
+  extract concrete knowledge implementation into packages/knowledge/* when worthwhile
 
 v0.5 late
   add standard tool transport / MCP where useful
   add production-oriented persistence and trace exporters
+  add a batteries-included preset if package assembly becomes burdensome
 
 v0.6
   benchmark context-selection strategies
@@ -666,6 +763,7 @@ The active conceptual documentation should converge on:
 docs/mental-model-v0.4.md
 docs/mental-model-to-implementation-model.md
 docs/future-plan.md
+docs/repository-structure-plan.md
 docs/mental-model-v0.37.md   # current/legacy implementation context and concerns
 ```
 
