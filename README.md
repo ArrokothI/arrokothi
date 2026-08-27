@@ -74,6 +74,7 @@ See [benchmarks](benchmarks/README.md) for generation and judge commands.
 packages/core/                control plane, durable runtime, public AgentHarness
 packages/agents/strands/      canonical production AgentLoopEngine
 packages/models/gemini/       Gemini ModelProvider adapter
+packages/storage/sqlite/      SQLite SessionStore / DefinitionStore adapter
 apps/studio/                  local development surface
 examples/                     minimal, workflow, and Strands examples
 benchmarks/six-subject/       current benchmark implementation
