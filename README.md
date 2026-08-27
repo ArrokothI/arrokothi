@@ -71,12 +71,13 @@ See [benchmarks](benchmarks/README.md) for generation and judge commands.
 ## Repository layout
 
 ```text
-core/                         control plane, durable runtime, public AgentHarness
-integrations/strands/         canonical production AgentLoopEngine
-providers/gemini/             Gemini ModelProvider adapter
+packages/core/                control plane, durable runtime, public AgentHarness
+packages/agents/strands/      canonical production AgentLoopEngine
+packages/models/gemini/       Gemini ModelProvider adapter
 apps/studio/                  local development surface
 examples/                     minimal, workflow, and Strands examples
 benchmarks/six-subject/       current benchmark implementation
 benchmarks/runs/              retained experiment evidence
 docs/                         current architecture and durability contracts
+scripts/                      repository tooling and manual diagnostics
 ```

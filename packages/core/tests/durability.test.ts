@@ -16,7 +16,7 @@ import { StaticModelProvider } from "../src/testing/scripted-provider.ts";
 import { createDeterministicIds, createFixedClock } from "../src/util/ids.ts";
 import { hashValue } from "../src/util/hash.ts";
 import { initialState, project, resume, snapshotOf } from "../src/session/state.ts";
-import { openDatabase, SqliteSessionStore } from "../../apps/studio/src/sqlite-store.ts";
+import { openDatabase, SqliteSessionStore } from "../../../apps/studio/src/sqlite-store.ts";
 
 function actionDefinition(name = "send_external", confirmation: ToolDefinition["confirmation"] = "none"): ToolDefinition {
   return {

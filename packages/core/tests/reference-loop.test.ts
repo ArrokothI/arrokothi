@@ -11,7 +11,7 @@ import {
 import { ScriptedModelProvider } from "../src/testing/scripted-provider.ts";
 import { RecordingExecutor } from "../src/testing/fake-executors.ts";
 import { buildRuntime, testDefinition } from "./helpers.ts";
-import { GeminiProvider } from "../../providers/gemini/src/index.ts";
+import { GeminiProvider } from "../../models/gemini/src/index.ts";
 
 const PET_DOC = {
   source: {
