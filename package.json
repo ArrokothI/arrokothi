@@ -5,9 +5,10 @@
   "description": "Provider-neutral agent control plane with a consolidated Harness and Strands execution engine.",
   "type": "module",
   "workspaces": [
-    "core",
-    "providers/gemini",
-    "integrations/strands",
+    "packages/core",
+    "packages/models/gemini",
+    "packages/agents/strands",
+    "packages/storage/sqlite",
     "apps/studio",
     "examples/minimal-agent",
     "examples/estate-like",
@@ -17,7 +18,7 @@
     "node": ">=22.9.0"
   },
   "scripts": {
-    "test": "node --test --experimental-sqlite --experimental-strip-types core/tests/*.test.ts providers/gemini/tests/*.test.ts integrations/strands/tests/*.test.ts",
+    "test": "node --test --experimental-sqlite --experimental-strip-types core/tests/*.test.ts providers/gemini/tests/*.test.ts integrations/strands/tests/*.test.ts benchmarks/six-subject/tests/*.test.ts",
     "test:watch": "node --test --watch --experimental-strip-types core/tests/*.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "studio": "node --experimental-strip-types --experimental-sqlite apps/studio/src/server.ts",
@@ -26,7 +27,13 @@
     "example:strands": "node --env-file-if-exists=.env --experimental-strip-types examples/strands-gemini/main.ts",
     "canary:gemini": "node --env-file-if-exists=.env --experimental-strip-types diagnostics/gemini-provider-canary.ts",
     "test:core": "node --test --experimental-strip-types core/tests/*.test.ts",
-    "test:strands": "node --test --experimental-strip-types integrations/strands/tests/*.test.ts"
+    "test:strands": "node --test --experimental-strip-types integrations/strands/tests/*.test.ts",
+    "benchmark:test": "node --test --experimental-strip-types benchmarks/six-subject/tests/*.test.ts",
+    "benchmark:generate": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/six-subject/run.ts generate",
+    "benchmark:evaluate": "node --experimental-strip-types benchmarks/six-subject/run.ts evaluate",
+    "benchmark:judge": "node --env-file-if-exists=.env --experimental-strip-types benchmarks/six-subject/run.ts judge",
+    "benchmark:analyze": "node --experimental-strip-types benchmarks/six-subject/run.ts analyze",
+    "benchmark:review": "node --experimental-strip-types benchmarks/six-subject/run.ts review"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

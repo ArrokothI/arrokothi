@@ -65,10 +65,12 @@ Cross-framework P01/P02 evaluation and retained historical evidence now live in 
 ## Repository layout
 
 ```text
-core/                         control plane, durable runtime, public AgentHarness
-integrations/strands/         canonical production AgentLoopEngine
-providers/gemini/             Gemini ModelProvider adapter
+packages/core/                control plane, durable runtime, public AgentHarness
+packages/agents/strands/      canonical production AgentLoopEngine
+packages/models/gemini/       Gemini ModelProvider adapter
+packages/storage/sqlite/      SQLite SessionStore / DefinitionStore adapter
 apps/studio/                  local development surface
 examples/                     minimal, workflow, and Strands examples
 docs/                         current architecture and durability contracts
+scripts/                      repository tooling and manual diagnostics
 ```
