@@ -7,6 +7,49 @@ The main rule is:
 
 > **Workflow and Agent share the same execution substrate. They differ primarily in who owns semantic control flow.**
 
+A second implementation rule follows from this model:
+
+> **Arrokoth owns the kernel semantics and invariants. Concrete execution, model, retrieval, storage, sandbox, and observability mechanisms should remain replaceable behind explicit ports.**
+
+At a high level, the intended boundary looks like this:
+
+```text
+                         ARROKOTH KERNEL
+┌──────────────────────────────────────────────────────────────┐
+│ ExecutableDefinition / ExecutionRun                         │
+│ Agent vs Workflow semantics                                 │
+│ Authority Envelope                                          │
+│ CapabilityGateway                                           │
+│ Memory semantics + provenance                               │
+│ Lifecycle / completion                                      │
+│ Execution tree                                              │
+│ Event semantics / durability                                │
+│ Context visibility rules                                    │
+└───────────────────────────┬──────────────────────────────────┘
+                            │
+                    implementation ports
+                            │
+       ┌────────────────────┼─────────────────────────┐
+       ▼                    ▼                         ▼
+ Agent Executor        Model Runtime             Knowledge
+ Strands               AI SDK                    LangChain
+ future adapters       direct SDK                LlamaIndex
+ reference loop        Ollama / local            pgvector / direct
+
+       ▼                    ▼                         ▼
+ Sandbox              Tool Transport            Persistence
+ Docker               Native                    SQLite
+ E2B / remote          MCP                       Postgres
+ foreign runtime       HTTP / OpenAPI             other stores
+
+                            ▼
+                     Observability
+                     OpenTelemetry
+                     Langfuse / other backends
+```
+
+The named projects above are examples of possible implementations, not semantic dependencies. The important goal is that changing one implementation should not redefine what an Arrokoth Agent, Workflow, authority boundary, memory write, or execution run means.
+
 ---
 
 ## 1. Core execution model
@@ -303,6 +346,43 @@ ExecutableRunner
 
 The exact class names are not important. The ownership boundaries are.
 
+### ContextCompiler ownership boundary
+
+Context compilation is a particularly important example of the kernel/implementation split.
+
+The kernel must determine what information and capabilities are **eligible and authorized** to appear in context. The algorithms that choose, rank, compress, or summarize eligible information can evolve independently.
+
+```text
+ContextCompiler
+    │
+    ├── which memories are eligible?       ARROKOTH
+    ├── which tools are authorized?        ARROKOTH
+    ├── what can this node see?             ARROKOTH
+    ├── provenance / visibility rules       ARROKOTH
+    │
+    ├── token counting                      replaceable
+    ├── summarizer                          replaceable
+    ├── retrieval ranking                   replaceable
+    ├── compression algorithm               replaceable
+    ├── context packing strategy             replaceable
+    └── model used for summarization        replaceable
+```
+
+This gives context engineering a clean safety boundary:
+
+```text
+authorized / eligible information
+              ↓
+      replaceable selection
+       ranking / compression
+              ↓
+        compiled context
+              ↓
+            model
+```
+
+A better ranking or compression algorithm may change what the model sees from the eligible set. It must never make previously unauthorized information eligible.
+
 ---
 
 ## 7. Semantic type vs implementation backend
@@ -324,6 +404,19 @@ Knowledge retrieval           LangChain / direct retrieval / future adapter
 Persistence                   memory / SQLite / Postgres / future store
 ```
 
+Another useful way to picture the two independent axes is:
+
+```text
+What is being executed?             How is it implemented?
+-----------------------             ----------------------
+Agent                     ───────→   Strands / other Agent executor
+Workflow                  ───────→   native / durable scheduler
+LLM leaf                  ───────→   Gemini / hosted API / local model
+Tool                      ───────→   native / MCP / HTTP
+Knowledge retrieval       ───────→   LangChain / LlamaIndex / direct
+Storage                   ───────→   memory / SQLite / Postgres
+```
+
 The runtime contracts and invariants belong to Arrokoth. Concrete implementations may be replaced when they satisfy those contracts.
 
 ### Agent executor vs Model Provider
@@ -341,6 +434,25 @@ Model Provider
 ```
 
 An Agent executor may call a Model Provider many times during one Agent run. Keeping the two separate prevents a loop implementation from becoming the model abstraction and allows hosted and local/self-hosted models to be used without changing Agent semantics.
+
+For example:
+
+```text
+                    Arrokoth Agent
+                          │
+                          ▼
+                  AgentLoopEngine
+                    (e.g. Strands)
+                          │
+                calls model repeatedly
+                          │
+                          ▼
+                    ModelProvider
+                 /         |         \
+                ▼          ▼          ▼
+             Gemini   OpenAI-compatible   local / self-hosted
+                                      Ollama / vLLM / other
+```
 
 Provider-specific credentials, payloads, SDK types, and transport behavior should remain outside the core contracts.
 
@@ -362,6 +474,42 @@ LLM-assisted retrieval
 ```
 
 Frameworks such as LangChain can remain convenient default implementations while those choices are immature or not strategically important. Their types and assumptions should not define the core contract. Over time, high-value retrieval paths may be replaced with direct or specialized implementations when benchmarks show a measurable quality, latency, cost, or control advantage.
+
+The retrieval boundary should therefore look more like this:
+
+```text
+                 Arrokoth KnowledgeRetriever contract
+                              │
+                              ▼
+                    retrieval implementation
+                 /              |              \
+                ▼               ▼               ▼
+          LangChain        LlamaIndex       direct/custom
+              │                                │
+              ▼                                ▼
+     vector/search DB                  application-specific
+     embeddings/reranker               retrieval research
+```
+
+Arrokoth can use framework defaults first, then replace individual retrieval stages when evidence justifies it:
+
+```text
+ingestion
+   ↓
+chunking             ← replaceable
+   ↓
+query rewrite         ← replaceable
+   ↓
+lexical / vector      ← replaceable
+   ↓
+score fusion          ← replaceable
+   ↓
+reranking             ← replaceable
+   ↓
+context packing       ← replaceable
+   ↓
+KnowledgeChunk[]      ← Arrokoth-facing contract
+```
 
 The same principle applies to context engineering more broadly:
 
