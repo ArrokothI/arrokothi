@@ -4,7 +4,7 @@ import type { ObjectSchema } from "../schema/value-schema.ts";
  * Provider-neutral model interfaces.
  *
  * Core defines these and nothing more. It never imports a provider SDK, never reads an environment
- * variable, and never holds a credential. `providers/gemini` implements this interface outside core;
+ * variable, and never holds a credential. `packages/models/gemini` implements this interface outside core;
  * a test injects `ScriptedModelProvider` instead. The runtime cannot tell the difference.
  */
 

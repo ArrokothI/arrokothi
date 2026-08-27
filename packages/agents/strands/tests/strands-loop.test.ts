@@ -491,7 +491,7 @@ describe("StrandsLoopEngine", () => {
 
 describe("Strands dependency containment", () => {
   it("keeps @strands-agents/sdk imports outside core", async () => {
-    const root = path.join(process.cwd(), "core", "src");
+    const root = path.join(process.cwd(), "packages", "core", "src");
     const files = await allFiles(root);
     for (const file of files.filter((candidate) => candidate.endsWith(".ts"))) {
       assert.doesNotMatch(await readFile(file, "utf8"), /@strands-agents\/sdk/, file);

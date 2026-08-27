@@ -1,0 +1,16 @@
+{
+  "name": "@agent-sdk/storage-sqlite",
+  "version": "0.37.0",
+  "description": "SQLite implementations of the Agent SDK session and definition store contracts.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@agent-sdk/core": "*"
+  }
+}
