@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@agent-sdk/core": "*",
+    "@agent-sdk/storage-sqlite": "*",
     "@agent-sdk/provider-gemini": "*",
     "@agent-sdk/integration-strands": "*",
     "@agent-sdk/example-minimal-agent": "*",

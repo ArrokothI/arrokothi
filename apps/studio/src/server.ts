@@ -22,7 +22,7 @@ import {
 import { StaticModelProvider } from "@agent-sdk/core/testing";
 import { GeminiProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";
 import { createStrandsGeminiEngine } from "@agent-sdk/integration-strands";
-import { SqliteDefinitionStore, SqliteSessionStore, openDatabase } from "./sqlite-store.ts";
+import { SqliteDefinitionStore, SqliteSessionStore, openDatabase } from "@agent-sdk/storage-sqlite";
 import { DryRunRegistry, registerStudioExecutors } from "./executors.ts";
 import { SAMPLE_DEFINITIONS } from "./samples.ts";
 

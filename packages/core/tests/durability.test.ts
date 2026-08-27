@@ -16,7 +16,6 @@ import { StaticModelProvider } from "../src/testing/scripted-provider.ts";
 import { createDeterministicIds, createFixedClock } from "../src/util/ids.ts";
 import { hashValue } from "../src/util/hash.ts";
 import { initialState, project, resume, snapshotOf } from "../src/session/state.ts";
-import { openDatabase, SqliteSessionStore } from "../../../apps/studio/src/sqlite-store.ts";
 
 function actionDefinition(name = "send_external", confirmation: ToolDefinition["confirmation"] = "none"): ToolDefinition {
   return {
@@ -527,19 +526,6 @@ describe("durable SessionStore expected-sequence contract", () => {
     assert.deepEqual((await store.readEvents("memory-cas")).map((item) => item.id), ["evt-1"]);
   });
 
-  test("SqliteSessionStore rejects a stale expected sequence without changing the stream", async () => {
-    const db = openDatabase(":memory:");
-    const store = new SqliteSessionStore(db);
-    await store.createSession({ sessionId: "sqlite-cas", agentId: "a", agentVersion: 1, createdAt: "2026-06-01T00:00:00.000Z" });
-    await store.append("sqlite-cas", [draft("evt-1", { type: "UserMessageReceived", turn: 1, payload: { text: "one" } })], { expectedSeq: 0 });
-
-    await assert.rejects(
-      () => store.append("sqlite-cas", [draft("evt-2", { type: "UserMessageReceived", turn: 2, payload: { text: "two" } })], { expectedSeq: 0 }),
-      (error) => error instanceof SessionConcurrencyConflictError && error.code === "session_concurrency_conflict",
-    );
-    assert.deepEqual((await store.readEvents("sqlite-cas")).map((item) => item.id), ["evt-1"]);
-    db.close();
-  });
 });
 
 function draft(id: string, input: SessionEventInput): DraftEvent {

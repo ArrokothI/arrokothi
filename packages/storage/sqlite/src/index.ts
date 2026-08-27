@@ -13,7 +13,7 @@ import type {
 } from "@agent-sdk/core";
 
 /**
- * SQLite persistence for the Studio.
+ * SQLite persistence for the core SessionStore and DefinitionStore contracts.
  *
  * This is the whole point of the storage adapter boundary: core defines `SessionStore` and
  * `DefinitionStore` and knows nothing about SQL. Everything here is replaceable without touching a

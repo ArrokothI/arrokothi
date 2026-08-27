@@ -5,8 +5,8 @@ import type { SessionSnapshot } from "./state.ts";
  * Storage interfaces.
  *
  * Core defines them and ships an in-memory implementation. SQLite, Postgres, or anything else lives
- * outside core behind this adapter - `apps/studio` implements exactly these two interfaces over
- * `node:sqlite`, and the runtime cannot tell which one it was given.
+ * outside core behind this adapter; implementation packages satisfy these interfaces, and the
+ * runtime cannot tell which one it was given.
  */
 
 /** A draft carries everything except `seq`, which only the store may assign. */
