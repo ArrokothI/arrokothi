@@ -15,7 +15,7 @@ npm run typecheck
 ```
 
 The default tests and examples are offline. Copy [`.env.example`](.env.example) to `.env` only for
-the optional Gemini canary, live Strands example, benchmark generation, or benchmark judging.
+the optional Gemini canary or live Strands example.
 
 ## Current architecture
 
@@ -57,16 +57,10 @@ npm run example:estate
 npm run example:strands          # add -- --live for Gemini
 npm run canary:gemini            # optional live provider check
 npm run studio
-
-npm run benchmark:test
-npm run benchmark:evaluate       # offline, existing raw corpus
-npm run benchmark:analyze        # offline, existing judged corpus
-npm run benchmark:review         # regenerate readable conversations
 ```
 
-The canonical benchmark report is
-[`benchmarks/runs/v2-six-subject-run-1/RESULTS.md`](benchmarks/runs/v2-six-subject-run-1/RESULTS.md).
-See [benchmarks](benchmarks/README.md) for generation and judge commands.
+Cross-framework P01/P02 evaluation and retained historical evidence now live in the standalone
+`ArrokothI/benchmark` repository. This repository owns only ArrokothI framework code and examples.
 
 ## Repository layout
 
@@ -76,7 +70,5 @@ integrations/strands/         canonical production AgentLoopEngine
 providers/gemini/             Gemini ModelProvider adapter
 apps/studio/                  local development surface
 examples/                     minimal, workflow, and Strands examples
-benchmarks/six-subject/       current benchmark implementation
-benchmarks/runs/              retained experiment evidence
 docs/                         current architecture and durability contracts
 ```
