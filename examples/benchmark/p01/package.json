@@ -1,0 +1,15 @@
+{
+  "name": "@agent-sdk/example-benchmark-p01",
+  "version": "0.37.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./subject.ts",
+    "./agent": "./agent.ts",
+    "./protocol": "./protocol.ts"
+  },
+  "dependencies": {
+    "@agent-sdk/core": "*",
+    "@agent-sdk/provider-gemini": "*"
+  }
+}

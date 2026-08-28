@@ -119,6 +119,8 @@ The current primary Agent executor is Strands, while model inference remains beh
 npm run example:minimal
 npm run example:estate
 npm run example:strands          # add -- --live for Gemini
+npm run example:benchmark:p01 -- --check
+npm run example:benchmark:p02 -- --check
 npm run canary:gemini            # optional live provider check
 npm run studio
 ```
@@ -134,6 +136,8 @@ packages/models/gemini/       Gemini ModelProvider adapter
 packages/storage/sqlite/      SQLite persistence adapter
 apps/studio/                  local development/inspection surface
 examples/                     focused usage examples
+examples/benchmark/p01/       stable P01 benchmark-facing subject
+examples/benchmark/p02/       stable P02 benchmark-facing subject
 docs/                         mental model, implementation guide, roadmap, structure
 scripts/                      repository tooling/manual diagnostics
 ```

@@ -12,7 +12,9 @@
     "apps/studio",
     "examples/minimal-agent",
     "examples/estate-like",
-    "examples/strands-gemini"
+    "examples/strands-gemini",
+    "examples/benchmark/p01",
+    "examples/benchmark/p02"
   ],
   "engines": {
     "node": ">=22.9.0"
@@ -25,6 +27,9 @@
     "example:minimal": "node --experimental-strip-types examples/minimal-agent/main.ts",
     "example:estate": "node --experimental-strip-types examples/estate-like/main.ts",
     "example:strands": "node --env-file-if-exists=.env --experimental-strip-types examples/strands-gemini/main.ts",
+    "example:benchmark:p01": "node --env-file-if-exists=.env --experimental-strip-types examples/benchmark/p01/main.ts",
+    "example:benchmark:p02": "node --env-file-if-exists=.env --experimental-strip-types examples/benchmark/p02/main.ts",
+    "test:benchmark-subjects": "node --test --experimental-strip-types examples/benchmark/p01/*.test.ts examples/benchmark/p02/*.test.ts",
     "canary:gemini": "node --env-file-if-exists=.env --experimental-strip-types scripts/gemini-provider-canary.ts",
     "test:core": "node --test --experimental-strip-types packages/core/tests/*.test.ts",
     "test:strands": "node --test --experimental-strip-types packages/agents/strands/tests/*.test.ts",
