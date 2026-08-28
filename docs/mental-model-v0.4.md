@@ -1,87 +1,84 @@
-# Mental Model v0.4: Executions, Events, Effects, Workflows, and Agents
+# Mental Model v0.4: A Kernel for Agents and Workflows
 
 > **Status: canonical v0.4 mental model.**
 >
-> This document is the primary conceptual explanation of the Arrokoth Agent Kernel. It describes the semantics we want the kernel to preserve; exact TypeScript APIs, class names, storage layouts, and executor implementations may evolve.
+> This document explains the conceptual model behind the Arrokoth Agent Kernel. It is intentionally written from coarse-grained ideas to finer implementation-facing concepts. Exact TypeScript APIs, storage layouts, executor implementations, and package boundaries belong in [`mental-model-to-implementation-model.md`](mental-model-to-implementation-model.md), not here.
 
-The model is intentionally small:
+## Overview
 
-> **An `ExecutableDefinition` describes something Arrokoth can run. Instantiating it creates an addressable `Execution` with bounded authority, private state, a mailbox, and a lifecycle. Executions consume Events and request Effects through the runtime. They may use capabilities, create other Executions, communicate with authorized Executions, and update memory. An Execution may terminate, or it may remain alive indefinitely and wake whenever new Events arrive.**
->
-> **Workflow and Agent use the same execution substrate. A Workflow has system-defined semantic control flow. An Agent has model-defined semantic control flow.**
+Most agent systems begin with one of two pictures.
 
-A short way to explain the kernel is:
+The first is a function-like picture:
 
 ```text
-Execution = long-lived event processor
-Event     = something happened to the Execution
-Effect    = something the Execution asks the runtime to do
-
-Workflow  = the system chooses the semantic next step
-Agent     = the model chooses the semantic next step
+input → model/tool work → output
 ```
 
-This keeps the core close to the spirit of Anthropic's distinction between workflows and agents while making recursive execution, durable waiting, peer-to-peer agent communication, memory, tools, and knowledge retrieval fit one model.
+The second is an agent-loop picture:
+
+```text
+model → tool → observation → model → ... → answer
+```
+
+Both are useful, but neither is broad enough to describe the system we want to build.
+
+A function normally finishes. A conversational Agent may remain alive for months. A Workflow may spend most of its lifetime waiting for an approval or an external event. One Agent may ask another Agent a question without sharing its context. A Workflow may create several Agents and let them discuss with one another. A search Agent may discover and query thousands of specialized paper Agents. Some tasks are controlled by predefined process logic; others should let the model decide what happens next.
+
+If every one of these cases gets its own special orchestration mechanism, the kernel quickly becomes a collection of unrelated abstractions.
+
+Arrokoth instead starts from a smaller idea:
+
+> **An `ExecutableDefinition` describes something Arrokoth can run. Instantiating it creates an addressable `Execution`. An Execution has bounded authority, private state, a mailbox, and a lifecycle. It receives Events, requests Effects through the runtime, and may either terminate or remain alive indefinitely.**
+
+From that one abstraction we derive Agents, Workflows, LLM calls, functions, tool usage, RAG, memory, peer communication, durable waiting, and recursive composition.
+
+The whole model can be summarized as:
+
+```text
+                     ┌───────────────────────┐
+                     │       Execution       │
+                     │ state / memory / auth │
+                     └───────────┬───────────┘
+                                 │
+                         receives Events
+                                 │
+                                 ▼
+                           controller
+                                 │
+                         requests Effects
+                                 │
+                                 ▼
+                     ┌───────────────────────┐
+                     │   Runtime / Harness   │
+                     │ authorize / persist   │
+                     │ dispatch / correlate  │
+                     └───────────┬───────────┘
+                                 │
+                   capability / environment /
+                     another Execution
+                                 │
+                                 ▼
+                               Event
+```
+
+Two kinds of composite execution sit on top of this substrate:
+
+```text
+Workflow → the system defines the semantic path
+Agent    → the model chooses the semantic path
+```
+
+Everything else in this document follows from those two ideas.
 
 ---
 
-## 1. The main body of the model
+## 1. Start with Executions, not with prompts or tool loops
 
-The central runtime loop is:
+The first design choice is to separate **what can run** from **one running instance of it**.
 
-```text
-             Event
-               │
-               ▼
-        ┌─────────────┐
-        │  Execution  │
-        └──────┬──────┘
-               │
-          EffectRequest
-               │
-               ▼
-        ┌─────────────┐
-        │   Runtime   │
-        │ / Harness   │
-        └──────┬──────┘
-               │
-       authorize / validate
-       persist / dispatch
-       observe / correlate
-               │
-               ▼
-        environment,
-        capability, or
-        another Execution
-               │
-               ▼
-             Event
-```
+An `ExecutableDefinition` is reusable. It says what kind of thing this is, what interface it exposes, what authority it may request, which memory resources it expects, and the kind-specific information needed to run it.
 
-The runtime owns mechanics and invariants. The Execution's controller owns the semantic work appropriate to its type.
-
-This gives us one substrate for:
-
-- one-shot LLM calls;
-- functions and code;
-- interactive agents;
-- deterministic workflows;
-- workflows containing agents;
-- agents invoking workflows;
-- subagents;
-- peer-to-peer agent communication;
-- long-lived monitoring processes;
-- human-in-the-loop waiting;
-- asynchronous tools and retrieval;
-- durable resume after process restart.
-
----
-
-## 2. `ExecutableDefinition` and `Execution` are different concepts
-
-A definition describes **what can be run**.
-
-An Execution records **one actual running instance**.
+An `Execution` is one concrete runtime instance of that definition.
 
 ```text
 ExecutableDefinition
@@ -91,40 +88,23 @@ ExecutableDefinition
      Execution
 ```
 
-Definitions are reusable and versionable. Executions have runtime identity and state.
+This distinction sounds simple, but it changes the architecture significantly.
 
-Conceptually:
+Suppose we define a customer-support Agent. The Agent definition may be reused for thousands of conversations. Each conversation is a different Execution with its own mailbox, memory, authority, lifecycle, pending operations, and trace.
 
-```text
-ExecutableDefinition
-├── id / version
-├── kind-specific specification
-├── interface contract
-├── requested authority
-└── memory bindings
+Likewise, one paper-Agent definition may be instantiated once for every paper in a corpus. One Workflow definition may have many live cases moving through it at the same time.
 
-Execution
-├── execution id
-├── definition reference
-├── owner / creator relation
-├── lifecycle state
-├── mailbox
-├── control state
-├── memory bindings
-├── Authority Envelope
-├── Active Capability View
-├── pending operations
-├── budget / deadline
-└── trace / durable events
-```
+The same Execution abstraction also covers short-lived work. A single LLM call or function call can be represented as a finite Execution that starts, computes, and terminates.
 
-A definition may **request** authority. It never grants itself authority.
+So the kernel does not begin with the assumption that everything is long-lived. It begins with the more general rule:
 
----
+> **An Execution may be finite or long-lived.**
 
-## 3. Executable kinds
+That lets the simple cases remain simple while avoiding a separate architecture for the harder cases.
 
-The kernel has four primary semantic kinds:
+### Executable kinds
+
+We currently need four primary semantic kinds:
 
 ```text
 ExecutableDefinition
@@ -137,66 +117,40 @@ ExecutableDefinition
     └── Agent
 ```
 
-A Tool is not required to be a separate Executable kind. In the common case, tools, MCP servers, knowledge sources, browsers, external APIs, and sandboxes are **Capabilities** used by an Execution.
+An LLM and a Function are usually finite leaves. A Workflow and an Agent are usually composites that may create or interact with other Executions.
 
-A piece of code can be exposed either way depending on the semantics we need:
+A Tool does not need to be a fifth executable kind. In the common case, tools, MCP servers, search engines, knowledge sources, browsers, filesystems, sandboxes, and external APIs are **Capabilities** available to an Execution.
+
+This keeps a useful distinction:
 
 ```text
-simple calculator function
-→ Capability
-
-separately managed computation with its own run identity,
-authority, lifecycle, budget, trace, or messaging
-→ Executable
+Executable → has its own execution identity/lifecycle/state
+Capability → something an Execution is authorized to use
 ```
 
-The distinction is semantic, not based on implementation technology.
+The same piece of code may be exposed either way depending on what semantics we need. A calculator is naturally a capability. A separately managed computation with its own lifecycle, authority, budget, mailbox, or trace may be better modeled as an Executable.
+
+### Definitions are kind-specific
+
+The shared Execution model does not mean every definition should have the same fields.
+
+An LLM needs a prompt/model-call specification. A Function needs an implementation reference. An Agent needs a prompt and Agent policy. A Workflow needs its stage/transition topology.
+
+There should therefore be no universal `instructions` field pretending these are all the same thing.
+
+The mental rule is:
+
+> **Share the execution substrate; keep the executable body specific to its kind.**
+
+That gives us a common kernel without flattening meaningful differences.
 
 ---
 
-## 4. Definitions have kind-specific bodies, not one universal `instructions` field
+## 2. An Execution is more general than `input → output`
 
-LLMs, functions, agents, and workflows are different enough that the generic definition should not pretend they all have the same body.
+Once we treat Agent and Workflow instances as Executions, the normal function interface becomes too narrow.
 
-Conceptually:
-
-```ts
-type ExecutableDefinition =
-  | LLMDefinition
-  | FunctionDefinition
-  | AgentDefinition
-  | WorkflowDefinition
-```
-
-A common envelope may contain identity, interface, authority request, and memory bindings, while the `spec` is kind-specific.
-
-For example:
-
-```text
-LLM
-└── prompt / model-call specification
-
-Function
-└── code / implementation reference
-
-Agent
-├── prompt
-└── agent/model policy
-
-Workflow
-├── entry stage
-└── stage / transition graph
-```
-
-Exact API shape is an implementation decision. The mental rule is:
-
-> **Share execution semantics where they are genuinely shared; keep the executable body type-specific.**
-
----
-
-## 5. An Execution is not necessarily `input → output`
-
-A one-shot function often looks like:
+A function often looks like this:
 
 ```text
 start input
@@ -206,83 +160,166 @@ start input
 terminal result
 ```
 
-But a conversational Agent may look like:
+But consider a conversational Agent:
 
 ```text
-message
-  ↓
-respond
-  ↓
-wait
-  ↓
-message
-  ↓
-respond
-  ↓
-wait
-  ↓
-...
+user message
+     ↓
+  respond
+     ↓
+   wait
+     ↓
+user message
+     ↓
+  respond
+     ↓
+   wait
+     ↓
+    ...
 ```
 
-and may live indefinitely.
+There may never be a meaningful moment where the Agent says, “I am done forever and will accept no future input.”
 
-Therefore an executable interface is better thought of as three possible contracts:
+A monitoring Workflow has the same property. It may wait for a new document, process it, send a notification, and then wait again. The Workflow is doing useful work, but it is not moving toward a mandatory terminal value.
+
+So an Executable interface should be understood through three possible channels:
 
 ```text
-start input      optional data used to create/start the Execution
-inbox            Events/messages it may receive while alive
-terminal result  optional result produced only if it terminates successfully
+start input
+  data used when the Execution is initially created
+
+inbox
+  Events/messages the Execution may receive while alive
+
+terminal result
+  optional final value produced if the Execution terminates successfully
 ```
 
-Conceptually:
+A Function usually has a start input and a terminal result. An interactive Agent usually has an inbox and may have no terminal result at all.
 
-```ts
-interface ExecutionInterface {
-  start?: Schema
-  inbox?: Schema
-  terminalResult?: Schema
-}
-```
+This immediately gives us an important distinction:
 
-Typical cases:
+> **A response is not the same thing as a result.**
 
-```text
-Function
-  start           required
-  inbox           none
-  terminalResult  required
+When a chat Agent sends a response to a user, the Agent has produced an outbound message. It has not necessarily completed its Execution.
 
-LLM call
-  start           required
-  inbox           none
-  terminalResult  required
+Likewise, when one Agent replies to another Agent, the reply is communication between two live Executions, not proof that either Execution is finished.
 
-Interactive Agent
-  start           optional
-  inbox           yes
-  terminalResult  optional
-
-Long-running Workflow
-  start           optional
-  inbox           yes
-  terminalResult  optional
-```
-
-A response sent during execution is not automatically a terminal result.
-
-```text
-outbound response ≠ Execution completion
-```
-
-This distinction is essential for chat agents, monitors, services, and other long-lived processes.
+This distinction is what allows the same kernel to model both one-shot work and indefinitely interactive systems.
 
 ---
 
-## 6. Lifecycle: an Execution may live forever
+## 3. Events come in, Effects go out
 
-Lifecycle state is runtime-owned operational state.
+Now that an Execution can remain alive across many interactions, we need a uniform way to describe what happens to it over time.
 
-A useful conceptual state machine is:
+The simplest model is:
+
+> **Events are observations delivered into an Execution. Effects are actions an Execution asks the runtime to perform.**
+
+This gives us the central loop:
+
+```text
+Event
+  ↓
+Execution controller
+  ↓
+EffectRequest
+  ↓
+Runtime
+  ↓
+world / capability / another Execution
+  ↓
+Event
+```
+
+This is the core kernel loop.
+
+### Events are what the Execution observes
+
+Examples include:
+
+```text
+user sent a message
+peer Agent replied
+tool returned a result
+knowledge retrieval completed
+approval was granted
+timer fired
+remote request timed out
+search service failed
+child Execution completed
+```
+
+All of these are things that happened **to** or **for** the Execution.
+
+The runtime may store them in richer typed forms, but conceptually they enter the Execution as observations.
+
+This matters for truthfulness. The model can propose that a tool be called, but it does not establish the tool result. The tool result comes back as an Event from the environment.
+
+Similarly, a model may claim that a message was sent, but the runtime and transport determine whether it was actually sent.
+
+This leads to one of the kernel's most important rules:
+
+> **Models propose. The runtime authorizes. Executors and the environment establish what actually happened.**
+
+### Effects are requests, not declarations of truth
+
+The Execution should have only a small number of ways to affect the outside world.
+
+Conceptually:
+
+```text
+EffectRequest
+├── UseCapability
+├── SpawnExecution
+├── SendMessage
+└── WriteMemory
+```
+
+`UseCapability` covers tools, MCP, knowledge retrieval, search, browser use, APIs, sandboxes, and similar external work.
+
+`SpawnExecution` creates another Execution from a definition.
+
+`SendMessage` communicates with an already-existing authorized Execution.
+
+`WriteMemory` proposes a persistent state update.
+
+The small Effect vocabulary is deliberate. We do not want RAG, tool use, subagents, memory, and asynchronous jobs to grow into unrelated control-flow systems.
+
+They are different kinds of interaction, but they all pass through the same runtime boundary where authorization, validation, persistence, correlation, and tracing can be enforced.
+
+### Failure is usually an observation first
+
+If a search API fails, the containing Agent should not automatically fail.
+
+Instead:
+
+```text
+search request
+    ↓
+search service fails
+    ↓
+Failure Event
+    ↓
+Agent observes failure
+    ↓
+retry / use another source / ask a peer / explain limitation
+```
+
+The same principle applies to timeouts and rejected actions. An external failure becomes information the controller can react to. The Execution itself reaches terminal `FAILED` only when it can no longer validly continue or its controller/runtime explicitly terminates it as failed.
+
+This makes the system adaptive without letting the model invent success.
+
+---
+
+## 4. Waiting is a lifecycle state, not an Agent action
+
+Once work is event-driven, we no longer need the model to emit a special `yield` every time it has nothing more to do immediately.
+
+Waiting is an operational property of the Execution.
+
+A useful lifecycle is:
 
 ```text
               ┌──────────────────┐
@@ -297,39 +334,38 @@ CREATED → READY → RUNNING → WAITING
                   └──→ CANCELLED
 ```
 
-Meanings:
+`READY` means there is runnable work. `RUNNING` means the controller is currently consuming compute. `WAITING` means there is no immediate runnable work, but the Execution may wake when a relevant Event arrives.
 
-- **CREATED** — execution identity exists but has not begun processing.
-- **READY** — runnable work/events are available.
-- **RUNNING** — its controller is actively processing.
-- **WAITING** — no immediate runnable work; it can be awakened by future Events.
-- **COMPLETED** — terminal successful state, optionally with a terminal result.
-- **FAILED** — terminal unsuccessful state.
-- **CANCELLED** — terminal state caused by cancellation.
-
-`COMPLETED`, `FAILED`, and `CANCELLED` are terminal. An Execution is not required to reach any of them.
-
-For an interactive chat Agent:
+For example, a chat Agent may spend almost all of its lifetime in `WAITING`:
 
 ```text
 WAITING
    ↓ user message
 READY
-   ↓ scheduler
-RUNNING
-   ↓ assistant message is sent
-WAITING
-   ↓ next user message
-READY
    ↓
-...
+RUNNING
+   ↓ response sent
+WAITING
 ```
 
-The Agent may remain in this logical loop for years.
+The same state is useful when waiting for:
 
-### Activation
+```text
+another Agent's reply
+a tool result
+knowledge retrieval
+human approval
+a timer
+an external webhook
+```
 
-An **Activation** is one period in which a long-lived Execution is actively consuming compute.
+We do not need separate lifecycle concepts for each case. The runtime simply knows which pending operation or incoming Event may wake the Execution.
+
+### Activations
+
+A long-lived Execution should not be imagined as a process continuously spinning forever.
+
+Instead, it wakes for an **Activation** when there is work to process:
 
 ```text
 Execution lifetime
@@ -340,124 +376,193 @@ Execution lifetime
       waiting           waiting        waiting
 ```
 
-This lets an Agent be logically long-lived without continuously spinning a CPU/model loop.
+An Agent may live for years while only consuming model/runtime compute during brief Activations.
+
+This is important both conceptually and operationally. “Long-lived” means persistent identity and resumable state, not permanently occupied compute.
+
+### Leaf completion is not composite completion
+
+A long-lived Agent may invoke many LLM calls. Each LLM call is normally finite:
+
+```text
+prompt → inference → model result → LLM Execution completes
+```
+
+But the Agent that used that LLM result may remain alive.
+
+So:
+
+> **Leaf completion does not imply composite completion.**
+
+This removes the need to say that intermediate LLM calls “yield.” They simply complete their own work. The outer Agent continues or waits according to its own lifecycle.
 
 ---
 
-## 7. Events come in
+## 5. Authority answers “what may this Execution ever do?”
 
-An Execution reacts to Events.
+So far we have an Execution that can request Effects. The next question is: what is it allowed to request?
 
-Representative Event families include:
+Arrokoth separates **authority** from **exposure**.
 
-```text
-Event
-├── Start
-├── MessageReceived
-├── CapabilityResult
-├── Timeout / Timer
-├── PermissionDecision
-├── FailureObservation
-└── ControlEvent
-```
-
-The exact event catalog may grow, but the important rule is:
-
-> **Something that happened outside the controller re-enters the Execution as an Event/Observation.**
-
-Examples:
+The three layers are:
 
 ```text
-tool succeeded           → CapabilityResult
-knowledge query returned → CapabilityResult / KnowledgeObservation
-peer Agent replied       → MessageReceived
-user sent a message      → MessageReceived
-approval was granted     → PermissionDecision
-remote request timed out → Timeout
-search API failed        → FailureObservation
+Capability Catalog
+        ↓
+Authority Envelope
+        ↓
+Active Capability View
 ```
 
-A failed capability does not automatically mean the Execution failed. It is normally an observation the Agent or Workflow can react to.
+The Capability Catalog is everything the runtime/application knows about: tools, knowledge sources, executable definitions, memory resources, communication routes, and so on.
+
+The Authority Envelope is the maximum subset this Execution is permitted to use.
+
+The Active Capability View is the smaller subset currently exposed to the controller/model.
+
+These are deliberately different concepts.
+
+### Authority is a hard boundary
+
+An Execution cannot grant itself authority.
+
+If a Workflow creates a child Agent, the child may receive only authority that the owner already possesses and delegates under runtime policy:
+
+```text
+child authority ⊆ owner authority
+```
+
+Authority may cover much more than tools. It can include rights such as:
+
+```text
+query these knowledge sources
+use these APIs/tools
+spawn these Executable definitions
+message these Executions/classes/groups
+read/write these memory resources
+perform these consequential actions
+```
+
+This makes authority a general execution boundary rather than a tool-filtering feature.
+
+### Exposure is context engineering
+
+A large Agent may be authorized to use thousands of capabilities but should not see all of them in every model call.
+
+For example, a research Agent might have authority to interact with one hundred thousand Paper Agents. Showing one hundred thousand handles and descriptions to the model would be unusable.
+
+Instead, the current Active Capability View may contain only the few resources relevant to the current task.
+
+```text
+Active Capability View ⊆ Authority Envelope
+```
+
+If something is authorized but not currently exposed, discovery can bring it into the Active View without changing authority.
+
+That is not privilege escalation. It is context selection.
+
+If something lies outside the Authority Envelope, the Execution cannot simply request that the runtime “retrieve” or expose it as though the distinction were cosmetic. That is a genuine authority boundary and must be denied or handled through an explicit higher-authority path.
+
+This separation gives us both safety and scale:
+
+```text
+large possible world
+        ↓
+hard authorized subset
+        ↓
+small relevant model-facing subset
+```
 
 ---
 
-## 8. Effects go out
+## 6. Memory and context are related, but not the same thing
 
-An Execution does not directly make the world true by declaring that something happened. It requests Effects from the runtime.
+An Execution may live across many Activations, so it needs durable or semi-durable state. But not every piece of persistent state should be treated the same way, and not every piece of state needs to be placed into every model context.
 
-A small conceptual Effect family is enough for most of the kernel:
+Arrokoth therefore separates **memory** from **context**.
 
-```text
-EffectRequest
-├── UseCapability
-├── SpawnExecution
-├── SendMessage
-└── WriteMemory
-```
+Memory is what the Execution retains.
 
-### `UseCapability`
+Context is what the current Activation/model call is allowed and chosen to see.
 
-Covers authorized interaction with external/runtime capabilities such as:
+### Memory
+
+Useful memory forms include:
 
 ```text
-MCP tool
-native tool
-knowledge retrieval / RAG
-browser
-search engine
-filesystem
-sandbox
-HTTP / external API
+Structured Memory
+Working Notes
+Artifact / File Memory
 ```
 
-Knowledge may keep specialized provenance and retrieval contracts, but it does not need a separate control-flow system.
+Structured Memory is schema-defined and inspectable. It is appropriate for things like a user profile, case status, budget, completed task ids, or other application state where validation and provenance matter.
 
-### `SpawnExecution`
+Working Notes are looser, Agent-owned state such as hypotheses, rough planning, partial conclusions, or current focus. They are useful for continuity but should not automatically be treated as authoritative facts.
 
-Creates another Execution from an `ExecutableDefinition`.
+Artifact/File Memory covers persistent workspaces such as research notes, plans, reports, or code files.
 
-Examples:
+These are storage/memory mechanisms, not new control-flow abstractions.
+
+### Shared memory must be explicit
+
+By default, each Execution's memory is private to that Execution.
+
+If several Agents need a shared whiteboard, the application should bind an explicit shared memory resource:
 
 ```text
-Workflow → Agent
-Workflow → Workflow
-Agent → Agent
-Agent → Workflow
+Agent A ─┐
+Agent B ─┼── shared_board
+Agent C ─┘
 ```
 
-A spawned Execution receives its own identity, state, mailbox, authority, memory view, lifecycle, budget, and trace.
+Communication alone does not imply shared memory.
 
-### `SendMessage`
+This is a critical property for multi-agent systems because it lets Agents reason independently without accidentally inheriting each other's context.
 
-Sends a message to an authorized address, especially another existing Execution.
+### Context is compiled per Activation
 
-Communication is not restricted to parent/child relationships.
+When an Agent wakes, the model should not automatically receive the entire history of the Execution.
 
-### `WriteMemory`
-
-Proposes a memory mutation. Runtime policy determines whether and how it is validated and committed.
-
-### Waiting is not an Effect
-
-There is no fundamental `WaitForExternalEvent` action.
-
-If an Execution has no immediate runnable work, the runtime moves it to `WAITING` and records the conditions that may wake it, for example:
+The runtime can compile an Activation-specific context from eligible information:
 
 ```text
-new mailbox message
-capability result
-reply with correlation id 42
-timer firing
-approval event
+Agent prompt
++ incoming Event(s)
++ selected conversation/history
++ selected structured memory
++ selected working notes/artifacts
++ recent observations
++ relevant retrieved knowledge
++ Active Capability View
+        ↓
+compiled model context
 ```
 
-Waiting is therefore a lifecycle condition, not a semantic action the LLM must explicitly emit.
+The kernel owns the visibility and authorization rules: what is eligible to be shown at all.
+
+The selection machinery—ranking, retrieval, summarization, compression, token packing—can evolve independently.
+
+So the relationship is:
+
+```text
+Execution state / memory / authorized resources
+                 ↓
+          ContextCompiler
+                 ↓
+        model-facing context
+```
+
+This keeps the Execution stable while allowing context engineering to improve over time.
 
 ---
 
-## 9. Ownership and communication are two different graphs
+## 7. Composition requires two graphs, not one
 
-This is a core invariant.
+Once Executions can create other Executions, it is tempting to treat the execution tree as the whole relationship between them.
+
+That is not enough.
+
+We need to distinguish **ownership** from **communication**.
 
 Suppose a Workflow creates three Agents:
 
@@ -477,10 +582,10 @@ Who created this Execution?
 From whose authority was its authority derived?
 Who allocated its budget?
 Who may normally cancel it?
-Where does its lifecycle/trace belong?
+Where does it appear in lifecycle accounting and tracing?
 ```
 
-But communication may form a different graph:
+But those same Agents may be allowed to talk directly to each other:
 
 ```text
                  COMMUNICATION GRAPH
@@ -492,393 +597,101 @@ But communication may form a different graph:
                   └──── Agent C ───┘
 ```
 
-Communication answers:
+Communication answers different questions:
 
 ```text
 Who may send messages to whom?
 Who may ask whom a question?
 Who may wait for whose reply?
-Which group/channel may receive a message?
+Which groups/channels may receive messages?
 ```
 
-The two graphs must not be conflated.
-
-Important consequences:
+The two graphs should remain independent.
 
 ```text
 can message X   ≠ can cancel X
 can message X   ≠ can inspect X's memory
-created X       ≠ must be the only entity allowed to talk to X
+owns X          ≠ must be the only entity allowed to talk to X
 ```
 
-Ownership is primarily about lifecycle, authority derivation, accounting, and trace structure.
+This separation is what makes richer multi-agent systems possible without collapsing all Agents into one shared context.
 
-Communication is about authorized message routing.
+### Addressable Executions
 
----
+A live Execution can be represented by an authorized handle/address.
 
-## 10. Addressable Executions and communication
+That handle may permit operations such as sending or asking, without granting lifecycle control or memory inspection.
 
-A running Execution can be represented by an opaque `ExecutionHandle`.
-
-The handle is an address plus whatever operations the holder is authorized to perform. It does not imply unrestricted access to the target.
-
-For example, a handle may allow:
+At a higher-level API, we may expose operations such as:
 
 ```text
-send message
-ask question
-```
-
-without allowing:
-
-```text
-inspect private memory
-cancel target
-change target authority
-```
-
-Useful high-level communication operations are:
-
-```text
-spawn(definition) → create Execution and return a handle
-send(handle, message) → fire-and-continue message
+spawn(definition) → create a new Execution and return a handle
+send(handle, message) → send and continue
 ask(handle, message, timeout) → request/reply
-call(definition, input) → create a usually finite Execution and wait for terminal result
+call(definition, input) → create finite work and wait for terminal result
 ```
 
-These need not all be separate kernel primitives.
-
-Conceptually:
+But conceptually these reduce to a small core:
 
 ```text
-ask = send
-    + correlation id
-    + wait for matching reply
-    + timeout
-
-call = spawn
-     + wait for terminal result
+ask  = send + correlation + wait for matching reply
+call = spawn + wait for terminal result
 ```
 
-The kernel should preserve the semantics even if the developer API provides convenient wrappers.
+### Example: an Agent meeting
+
+A Workflow can create three Agents with different prompts and private memories, then authorize them to communicate directly.
+
+```text
+Workflow W
+├── Agent A: optimistic analyst
+├── Agent B: skeptic
+└── Agent C: synthesizer
+```
+
+A sends a conclusion to B. B receives only that message plus B's own private context. B challenges it. C observes selected discussion messages and synthesizes.
+
+No one needs to share a single context window.
+
+The Workflow still owns the meeting's macro-process—for example, when discussion starts, when it ends, and when synthesis begins—while each Agent owns its own local reasoning.
+
+This is an important theme of the kernel:
+
+> **Composition does not require context merging.**
 
 ---
 
-## 11. Communication does not share context
+## 8. Workflow and Agent differ in who owns semantic control flow
 
-Two Agents talking to each other do not automatically share prompts, memory, context windows, plans, observations, or tool history.
+At this point we have a common substrate: long-lived Executions, Events, Effects, authority, memory, context, and communication.
 
-```text
-Agent A context ≠ Agent B context
-```
+Now we can define Workflow and Agent very simply.
 
-Only the explicit message crosses the boundary.
+The distinction is not how many LLM calls they use. It is not whether they use tools. It is not whether they contain loops. It is not whether they are long-running.
 
-This is important for independent reasoning, specialization, privacy, and context size.
+The distinction is:
 
-If several Agents intentionally need shared state, that should be explicit:
+> **Who chooses the semantic next step?**
 
-```text
-Agent A ─┐
-Agent B ─┼── shared_board memory/resource
-Agent C ─┘
-```
+### Workflow: the system owns the topology
 
-Therefore:
-
-> **Communication does not imply shared memory. Shared memory is an explicit bound resource.**
-
----
-
-## 12. Authority and exposure are separate
-
-The kernel should distinguish three layers:
+A Workflow has a predefined semantic control space.
 
 ```text
-Capability Catalog
-        ↓
-Authority Envelope
-        ↓
-Active Capability View
+Gather evidence
+      ↓
+Enough evidence?
+   ├── no  → Gather more
+   └── yes → Analyze
+                  ↓
+                Draft
+                  ↓
+               Validate
 ```
 
-### Capability Catalog
+Individual stages may use Functions, LLMs, Agents, or even other Workflows.
 
-Everything known to the runtime/application: tools, knowledge sources, executable definitions, communication routes, memory resources, etc.
-
-### Authority Envelope
-
-The maximum authority granted to one Execution.
-
-It is immutable for the lifetime of that Execution.
-
-For spawned owned Executions:
-
-```text
-child authority ⊆ parent authority
-```
-
-Conceptually:
-
-```text
-child effective authority
-=
-parent authority
-∩ child requested authority
-∩ runtime/application policy
-```
-
-Authority may include rights such as:
-
-```text
-use these tools
-query these knowledge sources
-spawn these executable definitions
-send messages to these Executions/classes/groups
-read/write these memory spaces
-perform these consequential actions
-```
-
-### Active Capability View
-
-The smaller set of capabilities currently exposed to the controller/model.
-
-```text
-active view ⊆ authority envelope
-```
-
-This solves the large-catalog problem: an Agent may be authorized to interact with thousands or millions of resources without showing all of them to every model call.
-
-Changing the Active View inside existing authority is context engineering, not privilege escalation.
-
-### Missing capability cases
-
-If capability `X` is authorized but not currently exposed:
-
-```text
-X ∈ Authority Envelope
-X ∉ Active Capability View
-```
-
-then discovery/exposure may add it without changing authority.
-
-If:
-
-```text
-X ∉ Authority Envelope
-```
-
-then the Execution cannot grant itself X. The request must be denied or handled through an explicit higher-authority path.
-
-Do not silently mutate a running Execution's authority just because the model requests more power.
-
----
-
-## 13. Memory: private by default, explicit when shared
-
-Memory is state available across Activations. It is different from lifecycle/control state.
-
-Useful memory forms are:
-
-```text
-Memory
-├── Structured Memory
-├── Working Notes
-└── Artifact / File Memory
-```
-
-### Structured Memory
-
-Schema-defined, inspectable state with provenance and validation.
-
-Examples:
-
-```text
-customer name
-budget
-case status
-completed task ids
-open questions
-```
-
-The model may propose a write. Runtime validation decides whether the proposal becomes committed state.
-
-### Working Notes
-
-Free-form, non-authoritative, execution-owned memory for things such as:
-
-```text
-hypotheses
-partial conclusions
-rough plan
-research notes
-current focus
-```
-
-### Artifact / File Memory
-
-Persistent files or workspace artifacts such as:
-
-```text
-plan.md
-research.md
-report draft
-code workspace
-```
-
-These are memory/storage mechanisms, not alternate control-flow systems.
-
-### Memory bindings
-
-A definition can declare which memory spaces should be attached to its Executions.
-
-A binding may conceptually specify:
-
-```text
-name
-kind
-schema if structured
-lifetime
-visibility
-read/write permissions
-commit/validation policy
-```
-
-Possible lifetimes include:
-
-```text
-activation-local
-execution-local
-session/workspace
-persistent application memory
-```
-
-Possible visibility includes:
-
-```text
-private to one Execution
-explicitly shared resource
-```
-
-`plan` and `focus` remain Agent-owned memory conventions, not universal runtime control states.
-
----
-
-## 14. Control state is not memory
-
-The kernel also needs internal control state.
-
-Examples:
-
-```text
-Workflow current stage
-pending operation ids
-reply correlation ids
-retry counters
-lifecycle state
-```
-
-This is different from semantic memory such as:
-
-```text
-Agent's current research hypothesis
-user profile data
-working notes
-```
-
-A useful rule is:
-
-> **Control state tells the runtime/controller where execution is. Memory tells the executable what it knows or wants to remember.**
-
----
-
-## 15. Context is compiled per activation
-
-An Agent does not need to expose its entire persistent Execution state to every model call.
-
-For each activation/model inference, the runtime compiles an authorized context from eligible information:
-
-```text
-Agent prompt
-+ incoming Event(s)
-+ selected conversation/history
-+ selected structured memory
-+ selected working notes/artifacts
-+ recent observations
-+ relevant retrieved knowledge
-+ Active Capability View
-        ↓
-compiled model context
-```
-
-The kernel owns visibility and authorization rules.
-
-Ranking, selection, retrieval, compression, summarization, and token packing can be replaceable implementations.
-
-The model's context is therefore a **view of the Execution**, not the Execution itself.
-
----
-
-## 16. Workflow: the system owns semantic topology
-
-A Workflow is a composite Executable whose allowed semantic control topology is defined by the system/application.
-
-```text
-Stage A
-   │
-   ├── condition X → Stage B
-   └── condition Y → Stage C
-```
-
-A Stage is best thought of as:
-
-> **A named Workflow control state that may run an Executable and defines system-owned transitions.**
-
-Conceptually:
-
-```text
-WorkflowStage
-├── id
-├── stage-local configuration/input mapping
-├── executor: ExecutableRef
-└── transitions
-```
-
-The stage executor may be:
-
-```text
-LLM
-Function
-Agent
-Workflow
-```
-
-Transitions may be:
-
-```text
-deterministic
-LLM-evaluated
-hybrid
-```
-
-An LLM selecting from predefined transitions does not turn the Workflow into an Agent. The system still owns the allowed topology.
-
-A Workflow may contain loops and may be long-lived forever:
-
-```text
-monitor
-   ↓ event
-analyze
-   ↓
-notify
-   ↓
-monitor
-   ↓
-...
-```
-
-There is no requirement for an End stage. A Workflow terminates only when its controller reaches a terminal condition.
+A transition may be deterministic, LLM-evaluated, or hybrid. An LLM choosing between predefined edges does not turn the Workflow into an Agent because the system still defined the allowed topology.
 
 A useful summary is:
 
@@ -886,26 +699,30 @@ A useful summary is:
 Workflow: the system is the semantic transition function.
 ```
 
----
-
-## 17. Agent: the model owns semantic topology
-
-An Agent is a composite Executable where the model chooses the semantic next action inside runtime-enforced authority.
-
-On an activation, the Agent conceptually receives:
+A Workflow may also contain cycles forever:
 
 ```text
-goal/prompt
-incoming Events
-memory/context
-observations
-Active Capability View
+monitor
+  ↓ event
+analyze
+  ↓
+notify
+  ↓
+monitor
+  ↓
+...
 ```
 
-The model may decide to:
+It does not need an End stage. It terminates only if its Workflow logic reaches a terminal condition.
+
+### Agent: the model owns the topology
+
+An Agent has no required predefined graph between semantic steps.
+
+On an Activation, the model may decide to:
 
 ```text
-respond to a user or peer
+answer a user
 use a tool
 retrieve knowledge
 write memory
@@ -914,340 +731,80 @@ revise a plan
 spawn another Agent
 invoke a Workflow
 message an existing Execution
+ask a peer for critique
 continue reasoning
 propose termination
 ```
 
-There is no required predefined graph between those semantic steps.
+The runtime bounds what is legal, but it does not replace the model's semantic decision-making with a predefined process.
 
-The runtime still validates whether requested Effects are legal and authorized.
+```text
+Agent: the model is the semantic transition function.
+```
+
+The Agent/runtime relationship is therefore:
 
 ```text
 model chooses/proposes
         ↓
 runtime validates/authorizes
         ↓
-executor/environment establishes truth
+executor/environment acts
         ↓
-Event/observation returns
+authoritative Event returns
         ↓
 model chooses again
 ```
 
-A useful summary is:
+This preserves Agent autonomy without making the model the authority system or the source of external truth.
 
-```text
-Agent: the model is the semantic transition function.
-```
+### Semantic completion vs operational termination
 
----
+An Agent may believe its task is finished and propose a terminal result.
 
-## 18. Leaf completion is not composite completion
-
-A long-lived Agent may use thousands of LLM calls.
-
-Each LLM call is finite:
-
-```text
-prompt
-  ↓
-LLM inference
-  ↓
-LLM result
-  ↓
-LLM Execution COMPLETED
-```
-
-But the parent Agent remains alive:
-
-```text
-Agent
-  ├── LLM #1 completed
-  ├── tool result observed
-  ├── LLM #2 completed
-  ├── peer message observed
-  ├── LLM #3 completed
-  └── WAITING for future Events
-```
-
-Therefore:
-
-> **Leaf completion does not imply composite completion.**
-
-There is no need for intermediate LLM calls to emit a special `yield` signal. They simply finish their own one-shot work.
-
----
-
-## 19. Completion: semantic proposal vs operational termination
-
-For an Agent, the model may believe the task should terminate.
-
-That is a semantic proposal, not unilateral authority over lifecycle.
+The runtime may still check hard requirements before actually terminating the Execution.
 
 ```text
 Agent proposes terminal result
         ↓
-Harness checks hard requirements
-        ├── acceptable → COMPLETED
-        └── not acceptable → Event/steering → continue
+Runtime checks hard conditions
+        ├── valid   → COMPLETED
+        └── invalid → steering/observation → continue
 ```
 
-A second evaluator model can be added when useful, but is optional policy rather than a fundamental part of every Agent turn.
-
-Interactive Agents often never make this proposal at all.
-
-A message such as an assistant reply is normally just an outbound message, not `COMPLETED`.
+For long-lived Agents, this proposal may never occur. A normal chat response is usually just a message followed by `WAITING`.
 
 ---
 
-## 20. Failure, timeout, retry, and cancellation
+## 9. Recursive composition becomes ordinary
 
-These concepts should remain mechanically distinct.
-
-### Capability failure
+Because Agent and Workflow are both Executions over the same substrate, they can contain and interact with each other naturally.
 
 ```text
-tool/search/API fails
-        ↓
-FailureObservation Event
-        ↓
-Agent/Workflow may retry, adapt, or continue
+Workflow
+├── Function
+├── Agent
+│   ├── uses search capability
+│   ├── messages peer Agent
+│   └── invokes Workflow
+│       ├── Function
+│       └── Agent
+└── Workflow
 ```
 
-This does not automatically set the whole Execution to `FAILED`.
+A subagent is not a special multi-agent framework. It is simply another Agent Execution created under bounded authority.
 
-### Execution failure
+Likewise, a Workflow invoked by an Agent is not a tool-shaped exception. It is another Executable with its own lifecycle and control semantics.
 
-An Execution becomes `FAILED` only when it cannot validly continue or its controller/runtime declares terminal failure.
+This gives us a strong implementation principle:
 
-### Timeout
+> **Agent and Workflow should share execution, authority, memory, event, effect, durability, and communication infrastructure. They differ primarily in who owns semantic control flow.**
 
-Timeout commonly belongs to a pending operation:
+### Example: papers as Agents
 
-```text
-Agent A asks Agent B
-request timeout = 5s
-        ↓
-Timeout Event delivered to A
-```
+Consider a large arXiv corpus.
 
-B may still be alive.
-
-A whole Execution may also have a deadline.
-
-### Retry ownership
-
-```text
-transport/infrastructure retry
-≠ semantic retry
-```
-
-The runtime may retry transient transport failures according to policy.
-
-An Agent deciding "that search was poor; search differently" is semantic behavior and belongs to the Agent.
-
-### Cancellation
-
-Cancellation authority normally follows ownership/lifecycle relationships, not communication permission.
-
-```text
-can message X ≠ can cancel X
-```
-
-Cancelling an owner may propagate to owned descendants according to policy.
-
----
-
-## 21. Budgets and accounting follow ownership
-
-Owned executions should receive bounded resources from their owner/application.
-
-Examples:
-
-```text
-model-call limit
-token/cost budget
-capability-call limit
-child-execution limit
-wall-clock deadline
-parallelism limit
-```
-
-Typical invariant:
-
-```text
-child allocation ≤ available owner allocation
-```
-
-This is separate from the communication graph. Messaging an Execution does not automatically make the sender responsible for the target's full lifetime cost.
-
----
-
-## 22. Durability: Events are the recoverable truth of execution
-
-A durable implementation should record enough information to reconstruct an Execution after process failure.
-
-Important durable facts include:
-
-```text
-Execution creation / ownership
-incoming Events
-requested Effects
-authorization decisions
-effect dispatch / completion
-message delivery
-memory commits
-lifecycle transitions
-pending correlations / operations
-terminal state/results
-```
-
-Conceptually:
-
-```text
-process crashes
-   ↓
-runtime restarts
-   ↓
-Execution reconstructed from durable state/events
-   ↓
-pending work resumes safely
-```
-
-Consequential external actions require idempotency/checkpoint semantics so replay/resume does not accidentally repeat real-world effects.
-
----
-
-## 23. Concurrency: one logical controller writer by default
-
-Messages and capability results may arrive concurrently, but a simple default is:
-
-> **One Execution has one logical controller activation mutating its control/memory state at a time.**
-
-For example:
-
-```text
-A ──→ C
-B ──→ C
-D ──→ C
-```
-
-C's mailbox can serialize or batch the Events:
-
-```text
-1. message from A
-2. message from D
-3. message from B
-```
-
-C may still launch multiple independent Effects in parallel.
-
-This keeps memory/control-state races understandable while allowing asynchronous work.
-
-More advanced concurrent-controller semantics can be introduced later if real applications justify them.
-
----
-
-## 24. Example: ChatGPT-like long-lived Agent
-
-A conversational Agent is created once:
-
-```text
-Execution C
-```
-
-The user sends:
-
-```text
-Message("hello")
-```
-
-C wakes:
-
-```text
-WAITING
-  ↓ MessageReceived
-READY
-  ↓
-RUNNING
-  ↓ model inference
-SendMessage("Hello! ...")
-  ↓
-WAITING
-```
-
-Later:
-
-```text
-Message("continue our discussion")
-```
-
-C wakes again using its own memory/context rules.
-
-The assistant reply was not a terminal result. The Execution can continue indefinitely.
-
-This is not an edge case; it is the natural model for interactive Agents.
-
----
-
-## 25. Example: an Agents meeting
-
-A Workflow wants three independent Agents to discuss a problem without sharing full context.
-
-It creates:
-
-```text
-Meeting Workflow W
-├── Agent A
-├── Agent B
-└── Agent C
-```
-
-Each Agent has private memory/context:
-
-```text
-Context A ≠ Context B ≠ Context C
-```
-
-W grants authorized handles so they can communicate:
-
-```text
-A ↔ B
-A ↔ C
-B ↔ C
-```
-
-A might send:
-
-```text
-"I think hypothesis X is strongest. What evidence contradicts it?"
-```
-
-B receives only that message plus B's own context. B reasons independently and replies.
-
-C may challenge both.
-
-The Workflow may define a meeting rule such as:
-
-```text
-start meeting
-   ↓
-allow discussion for N minutes / until quorum
-   ↓
-collect summaries
-   ↓
-move to synthesis stage
-```
-
-The system owns the meeting's macro-process; the Agents own their local reasoning.
-
-No shared context window or special multi-agent framework is required.
-
----
-
-## 26. Example: arXiv papers as Agents
-
-Imagine many addressable Paper Agents:
+Instead of putting every paper into one enormous retrieval context, we can represent each paper through a specialized Paper Agent:
 
 ```text
 paper-001
@@ -1257,19 +814,9 @@ paper-003
 paper-N
 ```
 
-Each Paper Agent owns private state derived from one paper:
+Each Paper Agent has its own private paper content, notes, citations, and interpretation.
 
-```text
-paper content
-metadata
-citations
-derived notes
-paper-specific interpretation
-```
-
-A Search Agent does not load all paper contexts.
-
-Instead it uses a discovery capability:
+A Search Agent first uses a discovery capability:
 
 ```text
 find relevant paper agents("mechanistic interpretability")
@@ -1277,7 +824,7 @@ find relevant paper agents("mechanistic interpretability")
 [paper-17, paper-91, paper-203]
 ```
 
-Then it can asynchronously ask:
+Then it asks those Agents targeted questions:
 
 ```text
 paper-17  → "What evidence does this paper provide for X?"
@@ -1285,33 +832,88 @@ paper-91  → "How does this paper define Y?"
 paper-203 → "Does this support or contradict paper-17?"
 ```
 
-Each Paper Agent wakes independently, reasons using its private context, and replies.
+The Paper Agents reason independently and reply. The Search Agent synthesizes the responses.
 
-The Search Agent observes the replies and synthesizes them.
+The Search Agent never needed to load every paper's context.
 
-Semantically these Paper Agents are long-lived addressable Executions. An implementation is free to cold-store them, lazily materialize them, or otherwise optimize resource usage as long as the observable semantics remain the same.
+Semantically, these are addressable Executions. Physically, an implementation may cold-store them and activate only the few that are queried. Long-lived identity does not imply always-resident compute.
 
-This architecture gives us:
-
-```text
-large distributed knowledge
-without one giant shared context
-```
+This example shows how the same model scales from a single chat Agent to a distributed knowledge system.
 
 ---
 
-## 27. Example: a complete research Workflow
+## 10. Operational rules keep the model reliable
 
-Suppose a user starts a research Workflow W.
+The semantic model stays small, but a real kernel still needs operational guarantees. These should be treated as orthogonal runtime rules rather than new semantic controllers.
+
+### Budgets and deadlines
+
+An Execution may have limits on model calls, tokens/cost, capability calls, spawned Executions, parallelism, or time.
+
+Owned child Executions receive bounded allocations from their owner/application.
+
+This is another reason ownership matters independently of communication: talking to an Execution does not automatically mean owning its lifecycle or budget.
+
+### Cancellation
+
+Cancellation authority normally follows ownership/supervision policy.
+
+If Workflow W owns Agent A, W may be allowed to cancel A. If Agent B merely has permission to message A, that does not imply B may cancel it.
+
+### Timeouts
+
+Timeouts are often associated with operations rather than whole Executions.
+
+If A asks B a question with a five-second timeout and B does not reply, A receives a timeout Event. B may remain alive.
+
+### Durability
+
+Because Executions may wait for long periods or survive process restarts, the runtime needs durable truth about important transitions.
+
+At minimum it should be possible to reconstruct:
+
+```text
+Execution creation / ownership
+incoming Events
+requested Effects
+authorization decisions
+effect dispatch and result
+message delivery
+memory commits
+lifecycle transitions
+pending operations/correlations
+terminal state if any
+```
+
+For consequential external effects, durability and idempotency are especially important. A restart must not accidentally send the same email, submit the same application, or make the same payment twice.
+
+### Concurrency
+
+A simple default is one logical controller Activation mutating an Execution at a time.
+
+Many messages/results may arrive concurrently, and many Effects may run in parallel, but the Execution's mailbox can serialize or batch observations before controller state is updated.
+
+This keeps memory and control-state races understandable without preventing asynchronous work.
+
+These mechanisms make the kernel robust, but they do not redefine Agent or Workflow semantics.
+
+---
+
+## 11. One complete example
+
+Putting the pieces together makes the model easier to see.
+
+Suppose a user starts a research Workflow.
 
 ```text
 User
- │ StartEvent
+ │
+ │ Start Event
  ▼
 Research Workflow W
 ```
 
-W spawns:
+W creates two Agents:
 
 ```text
 W
@@ -1319,30 +921,33 @@ W
 └── Critic Agent C
 ```
 
-Ownership:
+This creates an ownership tree. W allocates authority and budgets to S and C.
 
-```text
-W owns S
-W owns C
-```
-
-Communication permission:
+W also gives S and C permission to communicate:
 
 ```text
 S ↔ C
 ```
 
-S searches knowledge sources and discovers relevant Paper Agents.
+That is the communication graph.
+
+S begins with a research Activation. Its model sees the research goal, selected memory, current observations, and an Active Capability View containing search and paper-discovery capabilities.
+
+S requests:
 
 ```text
-S → UseCapability(search)
-S ← CapabilityResult
-
-S → UseCapability(find paper agents)
-S ← [P17, P91, P203]
+UseCapability(search)
 ```
 
-S sends questions in parallel:
+The runtime validates the request, dispatches it, and returns the search result as an Event.
+
+S observes the result and decides it needs specialized paper expertise. It discovers several relevant Paper Agents:
+
+```text
+P17, P91, P203
+```
+
+S sends all three questions asynchronously:
 
 ```text
 S → P17
@@ -1350,213 +955,93 @@ S → P91
 S → P203
 ```
 
-The Paper Agents reply independently.
+The Paper Agents have private contexts. They wake independently, reason over their own paper state, and send replies.
 
-S then asks C to critique its emerging conclusion:
+While waiting, S may continue other work or enter `WAITING` depending on whether it has runnable tasks.
+
+When replies arrive, they become Message Events in S's mailbox. S synthesizes them, then asks C:
 
 ```text
-S → C: "Attack this conclusion and identify missing evidence."
+"Attack this conclusion and identify missing evidence."
 ```
 
-C replies. S revises its synthesis.
+C reasons independently and replies with criticism. S revises its conclusion.
 
-S sends W a stage-level result/message. The Workflow's predefined transition moves from research to synthesis.
+Eventually S sends a research summary to W.
 
-W may later terminate with a report, or it may enter a monitoring stage and remain alive indefinitely for future paper updates.
+The Workflow's predefined topology says that when the research stage is sufficient, move to synthesis. W therefore enters its synthesis stage, perhaps invoking another Agent or Function.
 
-Everything here uses the same kernel concepts:
+At the end, W may produce a terminal report and complete.
+
+Or it may transition into a monitoring stage and remain alive indefinitely, waking whenever new papers appear.
+
+Nothing in this example required a second orchestration model for subagents, a special peer-agent protocol, a shared context window, or a mandatory completion signal.
+
+It all followed from:
 
 ```text
+ExecutableDefinitions
 Executions
 Events
 Effects
-Messages
 Authority
-Memory
+Memory / Context
+Ownership
+Communication
+Workflow / Agent controllers
 Lifecycle
 ```
 
----
-
-## 28. Skills, profiles, and implementations are side branches, not new control systems
-
-Several useful concepts can attach to this model without becoming new orchestration primitives.
-
-### Capability Profile
-
-A reusable grouping that helps construct an Active Capability View.
-
-```text
-Biomedical Research
-├── PubMed
-├── ClinicalTrials
-├── paper fetch
-└── biomedical Paper-Agent directory
-```
-
-A profile does not grant authority.
-
-### Skill
-
-A reusable package that may contain:
-
-```text
-instructions/prompts
-resources
-scripts/assets
-root ExecutableDefinition
-recommended capability profile
-requested authority
-```
-
-A Skill is not a third controller beside Agent and Workflow.
-
-### Implementation backend
-
-Kernel semantics are separate from how they are implemented.
-
-```text
-Agent semantics       → Strands / reference / future executor
-LLM inference         → Gemini / OpenAI-compatible / local model
-Knowledge retrieval   → LangChain / LlamaIndex / direct/custom
-Tool transport        → native / MCP / HTTP
-Persistence           → memory / SQLite / Postgres
-Sandbox               → local / Docker / remote provider
-```
-
-Changing an implementation should not silently redefine Execution, authority, messaging, memory, lifecycle, Workflow, or Agent semantics.
+That is the purpose of the mental model: a small set of concepts that remains coherent as the system grows.
 
 ---
 
-## 29. What the Harness / Runtime owns
+## 12. Side concepts should attach to the kernel, not compete with it
 
-The shared runtime exists around every Execution.
+Several useful features can be layered on top without creating new control-flow systems.
 
-Its responsibilities include:
+A **Capability Profile** is a reusable way to help select an Active Capability View. It groups semantically related capabilities, but does not grant authority.
 
-```text
-instantiate Executions
-assign identity / ownership
-compute Authority Envelopes
-enforce capability and communication permissions
-maintain Active Capability Views
-compile model context
-route Events and messages
-dispatch Effects
-correlate requests/replies
-persist state/events/checkpoints
-commit validated memory writes
-enforce budgets / deadlines
-propagate cancellation
-handle lifecycle transitions
-provide idempotency for consequential actions
-trace execution and communication
-resume durable Executions
-```
+A **Skill** can package prompts, resources, scripts, assets, a root Agent or Workflow definition, and recommended capabilities. It is packaging, not a third execution controller.
 
-The runtime should not take semantic control away from the controller that owns it.
+A retrieval framework such as LangChain, an Agent executor such as Strands, a model provider, an MCP implementation, a storage backend, or a sandbox are implementation choices behind kernel contracts. They should not become the meaning of Agent, Workflow, Execution, memory, authority, or communication.
 
-For a Workflow, semantic topology belongs to the Workflow definition/controller.
+This gives us a useful architectural test:
 
-For an Agent, semantic next-step selection belongs to the model/Agent controller.
+> **If one implementation disappeared tomorrow, could another implementation satisfy the same kernel semantics without changing the application's conceptual definition?**
+
+If yes, the boundary is probably healthy. If no, either the boundary is wrong or the concept is more fundamental than we admitted.
 
 ---
 
-## 30. The kernel invariants
+## 13. The mental model in one page
 
-The mental model should make a small set of rules mechanically understandable.
+The entire model can now be restated compactly.
 
-### Authority
+An `ExecutableDefinition` describes something Arrokoth knows how to run. It may describe an LLM, Function, Workflow, or Agent.
 
-```text
-an Execution cannot grant itself authority
-owned child authority ⊆ owner authority
-Active Capability View ⊆ Authority Envelope
-```
+Instantiating a definition creates an `Execution`. The Execution has identity, bounded authority, private state, memory bindings, a mailbox, and a lifecycle. It may be finite or long-lived.
 
-### Communication
+The Execution receives **Events**: user messages, peer messages, tool results, retrieval results, approvals, timers, failures, and other observations.
 
-```text
-communication requires explicit authority
-communication does not imply shared context
-communication does not imply lifecycle control
-```
+Its controller requests **Effects**: use a capability, spawn another Execution, send a message, or write memory.
 
-### Truth
+The runtime sits between requested Effects and reality. It validates authority, persists important transitions, dispatches work, correlates results, and turns what actually happened back into Events.
 
-```text
-models propose
-runtime authorizes
-executors/environment establish what actually happened
-observations return as Events
-```
+An Execution that has no immediate work becomes `WAITING` and can wake later. It does not need to terminate, and it does not need to emit a semantic `yield` simply to stop consuming compute.
 
-### Lifecycle
+Authority and exposure are separate. The Authority Envelope defines what the Execution may ever do; the Active Capability View defines what is currently visible to its controller/model.
 
-```text
-waiting is not completion
-outbound response is not terminal result
-leaf completion is not composite completion
-an Execution may remain alive indefinitely
-```
+Memory and context are separate. Memory persists knowledge/state across Activations; context is the selected authorized view shown during one Activation.
 
-### Control ownership
+Ownership and communication are separate. Ownership controls authority derivation, budgets, supervision, cancellation, and trace hierarchy. Communication may connect arbitrary authorized Executions without sharing their contexts or memories.
 
-```text
-Workflow → system owns semantic topology
-Agent    → model owns semantic topology
-```
+A **Workflow** uses this substrate with system-owned semantic topology.
 
-### Memory
+An **Agent** uses the same substrate with model-owned semantic topology.
 
-```text
-memory is explicit and provenance-aware
-shared memory is explicit
-plan/focus are memory conventions, not universal control flow
-```
+Everything else—subagents, Agent meetings, RAG, Paper Agents, long-running monitors, approvals, Skills, tool ecosystems, and recursive composition—builds on those primitives.
 
-### Durability
+The shortest explanation is:
 
-```text
-important state transitions and consequential Effects must be recoverable/idempotent
-```
-
----
-
-## 31. Vocabulary cheat sheet
-
-| Term | Meaning |
-| --- | --- |
-| **ExecutableDefinition** | Reusable definition of something Arrokoth can run. |
-| **Execution** | One addressable, stateful runtime instance of a definition. May be finite or long-lived. |
-| **Event** | Something that happened and is delivered into an Execution. |
-| **EffectRequest** | Something an Execution asks the runtime/environment to do. |
-| **Activation** | One period where a long-lived Execution is actively consuming compute. |
-| **Mailbox** | Durable/logical queue of Events/messages waiting for an Execution. |
-| **ExecutionHandle** | Authorized address/reference to an existing Execution. |
-| **Owner** | Execution/application relation used for authority derivation, lifecycle, budget, and tracing. |
-| **Communication graph** | Independent graph describing which Executions may communicate. |
-| **Authority Envelope** | Immutable maximum authority of one Execution. |
-| **Active Capability View** | Dynamic subset of authorized capabilities currently exposed to the controller/model. |
-| **Capability** | Authorized tool, knowledge source, external system, resource, or other usable runtime facility. |
-| **Memory** | Persistent semantic/application state available across Activations. |
-| **Control state** | Runtime/controller state such as Workflow stage or pending correlation ids. |
-| **Workflow** | Composite Execution where the system defines semantic topology. |
-| **Agent** | Composite Execution where the model chooses semantic topology. |
-| **Terminal result** | Optional final value produced only if an Execution successfully terminates. |
-
----
-
-## 32. The one-minute explanation
-
-If explaining Arrokoth to someone new, start here:
-
-> **Arrokoth treats an Agent or Workflow as a potentially long-lived Execution, more like an actor/process than a normal function. Every Execution has private state, a mailbox, bounded authority, and an address. Events come in; Effects go out through a runtime that validates permissions and records what actually happened. Executions can use tools and knowledge, spawn other Executions, send messages to other authorized Executions, and write memory. They can finish, but they can also wait and wake forever.**
->
-> **Workflow and Agent are not different runtimes. They use the same substrate. The difference is who chooses the semantic next step: in a Workflow the application defines the topology; in an Agent the model generates it dynamically. Ownership and communication are separate, so a Workflow can create several private-context Agents and let them talk to one another without sharing all of their context.**
-
-Or in one line:
-
-> **Executions receive Events and request Effects; Workflows let the system choose what happens next, Agents let the model choose.**
-
-That is the mental kernel all other Arrokoth features should build on.
+> **Arrokoth treats Agents and Workflows as addressable, potentially long-lived Executions. Events come in; Effects go out through a runtime that enforces authority and records reality. Workflows let the system choose the semantic path; Agents let the model choose it.**
