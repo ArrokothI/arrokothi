@@ -1,595 +1,1197 @@
 # Mental Model → Implementation Model
 
-This document translates [`mental-model-v0.4.md`](mental-model-v0.4.md) into implementation concepts for Agent SDK.
-It is intentionally an architecture guide rather than an API specification. Exact interfaces and package boundaries may change while the implementation is reviewed.
+> **Status: implementation guide for the canonical v0.4 mental model.**
+>
+> Read [`mental-model-v0.4.md`](mental-model-v0.4.md) first. That document defines the semantics. This document does **not** redefine them; it translates them into implementation boundaries, runtime records, ports, and invariants.
 
-The main rule is:
+The mental model can be summarized as:
 
-> **Workflow and Agent share the same execution substrate. They differ primarily in who owns semantic control flow.**
+```text
+ExecutableDefinition → Execution
+Execution + Event → EffectRequest(s)
+EffectRequest → Runtime → Event
 
-A second implementation rule follows from this model:
+Workflow: system owns semantic topology
+Agent:    model owns semantic topology
+```
 
-> **Arrokoth owns the kernel semantics and invariants. Concrete execution, model, retrieval, storage, sandbox, and observability mechanisms should remain replaceable behind explicit ports.**
+The implementation goal is therefore not to build separate runtimes for Agents, Workflows, tools, messaging, and durable waiting. It is to build one execution substrate with type-specific controllers.
 
-At a high level, the intended boundary looks like this:
+A second rule remains fundamental:
+
+> **Arrokoth owns kernel semantics and invariants. Concrete model, agent-loop, retrieval, tool transport, storage, sandbox, and observability mechanisms remain replaceable behind explicit ports.**
+
+---
+
+## 1. Target runtime shape
+
+A useful target architecture is:
 
 ```text
                          ARROKOTH KERNEL
-┌──────────────────────────────────────────────────────────────┐
-│ ExecutableDefinition / ExecutionRun                         │
-│ Agent vs Workflow semantics                                 │
-│ Authority Envelope                                          │
-│ CapabilityGateway                                           │
-│ Memory semantics + provenance                               │
-│ Lifecycle / completion                                      │
-│ Execution tree                                              │
-│ Event semantics / durability                                │
-│ Context visibility rules                                    │
-└───────────────────────────┬──────────────────────────────────┘
-                            │
-                    implementation ports
-                            │
-       ┌────────────────────┼─────────────────────────┐
-       ▼                    ▼                         ▼
- Agent Executor        Model Runtime             Knowledge
- Strands               AI SDK                    LangChain
- future adapters       direct SDK                LlamaIndex
- reference loop        Ollama / local            pgvector / direct
+┌─────────────────────────────────────────────────────────────────────┐
+│ Definitions / Executions / Handles                                │
+│ Lifecycle / Scheduler / Activations                               │
+│ Event + Effect semantics                                           │
+│ Ownership + communication routing                                  │
+│ Authority Envelope + Active Capability View                        │
+│ CapabilityGateway                                                  │
+│ Memory bindings + provenance                                       │
+│ Workflow controller                                                │
+│ Agent executor contract                                            │
+│ Context visibility rules                                           │
+│ Durability / idempotency / tracing                                 │
+└──────────────────────────────┬──────────────────────────────────────┘
+                               │
+                     replaceable implementation ports
+                               │
+       ┌───────────────────────┼───────────────────────────────┐
+       ▼                       ▼                               ▼
+ Agent executor          Model provider                  Knowledge
+ Strands                 Gemini / compatible            LangChain
+ reference               local/self-hosted              direct/custom
+ future adapters         future providers               other frameworks
 
-       ▼                    ▼                         ▼
- Sandbox              Tool Transport            Persistence
- Docker               Native                    SQLite
- E2B / remote          MCP                       Postgres
- foreign runtime       HTTP / OpenAPI             other stores
+       ▼                       ▼                               ▼
+ Tool transport          Persistence                    Sandbox
+ Native / MCP            memory / SQLite                local / Docker
+ HTTP / OpenAPI          Postgres / future              remote providers
 
-                            ▼
-                     Observability
-                     OpenTelemetry
-                     Langfuse / other backends
+                               ▼
+                         Observability
+                       OTel / external sinks
 ```
 
-The named projects above are examples of possible implementations, not semantic dependencies. The important goal is that changing one implementation should not redefine what an Arrokoth Agent, Workflow, authority boundary, memory write, or execution run means.
+The dependency direction matters more than class names:
+
+```text
+implementation packages → @arrokoth/core
+@arrokoth/core           -X→ framework-specific production SDKs
+```
 
 ---
 
-## 1. Core execution model
+## 2. Definitions: use a discriminated union
 
-The fundamental runtime object is an **Executable**.
+The mental model intentionally removed a universal `instructions` field. The implementation should reflect that.
 
-```text
-Executable
-├── Leaf
-│   ├── LLM call
-│   ├── function / code
-│   └── tool call
-│
-└── Composite
-    ├── Workflow
-    └── Agent
-```
-
-A leaf is opaque to the orchestration layer: it executes and returns a result.
-A composite may create or invoke child Executables, including other composites.
-
-Definitions and executions should remain separate:
-
-```text
-ExecutableDefinition
-        ↓ instantiated by runtime
-ExecutionRun
-        ↓ executed by
-Harness / Runtime
-```
-
-An `ExecutionRun` has an id, parent id, current state, effective authority, lifecycle status, child runs, trace, and result.
-The definition describes what may be run; the run records what actually happened.
-
-A useful common shape is conceptually:
+A common definition envelope should contain only genuinely shared concerns:
 
 ```ts
-interface ExecutableDefinition {
+interface DefinitionBase {
   id: string
-  kind: "llm" | "function" | "tool" | "workflow" | "agent"
-  instructions?: string
-  requestedScope?: ScopeRequest
-  memoryPolicy?: MemoryPolicy
-  inputSchema?: Schema
-  outputSchema?: Schema
+  version: string
+  kind: "llm" | "function" | "agent" | "workflow"
+  interface: ExecutionInterface
+  requestedAuthority?: AuthorityRequest
+  memoryBindings?: MemoryBindingDefinition[]
+  metadata?: Record<string, unknown>
 }
 ```
 
-This is illustrative only. A definition may request authority, but it never grants itself authority.
+Then use kind-specific bodies:
+
+```ts
+interface LLMDefinition extends DefinitionBase {
+  kind: "llm"
+  spec: {
+    prompt: PromptTemplate
+    modelPolicy?: ModelPolicy
+  }
+}
+
+interface FunctionDefinition extends DefinitionBase {
+  kind: "function"
+  spec: {
+    implementation: FunctionRef
+  }
+}
+
+interface AgentDefinition extends DefinitionBase {
+  kind: "agent"
+  spec: {
+    prompt: PromptTemplate
+    modelPolicy?: ModelPolicy
+    agentPolicy?: AgentPolicy
+  }
+}
+
+interface WorkflowDefinition extends DefinitionBase {
+  kind: "workflow"
+  spec: {
+    entry: StageId
+    stages: WorkflowStageDefinition[]
+  }
+}
+```
+
+This is illustrative rather than a frozen API. The important implementation rule is:
+
+> **Shared envelope, kind-specific executable body.**
+
+### Execution interface
+
+Do not model every executable as `inputSchema → outputSchema`.
+
+Use the three semantic channels from the mental model:
+
+```ts
+interface ExecutionInterface {
+  start?: Schema
+  inbox?: Schema
+  terminalResult?: Schema
+}
+```
+
+Typical defaults:
+
+```text
+LLM / Function
+  start           yes
+  inbox           no
+  terminalResult  yes
+
+Agent / Workflow
+  start           optional
+  inbox           optional/yes
+  terminalResult  optional
+```
+
+A developer-facing convenience API may still expose `run(input)`, but it should compile down to these semantics rather than define a second model.
 
 ---
 
-## 2. Authority, capability exposure, and child scope
+## 3. Execution is the durable runtime identity
 
-Authority and capability exposure are separate concepts.
+The previous `ExecutionRun` concept should evolve into the canonical `Execution` runtime record.
 
-### Authority Envelope
+Conceptually:
 
-The **Authority Envelope** is the maximum authority an execution node receives when it is created.
-It is immutable for the lifetime of that run.
+```ts
+interface ExecutionRecord {
+  id: ExecutionId
+  definition: ExecutableDefinitionRef
 
-```text
-child.authority ⊆ parent.authority
+  owner?: ExecutionId
+  rootExecutionId: ExecutionId
+
+  lifecycle: LifecycleState
+  authority: AuthorityEnvelope
+  activeView: ActiveCapabilityView
+
+  controlState: unknown
+  memoryBindings: BoundMemoryRef[]
+
+  mailboxCursor?: EventCursor
+  pendingOperations: PendingOperationRef[]
+
+  budget: EffectiveBudget
+  deadline?: Timestamp
+
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
 ```
 
-A child may narrow authority but may never widen it.
+A definition is reusable. An Execution is addressable, stateful, and durable.
 
-The effective child authority is derived by the runtime:
+The runtime should be able to answer independently:
 
 ```text
-child effective authority
+What definition is this?
+What Execution instance is this?
+Who owns it?
+Who may communicate with it?
+What authority does it have?
+What is it waiting for?
+What memory is attached?
+What happened to it?
+```
+
+---
+
+## 4. Activation is a scheduler concept, not a persistent Agent loop thread
+
+A long-lived Execution does not continuously consume compute.
+
+The scheduler creates an **Activation** whenever runnable Events are available.
+
+Conceptually:
+
+```ts
+interface Activation {
+  executionId: ExecutionId
+  activationId: string
+  inputEvents: EventRef[]
+  startedAt: Timestamp
+  budgetSlice?: BudgetSlice
+}
+```
+
+Lifecycle transitions commonly look like:
+
+```text
+WAITING --event arrives--> READY
+READY   --scheduled-----> RUNNING
+RUNNING --no runnable work/pending dependency--> WAITING
+RUNNING --terminal success--> COMPLETED
+RUNNING --terminal failure--> FAILED
+*       --cancel--------> CANCELLED
+```
+
+The scheduler, not the LLM, owns these operational transitions.
+
+### One logical writer by default
+
+One Execution should normally have only one controller Activation mutating its control state/memory at a time.
+
+Multiple messages/results may arrive concurrently, but the mailbox can serialize or batch them for the next Activation.
+
+Parallelism belongs primarily in Effects, child Executions, and external operations unless a future explicit concurrent-controller model is introduced.
+
+---
+
+## 5. Events: normalize observations into one inbound contract
+
+All asynchronous input should re-enter an Execution through a normalized Event envelope.
+
+Conceptually:
+
+```ts
+interface EventEnvelope<T = unknown> {
+  id: EventId
+  executionId: ExecutionId
+  type: string
+  payload: T
+
+  source?: EventSource
+  correlationId?: string
+  causationId?: string
+
+  createdAt: Timestamp
+  provenance?: Provenance
+}
+```
+
+Representative event types:
+
+```text
+execution.started
+message.received
+capability.succeeded
+capability.failed
+execution.spawned
+execution.completed
+execution.failed
+operation.timeout
+permission.decided
+timer.fired
+control.cancel_requested
+```
+
+Do not force every event type into the model context verbatim. The Event log is runtime truth; the ContextCompiler decides which observations are eligible and how they are represented to a model.
+
+### Failure is usually an Event first
+
+A tool/API/knowledge failure should normally produce a failure Event/Observation, not directly transition the containing Agent to `FAILED`.
+
+The controller may retry, choose another capability, ask a peer, or surface the issue.
+
+---
+
+## 6. Effects: one gateway from controller intent to reality
+
+Controllers should return normalized Effect requests rather than directly mutating external systems.
+
+A compact semantic union is:
+
+```ts
+type EffectRequest =
+  | UseCapabilityEffect
+  | SpawnExecutionEffect
+  | SendMessageEffect
+  | WriteMemoryEffect
+```
+
+Every Effect receives identity/correlation metadata so it can be traced and made idempotent where necessary.
+
+### `UseCapability`
+
+```ts
+interface UseCapabilityEffect {
+  type: "use_capability"
+  capability: CapabilityRef
+  input: unknown
+  idempotencyKey?: string
+}
+```
+
+This passes through `CapabilityGateway`.
+
+It covers native tools, MCP, knowledge retrieval, external APIs, sandboxes, browsers, etc.
+
+Knowledge remains semantically distinguishable through capability metadata and result/provenance types; it does not require a separate orchestration path.
+
+### `SpawnExecution`
+
+```ts
+interface SpawnExecutionEffect {
+  type: "spawn_execution"
+  definition: ExecutableDefinitionRef
+  start?: unknown
+  requestedAuthority?: AuthorityRequest
+  budget?: BudgetRequest
+  deadline?: Timestamp
+}
+```
+
+The runtime creates a new addressable Execution and records ownership.
+
+### `SendMessage`
+
+```ts
+interface SendMessageEffect {
+  type: "send_message"
+  target: ExecutionHandle
+  message: unknown
+  correlationId?: string
+}
+```
+
+The router validates communication authority and writes a `message.received` Event to the target mailbox.
+
+### `WriteMemory`
+
+```ts
+interface WriteMemoryEffect {
+  type: "write_memory"
+  binding: MemoryBindingRef
+  operation: MemoryOperation
+}
+```
+
+The runtime validates access, schema, provenance, and commit policy before durable mutation.
+
+### No `Wait` Effect
+
+Waiting should be derived from scheduler state. If the controller finishes an Activation with unresolved operations or no runnable work, the Execution becomes `WAITING`.
+
+---
+
+## 7. Pending operations unify async capability calls, replies, timers, and child results
+
+The runtime needs a first-class pending-operation record.
+
+```ts
+interface PendingOperation {
+  id: OperationId
+  executionId: ExecutionId
+  kind: "capability" | "reply" | "child_result" | "timer" | "permission"
+  correlationId?: string
+  deadline?: Timestamp
+  status: "pending" | "resolved" | "timed_out" | "cancelled"
+}
+```
+
+This gives one scheduler mechanism for:
+
+```text
+async tool call
+knowledge retrieval
+waiting for another Agent's reply
+waiting for a child terminal result
+human approval
+sleep/timer
+remote job
+```
+
+The result arrives as an Event. The scheduler marks the operation resolved and wakes the Execution when appropriate.
+
+---
+
+## 8. Ownership tree and communication graph must be stored separately
+
+The kernel should explicitly represent two relations.
+
+### Ownership
+
+Created by `SpawnExecution` / `call` semantics.
+
+Used for:
+
+```text
+authority derivation
+budget allocation
+cancellation propagation
+lifecycle supervision
+trace hierarchy
+resource accounting
+```
+
+Minimal representation:
+
+```text
+execution.owner_id
+```
+
+plus optional richer supervision metadata later.
+
+### Communication
+
+Communication authority is not inferred only from ownership.
+
+A runtime should be able to authorize:
+
+```text
+A may message B
+B may reply to A
+C may query a class/group of Paper Agents
+```
+
+without implying:
+
+```text
+A owns B
+A may cancel B
+A may inspect B memory
+```
+
+An `ExecutionHandle` is a useful capability-style representation:
+
+```ts
+interface ExecutionHandle {
+  executionId: ExecutionId
+  operations: ("send" | "ask")[]
+  protocol?: SchemaRef
+}
+```
+
+The exact authorization representation may use handles, ACLs, capability tokens, route policies, or a combination. The semantic invariant is what matters.
+
+### `send`, `ask`, `spawn`, `call`
+
+High-level APIs may provide:
+
+```text
+spawn(definition) → handle
+send(handle, message)
+ask(handle, message, timeout)
+call(definition, input) → terminal result
+```
+
+But kernel semantics can reduce these to:
+
+```text
+ask  = send + correlation + pending reply + timeout
+call = spawn + pending child terminal result
+```
+
+This avoids inventing separate distributed-agent machinery.
+
+---
+
+## 9. Authority: expand it beyond tools
+
+The Authority Envelope is an immutable per-Execution set of maximum permissions.
+
+It should cover at least:
+
+```text
+capability/tool use
+knowledge access
+memory read/write
+which definitions may be spawned
+which Executions/classes/groups may be messaged
+consequential external actions
+possibly model/provider restrictions
+```
+
+For an owned child:
+
+```text
+child authority
 =
-parent authority
-∩ child requested scope
-∩ runtime/application policy
+owner authority
+∩ child requested authority
+∩ application/runtime policy
 ```
 
-The model may propose a child scope. The runtime validates it.
-
-If an execution needs authority it does not possess, it must return a blocked/denied result to its parent or request an explicit higher-level authorization path. It cannot grant itself new authority.
-
-### Active Capability View
-
-The **Active Capability View** is the set of tools and knowledge sources currently exposed to an LLM call.
-It is dynamic and always remains inside the node's Authority Envelope.
+and therefore:
 
 ```text
-active view ⊆ authority envelope
+child authority ⊆ owner authority
 ```
 
-Changing the Active View is context engineering, not privilege escalation.
+### Do not mutate authority for discovery
 
-This lets an agent with a large authority envelope work with only a small relevant tool set at any one time.
-
-### Capability Profile
-
-A **Capability Profile** is a reusable, human- or system-defined grouping of related capabilities, for example:
+Keep the existing Active Capability View concept:
 
 ```text
-Biomedical Research
-├── PubMed search
-├── ClinicalTrials search
-├── paper fetch
-└── biomedical knowledge sources
+Active Capability View ⊆ Authority Envelope
 ```
 
-A profile does not grant authority. It helps select an Active View from authority the node already possesses.
+If a capability is authorized but currently hidden, the discovery/context layer may expose it.
 
-Capability discovery may later use profiles, metadata filtering, keyword/embedding retrieval, or an optional model-assisted fallback. Discovery should not require an extra LLM call when deterministic retrieval is sufficient.
+If it is outside the Authority Envelope, the current Execution cannot self-grant it. A higher-authority workflow/application/user may choose a new execution/delegation path.
+
+### Capability discovery
+
+Discovery is therefore an implementation over the authorized catalog, not a special lifecycle signal.
+
+Possible selectors:
+
+```text
+static view
+profile
+metadata/keyword search
+embedding retrieval
+hybrid retrieval
+model-assisted fallback
+```
 
 ---
 
-## 3. Memory
+## 10. `CapabilityGateway` remains a central kernel boundary
 
-The current memory philosophy should be preserved.
+The existing gateway idea should be generalized, not discarded.
 
-### Structured Memory
-
-Structured Memory remains schema-defined, inspectable state with provenance and authority.
-
-Useful application fields include:
+Every capability request should pass a narrow mechanical path:
 
 ```text
-name
-email
-budget
+UseCapability Effect
+        ↓
+CapabilityGateway
+        ├── capability exists?
+        ├── authorized by Envelope?
+        ├── arguments valid?
+        ├── confirmation required?
+        ├── limits/budget valid?
+        ├── idempotency/checkpoint valid?
+        └── dispatch
+              ↓
+        implementation adapter
+              ↓
+        authoritative result/failure
+              ↓
+             Event
 ```
 
-Agent-support fields may also be defined when useful:
+The controller may propose. The gateway authorizes. The executor/environment establishes what actually happened.
 
-```text
-focus
-completed_tasks
-open_questions
-```
-
-The model proposes writes; runtime validation establishes whether they become committed state.
-A model-inferred value is not automatically authoritative.
-
-### Working Notes
-
-Working Notes remain free-form, agent-owned, non-authoritative memory for things such as:
-
-```text
-hypotheses
-partial conclusions
-loose planning
-intermediate observations
-```
-
-### Artifact / File Memory
-
-A future memory form may expose persistent artifacts such as:
-
-```text
-plan.md
-research.md
-CLAUDE.md-like workspace files
-```
-
-These should be treated as another memory/storage mechanism rather than a new control-flow abstraction.
-
-### Plan and Focus
-
-`plan` and `focus` are not universal runtime concepts. They are agent-owned memory conventions.
-
-A plan is mutable memory: an agent may write, revise, ignore, or never create one.
-A focus is a more structured current-task marker. Agent policy may optionally require a short `focus` update before consequential actions, but it should remain inspectable task state rather than hidden chain-of-thought.
+The same principle applies to `SpawnExecution`, `SendMessage`, and `WriteMemory`: they need equivalent kernel validation even if they are not literally routed through the same class.
 
 ---
 
-## 4. Workflow implementation
+## 11. Memory implementation: bindings, stores, provenance
 
-A Workflow is a composite Executable where the system owns the control topology.
+The previous broad `MemoryPolicy` concept should become explicit **Memory Bindings**.
+
+A binding attaches a named memory resource/view to an Execution.
 
 Conceptually:
 
 ```ts
-interface WorkflowStage {
-  id: string
-  instructions?: string
-  requestedScope?: ScopeRequest
-  executor: ExecutableRef
-  transitions: Transition[]
+interface MemoryBindingDefinition {
+  name: string
+  kind: "structured" | "notes" | "artifact"
+  schema?: Schema
+  lifetime: "activation" | "execution" | "session" | "persistent"
+  visibility: "private" | "shared"
+  access: ("read" | "write" | "append")[]
+  commitPolicy?: MemoryCommitPolicy
 }
 ```
 
-A stage is a workflow scheduling frame around an Executable. The stage executor may therefore be:
+Implementations may map bindings onto different stores.
+
+### Structured memory
+
+Needs:
 
 ```text
-LLM
-Tool / Function
-Agent
-Workflow
+schema validation
+provenance
+correction history where applicable
+authoritative vs advisory semantics
+runtime-controlled commit
 ```
 
-Transitions may be:
+### Working notes
 
-```text
-deterministic
-LLM-evaluated
-hybrid
-```
+May use simpler append/replace semantics, but should remain inspectable and distinct from hidden chain-of-thought.
 
-An LLM selecting among predefined edges does not turn the Workflow into an Agent.
-The implementation may optimize an LLM stage and its LLM transition check into one call when safe, without changing the semantic model.
+### Artifacts
 
-The existing `Phase` idea should not remain a second long-term control abstraction. Its useful pieces—objective/instructions, scoped capabilities, condition DSL, transition tracing—can be migrated into Workflow stages and transition evaluation.
+Use file/object/workspace storage contracts. They are memory resources, not Workflow stages or alternate controllers.
+
+### Shared memory
+
+Two Executions share memory only when the same authorized resource is explicitly bound to both.
+
+Messaging never implicitly shares memory.
 
 ---
 
-## 5. Agent implementation
+## 12. Control state should have a separate store/schema path
 
-An Agent is a composite Executable where the LLM owns semantic control flow inside its immutable Authority Envelope.
+Runtime/controller state should not be mixed into semantic memory merely because both need persistence.
 
-Each agent iteration conceptually receives:
+Examples of control state:
 
 ```text
-goal / instructions
-memory
-observations
-active capability view
+Workflow current stage
+pending transition evaluation
+Agent executor checkpoint
+mailbox/event cursor
+pending operation ids
+correlation ids
+retry counters
 ```
 
-and may produce:
+It may live in the same physical database, but should have separate semantic contracts.
+
+A useful persistence split is:
 
 ```text
-action(s)
+ExecutionRecord / control snapshot
+Event journal
+Memory resources
+Artifacts
+Effect/idempotency checkpoints
+```
+
+---
+
+## 13. ContextCompiler becomes activation-scoped
+
+The ContextCompiler should compile a model-facing view for one Activation, not serialize an entire Execution.
+
+Kernel-owned eligibility rules determine:
+
+```text
+which incoming Events may be shown
+which conversation/history is visible
+which memories are visible
+which peer messages are visible
+which capabilities are authorized
+which Active View is allowed
+provenance/visibility constraints
+```
+
+Replaceable implementations determine:
+
+```text
+ranking
+retrieval
+selection
+compression
+summarization
+token counting
+context packing
+model used for summarization
+```
+
+Pipeline:
+
+```text
+authorized + eligible execution state
+             ↓
+selection / retrieval / compression
+             ↓
+activation model context
+             ↓
+model inference
+```
+
+A better selector may change what eligible information is shown. It must never make unauthorized information eligible.
+
+---
+
+## 14. Workflow implementation
+
+A Workflow is a controller over shared Execution/Event/Effect infrastructure.
+
+Conceptually:
+
+```ts
+interface WorkflowStageDefinition {
+  id: StageId
+  executor?: ExecutableDefinitionRef
+  inputMapping?: MappingExpression
+  requestedAuthority?: AuthorityRequest
+  activeViewHint?: CapabilityViewHint
+  transitions: TransitionDefinition[]
+}
+```
+
+A Stage is **control state plus scheduling configuration**, not `Executable + its own harness`.
+
+The Workflow runner should roughly:
+
+```text
+1. read current stage/control state
+2. consume relevant Events
+3. decide whether to start/resume stage work
+4. spawn/call/invoke the configured executable as needed
+5. observe its Events/terminal result
+6. evaluate only predefined transitions
+7. update Workflow control state
+8. emit Effects or become WAITING/terminal
+```
+
+Transitions may be deterministic, LLM-evaluated, or hybrid. If a model chooses among predefined edges, the system still owns the topology.
+
+A Workflow can remain in cycles indefinitely. The runner must not require an End stage or terminal result.
+
+### Existing Phase / Flow
+
+Useful pieces can migrate into Workflow implementation:
+
+```text
+condition DSL
+transition tracing
+stage objectives/configuration
+capability narrowing hints
+```
+
+But `Phase` should not remain a second Agent-control abstraction.
+
+---
+
+## 15. Agent implementation
+
+An Agent is another controller over the same Execution/Event/Effect substrate.
+
+The Agent executor contract should receive an Activation-oriented runtime view, not own persistence/authority independently.
+
+Conceptually:
+
+```ts
+interface AgentExecutor {
+  activate(input: AgentActivationInput): Promise<AgentActivationOutput>
+}
+```
+
+Where input contains normalized, authorized information such as:
+
+```text
+Agent definition/prompt
+incoming Events/observations
+compiled context
+memory view
+Active Capability View
+budget/deadline slice
+```
+
+and output contains semantic proposals such as:
+
+```text
+EffectRequest[]
+outbound model content/messages
 memory proposals
-optional focus update
-semantic status
+optional focus/plan updates
+optional terminal proposal
 ```
 
-The model may decide to:
+The Agent executor may internally perform multiple model inferences and tool-style iterations if its adapter architecture requires it, but all externally consequential operations still need to map back onto Arrokoth Effect semantics.
+
+### Agent executor vs ModelProvider
+
+Keep these separate:
 
 ```text
-use a tool
-retrieve knowledge
-keep or change focus
-revise a plan
-invoke a Workflow
-spawn/invoke a child Agent
-return a result
-yield / block / complete
+AgentExecutor
+  owns iterative Agent mechanism / adaptation
+
+ModelProvider
+  owns one normalized model inference
 ```
 
-There is no required predefined transition graph between these semantic steps.
+A Strands adapter may implement the AgentExecutor while calling one or more ModelProviders.
 
-### Completion
+### No mandatory `YIELD`
 
-Keep semantic completion separate from operational termination.
+When the Activation has no more immediate work, the runtime moves the Execution to `WAITING`.
 
-```text
-Agent proposes COMPLETE / YIELD / BLOCKED / CONTINUE
-        ↓
-Harness validates hard runtime requirements
-        ↓
-accept termination or continue with steering
-```
-
-A second evaluator LLM is optional policy, not a mandatory step after every agent call.
+A model may propose terminal completion, but ordinary conversational responses do not terminate the Agent.
 
 ---
 
-## 6. Harness and Runtime
+## 16. Leaf execution implementation
 
-The Harness/Runtime is shared infrastructure around all Executables.
-It should not own the Agent's semantic reasoning and should not encode Workflow topology that belongs in a Workflow definition.
+LLM and Function definitions are normally finite child Executions.
 
-Shared responsibilities include:
-
-- instantiate execution runs;
-- enforce parent/child authority inheritance;
-- compile the context visible to a node;
-- dispatch LLM/tool/code execution;
-- maintain the Active Capability View;
-- validate capability requests;
-- persist memory, events, checkpoints, and results;
-- create and track child runs;
-- propagate cancellation and budgets;
-- enforce operational termination;
-- trace the execution tree.
-
-A useful target shape is:
+### LLM leaf
 
 ```text
-ExecutionRuntime
-      ↓
-ExecutableRunner
-      ├── Leaf executor
-      ├── Workflow executor
-      └── Agent executor
+start input / compiled prompt
+        ↓
+ModelProvider
+        ↓
+validated model result
+        ↓
+COMPLETED
 ```
 
-The exact class names are not important. The ownership boundaries are.
-
-### ContextCompiler ownership boundary
-
-Context compilation is a particularly important example of the kernel/implementation split.
-
-The kernel must determine what information and capabilities are **eligible and authorized** to appear in context. The algorithms that choose, rank, compress, or summarize eligible information can evolve independently.
+### Function leaf
 
 ```text
-ContextCompiler
-    │
-    ├── which memories are eligible?       ARROKOTH
-    ├── which tools are authorized?        ARROKOTH
-    ├── what can this node see?             ARROKOTH
-    ├── provenance / visibility rules       ARROKOTH
-    │
-    ├── token counting                      replaceable
-    ├── summarizer                          replaceable
-    ├── retrieval ranking                   replaceable
-    ├── compression algorithm               replaceable
-    ├── context packing strategy             replaceable
-    └── model used for summarization        replaceable
+start input
+   ↓
+function executor
+   ↓
+validated result
+   ↓
+COMPLETED
 ```
 
-This gives context engineering a clean safety boundary:
+Leaf completion does not imply owner/composite completion.
 
-```text
-authorized / eligible information
-              ↓
-      replaceable selection
-       ranking / compression
-              ↓
-        compiled context
-              ↓
-            model
-```
-
-A better ranking or compression algorithm may change what the model sees from the eligible set. It must never make previously unauthorized information eligible.
+Implementation may optimize away heavyweight persistence for trivial internal leaves when semantics/tracing allow it, but conceptual execution identity should remain reconstructable where needed for conformance and observation.
 
 ---
 
-## 7. Semantic type vs implementation backend
+## 17. Messaging router and mailbox
 
-The semantic identity of an Executable and the implementation that executes it are separate concerns.
+Long-lived peer communication requires a runtime-owned router.
 
-For example, an `Agent` remains an Arrokoth Agent whether its iterative model/tool loop is implemented by Strands, a reference loop, or a future compatible executor. Likewise, an LLM call remains an LLM leaf whether the model is served by Gemini, a hosted API, an OpenAI-compatible endpoint, or a locally deployed model.
+Responsibilities:
+
+```text
+validate target handle/route
+validate sender communication authority
+validate message schema/protocol when declared
+persist message before/with delivery
+assign correlation/causation ids
+append MessageReceived Event to target mailbox
+wake target Execution if needed
+prevent duplicate delivery where required
+trace sender → receiver edge
+```
+
+A mailbox may be physically implemented as an Event stream, queue table, actor mailbox, or durable broker abstraction.
+
+The kernel contract should care about ordering/deduplication semantics, not the storage brand.
+
+### Addressability does not require always-resident processes
+
+A dormant Execution may be rehydrated on demand.
+
+For example, millions of Paper-Agent identities can be represented durably while only queried Agents are activated in compute resources.
+
+This is an implementation optimization behind the same addressable Execution semantics.
+
+---
+
+## 18. Lifecycle supervision, budgets, deadlines, and cancellation
+
+Ownership should drive default supervision.
+
+### Budgets
+
+Track at least the dimensions applications actually care about:
+
+```text
+model calls
+tokens/cost
+capability calls
+spawned Executions
+parallel operations
+wall-clock / deadline
+```
+
+Child allocations must fit within owner/application policy.
+
+### Deadlines and operation timeouts
+
+Distinguish:
+
+```text
+Execution deadline
+pending operation timeout
+```
+
+A timed-out `ask` should deliver a timeout Event to the requester; it does not automatically kill the target.
+
+### Cancellation
+
+Owner/application cancellation may propagate through owned descendants according to supervision policy.
+
+Communication permission alone never grants cancellation authority.
+
+### Retry
+
+Keep infrastructure retry policy separate from semantic retry chosen by an Agent/Workflow.
+
+---
+
+## 19. Durability and event truth
+
+The durable runtime should journal enough to recover semantics, not merely logs for debugging.
+
+At minimum preserve or reconstruct:
+
+```text
+Execution creation/ownership
+lifecycle transitions
+incoming Events
+requested Effects
+authorization decisions
+external dispatch checkpoints
+Effect results/failures
+message deliveries
+memory commits
+pending operations/correlations
+terminal outcomes
+```
+
+Consequential side effects require idempotency/checkpoint design:
+
+```text
+Effect proposed
+   ↓
+durable intent/checkpoint
+   ↓
+dispatch
+   ↓
+durable result
+```
+
+so restart/replay cannot silently send/pay/delete twice.
+
+Event records are runtime truth about what Arrokoth observed and authorized; provider/model assertions are not authoritative merely because they were generated.
+
+---
+
+## 20. Public resource/API model
+
+A future embedded or remote API should expose the same kernel resources rather than inventing Agent-only concepts.
 
 Conceptually:
 
 ```text
-Semantic type                 Implementation backend
--------------                 ----------------------
-Agent                         Strands / reference / future adapter
-Workflow                      native scheduler / future durable adapter
-LLM call                      ModelProvider implementation
-Tool                          native / MCP / remote adapter
-Knowledge retrieval           LangChain / direct retrieval / future adapter
-Persistence                   memory / SQLite / Postgres / future store
+Definitions
+Executions
+Events
+Messages
+Memory resources
+Cancellation
 ```
 
-Another useful way to picture the two independent axes is:
+Example convenience surface:
+
+```ts
+const agent = await arrokoth.definitions.createAgent({...})
+const execution = await arrokoth.executions.spawn(agent, { start })
+
+await execution.send(message)
+for await (const event of execution.events()) { ... }
+```
+
+For finite tasks:
+
+```ts
+const result = await arrokoth.executions.call(workflow, { start })
+```
+
+The convenience methods map to `ExecutableDefinition` / `Execution` semantics.
+
+---
+
+## 21. Implementation ports
+
+Semantic type and implementation backend remain independent axes.
 
 ```text
-What is being executed?             How is it implemented?
------------------------             ----------------------
-Agent                     ───────→   Strands / other Agent executor
-Workflow                  ───────→   native / durable scheduler
-LLM leaf                  ───────→   Gemini / hosted API / local model
-Tool                      ───────→   native / MCP / HTTP
-Knowledge retrieval       ───────→   LangChain / LlamaIndex / direct
-Storage                   ───────→   memory / SQLite / Postgres
+Kernel semantic                 Replaceable implementation
+-----------------------------   -----------------------------------
+Agent controller                Strands / reference / future adapter
+LLM leaf inference              ModelProvider implementations
+Workflow scheduling             native/durable workflow runner
+Capability execution            native / MCP / HTTP / sandbox
+Knowledge capability            LangChain / LlamaIndex / direct
+Persistence                     memory / SQLite / Postgres
+Message/event storage           DB / broker-backed implementation
+Artifacts                       local/object/workspace storage
+Observability                   OTel / Langfuse / other exporter
 ```
 
-The runtime contracts and invariants belong to Arrokoth. Concrete implementations may be replaced when they satisfy those contracts.
+### Knowledge boundary
 
-### Agent executor vs Model Provider
-
-These are different layers:
+Arrokoth owns:
 
 ```text
-Agent executor
-  decides the iterative mechanism:
-  model → tool/action → observation → model → ... → stop
-
-Model Provider
-  performs one model inference:
-  normalized request → concrete model/API/local server → normalized response
+authorization
+query/result contract
+provenance
+visibility
+trace semantics
+context eligibility
 ```
 
-An Agent executor may call a Model Provider many times during one Agent run. Keeping the two separate prevents a loop implementation from becoming the model abstraction and allows hosted and local/self-hosted models to be used without changing Agent semantics.
-
-For example:
-
-```text
-                    Arrokoth Agent
-                          │
-                          ▼
-                  AgentLoopEngine
-                    (e.g. Strands)
-                          │
-                calls model repeatedly
-                          │
-                          ▼
-                    ModelProvider
-                 /         |         \
-                ▼          ▼          ▼
-             Gemini   OpenAI-compatible   local / self-hosted
-                                      Ollama / vLLM / other
-```
-
-Provider-specific credentials, payloads, SDK types, and transport behavior should remain outside the core contracts.
-
-### Knowledge retrieval boundary
-
-Arrokoth should own the provider-neutral knowledge/retrieval contract and the context/authorization rules around retrieval, not every retrieval algorithm.
-
-A concrete retrieval implementation may choose or combine:
+A retrieval implementation may own:
 
 ```text
 chunking
-embedding models
-lexical / vector / hybrid search
-query rewriting or expansion
-metadata filtering
-score fusion
+embeddings
+lexical/vector/hybrid search
+query rewrite
+fusion
 reranking
-LLM-assisted retrieval
+context packing helpers
 ```
 
-Frameworks such as LangChain can remain convenient default implementations while those choices are immature or not strategically important. Their types and assumptions should not define the core contract. Over time, high-value retrieval paths may be replaced with direct or specialized implementations when benchmarks show a measurable quality, latency, cost, or control advantage.
+### Skills
 
-The retrieval boundary should therefore look more like this:
-
-```text
-                 Arrokoth KnowledgeRetriever contract
-                              │
-                              ▼
-                    retrieval implementation
-                 /              |              \
-                ▼               ▼               ▼
-          LangChain        LlamaIndex       direct/custom
-              │                                │
-              ▼                                ▼
-     vector/search DB                  application-specific
-     embeddings/reranker               retrieval research
-```
-
-Arrokoth can use framework defaults first, then replace individual retrieval stages when evidence justifies it:
-
-```text
-ingestion
-   ↓
-chunking             ← replaceable
-   ↓
-query rewrite         ← replaceable
-   ↓
-lexical / vector      ← replaceable
-   ↓
-score fusion          ← replaceable
-   ↓
-reranking             ← replaceable
-   ↓
-context packing       ← replaceable
-   ↓
-KnowledgeChunk[]      ← Arrokoth-facing contract
-```
-
-The same principle applies to context engineering more broadly:
-
-> **Visibility and authority policy belong to the kernel; selection, ranking, compression, and retrieval algorithms are replaceable implementations.**
-
----
-
-## 8. Skills
-
-A Skill is not a third control-flow system.
-It is a reusable capability package that resolves into existing runtime concepts.
+A Skill remains packaging:
 
 ```text
 Skill
-├── instructions
-├── resources / references
-├── scripts / assets
-├── executable root (Agent or Workflow)
-└── recommended Capability Profile / requested scope
+├── prompt/instructions/resources
+├── scripts/assets
+├── root ExecutableDefinition
+└── recommended profile/requested authority
 ```
 
-The effective authority of a Skill invocation is still derived from the parent execution and runtime policy.
-A Skill never grants authority by itself.
-
-Several Skills may reuse the same Capability Profile.
+It is not a third controller/runtime.
 
 ---
 
-## 9. Mapping from the current codebase
+## 22. Mapping from the current codebase
 
-The current implementation already contains many reusable pieces.
+The current repository already contains valuable implementation that should be preserved where semantics match.
 
 ```text
 Current concept                  Target role
-------------------------------   --------------------------------------------
-AgentRuntime                     durable execution/session runtime
-AgentHarness                     split shared harness from agent-specific work
-AgentLoopEngine                  Agent composite executor contract
-StrandsLoopEngine                primary Agent executor adapter, not Agent semantics
-ModelProvider                    provider-neutral single-inference boundary
-CapabilityGateway                shared authority/capability boundary
-KnowledgeRetriever               provider-neutral retrieval boundary
-LangChain retrieval              replaceable knowledge implementation
-Structured Memory               preserve and expand
-Working Notes                    preserve as non-authoritative agent memory
-ContextCompiler                  generalize to per-node/per-run context views
-WorkflowCoordinator              legacy bounded preflight workflow, not final Workflow
-Flow / Phase                     migrate useful logic into Workflow stages
-Session journal / durability     preserve; extend with execution-tree identity
+------------------------------   --------------------------------------------------
+AgentRuntime                     evolve into shared ExecutionRuntime/session facade
+AgentHarness                     split shared runtime mechanics from Agent controller
+AgentLoopEngine                  AgentExecutor implementation contract
+StrandsLoopEngine                primary AgentExecutor adapter
+ReferenceLoopEngine              deterministic/reference AgentExecutor
+ModelProvider                    preserve single-inference provider boundary
+CapabilityGateway                preserve/generalize capability authorization path
+KnowledgeRetriever               knowledge-capability implementation contract
+Structured Memory               preserve behind explicit MemoryBindings
+Working Notes                    preserve as notes memory
+ContextCompiler                  activation-scoped context compiler
+Flow / Phase                     migrate useful pieces into Workflow controller
+WorkflowCoordinator              compatibility behavior, not final Workflow semantics
+Session journal                  evolve into durable Execution/Event semantics
+confirmation/idempotency         preserve and integrate with Effect handling
 ```
 
-The current semantic Preflight must be given an explicit home under the new model:
+New target concepts that need explicit implementation homes include:
 
-- remove it from the pure Agent path when it is only scaffolding; or
-- represent it as an explicit Workflow / compatibility wrapper when the decomposition is intentionally desired.
+```text
+ExecutableDefinition discriminated union
+ExecutionRecord
+Lifecycle scheduler / Activation
+Event envelope + mailbox
+EffectRequest union
+PendingOperation
+ExecutionHandle / messaging router
+ownership vs communication authorization
+Workflow controller
+memory binding abstraction
+execution-tree + communication tracing
+```
 
-It should not remain an invisible second definition of Agent execution.
+### Semantic Preflight
+
+Preflight must become explicit:
+
+- remove it from a pure Agent path when it is only historical scaffolding; or
+- represent it as an explicit compatibility Workflow/controller layer when the decomposition is intentionally desired.
+
+It must not silently redefine what an Agent means.
 
 ---
 
-## 10. Migration principle
+## 23. Migration order
 
-We should reuse implementation where the concepts match and replace abstractions where they do not.
-
-The goal is not a rewrite for aesthetic reasons. The goal is to prevent two incompatible mental models from surviving inside the core and to prevent one implementation dependency from becoming the architecture by accident.
-
-A compatibility adapter may translate older `Flow` / `Phase` definitions at the system boundary during migration, but the new core should have one vocabulary:
+The safest implementation sequence is semantic before expansive.
 
 ```text
-Executable
-├── Workflow: system-owned topology
-└── Agent: model-owned topology
-
-Authority: fixed per run, monotonically narrowed for children
-Capability exposure: dynamic inside authority
-Memory: structured / notes / artifacts
-Skill: packaged executable + resources + profile
-Implementation: replaceable behind explicit ports
+1. Introduce Definition/Execution vocabulary and lifecycle records
+2. Normalize Agent execution around Events/Effects without changing behavior
+3. Separate memory bindings and Active Capability View from legacy Phase semantics
+4. Establish durable pending operations / waiting
+5. Implement real Workflow controller
+6. Implement recursive spawn/call semantics
+7. Add addressable messaging + ExecutionHandle
+8. Generalize tracing from tree-only to tree + communication edges
+9. Scale capability discovery/context selection
+10. Add more implementation adapters only where they prove a boundary or solve a need
 ```
 
-A default implementation is allowed to be opinionated and convenient. It must not become a semantic requirement unless the kernel genuinely depends on that behavior.
+Compatibility adapters are preferable to preserving two mental models inside core.
 
-That is the implementation model future features should build on.
+---
+
+## 24. Conformance invariants
+
+Tests and alternate implementations should verify kernel semantics rather than implementation-specific traces.
+
+At minimum:
+
+```text
+Definition does not grant itself authority
+Execution authority is immutable
+owned child authority is narrowed
+Active View never exceeds authority
+unauthorized messaging is rejected
+messaging does not share private memory/context
+message permission does not imply cancellation permission
+waiting Execution can resume from durable Events
+ordinary reply does not complete long-lived Agent
+leaf completion does not complete owner
+capability failure returns an observation before terminal failure
+consequential Effects are idempotent across restart
+Workflow never follows an undefined semantic transition
+Agent semantic next step is model-owned inside hard runtime limits
+```
+
+Executor conformance should eventually allow the same Agent definition and kernel policies to run through different AgentExecutor implementations without changing these rules.
+
+---
+
+## 25. Implementation summary
+
+The implementation model can be explained in one diagram:
+
+```text
+ExecutableDefinition
+        │ instantiate
+        ▼
+┌─────────────────────────────────────────┐
+│ Execution                               │
+│ identity / owner / lifecycle            │
+│ mailbox / control state / memory        │
+│ authority / active view / pending ops   │
+└───────────────────┬─────────────────────┘
+                    │ Activation consumes Events
+                    ▼
+              Controller
+          ┌─────────┴─────────┐
+          │                   │
+      Workflow             Agent
+   predefined topology   model topology
+          │                   │
+          └─────────┬─────────┘
+                    │ EffectRequest(s)
+                    ▼
+          Runtime validation/gateway
+                    │
+        ┌───────────┼────────────┐
+        ▼           ▼            ▼
+   capability   new Execution   message/memory
+        │           │            │
+        └───────────┴────────────┘
+                    │
+                  Event
+                    │
+                    └──────────────→ Execution mailbox
+```
+
+That is the implementation substrate. Everything else should either be a controller policy, a bound resource, or a replaceable implementation behind it.
