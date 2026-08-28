@@ -1,271 +1,296 @@
 # Future Plan
 
-This roadmap describes the architectural direction after adopting [`mental-model-v0.4.md`](mental-model-v0.4.md) and [`mental-model-to-implementation-model.md`](mental-model-to-implementation-model.md).
+This roadmap describes how the repository should move from the current implementation toward the canonical model in [`mental-model-v0.4.md`](mental-model-v0.4.md), using [`mental-model-to-implementation-model.md`](mental-model-to-implementation-model.md) as the implementation translation.
 
-It intentionally defines only the major goals of v0.4, v0.5, and v0.6. It does **not** prescribe minor-version sequencing such as v0.41/v0.42; those decisions should follow implementation review, benchmarks, and migration cost.
+The roadmap should answer **what remains to be built or migrated**, not redefine the architecture.
 
 The guiding rules are:
 
-> **Keep current implementation where it matches the new mental model. Replace or migrate abstractions where carrying two incompatible definitions would make future expansion confusing.**
+> **One mental model in core. Compatibility may exist at boundaries, but new features should not depend on competing definitions of Agent, Workflow, lifecycle, or authority.**
 
-> **Own the kernel semantics and invariants; keep concrete mechanisms replaceable behind narrow implementation boundaries.**
+> **Preserve working implementation where its responsibility still matches the target model. Replace abstractions where they encode the wrong semantics.**
 
-The current v0.37 mental model remains useful documentation of the existing architecture and its original concerns. Other roadmap/design documents should be treated as legacy references once this plan becomes the active direction; do not delete them yet.
+> **Own kernel semantics and invariants; keep concrete mechanisms replaceable behind narrow ports.**
 
 ---
 
-# Reference implementation strategy
+# 1. Target state
 
-Arrokoth should have a preferred development stack so the project can move quickly, but the preferred stack must not become the definition of the architecture.
+The target kernel vocabulary is:
 
-The current reference direction is:
+```text
+ExecutableDefinition
+        ↓ instantiate
+Execution
+├── lifecycle / Activation
+├── mailbox / Events
+├── EffectRequests
+├── ownership
+├── communication handles/routes
+├── Authority Envelope
+├── Active Capability View
+├── control state
+├── Memory Bindings
+├── pending operations
+└── trace / durability
+
+Workflow → system-owned semantic topology
+Agent    → model-owned semantic topology
+```
+
+The implementation stack remains modular:
 
 ```text
 Kernel semantics             Arrokoth-owned
-Agent loop                   Strands as primary implementation
-Model inference              provider-neutral ModelProvider boundary
-Knowledge / RAG              LangChain as initial implementation toolkit
-Tools                        native capabilities first; MCP as major ecosystem boundary
-Persistence                  in-memory / SQLite for development; Postgres-oriented production path
-Tracing                      Arrokoth-native trace semantics with standard exporters later
-Sandbox / computer use       external implementations when needed rather than core reinvention
+Agent execution              Strands as primary implementation initially
+Model inference              provider-neutral ModelProvider
+Knowledge / RAG              provider-neutral contract; LangChain initially useful
+Tools                        native capabilities; MCP as a major transport boundary
+Persistence                  in-memory / SQLite initially; production adapters later
+Messaging                    kernel semantics; storage/broker mechanism replaceable
+Tracing                      Arrokoth-native semantics; standard exporters later
+Sandbox / computer use       external implementations behind capability boundaries
 ```
 
-This is a development strategy, not a permanent dependency mandate.
-
-A successful kernel should eventually be able to replace one implementation without changing Agent/Workflow semantics, authority, memory contracts, lifecycle rules, or application definitions.
-
-For example:
-
-```text
-Agent
-  semantic type: Arrokoth Agent
-  executor: Strands today
-            another compatible executor later
-
-LLM call
-  semantic type: LLM leaf
-  provider: Gemini today
-            hosted API / OpenAI-compatible endpoint / local model later
-
-Knowledge retrieval
-  semantic type: KnowledgeRetriever
-  implementation: LangChain today
-                  direct or specialized retrieval later
-```
-
-The project should resist implementing multiple backends merely to prove theoretical flexibility. Add a second implementation when it tests an architectural boundary, removes a real limitation, or demonstrates measurable quality/cost/reliability benefit.
+A backend may change without changing what an Execution, Agent, Workflow, Event, Effect, memory write, or authority boundary means.
 
 ---
 
-# Repository and package architecture
+# 2. Current implementation reality
 
-The repository should communicate the same architecture as the code.
-
-The target monorepo convention is:
+The current code already contains several valuable pieces:
 
 ```text
-packages/      supported reusable Arrokoth software
-apps/          deployable/reference products built from packages
-examples/      focused learning examples
-benchmarks/    behavioral, retrieval, cost, and conformance evidence
-docs/          architecture, roadmap, guides, and decisions
-scripts/       repository tooling and manual diagnostics
+AgentRuntime
+AgentHarness
+AgentLoopEngine
+StrandsLoopEngine
+ReferenceLoopEngine
+ModelProvider
+CapabilityGateway
+KnowledgeRetriever
+Structured Memory
+Working Notes
+ContextCompiler
+Flow / Phase
+WorkflowCoordinator
+Session journal / durability
+confirmation / idempotency
 ```
 
-Inside `packages/`, package location does **not** determine whether something is semantically core. Instead:
-
-> **Everything under `packages/` is first-class supported Arrokoth software; only `packages/core` defines Arrokoth kernel semantics.**
-
-The intended shape is described in [`repository-structure-plan.md`](repository-structure-plan.md), roughly:
+The problem is not that all of this is wrong. The problem is that some pieces still encode the older mental model:
 
 ```text
-packages/
-├── core/
-├── client/
-├── server/
-├── presets/
-│   └── node/
-├── agents/
-├── models/
-├── knowledge/
-├── tools/
-├── storage/
-├── sandbox/
-└── observability/
-
-apps/
-├── studio/
-└── cloud-api/        # future
+Agent-centric external-turn coordinator
+semantic Preflight as implicit Agent behavior
+Phase as Agent-control structure
+workflow strategy that is not the target Workflow abstraction
+run/result assumptions that are too terminal-turn oriented
+parent/child execution without arbitrary communication semantics
 ```
 
-Concrete implementations such as Strands, Gemini, LangChain, Postgres, MCP, or OpenTelemetry should be first-class packages when supported, but their dependency arrows must point toward the kernel rather than the kernel importing their framework-specific types.
-
-The repository restructure should be mostly mechanical and should not be mixed into the deepest part of the v0.4 semantic refactor. Stabilize conceptual ownership first, then move packages with minimal behavioral change.
-
-A batteries-included preset such as `@arrokoth/node` may later compose the recommended implementations for normal users, while advanced users can assemble `@arrokoth/core` with explicit implementation packages.
+Migration should preserve behavior where possible while moving conceptual ownership.
 
 ---
 
-# v0.4 — Align the core with the new execution model
+# 3. v0.4 — Establish the execution substrate
 
-The goal of v0.4 is architectural alignment, not maximum feature count.
+The goal of v0.4 is to make core speak the new vocabulary even if advanced composition is still incomplete.
 
-## Core targets
+## 3.1 Definition / Execution split
 
-### 1. Introduce the Executable abstraction
-
-Establish one shared execution vocabulary for:
+Introduce or normalize:
 
 ```text
-Leaf
-├── LLM
-├── Tool / Function
-
-Composite
-├── Workflow
-└── Agent
+ExecutableDefinition
+ExecutionRecord
+ExecutionId
+owner relation
+LifecycleState
 ```
 
-Separate serializable definition from runtime execution identity/state.
-
-The shared runtime should support parent/child relationships even before all recursive features are exposed publicly.
-
-### 2. Separate shared harness/runtime behavior from Agent-specific orchestration
-
-Preserve the good parts of the current `AgentRuntime`, `CapabilityGateway`, durability, context compilation, tracing, and provider boundaries.
-
-Refactor ownership so Agent and Workflow can eventually use the same execution substrate without inheriting from each other's semantic implementation.
-
-### 3. Make implementation boundaries explicit without multiplying implementations
-
-Keep semantic contracts in core and concrete framework/provider details outside them.
-
-In particular:
-
-- `AgentLoopEngine` remains the Agent execution mechanism boundary;
-- `StrandsLoopEngine` remains the primary production Agent-loop implementation for now;
-- `ModelProvider` remains a separate single-inference boundary beneath an Agent loop;
-- provider SDK types, credentials, endpoints, and transport behavior stay outside core;
-- `KnowledgeRetriever` remains provider-neutral;
-- LangChain is treated as a replaceable retrieval implementation detail, not a kernel dependency in the conceptual model;
-- storage implementations remain behind session/event store contracts.
-
-Do not add a second Agent executor in v0.4 merely for feature parity. First make the boundary clean enough that a second executor can later be added without changing the kernel.
-
-### 4. Make authority a per-execution invariant
-
-Define an immutable Authority Envelope for each execution run.
-
-```text
-child authority ⊆ parent authority
-```
-
-Separate this hard authority from the dynamic Active Capability View presented to an LLM.
-
-The current Phase-based tool/knowledge filtering should no longer be the long-term authority model.
-
-### 5. Preserve and strengthen memory
-
-Keep Structured Memory and Working Notes as first-class features.
-
-Preserve:
-
-- schema validation;
-- provenance;
-- authoritative vs advisory values;
-- correction history;
-- runtime-controlled commitment.
-
-Prepare memory interfaces for optional agent-support fields such as `focus`, plan/task state, and future artifact/file memory without forcing every agent to use them.
-
-### 6. Resolve Phase / Flow ownership
-
-Do not continue expanding Phase as an Agent abstraction.
-
-Identify reusable Flow/Phase implementation pieces and migrate their conceptual ownership toward the future Workflow system:
-
-- objective/instructions;
-- deterministic condition DSL;
-- capability narrowing;
-- transition tracing.
-
-Compatibility support may remain at the boundary while applications migrate.
-
-### 7. Make the pure Agent path explicit
-
-The current semantic Preflight exists for historical/model-quality reasons. Under the new architecture it must become explicit rather than silently defining Agent semantics.
-
-Possible outcomes include:
-
-- a pure Agent path with no mandatory semantic Preflight;
-- an explicit compatibility/preflight Workflow wrapper;
-- opt-in semantic synchronization for applications that demonstrably benefit from it.
-
-Do not assume removal is automatically better; benchmark correctness, conversational quality, and inference cost.
-
-### 8. Keep correctness regressions green
-
-The known context/state/capability coherence invariants must remain enforced during the refactor.
-
-Preserve regression evidence for current state/action correctness and durability behavior.
-
-## v0.4 outcome
-
-At the end of v0.4, the core architecture should speak the new vocabulary even if some advanced composition remains unavailable:
-
-```text
-Runtime
-  ↓
-Executable
-  ├── Agent
-  └── compatibility / early Workflow path
-
-Agent executor: replaceable contract, Strands reference implementation
-Model inference: independent provider-neutral contract
-Knowledge retrieval: provider-neutral contract, framework implementation hidden
-```
-
-No new feature should need to understand both "Phase as Agent control" and "Executable node control" as competing mental models.
-No core semantic rule should depend on a Strands, LangChain, or model-provider-specific type.
-
-The v0.4 architecture should also make the subsequent package move mechanical: code ownership should already be clear enough to know what belongs in `packages/core` versus implementation packages.
-
----
-
-# v0.5 — Recursive composition and a real Workflow runtime
-
-The goal of v0.5 is to make the execution tree real.
-
-## Core targets
-
-### 1. Implement the real Workflow composite
-
-Workflow owns predefined semantic topology.
-
-A Workflow Stage should contain roughly:
-
-```text
-instructions
-requested scope
-executor
-transitions
-```
-
-Executors may be:
+Definitions should become a discriminated union:
 
 ```text
 LLM
-Tool / Function
+Function
 Agent
 Workflow
 ```
 
-Transitions may be deterministic, LLM-evaluated, or hybrid.
+Remove the conceptual dependency on one universal `instructions` / `input → output` shape.
 
-### 2. Support recursive execution
+Support:
 
-Allow:
+```text
+start schema
+inbox schema
+optional terminal-result schema
+```
+
+for the kinds that need them.
+
+## 3.2 Lifecycle and Activation
+
+Make long-lived Executions first-class:
+
+```text
+CREATED → READY → RUNNING ↔ WAITING
+                  ↓
+      COMPLETED / FAILED / CANCELLED
+```
+
+Add Activation semantics so an Agent can live indefinitely without continuously consuming compute.
+
+The runtime must support:
+
+```text
+wake from new Event
+resume from durable state
+ordinary response without completion
+terminal result as optional
+```
+
+## 3.3 Normalize Events and Effects
+
+Establish one inbound Event envelope and one outbound Effect model.
+
+Initial Effect set:
+
+```text
+UseCapability
+SpawnExecution
+SendMessage
+WriteMemory
+```
+
+Do not add a fundamental Wait Effect. Waiting is scheduler/lifecycle state.
+
+Initial Event support should cover at least:
+
+```text
+start
+message received
+capability success/failure
+timeout/timer
+permission decision
+control/cancellation
+```
+
+## 3.4 Generalize authority
+
+Keep an immutable Authority Envelope per Execution.
+
+Authority should expand beyond tool lists to cover:
+
+```text
+capabilities / knowledge
+memory access
+spawnable definitions
+communication routes
+consequential actions
+```
+
+Preserve:
+
+```text
+owned child authority ⊆ owner authority
+Active Capability View ⊆ Authority Envelope
+```
+
+Capability discovery must remain exposure/context selection, not privilege escalation.
+
+## 3.5 Memory Bindings
+
+Replace broad implicit memory-policy assumptions with explicit binding semantics:
+
+```text
+structured
+notes
+artifact
+```
+
+with lifetime, visibility, access, and commit policy.
+
+Preserve existing structured-memory provenance/correction behavior and Working Notes.
+
+Keep control state separate from semantic memory.
+
+## 3.6 Agent path cleanup
+
+Keep `AgentLoopEngine` / `StrandsLoopEngine` as implementation boundaries, but align them to Activation/Event/Effect semantics.
+
+The current semantic Preflight must become explicit:
+
+- remove it from the pure Agent path when it is only scaffolding; or
+- represent it as explicit compatibility/controller behavior when intentionally desired.
+
+Do not let Preflight remain the hidden semantic definition of Agent.
+
+## 3.7 Phase / Flow ownership
+
+Stop expanding Phase as an Agent abstraction.
+
+Retain useful implementation pieces for future Workflow:
+
+```text
+condition DSL
+transition tracing
+stage configuration/objective
+capability-view narrowing hints
+```
+
+## v0.4 outcome
+
+At the end of v0.4, the code should be able to explain itself in these terms:
+
+```text
+Definition → Execution
+Execution consumes Events
+Execution emits Effects
+Runtime owns lifecycle/authority/durability
+Agent controller is model-driven
+```
+
+Even if real Workflow and peer messaging are still partial, no new core feature should depend on the older AgentHarness/Phase mental model.
+
+---
+
+# 4. v0.5 — Workflow, recursive execution, and addressable communication
+
+The goal of v0.5 is to make the composite model real.
+
+## 4.1 Implement the real Workflow controller
+
+Workflow owns predefined semantic topology.
+
+A Stage should roughly contain:
+
+```text
+id
+executor reference
+input mapping
+optional requested authority / view hints
+predefined transitions
+```
+
+The Workflow may:
+
+```text
+run LLM leaves
+run functions
+spawn/call Agents
+spawn/call Workflows
+wait for Events
+loop indefinitely
+terminate optionally
+```
+
+Do not require an End stage.
+
+## 4.2 Recursive execution
+
+Support:
 
 ```text
 Workflow → Agent
@@ -274,150 +299,159 @@ Agent → Workflow
 Agent → Agent
 ```
 
-Every child run receives narrowed authority, explicit input/result contracts, independent lifecycle state, and trace identity.
-
-### 3. Introduce subagents as ordinary child Agent executions
-
-A subagent should not be a special multi-agent framework.
-It is an Agent Executable invoked by another composite node.
-
-Support at least:
-
-- parent-provided immutable goal/instructions;
-- narrowed Authority Envelope;
-- child-specific model policy;
-- child memory/context isolation;
-- bounded budget;
-- cancellation propagation;
-- parent-owned acceptance of returned results.
-
-This enables strong-parent / cheap-worker experiments without changing the basic runtime model.
-
-### 4. Prove Agent executor portability
-
-After recursive semantics are stable, add a second Agent executor primarily as an architectural conformance test.
-
-The target is not feature parity. The target is to demonstrate:
+Every spawned Execution receives:
 
 ```text
-same Agent definition
-same Authority Envelope
-same memory semantics
-same capability gateway
-same lifecycle / completion rules
-same execution-tree identity
-        ↓
-run through different Agent-loop implementations
+independent identity
+narrowed authority
+private control state
+explicit Memory Bindings
+budget/deadline
+lifecycle
+mailbox
+trace identity
 ```
 
-Strands should remain the reference production implementation unless benchmarks or maintenance considerations justify changing it.
+A subagent remains an ordinary child Agent Execution, not a special framework concept.
 
-Candidate second executors may include other TypeScript agent runtimes or foreign-agent adapters. Selection should be based on clean contract mapping, license, maintenance quality, model independence, and measurable behavior rather than popularity alone.
+## 4.3 Pending operations and durable waiting
 
-### 5. Expand model-provider freedom, including local models
-
-Keep the Agent executor and Model Provider as independent axes.
-
-A Model Provider performs one normalized model inference; the Agent executor may invoke it repeatedly.
-
-This should make configurations such as the following possible without changing Agent semantics:
+Introduce first-class pending-operation records for:
 
 ```text
-Strands Agent loop + Gemini
-Strands Agent loop + hosted OpenAI-compatible model
-Strands Agent loop + local/self-hosted model
-future Agent loop + same model providers
+async capability call
+knowledge retrieval
+child terminal result
+peer reply
+timer
+approval
+remote job
 ```
 
-Evaluate a broader provider ecosystem or OpenAI-compatible/local adapter where it reduces duplicated provider work, but retain the Arrokoth-owned provider-neutral contract and direct-provider escape hatches.
+Ensure WAITING/READY transitions and restart recovery work without model-specific assumptions.
 
-### 6. Add Agent-owned focus / task-state experiments
+## 4.4 Addressable `ExecutionHandle`
 
-Experiment with optional structured `focus` and related memory conventions.
+Add a safe handle/routing abstraction for existing Executions.
 
-Questions to evaluate include:
-
-- require focus only before actions vs every model turn;
-- whether explicit focus helps weak/local models;
-- whether focus should be structured memory, special working memory, or both;
-- whether mutable plan artifacts improve long-running tasks.
-
-Do not elevate plan/focus into mandatory universal control-flow concepts unless evidence supports it.
-
-### 7. Generalize tracing to execution trees
-
-Tracing should make nested runs understandable:
+Support high-level semantics such as:
 
 ```text
-parent run
-├── workflow stage
-├── agent child
-│   ├── model call
-│   └── tool call
-└── workflow child
+spawn
+send
+ask
+call
 ```
 
-Preserve provenance and authority explanations across boundaries.
-
-Prepare an exporter boundary so external observability systems can consume traces without defining Arrokoth's trace semantics.
-
-### 8. Strengthen tool ecosystem boundaries
-
-Keep capability authorization and confirmation in Arrokoth while allowing execution mechanisms to vary.
-
-Native function tools remain the simplest path. Add MCP or equivalent standard tool transport where it provides concrete ecosystem value.
-
-The important invariant is:
+with:
 
 ```text
-external tool ecosystem
-        ↓
-Arrokoth capability definition / mapping
-        ↓
-CapabilityGateway authorization
-        ↓
-execution adapter
+ask  = send + correlation + timeout
+call = spawn + wait for terminal result
 ```
 
-No external tool system should bypass the Authority Envelope or consequential-action rules.
+## 4.5 Separate ownership tree from communication graph
 
-### 9. Establish public package and service surfaces
+Implement arbitrary authorized peer communication.
 
-Once the execution contracts are stable enough, begin exposing the kernel through reusable and remote-facing packages rather than requiring every application to embed internal runtime classes directly.
-
-The intended layers are conceptually:
+Required invariants:
 
 ```text
-@arrokoth/core       embedded kernel contracts/runtime
-@arrokoth/client     remote API client
-@arrokoth/server     reusable runtime service
-@arrokoth/node       batteries-included preset (when useful)
+can message X ≠ owns X
+can message X ≠ can cancel X
+can message X ≠ can inspect X memory
 ```
 
-High-level convenience APIs such as `agents.create()` or `agents.run()` should map onto the more fundamental `ExecutableDefinition` / `ExecutionRun` model rather than becoming a second execution model.
+This should support:
 
-The server/API should treat Runs as first-class resources with status, events, children, result, and cancellation.
+```text
+Agents meetings
+peer critique
+cooperating specialists
+Paper-Agent knowledge network
+long-lived service-style Agents
+```
+
+without sharing full context.
+
+## 4.6 Messaging router / mailbox durability
+
+Add routing semantics for:
+
+```text
+message validation
+authorization
+correlation / causation ids
+durable delivery
+wake-up
+ordering/dedup policy
+communication tracing
+```
+
+The physical mechanism may initially use the existing persistence stack rather than requiring a distributed broker.
+
+## 4.7 Cancellation / budgets / supervision
+
+Make ownership the default supervision relation.
+
+Support:
+
+```text
+budget allocation to children
+execution deadlines
+operation timeouts
+cancellation propagation
+independent peer communication rights
+```
+
+## 4.8 Trace graph
+
+Tracing must expand beyond a pure execution tree.
+
+Represent both:
+
+```text
+ownership edges
+communication/effect causation edges
+```
+
+so an Agents meeting remains understandable without pretending every message is a parent-child call.
+
+## 4.9 Public Execution resources
+
+Once semantics stabilize, begin exposing public surfaces around:
+
+```text
+Definitions
+Executions
+Events
+messages
+cancellation
+results where terminal
+```
+
+High-level Agent APIs must map onto these resources rather than define a parallel runtime.
 
 ## v0.5 outcome
 
-At the end of v0.5, Agent and Workflow should be fully composable peers over one runtime.
-The old Phase system should no longer be required for new application design.
+At the end of v0.5:
 
-The implementation boundaries should also be empirically proven: at least one important backend should be replaceable without changing kernel semantics.
-
-The repository/package structure should make those boundaries visible to users and contributors, with applications consuming the same public surfaces intended for external developers.
+- Agents and Workflows are fully composable peers;
+- Executions may be long-lived and addressable;
+- ownership and communication are separate;
+- peer Agents can communicate without context sharing;
+- durable waiting is generic;
+- the old Phase system is not required for new designs.
 
 ---
 
-# v0.6 — Capability scale, context engineering, retrieval optimization, and Skills
+# 5. v0.6 — Scale: capability discovery, large agent populations, retrieval, Skills
 
-The goal of v0.6 is to make the architecture scale when tools, knowledge sources, models, and reusable capabilities become large, while beginning evidence-driven optimization of the replaceable implementation layers.
+The goal of v0.6 is to make the same semantics work at large scale.
 
-## Core targets
+## 5.1 Capability Profiles
 
-### 1. Capability Profiles
-
-Introduce reusable named profiles that describe semantically related capability/resource sets, for example:
+Introduce reusable named groupings such as:
 
 ```text
 Biomedical Research
@@ -426,345 +460,273 @@ Financial Analysis
 Customer Support
 ```
 
-Profiles help narrow context and guide delegation but never grant authority.
+Profiles select/expose capabilities from existing authority. They never grant authority.
 
-A node may dynamically switch profiles/Active Views while its Authority Envelope remains immutable.
+## 5.2 Capability discovery and Active View selection
 
-### 2. Capability discovery and context selection
-
-Provide pluggable mechanisms that select relevant capabilities and information from what the node is already authorized to access.
-
-Support progressively more expensive strategies where useful:
+Support progressively more powerful selection mechanisms:
 
 ```text
-static/default exposure
-→ profile-based filtering
+static/default view
+→ profiles
 → metadata / keyword retrieval
 → embedding retrieval
 → hybrid retrieval
 → optional model-assisted selection
 ```
 
-Do not require a separate discovery LLM call for every task.
-Use direct exposure when the relevant capability set is already small and obvious.
+This mechanism should work not only for tools/knowledge, but also for large populations of addressable Executions where appropriate.
 
-Keep the ownership boundary explicit:
+Example:
 
 ```text
-Kernel owns:
-- what the node may see
-- what authority the node has
-- provenance and visibility constraints
-
-Replaceable implementation owns:
-- ranking
-- selection
-- compression
-- query rewriting
-- summarization
+Search Agent
+  authority: query large Paper-Agent population
+  active view: only P17, P91, P203 for this activation
 ```
 
-Benchmark the tradeoff between:
+## 5.3 Large Execution populations
 
-- model-call count / latency;
-- prompt size;
-- tool-selection quality;
-- weak/local-model reliability;
-- missed capabilities;
-- irrelevant capability exposure.
+Explore efficient implementation for many dormant addressable Agents:
 
-### 3. Retrieval / RAG optimization as an evidence-driven implementation layer
+```text
+cold storage
+lazy rehydration
+indexed discovery
+eviction/caching
+sharded persistence
+```
 
-Continue using LangChain where it provides productive, well-tested building blocks, but do not assume its default algorithms are optimal for every application.
+Semantics must remain:
 
-Keep retrieval decomposable into independently testable choices such as:
+```text
+addressable Execution
+private state/context
+message-driven wake-up
+```
+
+regardless of whether the process is resident in memory.
+
+## 5.4 Retrieval / RAG optimization
+
+Keep retrieval decomposable and benchmark-driven:
 
 ```text
 ingestion / parsing
 chunking
-embedding model
-lexical retrieval
-vector retrieval
-metadata filters
-hybrid retrieval
-query rewriting / expansion
-multi-query generation
-score normalization / fusion
+embedding
+lexical / vector / hybrid search
+metadata filtering
+query rewrite / expansion
+fusion
 reranking
-LLM-assisted retrieval
 context packing
 ```
 
-Arrokoth should own the retrieval contract, authority/visibility rules, provenance, traces, and benchmarks. A retrieval framework may implement one or more stages without becoming part of the kernel model.
+Arrokoth owns authorization, provenance, result contracts, visibility, and tracing. Frameworks implement algorithms behind those contracts.
 
-Future options include:
+## 5.5 Skills
 
-- continuing with LangChain where its components are sufficient;
-- evaluating another retrieval-focused framework;
-- using direct vector/SQL/search-engine integrations for high-value paths;
-- implementing specialized retrieval algorithms where research or benchmark evidence shows a meaningful advantage.
-
-Do not rewrite working retrieval infrastructure simply to reduce dependencies. Replace a framework layer when there is a concrete need for better quality, inspectability, latency, cost, determinism, or application-specific control.
-
-### 4. Skills
-
-Add provider-neutral Skills as reusable capability packages.
-
-Conceptually:
+Add provider-neutral Skills as packaging:
 
 ```text
 Skill
-├── instructions
-├── resources / references
-├── scripts / assets
-├── root Executable (Agent or Workflow)
-└── recommended Capability Profile / requested scope
+├── prompts/instructions
+├── resources/references
+├── scripts/assets
+├── root ExecutableDefinition
+└── recommended Capability Profile / requested authority
 ```
 
-A Skill is not a separate runtime controller.
-Its effective authority is always derived from the invoking parent and runtime policy.
+A Skill is not another controller.
 
-Skills should be able to reuse existing Workflow definitions, Agents, tools, resources, and Capability Profiles rather than duplicate them.
+## 5.6 Artifact/file memory
 
-Prefer compatibility with broadly used skill/tool packaging conventions where they fit rather than creating a proprietary ecosystem prematurely.
+Add persistent workspace artifacts where useful for long-running Agents and Workflows.
 
-### 5. Artifact / file memory
+Keep files/resources as memory, not hidden control flow.
 
-Explore persistent agent workspace artifacts such as plan/research files where they improve long-running execution.
+## 5.7 Heterogeneous Agents
 
-Keep these as memory/resources rather than allowing them to become hidden alternative control planes.
-
-### 6. Large capability and heterogeneous-model experiments
-
-Evaluate architectures such as:
+Evaluate structures such as:
 
 ```text
-strong parent model
-  ↓ delegates narrow scope
-cheap/local child model
+strong coordinator Agent
+   ├── cheap/local worker Agents
+   ├── specialist Paper Agents
+   └── critique Agent
 ```
 
-Study whether profiles/discovery materially improve smaller-model behavior and whether delegation overhead buys enough quality to justify extra calls.
-
-Because model serving is below the Agent executor boundary, include locally deployed and self-hosted models in these experiments where practical.
-
-### 7. External execution environments and foreign agents
-
-When applications need browser automation, shell sandboxes, computer use, messaging gateways, or mature foreign-agent environments, prefer adapters to proven external systems over duplicating their product surfaces inside core.
-
-Potential boundaries include:
-
-```text
-ExecutionEnvironment
-ForeignAgentExecutor
-MCP / tool transport
-Browser / computer-use capability
-Remote sandbox
-```
-
-OpenClaw, Hermes, sandbox providers, and future systems may become useful implementations behind these boundaries. They should not become new semantic node types merely because they are powerful products.
+Because AgentExecutor and ModelProvider are separate, parent and peers may use different models without changing kernel semantics.
 
 ## v0.6 outcome
 
-At the end of v0.6, Arrokoth Agent Kernel should support a scalable ecosystem where:
+The same kernel should scale from:
 
-- authority remains mechanically bounded;
-- LLM context stays narrow when capability catalogs become large;
-- Workflows and Agents compose recursively;
-- Skills package reusable procedures/resources without creating another orchestration system;
-- applications can choose simple static capability exposure or more advanced discovery based on actual need;
-- hosted and local/self-hosted model implementations can sit beneath the same model contract;
-- retrieval pipelines can evolve from framework defaults toward specialized implementations without changing application semantics;
-- external agent/tool/sandbox ecosystems can extend Arrokoth through adapters rather than forcing kernel duplication.
+```text
+one simple Agent
+```
+
+to:
+
+```text
+large populations of dormant/addressable Agents
++ narrow Active Views
++ retrieval/discovery
++ peer messaging
++ long-lived Workflows
+```
+
+without introducing a second orchestration model.
 
 ---
 
-# Cross-version implementation principles
+# 6. Implementation-package strategy
 
-These principles apply throughout the roadmap.
-
-### One mental model
-
-Do not preserve old abstractions in the core merely for familiarity if they create a second definition of Agent/Workflow semantics.
-Compatibility translation at the boundary is preferable to conceptual duplication inside the runtime.
-
-### Semantic contracts over implementation brands
-
-Strands, LangChain, a specific model API, a vector database, or an external agent product are implementation choices.
-
-Do not allow their types or lifecycle assumptions to become core semantics unless Arrokoth intentionally adopts the underlying concept itself.
-
-A useful test is:
-
-> If this implementation disappeared tomorrow, could another implementation satisfy the same Arrokoth contract without changing the application's semantic definition?
-
-If not, either the boundary is wrong or the dependency is actually part of the architecture and should be acknowledged explicitly.
-
-### Reuse proven implementation
-
-The new model does not imply throwing away working infrastructure.
-Preserve and evolve components whose responsibilities remain valid, especially:
-
-- structured memory/provenance;
-- Working Notes;
-- CapabilityGateway-style validation;
-- tool authorization/confirmation;
-- durable session/event journal;
-- provider-neutral schemas;
-- context compilation;
-- tracing and execution checkpoints.
-
-Use mature external implementations for commodity mechanisms when they fit the contracts. Build custom mechanisms when they are part of Arrokoth's differentiation or when benchmarks show a real advantage.
-
-### First-class packages do not imply core semantics
-
-All supported reusable Arrokoth code should live under `packages/`, including implementation adapters.
-
-This is intentionally different from treating integrations as second-class extras. Strands, LangChain, model adapters, persistence adapters, and similar packages may be recommended and production-supported while remaining replaceable.
-
-Dependency direction and contracts—not folder distance from the root—define the architectural boundary.
-
-### Core should be independently testable, not production-complete by itself
-
-`packages/core` should include enough reference/fake implementations to test kernel contracts and execute deterministic examples, but it should not reimplement every production mechanism merely to prove independence.
-
-For example, a small reference Agent loop can validate the `AgentLoopEngine` contract while Strands remains the recommended production executor.
-
-### Default first, optionality second
-
-Every replaceable layer should have one well-supported reference implementation before accumulating alternatives.
-
-The project should not become a compatibility matrix where every backend receives equal engineering effort.
-
-Prefer:
+The repository should continue toward:
 
 ```text
-one primary implementation
-+ clean contract
-+ conformance tests
-+ selected secondary implementations
+packages/
+├── core/
+├── client/
+├── server/
+├── presets/
+├── agents/
+├── models/
+├── knowledge/
+├── tools/
+├── storage/
+├── sandbox/
+└── observability/
 ```
 
-over:
+Only `packages/core` defines kernel semantics.
+
+Concrete packages may be first-class supported software while remaining replaceable.
+
+Examples:
 
 ```text
-many partially supported implementations
+@arrokoth/agent-strands
+@arrokoth/model-gemini
+@arrokoth/knowledge-langchain
+@arrokoth/tool-mcp
+@arrokoth/storage-sqlite
 ```
 
-A batteries-included preset may select these defaults for normal users without changing the kernel contracts.
-
-### Model provider and Agent executor remain separate
-
-The Agent executor owns the iterative loop mechanism.
-The Model Provider owns one model inference.
-
-Do not merge these concepts merely because one framework offers both.
-
-This separation enables provider changes, local/self-hosted deployment, model routing, and heterogeneous parent/child models without redefining Agent execution.
-
-### RAG framework is a toolkit, not a retrieval philosophy
-
-Using LangChain or another framework is primarily an implementation convenience.
-
-Retrieval quality should ultimately be decided by application-specific evidence and benchmarks, not framework defaults.
-
-Preserve enough observability to know which chunker, embedding model, retrieval method, fusion rule, reranker, query transformation, and context-packing policy produced a result when those choices matter.
-
-### Models propose; runtime grants authority
-
-The model may choose semantic work, request capabilities, propose memory writes, select child scopes, and declare semantic completion.
-It never grants itself authority or establishes external truth by assertion.
-
-### Authority is immutable per execution
-
-A node's Authority Envelope is fixed at creation.
-Children may receive less authority; they never receive more than the parent possessed.
-
-### Capability exposure is dynamic
-
-The Active Capability View may change freely inside the Authority Envelope.
-Do not confuse tool discovery/context narrowing with privilege changes.
-
-### Context engineering is broader than prompting
-
-Prompt text is only one input to an inference.
-
-The implementation should treat context construction as a first-class engineering problem involving:
-
-- instructions;
-- relevant conversation/history;
-- structured memory;
-- working notes/artifacts;
-- observations;
-- knowledge retrieval;
-- active capabilities/tools;
-- token budgets and compression.
-
-Visibility and authorization remain runtime policy. Selection and compression strategies may evolve through experimentation.
-
-### Simplicity is still a goal
-
-Do not require Workflows, subagents, Skills, discovery, retrieval frameworks, planner calls, or external agent systems for tasks that a direct Agent/LLM invocation handles well.
-Each layer should justify its latency, complexity, dependency burden, and inference cost with measurable benefit.
+Do not create alternate implementations merely to prove theoretical flexibility. Add them when they prove a boundary, remove a limitation, or improve measured quality/cost/reliability.
 
 ---
 
-# Suggested implementation sequence
+# 7. Evidence and benchmarks
 
-This sequence is intentionally conservative.
+Architecture should be justified with conformance and behavioral evidence.
+
+Important benchmark/test areas:
+
+```text
+Agent task quality
+Workflow correctness
+Authority enforcement
+message authorization/isolation
+durable waiting/resume
+idempotency
+memory provenance
+context selection
+retrieval quality
+executor conformance
+cost / latency
+large dormant-Execution populations
+```
+
+Particularly important conformance invariants include:
+
+```text
+unauthorized message rejected
+peer message does not expose private context
+communication permission does not imply lifecycle control
+ordinary Agent response does not terminate the Execution
+leaf completion does not terminate owner
+WAITING Execution wakes correctly after restart
+owned child authority never exceeds owner authority
+Active View never exceeds authority
+Workflow never takes an undefined semantic transition
+```
+
+---
+
+# 8. Migration principle
+
+The implementation migration should be conservative:
+
+```text
+1. stabilize vocabulary/contracts
+2. adapt existing working behavior to those contracts
+3. add missing substrate semantics
+4. remove compatibility abstractions only after replacement is proven
+5. expand integrations after the kernel boundary is clear
+```
+
+Do not combine the deepest semantic refactor with unrelated package movement or provider churn.
+
+Compatibility adapters at system boundaries are preferable to duplicate semantics in core.
+
+---
+
+# 9. Documentation roles
+
+The active documents should have distinct jobs:
+
+```text
+mental-model-v0.4.md
+  → what Arrokoth means
+
+mental-model-to-implementation-model.md
+  → how those semantics map to runtime components/contracts
+
+future-plan.md
+  → what to build/migrate next
+
+repository-structure-plan.md
+  → where supported code should live
+
+mental-model-v0.37.md
+  → historical/current-implementation context
+```
+
+New architecture decisions that should not be casually reversed can later move into ADRs.
+
+---
+
+# 10. Roadmap summary
 
 ```text
 v0.4
-  stabilize kernel vocabulary and invariants
-  keep Strands as primary Agent executor
-  keep current working model provider(s)
-  keep LangChain retrieval behavior working
-  establish clean ownership boundaries
+  Definition / Execution
+  lifecycle + Activation
+  Event / Effect normalization
+  authority + Active View
+  Memory Bindings
+  Agent-path cleanup
+  Phase migration
 
-post-v0.4 mechanical repo migration
-  core/                 → packages/core/
-  integrations/strands/ → packages/agents/strands/
-  providers/gemini/     → packages/models/gemini/
-  keep apps/, examples/, benchmarks/, docs/ conceptually stable
-  move diagnostics into scripts/ or tests/ based on purpose
-  avoid behavior changes during directory moves
-
-v0.5 early
-  implement recursive Agent/Workflow execution
-  prove authority, lifecycle, cancellation, budget, and trace propagation
-  introduce client/server package surfaces when contracts are stable enough
-
-v0.5 middle
-  add one second Agent executor as a conformance test
-  broaden model-provider/local-model options where useful
-  extract concrete knowledge implementation into packages/knowledge/* when worthwhile
-
-v0.5 late
-  add standard tool transport / MCP where useful
-  add production-oriented persistence and trace exporters
-  add a batteries-included preset if package assembly becomes burdensome
+v0.5
+  real Workflow
+  recursive execution
+  generic pending operations
+  addressable ExecutionHandle
+  arbitrary authorized messaging
+  ownership vs communication graph
+  durable mailboxes
+  supervision + trace graph
 
 v0.6
-  benchmark context-selection strategies
-  benchmark retrieval pipelines and framework-vs-direct implementations
-  add capability profiles/discovery/Skills
-  integrate external sandboxes/foreign agents where applications need them
+  capability/Execution discovery at scale
+  large dormant Agent populations
+  retrieval optimization
+  Skills
+  artifact memory
+  heterogeneous Agent populations
 ```
 
-The sequence may change based on implementation review and benchmarks. The key constraint is that ecosystem breadth must not outrun kernel clarity.
-
----
-
-# Documentation direction
-
-The active conceptual documentation should converge on:
-
-```text
-docs/mental-model-v0.4.md
-docs/mental-model-to-implementation-model.md
-docs/future-plan.md
-docs/repository-structure-plan.md
-docs/mental-model-v0.37.md   # current/legacy implementation context and concerns
-```
-
-Other existing roadmap/design documents remain available as legacy/history for now. They should not be deleted until migration and implementation work make their historical value clear.
+The target is not maximum architectural machinery. It is the smallest kernel that preserves clear authority, durable state, independent context, composable control flow, and useful model autonomy.
