@@ -2,7 +2,7 @@
 
 > **Status: non-normative implementation translation.**
 >
-> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), and [`runtime-architecture.md`](runtime-architecture.md) first. This guide translates those semantics into implementation boundaries and a practical coding-plan strategy. Exact APIs are intentionally illustrative.
+> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), [`runtime-architecture.md`](runtime-architecture.md), and [`security-guarantees.md`](security-guarantees.md) first. This guide translates those semantics into implementation boundaries and a practical coding-plan strategy. Exact APIs are intentionally illustrative.
 
 ## 1. Implementation goal
 
@@ -32,7 +32,7 @@ provider/framework/storage implementations
           kernel semantics
 ```
 
-Provider SDKs, Agent-loop frameworks, retrieval libraries, tool transports, databases, and observability systems should not define what Execution, Workflow, Agent, Event, Effect, authority, or memory mean.
+Provider SDKs, Agent-loop frameworks, retrieval libraries, tool transports, databases, observability systems, and sandbox backends should not define what Execution, Workflow, Agent, Event, Effect, authority, memory, or security boundaries mean.
 
 ---
 
@@ -245,15 +245,32 @@ produce text | none
 resolve predefined transition
 ```
 
-The Stage runner needs access to the enclosing Workflow Execution's runtime facilities, but should not create another ExecutionContext for local Function/LLM computation.
+The Stage runner needs access to the enclosing Workflow Execution's runtime facilities, but should not create another `ExecutionContext` for local Function/LLM computation.
 
-A Stage-local object may exist for tracing/configuration. Do not accidentally give it independent identity semantics just because an object/record exists in code.
+A Stage may have a local runtime record for configuration, progress, or tracing. This does not make the Stage an independently managed Execution. Stage identifiers are Workflow-local bookkeeping and do not imply independent lifecycle, authority, mailbox, durability, addressability, cancellation, or messaging semantics.
+
+A useful implementation concept is a **Stage-local computation environment**:
+
+```text
+Workflow Execution authority / active view
+        ↓
+Stage-local environment
+  ├── Stage input
+  ├── local variables
+  ├── selected memory/context
+  ├── explicitly exposed local/materialized resources
+  ├── functions / parsing / validation
+  ├── local retrieval / filtering / reranking
+  └── LLM inference
+```
+
+Local code may compute freely over information and handles that have already been deliberately exposed. It should not gain additional environmental authority merely because it can execute code.
 
 Effects remain attributed to the enclosing Workflow Execution. A Stage runner only establishes which pending operations are required for the current Stage's completion.
 
 ---
 
-## 7. LLM Stage implementation
+## 7. LLM Stage and retrieval implementation
 
 Do not encode "LLM Stage = exactly one provider call" as a kernel invariant.
 
@@ -278,6 +295,36 @@ LLM → retrieval → LLM → output
 provided continuation is program-defined.
 
 A provider SDK may itself hide a multi-turn tool loop. If that hidden loop allows model-directed open-ended action selection, semantically it behaves like Agent execution, even if the provider exposes it as one HTTP/SDK method. Model semantic control, not API-call count.
+
+### Local RAG vs runtime-mediated RAG
+
+Do not encode "retrieval = always an Effect" either.
+
+If a resource has already been deliberately materialized into the Stage's exposed computation environment as a safe read-only corpus/index, then querying, filtering, reranking, and context construction may be ordinary local computation:
+
+```text
+read-only corpus/index already exposed
+        ↓
+local query / filter / rerank
+        ↓
+LLM
+```
+
+If retrieval requires expanding beyond that environment to a live database, remote vector service, browser, private API, or other runtime-managed resource, use the Effect/capability boundary:
+
+```text
+Stage
+  ↓ retrieval Effect
+Harness authorization
+  ↓
+resource adapter
+  ↓
+result observation
+```
+
+A `BoundResource` therefore means that an Execution is eligible to use a resource under its effective authority/view. It does not necessarily mean arbitrary Stage code receives a raw database connection, filesystem path, network route, or production credential.
+
+This distinction allows rich Stage-local coding while keeping external authority enforceable.
 
 ---
 
@@ -358,11 +405,13 @@ Timer / Timeout
 Cancellation / control
 ```
 
-Avoid treating provider/model output as an Event from the outside world when it is merely local controller computation. Reserve Event semantics for observations delivered through the Execution runtime boundary.
+Avoid treating provider/model output as an Event when it is merely local controller computation. An ordinary model call may return directly to the controller inside the same Activation. Reserve Event semantics for observations delivered through the Execution runtime boundary.
+
+The source alone does not determine the abstraction. If a model inference is itself dispatched as a remote runtime-managed operation that outlives the current Activation, its later completion may legitimately arrive through the runtime as an Event.
 
 ---
 
-## 10. Pending-operation manager
+## 10. Pending operations, inline waiting, and deadlines
 
 A generic pending-operation record should avoid one-off waiting mechanisms per feature.
 
@@ -394,7 +443,58 @@ This is completion/correlation scope, not ownership by a Stage or Agent step. Th
 
 Not every pending operation must originate from an Effect. Runtime-mediated waits such as timers may still need correlation and completion metadata, so `effectId` should not be a universal requirement.
 
-Do not freeze this exact API before testing non-blocking semantics. The important requirement is that Stage completion and Agent continuation can ask whether the work they depend on has settled.
+### Fast-path completion within an Activation
+
+An Effect boundary does not have to imply an immediate lifecycle transition to `WAITING`.
+
+A useful v0.4 implementation strategy is:
+
+```text
+EffectRequest
+   ↓
+Harness dispatches
+   ↓
+result becomes available quickly?
+   ├── yes → deliver/observe result and continue same Activation
+   └── no  → persist pending operation, yield Activation,
+             Execution RUNNING → WAITING
+```
+
+This is an optimization of scheduling, not a change in Effect semantics. Authorization, correlation, tracing, and external-observation rules still apply whether the result is fast or slow.
+
+Keep two time concepts separate:
+
+```text
+inline / Activation wait budget
+  how long the current Activation is willing to remain occupied
+
+Effect deadline
+  how long the operation itself is allowed to remain unresolved
+```
+
+Reaching the inline wait budget should normally mean "yield this Activation," **not** "cancel/fail the Effect."
+
+For example:
+
+```text
+Effect dispatched
+  ↓
+inline budget expires
+  ↓
+persist PendingOperation
+  ↓
+Execution WAITING
+  ↓
+Effect later completes before its actual deadline
+  ↓
+Event → mailbox → READY → future Activation
+```
+
+An ordinary language-level `await` also does not by itself imply Arrokoth lifecycle `WAITING`. The lifecycle transition occurs only when the runtime yields the Activation because required runtime-mediated work remains unresolved.
+
+The Stage itself never enters lifecycle `WAITING`; the enclosing Workflow Execution does, while Workflow control state records which Stage is still active.
+
+Do not freeze exact threshold values or a particular Promise/stream API before measuring real workloads. The important semantic requirements are correlation, durable resumability when yielded, and separation between an Activation scheduling budget and the actual operation deadline.
 
 ---
 
@@ -505,11 +605,12 @@ child authority never exceeds parent delegation
 child note ancestry does not bypass child visibility policy
 message permission does not imply memory access
 message permission does not imply cancellation
+knowing an ExecutionId does not imply access to its private runtime state
 ```
 
 ---
 
-## 13. Capability gateway
+## 13. Capability and resource gateway
 
 Capabilities should use a stable kernel-facing interface even if transports differ.
 
@@ -536,6 +637,20 @@ remote job system
 Knowledge retrieval and action tools can share runtime Effect semantics while retaining class/provenance metadata.
 
 A local Function Stage that deterministically chooses a consequential capability still uses the same Effect gateway.
+
+For untrusted execution, prefer exposing capability/resource handles rather than raw credentials:
+
+```text
+untrusted Stage/Agent code
+      ↓ EffectRequest(resource handle)
+Harness / gateway
+      ↓ authorization
+resource adapter owns secret/transport
+      ↓
+external system
+```
+
+A resource being bound to an Execution means the runtime may expose an authorized mode of use. It should not automatically mean that the underlying credential is placed in `process.env`, that arbitrary network egress is opened, or that a raw database client is handed to hostile code.
 
 ---
 
@@ -604,7 +719,47 @@ Later distributed implementations should not require changes to application-leve
 
 ---
 
-## 16. Tracing and provenance
+## 16. Execution environment and sandbox ports
+
+Security isolation should also remain replaceable.
+
+Do not make the kernel's Execution/Stage semantics depend on one container product. A useful boundary is:
+
+```text
+Agent/Workflow/Stage semantics
+        ↓
+ExecutionEnvironment / Sandbox port
+        ↓
+trusted in-process runner
+Docker / container backend
+remote isolated worker
+managed sandbox
+VM / microVM
+WASM/isolate where appropriate
+```
+
+Two profiles should remain explicit:
+
+```text
+trusted local profile
+  developer owns the host process
+  → in-process execution is acceptable
+  → kernel guarantees Arrokoth-mediated semantics,
+    not containment from arbitrary host code
+
+isolated hosted profile
+  executable code may be adversarial
+  → selected runner must provide an actual isolation boundary
+  → privileged external access goes through controlled Effects/capabilities
+```
+
+Static code analysis, restricted-import checks, and AI suggestions are useful front-end tooling but must not be the only defense for hostile uploaded code.
+
+Before building sandbox primitives from scratch, evaluate existing open-source mechanisms such as OpenClaw sandbox backends, Hermes execution environments/tool RPC patterns, and Dify Sandbox. Reuse should occur behind an Arrokoth-owned port and only after reviewing threat model, configuration defaults, escape hatches, licenses/notices, and security maintenance. See [`security-guarantees.md`](security-guarantees.md) for the current security contract and upstream references.
+
+---
+
+## 17. Tracing and provenance
 
 Every important runtime action should be reconstructable across:
 
@@ -618,13 +773,17 @@ memory writes
 capability/resource provenance
 Stage transitions
 Agent decisions where inspectable
+authority grants/denials
+sandbox/profile selection
 ```
 
 Do not confuse tracing with model context. Detailed history may be retained for debugging/evaluation without being placed into every model call.
 
+Security-relevant denials should be auditable without leaking secrets into ordinary model context or error messages.
+
 ---
 
-## 17. Practical implementation slices
+## 18. Practical implementation slices
 
 A future coding plan should prefer vertical semantic slices over broad renames.
 
@@ -656,11 +815,14 @@ EffectRequests
 Capability gateway
 pending operations
 Event routing
+inline-completion fast path + yield-to-WAITING path
 ```
 
 Checkpoint:
 
-- an async capability request can survive WAITING and resume with a correlated Event;
+- a fast authorized Effect may complete without forcing another Activation;
+- the same Effect, when slow, can survive `WAITING` and resume with a correlated Event;
+- reaching an Activation inline-wait budget does not accidentally become the Effect's failure deadline;
 - failures are observable Events before terminal failure.
 
 ### Slice C — Workflow Stages
@@ -673,11 +835,14 @@ four Stage types
 text|none Stage result
 predefined transitions
 Stage completion barrier
+Stage-local computation environment
 ```
 
 Checkpoint:
 
 - `LLM → RAG Effect → collect → next Stage` works without making retrieval or LLM calls child Executions;
+- local retrieval over an already-exposed read-only corpus can remain ordinary Stage computation;
+- a live external retrieval uses the Effect/resource gateway;
 - undefined transition is rejected;
 - Effects required for Stage completion are correlated without treating the Stage as their owner.
 
@@ -714,7 +879,8 @@ Checkpoint:
 
 - Workflow → Agent → Workflow composition preserves identity and authority boundaries;
 - Stage does not transition before required child result settles;
-- child note visibility follows explicit delegation rather than ownership ancestry.
+- child note visibility follows explicit delegation rather than ownership ancestry;
+- child authority cannot exceed the creator's delegable envelope.
 
 ### Slice F — Memory
 
@@ -748,9 +914,39 @@ mechanical confirmation
 Checkpoint:
 
 - peer messaging does not grant ownership/cancellation/memory access;
+- knowing a peer ExecutionId does not permit direct runtime inspection;
 - exact-payload confirmation invalidates when payload changes.
 
-### Slice H — durability
+### Slice H — Security profile and execution environment
+
+Deliver first:
+
+```text
+explicit trusted-local profile
+ExecutionEnvironment/Sandbox port
+no assumption that static analysis is containment
+security-profile metadata/diagnostics
+```
+
+Then, when hostile uploaded code becomes a product requirement, add one reviewed isolated backend:
+
+```text
+deny-by-default ambient access
+bounded CPU/memory/time/output/process use
+scoped workspace/filesystem
+scoped or disabled network
+a controlled Effect/capability bridge
+no raw production secrets in the sandbox
+```
+
+Checkpoint:
+
+- the trusted-local profile remains lightweight and honest about its threat model;
+- hostile code running under the isolated profile cannot read host secrets or directly reach an unexposed external resource;
+- the same code can request an allowed operation through the Harness and receive the authorized result;
+- denied operations do not cause external mutation.
+
+### Slice I — durability
 
 Deliver:
 
@@ -763,11 +959,12 @@ idempotent Effect dispatch boundaries
 Checkpoint:
 
 - WAITING Execution restarts and wakes correctly;
-- a consequential Effect is not duplicated after crash/retry.
+- a consequential Effect is not duplicated after crash/retry;
+- pending Effects yielded because of the Activation wait budget retain their original operation deadline/correlation across restart.
 
 ---
 
-## 18. Conformance scenarios
+## 19. Conformance scenarios
 
 Before freezing APIs, make these executable tests/examples.
 
@@ -783,7 +980,18 @@ LLM Stage
 
 Tests Stage-local computation, Execution-attributed Effects, and simple composition.
 
-### 2. Bounded multi-LLM Workflow Stage
+### 2. Local-corpus RAG Stage
+
+```text
+read-only corpus already exposed
+  → local query/rerank
+  → LLM
+  → Stage result
+```
+
+Tests that computation over already-exposed data does not require fake runtime Events/Effects.
+
+### 3. Bounded multi-LLM Workflow Stage
 
 ```text
 LLM → retrieve → LLM → result
@@ -791,7 +999,7 @@ LLM → retrieve → LLM → result
 
 Tests that multiple LLM calls do not imply Agent semantics.
 
-### 3. Agentic research loop
+### 4. Agentic research loop
 
 ```text
 model decides search/query/inspect/stop repeatedly
@@ -799,44 +1007,61 @@ model decides search/query/inspect/stop repeatedly
 
 Tests the actual Workflow/Agent distinction.
 
-### 4. Workflow containing child Agent
+### 5. Workflow containing child Agent
 
 Tests Agent Stage abstraction and Stage completion barrier.
 
-### 5. Parent Agent with two child Agents
+### 6. Parent Agent with two child Agents
 
 Tests child identity, narrowed authority, results, delegated Working Note visibility, and parallel pending work.
 
-### 6. Long-lived Agent waiting for user input
+### 7. Long-lived Agent waiting for user input
 
 Tests response ≠ completion, RequestUserInput, WAITING/READY, and restart.
 
-### 7. Peer Agents
+### 8. Fast vs slow Effect
 
-Tests ownership ≠ communication and message correlation.
+Run the same Effect under two latency regimes:
 
-### 8. Confirmation
+```text
+fast → result observed in current Activation
+slow → pending operation → WAITING → Event → later Activation
+```
+
+Tests that latency changes scheduling rather than Effect semantics, and that the inline wait budget is independent from the Effect deadline.
+
+### 9. Peer Agents
+
+Tests ownership ≠ communication, message correlation, and that message permission does not expose memory/cancellation rights.
+
+### 10. Confirmation
 
 Tests semantic authorization evidence versus exact mechanical confirmation.
 
-### 9. Memory visibility and confidentiality
+### 11. Memory visibility and confidentiality
 
 Tests Structured Memory views, Working Note frame behavior, and the rule that ancestry alone cannot reveal parent scratch information to a narrower child.
 
-### 10. Simple runtime profile
+### 12. Hostile Stage code
 
-Runs representative Workflow/Agent cases entirely in-process to verify that the architecture does not require heavyweight infrastructure for simple applications.
+Under the isolated hosted profile, attempt direct filesystem secret reads, unrestricted network access, raw resource access, and another Execution's workspace/state. These should fail even if static validation misses the code path. The same Stage should succeed when expressing an authorized external action through the Effect gateway.
+
+### 13. Minimal runtime profile
+
+Runs representative Workflow/Agent cases entirely in-process to verify that the architecture does not require heavyweight sandbox/durable/distributed infrastructure for trusted simple applications.
 
 ---
 
-## 19. Coding-plan rule
+## 20. Coding-plan rule
 
 When converting these docs into issues/tasks:
 
-> **Plan around semantic invariants and conformance scenarios, not around reproducing the class names in these documents.**
+> **Plan around semantic and security invariants plus conformance scenarios, not around reproducing the class names in these documents.**
 
 Before replacing an existing component, ask whether its responsibility already matches the target model. Preserve useful working code behind corrected interfaces where possible.
 
 Do not combine the deepest semantic migration with unrelated package movement, provider replacement, or stylistic refactoring unless necessary.
 
-The target is not maximum abstraction. It is the smallest implementation that makes the mental model true and testable.
+For security mechanisms, prefer a small Arrokoth-owned interface around a reviewed existing backend over reimplementing mature isolation machinery merely for architectural purity. Reuse the mechanism; keep Arrokoth's authority and Execution semantics as the source of truth.
+
+The target is not maximum abstraction. It is the smallest implementation that makes the mental model and stated security profile true and testable.
