@@ -2,7 +2,7 @@
 
 > **Status: non-normative implementation translation.**
 >
-> Read [`mental-model.md`](mental-model.md), [`workflow-model.md`](workflow-model.md), and [`runtime-architecture.md`](runtime-architecture.md) first. This guide translates those semantics into implementation boundaries and a practical coding-plan strategy. Exact APIs are intentionally illustrative.
+> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), and [`runtime-architecture.md`](runtime-architecture.md) first. This guide translates those semantics into implementation boundaries and a practical coding-plan strategy. Exact APIs are intentionally illustrative.
 
 ## 1. Implementation goal
 
@@ -358,7 +358,7 @@ Illustratively:
 interface PendingOperation {
   id: PendingOperationId
   executionId: ExecutionId
-  effectId: EffectId
+  effectId?: EffectId
   kind: string
   status: "pending" | "completed" | "failed" | "cancelled"
   correlation: CorrelationKey
@@ -377,6 +377,8 @@ nothing (non-blocking/future)
 ```
 
 This is completion/correlation scope, not ownership by a Stage or Agent step. The Effect itself remains attributed to `executionId`.
+
+Not every pending operation must originate from an Effect. Runtime-mediated waits such as timers may still need correlation and completion metadata, so `effectId` should not be a universal requirement.
 
 Do not freeze this exact API before testing non-blocking semantics. The important requirement is that Stage completion and Agent continuation can ask whether the work they depend on has settled.
 
