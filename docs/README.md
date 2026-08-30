@@ -1,16 +1,18 @@
 # Arrokoth Architecture Documents
 
-These documents describe the current design target for Arrokoth. They are separated by abstraction level so the conceptual model stays small while workflow/runtime mechanics can evolve independently.
+These documents describe the current design target for Arrokoth. They are separated by abstraction level so the conceptual model stays small while composition/runtime mechanics can evolve independently.
 
 ## Recommended reading order
 
 1. [`mental-model.md`](mental-model.md) — canonical conceptual model: Execution, Workflow vs Agent, Event/Effect, authority/exposure, memory/context, ownership/communication, and the core invariants.
-2. [`workflow-model.md`](workflow-model.md) — Workflow semantics: Stages, Stage boundaries, Function/LLM/Agent/Workflow Stages, Adapters, Effects inside Stages, and Stage completion.
-3. [`runtime-architecture.md`](runtime-architecture.md) — Harness/runtime semantics: ExecutionContext, lifecycle, scheduling, pending work, messaging, memory views, Working Notes, confirmation, durability, and provenance.
+2. [`composition.md`](composition.md) — composition semantics shared across Agents and Workflows: local computation vs child Executions, Workflow Stages, Effects, pending work, completion boundaries, retrieval patterns, and Adapters.
+3. [`runtime-architecture.md`](runtime-architecture.md) — Harness/runtime semantics: ExecutionContext, lifecycle, scheduling, pending operations, messaging, authority, memory visibility, Working Notes, confirmation, durability, and provenance.
 4. [`implementation-guide.md`](implementation-guide.md) — non-normative implementation mapping, suggested contracts, conformance scenarios, and a practical way to derive a coding plan.
 5. [`future-plan.md`](future-plan.md) — unresolved questions, experiments, and likely future work.
 
 For a new engineer or coding agent, reading the first four in order should be enough to understand the target architecture before inspecting the codebase.
+
+[`workflow-model.md`](workflow-model.md) is retained only as a compatibility redirect to `composition.md` for older links.
 
 ## Document authority
 
@@ -19,7 +21,7 @@ When documents appear to disagree, use this priority:
 ```text
 mental-model.md
     ↓ conceptual truth
-workflow-model.md / runtime-architecture.md
+composition.md / runtime-architecture.md
     ↓ domain refinements
 implementation-guide.md
     ↓ implementation proposal
@@ -115,7 +117,7 @@ A useful practical test is: if a unit does not need independently meaningful ide
 - Working Notes use stack-like ancestry plus a visibility/delegation filter: a child may receive selected parent notes read-only and writes only its own frame.
 - Sequential Stage note handoff is opt-in and defaults to no handoff.
 - Adapters are Effect-free in v0.4.
-- Arbitrary peer messaging from a Workflow Stage is not exposed in v0.4.
+- Broad non-blocking and detached-child semantics remain intentionally conservative until tested.
 - Dynamic model-driven mutation of Workflow topology is out of scope; prefer model-driven changes to data.
 
 ## Using these docs to make a coding plan
