@@ -37,8 +37,7 @@ A future version may add another Execution kind if a real use case needs indepen
 The Execution boundary is where several concerns align:
 
 ```text
-identity
-addressability
+identity / addressability
 lifecycle / waiting
 authority
 memory view
