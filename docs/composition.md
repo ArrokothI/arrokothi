@@ -21,75 +21,34 @@ memory/resource access
 result collection
 ```
 
-Across Execution boundaries, composition uses child Agent or Workflow Executions:
+When composition introduces a new Execution boundary in v0.4, it does so by creating or calling a child Agent or Workflow Execution. Existing Executions may also interact across boundaries through **messaging**, without forming a parent/child composition relationship.
 
-```text
-Parent Execution
-  ↓ call / spawn
-Child Agent or Workflow Execution
-```
 
 The important distinction is:
 
 ```text
 local composition
-  reuses the enclosing Execution's runtime identity
+  work remains inside the enclosing Execution
 
-Execution composition
-  creates another independently managed runtime identity
+child Execution composition
+  call/spawn creates another independently managed runtime entity
+
+peer interaction
+  send/ask communicates with an already-existing Execution
 ```
-
-A complex function, several LLM calls, or a retrieval sequence does not deserve another Execution merely because it contains many operations.
-
-> **Use an Execution boundary when the unit needs independently meaningful runtime management; otherwise keep the work local to the enclosing Execution.**
-
-This document focuses on what those local and child-composition structures mean.
-
 ---
 
-## 2. Two forms of semantic composition
+## 2. Recap: Workflow and Agent composition
 
-Workflow and Agent share the same runtime substrate but compose semantic progression differently.
-
-### Workflow composition
-
-A Workflow has system-defined semantic topology:
+As defined in [`mental-model.md`](mental-model.md), Workflow and Agent differ mainly in who owns semantic progression:
 
 ```text
-Stage A → Stage B → Stage C
+Workflow
+  system-defined semantic topology
+
+Agent
+  model-directed open-ended progression
 ```
-
-The application defines the possible transitions. An LLM may choose among predefined branches without turning the Workflow into an Agent.
-
-### Agent composition
-
-An Agent has model-directed open-ended semantic progression:
-
-```text
-LLM
- ↓
-choose next semantic action
- ↓
-Effect / child call / message / stop
- ↓
-observation
- ↓
-LLM chooses again
-```
-
-Both forms may use:
-
-```text
-LLM inference
-functions
-Effects
-Adapters
-child Executions
-Structured Memory / Artifacts
-pending asynchronous work
-```
-
-The difference is **who owns the continuation space**, not which primitive operations appear inside it.
 
 ---
 
@@ -676,7 +635,7 @@ Transform(value)
 Reject(reason)
 ```
 
-The enclosing Stage or Agent controller determines what a rejection means. The Adapter does not choose arbitrary semantic continuation.
+The Adapter reports a transformation or rejection; the enclosing Stage, Workflow, or Agent controller decides the resulting control flow. An Adapter does not independently choose the next semantic action.
 
 ### Stage Adapters
 
