@@ -12,8 +12,6 @@ These documents describe the current design target for Arrokoth. They are separa
 
 For a new engineer or coding agent, reading the first four in order should be enough to understand the target architecture before inspecting the codebase.
 
-[`workflow-model.md`](workflow-model.md) is retained only as a compatibility redirect to `composition.md` for older links.
-
 ## Document authority
 
 When documents appear to disagree, use this priority:
