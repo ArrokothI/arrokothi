@@ -451,17 +451,14 @@ Useful high-level classes are:
 
 ```text
 Knowledge Retrieval
-  web search
-  database query
-  file read
-  vector retrieval
-  bound-resource retrieval
-
-Tool Usage
-  execute code
-  modify files
-  send email
-  invoke an external action API
+├── open/external retrieval
+│   └── web search
+│
+└── bound-resource retrieval
+    ├── database query
+    ├── file/document read
+    ├── vector retrieval
+    └── other resource-specific retrieval
 ```
 
 A **bound resource** is the concrete object the capability operates on.
