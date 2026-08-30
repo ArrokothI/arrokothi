@@ -100,6 +100,8 @@ Draft Stage
 
 The transition result is a small local value; the explicit memory/resource layer carries shared application data.
 
+Stage transition values are a Workflow-level interface. They do not constrain an Execution's terminal-result type, which may be typed or schema-bound independently.
+
 ---
 
 ## 4. Stage types
@@ -302,7 +304,7 @@ A Workflow transition should occur only after the Stage reaches a stable boundar
 For v0.4:
 
 1. required local computation is complete;
-2. all Stage-owned **blocking** Effects required for completion have resolved;
+2. all **blocking Effects required for this Stage to complete** have resolved;
 3. their Events/results have been collected;
 4. child calls required for completion have returned;
 5. Stage output Adapters have completed;
@@ -326,7 +328,9 @@ For v0.4:
 
 This is the **Stage completion barrier**.
 
-It prevents Stage A from leaving semantically important background work that later mutates state after the Workflow has already advanced to Stage B.
+Effects remain owned/attributed at the enclosing Execution level. The Stage completion barrier merely identifies which pending operations are required for the current Stage to settle; it does not give the Stage runtime ownership.
+
+This prevents Stage A from leaving semantically important background work that later mutates state after the Workflow has already advanced to Stage B.
 
 ---
 
@@ -584,7 +588,9 @@ The implementation should preserve:
 
 > **A Stage may hide complex local work and Effects.**
 
-> **Required Stage-local work settles before transition.**
+> **All work required for the current Stage's completion settles before transition.**
+
+> **Effects are attributed to the enclosing Execution; Stage completion only defines a completion/correlation scope.**
 
 > **Effects are runtime interactions, not automatically graph nodes.**
 
