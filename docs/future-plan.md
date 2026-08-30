@@ -46,6 +46,12 @@ Stage            ≠ Execution
 
 Function calls, LLM inference, and Adapters normally remain local computation inside an enclosing Execution.
 
+A useful decision rule is:
+
+> **Create an Execution boundary only when the unit needs independently meaningful runtime management.**
+
+Signals include independent identity/addressability, lifecycle or waiting, authority/budget, mailbox/Events, cancellation/supervision, durability/recovery, or child ownership. Internal complexity alone is not sufficient.
+
 ---
 
 ## 2. Near-term implementation sequence
@@ -75,6 +81,8 @@ receive Event
 WAITING → READY → RUNNING
 respond without terminating
 ```
+
+Terminal results should remain typed/schema-bound at the Execution interface and independent from the Workflow Stage-result experiment.
 
 ### 2.2 Event / Effect substrate
 
@@ -117,6 +125,8 @@ text | none Stage result
 
 Do not create child Executions for ordinary function/LLM Stage computation.
 
+Treat Effects as attributed to the enclosing Workflow Execution. The Stage completion barrier tracks only which pending work is required for the current Stage to settle.
+
 ### 2.4 Agent controller
 
 Align the Agent executor boundary around:
@@ -143,6 +153,7 @@ call
 Agent Stage
 Workflow Stage
 child authority/budget derivation
+child memory/context visibility derivation
 child result Events
 cancellation/supervision
 ```
@@ -155,10 +166,19 @@ Implement/test:
 Structured Memory views
 Artifacts / Files
 Working Note frames
+Working Note visibility/delegation filtering
 provenance
 Stage note handoff policy
 context compilation
 ```
+
+The key rule is:
+
+```text
+note ancestry ≠ note visibility
+```
+
+A child may receive selected parent scratch context, but ownership ancestry alone must not expose all parent notes.
 
 ### 2.7 Messaging and human interaction
 
@@ -197,11 +217,11 @@ Before declaring the model stable, implement and evaluate at least these program
 2. **Bounded multi-LLM Stage** — `LLM → retrieval → LLM` remains a Workflow Stage because continuation is predefined.
 3. **Agentic research loop** — the model repeatedly chooses retrieve/tool/inspect/stop.
 4. **Workflow containing child Agent** — child is an Agent Execution hidden behind one Agent Stage; Stage waits for required completion.
-5. **Parent Agent spawning multiple children** — tests ownership, authority, results, Working Notes inheritance, and parallel pending work.
+5. **Parent Agent spawning multiple children** — tests ownership, authority, typed results, explicitly delegated Working Note visibility, and parallel pending work.
 6. **Long-lived conversational Agent** — response does not imply terminal completion; Agent can wait and wake.
 7. **Peer Agents** — messaging is independent from ownership and does not expose memory/cancellation rights.
 8. **User-input + confirmation case** — semantic free-form user input and exact mechanical confirmation remain distinct.
-9. **Memory visibility case** — explicit Structured Memory survives; popped child Working Notes do not silently become parent memory.
+9. **Memory visibility/confidentiality case** — explicit Structured Memory survives; a child sees only delegated parent notes; popped child Working Notes do not silently become parent memory.
 10. **Minimal runtime profile** — the same semantics run in-process without durable/distributed machinery.
 
 Architecture changes should be justified against these scenarios rather than aesthetics alone.
@@ -233,19 +253,20 @@ Do not expose a broad non-blocking API until these semantics are clear.
 
 ### 4.2 `fork()`
 
-Working Notes stack inheritance was partly chosen because it offers a natural path to fork:
+Working Notes stack ancestry was partly chosen because it offers a natural path to fork:
 
 ```text
-parent visible note stack
+current visible note view
         ↓ fork
 branch A local frame
 branch B local frame
 ```
 
-Open questions:
+Fork inheritance must remain subject to the new branch's authority and memory/context visibility policy. Open questions:
 
 ```text
 snapshot vs reference vs copy-on-write
+visibility/delegation across branches
 Structured Memory behavior across branches
 authority/budget inheritance
 branch merge semantics
@@ -280,6 +301,8 @@ StageResult = text | none
 ```
 
 This keeps graph edges simple and pushes durable structure into explicit memory/resources.
+
+This constraint applies only to Workflow Stage transitions. It does **not** constrain Execution terminal results.
 
 Test whether real applications need richer typed Stage results. If so, prefer a small explicit extension rather than an unconstrained object graph.
 
@@ -348,13 +371,29 @@ RemoteBuild
 Simulation
 ```
 
-Do not add such kinds until a use case needs independent lifecycle/authority/state and cannot be naturally represented as a Workflow.
+Use the same Execution-boundary test: add such a kind only when the unit needs independently meaningful identity/lifecycle/authority/state and cannot be naturally represented as a Workflow.
 
 ### 4.10 `ExecutionDefinition` naming
 
 `ExecutionDefinition` may be clearer than `ExecutableDefinition` now that ordinary functions/LLM calls are not members of the top-level runtime union.
 
 Treat this as a naming/API migration to validate after the semantic boundary is implemented.
+
+### 4.11 Information-flow policy
+
+v0.4 requires explicit child memory/context visibility, but does not attempt a full information-flow security system.
+
+Future work may test whether applications need:
+
+```text
+visibility labels on note frames
+provenance-aware delegation
+resource-derived confidentiality labels
+taint propagation
+policy checks on explicit result/message handoff
+```
+
+Do not build this machinery speculatively. The immediate requirement is only that Working Note ancestry cannot silently bypass an intended child visibility boundary.
 
 ---
 
