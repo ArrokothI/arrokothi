@@ -70,25 +70,11 @@ Function / LLM / Adapter
 
 ### Does this deserve an Execution?
 
-A useful design test is:
+Ask whether this piece of work needs to **continue existing as an independently managed thing** after the current local computation.
 
-> **Does this unit need to be managed independently by the runtime?**
+If another part of the system may need to find it later, send it new input, wait for it, cancel it, give it separate permissions or limits, let it manage child work, or recover it after a restart, it probably deserves an Execution.
 
-Signals include a need for independent:
-
-```text
-identity / addressability
-lifecycle or durable waiting
-authority or budget
-mailbox / asynchronous Events
-cancellation or supervision
-durability / recovery
-ownership / child composition
-```
-
-The presence of an internal timeout, trace span, or complex implementation is not enough by itself. What matters is whether these semantics are independently meaningful to the application/runtime.
-
-If the answer is no, the computation should normally remain inside its enclosing Execution. This keeps ordinary function calls, LLM inferences, and Adapters lightweight while leaving room for future Execution kinds when a real independent runtime boundary is needed.
+If it simply starts and finishes as part of its caller—such as an LLM inference, parser, retrieval step, or Adapter—it usually should stay inside the enclosing Execution.
 
 ---
 
@@ -124,16 +110,16 @@ The presence of LLMs, loops, tools, or model-based routing does not make a Workf
 
 > **An Agent has model-directed open-ended semantic progression inside hard runtime boundaries.**
 
-The model repeatedly decides what semantic action to take next based on observations.
+The model repeatedly decides what semantic action(s) to take next based on observations.
 
 ```text
 LLM
  ↓
-choose action
+choose actions
  ↓
-Effect / child call / message
+Effects / child calls / messages
  ↓
-observation
+observations
  ↓
 LLM chooses again
 ```
@@ -164,22 +150,36 @@ The category describes control ownership, not task output.
 
 ## 4. Events and Effects
 
-An Execution interacts with the runtime through two directions:
+An Execution is advanced by a **controller** appropriate to its kind.
+
+- A Workflow controller runs Stages and follows application-defined transitions. 
+- An Agent controller runs the agentic loop in which the model chooses the next semantic action. .
+
+When the controller needs to interact with the runtime or outside world, it requests an Effect. Results return to the Execution as Events.
 
 ```text
-Event
-  ↓
-Execution controller
-  ↓
-EffectRequest
-  ↓
-Harness
-  ↓
-environment / capability / another Execution
-  ↓
-Event
+Event(s)
+   ↓
+Execution
+   ↓
+controller
+   ├── local computation
+   │   function / LLM / Adapter
+   │
+   └── EffectRequest(s), when needed
+              ↓
+           Harness
+     authorize / coordinate
+              ↓
+    runtime-managed interaction
+       ├── capability / resource
+       ├── child or peer Execution
+       └── user / external system
+              ↓
+       resulting Event(s)
+              ↓
+      relevant Execution(s)
 ```
-
 ### Event
 
 An **Event** is an observation delivered to an Execution.
@@ -235,7 +235,7 @@ WAITING
 next message
 ```
 
-Likewise, a child or peer may send a message without completing.
+Likewise, a child or peer may send a message without completing/termination.
 
 Therefore:
 
@@ -325,11 +325,11 @@ Message Authority
   which peer targets may receive messages
 ```
 
-Definitions request authority; the Harness grants or narrows it. Required authority denied at creation means creation fails; optional authority may be omitted.
+Definitions request authority; the Harness grants or narrows it. **Required authority** denied at creation means creation fails; **optional authority** may be omitted.
 
 A child Execution must not receive authority beyond what its creator is allowed to delegate.
 
-Authority over a source resource and permission to receive already-derived information are related but not identical questions. Arrokoth should not accidentally treat memory/context inheritance as an authority grant. Cross-Execution information visibility must be explicit and policy-controlled.
+A child's Resource Authority controls which resources it may access directly. Separately, the runtime must control which information from the parent is exposed to the child. **A child should not automatically see all parent memory or Working Notes merely because it is a descendant.** Parent-to-child memory/context visibility must therefore be explicitly delegated or filtered.
 
 ---
 
