@@ -21,8 +21,8 @@ The default tests and examples are offline. Copy [`.env.example`](.env.example) 
 Start with [`docs/README.md`](docs/README.md). The recommended reading order is:
 
 1. [`docs/mental-model.md`](docs/mental-model.md) — canonical conceptual model.
-2. [`docs/workflow-model.md`](docs/workflow-model.md) — Stage, transition, Effect, and Adapter semantics.
-3. [`docs/runtime-architecture.md`](docs/runtime-architecture.md) — Harness, lifecycle, memory, messaging, pending work, confirmation, and durability.
+2. [`docs/composition.md`](docs/composition.md) — composition semantics: local computation vs child Executions, Workflow Stages, Effects, completion boundaries, retrieval, and Adapters.
+3. [`docs/runtime-architecture.md`](docs/runtime-architecture.md) — Harness, lifecycle, memory visibility, messaging, pending work, confirmation, and durability.
 4. [`docs/implementation-guide.md`](docs/implementation-guide.md) — implementation mapping, conformance scenarios, and coding-plan guidance.
 5. [`docs/future-plan.md`](docs/future-plan.md) — open questions and future experiments.
 
@@ -87,7 +87,7 @@ Stage
 └── Workflow Stage
 ```
 
-A Stage is a semantic Workflow boundary, not another Execution. It may hide local functions, LLM calls, Effects, and child Execution calls. Required Stage-local work settles before the Workflow transitions.
+A Stage is a semantic Workflow boundary, not another Execution. It may hide local functions, LLM calls, Effects, and child Execution calls. Work required for the current Stage's semantic completion settles before the Workflow transitions.
 
 Adapters are lightweight boundary transformations attached inside a Stage or around an Agent model-call boundary; they are not Workflow graph nodes or independent Executions.
 
@@ -123,7 +123,7 @@ Context
 
 Important shared information should move explicitly through Structured Memory, Artifacts, terminal/Stage results, or authorized messages.
 
-The current Working Notes design uses stack-like downward visibility for nested Executions: a child can read parent note frames and writes only its own frame, which is removed from active context when the child ends. This is a current runtime hypothesis and will be validated through implementation.
+Working Notes use stack-like ancestry, but **ancestry does not imply visibility**. When a child Execution is created, the runtime derives an explicitly delegated/filtered note view. The child may read only the inherited notes made visible to it and writes only its own local frame; child scratch does not automatically merge back into the parent.
 
 ### Ownership vs communication
 
