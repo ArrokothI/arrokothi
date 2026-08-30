@@ -69,6 +69,28 @@ Function / LLM / Adapter
 
 `call` and `spawn` are the explicit operations that introduce child Execution boundaries.
 
+### Does this deserve an Execution?
+
+A useful design test is:
+
+> **Does this unit need to be managed independently by the runtime?**
+
+Signals include a need for independent:
+
+```text
+identity / addressability
+lifecycle or durable waiting
+authority or budget
+mailbox / asynchronous Events
+cancellation or supervision
+durability / recovery
+ownership / child composition
+```
+
+The presence of an internal timeout, trace span, or complex implementation is not enough by itself. What matters is whether these semantics are independently meaningful to the application/runtime.
+
+If the answer is no, the computation should normally remain inside its enclosing Execution. This keeps ordinary function calls, LLM inferences, and Adapters lightweight while leaving room for future Execution kinds when a real independent runtime boundary is needed.
+
 ---
 
 ## 3. Workflow and Agent are complementary
@@ -222,6 +244,8 @@ Therefore:
 
 An Execution may optionally produce a terminal result when it reaches `COMPLETED`, but it need not be designed around a mandatory `input → output` function shape.
 
+A terminal result is definition/interface-specific and may be typed or schema-bound. It is independent from any Workflow-specific experiment about what value may cross a Stage transition.
+
 ---
 
 ## 6. Operational control and semantic control are different
@@ -305,6 +329,8 @@ Message Authority
 Definitions request authority; the Harness grants or narrows it. Required authority denied at creation means creation fails; optional authority may be omitted.
 
 A child Execution must not receive authority beyond what its creator is allowed to delegate.
+
+Authority over a source resource and permission to receive already-derived information are related but not identical questions. Arrokoth should not accidentally treat memory/context inheritance as an authority grant. Cross-Execution information visibility must be explicit and policy-controlled.
 
 ---
 
@@ -392,7 +418,23 @@ Larger persistent work products such as reports, code, datasets, or generated fi
 
 ### Working Notes
 
-Temporary scratch context. The exact inheritance policy is runtime architecture rather than a foundational invariant; the current v0.4 proposal uses stack-like downward visibility.
+Temporary scratch context. The exact storage and labeling policy is runtime architecture rather than a foundational invariant.
+
+The current v0.4 proposal uses stack-like ancestry with **explicitly delegated visibility** across Execution boundaries:
+
+```text
+parent Working Notes
+        ↓
+child visibility/delegation filter
+        ↓
+inherited read-only note view
+        +
+child-local writable frame
+```
+
+A child may therefore benefit from selected parent scratch context without automatically seeing every ancestral note or mutating parent frames.
+
+> **Note ancestry does not imply visibility.**
 
 The fundamental rule is:
 
@@ -456,7 +498,7 @@ spawn
 + wait for child Terminal Result
 ```
 
-The child receives its own identity, lifecycle, effective authority, mailbox, pending operations, and execution-local/control data under the same logical Harness.
+The child receives its own identity, lifecycle, effective authority, mailbox, pending operations, execution-local/control data, and delegated memory/context view under the same logical Harness.
 
 The parent normally receives the child's terminal result as an Event.
 
@@ -523,5 +565,7 @@ And these positive rules:
 > **Models/controllers request; the runtime and environment establish reality.**
 
 > **Composition alone does not imply another Execution boundary.**
+
+> **Cross-Execution memory/context visibility is explicitly delegated; ancestry alone grants no visibility.**
 
 The lower-level documents define Workflow Stage semantics, Adapter behavior, Working Notes policy, pending operations, durability, and implementation mapping without changing these fundamentals.
