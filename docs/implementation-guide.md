@@ -119,25 +119,39 @@ Keep identity/metadata, controller progress, semantic memory, and execution hist
 
 The Harness should not need provider-specific knowledge to schedule an Agent or Workflow.
 
-A high-level controller contract might resemble:
+Conceptually, a controller advances one Execution during an Activation and reports what semantic progress was made:
 
-```ts
-interface ExecutionController<TResult = TerminalResult> {
-  activate(input: ActivationInput): Promise<ActivationOutcome<TResult>>
-}
+```text
+ExecutionContext + delivered Events
+        ↓ Activation
+AgentController | WorkflowController
+        ↓
+Activation outcome
+  ├── requested Effects
+  ├── updated controller progress
+  └── optional terminal completion/result
+        ↓
+Harness
+        ↓
+update ExecutionContext / dispatch Effects / route future Events
 ```
 
-where an outcome reports semantic/runtime intent rather than directly mutating infrastructure:
+The important relationship is:
 
-```ts
-interface ActivationOutcome<TResult = TerminalResult> {
-  effects?: EffectRequest[]
-  terminalResult?: TResult
-  controlUpdate?: unknown
-}
+```text
+Controller
+  computes what should happen next
+
+Activation outcome
+  reports that result for this Activation
+
+ExecutionContext
+  records the runtime's current durable truth about the Execution
 ```
 
-The exact shape will depend on whether Effects are streamed/awaited within an Activation. Preserve the semantic rule that external truth returns as Events through the Harness.
+Most Activations do not terminate the Execution. A terminal result appears only when the controller reports semantic completion; the Harness then records the completed lifecycle and terminal result in the `ExecutionContext` and may deliver that result to a waiting parent/caller as an Event.
+
+The exact API shape is intentionally left open. Preserve only these semantics: controllers do not directly own persistence or operational lifecycle, external truth returns through Events, and Execution terminal-result typing remains independent from Workflow Stage-result typing.
 
 ### Agent controller
 
