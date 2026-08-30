@@ -86,6 +86,8 @@ The central boundary is:
 
 In v0.4, Agent and Workflow are the Execution kinds we need. Function calls, LLM inference, Stages, and Adapters normally run inside an enclosing Execution.
 
+A useful practical test is: if a unit does not need independently meaningful identity/addressability, lifecycle/waiting, authority/budget, mailbox/Events, cancellation/supervision, durability/recovery, or child ownership, it normally should not become another Execution.
+
 ## Stable invariants vs current hypotheses
 
 ### Stable target invariants
@@ -100,15 +102,17 @@ In v0.4, Agent and Workflow are the Execution kinds we need. Function calls, LLM
 - Memory is different from current model context.
 - Ownership is different from communication permission.
 - A response/message is different from a terminal result.
+- Execution terminal-result typing is independent from Workflow Stage-result typing.
 - One logical Harness manages many Executions.
-- A Stage is not another Execution.
+- A Stage is not another Execution and does not own Effects.
 - Adapters are attached transformations, not independent controllers.
+- Cross-Execution memory/context visibility is explicitly delegated; ancestry alone grants no visibility.
 
 ### Current v0.4 hypotheses to test
 
 - Stage transitions carry only `text | none`; larger structured shared information goes through Structured Memory or Artifacts.
-- Required Stage-local work settles before a Stage transition.
-- Working Notes use downward-visible stack frames: a child can read parent frames and writes only its own frame.
+- Work designated as required for the current Stage settles before a Stage transition.
+- Working Notes use stack-like ancestry plus a visibility/delegation filter: a child may receive selected parent notes read-only and writes only its own frame.
 - Sequential Stage note handoff is opt-in and defaults to no handoff.
 - Adapters are Effect-free in v0.4.
 - Arbitrary peer messaging from a Workflow Stage is not exposed in v0.4.
