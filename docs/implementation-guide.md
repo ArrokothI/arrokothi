@@ -83,7 +83,7 @@ Do not place every concept into one opaque `state` object.
 A useful conceptual split is:
 
 ```ts
-interface ExecutionContext {
+interface ExecutionContext<TResult = TerminalResult> {
   id: ExecutionId
   definition: ExecutionDefinitionRef
 
@@ -102,12 +102,14 @@ interface ExecutionContext {
   pending: PendingOperationRef[]
 
   policy: EffectiveRuntimePolicy
-  terminalResult?: string
+  terminalResult?: TResult
 
   createdAt: Timestamp
   updatedAt: Timestamp
 }
 ```
+
+`TerminalResult` here is definition/interface-specific and may be generic or schema-bound. It must **not** inherit the Workflow experiment that Stage transitions use `text | none`.
 
 Keep identity/metadata, controller progress, semantic memory, and execution history separately queryable.
 
@@ -120,17 +122,17 @@ The Harness should not need provider-specific knowledge to schedule an Agent or 
 A high-level controller contract might resemble:
 
 ```ts
-interface ExecutionController {
-  activate(input: ActivationInput): Promise<ActivationOutcome>
+interface ExecutionController<TResult = TerminalResult> {
+  activate(input: ActivationInput): Promise<ActivationOutcome<TResult>>
 }
 ```
 
 where an outcome reports semantic/runtime intent rather than directly mutating infrastructure:
 
 ```ts
-interface ActivationOutcome {
+interface ActivationOutcome<TResult = TerminalResult> {
   effects?: EffectRequest[]
-  terminalResult?: string
+  terminalResult?: TResult
   controlUpdate?: unknown
 }
 ```
@@ -218,9 +220,9 @@ input Adapter(s)
   ↓
 run Stage body
   ↓
-request/await required Effects
+request/await Effects required for this Stage
   ↓
-collect child/results
+collect required child/results
   ↓
 output Adapter(s)
   ↓
@@ -232,6 +234,8 @@ resolve predefined transition
 The Stage runner needs access to the enclosing Workflow Execution's runtime facilities, but should not create another ExecutionContext for local Function/LLM computation.
 
 A Stage-local object may exist for tracing/configuration. Do not accidentally give it independent identity semantics just because an object/record exists in code.
+
+Effects remain attributed to the enclosing Workflow Execution. A Stage runner only establishes which pending operations are required for the current Stage's completion.
 
 ---
 
@@ -372,6 +376,8 @@ Execution terminal completion
 nothing (non-blocking/future)
 ```
 
+This is completion/correlation scope, not ownership by a Stage or Agent step. The Effect itself remains attributed to `executionId`.
+
 Do not freeze this exact API before testing non-blocking semantics. The important requirement is that Stage completion and Agent continuation can ask whether the work they depend on has settled.
 
 ---
@@ -407,7 +413,9 @@ explicit writes through WriteMemory Effect when externally meaningful
 Represent frames explicitly enough to support:
 
 ```text
-parent-visible ancestry
+ancestral frame relationships
+explicit child visibility/delegation filter
+inherited read-only note view
 child-local writes
 pop/remove from active context
 optional trace archival
@@ -415,6 +423,14 @@ per-frame/token bounds
 Stage handoff policy
 future fork snapshot/reference semantics
 ```
+
+The critical rule is:
+
+```text
+note ancestry ≠ note visibility
+```
+
+At child creation, derive a Working Note view from explicit delegation/policy rather than automatically exposing every parent frame. This prevents a child with narrower resource authority from receiving confidential information merely because the parent wrote that information into scratch notes.
 
 Do not implement automatic child-to-parent commit in v0.4.
 
@@ -451,6 +467,18 @@ resource availability
 effective envelope
 ```
 
+Child creation should separately derive a memory/context visibility view:
+
+```text
+parent eligible memory/context
+      ↓
+visibility/delegation policy
+      ↓
+child MemoryView / WorkingNoteView
+```
+
+Do not assume that Resource Authority alone implements information-flow control. A parent can derive information from a resource and later pass that information explicitly; memory/context delegation is therefore a separate policy surface.
+
 Active/exposed views should be separately mutable within the envelope.
 
 Conformance checks should prove:
@@ -458,6 +486,7 @@ Conformance checks should prove:
 ```text
 Active View never exceeds authority
 child authority never exceeds parent delegation
+child note ancestry does not bypass child visibility policy
 message permission does not imply memory access
 message permission does not imply cancellation
 ```
@@ -598,7 +627,8 @@ basic in-memory scheduler/store
 Checkpoint:
 
 - a long-lived test Execution can WAIT, receive an Event, wake, and resume;
-- a normal response does not imply completion.
+- a normal response does not imply completion;
+- a typed/schema-bound terminal result can be returned without depending on Workflow Stage result semantics.
 
 ### Slice B — Event/Effect gateway
 
@@ -632,7 +662,8 @@ Stage completion barrier
 Checkpoint:
 
 - `LLM → RAG Effect → collect → next Stage` works without making retrieval or LLM calls child Executions;
-- undefined transition is rejected.
+- undefined transition is rejected;
+- Effects required for Stage completion are correlated without treating the Stage as their owner.
 
 ### Slice D — Agent Execution
 
@@ -658,6 +689,7 @@ Deliver:
 spawn
 call
 child authority derivation
+child memory/context visibility derivation
 child terminal result Event
 Agent Stage / Workflow Stage
 ```
@@ -665,7 +697,8 @@ Agent Stage / Workflow Stage
 Checkpoint:
 
 - Workflow → Agent → Workflow composition preserves identity and authority boundaries;
-- Stage does not transition before required child result settles.
+- Stage does not transition before required child result settles;
+- child note visibility follows explicit delegation rather than ownership ancestry.
 
 ### Slice F — Memory
 
@@ -674,13 +707,15 @@ Deliver:
 ```text
 Structured Memory views/provenance
 Artifacts
-Working Note frames
+Working Note frames + visibility/delegation filter
 Stage no-pass default
 ```
 
 Checkpoint:
 
-- child reads parent notes, writes only its frame, and parent does not see child scratch after return;
+- child receives only delegated parent notes, reads them as inherited context, and writes only its own frame;
+- a child lacking access to confidential resource A does not receive A-derived parent scratch notes unless explicitly delegated by policy;
+- parent does not see child scratch after return;
 - explicit Structured Memory write remains visible where authorized.
 
 ### Slice G — Communication and human interaction
@@ -730,7 +765,7 @@ LLM Stage
   → next LLM Stage
 ```
 
-Tests Stage-local Effects and simple composition.
+Tests Stage-local computation, Execution-attributed Effects, and simple composition.
 
 ### 2. Bounded multi-LLM Workflow Stage
 
@@ -754,7 +789,7 @@ Tests Agent Stage abstraction and Stage completion barrier.
 
 ### 5. Parent Agent with two child Agents
 
-Tests child identity, narrowed authority, results, and note inheritance.
+Tests child identity, narrowed authority, results, delegated Working Note visibility, and parallel pending work.
 
 ### 6. Long-lived Agent waiting for user input
 
@@ -768,9 +803,9 @@ Tests ownership ≠ communication and message correlation.
 
 Tests semantic authorization evidence versus exact mechanical confirmation.
 
-### 9. Memory visibility
+### 9. Memory visibility and confidentiality
 
-Tests Structured Memory views and Working Note frame behavior.
+Tests Structured Memory views, Working Note frame behavior, and the rule that ancestry alone cannot reveal parent scratch information to a narrower child.
 
 ### 10. Simple runtime profile
 
