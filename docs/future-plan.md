@@ -1,732 +1,471 @@
 # Future Plan
 
-This roadmap describes how the repository should move from the current implementation toward the canonical model in [`mental-model-v0.4.md`](mental-model-v0.4.md), using [`mental-model-to-implementation-model.md`](mental-model-to-implementation-model.md) as the implementation translation.
+> **Status: roadmap and open design questions, not canonical semantics.**
+>
+> Read [`mental-model.md`](mental-model.md), [`workflow-model.md`](workflow-model.md), [`runtime-architecture.md`](runtime-architecture.md), and [`implementation-guide.md`](implementation-guide.md) first.
 
-The roadmap should answer **what remains to be built or migrated**, not redefine the architecture.
+The immediate goal is to validate the current architecture through implementation rather than add more abstractions.
 
-The guiding rules are:
+## 1. What is considered stable enough to build against
 
-> **One mental model in core. Compatibility may exist at boundaries, but new features should not depend on competing definitions of Agent, Workflow, lifecycle, or authority.**
+The following are the current target invariants:
 
-> **Preserve working implementation where its responsibility still matches the target model. Replace abstractions where they encode the wrong semantics.**
+```text
+Execution = independently managed runtime identity
 
-> **Own kernel semantics and invariants; keep concrete mechanisms replaceable behind narrow ports.**
+v0.4 Execution kinds:
+  Agent
+  Workflow
+
+Workflow:
+  system-defined semantic topology
+
+Agent:
+  model-directed open-ended semantic progression
+
+Interaction:
+  Events in
+  Effects out
+
+Runtime:
+  one logical Harness manages many ExecutionContexts
+```
+
+Also preserve:
+
+```text
+Definition       ≠ Execution
+Event            ≠ Effect
+response         ≠ terminal result
+authority        ≠ exposure
+memory           ≠ context
+ownership        ≠ communication
+semantic control ≠ operational control
+Stage            ≠ Execution
+```
+
+Function calls, LLM inference, and Adapters normally remain local computation inside an enclosing Execution.
 
 ---
 
-# 1. Target state
+## 2. Near-term implementation sequence
 
-The target kernel vocabulary is:
+The preferred sequence is intentionally incremental.
 
-```text
-ExecutableDefinition
-        ↓ instantiate
-Execution
-├── lifecycle / Activation
-├── mailbox / Events
-├── EffectRequests
-├── ownership
-├── communication handles/routes
-├── Authority Envelope
-├── Active Capability View
-├── control state
-├── Memory Bindings
-├── pending operations
-└── trace / durability
+### 2.1 Execution substrate
 
-Workflow → system-owned semantic topology
-Agent    → model-owned semantic topology
-```
-
-The implementation stack remains modular:
+Build or normalize:
 
 ```text
-Kernel semantics             Arrokoth-owned
-Agent execution              Strands as primary implementation initially
-Model inference              provider-neutral ModelProvider
-Knowledge / RAG              provider-neutral contract; LangChain initially useful
-Tools                        native capabilities; MCP as a major transport boundary
-Persistence                  in-memory / SQLite initially; production adapters later
-Messaging                    kernel semantics; storage/broker mechanism replaceable
-Tracing                      Arrokoth-native semantics; standard exporters later
-Sandbox / computer use       external implementations behind capability boundaries
-```
-
-A backend may change without changing what an Execution, Agent, Workflow, Event, Effect, memory write, or authority boundary means.
-
----
-
-# 2. Current implementation reality
-
-The current code already contains several valuable pieces:
-
-```text
-AgentRuntime
-AgentHarness
-AgentLoopEngine
-StrandsLoopEngine
-ReferenceLoopEngine
-ModelProvider
-CapabilityGateway
-KnowledgeRetriever
-Structured Memory
-Working Notes
-ContextCompiler
-Flow / Phase
-WorkflowCoordinator
-Session journal / durability
-confirmation / idempotency
-```
-
-The problem is not that all of this is wrong. The problem is that some pieces still encode the older mental model:
-
-```text
-Agent-centric external-turn coordinator
-semantic Preflight as implicit Agent behavior
-Phase as Agent-control structure
-workflow strategy that is not the target Workflow abstraction
-run/result assumptions that are too terminal-turn oriented
-parent/child execution without arbitrary communication semantics
-```
-
-Migration should preserve behavior where possible while moving conceptual ownership.
-
----
-
-# 3. v0.4 — Establish the execution substrate
-
-The goal of v0.4 is to make core speak the new vocabulary even if advanced composition is still incomplete.
-
-## 3.1 Definition / Execution split
-
-Introduce or normalize:
-
-```text
-ExecutableDefinition
-ExecutionRecord
-ExecutionId
-owner relation
+ExecutionDefinition
+AgentDefinition
+WorkflowDefinition
+ExecutionContext
 LifecycleState
+Activation
+owner/root relationships
+in-memory scheduler/store
 ```
 
-Definitions should become a discriminated union:
+The first conformance target is a long-lived Execution that can:
 
 ```text
-LLM
-Function
-Agent
-Workflow
+RUNNING → WAITING
+receive Event
+WAITING → READY → RUNNING
+respond without terminating
 ```
 
-Remove the conceptual dependency on one universal `instructions` / `input → output` shape.
+### 2.2 Event / Effect substrate
 
-Support:
+Normalize:
 
 ```text
-start schema
-inbox schema
-optional terminal-result schema
+Events
+EffectRequests
+Effect authorization
+pending operations
+correlation / causation
+mailbox delivery
+wake-up
 ```
 
-for the kinds that need them.
-
-## 3.2 Lifecycle and Activation
-
-Make long-lived Executions first-class:
-
-```text
-CREATED → READY → RUNNING ↔ WAITING
-                  ↓
-      COMPLETED / FAILED / CANCELLED
-```
-
-Add Activation semantics so an Agent can live indefinitely without continuously consuming compute.
-
-The runtime must support:
-
-```text
-wake from new Event
-resume from durable state
-ordinary response without completion
-terminal result as optional
-```
-
-## 3.3 Normalize Events and Effects
-
-Establish one inbound Event envelope and one outbound Effect model.
-
-Initial Effect set:
+Initial Effects:
 
 ```text
 UseCapability
+WriteMemory
 SpawnExecution
 SendMessage
-WriteMemory
+RequestUserInput
 ```
 
-Do not add a fundamental Wait Effect. Waiting is scheduler/lifecycle state.
+### 2.3 Workflow controller
 
-Initial Event support should cover at least:
-
-```text
-start
-message received
-capability success/failure
-timeout/timer
-permission decision
-control/cancellation
-```
-
-## 3.4 Generalize authority
-
-Keep an immutable Authority Envelope per Execution.
-
-Authority should expand beyond tool lists to cover:
+Implement:
 
 ```text
-capabilities / knowledge
-memory access
-spawnable definitions
-communication routes
-consequential actions
-```
-
-Preserve:
-
-```text
-owned child authority ⊆ owner authority
-Active Capability View ⊆ Authority Envelope
-```
-
-Capability discovery must remain exposure/context selection, not privilege escalation.
-
-## 3.5 Memory Bindings
-
-Replace broad implicit memory-policy assumptions with explicit binding semantics:
-
-```text
-structured
-notes
-artifact
-```
-
-with lifetime, visibility, access, and commit policy.
-
-Preserve existing structured-memory provenance/correction behavior and Working Notes.
-
-Keep control state separate from semantic memory.
-
-## 3.6 Agent path cleanup
-
-Keep `AgentLoopEngine` / `StrandsLoopEngine` as implementation boundaries, but align them to Activation/Event/Effect semantics.
-
-The current semantic Preflight must become explicit:
-
-- remove it from the pure Agent path when it is only scaffolding; or
-- represent it as explicit compatibility/controller behavior when intentionally desired.
-
-Do not let Preflight remain the hidden semantic definition of Agent.
-
-## 3.7 Phase / Flow ownership
-
-Stop expanding Phase as an Agent abstraction.
-
-Retain useful implementation pieces for future Workflow:
-
-```text
-condition DSL
-transition tracing
-stage configuration/objective
-capability-view narrowing hints
-```
-
-## v0.4 outcome
-
-At the end of v0.4, the code should be able to explain itself in these terms:
-
-```text
-Definition → Execution
-Execution consumes Events
-Execution emits Effects
-Runtime owns lifecycle/authority/durability
-Agent controller is model-driven
-```
-
-Even if real Workflow and peer messaging are still partial, no new core feature should depend on the older AgentHarness/Phase mental model.
-
----
-
-# 4. v0.5 — Workflow, recursive execution, and addressable communication
-
-The goal of v0.5 is to make the composite model real.
-
-## 4.1 Implement the real Workflow controller
-
-Workflow owns predefined semantic topology.
-
-A Stage should roughly contain:
-
-```text
-id
-executor reference
-input mapping
-optional requested authority / view hints
+Function Stage
+LLM Stage
+Agent Stage
+Workflow Stage
 predefined transitions
+Stage completion barrier
+Adapters
+text | none Stage result
 ```
 
-The Workflow may:
+Do not create child Executions for ordinary function/LLM Stage computation.
+
+### 2.4 Agent controller
+
+Align the Agent executor boundary around:
 
 ```text
-run LLM leaves
-run functions
-spawn/call Agents
-spawn/call Workflows
-wait for Events
-loop indefinitely
-terminate optionally
+context compilation
+input Adapter
+LLM/model-directed decision
+output Adapter
+Effect requests
+result Events
+repeated semantic continuation
 ```
 
-Do not require an End stage.
+The current primary Agent implementation may remain Strands where useful, but framework-specific semantics must stay behind an explicit Agent executor boundary.
 
-## 4.2 Recursive execution
+### 2.5 Recursive composition
 
-Support:
-
-```text
-Workflow → Agent
-Workflow → Workflow
-Agent → Workflow
-Agent → Agent
-```
-
-Every spawned Execution receives:
-
-```text
-independent identity
-narrowed authority
-private control state
-explicit Memory Bindings
-budget/deadline
-lifecycle
-mailbox
-trace identity
-```
-
-A subagent remains an ordinary child Agent Execution, not a special framework concept.
-
-## 4.3 Pending operations and durable waiting
-
-Introduce first-class pending-operation records for:
-
-```text
-async capability call
-knowledge retrieval
-child terminal result
-peer reply
-timer
-approval
-remote job
-```
-
-Ensure WAITING/READY transitions and restart recovery work without model-specific assumptions.
-
-## 4.4 Addressable `ExecutionHandle`
-
-Add a safe handle/routing abstraction for existing Executions.
-
-Support high-level semantics such as:
+Implement:
 
 ```text
 spawn
+call
+Agent Stage
+Workflow Stage
+child authority/budget derivation
+child result Events
+cancellation/supervision
+```
+
+### 2.6 Memory
+
+Implement/test:
+
+```text
+Structured Memory views
+Artifacts / Files
+Working Note frames
+provenance
+Stage note handoff policy
+context compilation
+```
+
+### 2.7 Messaging and human interaction
+
+Implement:
+
+```text
 send
 ask
-call
+peer Message Events
+RequestUserInput
+mechanical Effect confirmation
+authorization evidence
 ```
 
-with:
+### 2.8 Durability
+
+After in-memory semantics are stable, add/reconcile:
 
 ```text
-ask  = send + correlation + timeout
-call = spawn + wait for terminal result
+durable ExecutionContext
+mailboxes
+pending operations
+Effect journal/idempotency
+restart recovery
 ```
 
-## 4.5 Separate ownership tree from communication graph
+Avoid coupling the semantic refactor to distributed infrastructure too early.
 
-Implement arbitrary authorized peer communication.
+---
 
-Required invariants:
+## 3. Required conformance programs
+
+Before declaring the model stable, implement and evaluate at least these programs:
+
+1. **Simple RAG Workflow** — `LLM Stage → retrieval Effect → next LLM Stage`.
+2. **Bounded multi-LLM Stage** — `LLM → retrieval → LLM` remains a Workflow Stage because continuation is predefined.
+3. **Agentic research loop** — the model repeatedly chooses retrieve/tool/inspect/stop.
+4. **Workflow containing child Agent** — child is an Agent Execution hidden behind one Agent Stage; Stage waits for required completion.
+5. **Parent Agent spawning multiple children** — tests ownership, authority, results, Working Notes inheritance, and parallel pending work.
+6. **Long-lived conversational Agent** — response does not imply terminal completion; Agent can wait and wake.
+7. **Peer Agents** — messaging is independent from ownership and does not expose memory/cancellation rights.
+8. **User-input + confirmation case** — semantic free-form user input and exact mechanical confirmation remain distinct.
+9. **Memory visibility case** — explicit Structured Memory survives; popped child Working Notes do not silently become parent memory.
+10. **Minimal runtime profile** — the same semantics run in-process without durable/distributed machinery.
+
+Architecture changes should be justified against these scenarios rather than aesthetics alone.
+
+---
+
+## 4. Open design questions
+
+### 4.1 Non-blocking Effects
+
+Current semantics are strongest for blocking dependencies:
 
 ```text
-can message X ≠ owns X
-can message X ≠ can cancel X
-can message X ≠ can inspect X memory
+Effect → wait → Event → continue
 ```
 
-This should support:
+Future Agents may continue while Effects remain pending. We need to test:
 
 ```text
-Agents meetings
-peer critique
-cooperating specialists
-Paper-Agent knowledge network
-long-lived service-style Agents
+how results enter future context
+which pending work blocks Agent step completion
+which pending work blocks Stage completion
+cancellation and timeout behavior
+ordering/correlation
+what happens when Agent decides to finish with work still pending
 ```
 
-without sharing full context.
+Do not expose a broad non-blocking API until these semantics are clear.
 
-## 4.6 Messaging router / mailbox durability
+### 4.2 `fork()`
 
-Add routing semantics for:
+Working Notes stack inheritance was partly chosen because it offers a natural path to fork:
 
 ```text
-message validation
-authorization
-correlation / causation ids
-durable delivery
-wake-up
-ordering/dedup policy
-communication tracing
+parent visible note stack
+        ↓ fork
+branch A local frame
+branch B local frame
 ```
 
-The physical mechanism may initially use the existing persistence stack rather than requiring a distributed broker.
-
-## 4.7 Cancellation / budgets / supervision
-
-Make ownership the default supervision relation.
-
-Support:
+Open questions:
 
 ```text
-budget allocation to children
-execution deadlines
-operation timeouts
-cancellation propagation
-independent peer communication rights
-```
-
-## 4.8 Trace graph
-
-Tracing must expand beyond a pure execution tree.
-
-Represent both:
-
-```text
-ownership edges
-communication/effect causation edges
-```
-
-so an Agents meeting remains understandable without pretending every message is a parent-child call.
-
-## 4.9 Public Execution resources
-
-Once semantics stabilize, begin exposing public surfaces around:
-
-```text
-Definitions
-Executions
-Events
-messages
+snapshot vs reference vs copy-on-write
+Structured Memory behavior across branches
+authority/budget inheritance
+branch merge semantics
 cancellation
-results where terminal
+trace representation
 ```
 
-High-level Agent APIs must map onto these resources rather than define a parallel runtime.
+`spawn` remains the canonical primitive until fork proves necessary.
 
-## v0.5 outcome
+### 4.3 Explicit Working Note commit
 
-At the end of v0.5:
+v0.4 does not automatically merge child notes into parent notes.
 
-- Agents and Workflows are fully composable peers;
-- Executions may be long-lived and addressable;
-- ownership and communication are separate;
-- peer Agents can communicate without context sharing;
-- durable waiting is generic;
-- the old Phase system is not required for new designs.
+Current recommendation:
+
+```text
+important information
+  → terminal result
+  → Structured Memory field
+  → Artifact/File
+  → explicit message
+```
+
+A future `commit note` mechanism may be useful, but it should be tested against the risk of making Working Notes a second implicit shared-memory system.
+
+### 4.4 Stage result type
+
+The current Workflow hypothesis is:
+
+```text
+StageResult = text | none
+```
+
+This keeps graph edges simple and pushes durable structure into explicit memory/resources.
+
+Test whether real applications need richer typed Stage results. If so, prefer a small explicit extension rather than an unconstrained object graph.
+
+### 4.5 More Adapter attachment points
+
+v0.4 focuses on:
+
+```text
+Stage input/output
+Agent-loop model input/output
+```
+
+Possible future boundaries:
+
+```text
+Event Adapter
+memory-read Adapter
+memory-write Adapter
+Effect Adapter
+```
+
+Only add these after concrete use cases demonstrate value.
+
+### 4.6 Adapter permissions
+
+Current v0.4 policy is deliberately narrow:
+
+```text
+read selected memory
+no Effects
+no writes
+no spawn/message
+```
+
+This should be validated with safety, translation, normalization, and structured-output examples.
+
+### 4.7 Dynamic Workflow topology
+
+Model-driven graph mutation is out of v0.4.
+
+Prefer:
+
+```text
+model changes data
+predefined graph reacts to data
+```
+
+Revisit only if fixed topology becomes a demonstrated limitation rather than an aesthetic constraint.
+
+### 4.8 Workflow Stage messaging
+
+Direct peer messaging is primarily an Agent capability in v0.4. Function/LLM Workflow Stages can use results, memory, child calls, and Effects without arbitrary peer messaging.
+
+Test whether real Workflow programs need Stage-initiated peer messaging before exposing it broadly.
+
+### 4.9 Execution kinds beyond Agent/Workflow
+
+The mental model defines Execution by independent runtime identity, not permanently by a closed two-kind ontology.
+
+Possible future examples:
+
+```text
+TrainingJob
+BatchInference
+RemoteBuild
+Simulation
+```
+
+Do not add such kinds until a use case needs independent lifecycle/authority/state and cannot be naturally represented as a Workflow.
+
+### 4.10 `ExecutionDefinition` naming
+
+`ExecutionDefinition` may be clearer than `ExecutableDefinition` now that ordinary functions/LLM calls are not members of the top-level runtime union.
+
+Treat this as a naming/API migration to validate after the semantic boundary is implemented.
 
 ---
 
-# 5. v0.6 — Scale: capability discovery, large agent populations, retrieval, Skills
+## 5. Authority and confirmation research
 
-The goal of v0.6 is to make the same semantics work at large scale.
+### Semantic authorization evidence
 
-## 5.1 Capability Profiles
-
-Introduce reusable named groupings such as:
+An Effect may reference evidence such as:
 
 ```text
-Biomedical Research
-Software Development
-Financial Analysis
-Customer Support
+user Event
+Structured Memory preference
+application policy fact
 ```
 
-Profiles select/expose capabilities from existing authority. They never grant authority.
+The Harness decides whether this is sufficient.
 
-## 5.2 Capability discovery and Active View selection
-
-Support progressively more powerful selection mechanisms:
+Potential policy modes:
 
 ```text
-static/default view
-→ profiles
-→ metadata / keyword retrieval
-→ embedding retrieval
-→ hybrid retrieval
-→ optional model-assisted selection
+none
+semantic
+mechanical
 ```
 
-This mechanism should work not only for tools/knowledge, but also for large populations of addressable Executions where appropriate.
+For consequential actions, exact-payload mechanical confirmation remains the least ambiguous baseline.
 
-Example:
+### Concurrency and Structured Memory
+
+Once parallel child Executions become common, test:
 
 ```text
-Search Agent
-  authority: query large Paper-Agent population
-  active view: only P17, P91, P203 for this activation
+concurrent writes
+optimistic versioning
+field-level conflict policy
+transactions
+provenance-preserving merge
 ```
 
-## 5.3 Large Execution populations
-
-Explore efficient implementation for many dormant addressable Agents:
-
-```text
-cold storage
-lazy rehydration
-indexed discovery
-eviction/caching
-sharded persistence
-```
-
-Semantics must remain:
-
-```text
-addressable Execution
-private state/context
-message-driven wake-up
-```
-
-regardless of whether the process is resident in memory.
-
-## 5.4 Retrieval / RAG optimization
-
-Keep retrieval decomposable and benchmark-driven:
-
-```text
-ingestion / parsing
-chunking
-embedding
-lexical / vector / hybrid search
-metadata filtering
-query rewrite / expansion
-fusion
-reranking
-context packing
-```
-
-Arrokoth owns authorization, provenance, result contracts, visibility, and tracing. Frameworks implement algorithms behind those contracts.
-
-## 5.5 Skills
-
-Add provider-neutral Skills as packaging:
-
-```text
-Skill
-├── prompts/instructions
-├── resources/references
-├── scripts/assets
-├── root ExecutableDefinition
-└── recommended Capability Profile / requested authority
-```
-
-A Skill is not another controller.
-
-## 5.6 Artifact/file memory
-
-Add persistent workspace artifacts where useful for long-running Agents and Workflows.
-
-Keep files/resources as memory, not hidden control flow.
-
-## 5.7 Heterogeneous Agents
-
-Evaluate structures such as:
-
-```text
-strong coordinator Agent
-   ├── cheap/local worker Agents
-   ├── specialist Paper Agents
-   └── critique Agent
-```
-
-Because AgentExecutor and ModelProvider are separate, parent and peers may use different models without changing kernel semantics.
-
-## v0.6 outcome
-
-The same kernel should scale from:
-
-```text
-one simple Agent
-```
-
-to:
-
-```text
-large populations of dormant/addressable Agents
-+ narrow Active Views
-+ retrieval/discovery
-+ peer messaging
-+ long-lived Workflows
-```
-
-without introducing a second orchestration model.
+Do not solve distributed consistency before actual concurrency examples require it.
 
 ---
 
-# 6. Implementation-package strategy
+## 6. Scaling after semantics stabilize
 
-The repository should continue toward:
-
-```text
-packages/
-├── core/
-├── client/
-├── server/
-├── presets/
-├── agents/
-├── models/
-├── knowledge/
-├── tools/
-├── storage/
-├── sandbox/
-└── observability/
-```
-
-Only `packages/core` defines kernel semantics.
-
-Concrete packages may be first-class supported software while remaining replaceable.
-
-Examples:
+Later work may include:
 
 ```text
-@arrokoth/agent-strands
-@arrokoth/model-gemini
-@arrokoth/knowledge-langchain
-@arrokoth/tool-mcp
-@arrokoth/storage-sqlite
+persistent distributed scheduler
+remote workers
+large dormant Agent populations
+capability/resource discovery
+Active View retrieval
+large knowledge collections
+heterogeneous models/executors
+MCP and additional tool transports
+remote sandbox/computer use
+OpenTelemetry/exporters
+production databases/brokers
 ```
 
-Do not create alternate implementations merely to prove theoretical flexibility. Add them when they prove a boundary, remove a limitation, or improve measured quality/cost/reliability.
+The requirement is that none of these change the application mental model.
+
+```text
+logical Harness
+  ├── worker A
+  ├── worker B
+  └── worker C
+```
+
+must still behave like the same Harness/Execution/Event/Effect system.
 
 ---
 
-# 7. Evidence and benchmarks
+## 7. Skills
 
-Architecture should be justified with conformance and behavioral evidence.
+Skills remain deliberately separate from ExecutionDefinition for now.
 
-Important benchmark/test areas:
+A future Skill may package:
 
 ```text
+instructions/prompts
+resources/references
+scripts/assets
+recommended capabilities
+root Agent/Workflow Definition
+```
+
+A Skill should not become another controller or alternate execution substrate.
+
+The exact Skill/Definition relationship remains open until real packaging/distribution use cases are clearer.
+
+---
+
+## 8. Evidence before abstraction
+
+Architecture work should be evaluated with:
+
+```text
+conformance tests
+failure/recovery tests
+latency/cost measurements
 Agent task quality
 Workflow correctness
-Authority enforcement
-message authorization/isolation
-durable waiting/resume
-idempotency
+authority isolation
 memory provenance
-context selection
+messaging isolation
+context selection quality
 retrieval quality
-executor conformance
-cost / latency
-large dormant-Execution populations
 ```
 
-Particularly important conformance invariants include:
+A new kernel abstraction should normally require at least one concrete application where existing primitives are awkward or semantically wrong.
 
-```text
-unauthorized message rejected
-peer message does not expose private context
-communication permission does not imply lifecycle control
-ordinary Agent response does not terminate the Execution
-leaf completion does not terminate owner
-WAITING Execution wakes correctly after restart
-owned child authority never exceeds owner authority
-Active View never exceeds authority
-Workflow never takes an undefined semantic transition
-```
-
----
-
-# 8. Migration principle
-
-The implementation migration should be conservative:
-
-```text
-1. stabilize vocabulary/contracts
-2. adapt existing working behavior to those contracts
-3. add missing substrate semantics
-4. remove compatibility abstractions only after replacement is proven
-5. expand integrations after the kernel boundary is clear
-```
-
-Do not combine the deepest semantic refactor with unrelated package movement or provider churn.
-
-Compatibility adapters at system boundaries are preferable to duplicate semantics in core.
-
----
-
-# 9. Documentation roles
-
-The active documents should have distinct jobs:
-
-```text
-mental-model-v0.4.md
-  → what Arrokoth means
-
-mental-model-to-implementation-model.md
-  → how those semantics map to runtime components/contracts
-
-future-plan.md
-  → what to build/migrate next
-
-repository-structure-plan.md
-  → where supported code should live
-
-mental-model-v0.37.md
-  → historical/current-implementation context
-```
-
-New architecture decisions that should not be casually reversed can later move into ADRs.
-
----
-
-# 10. Roadmap summary
-
-```text
-v0.4
-  Definition / Execution
-  lifecycle + Activation
-  Event / Effect normalization
-  authority + Active View
-  Memory Bindings
-  Agent-path cleanup
-  Phase migration
-
-v0.5
-  real Workflow
-  recursive execution
-  generic pending operations
-  addressable ExecutionHandle
-  arbitrary authorized messaging
-  ownership vs communication graph
-  durable mailboxes
-  supervision + trace graph
-
-v0.6
-  capability/Execution discovery at scale
-  large dormant Agent populations
-  retrieval optimization
-  Skills
-  artifact memory
-  heterogeneous Agent populations
-```
-
-The target is not maximum architectural machinery. It is the smallest kernel that preserves clear authority, durable state, independent context, composable control flow, and useful model autonomy.
+> **Add runtime machinery only when it makes real applications easier to express, operate, or reason about.**
