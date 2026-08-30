@@ -2,7 +2,7 @@
 
 > **Status: roadmap and open design questions, not canonical semantics.**
 >
-> Read [`mental-model.md`](mental-model.md), [`workflow-model.md`](workflow-model.md), [`runtime-architecture.md`](runtime-architecture.md), and [`implementation-guide.md`](implementation-guide.md) first.
+> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), [`runtime-architecture.md`](runtime-architecture.md), and [`implementation-guide.md`](implementation-guide.md) first.
 
 The immediate goal is to validate the current architecture through implementation rather than add more abstractions.
 
@@ -354,9 +354,15 @@ Revisit only if fixed topology becomes a demonstrated limitation rather than an 
 
 ### 4.8 Workflow Stage messaging
 
-Direct peer messaging is primarily an Agent capability in v0.4. Function/LLM Workflow Stages can use results, memory, child calls, and Effects without arbitrary peer messaging.
+`SendMessage` is a shared Execution-level Effect, so there is no architectural rule that peer messaging belongs only to Agents. The open question is narrower: whether v0.4 should expose convenient Stage-level APIs for arbitrary peer messaging from Function/LLM Stages, or keep that surface conservative until real Workflow programs require it.
 
-Test whether real Workflow programs need Stage-initiated peer messaging before exposing it broadly.
+Any such API must preserve the fixed semantics:
+
+```text
+message permission ≠ ownership
+message permission ≠ cancellation
+message permission ≠ memory access
+```
 
 ### 4.9 Execution kinds beyond Agent/Workflow
 
