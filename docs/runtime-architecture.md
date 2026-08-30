@@ -47,7 +47,7 @@ ExecutionContext
 ├── Working Notes view/frame
 ├── pending-operation references
 ├── budget / deadline / runtime policy
-└── optional terminal result
+└── optional typed/schema-bound terminal result
 ```
 
 Metadata and controller progress should remain separate concepts.
@@ -184,6 +184,8 @@ RequestUserInput
 
 Effects are attributed to the enclosing Execution, even when the Effect was requested by a local Function Stage or LLM Stage.
 
+A Stage may designate a subset of pending work as **required for the current Stage's completion**. This is completion/correlation metadata, not Stage ownership of the Effect.
+
 This provides one place for:
 
 ```text
@@ -236,6 +238,17 @@ The controller API may expose ordinary blocking/`await` semantics while the Harn
 
 Non-blocking Effect semantics are intentionally not fully fixed in v0.4. A future Agent may continue while some Effects remain pending, with later Events folded into future Activations. The runtime must preserve correlation and make completion requirements explicit.
 
+A pending operation may therefore carry completion metadata such as:
+
+```text
+required for current Agent step
+required for current Workflow Stage
+required for Execution terminal completion
+not currently blocking
+```
+
+This does not change Effect ownership: the Effect remains attributed to its requesting Execution.
+
 ---
 
 ## 7. `spawn`, `call`, `send`, and `ask`
@@ -263,6 +276,8 @@ pending operations
 trace identity
 effective authority / budget
 ```
+
+The child also receives explicitly derived memory/context visibility. Ownership ancestry alone does not grant access to parent memory or Working Notes.
 
 ### Call
 
@@ -353,6 +368,21 @@ allowed authority subset
 
 Do not hide semantic quality requirements such as "answer must cite 3 sources" in generic runtime policy. Those belong in explicit Workflow/Agent logic or evaluators.
 
+### Resource authority vs information flow
+
+Resource Authority answers whether an Execution may directly access a resource. It does not automatically answer whether information already derived from that resource may be passed to another Execution.
+
+For example, a parent may have access to confidential resource A while a child deliberately does not. If the parent wrote information from A into scratch notes, automatically exposing all parent notes to the child would bypass the intended information boundary.
+
+Therefore child creation must derive both:
+
+```text
+effective authority
+memory/context visibility
+```
+
+The second is an explicit delegation/information-flow decision. v0.4 does not require a full taint-tracking system, but it must not make note ancestry equivalent to permission.
+
 ---
 
 ## 9. Memory resources and views
@@ -416,28 +446,44 @@ This is especially important for correction, audit, and evaluation.
 
 ## 10. Working Notes stack
 
-The current v0.4 hypothesis is that Working Notes behave like a stack of frames rather than isolated per-child memory.
+The current v0.4 hypothesis is that Working Notes use stack-like ancestry rather than isolated per-child memory, **but ancestry does not itself grant visibility**.
 
 ### Nested Execution inheritance
 
 When a parent calls/spawns a child:
 
 ```text
-parent visible frames
+parent Working Note frames
         ↓
-push child frame
+child visibility/delegation filter
         ↓
-child reads parent frames + child frame
-child writes only child frame
+selected inherited read-only frames/view
+        +
+child-local writable frame
         ↓
 child ends
         ↓
-pop child frame
+pop child-local frame
 ```
 
-This lets a child use the parent's current scratch context without silently mutating it.
+The intended semantics are:
 
-It also produces a natural future `fork()` model:
+```text
+ancestry
+  determines what could be inherited
+
+visibility/delegation policy
+  determines what the child actually sees
+
+child-local frame
+  receives child writes
+```
+
+A child may therefore use selected parent scratch context without silently mutating parent frames or receiving confidential notes merely because it is a descendant.
+
+> **Note ancestry does not imply visibility.**
+
+This also produces a natural future `fork()` model. A fork can inherit the currently **visible** note view, subject to the forked Execution's authority and visibility policy, then add a branch-local frame:
 
 ```text
 visible stack
@@ -450,7 +496,7 @@ branch 1: A B C D1
 branch 2: A B C D2
 ```
 
-The implementation can later decide whether frames use snapshots, references, or copy-on-write. v0.4 specifies behavior, not storage strategy.
+The implementation can later decide whether frames use snapshots, references, or copy-on-write. v0.4 specifies intended behavior, not storage strategy.
 
 ### No automatic commit upward
 
@@ -527,6 +573,8 @@ Active Capability View
 Adapters may run around this boundary as defined in [`workflow-model.md`](workflow-model.md).
 
 The context compiler should be free to trim, rank, summarize, retrieve, or pack content as long as it respects authority/visibility and provenance requirements.
+
+For child Executions, context compilation must begin from the child's explicitly delegated memory/context view rather than from the full parent view.
 
 ---
 
@@ -737,6 +785,8 @@ The child may run on another worker, but parent/child semantics remain unchanged
 > **Every externally meaningful action crosses the Effect gateway.**
 
 > **Runtime authority/policy constrains controllers; controllers do not grant themselves permission.**
+
+> **Cross-Execution memory/context visibility is explicitly delegated; ancestry alone grants no visibility.**
 
 > **Important shared semantic information uses explicit memory/results/messages, not accidental Working Note propagation.**
 
