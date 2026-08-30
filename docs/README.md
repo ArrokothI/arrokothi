@@ -7,10 +7,11 @@ These documents describe the current design target for Arrokoth. They are separa
 1. [`mental-model.md`](mental-model.md) — canonical conceptual model: Execution, Workflow vs Agent, Event/Effect, authority/exposure, memory/context, ownership/communication, and the core invariants.
 2. [`composition.md`](composition.md) — composition semantics shared across Agents and Workflows: local computation vs child Executions, Workflow Stages, Effects, pending work, completion boundaries, retrieval patterns, and Adapters.
 3. [`runtime-architecture.md`](runtime-architecture.md) — Harness/runtime semantics: ExecutionContext, lifecycle, scheduling, pending operations, messaging, authority, memory visibility, Working Notes, confirmation, durability, and provenance.
-4. [`implementation-guide.md`](implementation-guide.md) — non-normative implementation mapping, suggested contracts, conformance scenarios, and a practical way to derive a coding plan.
-5. [`future-plan.md`](future-plan.md) — unresolved questions, experiments, and likely future work.
+4. [`security-guarantees.md`](security-guarantees.md) — kernel security guarantees, trust/deployment profiles, untrusted-code boundaries, Execution-to-Execution isolation, resource exposure, and reusable sandbox backends.
+5. [`implementation-guide.md`](implementation-guide.md) — non-normative implementation mapping, suggested contracts, conformance scenarios, and a practical way to derive a coding plan.
+6. [`future-plan.md`](future-plan.md) — unresolved questions, experiments, and likely future work.
 
-For a new engineer or coding agent, reading the first four in order should be enough to understand the target architecture before inspecting the codebase.
+For a new engineer or coding agent, reading the first five in order should be enough to understand the target architecture before inspecting the codebase.
 
 ## Document authority
 
@@ -21,6 +22,8 @@ mental-model.md
     ↓ conceptual truth
 composition.md / runtime-architecture.md
     ↓ domain refinements
+security-guarantees.md
+    ↓ security contract derived from those semantics
 implementation-guide.md
     ↓ implementation proposal
 future-plan.md
@@ -88,6 +91,29 @@ In v0.4, Agent and Workflow are the Execution kinds we need. Function calls, LLM
 
 A useful practical test is: if a unit does not need independently meaningful identity/addressability, lifecycle/waiting, authority/budget, mailbox/Events, cancellation/supervision, durability/recovery, or child ownership, it normally should not become another Execution.
 
+## Security in one picture
+
+```text
+application policy
+  decides what should be allowed
+        ↓
+Harness / kernel
+  enforces authority, visibility,
+  messaging, ownership, and Effects
+        ↓
+execution-isolation backend
+  prevents hostile code from bypassing
+  the Harness through ambient privilege
+        ↓
+external resources / world state
+```
+
+The kernel-level rule is:
+
+> **An Execution receives authority, not ambient privilege. A request is not permission.**
+
+The trusted local SDK profile enforces Arrokoth-mediated operations but cannot contain the owner of the host process. A stronger hosted/untrusted-code profile additionally requires a reviewed sandbox/isolation backend. See [`security-guarantees.md`](security-guarantees.md).
+
 ## Stable invariants vs current hypotheses
 
 ### Stable target invariants
@@ -107,6 +133,9 @@ A useful practical test is: if a unit does not need independently meaningful ide
 - A Stage is not another Execution and does not own Effects.
 - Adapters are attached transformations, not independent controllers.
 - Cross-Execution memory/context visibility is explicitly delegated; ancestry alone grants no visibility.
+- Effect requests are not grants of authority.
+- Knowing or messaging an Execution does not grant access to its private runtime or memory state.
+- Strong hostile-code containment requires an isolation substrate in addition to kernel authority checks.
 
 ### Current v0.4 hypotheses to test
 
@@ -117,12 +146,13 @@ A useful practical test is: if a unit does not need independently meaningful ide
 - Adapters are Effect-free in v0.4.
 - Broad non-blocking and detached-child semantics remain intentionally conservative until tested.
 - Dynamic model-driven mutation of Workflow topology is out of scope; prefer model-driven changes to data.
+- The initial runtime may execute trusted Stage code in-process; hostile uploaded code requires a later isolated execution profile rather than pretending that static analysis is containment.
 
 ## Using these docs to make a coding plan
 
 Before mapping files to tasks:
 
-1. read the four architecture documents;
+1. read the five architecture/security documents;
 2. list the invariants the feature or migration must preserve;
 3. inspect the current code and identify components that already satisfy those responsibilities;
 4. separate semantic gaps from naming/package cleanup;
