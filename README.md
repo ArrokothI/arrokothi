@@ -1,8 +1,8 @@
 # Arrokoth Agent Kernel
 
-A provider-neutral execution kernel for building long-lived Agents and Workflows with bounded authority, durable state, explicit memory, and composable communication.
+A provider-neutral execution kernel for building long-lived Agents and Workflows with bounded authority, explicit memory, durable waiting, and composable communication.
 
-> **Executions receive Events and request Effects. Workflows let the system choose what happens next; Agents let the model choose.**
+> **Executions receive Events and request Effects. Workflows use system-defined semantic topology; Agents use model-directed open-ended semantic progression.**
 
 ## Install and verify
 
@@ -16,33 +16,35 @@ npm run typecheck
 
 The default tests and examples are offline. Copy [`.env.example`](.env.example) to `.env` only for optional live provider examples.
 
+## Architecture documentation
+
+Start with [`docs/README.md`](docs/README.md). The recommended reading order is:
+
+1. [`docs/mental-model.md`](docs/mental-model.md) — canonical conceptual model.
+2. [`docs/workflow-model.md`](docs/workflow-model.md) — Stage, transition, Effect, and Adapter semantics.
+3. [`docs/runtime-architecture.md`](docs/runtime-architecture.md) — Harness, lifecycle, memory, messaging, pending work, confirmation, and durability.
+4. [`docs/implementation-guide.md`](docs/implementation-guide.md) — implementation mapping, conformance scenarios, and coding-plan guidance.
+5. [`docs/future-plan.md`](docs/future-plan.md) — open questions and future experiments.
+
+Files under [`docs/legacy/`](docs/legacy/) are historical design material and are not canonical.
+
 ## Mental model
 
-The canonical architecture is documented in:
-
-- [`docs/mental-model-v0.4.md`](docs/mental-model-v0.4.md) — the semantic model;
-- [`docs/mental-model-to-implementation-model.md`](docs/mental-model-to-implementation-model.md) — how those semantics map to runtime components;
-- [`docs/future-plan.md`](docs/future-plan.md) — migration and roadmap;
-- [`docs/repository-structure-plan.md`](docs/repository-structure-plan.md) — package/repository ownership.
-
-The core idea is:
+The core runtime boundary is:
 
 ```text
-ExecutableDefinition
-        │ instantiate
-        ▼
-Execution
-├── lifecycle / Activation
-├── mailbox / Events
-├── EffectRequests
-├── Authority Envelope
-├── Active Capability View
-├── Memory Bindings
-├── ownership
-└── communication routes
+ExecutionDefinition
+├── AgentDefinition
+└── WorkflowDefinition
+        ↓ instantiate
+     Execution
 ```
 
-An Execution may be a finite LLM/function call, or a long-lived Agent/Workflow that waits and wakes for future Events.
+An **Execution** is an independently managed runtime entity with identity, lifecycle, authority, memory/runtime state, pending operations, and optional communication endpoints.
+
+Ordinary Function calls and LLM inference are normally lightweight computation inside an Agent or Workflow Execution rather than independent Executions.
+
+> **Composition does not imply an Execution boundary. `call` or `spawn` does.**
 
 ```text
 Event
@@ -51,67 +53,103 @@ Execution controller
   ↓
 EffectRequest
   ↓
-Runtime / Harness
+Harness
   ↓
 capability, memory, another Execution, or environment
   ↓
 Event
 ```
 
-The runtime validates authority, persistence, idempotency, lifecycle, and routing. The controller owns semantic work appropriate to its kind.
+The Harness authorizes and coordinates Effects and records what actually happened. Controllers own semantic work appropriate to their kind.
 
 ### Workflow vs Agent
 
 ```text
 Workflow
-  system/application owns the allowed semantic topology
+  system/application defines the possible semantic topology
 
 Agent
-  model chooses the semantic next action inside hard runtime limits
+  model repeatedly chooses the semantic next action
+  inside hard runtime limits
 ```
 
-Both use the same execution substrate.
+The distinction does not depend on the number of LLM calls, tool use, loops, or duration. A Workflow Stage may contain multiple predetermined LLM calls and Effects. An Agent is different because the model owns an open-ended continuation space.
+
+### Workflow Stages
+
+A Workflow is composed from Stages:
+
+```text
+Stage
+├── Function Stage
+├── LLM Stage
+├── Agent Stage
+└── Workflow Stage
+```
+
+A Stage is a semantic Workflow boundary, not another Execution. It may hide local functions, LLM calls, Effects, and child Execution calls. Required Stage-local work settles before the Workflow transitions.
+
+Adapters are lightweight boundary transformations attached inside a Stage or around an Agent model-call boundary; they are not Workflow graph nodes or independent Executions.
+
+### Authority and exposure
+
+```text
+Capability/resource universe
+        ↓
+Authority Envelope
+        ↓
+Active / Exposed View
+```
+
+Authority answers what an Execution may ever do. Exposure answers what subset is currently visible to its controller/model.
+
+```text
+Active View ⊆ Authority Envelope
+```
+
+### Memory and context
+
+Arrokoth distinguishes retained information from current model context.
+
+```text
+Memory
+  Structured Memory
+  Artifacts / Files
+  Working Notes
+
+Context
+  selected information compiled for the current computation
+```
+
+Important shared information should move explicitly through Structured Memory, Artifacts, terminal/Stage results, or authorized messages.
+
+The current Working Notes design uses stack-like downward visibility for nested Executions: a child can read parent note frames and writes only its own frame, which is removed from active context when the child ends. This is a current runtime hypothesis and will be validated through implementation.
 
 ### Ownership vs communication
 
-An Execution may create/own another Execution, but communication is a separate graph.
+Ownership and communication are independent graphs.
 
 ```text
 Ownership
   Workflow W
    ├── Agent A
    ├── Agent B
-   └── Agent C
+   └── Workflow C
 
 Communication
-  A ↔ B ↔ C ↔ A
+  A ↔ B
+  B ↔ D
 ```
 
-This allows independent-context Agents to discuss, critique, or query each other without sharing their full context or memory.
-
-### Authority and exposure
-
-```text
-Capability Catalog
-        ↓
-Authority Envelope
-        ↓
-Active Capability View
-```
-
-The Authority Envelope is the immutable maximum authority of an Execution. The Active Capability View is the smaller dynamic set currently exposed to its controller/model.
-
-Changing exposure inside existing authority is context engineering, not privilege escalation.
+Messaging permission does not imply ownership, cancellation rights, or memory access.
 
 ## Current implementation
 
-The repository is in transition from the earlier Agent SDK architecture toward the canonical Execution/Event/Effect model.
+The repository is being migrated toward the architecture documented above. Existing components such as Agent execution, model-provider boundaries, capability gateways, memory, context compilation, durability, and storage should be preserved where their responsibilities still match the target semantics.
 
-Existing implementation pieces such as `AgentRuntime`, `AgentHarness`, `AgentLoopEngine`, `CapabilityGateway`, structured memory, Working Notes, context compilation, durability, and provider boundaries are being preserved where their responsibilities still match the target model.
+Older code may still encode previous assumptions. In particular, historical documents and implementation structures may treat LLM/Function invocations as Executions or use older Flow/Phase/AgentHarness semantics. New work should follow the active documents rather than infer the architecture from legacy class names.
 
-Some older concepts remain in code for compatibility, especially semantic Preflight, Flow/Phase behavior, and the historical `AgentHarness` workflow strategy. They should not be treated as the long-term semantic definition of Agent or Workflow. See [`docs/future-plan.md`](docs/future-plan.md) for the migration path.
-
-The current primary Agent executor is Strands, while model inference remains behind a separate provider-neutral `ModelProvider` boundary.
+The current primary Agent executor is Strands, while model inference remains behind a provider-neutral boundary.
 
 ## Commands
 
@@ -132,13 +170,12 @@ Cross-framework P01/P02 evaluation and retained historical evidence live in the 
 ```text
 packages/core/                kernel contracts/runtime and reference mechanisms
 packages/agents/strands/      primary Strands Agent executor adapter
-packages/models/gemini/       Gemini ModelProvider adapter
+packages/models/gemini/       Gemini model-provider adapter
 packages/storage/sqlite/      SQLite persistence adapter
 apps/studio/                  local development/inspection surface
 examples/                     focused usage examples
-examples/benchmark/p01/       stable P01 benchmark-facing subject
-examples/benchmark/p02/       stable P02 benchmark-facing subject
-docs/                         mental model, implementation guide, roadmap, structure
+docs/                         active architecture, implementation guidance, roadmap
+docs/legacy/                  historical design documents
 scripts/                      repository tooling/manual diagnostics
 ```
 
@@ -156,6 +193,6 @@ Concrete Agent frameworks, model SDKs, retrieval frameworks, databases, and tool
 
 ## One-minute explanation
 
-Arrokoth treats an Agent or Workflow as a potentially long-lived, addressable Execution rather than only as a function call. Each Execution has private state, a mailbox, bounded authority, memory bindings, and a lifecycle. Events come in; Effects go out through a runtime that validates permissions and records what actually happened. Executions can use tools and knowledge, create other Executions, message authorized peers, update memory, finish, or wait and wake indefinitely.
+Arrokoth treats an Agent or Workflow as a potentially long-lived, addressable **Execution**. The Harness manages many Executions and owns operational concerns such as scheduling, authorization, waiting, routing, and recovery. Events are observations delivered into an Execution; Effects are requests to interact with capabilities, memory, users, or other Executions.
 
-Workflow and Agent are peers over this same substrate. The only fundamental control-flow distinction is who chooses the semantic next step: the system for a Workflow, the model for an Agent.
+A Workflow uses system-defined semantic topology made from Stages. An Agent uses a model-directed semantic loop. Functions, LLM calls, and Adapters normally remain local computation inside those Executions rather than receiving independent runtime identity.
