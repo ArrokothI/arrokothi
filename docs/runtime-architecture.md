@@ -2,7 +2,7 @@
 
 > **Status: current v0.4 runtime semantics.**
 >
-> Read [`mental-model.md`](mental-model.md) and [`workflow-model.md`](workflow-model.md) first. This document explains how one logical Harness manages Executions, memory, pending work, messaging, confirmation, durability, and provenance.
+> Read [`mental-model.md`](mental-model.md) and [`composition.md`](composition.md) first. This document explains how one logical Harness manages Executions, lifecycle, scheduling, pending work, messaging, authority, memory visibility, confirmation, durability, and provenance.
 
 ## 1. One logical Harness
 
@@ -15,7 +15,7 @@ The Harness is the runtime boundary between controller intent and reality.
       Execution    Execution    Execution
 ```
 
-An Execution does **not** own its own Harness. Instead, the Harness manages one `ExecutionContext` per live Execution.
+An Execution does **not** own its own Harness. The Harness manages one `ExecutionContext` per live Execution.
 
 ```text
 Harness
@@ -24,7 +24,7 @@ Harness
   └── ExecutionContext C
 ```
 
-This is similar to one operating-system kernel managing many processes. Parent and child Executions receive separate runtime identity/context under the same logical Harness; there is no Harness merging operation.
+This is similar to one operating-system kernel managing many processes. Parent and child Executions receive separate runtime identity/context under the same logical Harness.
 
 The logical Harness may later be distributed across multiple processes or workers. Physical placement must not change the semantics of `spawn`, `call`, Event, Effect, memory, or lifecycle.
 
@@ -127,7 +127,7 @@ Successful terminal completion:
 
 ## 4. Scheduler and wake-up
 
-The Runtime State Store is persistence, not a wake-up mechanism.
+Persistence is not a wake-up mechanism.
 
 Wake-up is:
 
@@ -151,12 +151,12 @@ A simple deployment can use an in-memory mailbox and FIFO queue. A richer runtim
 
 ---
 
-## 5. Effects and the Effect Gateway
+## 5. Effect gateway
 
-All externally meaningful actions cross the Harness through an EffectRequest.
+Externally meaningful actions cross the Harness through an EffectRequest.
 
 ```text
-controller / Stage
+controller / local composition
        ↓
   EffectRequest
        ↓
@@ -182,11 +182,11 @@ SendMessage
 RequestUserInput
 ```
 
-Effects are attributed to the enclosing Execution, even when the Effect was requested by a local Function Stage or LLM Stage.
+Effects are attributed to the requesting Execution, even when requested by local Function Stage, LLM Stage, or Agent-step logic.
 
-A Stage may designate a subset of pending work as **required for the current Stage's completion**. This is completion/correlation metadata, not Stage ownership of the Effect.
+Local composition may identify which pending operations are required for a particular Stage or Agent step to settle. That is completion/correlation metadata, not local ownership of the Effect.
 
-This provides one place for:
+The Effect gateway centralizes:
 
 ```text
 authorization
@@ -199,11 +199,13 @@ provenance
 recovery
 ```
 
+The semantics of how Effects compose inside Stages and Agents are defined in [`composition.md`](composition.md).
+
 ---
 
 ## 6. Pending operations
 
-If an Effect does not finish within the current Activation, the Harness records a pending operation.
+If an Effect or runtime-mediated interaction does not finish within the current Activation, the Harness records a pending operation.
 
 Examples:
 
@@ -221,7 +223,7 @@ timer
 Conceptually:
 
 ```text
-EffectRequest
+EffectRequest / awaited interaction
     ↓
 PendingOperation
     ↓
@@ -236,9 +238,7 @@ mailbox / READY
 
 The controller API may expose ordinary blocking/`await` semantics while the Harness internally suspends and resumes the Execution.
 
-Non-blocking Effect semantics are intentionally not fully fixed in v0.4. A future Agent may continue while some Effects remain pending, with later Events folded into future Activations. The runtime must preserve correlation and make completion requirements explicit.
-
-A pending operation may therefore carry completion metadata such as:
+A pending operation may carry completion metadata such as:
 
 ```text
 required for current Agent step
@@ -247,7 +247,7 @@ required for Execution terminal completion
 not currently blocking
 ```
 
-This does not change Effect ownership: the Effect remains attributed to its requesting Execution.
+The exact non-blocking model is intentionally not fixed in v0.4. The runtime requirement is correlation plus an explicit statement of which semantic boundary, if any, depends on completion.
 
 ---
 
@@ -275,13 +275,14 @@ mailbox
 pending operations
 trace identity
 effective authority / budget
+memory/context view
 ```
 
-The child also receives explicitly derived memory/context visibility. Ownership ancestry alone does not grant access to parent memory or Working Notes.
+Ownership ancestry alone does not grant access to parent memory or Working Notes.
 
 ### Call
 
-`call` is a convenience semantic:
+`call` is conceptually:
 
 ```text
 spawn child
@@ -370,9 +371,9 @@ Do not hide semantic quality requirements such as "answer must cite 3 sources" i
 
 ### Resource authority vs information flow
 
-Resource Authority answers whether an Execution may directly access a resource. It does not automatically answer whether information already derived from that resource may be passed to another Execution.
+Resource Authority answers whether an Execution may directly access a resource. It does not automatically answer whether already-derived information may be passed to another Execution.
 
-For example, a parent may have access to confidential resource A while a child deliberately does not. If the parent wrote information from A into scratch notes, automatically exposing all parent notes to the child would bypass the intended information boundary.
+For example, a parent may have access to confidential resource A while a child deliberately does not. If the parent wrote A-derived information into scratch notes, automatically exposing all parent notes to the child would bypass the intended information boundary.
 
 Therefore child creation must derive both:
 
@@ -381,13 +382,13 @@ effective authority
 memory/context visibility
 ```
 
-The second is an explicit delegation/information-flow decision. v0.4 does not require a full taint-tracking system, but it must not make note ancestry equivalent to permission.
+The second is an explicit delegation/information-flow decision. v0.4 does not require a full taint-tracking system, but note ancestry must not be treated as permission.
 
 ---
 
 ## 9. Memory resources and views
 
-The current design avoids creating copied physical memory stores for every nested Execution.
+The architecture avoids creating copied physical memory stores for every nested Execution.
 
 Instead, memory is shared by reference with policy-controlled views:
 
@@ -396,10 +397,10 @@ Underlying Memory Resources
           ↓
       Memory View
           ↓
-Execution / Stage / Adapter
+      Execution
 ```
 
-The default architecture contains:
+The default memory forms are:
 
 ```text
 Structured Memory
@@ -444,9 +445,9 @@ This is especially important for correction, audit, and evaluation.
 
 ---
 
-## 10. Working Notes stack
+## 10. Working Notes
 
-The current v0.4 hypothesis is that Working Notes use stack-like ancestry rather than isolated per-child memory, **but ancestry does not itself grant visibility**.
+The current v0.4 hypothesis is that Working Notes use stack-like ancestry, but **ancestry does not itself grant visibility**.
 
 ### Nested Execution inheritance
 
@@ -457,7 +458,7 @@ parent Working Note frames
         ↓
 child visibility/delegation filter
         ↓
-selected inherited read-only frames/view
+selected inherited read-only view
         +
 child-local writable frame
         ↓
@@ -479,11 +480,36 @@ child-local frame
   receives child writes
 ```
 
-A child may therefore use selected parent scratch context without silently mutating parent frames or receiving confidential notes merely because it is a descendant.
+A child may therefore use selected parent scratch context without mutating parent frames or receiving confidential notes merely because it is a descendant.
 
 > **Note ancestry does not imply visibility.**
 
-This also produces a natural future `fork()` model. A fork can inherit the currently **visible** note view, subject to the forked Execution's authority and visibility policy, then add a branch-local frame:
+### No automatic commit upward
+
+A child's Working Notes do not automatically merge into the parent.
+
+If the child discovers something that must survive, use an explicit channel:
+
+```text
+terminal result
+Structured Memory write
+Artifact/File
+peer/parent message when appropriate
+```
+
+A future explicit note-commit operation can be tested, but v0.4 should not make Working Notes a second implicit shared-memory system.
+
+### Bounded notes
+
+Prefer bounds per frame/view, ideally by context/token budget rather than a single global row count. A child should not be able to evict unrelated parent notes from active context merely by writing heavily to its own frame.
+
+### Pop vs erase
+
+Popping a frame means it is no longer part of active reasoning context. The runtime may still retain it in trace/debug archives according to policy.
+
+### Future `fork()`
+
+The stack model leaves room for a future fork operation:
 
 ```text
 visible stack
@@ -496,64 +522,13 @@ branch 1: A B C D1
 branch 2: A B C D2
 ```
 
-The implementation can later decide whether frames use snapshots, references, or copy-on-write. v0.4 specifies intended behavior, not storage strategy.
+A fork would inherit the currently visible note view subject to the new Execution's authority and visibility policy. Snapshot/reference/copy-on-write details remain implementation questions.
 
-### No automatic commit upward
-
-A child's Working Notes should not automatically merge into the parent.
-
-If the child discovers something that must survive, it should use an explicit channel:
-
-```text
-terminal result
-Structured Memory write
-Artifact/File
-peer/parent message when appropriate
-```
-
-A future explicit note-commit operation can be tested, but the current recommendation is to define a Structured Memory field such as `important_note` when a durable semantic value is required.
-
-### Bounded notes
-
-The older global "last N rows" behavior should not allow a child to evict unrelated parent notes.
-
-Prefer bounds per frame/view, ideally by context/token budget rather than a single global row count.
-
-### Pop vs erase
-
-Popping a frame means it is no longer part of active reasoning context. The runtime may still retain it in trace/debug archives according to policy.
+Stage-to-Stage Working Note handoff is a composition rule and is defined in [`composition.md`](composition.md), not here.
 
 ---
 
-## 11. Sequential Workflow Stage note handoff
-
-Sequential Stages are not parent/child Executions, so their note behavior differs.
-
-Current proposal:
-
-```text
-default:
-  Stage A Working Notes do not flow to Stage B
-
-optional:
-  explicitly hand off selected/all notes
-```
-
-Default no-pass prevents scratch notes from becoming hidden Workflow dataflow.
-
-When pass is enabled, treat it as a handoff into the next Stage's working frame rather than keeping an ever-growing stack of every previous Stage.
-
-Important information should still prefer:
-
-```text
-Stage result
-Structured Memory
-Artifact/File
-```
-
----
-
-## 12. Context compilation
+## 11. Context compilation
 
 Memory and history are not automatically equal to model context.
 
@@ -570,15 +545,15 @@ selected Artifacts/resource snippets
 Active Capability View
 ```
 
-Adapters may run around this boundary as defined in [`workflow-model.md`](workflow-model.md).
+Adapters may run around model-call boundaries as defined in [`composition.md`](composition.md).
 
 The context compiler should be free to trim, rank, summarize, retrieve, or pack content as long as it respects authority/visibility and provenance requirements.
 
-For child Executions, context compilation must begin from the child's explicitly delegated memory/context view rather than from the full parent view.
+For child Executions, context compilation begins from the child's explicitly delegated memory/context view, not the full parent view.
 
 ---
 
-## 13. User input and confirmation
+## 12. User input and confirmation
 
 Two mechanisms must remain distinct.
 
@@ -649,7 +624,7 @@ Structured Memory can store durable preferences such as `auto_send_weekly_report
 
 ---
 
-## 14. Failure semantics
+## 13. Failure semantics
 
 An operation failure is normally an Event before it is a terminal Execution failure.
 
@@ -669,7 +644,7 @@ Infrastructure retry policy belongs to the Harness. Semantic retries/alternative
 
 ---
 
-## 15. Durability and recovery
+## 14. Durability and recovery
 
 Durability is a deployment capability of the same runtime semantics, not a separate programming model.
 
@@ -699,7 +674,7 @@ A simple deployment may keep all of this in memory.
 
 ---
 
-## 16. Provenance and tracing
+## 15. Provenance and tracing
 
 Provenance should separate several questions:
 
@@ -734,7 +709,7 @@ rather than pretending every interaction is a parent-child call tree.
 
 ---
 
-## 17. Simple and distributed deployments
+## 16. Simple and distributed deployments
 
 The architecture should scale by progressively enabling runtime machinery rather than creating separate semantics.
 
@@ -770,26 +745,26 @@ logical Harness
   └── worker C
 ```
 
-The child may run on another worker, but parent/child semantics remain unchanged.
+A child may run on another worker, but parent/child semantics remain unchanged.
 
 ---
 
-## 18. Runtime invariants
+## 17. Runtime invariants
 
 > **One logical Harness manages many Executions.**
 
-> **ExecutionContext belongs to an Execution; Blocks and Adapters do not get independent ExecutionContexts.**
+> **ExecutionContext belongs to an Execution; Stages and Adapters do not get independent ExecutionContexts.**
 
 > **Events wake Executions through routing/scheduling; persistence alone does not wake them.**
 
-> **Every externally meaningful action crosses the Effect gateway.**
+> **Externally meaningful actions cross the Effect gateway.**
+
+> **Effects and pending operations are attributed to the Execution; local composition boundaries only mark completion dependencies.**
 
 > **Runtime authority/policy constrains controllers; controllers do not grant themselves permission.**
 
 > **Cross-Execution memory/context visibility is explicitly delegated; ancestry alone grants no visibility.**
 
-> **Important shared semantic information uses explicit memory/results/messages, not accidental Working Note propagation.**
-
-> **Working Notes stack semantics are a current policy hypothesis and should be tested, especially with future `fork()`.**
+> **Important shared semantic information uses explicit memory/results/messages rather than accidental Working Note propagation.**
 
 > **Simple and durable/distributed deployments share the same semantics.**
