@@ -68,7 +68,7 @@ Examples of control data:
 ```text
 Workflow current/completed Stage
 Agent executor continuation data
-correlation cursors
+correlation / event-consumption cursors
 ```
 
 Avoid using one generic `state` field to blur these together.
@@ -184,7 +184,7 @@ RequestUserInput
 
 Effects are attributed to the requesting Execution, even when requested by local Function Stage, LLM Stage, or Agent-step logic.
 
-Local composition may identify which pending operations are required for a particular Stage or Agent step to settle. That is completion/correlation metadata, not local ownership of the Effect.
+A Stage or Agent step may mark certain pending operations as **required** before that local semantic step can complete. The Effects themselves still belong to the enclosing Execution; the local step only records a completion dependency and how the eventual result should be correlated.
 
 The Effect gateway centralizes:
 
@@ -198,6 +198,7 @@ tracing
 provenance
 recovery
 ```
+* **correlation** connects an Effect to the later Event/result that resolves it.
 
 The semantics of how Effects compose inside Stages and Agents are defined in [`composition.md`](composition.md).
 
@@ -367,7 +368,7 @@ infrastructure retry policy
 allowed authority subset
 ```
 
-Do not hide semantic quality requirements such as "answer must cite 3 sources" in generic runtime policy. Those belong in explicit Workflow/Agent logic or evaluators.
+Do not hide **semantic quality** requirements such as "answer must cite 3 sources" in generic runtime policy. Those belong in explicit Workflow/Agent logic or evaluators.
 
 ### Resource authority vs information flow
 
