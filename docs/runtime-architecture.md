@@ -2,7 +2,7 @@
 
 > **Status: current v0.4 runtime semantics.**
 >
-> Read [`mental-model.md`](mental-model.md) and [`composition.md`](composition.md) first. This document explains how one logical Harness manages Executions, lifecycle, scheduling, pending work, messaging, authority, memory visibility, confirmation, durability, and provenance.
+> Read [`mental-model.md`](mental-model.md) and [`composition.md`](composition.md) first. This document explains how one logical Harness manages Executions, lifecycle, scheduling, pending work, messaging, authority, memory visibility, confirmation, durability, and provenance. Protocol/service projection and import/export mapping are defined in [`interoperability.md`](interoperability.md).
 
 ## 1. One logical Harness
 
@@ -201,6 +201,39 @@ recovery
 * **correlation** connects an Effect to the later Event/result that resolves it.
 
 The semantics of how Effects compose inside Stages and Agents are defined in [`composition.md`](composition.md).
+
+### Protocol and interoperability gateways
+
+Protocol adapters sit outside the kernel Effect vocabulary. They may implement outbound Effects, expose selected Arrokoth services inbound, or translate external asynchronous observations back into trusted settlement/Event ingress.
+
+```text
+Outbound
+Effect
+  ↓
+Harness
+  ↓
+protocol/capability adapter
+  ↓
+MCP / HTTP / SDK / remote service
+
+Inbound service call
+external authenticated caller
+  ↓
+application/protocol adapter
+  ↓
+declared Arrokoth service operation
+  ↓
+create/input/message an Execution or request an Effect
+
+External completion/change
+protocol result / task / notification
+  ↓
+trusted adapter/router
+  ↓
+settlement, cache/view refresh, or Event when semantically relevant
+```
+
+An external operation, task, or notification does not become an Effect, PendingOperation, Execution, or Event merely because the protocol names it similarly. The adapter preserves correlation and maps only the semantic portion that belongs inside the runtime. See [`interoperability.md`](interoperability.md).
 
 ---
 
@@ -759,6 +792,8 @@ A child may run on another worker, but parent/child semantics remain unchanged.
 > **Events wake Executions through routing/scheduling; persistence alone does not wake them.**
 
 > **Externally meaningful actions cross the Effect gateway.**
+
+> **Protocol operations and notifications cross explicit adapters; they do not redefine Effect/Event semantics.**
 
 > **Effects and pending operations are attributed to the Execution; local composition boundaries only mark completion dependencies.**
 
