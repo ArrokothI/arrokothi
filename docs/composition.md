@@ -4,7 +4,7 @@
 >
 > Read [`mental-model.md`](mental-model.md) first. This document explains how work composes inside and across Executions. Workflow Stages provide the main explicit composition structure, but several mechanisms here—local computation, Effects, pending work, Adapters, child Executions, retrieval, and completion dependencies—are shared by both Workflows and Agents.
 >
-> Runtime lifecycle, scheduling, pending work, structural budgets, wait-for dependencies, cancellation, and supervision are defined in [`execution-runtime.md`](execution-runtime.md).
+> Runtime lifecycle, scheduling, pending work, concurrency, structural budgets, wait-for dependencies, cancellation, and supervision are defined in [`execution-runtime.md`](execution-runtime.md).
 >
 > Portable service/interface projection and protocol mapping are defined in [`interoperability.md`](interoperability.md). Those projections do not create new composition boundaries or replace Event/Effect semantics.
 
@@ -37,6 +37,8 @@ child Execution composition
 peer interaction
   send/ask communicates with an already-existing Execution
 ```
+
+Local does not mean physically synchronous. A model invocation or other controller-local operation may suspend and resume across Activations while remaining semantically inside one Execution. See [`execution-runtime.md`](execution-runtime.md).
 
 ---
 
@@ -239,6 +241,8 @@ predefined Workflow branch
 
 is still Workflow semantics.
 
+An LLM Stage may suspend while its provider request is in flight. That does not make the provider call another Execution or change the Workflow into an Agent.
+
 ### 5.3 Agent Stage
 
 An Agent Stage uses a child Agent Execution behind one Workflow Stage boundary.
@@ -360,7 +364,7 @@ The projection does not create another Stage or Execution, and its description/s
 
 ## 7. Pending work and semantic completion dependencies
 
-An Effect, peer interaction, or child operation may complete later. Whether semantic work can continue depends on which continuation or completion boundary requires the result.
+An Effect, peer interaction, model invocation, or child operation may complete later. Whether semantic work can continue depends on which continuation or completion boundary requires the result.
 
 ### Required work
 
@@ -373,7 +377,7 @@ result required for this continuation
    ↓
 continuation suspends
    ↓
-Event/result arrives
+result/observation arrives
    ↓
 continuation may resume
 ```
@@ -384,7 +388,7 @@ The important composition rule is:
 
 > **Waiting for one required result suspends the dependent continuation; it does not necessarily make the whole Execution semantically incapable of processing every other Event.**
 
-For a long-lived Agent, another message or request may legitimately create a runnable progression before the original wait has resolved. For a Workflow blocked inside a Stage with no handler for that Event, it may remain non-runnable.
+For a long-lived Agent, another message or request may legitimately create runnable progression before the original wait has resolved. For a Workflow blocked inside a Stage with no handler for that Event, it may remain non-runnable.
 
 ### Future non-blocking Agent work
 
@@ -412,9 +416,9 @@ The shared concept is:
 
 ---
 
-## 8. Fan-out, join, and semantic aggregation
+## 8. Fan-out, join, and structured parallelism
 
-A Stage or Agent step may request several operations in parallel:
+A Stage or Agent progression may request several independent operations in parallel:
 
 ```text
       ┌── Effect A
@@ -431,7 +435,76 @@ collect [resultA, resultB, resultC]
 
 that is a **mechanical join**. It does not require a dedicated Aggregator Stage.
 
-If the results need semantic processing—such as ranking, deduplication, conflict resolution, or synthesis—that work should be performed by Function or LLM logic, either inside the current bounded Stage or as a separate Stage when the semantic operation deserves an explicit Workflow boundary.
+If results need semantic processing—ranking, deduplication, conflict resolution, synthesis—that work belongs in Function/LLM logic, either inside the current bounded Stage or as an explicit later Stage.
+
+### Parallel Workflow branches
+
+A Workflow may also have system-defined parallel branches:
+
+```text
+             ┌── Stage B ──┐
+Stage A ─────┤             ├── Stage D
+             └── Stage C ──┘
+```
+
+B and C may overlap in wall-clock time. Their model calls, Effects, child Executions, and other independent operations may all run concurrently.
+
+This does **not** require two uncontrolled Workflow-controller writers mutating the same Workflow state simultaneously.
+
+The intended model is structured parallelism:
+
+```text
+fork / branch boundary
+      ↓
+branch B progress    branch C progress
+      │                    │
+      ├─ in-flight work    ├─ in-flight work
+      │                    │
+      └──── results/deltas ─┘
+               ↓
+          explicit join
+               ↓
+           next progress
+```
+
+Branch progress may be represented separately inside controller state while the Workflow controller still commits state through serialized Activations.
+
+### Parallel branches must not silently race on shared state
+
+If two branches can update the same logical state, the result must not silently become timing-dependent “last writer wins.”
+
+Prefer one of:
+
+```text
+branch-local result/delta
+  → explicit merge/reducer at join
+
+commutative update
+  → defined associative/merge semantics
+
+versioned/transactional shared resource
+  → resource-level concurrency semantics
+
+separate child Executions
+  → independent state + explicit communication/results
+```
+
+For example:
+
+```text
+branch B produces evidence_B
+branch C produces evidence_C
+        ↓
+join/reducer
+        ↓
+evidence = merge(evidence_B, evidence_C)
+```
+
+rather than both branches freely overwriting the same controller field.
+
+> **Parallel execution is allowed; ambiguous shared-state mutation is not silently resolved by timing.**
+
+The exact branch snapshot/delta/reducer API is not frozen in v0.4 and should be validated against real parallel Workflow programs.
 
 > **Not every computation deserves a Stage, just as not every computation deserves an Execution.**
 
@@ -485,7 +558,9 @@ and mutates evidence
 
 The graph says `A → B`; semantically required work from A should therefore not continue changing the assumptions of B after the transition.
 
-This rule does not prohibit every possible background operation forever. It says that anything required for the Stage's semantic completion must settle before transition. Truly detached/non-blocking work needs explicit semantics and is not assumed by default in v0.4.
+For a parallel branch join, the analogous rule is that all branch work required by the join must settle and any defined merge/reducer must complete before downstream topology observes the joined state.
+
+Truly detached/non-blocking work needs explicit semantics and is not assumed by default in v0.4.
 
 ---
 
@@ -537,7 +612,7 @@ Agent may run another Activation/progression
 original dependency remains pending
 ```
 
-Whether such interleaving is permitted depends on the controller semantics and runtime safety rules. It must not become uncontrolled concurrent mutation of one Agent's controller state.
+Whether such interleaving is permitted depends on controller semantics and runtime safety rules. It must not become uncontrolled concurrent mutation of one Agent's controller state, and a resumed continuation must not silently commit stale assumptions after intervening progress.
 
 A response or completed model turn does not imply terminal Execution completion.
 
@@ -594,8 +669,6 @@ A static authoring tool may warn about recursive dependencies, but runtime safet
 
 The runtime owns lineage-scoped limits such as descendant/spawn budget, active-descendant limits, depth, and parallelism. A child may receive only a bounded share of the remaining structural budget and cannot mint unlimited new descendant capacity. See [`execution-runtime.md`](execution-runtime.md).
 
-This preserves useful recursive composition while preventing autonomous spawn loops from expanding forever.
-
 ---
 
 ## 12. Cyclic waits and peer/child interaction
@@ -629,7 +702,7 @@ The composition rule is therefore:
 
 > **A dependency suspends the continuation that requires it; it does not automatically forbid all other semantically valid progress by that Execution.**
 
-Runtime `WAITING`, mailbox interleaving, wait-for dependency tracking, and deadlock diagnostics are defined in [`execution-runtime.md`](execution-runtime.md).
+Runtime `WAITING`, mailbox interleaving, wait-for dependency tracking, stale-continuation safety, and deadlock diagnostics are defined in [`execution-runtime.md`](execution-runtime.md).
 
 ### Semantic deadlocks remain possible
 
@@ -824,6 +897,8 @@ Structured Memory
 Artifact/File
 ```
 
+Parallel branches should likewise avoid implicitly sharing mutable Working Notes. Branch-local scratch state should remain branch-local unless an explicit join/handoff rule promotes selected information.
+
 ---
 
 ## 16. What is not a new Stage type
@@ -856,9 +931,13 @@ The implementation should preserve:
 
 > **A Stage is a semantic Workflow boundary, not another Execution.**
 
+> **Semantically local work may still execute asynchronously; locality means no independent Execution identity.**
+
 > **Effects are attributed to the enclosing Execution; local composition boundaries define completion/correlation requirements.**
 
 > **All work required for the current Stage's semantic completion settles before transition.**
+
+> **Parallel branches may overlap in execution, but shared state must merge through explicit semantics rather than timing-dependent last-write-wins.**
 
 > **A mechanical join does not require an Aggregator Stage.**
 
@@ -874,4 +953,4 @@ The implementation should preserve:
 
 > **Prefer explicit shared state/results over hidden scratch-memory coupling.**
 
-Broad non-blocking semantics, detached child semantics, exact interleaving policy, Adapter permissions, and Working Notes handoff remain deliberately conservative or subject to validation.
+Broad non-blocking semantics, detached child semantics, stale-continuation policy, exact parallel-branch snapshot/merge semantics, Adapter permissions, and Working Notes handoff remain deliberately conservative or subject to validation.
