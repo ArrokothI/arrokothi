@@ -39,6 +39,7 @@ const V04_OWNED = [
   "effects/",
   "execution/",
   "interaction/",
+  "model/",
   "ports/",
   "reference/",
   "testing/contracts/",
@@ -310,6 +311,45 @@ describe("v0.4 architecture boundaries", () => {
       [],
       "policy decides about a described request and cannot reach what would carry it out",
     );
+  });
+
+  test("the model provider boundary cannot reach Effects, Execution state, or runtime machinery", async () => {
+    const { files } = await walkGraph(["ports/model-provider.ts", "ports/model-resolver.ts"]);
+    const forbiddenPrefixes = ["effects/", "execution/", "runtime/", "capabilities/"];
+    const forbiddenFiles = [
+      "ports/capability-executor.ts",
+      "ports/effect-authorizer.ts",
+      "ports/runtime-store.ts",
+      "ports/scheduler.ts",
+      "ports/controller.ts",
+    ];
+    assert.deepEqual(
+      [...files].filter((path) => forbiddenFiles.includes(path) || forbiddenPrefixes.some((prefix) => path.startsWith(prefix))),
+      [],
+      "a model provider returns inference data and has no path to mutate, authorize, dispatch, persist, or schedule",
+    );
+  });
+
+  test("model-call and capability-call data cannot dispatch a capability directly", async () => {
+    const source = await readFile(resolve(CORE_SRC, "model/types.ts"), "utf8");
+    for (const forbidden of ["CapabilityExecutor", "EffectProposal", "EffectRequest", "RuntimeStore", "Harness"]) {
+      assert.equal(source.includes(forbidden), false, `portable model data must not mention ${forbidden}`);
+    }
+    assert.match(source, /no executor and grants no authority/);
+  });
+
+  test("Gemini implements the core port and core never imports Gemini", async () => {
+    const geminiSource = await readFile(resolve(REPO_ROOT, "packages/models/gemini/src/index.ts"), "utf8");
+    assert.equal(geminiSource.includes("@agent-sdk/core/ports"), true);
+    const reverseImports: string[] = [];
+    for (const path of await coreSourceFiles()) {
+      const source = await readFile(resolve(CORE_SRC, path), "utf8");
+      if (specifiersIn(source).some((specifier) =>
+        specifier === "@agent-sdk/provider-gemini" || specifier.includes("packages/models/gemini"))) {
+        reverseImports.push(path);
+      }
+    }
+    assert.deepEqual(reverseImports, [], "the vendor adapter depends inward; the kernel never depends outward on Gemini");
   });
 
   test("the published v0.4 entry points are the ones the package exports", async () => {

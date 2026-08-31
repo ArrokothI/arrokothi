@@ -25,3 +25,12 @@ export type {
   ScriptedCapabilityExecutorOptions,
   ScriptedCapabilityHandler,
 } from "./scripted-capability-executor.ts";
+
+export { StaticModelResolver, portableModelFeatures } from "./static-model-resolver.ts";
+export type { StaticModelMapping } from "./static-model-resolver.ts";
+export { ModelProviderRegistry } from "./model-provider-registry.ts";
+export { ScriptedModelProvider } from "./scripted-model-provider.ts";
+export type {
+  ScriptedModelProviderOptions,
+  ScriptedModelStep,
+} from "./scripted-model-provider.ts";

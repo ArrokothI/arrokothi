@@ -75,3 +75,46 @@ export type {
   ControllerNext,
   ExecutionController,
 } from "./controller.ts";
+
+// -- model resolution and provider invocation -------------------------------
+export type { ModelResolver } from "./model-resolver.ts";
+export type { ModelProvider } from "./model-provider.ts";
+export type {
+  LogicalModelRef,
+  LogicalModelRequest,
+  ModelCapabilityCall,
+  ModelCapabilitySpec,
+  ModelDiagnostics,
+  ModelLimits,
+  ModelMessage,
+  ModelMessageRole,
+  ModelOutput,
+  ModelProviderRequest,
+  ModelProviderResponse,
+  ModelRequirementLevel,
+  ModelRequirements,
+  ModelResolutionRequest,
+  ModelResponseMetadata,
+  ModelStructuredOutputRequest,
+  ModelUsage,
+  PortableModelFeature,
+  PortableModelFeatures,
+  ResolvedModel,
+} from "../model/types.ts";
+export { PORTABLE_MODEL_FEATURES } from "../model/types.ts";
+export type {
+  ModelInvocationErrorCode,
+  ModelInvocationErrorOptions,
+  ModelResolutionErrorCode,
+  ModelResolutionErrorOptions,
+} from "../model/errors.ts";
+export { ModelInvocationError, ModelResolutionError } from "../model/errors.ts";
+export {
+  assertModelProviderRequest,
+  assertModelRequirementsSupported,
+  optionalModelFeatures,
+  requiredModelFeatures,
+  unavailableOptionalModelFeatures,
+  unsupportedRequiredModelFeatures,
+  validateModelProviderResponse,
+} from "../model/validation.ts";

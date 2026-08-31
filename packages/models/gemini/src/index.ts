@@ -8,6 +8,18 @@ import type {
 } from "@agent-sdk/core";
 import { ModelProviderError, toJsonSchema } from "@agent-sdk/core";
 import type { ObjectSchema, ValueSchema } from "@agent-sdk/core";
+import type {
+  ModelCapabilityCall as PortableModelCapabilityCall,
+  ModelMessage as PortableModelMessage,
+  ModelProvider as PortableModelProvider,
+  ModelProviderRequest as PortableModelProviderRequest,
+  ModelProviderResponse as PortableModelProviderResponse,
+} from "@agent-sdk/core/ports";
+import {
+  ModelInvocationError,
+  assertModelProviderRequest,
+  validateModelProviderResponse,
+} from "@agent-sdk/core/ports";
 
 /**
  * Gemini adapter.
@@ -106,6 +118,76 @@ function classifyNetwork(error: unknown): { code: string; retryable: boolean } {
   return { code: "OTHER_PROVIDER_FAILURE", retryable: true };
 }
 
+interface GeminiTransportConfig {
+  readonly apiKey: string;
+  readonly baseUrl: string;
+  readonly timeoutMs: number;
+  readonly maxRetries: number;
+  readonly fetchImpl: typeof fetch;
+}
+
+class GeminiTransportError extends Error {
+  readonly code: string;
+  readonly retryable: boolean;
+  constructor(code: string, message: string, retryable: boolean) {
+    super(message);
+    this.name = "GeminiTransportError";
+    this.code = code;
+    this.retryable = retryable;
+  }
+}
+
+/** Shared, already-validated HTTP/retry mechanism used by both migration surfaces. */
+async function postGemini(
+  config: GeminiTransportConfig,
+  path: string,
+  body: unknown,
+  signal?: AbortSignal,
+): Promise<GeminiResponseBody> {
+  let lastError: GeminiTransportError | undefined;
+
+  for (let attempt = 0; attempt <= config.maxRetries; attempt++) {
+    const controller = new AbortController();
+    const abort = () => controller.abort();
+    signal?.addEventListener("abort", abort, { once: true });
+    if (signal?.aborted) controller.abort();
+    const timer = setTimeout(() => controller.abort(), config.timeoutMs);
+    try {
+      const response = await config.fetchImpl(`${config.baseUrl}${path}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-goog-api-key": config.apiKey },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const text = await response.text().catch(() => "");
+        const { code, retryable } = classify(response.status, text);
+        const error = new GeminiTransportError(code, `Gemini ${response.status}: ${text.slice(0, 400)}`, retryable);
+        // Rate limits remain visible to application pacing instead of disappearing into retries.
+        if (!retryable || code === "HTTP_429_RATE_LIMIT" || attempt === config.maxRetries) throw error;
+        lastError = error;
+      } else {
+        return (await response.json()) as GeminiResponseBody;
+      }
+    } catch (error) {
+      if (error instanceof GeminiTransportError) throw error;
+      if (signal?.aborted) throw new GeminiTransportError("CANCELLED", "Gemini request was cancelled", false);
+      const { code, retryable } = classifyNetwork(error);
+      const wrapped = new GeminiTransportError(code, error instanceof Error ? error.message : String(error), retryable);
+      if (!retryable || attempt === config.maxRetries) throw wrapped;
+      lastError = wrapped;
+    } finally {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", abort);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
+  }
+
+  throw lastError ?? new GeminiTransportError("OTHER_PROVIDER_FAILURE", "request failed with no recorded cause", true);
+}
+
+/** @deprecated Temporary v0 Session/ModelPolicy compatibility. Use `GeminiModelProvider`. */
 export class GeminiProvider implements ModelProvider {
   readonly id: string;
   private readonly apiKey: string;
@@ -160,48 +242,20 @@ export class GeminiProvider implements ModelProvider {
   }
 
   private async post(path: string, body: unknown, signal?: AbortSignal): Promise<GeminiResponseBody> {
-    let lastError: ModelProviderError | undefined;
-
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
-      const controller = new AbortController();
-      const abort = () => controller.abort();
-      signal?.addEventListener("abort", abort, { once: true });
-      if (signal?.aborted) controller.abort();
-      const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-      try {
-        const response = await this.fetchImpl(`${this.baseUrl}${path}`, {
-          method: "POST",
-          headers: { "content-type": "application/json", "x-goog-api-key": this.apiKey },
-          body: JSON.stringify(body),
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          const text = await response.text().catch(() => "");
-          const { code, retryable } = classify(response.status, text);
-          const error = new ModelProviderError(code, `Gemini ${response.status}: ${text.slice(0, 400)}`, retryable);
-          // A rate limit is surfaced to the caller rather than absorbed here: the benchmark protocol
-          // needs to pace and count 429s itself, not have them hidden inside a retry loop.
-          if (!retryable || code === "HTTP_429_RATE_LIMIT" || attempt === this.maxRetries) throw error;
-          lastError = error;
-        } else {
-          return (await response.json()) as GeminiResponseBody;
-        }
-      } catch (error) {
-        if (error instanceof ModelProviderError) throw error;
-        if (signal?.aborted) throw new ModelProviderError("CANCELLED", "Gemini request was cancelled", false);
-        const { code, retryable } = classifyNetwork(error);
-        const wrapped = new ModelProviderError(code, error instanceof Error ? error.message : String(error), retryable);
-        if (!retryable || attempt === this.maxRetries) throw wrapped;
-        lastError = wrapped;
-      } finally {
-        clearTimeout(timer);
-        signal?.removeEventListener("abort", abort);
+    try {
+      return await postGemini({
+        apiKey: this.apiKey,
+        baseUrl: this.baseUrl,
+        timeoutMs: this.timeoutMs,
+        maxRetries: this.maxRetries,
+        fetchImpl: this.fetchImpl,
+      }, path, body, signal);
+    } catch (error) {
+      if (error instanceof GeminiTransportError) {
+        throw new ModelProviderError(error.code, error.message, error.retryable);
       }
-      await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
+      throw error;
     }
-
-    throw lastError ?? new ModelProviderError("OTHER_PROVIDER_FAILURE", "request failed with no recorded cause");
   }
 
   private toModelResponse(payload: GeminiResponseBody, requestedModel: string): ModelResponse {
@@ -240,6 +294,196 @@ export class GeminiProvider implements ModelProvider {
       },
       raw: payload,
     };
+  }
+}
+
+/**
+ * v0.4 Gemini implementation.
+ *
+ * Unlike the temporary `GeminiProvider` compatibility class above, this class receives an
+ * already-resolved model, uses capability terminology, validates structured output at the
+ * provider boundary, and normalizes failures into the stable kernel taxonomy.
+ */
+export interface GeminiModelProviderOptions {
+  readonly apiKey: string;
+  readonly id?: string;
+  readonly baseUrl?: string;
+  readonly timeoutMs?: number;
+  readonly maxRetries?: number;
+  readonly fetchImpl?: typeof fetch;
+  /** Deployment-level defaults, not semantic Definition fields. */
+  readonly temperature?: number;
+  readonly maxOutputTokens?: number;
+}
+
+function toPortableGeminiContents(messages: readonly PortableModelMessage[]): { role: string; parts: GeminiPart[] }[] {
+  return messages.map((message) => ({
+    role: message.role === "assistant" ? "model" : "user",
+    parts: [{
+      text: message.role === "capability"
+        ? `Result from ${message.capability ?? "capability"}${message.capabilityCallId ? ` (${message.capabilityCallId})` : ""}: ${message.content}`
+        : message.content,
+    }],
+  }));
+}
+
+function normalizeGeminiInvocationError(error: unknown, provider: string, model: string): ModelInvocationError {
+  if (error instanceof ModelInvocationError) return error;
+  if (error instanceof GeminiTransportError) {
+    if (error.code === "CANCELLED") {
+      return new ModelInvocationError("cancelled", error.message, { provider, model, cause: error });
+    }
+    if (error.code === "PROVIDER_AUTH_FAILED") {
+      return new ModelInvocationError("authentication", error.message, { provider, model, cause: error });
+    }
+    if (error.code === "HTTP_429_RATE_LIMIT" || error.code === "DAILY_QUOTA_EXHAUSTED") {
+      return new ModelInvocationError("rate_limit", error.message, {
+        provider,
+        model,
+        retryable: error.retryable,
+        cause: error,
+      });
+    }
+    if (error.code === "PROVIDER_5XX" || error.code.startsWith("NETWORK_") || error.code === "OTHER_PROVIDER_FAILURE") {
+      return new ModelInvocationError("transport", error.message, {
+        provider,
+        model,
+        retryable: error.retryable,
+        cause: error,
+      });
+    }
+    return new ModelInvocationError("provider_rejected", error.message, { provider, model, cause: error });
+  }
+  return new ModelInvocationError("transport", error instanceof Error ? error.message : String(error), {
+    provider,
+    model,
+    retryable: true,
+    cause: error,
+  });
+}
+
+export class GeminiModelProvider implements PortableModelProvider {
+  readonly id: string;
+  private readonly transport: GeminiTransportConfig;
+  private readonly temperature: number;
+  private readonly maxOutputTokens: number;
+
+  constructor(options: GeminiModelProviderOptions) {
+    if (!options.apiKey) throw new Error("GeminiModelProvider requires an apiKey supplied by deployment wiring");
+    this.id = options.id ?? "gemini";
+    this.transport = {
+      apiKey: options.apiKey,
+      baseUrl: options.baseUrl ?? DEFAULT_BASE_URL,
+      timeoutMs: options.timeoutMs ?? 60_000,
+      maxRetries: options.maxRetries ?? 2,
+      fetchImpl: options.fetchImpl ?? fetch,
+    };
+    this.temperature = options.temperature ?? 0;
+    this.maxOutputTokens = options.maxOutputTokens ?? 2_048;
+  }
+
+  async generate(request: PortableModelProviderRequest): Promise<PortableModelProviderResponse> {
+    assertModelProviderRequest(request, this.id);
+    if (request.signal?.aborted) {
+      throw new ModelInvocationError("cancelled", "Gemini request was cancelled before invocation", {
+        provider: this.id,
+        model: request.model.model,
+      });
+    }
+
+    const structuredProjection = request.structuredOutput
+      ? projectGeminiStructuredOutput(request.structuredOutput.schema)
+      : undefined;
+    const body: Record<string, unknown> = {
+      systemInstruction: { parts: [{ text: request.system }] },
+      contents: toPortableGeminiContents(request.messages),
+      generationConfig: {
+        temperature: this.temperature,
+        maxOutputTokens: this.maxOutputTokens,
+        ...(structuredProjection ? {
+          responseMimeType: "application/json",
+          responseJsonSchema: structuredProjection.schema,
+        } : {}),
+      },
+    };
+    if (request.capabilities?.length) {
+      body["tools"] = [{
+        functionDeclarations: request.capabilities.map((capability) => ({
+          name: capability.name,
+          description: capability.description,
+          parameters: projectGeminiSchema(capability.input),
+        })),
+      }];
+    }
+    if ((body["contents"] as unknown[]).length === 0) {
+      body["contents"] = [{ role: "user", parts: [{ text: "(start of conversation)" }] }];
+    }
+
+    let payload: GeminiResponseBody;
+    try {
+      payload = await postGemini(
+        this.transport,
+        `/models/${encodeURIComponent(request.model.model)}:generateContent`,
+        body,
+        request.signal,
+      );
+    } catch (error) {
+      throw normalizeGeminiInvocationError(error, this.id, request.model.model);
+    }
+
+    if (payload.error) {
+      throw new ModelInvocationError("provider_rejected", payload.error.message ?? "Gemini rejected the request", {
+        provider: this.id,
+        model: request.model.model,
+      });
+    }
+    const candidate = payload.candidates?.[0];
+    const parts = candidate?.content?.parts ?? [];
+    const text = parts.map((part) => part.text ?? "").join("").trim();
+    const capabilityCalls: PortableModelCapabilityCall[] = parts
+      .filter((part) => part.functionCall)
+      .map((part) => ({
+        capability: part.functionCall!.name,
+        // The core validator below remains authoritative; the transport type is intentionally loose.
+        input: (part.functionCall!.args ?? {}) as PortableModelCapabilityCall["input"],
+      }));
+
+    let structured: unknown;
+    if (structuredProjection) {
+      try {
+        structured = structuredProjection.normalize(JSON.parse(text) as unknown);
+      } catch (error) {
+        throw new ModelInvocationError("invalid_response", "Gemini returned malformed structured JSON", {
+          provider: this.id,
+          model: request.model.model,
+          cause: error,
+        });
+      }
+    }
+
+    const inputTokens = payload.usageMetadata?.promptTokenCount;
+    const outputTokens = payload.usageMetadata?.candidatesTokenCount;
+    const usage = inputTokens !== undefined || outputTokens !== undefined
+      ? {
+          ...(inputTokens !== undefined ? { inputTokens } : {}),
+          ...(outputTokens !== undefined ? { outputTokens } : {}),
+          ...(inputTokens !== undefined && outputTokens !== undefined ? { totalTokens: inputTokens + outputTokens } : {}),
+        }
+      : undefined;
+    const response = {
+      output: {
+        ...(!structuredProjection && text ? { text } : {}),
+        ...(capabilityCalls.length ? { capabilityCalls } : {}),
+        ...(structured !== undefined ? { structured } : {}),
+      },
+      metadata: {
+        provider: this.id,
+        model: payload.modelVersion ?? request.model.model,
+        ...(usage ? { usage } : {}),
+        ...(candidate?.finishReason ? { finishReason: candidate.finishReason } : {}),
+      },
+    };
+    return validateModelProviderResponse(request, response);
   }
 }
 
@@ -337,11 +581,22 @@ function toGeminiResponseJsonSchema(value: unknown): unknown {
   );
 }
 
-/** Convenience for applications: build a provider from the environment, or explain what is missing. */
+/** @deprecated Temporary v0 compatibility helper. Use `createGeminiModelProviderFromEnv`. */
 export function createGeminiProviderFromEnv(options: Omit<GeminiProviderOptions, "apiKey"> = {}): GeminiProvider {
   const apiKey = geminiApiKeyFromEnv();
   if (!apiKey) {
     throw new Error("No Gemini API key found. Set GEMINI_API_KEY (or GOOGLE_API_KEY) in the environment of the app that constructs the provider.");
   }
   return new GeminiProvider({ ...options, apiKey });
+}
+
+/** v0.4 deployment helper; credentials remain outside semantic definitions and resolved metadata. */
+export function createGeminiModelProviderFromEnv(
+  options: Omit<GeminiModelProviderOptions, "apiKey"> = {},
+): GeminiModelProvider {
+  const apiKey = geminiApiKeyFromEnv();
+  if (!apiKey) {
+    throw new Error("No Gemini API key found. Set GEMINI_API_KEY (or GOOGLE_API_KEY) in deployment configuration.");
+  }
+  return new GeminiModelProvider({ ...options, apiKey });
 }

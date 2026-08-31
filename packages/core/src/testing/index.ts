@@ -18,7 +18,13 @@ export type { ScriptedControllerStep, ScriptedDefinitionInput, ScriptedProgress 
 export {
   capabilityExecutorContract,
   definitionStoreContract,
+  modelProviderContract,
   runtimeStoreContract,
   schedulerContract,
 } from "./contracts/index.ts";
-export type { CapabilityExecutorSubject, ContractCase } from "./contracts/index.ts";
+export type {
+  CapabilityExecutorSubject,
+  ContractCase,
+  ModelProviderContractScenario,
+  ModelProviderContractSubject,
+} from "./contracts/index.ts";
