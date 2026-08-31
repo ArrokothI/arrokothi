@@ -13,6 +13,9 @@ import type { HarnessOptions } from "../runtime/harness.ts";
 import type { Clock } from "../ports/clock.ts";
 import type { IdGenerator } from "../ports/ids.ts";
 import type { ExecutionController } from "../ports/controller.ts";
+import type { CapabilityExecutor } from "../ports/capability-executor.ts";
+import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
+import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import { createDeterministicIds, createFixedClock } from "../reference/deterministic.ts";
 import { FifoScheduler } from "../reference/fifo-scheduler.ts";
 import { InMemoryDefinitionStore } from "../reference/in-memory-definition-store.ts";
@@ -34,6 +37,15 @@ export interface TestHarnessOptions {
   readonly controllers?: readonly ExecutionController[];
   readonly activationBudget?: HarnessOptions["activationBudget"];
   readonly maxActivationsPerRun?: number;
+  /**
+   * Effect policy. Left unset, the Harness denies every Effect - which is the default a test
+   * asserting "requesting is not permission" wants.
+   */
+  readonly authorizer?: EffectAuthorizer;
+  readonly capabilities?: CapabilityExecutor;
+  /** Swap in `createNoInlineWaitBudget()` to force the slow path for work that could settle inline. */
+  readonly inlineWait?: InlineWaitBudget;
+  readonly defaultEffectDeadlineMs?: number;
 }
 
 export function createTestHarness(options: TestHarnessOptions = {}): TestHarnessBundle {
@@ -55,6 +67,10 @@ export function createTestHarness(options: TestHarnessOptions = {}): TestHarness
     ids,
     ...(options.activationBudget !== undefined ? { activationBudget: options.activationBudget } : {}),
     ...(options.maxActivationsPerRun !== undefined ? { maxActivationsPerRun: options.maxActivationsPerRun } : {}),
+    ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
+    ...(options.capabilities !== undefined ? { capabilities: options.capabilities } : {}),
+    ...(options.inlineWait !== undefined ? { inlineWait: options.inlineWait } : {}),
+    ...(options.defaultEffectDeadlineMs !== undefined ? { defaultEffectDeadlineMs: options.defaultEffectDeadlineMs } : {}),
   });
 
   return { harness, definitions, store, scheduler, controllers, clock, ids };

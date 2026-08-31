@@ -70,10 +70,67 @@ export type {
   EventDestination,
   EventEnvelope,
   EventId,
-  EventKind,
   WakeCondition,
 } from "./interaction/event-envelope.ts";
 export { eventSatisfiesWake } from "./interaction/event-envelope.ts";
+export type {
+  CapabilityCompletedBody,
+  CapabilityFailedBody,
+  CapabilityUnknownBody,
+  EffectDeniedBody,
+  EffectRejectedBody,
+  EventBodies,
+  EventKind,
+  ExternalInputBody,
+} from "./interaction/events.ts";
+export {
+  EFFECT_RESULT_EVENT_KINDS,
+  EVENT_KINDS,
+  isEffectResultEventKind,
+  isEventKind,
+} from "./interaction/events.ts";
+
+// -- effects -----------------------------------------------------------------
+export type {
+  CapabilityId,
+  EffectId,
+  IdempotencyKey,
+  OperationId,
+  PendingOperationId,
+  ResourceBindingId,
+} from "./effects/ids.ts";
+export { capabilityId, isCapabilityId, isOperationId, isResourceBindingId, operationId, resourceBindingId } from "./effects/ids.ts";
+export type { EffectIdempotencyScope } from "./effects/fingerprint.ts";
+export { isEffectIdempotencyScope } from "./effects/fingerprint.ts";
+export type {
+  AuthorizationEvidence,
+  EffectKind,
+  EffectProposal,
+  EffectRequest,
+  RequestUserInputProposal,
+  SendMessageProposal,
+  SpawnExecutionProposal,
+  UseCapabilityProposal,
+  WriteMemoryProposal,
+} from "./effects/types.ts";
+export type { UseCapabilityInput } from "./effects/types.ts";
+export { DISPATCHABLE_EFFECT_KINDS, EFFECT_KINDS, isEffectKind, isUseCapabilityProposal, useCapability } from "./effects/types.ts";
+export type { ResourceAccessMode, ResourceBindingRef, SecurityProfile } from "./effects/capability.ts";
+export type { CapabilityError, CapabilityOutcome } from "./effects/outcome.ts";
+export type {
+  AuthorizationConstraints,
+  AuthorizationDecision,
+  EffectAuthorizationRequest,
+} from "./effects/authorization.ts";
+export type {
+  PendingDispatchState,
+  PendingOperation,
+  PendingOperationStatus,
+  PendingOutcomeState,
+} from "./effects/pending.ts";
+export { isExpired, isUnresolved, isUnresolvedDispatch } from "./effects/pending.ts";
+export type { EffectJournalEntry, EffectJournalPhase } from "./effects/journal.ts";
+export { EFFECT_JOURNAL_PHASES, effectRequestsIn, isTerminalEffectPhase, latestPhase } from "./effects/journal.ts";
 
 // -- runtime -----------------------------------------------------------------
 export { ControllerRegistry, UnknownControllerKindError } from "./runtime/controller-registry.ts";
@@ -81,11 +138,12 @@ export type { ActivationRecord, ActivationResultKind } from "./runtime/activatio
 export { Harness, HarnessRunawayError, UnknownDefinitionError } from "./runtime/harness.ts";
 export type {
   CreateExecutionInput,
-  DeliverEventInput,
+  DeliverExternalInputInput,
   EventDeliveryReceipt,
   ExecutionHandle,
   HarnessOptions,
 } from "./runtime/harness.ts";
+export type { EffectDispatchRecord, SettleEffectInput, SettleEffectReceipt } from "./runtime/effect-processor.ts";
 
 // -- shared value domain -----------------------------------------------------
 export type { JsonObject, JsonPrimitive, JsonValue } from "./util/json.ts";

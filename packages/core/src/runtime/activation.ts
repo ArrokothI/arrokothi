@@ -12,11 +12,14 @@
  */
 
 import type { DefinitionKind, ExecutionDefinition } from "../definitions/types.ts";
+import type { EffectProposal } from "../effects/types.ts";
+import { effectProposalIssues } from "../effects/types.ts";
 import type { ControllerProgress, ExecutionView } from "../execution/context.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
 import { emissionBodyIssues } from "../execution/emission.ts";
 import type { ActivationId, ExecutionId } from "../execution/ids.ts";
 import type { LifecycleState } from "../execution/lifecycle.ts";
+import type { EffectDispatchRecord } from "./effect-processor.ts";
 import type { DeliveredEvent } from "../interaction/event-envelope.ts";
 import { wakeConditionIssues } from "../interaction/event-envelope.ts";
 import type { ActivationInput, ActivationOutcome, ControllerNext } from "../ports/controller.ts";
@@ -33,6 +36,8 @@ export interface ActivationRecord {
   readonly finishedAt: string;
   readonly deliveredEventIds: readonly string[];
   readonly emissionIds: readonly string[];
+  /** What the Harness did with each Effect this Activation proposed. */
+  readonly effects: readonly EffectDispatchRecord[];
   readonly lifecycleBefore: LifecycleState;
   readonly lifecycleAfter: LifecycleState;
   readonly result: ActivationResultKind;
@@ -45,6 +50,7 @@ export type OutcomeRejectionCode =
   | "wrong_control_kind"
   | "invalid_progress"
   | "invalid_emission"
+  | "invalid_effect"
   | "invalid_next"
   | "invalid_wake"
   | "invalid_result"
@@ -162,11 +168,41 @@ export function validateActivationOutcome(outcome: unknown, kind: DefinitionKind
   const nextRejection = validateNext(candidate.next);
   if (nextRejection) return { ok: false, rejection: nextRejection };
 
+  const effects = (candidate as { effects?: unknown }).effects;
+  if (effects !== undefined) {
+    if (!Array.isArray(effects)) {
+      return reject("invalid_effect", "outcome.effects must be an array when present");
+    }
+    for (const [index, proposal] of effects.entries()) {
+      const proposalIssues = effectProposalIssues(proposal, `effects[${index}]`);
+      if (proposalIssues.length > 0) {
+        return reject("invalid_effect", proposalIssues.map((i) => `${i.path}: ${i.message}`).join("; "));
+      }
+    }
+    // An Execution that is finishing must not be launching work whose result nothing will observe.
+    // The alternative - dispatching and discarding the outcome - would make a consequential action
+    // happen with no record of anyone having seen it.
+    const status = (candidate.next as { status?: unknown }).status;
+    if (effects.length > 0 && (status === "complete" || status === "fail")) {
+      return reject(
+        "invalid_effect",
+        `an Activation reporting "${String(status)}" cannot also propose Effects; their results could never be observed`,
+      );
+    }
+    const keys = (effects as readonly EffectProposal[])
+      .map((proposal) => proposal.requestKey)
+      .filter((key): key is string => key !== undefined);
+    if (new Set(keys).size !== keys.length) {
+      return reject("invalid_effect", "two Effects in one Activation share a request key, so their results would be indistinguishable");
+    }
+  }
+
   return {
     ok: true,
     outcome: {
       control: control as ControllerProgress,
       emissions: (emissions as readonly EmissionProposal[] | undefined) ?? [],
+      effects: (effects as readonly EffectProposal[] | undefined) ?? [],
       next: candidate.next as ControllerNext,
     },
   };

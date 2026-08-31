@@ -11,6 +11,9 @@
  * "prove" invariants that only hold because two callers happened to share one object.
  */
 
+import type { EffectId, PendingOperationId } from "../effects/ids.ts";
+import type { EffectJournalEntry } from "../effects/journal.ts";
+import type { PendingOperation } from "../effects/pending.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ExecutionId } from "../execution/ids.ts";
@@ -21,7 +24,7 @@ import type {
   RuntimeStore,
   RuntimeTransaction,
 } from "../ports/runtime-store.ts";
-import { ExecutionAlreadyExistsError, RuntimeConcurrencyError } from "../ports/runtime-store.ts";
+import { ExecutionAlreadyExistsError, RuntimeConcurrencyError, UnknownPendingOperationError } from "../ports/runtime-store.ts";
 
 interface MailboxState {
   events: DeliveredEvent[];
@@ -36,10 +39,19 @@ interface RuntimeState {
   mailboxes: Map<string, MailboxState>;
   emissions: Map<string, ExecutionEmission[]>;
   transitions: Map<string, LifecycleTransitionRecord[]>;
+  pendingOperations: Map<string, PendingOperation>;
+  effectJournal: Map<string, EffectJournalEntry[]>;
 }
 
 function emptyState(): RuntimeState {
-  return { executions: new Map(), mailboxes: new Map(), emissions: new Map(), transitions: new Map() };
+  return {
+    executions: new Map(),
+    mailboxes: new Map(),
+    emissions: new Map(),
+    transitions: new Map(),
+    pendingOperations: new Map(),
+    effectJournal: new Map(),
+  };
 }
 
 function mailbox(state: RuntimeState, mailboxId: string): MailboxState {
@@ -121,6 +133,57 @@ function makeTransaction(state: RuntimeState): RuntimeTransaction {
         return structuredClone(state.transitions.get(executionId) ?? []);
       },
     },
+
+    pendingOperations: {
+      async insert(operation) {
+        if (state.pendingOperations.has(operation.pendingOperationId)) {
+          throw new Error(`pending operation ${operation.pendingOperationId} already exists`);
+        }
+        state.pendingOperations.set(operation.pendingOperationId, structuredClone(operation));
+      },
+      async get(pendingOperationId) {
+        const stored = state.pendingOperations.get(pendingOperationId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+      async update(operation) {
+        if (!state.pendingOperations.has(operation.pendingOperationId)) {
+          throw new UnknownPendingOperationError(operation.pendingOperationId);
+        }
+        state.pendingOperations.set(operation.pendingOperationId, structuredClone(operation));
+      },
+      async listByExecution(executionId) {
+        return structuredClone(
+          [...state.pendingOperations.values()].filter((operation) => operation.executionId === executionId),
+        );
+      },
+      async findByIdempotencyKey(executionId, key) {
+        return structuredClone(
+          [...state.pendingOperations.values()]
+            .filter((operation) => operation.executionId === executionId && operation.idempotencyKey === key)
+            .sort((a, b) => (a.createdAt < b.createdAt ? -1 : a.createdAt > b.createdAt ? 1 : 0)),
+        );
+      },
+    },
+
+    effectJournal: {
+      async append(draft) {
+        const list = state.effectJournal.get(draft.executionId) ?? [];
+        const entry: EffectJournalEntry = { ...structuredClone(draft), sequence: list.length + 1 };
+        list.push(entry);
+        state.effectJournal.set(draft.executionId, list);
+        return structuredClone(entry);
+      },
+      async listByExecution(executionId) {
+        return structuredClone(state.effectJournal.get(executionId) ?? []);
+      },
+      async listByEffect(effectId) {
+        const matches: EffectJournalEntry[] = [];
+        for (const list of state.effectJournal.values()) {
+          for (const entry of list) if (entry.effectId === effectId) matches.push(entry);
+        }
+        return structuredClone(matches.sort((a, b) => a.sequence - b.sequence));
+      },
+    },
   };
 }
 
@@ -159,6 +222,30 @@ export class InMemoryRuntimeStore implements RuntimeStore {
 
   async listTransitions(executionId: ExecutionId): Promise<readonly LifecycleTransitionRecord[]> {
     return structuredClone(this.state.transitions.get(executionId) ?? []);
+  }
+
+  async listPendingOperations(executionId: ExecutionId): Promise<readonly PendingOperation[]> {
+    return structuredClone(
+      [...this.state.pendingOperations.values()].filter((operation) => operation.executionId === executionId),
+    );
+  }
+
+  async readPendingOperation(pendingOperationId: PendingOperationId): Promise<PendingOperation | undefined> {
+    const stored = this.state.pendingOperations.get(pendingOperationId);
+    return stored ? structuredClone(stored) : undefined;
+  }
+
+  async listEffectJournal(executionId: ExecutionId): Promise<readonly EffectJournalEntry[]> {
+    return structuredClone(this.state.effectJournal.get(executionId) ?? []);
+  }
+
+  /** Journal entries for one Effect, across Executions. Diagnostics and conformance assertions. */
+  async listEffectJournalFor(effectId: EffectId): Promise<readonly EffectJournalEntry[]> {
+    const matches: EffectJournalEntry[] = [];
+    for (const list of this.state.effectJournal.values()) {
+      for (const entry of list) if (entry.effectId === effectId) matches.push(entry);
+    }
+    return structuredClone(matches);
   }
 
   /** Undelivered-to-controller Events, for diagnostics and conformance assertions. */

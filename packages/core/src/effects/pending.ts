@@ -1,0 +1,136 @@
+/**
+ * PendingOperation: an Effect whose request exists but whose result the Execution has not observed.
+ *
+ * Generic on purpose. Nothing here mentions capabilities, because `SpawnExecution`, `SendMessage`,
+ * `RequestUserInput`, and a timer all need the same runtime record: whose operation it is, what it
+ * was, how its result will be correlated, whether it has been dispatched, whether it has settled,
+ * and by when it must. Building a capability-shaped waiting mechanism now would guarantee four more
+ * bespoke ones later.
+ *
+ * It is runtime state, not controller state. A controller learns that an operation settled by
+ * receiving an Event; it never receives a handle to the record, because a mutable pending operation
+ * is a way to claim an outcome that did not happen.
+ *
+ * Two states are deliberately distinguished at the top level:
+ *
+ *   dispatch  did the runtime hand this to the outside world?
+ *   outcome   did the outside world tell us what happened?
+ *
+ * "dispatched with no outcome" is the crash-sensitive state that makes duplicate external effects
+ * possible, so it must be representable rather than inferred.
+ */
+
+import type { ExecutionId } from "../execution/ids.ts";
+import type { EventId } from "../interaction/event-envelope.ts";
+import type { EffectId, IdempotencyKey, PendingOperationId } from "./ids.ts";
+import type { EffectKind } from "./types.ts";
+
+/** Whether the Execution is still owed a result. */
+export type PendingOperationStatus =
+  | "pending"
+  /** A result was correlated and delivered as an Event. */
+  | "settled"
+  /** The result can never be delivered - the Execution reached a terminal state first. */
+  | "abandoned";
+
+export type PendingDispatchState = "not_dispatched" | "dispatched";
+
+/** What the outside world established, once it did. `null` while nothing is known. */
+export type PendingOutcomeState = "success" | "failure" | "unknown" | null;
+
+export interface PendingOperation {
+  readonly pendingOperationId: PendingOperationId;
+  readonly executionId: ExecutionId;
+  readonly effectId: EffectId;
+  readonly effectKind: EffectKind;
+  /** The label the result Event will carry, so a controller can wait for this specific operation. */
+  readonly correlationId: string;
+  /** What caused the request; the Activation that proposed it. */
+  readonly causationId: string | null;
+  readonly status: PendingOperationStatus;
+  readonly dispatch: PendingDispatchState;
+  readonly outcome: PendingOutcomeState;
+  readonly idempotencyKey: IdempotencyKey;
+  readonly createdAt: string;
+  readonly dispatchedAt: string | null;
+  /**
+   * When the operation itself stops being allowed to remain unresolved.
+   *
+   * Set once, from the Effect request. An Activation that yields because its inline wait budget
+   * expired does not touch this: the operation is still valid, still pending, and still has until
+   * this instant to produce a result.
+   */
+  readonly deadline: string;
+  readonly settledAt: string | null;
+  /** Result linkage: the Event that delivered the outcome to the Execution. */
+  readonly resultEventId: EventId | null;
+}
+
+export interface CreatePendingOperationInput {
+  readonly pendingOperationId: PendingOperationId;
+  readonly executionId: ExecutionId;
+  readonly effectId: EffectId;
+  readonly effectKind: EffectKind;
+  readonly correlationId: string;
+  readonly causationId: string | null;
+  readonly idempotencyKey: IdempotencyKey;
+  readonly createdAt: string;
+  readonly deadline: string;
+}
+
+export function createPendingOperation(input: CreatePendingOperationInput): PendingOperation {
+  return {
+    pendingOperationId: input.pendingOperationId,
+    executionId: input.executionId,
+    effectId: input.effectId,
+    effectKind: input.effectKind,
+    correlationId: input.correlationId,
+    causationId: input.causationId,
+    status: "pending",
+    dispatch: "not_dispatched",
+    outcome: null,
+    idempotencyKey: input.idempotencyKey,
+    createdAt: input.createdAt,
+    dispatchedAt: null,
+    deadline: input.deadline,
+    settledAt: null,
+    resultEventId: null,
+  };
+}
+
+export function markDispatched(operation: PendingOperation, at: string): PendingOperation {
+  return { ...operation, dispatch: "dispatched", dispatchedAt: at };
+}
+
+export function markSettled(
+  operation: PendingOperation,
+  outcome: Exclude<PendingOutcomeState, null>,
+  resultEventId: EventId,
+  at: string,
+): PendingOperation {
+  return { ...operation, status: "settled", outcome, resultEventId, settledAt: at };
+}
+
+/** The Execution went terminal before the result arrived. Recorded, not delivered. */
+export function markAbandoned(operation: PendingOperation, at: string): PendingOperation {
+  return { ...operation, status: "abandoned", settledAt: at };
+}
+
+export function isUnresolved(operation: PendingOperation): boolean {
+  return operation.status === "pending";
+}
+
+/**
+ * Dispatched with no outcome: the state that makes duplicate external effects possible.
+ *
+ * A runtime reconstructed after a crash uses this to recognise operations it must not automatically
+ * redispatch. Slice B does not automatically redispatch anything, so this is a query rather than a
+ * recovery mechanism; Slice I owns production recovery.
+ */
+export function isUnresolvedDispatch(operation: PendingOperation): boolean {
+  return operation.status === "pending" && operation.dispatch === "dispatched";
+}
+
+export function isExpired(operation: PendingOperation, now: string): boolean {
+  return operation.status === "pending" && operation.deadline <= now;
+}

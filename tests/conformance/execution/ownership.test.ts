@@ -58,7 +58,7 @@ describe("ownership and root identity", () => {
   test("knowing an ExecutionId grants no authority over it", async () => {
     const { harness, definitions } = createTestHarness();
     const ref = await definitions.save(
-      scriptedAgentDefinition({ id: "private", program: [{ do: "await", eventKinds: ["owner.only"] }, { do: "complete" }] }),
+      scriptedAgentDefinition({ id: "private", program: [{ do: "await", eventKinds: ["external.input"], correlationId: "owner-only" }, { do: "complete" }] }),
     );
     const handle = await harness.createExecution({ definition: ref });
     await harness.runUntilIdle();
@@ -80,7 +80,7 @@ describe("ownership and root identity", () => {
     );
 
     // An Event is the only thing an id lets you send, and it is still checked.
-    const receipt = await harness.deliverEvent({ destination: handle.executionId, kind: "attacker.command" });
+    const receipt = await harness.deliverExternalInput({ destination: handle.executionId, label: "attacker.command" });
     assert.equal(receipt.status, "delivered");
     assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "WAITING", "an unrelated Event grants nothing");
   });

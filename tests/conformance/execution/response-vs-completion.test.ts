@@ -20,7 +20,7 @@ describe("response is not a terminal result", () => {
         program: [
           { do: "emit", text: "first answer" },
           { do: "emit", text: "second answer" },
-          { do: "await", eventKinds: ["user.message"], note: "waiting for the next question" },
+          { do: "await", eventKinds: ["external.input"], note: "waiting for the next question" },
           { do: "emit", text: "third answer" },
           { do: "complete" },
         ],
@@ -42,7 +42,7 @@ describe("response is not a terminal result", () => {
     );
     assert.deepEqual(emissions.map((e) => e.sequence), [1, 2], "emissions are ordered without implying completion");
 
-    await harness.deliverEvent({ destination: handle.executionId, kind: "user.message", body: { text: "and then?" } });
+    await harness.deliverExternalInput({ destination: handle.executionId, label: "user.message", payload: { text: "and then?" } });
     await harness.runUntilIdle();
 
     const finished = await harness.inspect(handle.executionId);

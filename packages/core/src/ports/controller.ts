@@ -14,9 +14,20 @@
  * Note what `ControllerNext` deliberately lacks: any `WAITING` value. A controller reports that it
  * is *waiting for an Event matching X*. Only the Harness, after confirming there is no runnable
  * local work, derives the WAITING state.
+ *
+ * Slice B widens the outcome by exactly one field: `effects`, a list of Effect *proposals* as plain
+ * data. Note what did not appear alongside it. A controller still receives no `CapabilityExecutor`,
+ * no `EffectAuthorizer`, no Effect journal, no pending-operation store, no `RuntimeStore`, and no
+ * scheduler. It describes what it would like the runtime to do; the Harness authorizes, journals,
+ * dispatches, correlates, and eventually delivers the result as an Event.
+ *
+ * Proposing an Effect also does not imply `WAITING`. The controller separately reports whether it
+ * has runnable local work, and the Harness decides whether the Effect settled inline, whether work
+ * remains pending, and therefore whether this Execution is READY or WAITING.
  */
 
 import type { ExecutionDefinition, DefinitionKind } from "../definitions/types.ts";
+import type { EffectProposal } from "../effects/types.ts";
 import type { DeliveredEvent, WakeCondition } from "../interaction/event-envelope.ts";
 import type { ControllerProgress, ExecutionView } from "../execution/context.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
@@ -69,6 +80,15 @@ export interface ActivationOutcome {
   readonly control: ControllerProgress;
   /** Nonterminal output. Emitting never completes an Execution. */
   readonly emissions?: readonly EmissionProposal[];
+  /**
+   * Interactions the controller would like the runtime to perform.
+   *
+   * Proposals, not instructions and not claims. Each one is validated, journaled, and authorized
+   * before anything happens, and its result reaches this controller only as a delivered Event.
+   * Proposing Effects alongside `complete` or `fail` is rejected: an Execution that is finishing
+   * must not be launching work whose result nothing will ever observe.
+   */
+  readonly effects?: readonly EffectProposal[];
   readonly next: ControllerNext;
 }
 

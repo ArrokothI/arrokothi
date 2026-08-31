@@ -15,7 +15,15 @@
  * WAITING because the Harness checked the mailbox, found nothing that satisfies the dependency,
  * and recorded the dependency itself. A controller reporting `complete` does not become COMPLETED
  * because it proposed a value. It becomes COMPLETED because the Harness validated that value
- * against the schema declared by the definition the Execution pinned at creation.
+ * against the schema declared by the definition the Execution pinned at creation. And a controller
+ * proposing an Effect does not cause anything to happen in the world; the Harness authorizes it,
+ * journals it, dispatches it, and delivers whatever actually happened back as an Event.
+ *
+ * Effects are processed after the controller returns and *before* the Harness derives the next
+ * lifecycle state, which is what makes the fast and slow paths one path. A result that arrives
+ * inline is already in the mailbox when the Harness checks whether the reported wake dependency is
+ * genuinely unmet, so the Execution stays runnable; a result that does not arrive in time leaves a
+ * pending operation, the Execution waits, and the identical Event wakes it later.
  */
 
 import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
@@ -29,8 +37,17 @@ import type { LifecycleState, LifecycleTransitionRecord } from "../execution/lif
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
 import type { ExecutionFailure, TerminalResultEnvelope } from "../execution/terminal-result.ts";
 import { validateTerminalResult } from "../execution/terminal-result.ts";
+import type { EffectId, PendingOperationId } from "../effects/ids.ts";
+import type { EffectJournalEntry } from "../effects/journal.ts";
+import type { PendingOperation } from "../effects/pending.ts";
+import type { SecurityProfile } from "../effects/capability.ts";
 import type { DeliveredEvent, EventEnvelope, EventId, WakeCondition } from "../interaction/event-envelope.ts";
-import { eventEnvelopeIssues, eventSatisfiesWake } from "../interaction/event-envelope.ts";
+import { eventSatisfiesWake } from "../interaction/event-envelope.ts";
+import type { CapabilityExecutor } from "../ports/capability-executor.ts";
+import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
+import { denyAllEffects } from "../ports/effect-authorizer.ts";
+import type { InlineWaitBudget } from "../ports/inline-wait.ts";
+import { microtaskInlineWaitBudget } from "../ports/inline-wait.ts";
 import type { Clock } from "../ports/clock.ts";
 import { nowIso } from "../ports/clock.ts";
 import type { ActivationClaim, Scheduler } from "../ports/scheduler.ts";
@@ -44,6 +61,12 @@ import type { JsonValue } from "../util/json.ts";
 import type { ActivationRecord, ActivationResultKind } from "./activation.ts";
 import { buildActivationInput, validateActivationOutcome } from "./activation.ts";
 import type { ControllerRegistry } from "./controller-registry.ts";
+import type { EffectDispatchRecord, SettleEffectInput, SettleEffectReceipt } from "./effect-processor.ts";
+import { EffectProcessor } from "./effect-processor.ts";
+import { routeEvent } from "./event-router.ts";
+
+/** Thirty seconds. Long enough that an inline wait budget is obviously a different concept. */
+const DEFAULT_EFFECT_DEADLINE_MS = 30_000;
 
 export interface HarnessOptions {
   readonly definitions: DefinitionStore;
@@ -52,10 +75,31 @@ export interface HarnessOptions {
   readonly controllers: ControllerRegistry;
   readonly clock: Clock;
   readonly ids: IdGenerator;
-  /** Advisory budget handed to every controller. Enforcement beyond reporting arrives with Slice B. */
+  /** Advisory budget handed to every controller. Reported, not enforced. */
   readonly activationBudget?: { readonly maxSteps?: number | null; readonly deadlineMs?: number | null };
   /** Guards `runUntilIdle` against a controller that never settles. */
   readonly maxActivationsPerRun?: number;
+
+  /**
+   * Effect policy. Omitting it means every Effect is denied.
+   *
+   * That default is the correct behaviour, not a stub: "nobody configured policy" and "policy
+   * allowed it" must never look the same.
+   */
+  readonly authorizer?: EffectAuthorizer;
+  /** Where authorized capability work actually happens. Omitting it refuses capability Effects. */
+  readonly capabilities?: CapabilityExecutor;
+  /**
+   * How long an Activation is willing to stay occupied waiting for an Effect.
+   *
+   * A scheduling choice, never an operation deadline. Defaults to the deterministic microtask
+   * budget, which lets an already-resolved dispatch settle inline without consulting a clock.
+   */
+  readonly inlineWait?: InlineWaitBudget;
+  /** Applied to Effects that declare no deadline of their own. Defaults to 30 seconds. */
+  readonly defaultEffectDeadlineMs?: number;
+  /** The deployment trust posture reported to executors. */
+  readonly securityProfile?: SecurityProfile;
 }
 
 export interface CreateExecutionInput {
@@ -79,10 +123,19 @@ export interface ExecutionHandle {
   readonly rootExecutionId: ExecutionId;
 }
 
-export interface DeliverEventInput {
+/**
+ * An observation delivered from outside the kernel.
+ *
+ * Applications mint `external.input` and nothing else. Capability results, denials, and refusals
+ * are Events the *Harness* creates when it establishes what happened - an application that could
+ * hand-deliver a `capability.completed` Event could tell an Execution that an action succeeded
+ * without any action having occurred.
+ */
+export interface DeliverExternalInputInput {
   readonly destination: ExecutionId;
-  readonly kind: string;
-  readonly body?: JsonValue;
+  /** Application vocabulary for what kind of input this is. Never interpreted by the kernel. */
+  readonly label: string;
+  readonly payload?: JsonValue;
   readonly correlationId?: string | null;
   readonly causationId?: string | null;
 }
@@ -93,7 +146,7 @@ export type EventDeliveryReceipt =
   | {
       readonly status: "rejected";
       readonly eventId: EventId;
-      readonly reason: "unknown_destination" | "execution_terminal" | "malformed_event";
+      readonly reason: "unknown_destination" | "execution_terminal" | "malformed_event" | "kind_not_deliverable";
       readonly detail: string;
     };
 
@@ -114,10 +167,25 @@ export class HarnessRunawayError extends Error {
 export class Harness {
   private readonly options: HarnessOptions;
   private readonly maxActivationsPerRun: number;
+  private readonly effects: EffectProcessor;
 
   constructor(options: HarnessOptions) {
     this.options = options;
     this.maxActivationsPerRun = options.maxActivationsPerRun ?? 1000;
+    this.effects = new EffectProcessor({
+      store: options.store,
+      clock: options.clock,
+      ids: options.ids,
+      // Fail closed. An unconfigured Harness denies every Effect rather than permitting them.
+      authorizer: options.authorizer ?? denyAllEffects,
+      capabilities: options.capabilities ?? null,
+      inlineWait: options.inlineWait ?? microtaskInlineWaitBudget(),
+      defaultEffectDeadlineMs: options.defaultEffectDeadlineMs ?? DEFAULT_EFFECT_DEADLINE_MS,
+      profile: options.securityProfile ?? "trusted-local",
+      wake: async (executionId) => {
+        await options.scheduler.enqueue(executionId);
+      },
+    });
   }
 
   // -- creation --------------------------------------------------------------
@@ -173,13 +241,18 @@ export class Harness {
 
   // -- event delivery --------------------------------------------------------
 
-  /** Mints an addressed Event envelope and routes it. */
-  async deliverEvent(input: DeliverEventInput): Promise<EventDeliveryReceipt> {
+  /**
+   * Mints an addressed `external.input` Event and routes it.
+   *
+   * This is the only Event an application creates. Everything else in the closed vocabulary
+   * describes something the runtime itself established.
+   */
+  async deliverExternalInput(input: DeliverExternalInputInput): Promise<EventDeliveryReceipt> {
     const envelope: EventEnvelope = {
       eventId: this.options.ids.next(ID_PREFIXES.event) as EventId,
       destination: { executionId: input.destination },
-      kind: input.kind,
-      body: input.body ?? null,
+      kind: "external.input",
+      body: { label: input.label, payload: input.payload ?? null },
       correlationId: input.correlationId ?? null,
       causationId: input.causationId ?? null,
       occurredAt: nowIso(this.options.clock),
@@ -188,58 +261,97 @@ export class Harness {
   }
 
   /**
-   * Routes an already-formed envelope.
+   * Routes an already-formed envelope from outside the kernel.
    *
-   * Delivery is destination-checked: the mailbox written is the one belonging to
-   * `envelope.destination.executionId` and nothing else can reach it. An Event addressed to a
-   * terminal Execution is refused rather than queued - terminal states do not resume.
+   * Only `external.input` may be delivered this way. The rest of the vocabulary describes things
+   * the runtime itself established - that a capability succeeded, that policy refused a request -
+   * and a caller who could mint those could tell an Execution an action had happened when nothing
+   * had. Results reach an Execution through `settleEffect`, which checks them against the pending
+   * operation they claim to answer.
+   *
+   * Delivery is destination-checked and duplicate-safe, and an Event addressed to a terminal
+   * Execution is refused rather than queued - terminal states do not resume. The receipt says the
+   * Event was accepted and persisted. It does *not* say a controller observed it: consumption
+   * happens when an Activation takes the Event out of the mailbox, and semantic handling happens
+   * only when a controller decides what it meant.
    */
   async deliverEnvelope(envelope: EventEnvelope): Promise<EventDeliveryReceipt> {
-    const issues = eventEnvelopeIssues(envelope);
-    if (issues.length > 0) {
+    if (envelope.kind !== "external.input") {
       return {
         status: "rejected",
         eventId: envelope.eventId,
-        reason: "malformed_event",
-        detail: issues.map((i) => `${i.path}: ${i.message}`).join("; "),
+        reason: "kind_not_deliverable",
+        detail: `"${envelope.kind}" describes something the runtime establishes; it cannot be delivered from outside`,
       };
     }
-
     const destination = envelope.destination.executionId;
     const deliveredAt = nowIso(this.options.clock);
 
-    const receipt = await this.options.store.transact(destination, async (tx): Promise<EventDeliveryReceipt> => {
-      const context = await tx.executions.get(destination);
-      if (!context) {
-        return { status: "rejected", eventId: envelope.eventId, reason: "unknown_destination", detail: `no execution ${destination}` };
-      }
-      if (isTerminalLifecycle(context.lifecycle)) {
-        return {
-          status: "rejected",
-          eventId: envelope.eventId,
-          reason: "execution_terminal",
-          detail: `execution ${destination} is ${context.lifecycle}`,
-        };
-      }
-
-      const appended = await tx.mailboxes.append(context.mailbox.mailboxId, envelope, deliveredAt);
-      if (!appended.accepted) return { status: "duplicate", eventId: envelope.eventId };
-
-      const wake = context.waitingFor;
-      if (context.lifecycle === "WAITING" && wake !== null && eventSatisfiesWake(envelope, wake)) {
-        const ready = transitionContext(context, "READY", deliveredAt);
-        await tx.executions.update(ready, context.revision);
-        await this.record(tx, destination, "WAITING", "READY", deliveredAt, null, `event ${envelope.eventId}`);
-        return { status: "delivered", eventId: envelope.eventId, wokeExecution: true };
-      }
-      return { status: "delivered", eventId: envelope.eventId, wokeExecution: false };
-    });
+    const receipt = await this.options.store.transact(destination, async (tx) =>
+      routeEvent({
+        tx,
+        envelope,
+        deliveredAt,
+        recordTransition: async (executionId, from, to, at, reason) => {
+          await this.record(tx, executionId, from, to, at, null, reason);
+        },
+      }),
+    );
 
     // Waking is a scheduling act, so it happens after the mailbox write is committed.
     if (receipt.status === "delivered" && receipt.wokeExecution) {
       await this.options.scheduler.enqueue(destination);
     }
     return receipt;
+  }
+
+  // -- effects ---------------------------------------------------------------
+
+  /**
+   * Delivers an outcome for a pending operation from outside the dispatch that created it.
+   *
+   * The path a recovered runtime or an out-of-band completion transport uses. It goes through the
+   * same funnel as an in-process completion, so it cannot skip the correlation check, the journal,
+   * the idempotency rules, or routing. A second result for an operation that already produced one
+   * is answered `already_settled` and creates no second observation, and a result naming the wrong
+   * Effect cannot settle somebody else's work.
+   *
+   * This is a trusted runtime entry point, at the same level as a `CapabilityExecutor`: it is how a
+   * result transport reports what the world did. Knowing a pending-operation id is not authorization
+   * to call it - an Internet-facing deployment must authenticate the caller before it reaches here,
+   * exactly as it must before creating or cancelling an Execution.
+   */
+  async settleEffect(input: SettleEffectInput): Promise<SettleEffectReceipt> {
+    return this.effects.settleEffect(input);
+  }
+
+  /**
+   * Resolves once every dispatch currently in flight has settled.
+   *
+   * A reference/testing affordance so a conformance run can advance the slow path deterministically
+   * instead of sleeping. It will not return while an Effect genuinely has not completed, which is
+   * correct: nothing here shortens an operation's deadline.
+   */
+  async drainEffects(): Promise<void> {
+    await this.effects.drain();
+  }
+
+  /** Pending operations belonging to one Execution. Read-only; runtime state is never handed out. */
+  async pendingOperationsOf(executionId: ExecutionId): Promise<readonly PendingOperation[]> {
+    return this.options.store.listPendingOperations(executionId);
+  }
+
+  async pendingOperation(pendingOperationId: PendingOperationId): Promise<PendingOperation | undefined> {
+    return this.options.store.readPendingOperation(pendingOperationId);
+  }
+
+  /**
+   * The Effect journal for one Execution.
+   *
+   * Audit history. These records are never delivered to a controller and never enter a mailbox.
+   */
+  async effectJournalOf(executionId: ExecutionId): Promise<readonly EffectJournalEntry[]> {
+    return this.options.store.listEffectJournal(executionId);
   }
 
   // -- scheduling ------------------------------------------------------------
@@ -397,8 +509,32 @@ export class Harness {
     setRequeue: (value: boolean) => void,
   ): Promise<ActivationRecord> {
     const executionId = running.executionId;
-    const finishedAt = nowIso(this.options.clock);
     const next: ControllerNext = outcome.next;
+
+    // Effects are processed before the lifecycle is derived, and this ordering is load-bearing. A
+    // result that settled inline is already in the mailbox when the wake dependency is checked
+    // below, so the Execution stays runnable; one that did not leaves a pending operation and the
+    // Execution waits for the identical Event. Neither the controller nor the Event body can tell
+    // which happened.
+    let dispatched: readonly EffectDispatchRecord[];
+    try {
+      dispatched = await this.effects.processActivationEffects({
+        context: running,
+        definition: running.definition,
+        activationId,
+        proposals: outcome.effects ?? [],
+      });
+    } catch (error) {
+      // The gateway could not record what it was doing. Failing the Activation is the only honest
+      // response: nothing partial was committed, and pretending the Activation succeeded would
+      // leave controller progress describing Effects the runtime has no record of.
+      return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
+        code: "effect_processing_failed",
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+
+    const finishedAt = nowIso(this.options.clock);
 
     const applied = await this.options.store.transact(executionId, async (tx) => {
       const emissionIds = await this.persistEmissions(tx, running, activationId, outcome, finishedAt);
@@ -486,6 +622,7 @@ export class Harness {
       finishedAt,
       deliveredEventIds,
       emissionIds: applied.emissionIds,
+      effects: dispatched,
       lifecycleBefore: "RUNNING",
       lifecycleAfter: applied.to,
       result: applied.result,
@@ -542,6 +679,7 @@ export class Harness {
       finishedAt,
       deliveredEventIds,
       emissionIds: [],
+      effects: [],
       lifecycleBefore: "RUNNING",
       lifecycleAfter: "FAILED",
       result: "failed",

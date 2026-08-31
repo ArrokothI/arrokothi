@@ -75,7 +75,7 @@ describe("lifecycle", () => {
 
     assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "COMPLETED");
 
-    const receipt = await harness.deliverEvent({ destination: handle.executionId, kind: "user.message" });
+    const receipt = await harness.deliverExternalInput({ destination: handle.executionId, label: "user.message" });
     assert.equal(receipt.status, "rejected");
     if (receipt.status === "rejected") assert.equal(receipt.reason, "execution_terminal");
 

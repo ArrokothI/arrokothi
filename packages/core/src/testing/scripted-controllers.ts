@@ -12,13 +12,24 @@
  *
  * One Activation executes one step. The step cursor lives in controller progress, so "the same
  * Execution resumed where it left off" is observable rather than assumed.
+ *
+ * The Effect steps matter for what they cannot do. `use_capability` produces a *proposal* and
+ * nothing else: this controller has no executor, no journal, no authorizer, and no way to learn an
+ * outcome except by being handed an Event in a later Activation. A script that requests a capability
+ * and then awaits its result is therefore the honest shape of controller/Harness collaboration,
+ * whether the Effect takes a microsecond or an hour.
  */
 
 import type { AgentDefinition, WorkflowDefinition, TerminalResultSchema } from "../definitions/types.ts";
 import { defineAgent, defineWorkflow } from "../definitions/validation.ts";
 import type { DefinitionKind } from "../definitions/types.ts";
+import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
+import type { EffectProposal } from "../effects/types.ts";
+import { useCapability } from "../effects/types.ts";
 import { eventSatisfiesWake } from "../interaction/event-envelope.ts";
 import type { WakeCondition } from "../interaction/event-envelope.ts";
+import type { EventKind } from "../interaction/events.ts";
+import { EFFECT_RESULT_EVENT_KINDS, isEffectResultEventKind } from "../interaction/events.ts";
 import type { ActivationInput, ActivationOutcome, ExecutionController } from "../ports/controller.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
@@ -31,7 +42,29 @@ export type ScriptedControllerStep =
   /** Write into controller progress, so progress carried across Activations is checkable. */
   | { readonly do: "remember"; readonly key: string; readonly value: JsonValue }
   /** Report a wake dependency. The Harness, not this step, decides whether that means WAITING. */
-  | { readonly do: "await"; readonly eventKinds?: readonly string[]; readonly correlationId?: string; readonly note?: string }
+  | { readonly do: "await"; readonly eventKinds?: readonly EventKind[]; readonly correlationId?: string; readonly note?: string }
+  /**
+   * Propose a capability Effect, then report that its result is still needed.
+   *
+   * One step, because that is the shape real controllers have: the proposal and the dependency on
+   * its result are one semantic decision. The Harness decides whether the result arrived in time.
+   */
+  | {
+      readonly do: "use_capability";
+      readonly capability: string;
+      readonly operation: string;
+      readonly input?: JsonObject;
+      readonly requestKey?: string;
+      readonly resources?: readonly string[];
+      readonly deadlineMs?: number;
+      readonly idempotency?: EffectIdempotencyScope;
+      /** Report `continue` instead of awaiting, for scripts that do not need the result yet. */
+      readonly await?: boolean;
+    }
+  /** Propose an Effect kind this slice does not dispatch, to prove it is refused rather than dropped. */
+  | { readonly do: "propose_effect"; readonly effect: EffectProposal; readonly await?: boolean }
+  /** Record the kinds and correlations of the Events this Activation consumed. */
+  | { readonly do: "observe"; readonly note?: string }
   /** Propose semantic completion. The Harness validates the value against the pinned schema. */
   | { readonly do: "complete"; readonly result?: JsonValue }
   | { readonly do: "fail"; readonly code: string; readonly message: string }
@@ -43,17 +76,23 @@ export interface ScriptedProgress extends JsonObject {
   awaiting: boolean;
   /** Every Event id this Execution has ever consumed, in order. */
   seenEvents: string[];
+  /** Every Event kind this Execution has ever consumed, in order. */
+  seenKinds: string[];
+  /** Bodies of the Effect-result Events consumed, so a test can assert what was observed. */
+  observations: JsonValue[];
   notes: JsonObject;
 }
 
-const EMPTY: ScriptedProgress = { step: 0, awaiting: false, seenEvents: [], notes: {} };
+const EMPTY: ScriptedProgress = { step: 0, awaiting: false, seenEvents: [], seenKinds: [], observations: [], notes: {} };
 
 function readProgress(value: JsonObject): ScriptedProgress {
   const step = typeof value["step"] === "number" ? (value["step"] as number) : 0;
   const awaiting = value["awaiting"] === true;
   const seenEvents = Array.isArray(value["seenEvents"]) ? ([...(value["seenEvents"] as JsonValue[])] as string[]) : [];
+  const seenKinds = Array.isArray(value["seenKinds"]) ? ([...(value["seenKinds"] as JsonValue[])] as string[]) : [];
+  const observations = Array.isArray(value["observations"]) ? [...(value["observations"] as JsonValue[])] : [];
   const notes = (value["notes"] ?? {}) as JsonObject;
-  return { step, awaiting, seenEvents, notes: { ...notes } };
+  return { step, awaiting, seenEvents, seenKinds, observations, notes: { ...notes } };
 }
 
 function readProgram(spec: JsonObject): readonly ScriptedControllerStep[] {
@@ -70,7 +109,13 @@ class ScriptedController implements ExecutionController {
 
   activate(input: ActivationInput): ActivationOutcome {
     const progress = readProgress(input.execution.control.progress);
-    for (const event of input.events) progress.seenEvents.push(event.eventId);
+    for (const event of input.events) {
+      progress.seenEvents.push(event.eventId);
+      progress.seenKinds.push(event.kind);
+      if (isEffectResultEventKind(event.kind)) {
+        progress.observations.push(event.body as unknown as JsonValue);
+      }
+    }
 
     const program = readProgram(input.definition.spec);
     const step = program[progress.step];
@@ -119,6 +164,61 @@ class ScriptedController implements ExecutionController {
         return this.outcome(progress, { status: "await_event", wake });
       }
 
+      case "use_capability": {
+        progress.step += 1;
+        const requestKey = step.requestKey ?? `${step.capability}:${progress.step}`;
+        const proposal: EffectProposal = useCapability({
+          capability: step.capability,
+          operation: step.operation,
+          ...(step.input !== undefined ? { input: step.input } : {}),
+          requestKey,
+          ...(step.resources !== undefined ? { resources: step.resources } : {}),
+          ...(step.deadlineMs !== undefined ? { deadlineMs: step.deadlineMs } : {}),
+          ...(step.idempotency !== undefined ? { idempotency: step.idempotency } : {}),
+        });
+        if (step.await === false) {
+          return this.outcome(progress, { status: "continue" }, [], [proposal]);
+        }
+        progress.awaiting = true;
+        return this.outcome(
+          progress,
+          {
+            status: "await_event",
+            // Wait on the correlation, not on a particular outcome: success, definite failure, and
+            // an unknown outcome are all answers, and a controller that only woke for success would
+            // sleep forever on the ones that matter most.
+            wake: { eventKinds: [...EFFECT_RESULT_EVENT_KINDS], correlationId: requestKey, description: `result of ${step.capability}` },
+          },
+          [],
+          [proposal],
+        );
+      }
+
+      case "propose_effect": {
+        progress.step += 1;
+        const requestKey = step.effect.requestKey ?? `effect:${progress.step}`;
+        const proposal: EffectProposal = { ...step.effect, requestKey } as EffectProposal;
+        if (step.await === false) {
+          return this.outcome(progress, { status: "continue" }, [], [proposal]);
+        }
+        progress.awaiting = true;
+        return this.outcome(
+          progress,
+          {
+            status: "await_event",
+            wake: { eventKinds: [...EFFECT_RESULT_EVENT_KINDS], correlationId: requestKey, description: `result of ${step.effect.kind}` },
+          },
+          [],
+          [proposal],
+        );
+      }
+
+      case "observe": {
+        progress.step += 1;
+        if (step.note !== undefined) progress.notes["observed"] = step.note;
+        return this.outcome(progress, { status: "continue" });
+      }
+
       case "complete": {
         progress.step += 1;
         return this.outcome(
@@ -152,8 +252,9 @@ class ScriptedController implements ExecutionController {
     progress: ScriptedProgress,
     next: ActivationOutcome["next"],
     emissions: readonly EmissionProposal[] = [],
+    effects: readonly EffectProposal[] = [],
   ): ActivationOutcome {
-    return { control: { kind: this.kind, progress } as ActivationOutcome["control"], emissions, next };
+    return { control: { kind: this.kind, progress } as ActivationOutcome["control"], emissions, effects, next };
   }
 }
 

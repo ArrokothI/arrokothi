@@ -16,15 +16,49 @@ export type { DefinitionStore } from "./definition-store.ts";
 export { DefinitionIntegrityError, DefinitionVersionConflictError } from "./definition-store.ts";
 
 export type {
+  EffectJournalFacet,
   EmissionFacet,
   ExecutionRecordFacet,
   MailboxAppendResult,
   MailboxFacet,
+  PendingOperationFacet,
   RuntimeStore,
   RuntimeTransaction,
   TransitionAuditFacet,
 } from "./runtime-store.ts";
-export { ExecutionAlreadyExistsError, RuntimeConcurrencyError, UnknownExecutionError } from "./runtime-store.ts";
+export {
+  ExecutionAlreadyExistsError,
+  RuntimeConcurrencyError,
+  UnknownExecutionError,
+  UnknownPendingOperationError,
+} from "./runtime-store.ts";
+
+export type { CapabilityExecutor } from "./capability-executor.ts";
+export { UnknownCapabilityError } from "./capability-executor.ts";
+
+export type { EffectAuthorizer } from "./effect-authorizer.ts";
+export { denyAllEffects } from "./effect-authorizer.ts";
+
+export type { InlineWaitBudget, InlineWaitResult } from "./inline-wait.ts";
+export { microtaskInlineWaitBudget } from "./inline-wait.ts";
+
+export type {
+  AuthorizedCapabilityRequest,
+  AuthorizedGrant,
+  CapabilityCancellation,
+  CapabilityExecutionEnvironment,
+  ResourceAccessMode,
+  ResourceBindingRef,
+  SecurityProfile,
+} from "../effects/capability.ts";
+export type { CapabilityError, CapabilityOutcome } from "../effects/outcome.ts";
+export { capabilityOutcomeIssues } from "../effects/outcome.ts";
+
+export type {
+  AuthorizationConstraints,
+  AuthorizationDecision,
+  EffectAuthorizationRequest,
+} from "../effects/authorization.ts";
 
 export type { ActivationClaim, Scheduler } from "./scheduler.ts";
 export { UnknownClaimError } from "./scheduler.ts";

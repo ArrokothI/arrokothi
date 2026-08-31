@@ -15,5 +15,10 @@ export {
   INITIAL_SCRIPTED_PROGRESS,
 } from "./scripted-controllers.ts";
 export type { ScriptedControllerStep, ScriptedDefinitionInput, ScriptedProgress } from "./scripted-controllers.ts";
-export { definitionStoreContract, runtimeStoreContract, schedulerContract } from "./contracts/index.ts";
-export type { ContractCase } from "./contracts/index.ts";
+export {
+  capabilityExecutorContract,
+  definitionStoreContract,
+  runtimeStoreContract,
+  schedulerContract,
+} from "./contracts/index.ts";
+export type { CapabilityExecutorSubject, ContractCase } from "./contracts/index.ts";

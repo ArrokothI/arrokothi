@@ -5,6 +5,10 @@
  * derives WAITING. An Event arriving - not a save, not a poll, not a timer - makes the Execution
  * READY. The Activation that follows belongs to the same Execution identity and continues from the
  * controller progress the previous Activation left behind.
+ *
+ * Since the Event vocabulary closed, an application delivers `external.input` and distinguishes one
+ * observation from another by correlation rather than by inventing an Event kind. The kernel matches
+ * a wake dependency on the closed kind plus the correlation, and never on an application label.
  */
 
 import { test, describe } from "node:test";
@@ -26,7 +30,7 @@ const longLived = () =>
     program: [
       { do: "remember", key: "topic", value: "quarterly report" },
       { do: "emit", text: "what should I focus on?" },
-      { do: "await", eventKinds: ["user.message"], note: "needs the user's answer" },
+      { do: "await", eventKinds: ["external.input"], correlationId: "answer-1", note: "needs the user's answer" },
       { do: "emit", text: "understood" },
       { do: "complete" },
     ],
@@ -43,7 +47,8 @@ describe("wait, wake, and resume", () => {
 
     const context = await harness.inspect(handle.executionId);
     assert.equal(context?.lifecycle, "WAITING");
-    assert.deepEqual(context?.waitingFor?.eventKinds, ["user.message"]);
+    assert.deepEqual(context?.waitingFor?.eventKinds, ["external.input"]);
+    assert.equal(context?.waitingFor?.correlationId, "answer-1");
     assert.equal(context?.waitingFor?.description, "needs the user's answer");
     assert.equal(context?.terminalResult, null, "waiting is not completing");
   });
@@ -56,13 +61,13 @@ describe("wait, wake, and resume", () => {
     await harness.runUntilIdle();
 
     const before = await harness.inspect(waiting.executionId);
-    await harness.deliverEvent({ destination: other.executionId, kind: "user.message", body: { text: "for the other one" } });
+    await harness.deliverExternalInput({ destination: other.executionId, label: "user.message", payload: { text: "for the other one" }, correlationId: "answer-1" });
 
     const after = await harness.inspect(waiting.executionId);
     assert.equal(after?.lifecycle, "WAITING");
     assert.equal(after?.revision, before?.revision, "delivery is destination-checked; the wrong mailbox was never touched");
 
-    const unknown = await harness.deliverEvent({ destination: "exe_does_not_exist" as never, kind: "user.message" });
+    const unknown = await harness.deliverExternalInput({ destination: "exe_does_not_exist" as never, label: "user.message" });
     assert.equal(unknown.status, "rejected");
     if (unknown.status === "rejected") assert.equal(unknown.reason, "unknown_destination");
   });
@@ -73,7 +78,7 @@ describe("wait, wake, and resume", () => {
     const handle = await harness.createExecution({ definition: ref });
     await harness.runUntilIdle();
 
-    const receipt = await harness.deliverEvent({ destination: handle.executionId, kind: "system.heartbeat" });
+    const receipt = await harness.deliverExternalInput({ destination: handle.executionId, label: "system.heartbeat" });
     assert.equal(receipt.status, "delivered");
     if (receipt.status === "delivered") assert.equal(receipt.wokeExecution, false);
 
@@ -90,12 +95,12 @@ describe("wait, wake, and resume", () => {
     const beforeWait = await harness.runUntilIdle();
     const activationsBeforeWait = beforeWait.length;
 
-    await harness.deliverEvent({ destination: handle.executionId, kind: "system.heartbeat" });
-    const receipt = await harness.deliverEvent({
+    await harness.deliverExternalInput({ destination: handle.executionId, label: "system.heartbeat" });
+    const receipt = await harness.deliverExternalInput({
       destination: handle.executionId,
-      kind: "user.message",
-      body: { text: "focus on revenue" },
-      correlationId: "corr-1",
+      label: "user.message",
+      payload: { text: "focus on revenue" },
+      correlationId: "answer-1",
     });
     assert.equal(receipt.status, "delivered");
     if (receipt.status === "delivered") assert.equal(receipt.wokeExecution, true);
@@ -148,7 +153,7 @@ describe("wait, wake, and resume", () => {
           await gate.promise;
           return {
             control: { kind: "agent", progress: { asked: true } },
-            next: { status: "await_event", wake: { eventKinds: ["late.answer"], correlationId: null } },
+            next: { status: "await_event", wake: { eventKinds: ["external.input"], correlationId: "late-answer" } },
           };
         }
         return { control: { kind: "agent", progress: { answered: true } }, next: { status: "complete" } };
@@ -161,7 +166,7 @@ describe("wait, wake, and resume", () => {
 
     const running = harness.runOnce();
     await entered.promise;
-    await harness.deliverEvent({ destination: handle.executionId, kind: "late.answer", body: { text: "early" } });
+    await harness.deliverExternalInput({ destination: handle.executionId, label: "late.answer", payload: { text: "early" }, correlationId: "late-answer" });
     gate.resolve();
 
     const record = await running;
@@ -183,12 +188,12 @@ describe("wait, wake, and resume", () => {
     const envelope = {
       eventId: "evt_fixed" as never,
       destination: { executionId: handle.executionId },
-      kind: "user.message",
-      body: { text: "hello" },
-      correlationId: null,
+      kind: "external.input",
+      body: { label: "user.message", payload: { text: "hello" } },
+      correlationId: "answer-1",
       causationId: null,
       occurredAt: "2026-01-01T00:10:00.000Z",
-    };
+    } as const;
 
     const first = await harness.deliverEnvelope(envelope);
     assert.equal(first.status, "delivered");

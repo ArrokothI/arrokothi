@@ -2,13 +2,22 @@
  * RuntimeStore contract.
  *
  * The invariants a durable implementation must reproduce: compare-and-set on Execution revisions,
- * all-or-nothing transactions, duplicate-safe mailbox delivery, an honest consumption cursor, and
- * lifecycle audit records kept separate from Events.
+ * all-or-nothing transactions, duplicate-safe mailbox delivery, an honest consumption cursor,
+ * pending operations and the Effect journal committing inside the same transaction as the mailbox
+ * write they belong to, and audit records kept out of mailboxes entirely.
+ *
+ * The rollback case is the one that matters most for Slice B. A store that could commit "the Effect
+ * was dispatched" without "there is a pending operation to settle", or "the result Event is in the
+ * mailbox" without "the operation is no longer pending", would let an Execution be woken by an
+ * observation the runtime does not believe in.
  */
 
 import { createExecutionContext, transitionContext } from "../../execution/context.ts";
 import type { ExecutionContext } from "../../execution/context.ts";
 import type { ActivationId, ExecutionId } from "../../execution/ids.ts";
+import type { EffectId, IdempotencyKey, PendingOperationId } from "../../effects/ids.ts";
+import { createPendingOperation, markDispatched, markSettled } from "../../effects/pending.ts";
+import type { PendingOperation } from "../../effects/pending.ts";
 import type { EventEnvelope, EventId } from "../../interaction/event-envelope.ts";
 import type { RuntimeStore } from "../../ports/runtime-store.ts";
 import type { ContractCase } from "./expect.ts";
@@ -29,16 +38,30 @@ function context(): ExecutionContext {
   });
 }
 
-function event(id: string, kind = "test.event"): EventEnvelope {
+function event(id: string, label = "test-input"): EventEnvelope {
   return {
     eventId: id as EventId,
     destination: { executionId: EXECUTION },
-    kind,
-    body: { n: 1 },
+    kind: "external.input",
+    body: { label, payload: { n: 1 } },
     correlationId: null,
     causationId: null,
     occurredAt: "2026-01-01T00:00:01.000Z",
   };
+}
+
+function pending(suffix = "1", key = "per_input:contract"): PendingOperation {
+  return createPendingOperation({
+    pendingOperationId: `pop_${suffix}` as PendingOperationId,
+    executionId: EXECUTION,
+    effectId: `eff_${suffix}` as EffectId,
+    effectKind: "use_capability",
+    correlationId: `req-${suffix}`,
+    causationId: "act_1",
+    idempotencyKey: key as IdempotencyKey,
+    createdAt: "2026-01-01T00:00:02.000Z",
+    deadline: "2026-01-01T00:00:32.000Z",
+  });
 }
 
 export function runtimeStoreContract(factory: () => RuntimeStore): readonly ContractCase[] {
@@ -95,6 +118,17 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
                 body: { kind: "text", text: "should not survive" },
                 emittedAt: "2026-01-01T00:00:02.000Z",
               });
+              await tx.pendingOperations.insert(pending("rollback"));
+              await tx.effectJournal.append({
+                effectId: "eff_rollback" as EffectId,
+                executionId: EXECUTION,
+                effectKind: "use_capability",
+                phase: "dispatch_started",
+                activationId: "act_1" as ActivationId,
+                pendingOperationId: "pop_rollback" as PendingOperationId,
+                at: "2026-01-01T00:00:02.000Z",
+                detail: {},
+              });
               throw Object.assign(new Error("aborted"), { name: "AbortedForContract" });
             }),
           "AbortedForContract",
@@ -102,9 +136,11 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
         );
 
         assertDeepEqual(await store.listEmissions(EXECUTION), [], "no emission survived the rollback");
+        assertDeepEqual(await store.listPendingOperations(EXECUTION), [], "no pending operation survived the rollback");
+        assertDeepEqual(await store.listEffectJournal(EXECUTION), [], "no journal entry survived the rollback");
         await store.transact(EXECUTION, async (tx) => {
-          const pending = await tx.mailboxes.peek(MAILBOX);
-          assertEqual(pending.length, 0, "no mailbox write survived the rollback");
+          const queued = await tx.mailboxes.peek(MAILBOX);
+          assertEqual(queued.length, 0, "no mailbox write survived the rollback");
         });
       },
     },
@@ -167,6 +203,86 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
         assertEqual((await store.listTransitions(EXECUTION)).length, 1, "the lifecycle audit is stored separately");
         await store.transact(EXECUTION, async (tx) => {
           assertEqual((await tx.mailboxes.peek(MAILBOX)).length, 0, "audit records never enter a mailbox");
+        });
+      },
+    },
+    {
+      name: "pending operations record dispatch and settlement separately",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        await store.transact(EXECUTION, async (tx) => tx.pendingOperations.insert(pending()));
+        const created = await store.readPendingOperation("pop_1" as PendingOperationId);
+        assertEqual(created?.status, "pending", "a new operation is unresolved");
+        assertEqual(created?.dispatch, "not_dispatched", "and has not been handed to the outside world");
+        assertEqual(created?.outcome, null, "and nothing is known about what happened");
+        assertEqual(created?.deadline, "2026-01-01T00:00:32.000Z", "its own deadline is stored, not derived");
+
+        await store.transact(EXECUTION, async (tx) => {
+          await tx.pendingOperations.update(markDispatched(created!, "2026-01-01T00:00:03.000Z"));
+        });
+        const dispatched = await store.readPendingOperation("pop_1" as PendingOperationId);
+        assertEqual(dispatched?.dispatch, "dispatched", "dispatch is recorded");
+        assertEqual(dispatched?.status, "pending", "and dispatched is still not completed");
+        assertEqual(dispatched?.outcome, null, "the crash-sensitive state is representable, not inferred");
+
+        await store.transact(EXECUTION, async (tx) => {
+          await tx.pendingOperations.update(markSettled(dispatched!, "success", "evt_result" as EventId, "2026-01-01T00:00:04.000Z"));
+        });
+        const settled = await store.readPendingOperation("pop_1" as PendingOperationId);
+        assertEqual(settled?.status, "settled", "settlement is terminal for the operation");
+        assertEqual(settled?.outcome, "success", "and records what the world established");
+        assertEqual(settled?.resultEventId, "evt_result", "linked to the observation the Execution received");
+      },
+    },
+    {
+      name: "pending operations are findable by duplicate-suppression key",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+        await store.transact(EXECUTION, async (tx) => {
+          await tx.pendingOperations.insert(pending("1", "per_input:send"));
+          await tx.pendingOperations.insert(pending("2", "per_input:other"));
+          await tx.pendingOperations.insert(pending("3", "per_input:send"));
+        });
+
+        await store.transact(EXECUTION, async (tx) => {
+          const matches = await tx.pendingOperations.findByIdempotencyKey(EXECUTION, "per_input:send" as IdempotencyKey);
+          assertDeepEqual(matches.map((operation) => operation.pendingOperationId), ["pop_1", "pop_3"], "only same-key operations match");
+          const none = await tx.pendingOperations.findByIdempotencyKey(EXECUTION, "per_input:absent" as IdempotencyKey);
+          assertEqual(none.length, 0, "an unseen key matches nothing");
+        });
+        assertEqual((await store.listPendingOperations(EXECUTION)).length, 3, "all three belong to this Execution");
+      },
+    },
+    {
+      name: "the Effect journal is sequenced per Execution and never reaches a mailbox",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+        await store.transact(EXECUTION, async (tx) => {
+          for (const phase of ["requested", "authorized", "dispatch_started", "completed"] as const) {
+            await tx.effectJournal.append({
+              effectId: "eff_1" as EffectId,
+              executionId: EXECUTION,
+              effectKind: "use_capability",
+              phase,
+              activationId: "act_1" as ActivationId,
+              pendingOperationId: "pop_1" as PendingOperationId,
+              at: "2026-01-01T00:00:05.000Z",
+              detail: { phase },
+            });
+          }
+        });
+
+        const entries = await store.listEffectJournal(EXECUTION);
+        assertDeepEqual(entries.map((entry) => entry.phase), ["requested", "authorized", "dispatch_started", "completed"], "phases are ordered");
+        assertDeepEqual(entries.map((entry) => entry.sequence), [1, 2, 3, 4], "and sequenced");
+        await store.transact(EXECUTION, async (tx) => {
+          assertEqual((await tx.mailboxes.peek(MAILBOX)).length, 0, "journal entries are audit, not observations");
+          const byEffect = await tx.effectJournal.listByEffect("eff_1" as EffectId);
+          assertEqual(byEffect.length, 4, "one Effect's whole history is retrievable");
         });
       },
     },

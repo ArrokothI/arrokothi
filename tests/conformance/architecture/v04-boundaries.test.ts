@@ -34,11 +34,21 @@ const V04_ENTRY_MODULES = [
 ];
 
 /** Directories and files the v0.4 path owns. */
-const V04_OWNED = ["definitions/", "execution/", "interaction/", "ports/", "reference/", "testing/contracts/"];
+const V04_OWNED = [
+  "definitions/",
+  "effects/",
+  "execution/",
+  "interaction/",
+  "ports/",
+  "reference/",
+  "testing/contracts/",
+];
 const V04_OWNED_FILES = [
   "execution-api.ts",
   "runtime/activation.ts",
   "runtime/controller-registry.ts",
+  "runtime/effect-processor.ts",
+  "runtime/event-router.ts",
   "runtime/harness.ts",
   "testing/scripted-controllers.ts",
   "testing/execution-harness.ts",
@@ -104,11 +114,11 @@ interface Graph {
   readonly bare: Map<string, string[]>;
 }
 
-/** Transitive closure over relative imports, starting from the published v0.4 entry modules. */
-async function walkV04Graph(): Promise<Graph> {
+/** Transitive closure over relative imports, starting from the given modules. */
+async function walkGraph(entries: readonly string[]): Promise<Graph> {
   const files = new Set<string>();
   const bare = new Map<string, string[]>();
-  const queue = [...V04_ENTRY_MODULES];
+  const queue = [...entries];
 
   while (queue.length > 0) {
     const relativePath = queue.pop()!;
@@ -127,6 +137,10 @@ async function walkV04Graph(): Promise<Graph> {
   }
 
   return { files, bare };
+}
+
+function walkV04Graph(): Promise<Graph> {
+  return walkGraph(V04_ENTRY_MODULES);
 }
 
 async function coreSourceFiles(): Promise<string[]> {
@@ -209,6 +223,73 @@ describe("v0.4 architecture boundaries", () => {
     }
 
     assert.deepEqual(violations, [], "conformance asserts target semantics through the published v0.4 surface only");
+  });
+
+  test("the controller boundary cannot reach an executor, policy, journal, or store", async () => {
+    // Asserted on the import graph rather than on the shape of one object, because the claim is
+    // about what a controller *could* be given, not about what today's Harness happens to pass.
+    const { files } = await walkGraph(["ports/controller.ts"]);
+    const forbidden = [
+      "ports/capability-executor.ts",
+      "ports/effect-authorizer.ts",
+      "ports/runtime-store.ts",
+      "ports/scheduler.ts",
+      "ports/definition-store.ts",
+      "ports/inline-wait.ts",
+      "effects/journal.ts",
+      "effects/pending.ts",
+      "effects/authorization.ts",
+      "effects/capability.ts",
+      "runtime/harness.ts",
+      "runtime/effect-processor.ts",
+      "runtime/event-router.ts",
+    ];
+    assert.deepEqual(
+      [...files].filter((path) => forbidden.includes(path)),
+      [],
+      "a controller proposes Effects as data; it is handed nothing that authorizes, dispatches, journals, persists, or schedules",
+    );
+  });
+
+  test("the capability boundary cannot reach Execution state, the store, or the Harness", async () => {
+    const { files } = await walkGraph(["ports/capability-executor.ts"]);
+    const forbidden = [
+      "execution/context.ts",
+      "execution/lifecycle.ts",
+      "execution/terminal-result.ts",
+      "execution/emission.ts",
+      "ports/runtime-store.ts",
+      "ports/scheduler.ts",
+      "ports/controller.ts",
+      "runtime/harness.ts",
+      "runtime/effect-processor.ts",
+      "effects/journal.ts",
+      "effects/pending.ts",
+    ];
+    assert.deepEqual(
+      [...files].filter((path) => forbidden.includes(path)),
+      [],
+      "an executor returns observations; it has no route to mutate an ExecutionContext, a mailbox, or a lifecycle",
+    );
+  });
+
+  test("the authorization boundary sees requests, not runtime machinery", async () => {
+    const { files } = await walkGraph(["ports/effect-authorizer.ts"]);
+    const forbidden = [
+      "ports/runtime-store.ts",
+      "ports/scheduler.ts",
+      "ports/capability-executor.ts",
+      "runtime/harness.ts",
+      "runtime/effect-processor.ts",
+      "effects/journal.ts",
+      "effects/pending.ts",
+      "execution/context.ts",
+    ];
+    assert.deepEqual(
+      [...files].filter((path) => forbidden.includes(path)),
+      [],
+      "policy decides about a described request and cannot reach what would carry it out",
+    );
   });
 
   test("the published v0.4 entry points are the ones the package exports", async () => {

@@ -7,6 +7,8 @@
  */
 
 export type { ContractCase } from "./expect.ts";
+export { capabilityExecutorContract } from "./capability-executor.ts";
+export type { CapabilityExecutorSubject } from "./capability-executor.ts";
 export { definitionStoreContract } from "./definition-store.ts";
 export { runtimeStoreContract } from "./runtime-store.ts";
 export { schedulerContract } from "./scheduler.ts";
