@@ -28,11 +28,7 @@ implementation-guide.md
     ↓ implementation proposal
 future-plan.md
     ↓ open questions / experiments
-legacy/*
-    ↓ historical context only
 ```
-
-Files under [`legacy/`](legacy/) are design history. They may describe older models, including the earlier idea that every LLM or Function invocation was itself an Execution.
 
 ## Architecture in one picture
 
