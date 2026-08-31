@@ -3,6 +3,8 @@
 > **Status: canonical conceptual overview for ArrokothI.**
 >
 > This document should be enough to understand the shape of the system. It defines the major concepts and the boundaries between them, but deliberately leaves tricky semantics to the dedicated concept documents. It does not define TypeScript APIs, storage layouts, scheduler algorithms, provider SDK behavior, or protocol wire formats.
+>
+> Go deeper in [`execution-runtime.md`](execution-runtime.md) for runtime/lifecycle/concurrency, [`composition.md`](composition.md) for Agent/Workflow composition and Skill, [`authority.md`](authority.md) for permission/delegation/exposure, [`memory.md`](memory.md) for retained information/context/provenance, [`interoperability.md`](interoperability.md) for portable interfaces/protocols, and [`security-guarantees.md`](security-guarantees.md) for trust/deployment guarantees. Unresolved/post-v0.4 questions belong in [`future-plan.md`](future-plan.md). The document map and ownership rules are in [`README.md`](README.md).
 
 ## 1. The core idea
 
@@ -166,7 +168,7 @@ Executions do not each own a separate Harness.
 
 The Harness may be implemented in one process or distributed across workers. Physical placement does not change the meaning of Execution, Event, Effect, `spawn`, or `call`.
 
-The detailed runtime semantics live in [`execution-runtime.md`](execution-runtime.md).
+The detailed runtime semantics live in [`execution-runtime.md`](execution-runtime.md). Authority decisions performed by the Harness are defined in [`authority.md`](authority.md), while security guarantees around bypass/containment live in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -209,7 +211,7 @@ may message X ≠ may inspect X memory
 
 A future/reusable **Skill** is also a composition/package concept, not an Execution kind. A Skill may package instructions, resources, scripts, bindings, and optionally a root Agent/Workflow composition. Activating a Skill may create a child Execution when its composition requires one, or may simply enrich the current Agent when it is instruction-only.
 
-The deeper composition rules belong in [`composition.md`](composition.md).
+The deeper composition rules belong in [`composition.md`](composition.md). Memory visibility at those boundaries belongs in [`memory.md`](memory.md); the authority to spawn/message/use resources belongs in [`authority.md`](authority.md).
 
 ---
 
@@ -255,7 +257,7 @@ Runtime identity is also not automatically application identity:
 
 Application policy may consider a human, tenant, world, service identity, an Agent acting on behalf of someone, or other authenticated domain facts. Those facts may influence authority, but they do not redefine what an Execution is.
 
-The detailed authority, delegation, Active View, and discovery model will live in the dedicated authority document during this documentation reorganization.
+The detailed authority, delegation, Active View, discovery, evidence, and confirmation model is defined in [`authority.md`](authority.md). Deployment/security consequences are defined in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -306,7 +308,7 @@ but does not automatically become
 
 Cross-Execution visibility is explicit. A child does not see all parent memory or notes merely because it is a descendant.
 
-The detailed memory forms, scopes, provenance, visibility, supersession, and context-selection rules will live in the dedicated memory document during this documentation reorganization.
+The detailed memory forms, scopes, provenance, visibility, supersession, promotion, retrieval, and context-compilation rules are defined in [`memory.md`](memory.md). Permission to read/write those views belongs in [`authority.md`](authority.md).
 
 ---
 
@@ -377,17 +379,17 @@ Skill
 External protocol objects do not replace kernel identities:
 
 ```text
-Effect          ≠ protocol operation
-Event           ≠ protocol notification
-Execution       ≠ external task/job
-PendingOperation≠ external async handle
+Effect           ≠ protocol operation
+Event            ≠ protocol notification
+Execution        ≠ external task/job
+PendingOperation ≠ external async handle
 ```
 
 And protocol discovery/authentication does not grant Arrokoth authority.
 
 External standards are design references, not masters of the kernel. When they reveal a genuinely more general concept, Arrokoth should adopt the concept at the correct layer without making the wire format core truth.
 
-Detailed mappings belong in [`interoperability.md`](interoperability.md).
+Detailed portable semantics/mappings belong in [`interoperability.md`](interoperability.md). Authority filtering before exposure belongs in [`authority.md`](authority.md); protocol/control-plane security consequences belong in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -396,23 +398,23 @@ Detailed mappings belong in [`interoperability.md`](interoperability.md).
 The architecture should protect these distinctions aggressively:
 
 ```text
-Definition        ≠ Execution
-Workflow          ≠ Agent
-Stage             ≠ Execution
-Capability        ≠ Execution
-Event             ≠ Effect
-response          ≠ terminal result
-semantic control  ≠ operational control
-authority         ≠ exposure
-Execution identity≠ application principal identity
-memory            ≠ context
-explicit memory   ≠ derived semantic memory
-ownership         ≠ communication
-Skill             ≠ Execution
-Effect            ≠ protocol operation
-Event             ≠ protocol notification
-Execution         ≠ external task/job handle
-protocol exposure ≠ authority grant
+Definition         ≠ Execution
+Workflow           ≠ Agent
+Stage              ≠ Execution
+Capability         ≠ Execution
+Event              ≠ Effect
+response           ≠ terminal result
+semantic control   ≠ operational control
+authority          ≠ exposure
+Execution identity ≠ application principal identity
+memory             ≠ context
+explicit memory    ≠ derived semantic memory
+ownership          ≠ communication
+Skill              ≠ Execution
+Effect             ≠ protocol operation
+Event              ≠ protocol notification
+Execution          ≠ external task/job handle
+protocol exposure  ≠ authority grant
 ```
 
 And these positive rules summarize the system:
@@ -435,4 +437,4 @@ And these positive rules summarize the system:
 
 > **Kernel semantics are protocol-independent but intentionally projectable to standard interfaces.**
 
-This is the whole picture. The deeper canonical documents should explain the difficult semantics without redefining these concepts.
+This is the whole picture. Use [`README.md`](README.md) to find the canonical owner of each deeper concept rather than relying on another document to redefine it.
