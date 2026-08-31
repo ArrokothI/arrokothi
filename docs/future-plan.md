@@ -43,6 +43,7 @@ ownership        ≠ communication
 semantic control ≠ operational control
 Stage            ≠ Execution
 request          ≠ authorization
+Execution        ≠ process/sandbox
 ```
 
 Function calls, LLM inference, and Adapters normally remain local computation inside an enclosing Execution.
@@ -56,6 +57,8 @@ Signals include independent identity/addressability, lifecycle or waiting, autho
 The security direction is also stable enough to build against:
 
 > **An Execution receives authority, not ambient privilege. Application policy decides what should be allowed; the kernel enforces Arrokoth authority/visibility semantics; hostile-code containment requires an execution-isolation substrate.**
+
+Prompt/model/retrieved/tool content may influence what an Agent requests, but must not grant new authority by itself.
 
 ---
 
@@ -166,6 +169,8 @@ repeated semantic continuation
 
 The current primary Agent implementation may remain Strands where useful, but framework-specific semantics must stay behind an explicit Agent executor boundary.
 
+Test the security invariant that prompt-injected or malicious retrieved/tool content may produce a bad request but cannot alter the Execution's authority or bypass the Effect gateway.
+
 ### 2.5 Recursive composition
 
 Implement:
@@ -238,6 +243,8 @@ no assumption that BoundResource = raw credential
 security-profile diagnostics/metadata
 ```
 
+The v0.4 Studio should remain the simplest profile: one process, one logical Harness, multiple in-process Executions.
+
 ### 2.9 Durability
 
 After in-memory semantics are stable, add/reconcile:
@@ -252,7 +259,23 @@ restart recovery
 
 Avoid coupling the semantic refactor to distributed infrastructure too early.
 
-### 2.10 First isolated hosted profile
+### 2.10 Hosted declarative profile
+
+Before accepting arbitrary executable uploads, a useful intermediate platform may allow users to create stored Agent/Workflow definitions from prompts, graphs, resource requests, and configuration while executable controllers/Stages remain platform-owned.
+
+```text
+client
+  ↓ authenticated API
+untrusted definition/configuration
+  ↓
+trusted Arrokoth runtime implementation
+  ↓
+Harness / Effects / authority
+```
+
+This profile should establish application/tenant authentication and resource ownership without requiring every Execution to run in a container.
+
+### 2.11 First isolated hosted profile
 
 Only after the kernel semantics are working should we claim hostile uploaded-code containment.
 
@@ -287,8 +310,10 @@ Before declaring the model stable, implement and evaluate at least these program
 9. **Peer Agents** — messaging is independent from ownership and does not expose memory/cancellation rights.
 10. **User-input + confirmation case** — semantic free-form user input and exact mechanical confirmation remain distinct.
 11. **Memory visibility/confidentiality case** — explicit Structured Memory survives; a child sees only delegated parent notes; popped child Working Notes do not silently become parent memory.
-12. **Hostile Stage case** — under an isolated profile, direct ambient filesystem/network/secret/peer-state access fails while the same authorized action succeeds through an Effect.
-13. **Minimal runtime profile** — the same semantics run in-process without durable/distributed/sandbox machinery for trusted applications.
+12. **Prompt-injected Agent** — untrusted retrieved/tool/message content may cause an unauthorized request, but the Harness still rejects it and authority remains unchanged.
+13. **Hostile Stage case** — under an isolated profile, direct ambient filesystem/network/secret/peer-state access fails while the same authorized action succeeds through an Effect.
+14. **Hosted control-plane case** — knowledge of another user's Execution/session identifier does not authorize inspection, messaging, cancellation, or reconfiguration.
+15. **Minimal runtime profile** — the same semantics run in-process without durable/distributed/sandbox machinery for trusted applications.
 
 Architecture changes should be justified against these scenarios rather than aesthetics alone.
 
@@ -556,7 +581,7 @@ We need to test the smallest Arrokoth-owned port that can support multiple exist
 Potential implementations/references include:
 
 ```text
-OpenClaw sandbox backends
+OpenClaw sandbox mechanisms
 Hermes execution environments / programmatic tool RPC
 Dify Sandbox
 container or remote worker implemented directly
@@ -611,6 +636,98 @@ whether principals belong in kernel contracts or an application policy layer
 
 The likely direction is that applications define principal/domain policy while the kernel provides reusable enforcement hooks and Execution-scoped authority.
 
+### 4.17 Network egress and SSRF policy
+
+A sandbox and a network policy solve different problems. A sandboxed process with unrestricted egress may still reach internal services, metadata endpoints, localhost-bound control planes, or user-supplied URLs that should not be reachable.
+
+Future hosted profiles should evaluate:
+
+```text
+deny-by-default egress vs allowlists
+HTTP proxy/broker vs raw socket access
+DNS rebinding/private-IP handling
+redirect validation
+cloud metadata endpoints
+localhost/internal service access
+per-capability destination policy
+request size/time/rate limits
+```
+
+Dify's separation of code sandboxing and an SSRF-proxy layer is a useful reference pattern. This is not required for the v0.4 trusted-local Studio, but it is critical before claiming safe arbitrary URL/network access in a hostile hosted deployment.
+
+### 4.18 Control-plane authentication vs runtime identifiers
+
+Execution authority is not a replacement for authenticating the caller of an Internet-facing API.
+
+A future hosted service needs an explicit answer for:
+
+```text
+who may create this Execution?
+who may inspect it?
+who may send it a message?
+who may cancel/reconfigure it?
+which tenant/resource owner pays for it?
+```
+
+Do not treat `ExecutionId`, session ids, mailbox refs, trace ids, or other routing identifiers as bearer authorization unless intentionally designed as protected capability tokens. OpenClaw's explicit separation between session/routing identifiers and authorization is a useful warning here.
+
+### 4.19 Filesystem/path/mount safety
+
+Once isolated environments support host/project mounts, workspace persistence, or user-supplied paths, path handling itself becomes security-sensitive.
+
+Future work should test:
+
+```text
+canonical path resolution
+symlink escape
+path traversal
+read-only vs read-write mounts
+protected host paths
+container runtime sockets
+workspace ownership
+cross-Execution workspace isolation
+mount inheritance into children
+```
+
+OpenClaw's sandbox configuration validates dangerous bind mounts and canonicalized paths; Hermes also applies path/file-write restrictions. These are useful implementation references, but v0.4 only needs to avoid baking raw-path assumptions into BoundResource semantics.
+
+### 4.20 Plugin/skill supply chain
+
+Runtime isolation does not answer whether third-party code/package contents are authentic or trustworthy before execution.
+
+Future public distribution may need:
+
+```text
+publisher identity
+package signatures
+checksums/content addressing
+version pinning
+reproducible manifests
+requested-authority declarations
+security/profile requirements
+malware/static scanning
+revocation/blocklists
+provenance and audit
+```
+
+Dify's plugin signature verification is a useful reference. This is future ecosystem work rather than a blocker for the v0.4 kernel, where Skills remain separate from ExecutionDefinition and executable code is trusted by the local developer.
+
+### 4.21 Security audit and configuration diagnostics
+
+Misconfiguration can destroy otherwise-correct security boundaries. Future hosted tooling should make dangerous states visible, for example:
+
+```text
+hostile code running in trusted-local profile
+raw credentials injected into sandbox env
+unrestricted network enabled
+sensitive writable host mount
+sandbox backend disabled/fallback occurred
+resource limits absent
+cross-tenant messaging broadly enabled
+```
+
+A future `security audit`/diagnostics surface similar in spirit to OpenClaw's configuration/security checks could report the effective deployment profile and why a stronger guarantee is or is not active.
+
 ---
 
 ## 5. Security evolution: v0.4 vs future
@@ -620,37 +737,51 @@ The security roadmap should remain progressive rather than blocking the semantic
 ```text
 v0.4 / first implementation
 ───────────────────────────
-trusted-local profile is explicit
+trusted-local Studio/profile is explicit
+one logical Harness may run many Executions in one process
 Harness authorizes Effects
 child authority narrows correctly
 memory/context views are explicit
 peer messaging does not grant memory/cancellation
+prompt/tool/retrieved content cannot grant authority
 BoundResource does not imply raw credentials
-ExecutionEnvironment/Sandbox port exists or is easy to introduce
+ExecutionEnvironment/Sandbox boundary remains replaceable
 static checks are treated as diagnostics, not containment
 
-later hosted profile
-────────────────────
+nearer hosted declarative profile
+────────────────────────────────
+authenticated API/control plane
+untrusted prompts/graphs/configuration
+platform-owned executable controllers/Stages
+tenant/resource ownership rules
+Execution/session identifiers are not implicit bearer auth
+
+later hosted arbitrary-code profile
+─────────────────────────────────
 one or more reviewed isolation backends
 hostile uploaded Stage/plugin code
 no ambient credentials
 network/filesystem/process isolation
 resource quotas
 controlled Effect bridge
+network egress/SSRF policy
+filesystem/mount hardening
 security-profile conformance suite
 per-principal/tenant policies
 
-possible advanced future
-────────────────────────
+possible advanced ecosystem future
+──────────────────────────────────
 information-flow labels / taint
 provenance-aware declassification
 cross-tenant policy language
 fine-grained revocation
 sandbox attestation
-stronger supply-chain/signing model
+plugin/Skill signing and publisher identity
+supply-chain scanning/revocation
+security audit/diagnostics
 ```
 
-The first implementation should make the later hosted profile possible without forcing every local developer to pay its infrastructure cost.
+The first implementation should make the later hosted profiles possible without forcing every local developer to pay their infrastructure cost.
 
 ---
 
@@ -764,6 +895,9 @@ retrieval quality
 sandbox escape/containment tests
 resource-limit tests
 denied-Effect mutation tests
+control-plane authorization tests
+network/SSRF tests for hosted profiles
+filesystem/mount escape tests for hosted profiles
 ```
 
 For the Effect inline-wait strategy, explicitly measure:
