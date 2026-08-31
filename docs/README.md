@@ -1,17 +1,18 @@
 # ArrokothI Architecture Documents
 
-These documents describe the current design target for ArrokothI. They are separated by abstraction level so the conceptual model stays small while composition/runtime mechanics can evolve independently.
+These documents describe the current design target for ArrokothI. They are separated by abstraction level so the conceptual model stays small while composition/runtime mechanics and interoperability can evolve independently.
 
 ## Recommended reading order
 
 1. [`mental-model.md`](mental-model.md) — canonical conceptual model: Execution, Workflow vs Agent, Event/Effect, authority/exposure, memory/context, ownership/communication, and the core invariants.
 2. [`composition.md`](composition.md) — composition semantics shared across Agents and Workflows: local computation vs child Executions, Workflow Stages, Effects, pending work, completion boundaries, retrieval patterns, and Adapters.
 3. [`runtime-architecture.md`](runtime-architecture.md) — Harness/runtime semantics: ExecutionContext, lifecycle, scheduling, pending operations, messaging, authority, memory visibility, Working Notes, confirmation, durability, and provenance.
-4. [`security-guarantees.md`](security-guarantees.md) — kernel security guarantees, trust/deployment profiles, untrusted-code boundaries, Execution-to-Execution isolation, resource exposure, and reusable sandbox backends.
-5. [`implementation-guide.md`](implementation-guide.md) — non-normative implementation mapping, suggested contracts, conformance scenarios, and a practical way to derive a coding plan.
-6. [`future-plan.md`](future-plan.md) — unresolved questions, experiments, and likely future work.
+4. [`interoperability.md`](interoperability.md) — canonical mapping between kernel semantics and portable service interfaces/protocols, with MCP as a first-class interoperability target.
+5. [`security-guarantees.md`](security-guarantees.md) — kernel security guarantees, trust/deployment profiles, untrusted-code boundaries, Execution-to-Execution isolation, resource exposure, and reusable sandbox backends.
+6. [`implementation-guide.md`](implementation-guide.md) — non-normative implementation mapping, suggested contracts, conformance scenarios, and a practical way to derive a coding plan.
+7. [`future-plan.md`](future-plan.md) — unresolved questions, experiments, and likely future work.
 
-For a new engineer or coding agent, reading the first five in order should be enough to understand the target architecture before inspecting the codebase.
+For a new engineer or coding agent, reading the first six in order should be enough to understand the target architecture before inspecting the codebase.
 
 ## Document authority
 
@@ -20,7 +21,7 @@ When documents appear to disagree, use this priority:
 ```text
 mental-model.md
     ↓ conceptual truth
-composition.md / runtime-architecture.md
+composition.md / runtime-architecture.md / interoperability.md
     ↓ domain refinements
 security-guarantees.md
     ↓ security contract derived from those semantics
@@ -29,6 +30,8 @@ implementation-guide.md
 future-plan.md
     ↓ open questions / experiments
 ```
+
+`interoperability.md` is authoritative for the boundary between ArrokothI-owned semantics and external protocols. It must not redefine Execution, Event, Effect, authority, or lifecycle; those concepts remain owned by the higher-level mental/runtime documents.
 
 ## Architecture in one picture
 
@@ -50,6 +53,21 @@ future-plan.md
                                 │
                               Events
 ```
+
+Portable interoperability sits outside, not inside, those kernel semantics:
+
+```text
+Arrokoth kernel semantics
+  Execution / Event / Effect / authority
+              ↓
+portable interface semantics
+  operations / resources / templates /
+  async handles / input requirements / change signals
+              ↓
+MCP / HTTP+OpenAPI / SDK / future protocols
+```
+
+MCP is a first-class compatibility target and design reference, but MCP wire types do not define the kernel ontology.
 
 Inside a Workflow:
 
@@ -108,6 +126,8 @@ The kernel-level rule is:
 
 > **An Execution receives authority, not ambient privilege. A request is not permission.**
 
+The same remains true at interoperability boundaries: discovering an operation/resource or authenticating to a protocol endpoint does not grant an Execution authority to use it.
+
 The trusted local SDK profile enforces ArrokothI-mediated operations but cannot contain the owner of the host process. A stronger hosted/untrusted-code profile additionally requires a reviewed sandbox/isolation backend. See [`security-guarantees.md`](security-guarantees.md).
 
 ## Stable invariants vs current hypotheses
@@ -132,6 +152,11 @@ The trusted local SDK profile enforces ArrokothI-mediated operations but cannot 
 - Effect requests are not grants of authority.
 - Knowing or messaging an Execution does not grant access to its private runtime or memory state.
 - Strong hostile-code containment requires an isolation substrate in addition to kernel authority checks.
+- Kernel semantics are protocol-independent but intentionally projectable to standard interoperability protocols.
+- Portable descriptors/exposure do not grant authority.
+- External task handles do not replace Execution identity or PendingOperation semantics.
+- Protocol notifications do not automatically become Execution Events.
+- Core semantic contracts must not depend on MCP SDK or wire types.
 
 ### Current v0.4 hypotheses to test
 
@@ -143,16 +168,18 @@ The trusted local SDK profile enforces ArrokothI-mediated operations but cannot 
 - Broad non-blocking and detached-child semantics remain intentionally conservative until tested.
 - Dynamic model-driven mutation of Workflow topology is out of scope; prefer model-driven changes to data.
 - The initial runtime may execute trusted Stage code in-process; hostile uploaded code requires a later isolated execution profile rather than pretending that static analysis is containment.
+- The exact portable descriptor TypeScript surface is intentionally deferred until an implementation slice requires it; the semantic categories in `interoperability.md` are canonical first.
 
 ## Using these docs to make a coding plan
 
 Before mapping files to tasks:
 
-1. read the five architecture/security documents;
+1. read the six architecture/security documents;
 2. list the invariants the feature or migration must preserve;
 3. inspect the current code and identify components that already satisfy those responsibilities;
 4. separate semantic gaps from naming/package cleanup;
-5. implement the smallest slice that can be validated by a conformance scenario;
-6. leave unresolved questions explicit instead of freezing them accidentally in an API.
+5. when introducing a new externally meaningful abstraction, ask whether it belongs to kernel semantics, portable interoperability semantics, or only a protocol adapter;
+6. implement the smallest slice that can be validated by a conformance scenario;
+7. leave unresolved questions explicit instead of freezing them accidentally in an API.
 
 See [`implementation-guide.md`](implementation-guide.md) for suggested implementation slices and conformance tests.
