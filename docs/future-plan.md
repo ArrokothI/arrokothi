@@ -728,6 +728,72 @@ cross-tenant messaging broadly enabled
 
 A future `security audit`/diagnostics surface similar in spirit to OpenClaw's configuration/security checks could report the effective deployment profile and why a stronger guarantee is or is not active.
 
+### 4.22 Cryptographic identity, integrity, and distributed trust
+
+Cryptography should appear when trust crosses a physical or administrative boundary, not merely because an Execution exists.
+
+For the v0.4 trusted single-process Studio, signing every Event/Effect or assigning a public/private key pair to every Execution would add complexity without creating a meaningful containment boundary. The Harness already acts as the trust anchor for runtime identity and authority.
+
+Keep these concepts separate:
+
+```text
+authority
+  → may this Execution perform the operation?
+
+authentication
+  → who is making the request?
+
+cryptographic integrity
+  → was this content changed?
+
+signature / MAC
+  → who produced or approved this content,
+    and was it changed?
+```
+
+Useful future applications include:
+
+```text
+content hashes
+  → exact-payload mechanical confirmation
+  → Definition / Artifact / package fingerprints
+  → sandbox image/version identity
+  → idempotency/audit fingerprints
+
+hosted control-plane authentication
+  → API key / OAuth / session / workload identity
+  → tenant/user authorization remains separate
+
+Harness ↔ remote worker communication
+  → TLS / mTLS / workload identity
+  → authenticated encrypted channels
+
+resource access
+  → keep production secrets in trusted adapters/secret stores
+  → give Executions capability/resource handles rather than raw credentials
+
+public Agent/Skill ecosystem
+  → publisher signatures
+  → package provenance
+  → signed manifests
+
+federated Agent platforms
+  → cross-platform Agent/service identity
+  → signed messages or attestations where trust is not shared
+
+distributed capability enforcement
+  → short-lived signed/MACed capability tokens
+  → resource gateway verifies delegated scope without redefining authority semantics
+```
+
+A cryptographic hash alone must never be confused with authentication or authorization: an attacker who can modify data can usually compute a new hash as well.
+
+Per-Execution keypairs should not be a default assumption. They introduce lifecycle, storage, rotation, revocation, recovery, and compromise questions and are unnecessary while the Harness remains the trusted runtime mediator.
+
+The invariant to preserve is:
+
+> **Cryptographic identity and authorization are transport/enforcement mechanisms; they must not redefine Arrokoth's semantic authority model. A valid signature can prove who sent a request, but does not imply that the sender is authorized to perform the requested Effect.**
+
 ---
 
 ## 5. Security evolution: v0.4 vs future
@@ -747,6 +813,7 @@ prompt/tool/retrieved content cannot grant authority
 BoundResource does not imply raw credentials
 ExecutionEnvironment/Sandbox boundary remains replaceable
 static checks are treated as diagnostics, not containment
+no unnecessary per-Execution crypto protocol
 
 nearer hosted declarative profile
 ────────────────────────────────
@@ -755,6 +822,7 @@ untrusted prompts/graphs/configuration
 platform-owned executable controllers/Stages
 tenant/resource ownership rules
 Execution/session identifiers are not implicit bearer auth
+standard service/API authentication rather than custom crypto
 
 later hosted arbitrary-code profile
 ─────────────────────────────────
@@ -768,6 +836,7 @@ network egress/SSRF policy
 filesystem/mount hardening
 security-profile conformance suite
 per-principal/tenant policies
+remote-worker authenticated transport where distributed
 
 possible advanced ecosystem future
 ──────────────────────────────────
@@ -777,6 +846,9 @@ cross-tenant policy language
 fine-grained revocation
 sandbox attestation
 plugin/Skill signing and publisher identity
+content-addressed/signed packages
+federated Agent identity
+short-lived cryptographic capability tokens
 supply-chain scanning/revocation
 security audit/diagnostics
 ```
@@ -842,6 +914,7 @@ remote sandbox/computer use
 OpenTelemetry/exporters
 production databases/brokers
 multi-tenant policy/accounting
+workload identity / authenticated worker transport
 ```
 
 The requirement is that none of these change the application mental model.
@@ -898,6 +971,8 @@ denied-Effect mutation tests
 control-plane authorization tests
 network/SSRF tests for hosted profiles
 filesystem/mount escape tests for hosted profiles
+signature/provenance verification tests when ecosystem signing is introduced
+remote-worker identity/transport tests when the Harness becomes distributed
 ```
 
 For the Effect inline-wait strategy, explicitly measure:
