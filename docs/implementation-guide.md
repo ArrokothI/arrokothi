@@ -172,6 +172,20 @@ repeat when model-directed continuation requires it
 
 Do not hard-code one framework's tool-loop object model into kernel contracts.
 
+A malicious prompt, retrieved document, tool result, or peer message may influence what the model requests, but must not change effective authority by itself:
+
+```text
+untrusted content
+   ↓
+model/controller decision
+   ↓
+EffectRequest / message / spawn request
+   ↓
+Harness authorization
+```
+
+Prompt-injection detection may be useful defense-in-depth, but unavailable capabilities should be absent from the active view or denied by the Harness rather than protected only by prompt instructions.
+
 ### Workflow controller
 
 A Workflow controller owns:
@@ -738,6 +752,8 @@ VM / microVM
 WASM/isolate where appropriate
 ```
 
+`Execution`, process, and sandbox scope are independent concepts. The implementation must not assume one sandbox per Execution. A trusted local runtime may host many Executions in one process; a hostile hosted deployment may use one sandbox per Execution or a reviewed pooled/worker isolation scheme.
+
 Two profiles should remain explicit:
 
 ```text
@@ -759,7 +775,68 @@ Before building sandbox primitives from scratch, evaluate existing open-source m
 
 ---
 
-## 17. Tracing and provenance
+## 17. Application integration profiles
+
+Arrokoth should be usable as an embedded runtime before it becomes a hosted platform.
+
+### Simple web/chat application
+
+```text
+browser
+  ↓ HTTP
+application server
+  ├── ordinary app logic
+  └── embedded Arrokoth Harness
+        └── trusted in-process Agent Execution
+```
+
+The developer may expose only model, memory, and selected capabilities. No separate sandbox is required when the developer trusts their own code.
+
+### General application subsystem
+
+```text
+ordinary program
+  ↓ call/spawn
+Agent or Workflow Execution
+  ↓ terminal result / Events
+ordinary program continues
+```
+
+Arrokoth is one subsystem rather than the whole application. Authoring definitions should remain separate from runtime management so an application can construct a Workflow without owning scheduler/mailbox/Effect internals.
+
+### Hosted declarative Agent/Workflow service
+
+```text
+client
+  ↓ authenticated API
+stored Agent/Workflow definition
+  ↓
+Harness
+  ↓
+platform-owned controller/Stage implementation
+```
+
+Untrusted prompts/configuration are different from arbitrary uploaded executable code. This profile can be substantially safer before a full sandbox backend exists, provided the platform authenticates callers and keeps privileged operations behind the Harness.
+
+An `ExecutionId`, session id, mailbox reference, or resource handle should not accidentally act as authorization merely because a client knows it. API/control-plane authentication and tenant/resource authorization remain application/platform responsibilities.
+
+### Hosted arbitrary-code or multi-agent ecosystem
+
+```text
+untrusted executable Agent/Stage/plugin
+  ↓
+reviewed isolated ExecutionEnvironment
+  ↓ controlled Effect bridge
+Harness + application/world policy
+```
+
+This is where containment, egress/network policy, resource limits, secret isolation, and multi-tenant principal policy become required for a strong hosted claim.
+
+The same Agent/Workflow semantic definition should ideally move from trusted in-process development to stronger hosted execution without changing what Execution, Effect, Event, or authority mean.
+
+---
+
+## 18. Tracing and provenance
 
 Every important runtime action should be reconstructable across:
 
@@ -774,7 +851,7 @@ capability/resource provenance
 Stage transitions
 Agent decisions where inspectable
 authority grants/denials
-sandbox/profile selection
+security/deployment profile selection
 ```
 
 Do not confuse tracing with model context. Detailed history may be retained for debugging/evaluation without being placed into every model call.
@@ -783,7 +860,7 @@ Security-relevant denials should be auditable without leaking secrets into ordin
 
 ---
 
-## 18. Practical implementation slices
+## 19. Practical implementation slices
 
 A future coding plan should prefer vertical semantic slices over broad renames.
 
@@ -860,7 +937,8 @@ Agent-loop Adapters
 Checkpoint:
 
 - the Agent can choose repeated retrieval/tool operations and stop;
-- Workflow with two predetermined LLM calls remains Workflow behavior.
+- Workflow with two predetermined LLM calls remains Workflow behavior;
+- prompt-injected/model-authored instructions cannot grant authority that the Harness did not provide.
 
 ### Slice E — Recursive composition
 
@@ -923,7 +1001,7 @@ Deliver first:
 
 ```text
 explicit trusted-local profile
-ExecutionEnvironment/Sandbox port
+ExecutionEnvironment/Sandbox abstraction remains replaceable
 no assumption that static analysis is containment
 security-profile metadata/diagnostics
 ```
@@ -964,7 +1042,7 @@ Checkpoint:
 
 ---
 
-## 19. Conformance scenarios
+## 20. Conformance scenarios
 
 Before freezing APIs, make these executable tests/examples.
 
@@ -1042,17 +1120,25 @@ Tests semantic authorization evidence versus exact mechanical confirmation.
 
 Tests Structured Memory views, Working Note frame behavior, and the rule that ancestry alone cannot reveal parent scratch information to a narrower child.
 
-### 12. Hostile Stage code
+### 12. Prompt-injected Agent
+
+Feed the Agent retrieved/tool/message content that explicitly asks it to use an unauthorized capability or inspect another Execution. The model may produce the request; the Harness must still deny it without authority changing.
+
+### 13. Hostile Stage code
 
 Under the isolated hosted profile, attempt direct filesystem secret reads, unrestricted network access, raw resource access, and another Execution's workspace/state. These should fail even if static validation misses the code path. The same Stage should succeed when expressing an authorized external action through the Effect gateway.
 
-### 13. Minimal runtime profile
+### 14. Hosted control plane
+
+A caller that knows another user's Execution/session identifier but lacks application/tenant authorization must not be able to inspect, message, cancel, or reconfigure that Execution.
+
+### 15. Minimal runtime profile
 
 Runs representative Workflow/Agent cases entirely in-process to verify that the architecture does not require heavyweight sandbox/durable/distributed infrastructure for trusted simple applications.
 
 ---
 
-## 20. Coding-plan rule
+## 21. Coding-plan rule
 
 When converting these docs into issues/tasks:
 
