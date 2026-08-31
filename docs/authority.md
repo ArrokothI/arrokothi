@@ -2,7 +2,9 @@
 
 > **Status: canonical authority and exposure semantics for ArrokothI v0.4.**
 >
-> Read [`mental-model.md`](mental-model.md) first. This document owns the meanings of authority, delegation, policy inputs, exposure, Active View, model projection, authorization evidence, and confirmation. Runtime Effect handling is defined in [`execution-runtime.md`](execution-runtime.md); portable descriptor/protocol mappings are defined in [`interoperability.md`](interoperability.md).
+> Read [`mental-model.md`](mental-model.md) first. This document owns authority, delegation, application-policy inputs, Effective Authority, Active/Exposed View, model projection, authorization evidence, confirmation, revocation, and authorized discovery.
+>
+> Runtime Effect enforcement/settlement belongs in [`execution-runtime.md`](execution-runtime.md). Child/peer/Skill composition belongs in [`composition.md`](composition.md). Memory views/trust/evidence consequences belong in [`memory.md`](memory.md). Portable descriptor/protocol mappings belong in [`interoperability.md`](interoperability.md). Security/deployment/control-plane guarantees belong in [`security-guarantees.md`](security-guarantees.md). Unresolved richer grant/policy/discovery mechanisms belong in [`future-plan.md`](future-plan.md).
 
 ## 1. Authority is the power an Execution may exercise
 
@@ -47,7 +49,7 @@ These facts are **policy context**, not aliases for the Execution identity.
 
 The kernel does not need to understand what `user`, `tenant`, `organization`, or `world` mean. Applications define those domain relationships and authenticate their facts; the authority/policy boundary must be able to evaluate them.
 
-Ownership is similarly distinct. Parent/child ownership is a runtime relation for delegation, supervision, budgets, and causation. It does not replace an application's user/resource/tenant relationship graph.
+Ownership is similarly distinct. Parent/child ownership is a runtime relation for delegation, supervision, budgets, and causation. It does not replace an application's user/resource/tenant relationship graph. Composition ownership semantics are defined in [`composition.md`](composition.md).
 
 ---
 
@@ -85,7 +87,7 @@ These layers answer different questions and must not collapse into one list.
 
 ### Catalog
 
-A Catalog contains registered Operations, Resources, services, memory interfaces, Skills, peers, or other descriptors known to the application/runtime.
+A Catalog contains registered Operations, Resources, services, memory interfaces, Skills, peers, or other descriptors known to the application/runtime. Portable descriptor categories are defined in [`interoperability.md`](interoperability.md).
 
 Catalog membership says only that something exists.
 
@@ -147,7 +149,7 @@ model tool schema      ≠ capability token
 operation/resource id  ≠ bearer credential
 ```
 
-The final typed request may include concrete arguments/resources that were not knowable at discovery time, so the Harness must authorize the actual action, not merely the descriptor.
+The final typed request may include concrete arguments/resources that were not knowable at discovery time, so the Harness must authorize the actual action, not merely the descriptor. Runtime dispatch/settlement semantics are defined in [`execution-runtime.md`](execution-runtime.md).
 
 ---
 
@@ -169,7 +171,7 @@ model response from call N
 
 Snapshot IDs, binding IDs, operation refs, and correlation IDs protect integrity and causation. They are not credentials.
 
-This rule becomes especially important with progressive discovery, dynamic aliases, delayed model responses, and concurrent Agent progressions.
+This rule becomes especially important with progressive discovery, dynamic aliases, delayed model responses, and concurrent Agent progressions. Runtime stale-continuation/resumption questions are tracked in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -200,7 +202,7 @@ valid-from / expiry
 revocation state
 ```
 
-The exact grant representation is not frozen by this document. A simple trusted-local deployment may use compact internal records; a distributed/federated deployment may eventually need stronger proof mechanisms.
+The exact grant representation is not frozen by this document. A simple trusted-local deployment may use compact internal records; a distributed/federated deployment may eventually need stronger proof mechanisms. Those future mechanisms belong in [`future-plan.md`](future-plan.md).
 
 Budgets are separate:
 
@@ -212,7 +214,7 @@ budget/runtime limit
   how much/how often/how long may work continue?
 ```
 
-A call-count, token limit, or spawn credit should not automatically become an authority permission merely because a policy engine can express it.
+A call-count, token limit, or spawn credit should not automatically become an authority permission merely because a policy engine can express it. Runtime budgets/structural bounds are defined in [`execution-runtime.md`](execution-runtime.md).
 
 ---
 
@@ -238,7 +240,7 @@ Arrokoth authority semantics
 application policy / Cedar / OpenFGA / other backend
 ```
 
-No backend's entity model becomes the kernel's authority ontology.
+No backend's entity model becomes the kernel's authority ontology. Backend selection/evaluation remains future/implementation work in [`future-plan.md`](future-plan.md) and [`development/`](development/).
 
 ---
 
@@ -277,6 +279,8 @@ A future model-visible discovery operation may expand the Active View when the i
 
 > **Discovery can reveal authorized possibilities; it cannot create new ones.**
 
+Exact discovery mechanics/benchmarks remain in [`future-plan.md`](future-plan.md); typed portable descriptors are defined in [`interoperability.md`](interoperability.md).
+
 ---
 
 ## 9. Requested requirements are not grants
@@ -308,7 +312,7 @@ manifest says "allowed"
 authority automatically granted
 ```
 
-This applies to external formats such as Agent Skills `allowed-tools` as well as Arrokoth-native package metadata.
+This applies to external formats such as Agent Skills `allowed-tools` as well as Arrokoth-native package metadata. Skill semantics are in [`composition.md`](composition.md); external Skill mapping is in [`interoperability.md`](interoperability.md).
 
 ---
 
@@ -352,7 +356,7 @@ user input        ≠ mechanical confirmation
 authentication    ≠ authorization
 ```
 
-Derived Semantic Memory is not authorization evidence by default; see [`memory.md`](memory.md).
+Derived Semantic Memory is not authorization evidence by default; see [`memory.md`](memory.md). Security guarantees around malicious/inferred content are in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -402,7 +406,7 @@ may discover operation
   ≠ may execute arbitrary arguments against it
 ```
 
-Memory scope/view rules are defined in [`memory.md`](memory.md); composition and ownership are defined in [`composition.md`](composition.md); runtime cancellation is defined in [`execution-runtime.md`](execution-runtime.md).
+Memory scope/view rules are defined in [`memory.md`](memory.md); composition and ownership are defined in [`composition.md`](composition.md); runtime cancellation is defined in [`execution-runtime.md`](execution-runtime.md); ambient-credential/containment guarantees are in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -420,9 +424,9 @@ remote authentication succeeds
   ≠ Execution gains new Arrokoth authority automatically
 ```
 
-An adapter may surface an external continuation requirement to the application/user, then continue the already-authorized operation once the external prerequisite is satisfied.
+An adapter may surface an external continuation requirement to the application/user, then continue the already-authorized operation once the external prerequisite is satisfied. Portable continuation/input-requirement semantics belong in [`interoperability.md`](interoperability.md).
 
-Similarly, control-plane authentication answers who may operate the Arrokoth service; Execution authority answers what the Execution itself may do. `ExecutionId`, session IDs, trace IDs, and routing handles are not bearer authorization unless an application deliberately designs them as protected capability tokens.
+Similarly, control-plane authentication answers who may operate the Arrokoth service; Execution authority answers what the Execution itself may do. `ExecutionId`, session IDs, trace IDs, and routing handles are not bearer authorization unless an application deliberately designs them as protected capability tokens. The deployment/security guarantee is defined in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -462,4 +466,4 @@ And these positive rules summarize the model:
 
 > **Policy engines are replaceable mechanisms behind Arrokoth-owned authority semantics.**
 
-This document owns these authority/exposure meanings. Other canonical documents should reference them rather than redefine them.
+This document owns these authority/exposure meanings. Use [`README.md`](README.md) to locate adjacent canonical owners instead of redefining them here.
