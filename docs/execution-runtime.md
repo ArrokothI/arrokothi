@@ -2,7 +2,7 @@
 
 > **Status: canonical runtime semantics for ArrokothI v0.4.**
 >
-> Read [`mental-model.md`](mental-model.md) first. This document deepens only the runtime concepts behind `Execution`, `Harness`, lifecycle, Activation, Events, Effects, pending work, wake-up, structural bounds, cancellation, supervision, durability, and recovery. Agent/Workflow composition belongs in [`composition.md`](composition.md).
+> Read [`mental-model.md`](mental-model.md) first. This document deepens only the runtime concepts behind `Execution`, `Harness`, lifecycle, Activation, Events, Effects, pending work, concurrency, wake-up, structural bounds, cancellation, supervision, durability, and recovery. Agent/Workflow composition belongs in [`composition.md`](composition.md).
 
 ## 1. One logical Harness
 
@@ -46,7 +46,7 @@ Execution
   logical identity + runtime truth
 
 Activation
-  one scheduled period of active computation
+  one scheduled period of controller computation
 
 worker / process / sandbox
   physical place where an Activation happens
@@ -67,7 +67,42 @@ The runtime may unload/passivate implementation state between Activations and re
 
 > **Execution existence ≠ continuously resident compute.**
 
-Unless a future execution model explicitly says otherwise, one Execution should have at most one active controller Activation at a time. Interleaving happens between Activations, not through uncontrolled concurrent mutation of one Execution's controller state.
+### One controller writer does not mean one in-flight operation
+
+Unless a future execution model explicitly defines another rule, one Execution should have at most one **controller-state-mutating Activation** at a time.
+
+This protects controller state from uncontrolled concurrent mutation:
+
+```text
+bad:
+  Activation A1 ─┐
+                  ├─ concurrently mutate the same controller state
+  Activation A2 ─┘
+
+normal:
+  Activation A1
+      ↓
+  Activation A2
+```
+
+This is a **single-writer state rule**, not a global serialization rule.
+
+While one Execution has only one active controller writer, it may still have many things in flight:
+
+```text
+Execution A
+  ├── model invocation 1
+  ├── model invocation 2
+  ├── capability operation
+  ├── peer request
+  └── child Execution B
+```
+
+Different Executions may also run in parallel on different workers.
+
+> **Serialize controller-state mutation; parallelize independent work.**
+
+Interleaving happens between Activations. A suspended continuation may later resume after another safe Activation has processed a different Event, but two Activations should not race while mutating the same Execution's controller state.
 
 ---
 
@@ -82,7 +117,7 @@ identity / Definition reference
 owner / root relationships
 lifecycle
 mailbox
-pending-operation references
+pending/waiting references
 runtime and structural budgets
 memory/resource/view references
 terminal result
@@ -92,7 +127,7 @@ trace / causation metadata
 Controller-specific progress includes things such as:
 
 ```text
-Workflow current Stage / barrier state
+Workflow current Stage / barrier / branch progress
 Agent continuation/progression state
 ```
 
@@ -100,9 +135,60 @@ These remain separate concepts even if one implementation stores them together.
 
 The runtime should not need to interpret an opaque controller object merely to know whether an Execution exists, can run, is waiting, or has terminally completed.
 
+This separation also allows the runtime to wake or recover an Execution before interpreting its Workflow- or Agent-specific semantic state.
+
 ---
 
-## 4. Lifecycle, runnable work, and Activation
+## 4. Four levels of concurrency
+
+Arrokoth should reason about concurrency at four different boundaries.
+
+### 4.1 Across Executions
+
+Independent Executions may run concurrently:
+
+```text
+Execution A ───────┐
+Execution B ───────┼── parallel
+Execution C ───────┘
+```
+
+This is the primary source of multi-Agent and child-Execution parallelism.
+
+### 4.2 In-flight work initiated by one Execution
+
+One Execution may initiate several independent operations that overlap in wall-clock time:
+
+```text
+model call A ─────────┐
+model call B ─────────┤
+Effect C ─────────────┤── parallel in flight
+child Execution D ────┘
+```
+
+The controller need not stay physically active while these operations are unresolved.
+
+### 4.3 Controller-state mutation inside one Execution
+
+Commits/mutations to one Execution's controller state are serialized through Activations unless a future execution model explicitly defines safe parallel state ownership.
+
+This avoids ordinary data races and duplicate semantic progression.
+
+### 4.4 Shared mutable resources across Executions
+
+Two safe single-writer Executions can still race when they act on the same external or shared resource:
+
+```text
+Execution A ─┐
+             ├─→ Resource R
+Execution B ─┘
+```
+
+That conflict is not solved by serializing each Execution internally. The resource/operation needs explicit concurrency semantics; see §11.
+
+---
+
+## 5. Lifecycle, runnable work, and Activation
 
 The basic v0.4 lifecycle is:
 
@@ -118,7 +204,7 @@ RUNNING
    └── CANCELLED
 ```
 
-An **Activation** is one scheduled period during which an Execution's controller actively computes.
+An **Activation** is one scheduled period during which an Execution's controller actively computes and may commit controller progress.
 
 Typical transitions are:
 
@@ -133,7 +219,7 @@ no runnable continuation remains,
 but unresolved work may later enable progress
   RUNNING → WAITING
 
-processable Event makes work runnable
+processable Event/resumption makes work runnable
   WAITING → READY
 
 controller reports terminal success
@@ -154,7 +240,41 @@ A controller does not enter `WAITING` by emitting a semantic `yield`. The Harnes
 
 ---
 
-## 5. Events are delivered observations
+## 6. Semantic locality is not physical synchrony
+
+Function or LLM work can be **semantically local** to one Execution without occupying one worker synchronously until completion.
+
+For example, a model invocation normally does not deserve its own Execution identity, authority envelope, mailbox, or ownership relation. It is still controller-local work.
+
+But a provider call may take tens of seconds:
+
+```text
+Activation A1
+  decide/model-input preparation
+  dispatch provider request
+  persist enough resumption/correlation state
+  nothing else runnable
+  → yield
+
+... provider works asynchronously ...
+
+provider response arrives
+  → Execution becomes runnable
+
+Activation A2
+  consume model result
+  continue controller progression
+```
+
+No worker needs to remain occupied merely because the work is semantically local.
+
+> **Local to the Execution means “no independent Execution identity,” not “must complete synchronously inside one Activation.”**
+
+A controller-internal asynchronous result does not automatically become a public Arrokoth Event merely because the runtime suspended while waiting for it. Implementations may use internal continuation/resumption records while preserving the Event boundary defined below.
+
+---
+
+## 7. Events are delivered observations
 
 An **Event** is an observation delivered to an Execution through the runtime boundary.
 
@@ -171,23 +291,21 @@ timer / timeout
 cancellation / control observation
 ```
 
-Ordinary local function returns and normal model inference results do not become Events merely because they produced data.
+Ordinary local function returns and model inference results do not become Events merely because they produced data.
 
 ```text
-local computation
-  returns directly inside the Activation
+controller-local result
+  resumes/returns to controller semantics
 
 runtime/external observation
   is delivered as Event
 ```
 
-If normally local work is instead dispatched as independently managed remote work that outlives the current Activation, its later completion may legitimately return as an Event.
-
-Event-ness follows the runtime boundary, not the technology that produced the data.
+If normally local work is instead modeled as an independently managed external/runtime operation whose completion is semantically observable, its completion may legitimately enter through an Event. Event-ness follows the semantic boundary, not latency or implementation technology.
 
 ---
 
-## 6. Effects cross the runtime boundary
+## 8. Effects cross the runtime boundary
 
 An **Effect** is a controller's proposal for runtime-mediated interaction.
 
@@ -215,7 +333,7 @@ SendMessage
 RequestUserInput
 ```
 
-The Effect belongs to the requesting Execution even when a local Workflow Stage or Agent step originated it.
+The Effect belongs to the requesting Execution even when a local Workflow Stage or Agent progression originated it.
 
 The Harness may deny it, require confirmation, execute it immediately, dispatch it asynchronously, create runtime state, route a message, or record unresolved work.
 
@@ -223,9 +341,11 @@ The Harness may deny it, require confirmation, execute it immediately, dispatch 
 
 The decisive authorization remains at the Harness boundary.
 
+Independent Effects from one or many Executions may execute concurrently when their operation/resource semantics permit it.
+
 ---
 
-## 7. Fast and slow completion have the same meaning
+## 9. Fast and slow completion have the same meaning
 
 An Effect boundary does not imply an immediate transition to `WAITING`.
 
@@ -240,6 +360,8 @@ result becomes available quickly?
 ```
 
 Whether completion occurs now or after a later wake-up must not change authorization, correlation, consequence/idempotency policy, trace identity, or result meaning.
+
+The same principle applies to other asynchronous controller work such as model-provider calls: the runtime may keep an Activation alive briefly for a fast result or suspend and resume later without changing the semantic meaning of that work.
 
 ### Activation wait budget vs operation deadline
 
@@ -257,14 +379,14 @@ Exhausting the inline budget normally means:
 
 ```text
 yield current Activation
-record pending work
+record enough state to resume later
 ```
 
 not “cancel the underlying operation.” Cancellation follows the operation deadline or explicit cancellation policy.
 
 ---
 
-## 8. PendingOperation records unresolved dependency/correlation
+## 10. PendingOperation records unresolved runtime dependency/correlation
 
 A **PendingOperation** records unresolved runtime-mediated work that an Execution may need to correlate with a later observation.
 
@@ -280,7 +402,9 @@ timer
 remote job completion
 ```
 
-Conceptually:
+Controller-internal asynchronous work such as a model-provider invocation may use the same underlying durable suspension machinery or a controller-owned resumption record; this is an implementation choice as long as it does not incorrectly turn every local provider result into a public Event/Effect.
+
+Conceptually for runtime-mediated work:
 
 ```text
 runtime-mediated work
@@ -330,9 +454,27 @@ A replies to B
 A may return to WAITING for B's result
 ```
 
-This is controlled **interleaving between Activations**, not concurrent execution of A.
+This is controlled **interleaving between Activations**, not concurrent controller-state mutation of A.
 
 Not every Event must make an Execution runnable. A Workflow blocked at a Stage barrier may have no semantic handler for an unrelated message. The rule is only that one suspended continuation does not automatically lock the whole mailbox.
+
+### Interleaving creates logical-race questions
+
+Single-writer Activations prevent simultaneous state mutation, but they do not eliminate every logical race.
+
+A continuation may suspend under assumptions about controller state; another Activation may then change that state before the first continuation resumes.
+
+```text
+A1 reads controller state at revision N
+A1 suspends
+
+A2 processes another Event
+state becomes revision N+1
+
+A1 later resumes
+```
+
+The resumed continuation must not silently commit stale assumptions when those assumptions are no longer valid. Exact mechanisms—controller-state revision checks, re-evaluation, restricted interleaving, or explicit merge rules—remain controller/runtime design questions and should be validated before broad reentrant progression is exposed.
 
 ### Completion dependency
 
@@ -340,18 +482,100 @@ Pending work may record which semantic boundary currently depends on it, for exa
 
 ```text
 current Agent progression
-current Workflow Stage
+current Workflow Stage / branch
 Execution terminal completion
 nothing / non-blocking
 ```
 
-This does not make the Stage or Agent step the owner of the Effect. The Effect remains attributed to the enclosing Execution.
+This does not make the Stage or Agent progression the owner of the Effect. The Effect remains attributed to the enclosing Execution.
 
 Broad detached/non-blocking semantics remain intentionally conservative until real programs justify them.
 
 ---
 
-## 9. Wait-for dependencies and deadlock
+## 11. Shared-resource concurrency is explicit
+
+The Harness may run independent Effects in parallel, but shared mutable resources require their own concurrency contract.
+
+For example:
+
+```text
+A reads version 17 of a document
+B reads version 17 of the same document
+
+A writes change X
+B writes change Y
+```
+
+Serializing A internally and B internally does not determine whether both writes are valid.
+
+Different resources/operations may support different semantics:
+
+```text
+read-only
+  parallel reads are safe
+
+commutative / reducible
+  concurrent updates combine by a defined operation
+
+optimistic/versioned
+  commit only if expected revision still matches
+
+transactional
+  backend commits a multi-item invariant atomically
+
+exclusive
+  operation/resource is intentionally serialized
+
+provider-defined
+  external service defines its own conflict semantics
+```
+
+Arrokoth should not impose one global mutex strategy over all resources.
+
+### Prefer explicit conflict semantics over timing-dependent last-write-wins
+
+When concurrent writes can change correctness, the result should not silently depend on whichever network request finishes last.
+
+A versioned write can instead produce a conflict observation:
+
+```text
+read revision 17
+  ↓
+write if revision == 17
+
+another writer commits first
+  ↓
+revision becomes 18
+  ↓
+conflicting write rejected
+  ↓
+controller receives conflict/failure observation
+```
+
+The controller/application can then re-read, merge, retry, or deliberately fail.
+
+Structured Memory and BoundResource APIs may eventually expose version/precondition/transaction semantics where applications require them; the exact API belongs to the memory/resource design rather than the Effect vocabulary.
+
+### Durable exclusivity should use explicit leases/permits
+
+When true exclusivity is required across Activations or workers, use explicit durable resource state such as a lease/semaphore/permit with expiry and, where needed, fencing/version semantics.
+
+Do not model long-lived exclusivity as an ordinary process mutex held by a sleeping Execution.
+
+```text
+Lease
+  resource
+  holder
+  validity / expiry
+  fencing/version token where required
+```
+
+This allows crash recovery and prevents an expired old holder from waking later and acting as though it still owns the resource.
+
+---
+
+## 12. Wait-for dependencies and deadlock
 
 Cross-Execution waits create a graph different from both ownership and communication.
 
@@ -369,7 +593,7 @@ A waits for B
 B waits for A
 ```
 
-may still make progress if, for example, A can process B's incoming request in another Activation, a timer fires, a user responds, or another external dependency resolves.
+may still make progress if A can process B's incoming request in another Activation, a timer fires, a user responds, or another external dependency resolves.
 
 A true deadlock requires the stronger condition that the participants have no runnable or externally escapable path that can break the cycle.
 
@@ -389,13 +613,11 @@ Activation
   yield
 ```
 
-If exclusive ownership genuinely must persist across Activations, it should be represented as explicit runtime/application resource state such as a lease with defined expiry/cancellation semantics, not as an invisible host lock held by a sleeping Execution.
-
-This rule prevents the runtime implementation itself from creating deadlocks that the Execution model cannot observe or recover from.
+Cross-Activation exclusivity belongs in explicit lease/resource semantics such as §11, not in an invisible host lock held by a sleeping Execution.
 
 ---
 
-## 10. Settlement, correlation, mailbox, and wake-up
+## 13. Settlement, correlation, mailbox, and wake-up
 
 Runtime-mediated work may begin in one Activation and finish much later, so stable correlation is required.
 
@@ -427,11 +649,9 @@ Duplicate completion must not settle the same pending dependency twice. Correlat
 The logical wake-up path is:
 
 ```text
-result / message / timer / user input
+result / message / timer / user input / controller resumption
              ↓
-           Event
-             ↓
-          mailbox
+   Event or internal resumption signal
              ↓
 processable work exists?
   ├── yes → WAITING → READY → scheduler → Activation
@@ -442,7 +662,7 @@ Scheduling strategy—FIFO, priority, fairness, deadlines, worker affinity, dist
 
 ---
 
-## 11. Spawned children and structural budgets
+## 14. Spawned children and structural budgets
 
 `SpawnExecution` creates an independent child Execution under the same logical Harness.
 
@@ -508,7 +728,7 @@ This permits legitimate recursion and divide-and-conquer while preventing an aut
 
 ---
 
-## 12. Response, terminal completion, cancellation, and supervision
+## 15. Response, terminal completion, cancellation, and supervision
 
 An Execution can communicate without terminating.
 
@@ -558,7 +778,7 @@ Restart loops, like spawn loops, must remain bounded by runtime retry/restart po
 
 ---
 
-## 13. Budgets and deadlines
+## 16. Budgets and deadlines
 
 Runtime limits are distinct from semantic authority.
 
@@ -568,7 +788,7 @@ Examples include:
 deadline
 model/token/cost budget
 structural spawn budget
-parallelism
+in-flight/parallelism budget
 retry/restart budget
 resource limits
 ```
@@ -583,7 +803,7 @@ A long-lived Execution may intentionally wait indefinitely for external input. T
 
 ---
 
-## 14. Failure, durability, and idempotent recovery
+## 17. Failure, durability, and idempotent recovery
 
 A failed operation does not automatically mean a failed Execution.
 
@@ -612,6 +832,7 @@ Execution identity and lifecycle
 controller progress
 mailboxes / Event cursors
 pending operations and wait-for dependencies
+controller-internal resumption state when needed
 Effect records and settlement state
 owner/child relationships
 structural/runtime budgets
@@ -650,12 +871,12 @@ Existing durable execution systems may later implement runtime ports, but their 
 
 ---
 
-## 15. Provenance and external handles
+## 18. Provenance and external handles
 
 Runtime history should preserve enough causation to answer questions such as:
 
 ```text
-Which Event triggered this Activation?
+Which Event/resumption triggered this Activation?
 Which Execution proposed this Effect?
 Which Effect caused this result Event?
 Which child was spawned by which request?
@@ -668,7 +889,7 @@ Useful logical edges include:
 ```text
 ownership edges
 wait-for edges
-Event → Activation causation
+Event/resumption → Activation causation
 Activation → Effect causation
 Effect → result Event correlation
 message sender → receiver
@@ -696,7 +917,7 @@ external handle ≠ Execution ≠ PendingOperation
 
 ---
 
-## 16. Runtime invariants
+## 19. Runtime invariants
 
 The runtime should preserve these distinctions:
 
@@ -704,7 +925,9 @@ The runtime should preserve these distinctions:
 Execution          ≠ physical worker/process
 Execution          ≠ Activation
 Activation         ≠ Execution lifetime
-Event              ≠ local function/model return
+semantic locality  ≠ synchronous worker occupancy
+one controller writer ≠ one in-flight operation
+Event              ≠ every asynchronous result
 Effect proposal    ≠ authorization
 Effect proposal    ≠ completion
 PendingOperation   ≠ underlying work
@@ -712,6 +935,7 @@ PendingOperation   ≠ global mailbox lock
 wait-for graph     ≠ ownership graph
 wait-for cycle     ≠ automatic deadlock
 Definition cycle   ≠ invalid Execution
+Execution-local serialization ≠ shared-resource serialization
 external handle    ≠ PendingOperation
 response/message   ≠ terminal result
 operation failure  ≠ automatic Execution failure
@@ -724,21 +948,27 @@ And these positive rules summarize the runtime:
 
 > **One logical Harness operationally manages many independent Executions.**
 
-> **An Execution is logical identity; an Activation is temporary compute.**
+> **An Execution is logical identity; an Activation is temporary controller compute.**
+
+> **Serialize controller-state mutation, while allowing independent Executions and in-flight operations to run concurrently.**
+
+> **Semantically local asynchronous work may suspend an Activation without becoming another Execution.**
 
 > **WAITING means no work is runnable now, not that the mailbox is closed.**
 
 > **A PendingOperation blocks its dependent continuation/completion boundary, not automatically every future Event.**
 
-> **The Harness may interleave safe work between Activations while preserving single-Execution controller consistency.**
+> **Interleaving between Activations must not silently commit stale controller assumptions.**
 
 > **Recursive child composition is legal, but descendants cannot create unbounded structural budget.**
 
 > **Known waits form explicit runtime dependencies so cycles can be diagnosed without confusing them with ownership.**
 
-> **Harness-internal locks do not survive an Execution yield; cross-Activation exclusivity must be explicit state.**
+> **Shared mutable resources define explicit conflict/merge/version/transaction/exclusivity semantics; timing-dependent last-write-wins is not a universal concurrency model.**
 
-> **Fast and slow completion paths preserve the same Effect meaning.**
+> **Harness-internal locks do not survive an Execution yield; long-lived exclusivity must be explicit durable resource state.**
+
+> **Fast and slow completion paths preserve the same semantic meaning.**
 
 > **Durability and distribution may change mechanisms without changing application semantics.**
 
