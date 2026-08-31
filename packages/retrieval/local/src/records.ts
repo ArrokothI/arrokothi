@@ -1,39 +1,105 @@
-import type {
-  RecordFilter,
-  RecordQuery,
-  RecordQueryError,
-  RecordQueryResult,
-  RecordSetSource,
-} from "./types.ts";
-import { recordFieldSchema } from "./types.ts";
-import type { Result } from "../util/result.ts";
-import { err, ok } from "../util/result.ts";
-import { describeIssues, validateValue } from "../schema/value-schema.ts";
-
 /**
  * Deterministic filtering and sorting over a typed record set.
  *
- * This exists because "which properties are at or under my budget" must not be answered by prose
- * reasoning over a pile of listings. The runtime computes it; the model reports it.
+ * Migrated verbatim in behaviour from the pre-v0.4 core `knowledge/record-query.ts`, and unchanged
+ * where it was already right: this exists because "which properties are at or under my budget" must
+ * not be answered by prose reasoning over a pile of listings. The runtime computes it; the model
+ * reports it.
  *
- * Two deliberate strictness choices:
+ * Two deliberate strictness choices survive the move:
  *  - A filter on an undeclared field is an ERROR, not an empty result. A hallucinated field name
  *    must be visibly wrong, not silently indistinguishable from "nothing matched".
  *  - Comparison operators require the declared field to be numeric. Comparing strings with `<` is
  *    the kind of quiet nonsense that produces confidently wrong answers.
+ *
+ * What changed is the input type. The evaluator now takes a structural `RecordSetView` declared
+ * here rather than the legacy core `RecordSetSource`, so the algorithm has no dependency on legacy
+ * knowledge ownership. The legacy shape is structurally compatible and still works.
  */
+
+import type { Result, ValueSchema } from "@agent-sdk/core";
+import { describeIssues, err, ok, validateValue } from "@agent-sdk/core";
+
+/** Provider-neutral, JSON-serializable semantics owned by the record source author. */
+export interface RecordFieldMetadata {
+  schema: ValueSchema;
+  description?: string;
+  examples?: (string | number | boolean)[];
+}
+
+/** Field declaration: a bare schema, or a schema with authored semantics. */
+export type RecordField = ValueSchema | RecordFieldMetadata;
+
+export function recordFieldSchema(field: RecordField): ValueSchema {
+  return "schema" in field ? field.schema : field;
+}
+
+export function recordFieldDescription(field: RecordField): string | undefined {
+  return "schema" in field ? field.description : undefined;
+}
+
+export function recordFieldExamples(field: RecordField): (string | number | boolean)[] | undefined {
+  return "schema" in field ? field.examples : undefined;
+}
+
+/** The minimum a record set must present to be queryable. */
+export interface RecordSetView {
+  id: string;
+  fields: Record<string, RecordField>;
+  records: Record<string, unknown>[];
+}
+
+export type RecordFilterOp = "eq" | "ne" | "lt" | "lte" | "gt" | "gte" | "in" | "contains" | "starts_with";
+
+export const RECORD_FILTER_OPERATORS: RecordFilterOp[] = [
+  "eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "starts_with",
+];
+
+export interface RecordFilter {
+  field: string;
+  op: RecordFilterOp;
+  value: unknown;
+}
+
+export interface RecordSort {
+  field: string;
+  direction: "asc" | "desc";
+}
+
+export interface RecordQuery {
+  filters?: RecordFilter[];
+  sort?: RecordSort[];
+  limit?: number;
+}
+
+export interface RecordQueryResult {
+  sourceId: string;
+  /** Rows that satisfied every filter, after sorting and limiting. */
+  matches: Record<string, unknown>[];
+  /** Match count *before* `limit` was applied - the honest answer to "how many are there". */
+  totalMatched: number;
+  /** Total rows in the source, so "0 of 6" can be stated truthfully. */
+  totalRecords: number;
+  /** The normalized query actually executed, for the trace. */
+  query: RecordQuery;
+}
+
+export interface RecordQueryError {
+  code: "unknown_field" | "bad_operator" | "bad_value" | "unknown_source";
+  message: string;
+}
 
 const COMPARISON_OPS = new Set(["lt", "lte", "gt", "gte"]);
 const STRING_OPS = new Set(["contains", "starts_with"]);
 const ALL_OPS = new Set(["eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "starts_with"]);
 
-function fieldKind(source: RecordSetSource, field: string): string | null {
+function fieldKind(source: RecordSetView, field: string): string | null {
   const declared = source.fields[field];
   const schema = declared ? recordFieldSchema(declared) : undefined;
   return schema ? schema.kind : null;
 }
 
-function validateFilter(source: RecordSetSource, filter: RecordFilter): RecordQueryError | null {
+function validateFilter(source: RecordSetView, filter: RecordFilter): RecordQueryError | null {
   if (!filter || typeof filter !== "object" || typeof filter.field !== "string") {
     return { code: "bad_value", message: "every filter requires a string field name" };
   }
@@ -123,7 +189,7 @@ function compareValues(a: unknown, b: unknown): number {
  * Runs a query. Returns an error (never a misleading empty result) when the query references a
  * field the record set does not declare.
  */
-export function queryRecords(source: RecordSetSource, query: RecordQuery): Result<RecordQueryResult, RecordQueryError> {
+export function queryRecords(source: RecordSetView, query: RecordQuery): Result<RecordQueryResult, RecordQueryError> {
   if (query.filters !== undefined && !Array.isArray(query.filters)) {
     return err({ code: "bad_value", message: "record query filters must be an array" });
   }

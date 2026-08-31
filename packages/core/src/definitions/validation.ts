@@ -10,6 +10,7 @@
  */
 
 import type { ValueSchema } from "../schema/value-schema.ts";
+import { valueSchemaIssues } from "../schema/value-schema.ts";
 import { hashValue } from "../util/hash.ts";
 import { jsonIssues } from "../util/json.ts";
 import type { ExecutionDefinitionRef } from "./ids.ts";
@@ -21,9 +22,10 @@ import type {
   ExecutionDefinition,
   TerminalResultSchema,
   WorkflowDefinition,
-  WorkflowSpec,
 } from "./types.ts";
 import { isDefinitionKind } from "./types.ts";
+import type { WorkflowSpecInput } from "../workflow/spec.ts";
+import { validateWorkflowSpec } from "../workflow/validation.ts";
 
 export interface DefinitionIssue {
   readonly path: string;
@@ -42,42 +44,13 @@ export type DefinitionValidation =
   | { readonly ok: true; readonly definition: ExecutionDefinition }
   | { readonly ok: false; readonly issues: readonly DefinitionIssue[] };
 
-const SCHEMA_KINDS = new Set(["string", "number", "boolean", "enum", "string_array", "array", "any", "object"]);
-
 /** Structural check that a declared result schema is a well-formed `ValueSchema` tree. */
-function valueSchemaIssues(schema: unknown, path: string): DefinitionIssue[] {
-  if (schema === null || typeof schema !== "object" || Array.isArray(schema)) {
-    return [{ path, code: "invalid_result_schema", message: "expected a ValueSchema object" }];
-  }
-  const kind = (schema as { kind?: unknown }).kind;
-  if (typeof kind !== "string" || !SCHEMA_KINDS.has(kind)) {
-    return [{ path: `${path}.kind`, code: "invalid_result_schema", message: `unknown schema kind ${JSON.stringify(kind)}` }];
-  }
-  if (kind === "enum") {
-    const choices = (schema as { choices?: unknown }).choices;
-    if (!Array.isArray(choices) || choices.length === 0 || choices.some((c) => typeof c !== "string")) {
-      return [{ path: `${path}.choices`, code: "invalid_result_schema", message: "enum requires a non-empty string[] of choices" }];
-    }
-  }
-  if (kind === "array") {
-    return valueSchemaIssues((schema as { items?: unknown }).items, `${path}.items`);
-  }
-  if (kind === "object") {
-    const fields = (schema as { fields?: unknown }).fields;
-    if (fields === null || typeof fields !== "object" || Array.isArray(fields)) {
-      return [{ path: `${path}.fields`, code: "invalid_result_schema", message: "object schema requires a fields record" }];
-    }
-    const issues: DefinitionIssue[] = [];
-    for (const [key, spec] of Object.entries(fields as Record<string, unknown>)) {
-      if (spec === null || typeof spec !== "object" || Array.isArray(spec)) {
-        issues.push({ path: `${path}.fields.${key}`, code: "invalid_result_schema", message: "expected a FieldSpec object" });
-        continue;
-      }
-      issues.push(...valueSchemaIssues((spec as { schema?: unknown }).schema, `${path}.fields.${key}.schema`));
-    }
-    return issues;
-  }
-  return [];
+function resultSchemaIssues(schema: unknown, path: string): DefinitionIssue[] {
+  return valueSchemaIssues(schema, path).map((issue) => ({
+    path: issue.path,
+    code: "invalid_result_schema" as const,
+    message: issue.message,
+  }));
 }
 
 function terminalResultIssues(declared: unknown): DefinitionIssue[] {
@@ -93,7 +66,7 @@ function terminalResultIssues(declared: unknown): DefinitionIssue[] {
   if (!Number.isInteger(value.schemaVersion) || (value.schemaVersion as number) < 1) {
     issues.push({ path: "terminalResult.schemaVersion", code: "invalid_result_schema", message: "expected an integer schema version >= 1" });
   }
-  issues.push(...valueSchemaIssues(value.schema, "terminalResult.schema"));
+  issues.push(...resultSchemaIssues(value.schema, "terminalResult.schema"));
   return issues;
 }
 
@@ -139,6 +112,18 @@ export function validateDefinition(input: unknown): DefinitionValidation {
   }
 
   issues.push(...terminalResultIssues(candidate["terminalResult"]));
+
+  // Workflow topology is statically knowable, so it is rejected statically: at authoring, at
+  // deserialization, and at store time alike. A missing entry Stage, a duplicate Stage id, or a
+  // transition naming a Stage nobody declared is not something a running Workflow should discover.
+  if (candidate["kind"] === "workflow" && spec !== null && typeof spec === "object" && !Array.isArray(spec)) {
+    const topology = validateWorkflowSpec(spec);
+    if (!topology.ok) {
+      for (const problem of topology.issues) {
+        issues.push({ path: problem.path, code: "invalid_spec", message: `${problem.code}: ${problem.message}` });
+      }
+    }
+  }
 
   // Everything the definition carries must survive a round trip, including fields this version of
   // the kernel does not know about yet.
@@ -203,7 +188,15 @@ export function defineAgent(input: DefineExecutionInput<AgentSpec>): AgentDefini
   return build("agent", input) as AgentDefinition;
 }
 
-export function defineWorkflow(input: DefineExecutionInput<WorkflowSpec>): WorkflowDefinition {
+/**
+ * Authors a Workflow definition.
+ *
+ * Takes the plain-string authoring shape and validates it into branded topology, in the same way
+ * `useCapability` brands capability names: authors write `"research"`, and the stored definition
+ * carries a checked `StageId`. Every topology rule in `workflow/validation.ts` runs here, so an
+ * unpublishable Workflow never becomes a definition at all.
+ */
+export function defineWorkflow(input: DefineExecutionInput<WorkflowSpecInput>): WorkflowDefinition {
   return build("workflow", input) as WorkflowDefinition;
 }
 

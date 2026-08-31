@@ -1,3 +1,17 @@
+/**
+ * Legacy pre-v0.4 local knowledge implementation.
+ *
+ * Moved out of `packages/core` unchanged in behaviour. It is isolated compatibility for consumers
+ * that have not migrated to the v0.4 capability/resource path - Studio, the current examples, the
+ * benchmark subjects, and the legacy Session runtime - and it has no presumption of surviving.
+ * New code should use the v0.4 surface in `./index.ts` instead: a materialized `LocalResource` for
+ * Stage-local retrieval, or `createLocalRetrievalExecutor` for the mediated Effect path.
+ *
+ * Its ownership was the real problem, not its behaviour. Document representation, recursive
+ * splitting, and IDF-weighted ranking are perfectly good; they simply are not kernel semantics, and
+ * keeping them in core put LangChain in the kernel's install surface.
+ */
+
 import { Document } from "@langchain/core/documents";
 import { BaseRetriever } from "@langchain/core/retrievers";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
@@ -10,48 +24,20 @@ import type {
   KnowledgeRetriever,
   KnowledgeSource,
   KnowledgeSourceCatalogEntry,
-  RecordFilterOp,
   RecordQueryRequest,
   RecordQueryError,
   RecordQueryResult,
   RecordSetSource,
+  Result,
   WebKnowledgeResult,
   WebSearchProvider,
   WebSearchRequest,
-} from "./types.ts";
-import { recordFieldDescription, recordFieldExamples, recordFieldSchema } from "./types.ts";
-import type { Result } from "../util/result.ts";
-import { err } from "../util/result.ts";
-import { queryRecords as executeRecordQuery } from "./record-query.ts";
+} from "@agent-sdk/core";
+import { err, recordFieldDescription, recordFieldExamples, recordFieldSchema } from "@agent-sdk/core";
+import { DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, tokenize } from "./lexical.ts";
+import { RECORD_FILTER_OPERATORS, queryRecords as executeRecordQuery } from "./records.ts";
 
-/**
- * Local, CPU-only knowledge implementation.
- *
- * LangChain owns document representation, recursive splitting, and the retriever invocation seam.
- * Ranking remains a small explainable IDF-weighted lexical index. No embeddings, vector database,
- * hosted service, or model call is involved.
- */
-
-export const DEFAULT_CHUNK_SIZE = 1000;
-export const DEFAULT_CHUNK_OVERLAP = 200;
-export const RECORD_FILTER_OPERATORS: RecordFilterOp[] = [
-  "eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "starts_with",
-];
-
-const STOPWORDS = new Set([
-  "a", "an", "and", "are", "as", "at", "be", "but", "by", "can", "do", "does", "for", "from", "had",
-  "has", "have", "how", "i", "if", "in", "is", "it", "its", "me", "my", "no", "not", "of", "on",
-  "or", "our", "so", "that", "the", "their", "them", "then", "there", "these", "they", "this",
-  "to", "was", "we", "were", "what", "when", "where", "which", "who", "will", "with", "would", "you", "your",
-]);
-
-export function tokenize(text: string): string[] {
-  return text
-    .toLowerCase()
-    .split(/[^a-z0-9.]+/)
-    .map((token) => token.replace(/\.$/, ""))
-    .filter((token) => token.length > 1 && !STOPWORDS.has(token));
-}
+export { DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, RECORD_FILTER_OPERATORS, tokenize };
 
 interface LexicalMetadata extends Record<string, unknown> {
   sourceId: string;

@@ -1,7 +1,7 @@
 import type { AgentDefinition } from "../src/definition/types.ts";
 import type { ToolDefinition } from "../src/tools/types.ts";
 import { defineAgent } from "../src/definition/definition.ts";
-import { KnowledgeIndex } from "../src/knowledge/in-memory.ts";
+import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
 import { ToolRegistry } from "../src/tools/registry.ts";
 import { InMemorySessionStore } from "../src/session/store.ts";
 import { AgentRuntime } from "../src/runtime/runtime.ts";

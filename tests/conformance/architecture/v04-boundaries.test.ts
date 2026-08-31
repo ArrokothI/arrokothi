@@ -25,16 +25,19 @@ const IMPORT_SPECIFIER = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)["']([^"']+)
 /** Everything the v0.4 path is published through. */
 const V04_ENTRY_MODULES = [
   "execution-api.ts",
+  "controllers/workflow/controller.ts",
   "ports/index.ts",
   "reference/index.ts",
   "runtime/harness.ts",
   "testing/scripted-controllers.ts",
   "testing/execution-harness.ts",
+  "testing/workflow.ts",
   "testing/contracts/index.ts",
 ];
 
 /** Directories and files the v0.4 path owns. */
 const V04_OWNED = [
+  "controllers/",
   "definitions/",
   "effects/",
   "execution/",
@@ -43,9 +46,11 @@ const V04_OWNED = [
   "ports/",
   "reference/",
   "testing/contracts/",
+  "workflow/",
 ];
 const V04_OWNED_FILES = [
   "execution-api.ts",
+  "testing/workflow.ts",
   "runtime/activation.ts",
   "runtime/controller-registry.ts",
   "runtime/effect-processor.ts",
@@ -211,6 +216,9 @@ describe("v0.4 architecture boundaries", () => {
       "@agent-sdk/core/ports",
       "@agent-sdk/core/reference",
       "@agent-sdk/core/testing",
+      // The retrieval conformance cases must exercise a real implementation of the capability and
+      // local-resource ports, and proving the extraction is part of what they assert.
+      "@agent-sdk/retrieval-local",
     ]);
     const violations: string[] = [];
 

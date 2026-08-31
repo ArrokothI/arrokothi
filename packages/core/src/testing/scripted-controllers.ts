@@ -95,9 +95,27 @@ function readProgress(value: JsonObject): ScriptedProgress {
   return { step, awaiting, seenEvents, seenKinds, observations, notes: { ...notes } };
 }
 
-function readProgram(spec: JsonObject): readonly ScriptedControllerStep[] {
-  const program = spec["program"];
-  return Array.isArray(program) ? (program as unknown as readonly ScriptedControllerStep[]) : [];
+/**
+ * Finds the script.
+ *
+ * An Agent spec carries it directly. A Workflow spec is real Stage topology since Slice C, so a
+ * scripted Workflow wraps its program in the `config` of a single Function Stage - the definition
+ * stays a valid, publishable Workflow while the scripted controller keeps driving it. These
+ * controllers exercise the *substrate* (Events, progress, Effects, completion), not Stage
+ * semantics; `controllers/workflow` owns those.
+ */
+function readProgram(spec: unknown): readonly ScriptedControllerStep[] {
+  if (spec === null || typeof spec !== "object") return [];
+  const described = spec as Record<string, unknown>;
+  const direct = described["program"];
+  if (Array.isArray(direct)) return direct as unknown as readonly ScriptedControllerStep[];
+  const stages = described["stages"];
+  if (Array.isArray(stages)) {
+    const first = stages[0] as { config?: { program?: unknown } } | undefined;
+    const program = first?.config?.program;
+    if (Array.isArray(program)) return program as unknown as readonly ScriptedControllerStep[];
+  }
+  return [];
 }
 
 class ScriptedController implements ExecutionController {
@@ -294,7 +312,18 @@ export function scriptedWorkflowDefinition(input: ScriptedDefinitionInput): Work
     ...(input.version !== undefined ? { version: input.version } : {}),
     ...(input.name !== undefined ? { name: input.name } : {}),
     ...(input.terminalResult !== undefined ? { terminalResult: input.terminalResult } : {}),
-    spec: spec(input.program),
+    spec: {
+      entryStage: "scripted",
+      stages: [
+        {
+          id: "scripted",
+          kind: "function",
+          implementationRef: "scripted-controller-program",
+          config: spec(input.program),
+          transitions: { kind: "always", next: { to: "complete" } },
+        },
+      ],
+    },
   });
 }
 

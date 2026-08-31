@@ -2,13 +2,13 @@ import {
   AgentHarness,
   AgentRuntime,
   InMemorySessionStore,
-  KnowledgeIndex,
   ToolRegistry,
   createDeterministicIds,
   createFixedClock,
   defineAgent,
   knowledgeCapabilityName,
 } from "@agent-sdk/core";
+import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
 import { ScriptedModelProvider } from "@agent-sdk/core/testing";
 import { StrandsLoopEngine, createStrandsGeminiEngine } from "@agent-sdk/integration-strands";
 import { GeminiProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";

@@ -8,7 +8,6 @@ import type { AgentDefinition, CompiledContext, ModelProvider, WebSearchProvider
 import {
   AgentRuntime,
   AgentHarness,
-  KnowledgeIndex,
   ReferenceLoopEngine,
   ToolRegistry,
   createRandomIds,
@@ -19,6 +18,7 @@ import {
   nextVersion,
   validateDefinition,
 } from "@agent-sdk/core";
+import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
 import { StaticModelProvider } from "@agent-sdk/core/testing";
 import { GeminiProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";
 import { createStrandsGeminiEngine } from "@agent-sdk/integration-strands";

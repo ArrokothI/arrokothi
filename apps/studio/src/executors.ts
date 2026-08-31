@@ -1,6 +1,6 @@
 import type { AgentDefinition, ToolExecutor, ToolRegistry } from "@agent-sdk/core";
 import { recordQueryTools } from "@agent-sdk/core";
-import type { KnowledgeIndex } from "@agent-sdk/core";
+import type { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
 
 /**
  * Studio tool executors.

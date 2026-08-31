@@ -2,7 +2,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { AgentRuntime } from "../src/runtime/runtime.ts";
 import { InMemorySessionStore } from "../src/session/store.ts";
-import { KnowledgeIndex } from "../src/knowledge/in-memory.ts";
+import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
 import { ToolRegistry } from "../src/tools/registry.ts";
 import { ScriptedModelProvider } from "../src/testing/scripted-provider.ts";
 import { emailDryRun } from "../src/testing/fake-executors.ts";

@@ -350,3 +350,66 @@ export function toJsonSchema(schema: ValueSchema): Record<string, unknown> {
     }
   }
 }
+
+// ---------------------------------------------------------------------------
+// Structural validation of a schema itself
+// ---------------------------------------------------------------------------
+
+/**
+ * A problem with an authored *schema*, as opposed to a problem with a value.
+ *
+ * Definitions carry schemas as data, so a stored definition can contain a malformed schema tree the
+ * same way it can contain a malformed anything else. Checking that tree is a different question
+ * from checking a value against it, and both callers - terminal-result declarations and Workflow
+ * Stage authoring - need the same answer, so it lives beside the language it describes.
+ */
+export interface SchemaStructureIssue {
+  readonly path: string;
+  readonly message: string;
+}
+
+const SCHEMA_KINDS = new Set(["string", "number", "boolean", "enum", "string_array", "array", "any", "object"]);
+
+/** Collects every reason `schema` is not a well-formed `ValueSchema` tree. Empty means it is. */
+export function valueSchemaIssues(schema: unknown, path: string): SchemaStructureIssue[] {
+  if (schema === null || typeof schema !== "object" || Array.isArray(schema)) {
+    return [{ path, message: "expected a ValueSchema object" }];
+  }
+  const kind = (schema as { kind?: unknown }).kind;
+  if (typeof kind !== "string" || !SCHEMA_KINDS.has(kind)) {
+    return [{ path: `${path}.kind`, message: `unknown schema kind ${JSON.stringify(kind)}` }];
+  }
+  if (kind === "enum") {
+    const choices = (schema as { choices?: unknown }).choices;
+    if (!Array.isArray(choices) || choices.length === 0 || choices.some((choice) => typeof choice !== "string")) {
+      return [{ path: `${path}.choices`, message: "enum requires a non-empty string[] of choices" }];
+    }
+  }
+  if (kind === "array") {
+    return valueSchemaIssues((schema as { items?: unknown }).items, `${path}.items`);
+  }
+  if (kind === "object") {
+    const fields = (schema as { fields?: unknown }).fields;
+    if (fields === null || typeof fields !== "object" || Array.isArray(fields)) {
+      return [{ path: `${path}.fields`, message: "object schema requires a fields record" }];
+    }
+    const issues: SchemaStructureIssue[] = [];
+    for (const [key, spec] of Object.entries(fields as Record<string, unknown>)) {
+      if (spec === null || typeof spec !== "object" || Array.isArray(spec)) {
+        issues.push({ path: `${path}.fields.${key}`, message: "expected a FieldSpec object" });
+        continue;
+      }
+      issues.push(...valueSchemaIssues((spec as { schema?: unknown }).schema, `${path}.fields.${key}.schema`));
+    }
+    return issues;
+  }
+  return [];
+}
+
+/** The same check, narrowed to an `object` schema - what capability and callable inputs must be. */
+export function objectSchemaIssues(schema: unknown, path: string): SchemaStructureIssue[] {
+  if (schema === null || typeof schema !== "object" || Array.isArray(schema) || (schema as { kind?: unknown }).kind !== "object") {
+    return [{ path, message: "expected an object schema" }];
+  }
+  return valueSchemaIssues(schema, path);
+}

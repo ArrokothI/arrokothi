@@ -36,6 +36,26 @@ export {
 export type { CapabilityExecutor } from "./capability-executor.ts";
 export { UnknownCapabilityError } from "./capability-executor.ts";
 
+// -- workflow stage, adapter, and local resource boundaries ------------------
+export type {
+  FunctionStageImplementation,
+  FunctionStageOutcome,
+  FunctionStageRegistry,
+  StageActivationFacts,
+  StageExecutionContext,
+} from "./stage.ts";
+export { emptyFunctionStageRegistry, functionStageOutcomeIssues } from "./stage.ts";
+export type {
+  AdapterContext,
+  AdapterImplementation,
+  AdapterPosition,
+  AdapterRegistry,
+  AdapterResult,
+} from "./adapter.ts";
+export { adapterResultIssues, emptyAdapterRegistry } from "./adapter.ts";
+export type { LocalResource, LocalResourceEnvironment, LocalResourceView } from "./local-resource.ts";
+export { emptyLocalResourceEnvironment, UnexposedLocalResourceError } from "./local-resource.ts";
+
 export type { EffectAuthorizer } from "./effect-authorizer.ts";
 export { denyAllEffects } from "./effect-authorizer.ts";
 
@@ -78,7 +98,7 @@ export type {
 
 // -- model resolution and provider invocation -------------------------------
 export type { ModelResolver } from "./model-resolver.ts";
-export type { ModelProvider } from "./model-provider.ts";
+export type { ModelProvider, ModelProviderLookup } from "./model-provider.ts";
 export type {
   LogicalModelRef,
   LogicalModelRequest,

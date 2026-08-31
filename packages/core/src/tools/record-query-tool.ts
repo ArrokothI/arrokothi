@@ -1,7 +1,29 @@
 import type { ToolDefinition, ToolExecutor } from "./types.ts";
-import type { KnowledgeIndex } from "../knowledge/in-memory.ts";
-import type { RecordFilterOp, RecordQuery, RecordSetSource } from "../knowledge/types.ts";
+import type {
+  KnowledgeBinding,
+  RecordFilterOp,
+  RecordQuery,
+  RecordQueryError,
+  RecordQueryRequest,
+  RecordQueryResult,
+  RecordSetSource,
+} from "../knowledge/types.ts";
 import { recordFieldDescription, recordFieldExamples, recordFieldSchema } from "../knowledge/types.ts";
+import type { Result } from "../util/result.ts";
+
+/**
+ * The narrow record-set surface this tool needs.
+ *
+ * Declared structurally rather than importing a concrete provider, because the local retrieval
+ * implementation now lives in `@agent-sdk/retrieval-local` and core must not depend outward on it.
+ * The legacy `KnowledgeIndex` satisfies this shape unchanged.
+ */
+export interface RecordQueryKnowledge {
+  recordSets(): RecordSetSource[];
+  getBinding(sourceId: string): KnowledgeBinding | undefined;
+  getRecordSet(sourceId: string): RecordSetSource | undefined;
+  queryRecords(request: RecordQueryRequest): Result<RecordQueryResult, RecordQueryError>;
+}
 
 /**
  * Exposes a record set to the model as a deterministic READ tool.
@@ -118,7 +140,7 @@ export function parseRecordQueryArgs(args: Record<string, unknown>): RecordQuery
   return query;
 }
 
-export function createRecordQueryExecutor(knowledge: KnowledgeIndex, sourceId: string): ToolExecutor {
+export function createRecordQueryExecutor(knowledge: RecordQueryKnowledge, sourceId: string): ToolExecutor {
   return {
     async execute(args) {
       const result = knowledge.queryRecords({ kind: "record_query", sourceId, ...parseRecordQueryArgs(args) });
@@ -143,7 +165,7 @@ export function createRecordQueryExecutor(knowledge: KnowledgeIndex, sourceId: s
 }
 
 /** Registers a query tool for every record set that has not opted out via `exposeQueryTool: false`. */
-export function recordQueryTools(knowledge: KnowledgeIndex): { definition: ToolDefinition; executor: ToolExecutor }[] {
+export function recordQueryTools(knowledge: RecordQueryKnowledge): { definition: ToolDefinition; executor: ToolExecutor }[] {
   return knowledge
     .recordSets()
     .filter((source) => knowledge.getBinding(source.id)?.exposeQueryTool !== false)

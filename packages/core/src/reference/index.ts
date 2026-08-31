@@ -26,6 +26,10 @@ export type {
   ScriptedCapabilityHandler,
 } from "./scripted-capability-executor.ts";
 
+export { createFunctionStageRegistry, createAdapterRegistry } from "./workflow-registries.ts";
+export type { AdapterHandler, FunctionStageHandler } from "./workflow-registries.ts";
+export { createLocalResourceEnvironment } from "./local-resource-environment.ts";
+
 export { StaticModelResolver, portableModelFeatures } from "./static-model-resolver.ts";
 export type { StaticModelMapping } from "./static-model-resolver.ts";
 export { ModelProviderRegistry } from "./model-provider-registry.ts";

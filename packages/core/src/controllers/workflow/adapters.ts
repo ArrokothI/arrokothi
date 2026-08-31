@@ -1,0 +1,126 @@
+/**
+ * Running Stage Adapters.
+ *
+ * Adapters settle before the Stage boundary they guard: input Adapters before the Stage body sees
+ * anything, output Adapters before a transition is resolved. They run in declaration order and the
+ * first rejection stops the chain, because a value that has been rejected is not a value later
+ * Adapters should be transforming.
+ *
+ * Two invariants are enforced here rather than trusted:
+ *
+ * **An Adapter cannot request an Effect.** Its context has no proposer, so there is nothing to
+ * enforce at runtime - but `adapterResultIssues` also refuses a result that tries to name a next
+ * Stage, so an implementation that reaches for topology gets an error rather than silence.
+ *
+ * **An LLM Adapter exposes no model-callable operations.** The request carries no `capabilities`,
+ * which means the provider boundary itself (`validateModelProviderResponse`) rejects any capability
+ * call that comes back - an unrequested call is invalid provider output, not an Effect the runtime
+ * might consider dispatching.
+ */
+
+import type { ModelMessage } from "../../model/types.ts";
+import type { AdapterContext, AdapterRegistry, AdapterResult } from "../../ports/adapter.ts";
+import { adapterResultIssues } from "../../ports/adapter.ts";
+import type { LocalResourceView } from "../../ports/local-resource.ts";
+import type { AdapterDeclaration } from "../../workflow/adapters.ts";
+import type { StageId } from "../../workflow/spec.ts";
+import type { StageResult } from "../../workflow/stage-result.ts";
+import { describeStageResult } from "../../workflow/stage-result.ts";
+import type { WorkflowModelAccess, WorkflowTrace } from "./model-access.ts";
+import { invokeStageModel } from "./model-access.ts";
+
+export type AdapterChainOutcome =
+  | { readonly status: "value"; readonly value: StageResult }
+  | { readonly status: "rejected"; readonly reason: string; readonly index: number }
+  | { readonly status: "failed"; readonly code: string; readonly message: string };
+
+export interface AdapterChainInput {
+  readonly stageId: StageId;
+  readonly visit: number;
+  readonly position: "input" | "output";
+  readonly declarations: readonly AdapterDeclaration[];
+  readonly value: StageResult;
+  readonly resources: LocalResourceView;
+  readonly adapters: AdapterRegistry;
+  readonly models: WorkflowModelAccess | undefined;
+  readonly trace: WorkflowTrace | undefined;
+}
+
+function renderPrompt(template: string, value: StageResult): string {
+  return template.replaceAll("{{value}}", describeStageResult(value));
+}
+
+async function applyOne(
+  declaration: AdapterDeclaration,
+  context: AdapterContext,
+  input: AdapterChainInput,
+): Promise<AdapterResult | { readonly kind: "error"; readonly code: string; readonly message: string }> {
+  if (declaration.kind === "function") {
+    const implementation = input.adapters.resolve(declaration.implementationRef);
+    if (!implementation) {
+      return {
+        kind: "error",
+        code: "adapter_implementation_missing",
+        message: `no adapter implementation is wired for logical ref "${declaration.implementationRef}"`,
+      };
+    }
+    const result = await implementation.apply(context);
+    const issues = adapterResultIssues(result);
+    if (issues.length > 0) {
+      return { kind: "error", code: "invalid_adapter_result", message: issues.map((i) => `${i.path}: ${i.message}`).join("; ") };
+    }
+    return result;
+  }
+
+  const messages: readonly ModelMessage[] = [{ role: "user", content: renderPrompt(declaration.prompt, context.value) }];
+  const { resolved, response } = await invokeStageModel(input.models, declaration.model, {
+    system: declaration.system,
+    messages,
+    purpose: `adapter:${input.position}`,
+  });
+  input.trace?.modelInvoked?.({
+    stageId: input.stageId,
+    visit: input.visit,
+    purpose: "adapter",
+    phase: 1,
+    logicalRef: declaration.model.logicalRef,
+    provider: resolved.provider,
+    model: resolved.model,
+    ...(response.metadata.finishReason !== undefined ? { finishReason: response.metadata.finishReason } : {}),
+    capabilityCallCount: response.output.capabilityCalls?.length ?? 0,
+  });
+  const text = response.output.text;
+  if (typeof text !== "string") {
+    return { kind: "error", code: "adapter_model_output_missing", message: "an LLM Adapter needs text output to transform its value" };
+  }
+  return { kind: "transform", value: text };
+}
+
+/** Runs one Adapter chain to completion. The caller applies predefined policy to a rejection. */
+export async function runAdapterChain(input: AdapterChainInput): Promise<AdapterChainOutcome> {
+  let value = input.value;
+  for (const [index, declaration] of input.declarations.entries()) {
+    const context: AdapterContext = {
+      stageId: input.stageId,
+      visit: input.visit,
+      position: input.position,
+      value,
+      config: declaration.kind === "function" ? (declaration.config ?? {}) : {},
+      resources: input.resources,
+    };
+    let result: Awaited<ReturnType<typeof applyOne>>;
+    try {
+      result = await applyOne(declaration, context, input);
+    } catch (error) {
+      return {
+        status: "failed",
+        code: "adapter_error",
+        message: error instanceof Error ? error.message : String(error),
+      };
+    }
+    if (result.kind === "error") return { status: "failed", code: result.code, message: result.message };
+    if (result.kind === "reject") return { status: "rejected", reason: result.reason, index };
+    if (result.kind === "transform") value = result.value;
+  }
+  return { status: "value", value };
+}

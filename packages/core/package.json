@@ -14,8 +14,7 @@
     "src"
   ],
   "sideEffects": false,
-  "dependencies": {
-    "@langchain/core": "^1.2.9",
-    "@langchain/textsplitters": "^1.0.1"
+  "devDependencies": {
+    "@agent-sdk/retrieval-local": "*"
   }
 }

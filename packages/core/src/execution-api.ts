@@ -27,8 +27,10 @@ export type {
   WorkflowDefinition,
   WorkflowSpec,
 } from "./definitions/types.ts";
+
 export { DEFINITION_KINDS, isAgentDefinition, isDefinitionKind, isWorkflowDefinition } from "./definitions/types.ts";
 export type { DefinitionIssue, DefinitionValidation, DefineExecutionInput } from "./definitions/validation.ts";
+
 export {
   assertValidDefinition,
   defineAgent,
@@ -41,6 +43,47 @@ export {
   serializeDefinition,
   validateDefinition,
 } from "./definitions/validation.ts";
+
+// -- workflow topology -------------------------------------------------------
+export type {
+  AgentStageDefinition,
+  ChildDefinitionRef,
+  FunctionStageDefinition,
+  ImplementationRef,
+  LLMStageDefinition,
+  ModelCallableDeclaration,
+  StageDefinition,
+  StageDefinitionBase,
+  StageDefinitionInput,
+  StageId,
+  StageKind,
+  StageTransitionCase,
+  StageTransitions,
+  StageTransitionsInput,
+  TerminalProposal,
+  TransitionTarget,
+  TransitionTargetInput,
+  WorkflowSpecInput,
+  WorkflowStageDefinition,
+} from "./workflow/spec.ts";
+export { STAGE_KINDS, findStage, isImplementationRef, isStageId, isStageKind, stageId, transitionLabels } from "./workflow/spec.ts";
+export type { AdapterDeclaration, AdapterKind, FunctionAdapterDeclaration, LLMAdapterDeclaration } from "./workflow/adapters.ts";
+export { ADAPTER_KINDS, isAdapterKind } from "./workflow/adapters.ts";
+export type { StageResult } from "./workflow/stage-result.ts";
+export { describeStageResult, isStageResult } from "./workflow/stage-result.ts";
+export type { StageCapabilityRequest, StageObservation, StageObservationOutcome } from "./workflow/observations.ts";
+export { findObservation, isSuccessfulObservation } from "./workflow/observations.ts";
+export type { WorkflowSpecIssue, WorkflowSpecIssueCode, WorkflowSpecValidation } from "./workflow/validation.ts";
+export { MAX_MODEL_PHASES, validateWorkflowSpec } from "./workflow/validation.ts";
+/**
+ * Workflow control state is exported as *readable* shapes only.
+ *
+ * There is no barrier mutator here, and no way to write a Stage's progress from outside the
+ * controller that owns it. An application inspects what a Workflow is doing; it does not reach in
+ * and change where the Workflow thinks it is.
+ */
+export type { BarrierEntry, BarrierEntryKind, WorkflowControlState } from "./workflow/control-state.ts";
+export { readWorkflowControlState, stageCorrelationId } from "./workflow/control-state.ts";
 
 // -- execution identity and lifecycle ----------------------------------------
 export type { ActivationId, ExecutionId } from "./execution/ids.ts";
@@ -152,6 +195,15 @@ export { EFFECT_JOURNAL_PHASES, effectRequestsIn, isTerminalEffectPhase, latestP
 export { ControllerRegistry, UnknownControllerKindError } from "./runtime/controller-registry.ts";
 export type { ActivationRecord, ActivationResultKind } from "./runtime/activation.ts";
 export { Harness, HarnessRunawayError, UnknownDefinitionError } from "./runtime/harness.ts";
+export { createWorkflowController } from "./controllers/workflow/controller.ts";
+export type { WorkflowControllerOptions } from "./controllers/workflow/controller.ts";
+export type {
+  ModelInvocationPurpose,
+  WorkflowModelAccess,
+  WorkflowModelInvocation,
+  WorkflowStageTransitionRecord,
+  WorkflowTrace,
+} from "./controllers/workflow/model-access.ts";
 export type {
   CreateExecutionInput,
   DeliverExternalInputInput,

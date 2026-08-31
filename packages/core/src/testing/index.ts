@@ -15,6 +15,12 @@ export {
   INITIAL_SCRIPTED_PROGRESS,
 } from "./scripted-controllers.ts";
 export type { ScriptedControllerStep, ScriptedDefinitionInput, ScriptedProgress } from "./scripted-controllers.ts";
+export { createWorkflowTestHarness, modelAccess, recordingWorkflowTrace } from "./workflow.ts";
+export type {
+  RecordingWorkflowTrace,
+  WorkflowTestHarnessBundle,
+  WorkflowTestHarnessOptions,
+} from "./workflow.ts";
 export {
   capabilityExecutorContract,
   definitionStoreContract,

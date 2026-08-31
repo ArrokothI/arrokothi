@@ -73,17 +73,10 @@ export type {
 } from "./context/types.ts";
 
 // -- knowledge ---------------------------------------------------------------
-export {
-  KnowledgeIndex,
-  createRetriever,
-  chunkDocument,
-  tokenize,
-  renderRecord,
-  DEFAULT_CHUNK_SIZE,
-  DEFAULT_CHUNK_OVERLAP,
-  RECORD_FILTER_OPERATORS,
-} from "./knowledge/in-memory.ts";
-export { queryRecords } from "./knowledge/record-query.ts";
+// The local implementation (lexical retrieval, the record-set evaluator, and the legacy
+// `KnowledgeIndex`) moved to `@agent-sdk/retrieval-local`, taking the LangChain dependency with it.
+// Core keeps only the generic contracts.
+export { recordFieldDescription, recordFieldExamples, recordFieldSchema } from "./knowledge/types.ts";
 export type {
   KnowledgeSource,
   DocumentSource,

@@ -8,11 +8,11 @@ import type {
   CapabilityDefinition,
   CompiledContext,
 } from "@agent-sdk/core";
+import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
 import {
   AgentHarness,
   AgentRuntime,
   InMemorySessionStore,
-  KnowledgeIndex,
   ToolRegistry,
   createDeterministicIds,
   createFixedClock,

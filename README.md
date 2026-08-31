@@ -192,6 +192,7 @@ npm run example:strands          # add -- --live for Gemini
 npm run example:benchmark:p01 -- --check
 npm run example:benchmark:p02 -- --check
 npm run canary:gemini            # optional live provider check
+npm run canary:workflow          # optional live v0.4 Workflow scenario
 npm run studio
 ```
 
@@ -203,6 +204,7 @@ Cross-framework P01/P02 evaluation and retained historical evidence live in the 
 packages/core/                kernel contracts/runtime and reference mechanisms
 packages/agents/strands/      primary Strands Agent executor adapter
 packages/models/gemini/       Gemini model-provider adapter
+packages/retrieval/local/     local retrieval implementations behind the kernel's ports
 packages/storage/sqlite/      SQLite persistence adapter
 apps/studio/                  local development/inspection surface
 examples/                     focused usage examples

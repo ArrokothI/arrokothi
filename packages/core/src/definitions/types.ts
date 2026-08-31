@@ -15,6 +15,7 @@
 
 import type { ValueSchema } from "../schema/value-schema.ts";
 import type { JsonObject } from "../util/json.ts";
+import type { WorkflowSpec } from "../workflow/spec.ts";
 import type { DefinitionId, DefinitionVersion } from "./ids.ts";
 
 export type DefinitionKind = "agent" | "workflow";
@@ -51,13 +52,21 @@ export interface DefinitionBase {
 }
 
 /**
- * Slice A keeps the controller-specific body of a definition deliberately open: serializable data
- * that the kernel stores, pins, and hands to the controller registered for this kind without
- * interpreting it. Slice D narrows `AgentSpec` to the canonical Agent spec and Slice C narrows
- * `WorkflowSpec` to Stage topology. Freezing either now would guess at those slices.
+ * The Agent body remains deliberately open: serializable data that the kernel stores, pins, and
+ * hands to the controller registered for this kind without interpreting it. Slice D narrows it to
+ * the canonical Agent spec; freezing it now would guess at that slice.
  */
 export type AgentSpec = JsonObject;
-export type WorkflowSpec = JsonObject;
+
+/**
+ * The Workflow body is no longer open.
+ *
+ * Slice C replaced the generic Slice-A placeholder with real Stage topology (`workflow/spec.ts`).
+ * A Workflow definition now declares its entry Stage, its Stage definitions, its predefined
+ * transitions, and its completion targets, and `validateDefinition` rejects anything that is not
+ * one - so a malformed graph is unpublishable rather than discovered several Activations in.
+ */
+export type { WorkflowSpec };
 
 export interface AgentDefinition extends DefinitionBase {
   readonly kind: "agent";

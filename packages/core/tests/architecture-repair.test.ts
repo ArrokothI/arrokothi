@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   AgentHarness,
-  KnowledgeIndex,
   type ToolDefinition,
   type WebSearchProvider,
   ReferenceLoopEngine,
@@ -11,6 +10,7 @@ import {
   defineAgent,
   knowledgeCapabilityName,
 } from "../src/index.ts";
+import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
 import { ScriptedModelProvider } from "../src/testing/scripted-provider.ts";
 import { RecordingExecutor } from "../src/testing/fake-executors.ts";
 import { buildRuntime } from "./helpers.ts";

@@ -1,11 +1,11 @@
 import {
   AgentRuntime,
   InMemorySessionStore,
-  KnowledgeIndex,
   ToolRegistry,
   createDeterministicIds,
   createFixedClock,
 } from "@agent-sdk/core";
+import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
 import { ScriptedModelProvider } from "@agent-sdk/core/testing";
 import { minimalAgent } from "./agent.ts";
 
