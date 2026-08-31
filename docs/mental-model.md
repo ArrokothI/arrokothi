@@ -1,16 +1,16 @@
 # Mental Model
 
-> **Status: canonical conceptual model.**
+> **Status: canonical conceptual overview for ArrokothI.**
 >
-> This document defines what ArrokothI means. It intentionally avoids detailed TypeScript APIs, persistence layouts, scheduler algorithms, provider-specific mechanisms, or protocol wire formats. Those belong in the lower-level documents.
+> This document should be enough to understand the shape of the system. It defines the major concepts and the boundaries between them, but deliberately leaves tricky semantics to the dedicated concept documents. It does not define TypeScript APIs, storage layouts, scheduler algorithms, provider SDK behavior, or protocol wire formats.
 
 ## 1. The core idea
 
-ArrokothI is an execution kernel for long-lived Agents and Workflows.
+ArrokothI is an **execution kernel for long-lived Agents and Workflows**.
 
-Its central runtime concept is an **Execution**:
+The central runtime entity is an **Execution**:
 
-> **An Execution is an independently managed runtime entity with identity, lifecycle, authority, state/memory bindings, pending work, and optional communication endpoints.**
+> **An Execution is a logically independent unit of runtime work with its own identity, lifecycle, authority, state/memory view, pending work, and runtime management.**
 
 In v0.4, the primary Execution kinds are:
 
@@ -22,140 +22,70 @@ ExecutionDefinition
      Execution
 ```
 
-Function calls and LLM inference are normally computations *inside* an Execution. They do not receive independent runtime identity merely because they are runnable.
+A Definition describes reusable work. An Execution is one live runtime instance of that definition.
 
-This gives the first important rule:
+Functions, LLM calls, retrieval, parsing, Adapters, and Workflow Stages do **not** become Executions merely because they are runnable or complex.
 
 > **Composition does not imply an Execution boundary. Independent runtime identity does.**
 
-A future version may add another Execution kind if a real use case needs independent lifecycle/authority/state without naturally being an Agent or Workflow. v0.4 does not need such a kind.
+A useful test is: does this piece of work need to keep existing as something the runtime may independently wait for, resume, message, cancel, supervise, recover, give separate authority to, or address later? If yes, it probably deserves an Execution. Otherwise it should usually remain local computation inside one.
 
 ---
 
-## 2. Why Execution is a real boundary
+## 2. Agent and Workflow are complementary
 
-The Execution boundary is where several concerns align:
-
-```text
-identity / addressability
-lifecycle / waiting
-authority
-memory view
-mailbox / Events
-pending operations
-cancellation
-ownership
-budget / deadline
-durability / recovery
-trace identity
-```
-
-A local function call does not normally need these semantics. A single LLM inference does not normally need them either.
-
-This is why ArrokothI does **not** define every computation as an Execution and then rely on an implementation optimization to erase the simple cases. If identity, mailbox, lifecycle, and cancellation are part of the semantics, they cannot be optimized away while remaining observationally equivalent.
-
-Instead:
-
-```text
-Workflow / Agent
-  independently managed
-  → Execution
-
-Function / LLM / Adapter
-  local computation inside an Execution
-  → no independent Execution by default
-```
-
-`call` and `spawn` are the explicit operations that introduce child Execution boundaries.
-
-### Does this deserve an Execution?
-
-Ask whether this piece of work needs to **continue existing as an independently managed thing** after the current local computation.
-
-If another part of the system may need to find it later, send it new input, wait for it, cancel it, give it separate permissions or limits, let it manage child work, or recover it after a restart, it probably deserves an Execution.
-
-If it simply starts and finishes as part of its caller—such as an LLM inference, parser, retrieval step, or Adapter—it usually should stay inside the enclosing Execution.
-
----
-
-## 3. Workflow and Agent are complementary
-
-The central semantic distinction is who owns the possible progression of the program.
+Agent and Workflow differ mainly in **who owns semantic progression**.
 
 ### Workflow
 
 > **A Workflow has system-defined semantic topology.**
 
-The application defines the possible stages and transitions. An LLM may still participate in the Workflow, including selecting among predefined branches.
-
-Examples that remain Workflows:
+The application defines the possible Stages and transitions. An LLM may classify, branch, retrieve, revise, or loop inside those predefined possibilities without turning the Workflow into an Agent.
 
 ```text
-LLM → retrieval → LLM
+collect → evaluate → revise
+              │         │
+              └→ publish┘
 ```
 
-```text
-LLM classifier
-  ├── route A
-  └── route B
-```
-
-```text
-draft → evaluator → revise → evaluator
-```
-
-The presence of LLMs, loops, tools, or model-based routing does not make a Workflow an Agent.
+A **Stage** is Workflow structure inside one Workflow Execution. It is not a smaller Execution.
 
 ### Agent
 
 > **An Agent has model-directed open-ended semantic progression inside hard runtime boundaries.**
 
-The model repeatedly decides what semantic action(s) to take next based on observations.
+The model repeatedly chooses what semantic action to take next from the observations and options made available to it.
 
 ```text
-LLM
- ↓
-choose actions
- ↓
-Effects / child calls / messages
- ↓
-observations
- ↓
-LLM chooses again
+observe
+  ↓
+model decides
+  ↓
+action requests / child calls / messages
+  ↓
+new observations
+  ↓
+model decides again
 ```
 
-The number of LLM calls does not define Agent-ness. A Workflow Stage may contain several predetermined LLM calls. What matters is whether the model owns an open-ended continuation space.
+The number of LLM calls does not define Agent-ness. What matters is whether the model owns an open-ended continuation space.
 
-### Same task, different architecture
-
-The same externally visible task may be implemented as a Workflow or an Agent.
-
-For example, retrieval can be:
-
-```text
-Workflow:
-  formulate query → retrieve → synthesize
-```
-
-or:
-
-```text
-Agent:
-  model decides whether/when/how often to retrieve
-```
-
-The category describes control ownership, not task output.
+The same task may be expressed as a Workflow or an Agent. The distinction describes **control ownership**, not the output.
 
 ---
 
-## 4. Events and Effects
+## 3. Events in, Effects out
 
-An Execution is advanced by a **controller** appropriate to its kind.
+An Execution advances through a controller appropriate to its kind:
 
-- A Workflow controller runs Stages and follows application-defined transitions.
-- An Agent controller runs the agentic loop in which the model chooses the next semantic action.
+```text
+Workflow Execution → Workflow controller
+Agent Execution    → Agent controller
+```
 
-When the controller needs to interact with the runtime or outside world, it requests an Effect. Results return to the Execution as Events.
+The controller may perform local computation directly. When it needs the runtime or outside world to do something, it proposes an **Effect**.
+
+Results and other observations enter an Execution as **Events**.
 
 ```text
 Event(s)
@@ -164,469 +94,345 @@ Execution
    ↓
 controller
    ├── local computation
-   │   function / LLM / Adapter
    │
-   └── EffectRequest(s), when needed
+   └── Effect proposal(s)
               ↓
            Harness
-     authorize / coordinate
+      authorize / coordinate
               ↓
-    runtime-managed interaction
-       ├── capability / resource
-       ├── child or peer Execution
-       └── user / external system
+       runtime / outside world
               ↓
-       resulting Event(s)
-              ↓
-      relevant Execution(s)
+            Event(s)
 ```
 
-### Event
+An **Event** says something was observed by an Execution.
 
-An **Event** is an observation delivered to an Execution.
+Examples include user input, a capability result, a child result, a peer message, a timer, or cancellation.
 
-Examples:
+An **Effect** is a request for runtime-mediated interaction. The v0.4 vocabulary is intentionally small:
 
 ```text
-start input
-user input
-capability result
-capability failure
-child terminal result
-peer message
-confirmation decision
-timer / timeout
-cancellation/control event
+UseCapability
+WriteMemory
+SpawnExecution
+SendMessage
+RequestUserInput
 ```
 
-### Effect
+Effects are proposals, not claims that something already happened.
 
-An **EffectRequest** is a requested interaction with the runtime or outside world.
+> **Controllers request. The Harness authorizes and coordinates. Executors and the environment establish reality.**
 
-The v0.4 vocabulary is deliberately small:
-
-```text
-EffectRequest
-├── UseCapability
-├── WriteMemory
-├── SpawnExecution
-├── SendMessage
-└── RequestUserInput
-```
-
-Effects are proposals, not claims that something happened.
-
-> **Models/controllers propose. The Harness authorizes and coordinates. Executors and the environment establish what actually happened.**
-
-A tool failure therefore normally becomes an Event that the Agent or Workflow can respond to, rather than automatically failing the whole Execution.
+This is why a failed tool call normally becomes an observation the program can react to rather than automatically meaning the whole Execution failed.
 
 ---
 
-## 5. Response is not completion
+## 4. Semantic control and operational control are different
 
-A long-lived Agent may send many responses while remaining alive.
-
-```text
-message
-  ↓
-Agent responds
-  ↓
-WAITING
-  ↓
-next message
-```
-
-Likewise, a child or peer may send a message without completing/termination.
-
-Therefore:
-
-> **A response/message is not a terminal result.**
-
-An Execution may optionally produce a terminal result when it reaches `COMPLETED`, but it need not be designed around a mandatory `input → output` function shape.
-
-A terminal result is definition/interface-specific and may be typed or schema-bound. It is independent from any Workflow-specific experiment about what value may cross a Stage transition.
-
----
-
-## 6. Operational control and semantic control are different
-
-The controller determines semantic work appropriate to its kind:
+The controller owns **semantic control**:
 
 ```text
 Workflow controller
   follows system-defined topology
 
 Agent controller
-  allows model-directed semantic progression
+  interprets model-directed progression
 ```
 
-The Harness owns operational control:
+The **Harness** owns operational control for all Executions:
 
 ```text
+lifecycle
 scheduling
-lifecycle transitions
-Effect authorization
-pending-operation tracking
+Event delivery
+Effect authorization and coordination
+pending work
 wake-up
-persistence/recovery
-budgets/deadlines
-mechanical confirmation
+budgets / deadlines
+cancellation / supervision
+persistence / recovery
 routing
+mechanical confirmation
 ```
 
-An Agent does not decide that it is `WAITING`; the runtime derives that state from whether runnable work exists.
+Executions do not each own a separate Harness.
 
-This separation is important:
+```text
+                 one logical Harness
+          ┌────────────┼────────────┐
+          ▼            ▼            ▼
+      Execution    Execution    Execution
+```
 
-> **Semantic control ≠ operational control.**
+The Harness may be implemented in one process or distributed across workers. Physical placement does not change the meaning of Execution, Event, Effect, `spawn`, or `call`.
+
+The detailed runtime semantics live in [`execution-runtime.md`](execution-runtime.md).
 
 ---
 
-## 7. Authority and exposure are different
+## 5. Local composition, child composition, and peer communication
 
-An Execution may be authorized to use more capabilities/resources than should appear in one model context.
-
-Conceptually:
+There are three different ways work combines:
 
 ```text
-available resources/capabilities
-          ↓
-   Authority Envelope
-          ↓
-   Active/Exposed View
+local composition
+  function / LLM / Adapter / Stage-local work
+  stays inside the current Execution
+
+child composition
+  spawn / call
+  creates another Execution
+
+peer communication
+  send / ask
+  talks to an already-existing Execution
 ```
 
-The **Authority Envelope** answers:
-
-> What may this Execution ever do or access?
-
-The **Active/Exposed View** answers:
-
-> What subset is currently visible or convenient to the controller/model?
-
-```text
-Active View ⊆ Authority Envelope
-```
-
-Changing exposure inside existing authority is context engineering, not privilege escalation.
-
-Authority includes more than tools:
-
-```text
-Capability Authority
-  which capabilities may be invoked
-
-Resource Authority
-  which bound resources may be read/written
-
-Spawn Authority
-  which Agent/Workflow Definitions may be instantiated
-
-Message Authority
-  which peer targets may receive messages
-```
-
-Definitions request authority; the Harness grants or narrows it. **Required authority** denied at creation means creation fails; **optional authority** may be omitted.
-
-A child Execution must not receive authority beyond what its creator is allowed to delegate.
-
-A child's Resource Authority controls which resources it may access directly. Separately, the runtime must control which information from the parent is exposed to the child. **A child should not automatically see all parent memory or Working Notes merely because it is a descendant.** Parent-to-child memory/context visibility must therefore be explicitly delegated or filtered.
-
----
-
-## 8. Ownership and communication are different
-
-The ownership graph and communication graph answer different questions.
-
-```text
-Ownership tree
-
-Workflow W
-├── Agent A
-├── Agent B
-└── Workflow C
-```
-
-```text
-Communication graph
-
-Agent A ↔ Agent B
-    ↘     ↗
-      Agent D
-```
-
-Ownership is useful for:
-
-```text
-authority derivation
-budget/deadline allocation
-cancellation propagation
-supervision
-trace ancestry
-```
-
-Communication permission only means a message may be sent.
-
-Therefore:
-
-```text
-can message X ≠ owns X
-can message X ≠ can cancel X
-can message X ≠ can inspect X memory
-```
-
----
-
-## 9. Memory and context are different
-
-**Memory** is information retained across computation/Activations.
-
-**Context** is the selected information made available to a controller/model during the current computation.
-
-```text
-memory / Events / resources / instructions
-                 ↓
-          context compilation
-                 ↓
-          current model context
-```
-
-The current design uses three useful memory forms:
-
-```text
-Structured Memory
-Working Notes
-Artifacts / Files
-```
-
-### Structured Memory
-
-Schema-defined, explicit information intended to survive and be shared where authorized.
-
-Examples:
-
-```text
-preferred_language
-research_sources
-task_requirements
-important_note
-```
-
-### Artifacts / Files
-
-Larger persistent work products such as reports, code, datasets, or generated files.
-
-### Working Notes
-
-Temporary scratch context. The exact storage and labeling policy is runtime architecture rather than a foundational invariant.
-
-The current v0.4 proposal uses stack-like ancestry with **explicitly delegated visibility** across Execution boundaries:
-
-```text
-parent Working Notes
-        ↓
-child visibility/delegation filter
-        ↓
-inherited read-only note view
-        +
-child-local writable frame
-```
-
-A child may therefore benefit from selected parent scratch context without automatically seeing every ancestral note or mutating parent frames.
-
-> **Note ancestry does not imply visibility.**
-
-The fundamental rule is:
-
-> **Important cross-Execution or cross-Stage information should move through an explicit result, Structured Memory, Artifact/File, or authorized message rather than accidental scratch-memory sharing.**
-
-History is not the same thing as semantic memory. Events, Effects, messages, lifecycle transitions, and traces form execution history and provenance.
-
----
-
-## 10. Capabilities and bound resources
-
-A **Capability** is something an Execution may ask the Harness to use.
-
-Useful high-level classes are:
-
-```text
-Knowledge Retrieval
-├── open/external retrieval
-│   └── web search
-│
-└── bound-resource retrieval
-    ├── database query
-    ├── file/document read
-    ├── vector retrieval
-    └── other resource-specific retrieval
-```
-
-A **bound resource** is the concrete object the capability operates on.
-
-Examples:
-
-```text
-papers         → knowledge://project-papers
-project_memory → memory://project
-workspace      → workspace://run-123
-```
-
-Bindings answer **which resource**; authority answers **what may be done with it**.
-
-Retrieval is usually a capability, not its own fundamental Execution kind.
-
----
-
-## 11. Interoperability is a projection boundary
-
-ArrokothI kernel semantics should be independent of any one external protocol while remaining intentionally easy to import from and export to standard protocols.
-
-Conceptually:
-
-```text
-kernel semantics
-  Execution / Event / Effect / authority / memory / lifecycle
-        ↓
-portable interface semantics
-  operations / resources / interaction templates /
-  async handles / input requirements / change signals
-        ↓
-protocol bindings
-  MCP / HTTP+OpenAPI / SDK / future protocols
-```
-
-The purpose of the portable interface layer is to let the same semantic service be described once and projected into different environments without making wire formats kernel truth.
-
-Examples include:
-
-```text
-Capability Operation  → model tool / MCP Tool / SDK function
-bound Resource        → MCP Resource / HTTP resource / local binding
-interaction template  → MCP Prompt / UI recipe / SDK template
-Agent/Workflow call   → service operation / MCP Tool
-long-running service  → protocol task/job handle around runtime work
-```
-
-These mappings do not create identity:
-
-```text
-Effect             ≠ protocol operation
-Event              ≠ protocol notification
-Execution          ≠ external task/job
-Capability         ≠ MCP Tool
-bound Resource     ≠ MCP Resource
-```
-
-And descriptors do not create permission:
-
-```text
-protocol discovery ≠ authority
-model exposure     ≠ authority
-external handle    ≠ authorization
-```
-
-MCP is a first-class interoperability target and design reference because its Tools, Resources, Prompts, Tasks, elicitation, and notification/subscription concepts overlap strongly with agent-facing service interfaces. But MCP wire types and SDK types must not define ArrokothI core semantic contracts.
-
-When a maturing external protocol reveals a genuinely better general abstraction, ArrokothI should evaluate whether that concept belongs in the portable interoperability layer or, if it changes true runtime semantics, in the kernel itself. The goal is to adopt general ideas at the correct layer rather than preserve unnecessary proprietary concepts.
-
-See [`interoperability.md`](interoperability.md) for the detailed mapping and import/export model.
-
----
-
-## 12. Parent/child composition
-
-`spawn` creates a new child Agent or Workflow Execution.
-
-```text
-Parent Execution
-      ↓ spawn
-Child Execution
-```
+`spawn` creates a child Agent or Workflow Execution.
 
 `call` is conceptually:
 
 ```text
 spawn
-+ wait for child Terminal Result
++ wait for the child's terminal result
 ```
 
-The child receives its own identity, lifecycle, effective authority, mailbox, pending operations, execution-local/control data, and delegated memory/context view under the same logical Harness.
+`send` communicates with an existing peer. `ask` adds correlation and waits for a reply.
 
-The parent normally receives the child's terminal result as an Event.
-
-Peer communication is different:
+Ownership and communication are separate graphs:
 
 ```text
-call child
-  new Execution + wait for terminal result
-
-ask peer
-  existing Execution + send message + wait for reply
+owns X      ≠ may message X
+may message X ≠ may cancel X
+may message X ≠ may inspect X memory
 ```
 
-This distinction should remain explicit.
+A future/reusable **Skill** is also a composition/package concept, not an Execution kind. A Skill may package instructions, resources, scripts, bindings, and optionally a root Agent/Workflow composition. Activating a Skill may create a child Execution when its composition requires one, or may simply enrich the current Agent when it is instruction-only.
+
+The deeper composition rules belong in [`composition.md`](composition.md).
 
 ---
 
-## 13. One logical Harness
+## 6. Authority is not exposure
 
-Executions do not each own a separate Harness.
+An Execution receives **authority**, not ambient privilege.
+
+Authority answers:
+
+> What may this Execution do or access?
+
+It can cover capabilities/operations, resources, spawning, messaging, and other runtime-controlled powers.
+
+The model should usually see much less than the full authorized universe.
+
+Conceptually:
 
 ```text
-                 Harness
-          ┌────────┼────────┐
-          ▼        ▼        ▼
-       exec-1   exec-2   exec-3
+Catalog
+  what exists
+      ↓
+Effective Authority
+  what this Execution may use
+      ↓
+Active / Exposed View
+  what is relevant and intentionally exposed now
+      ↓
+Model Invocation Projection
+  what this exact model call receives
 ```
 
-The Harness is one logical runtime that may be implemented in-process or distributed across many workers.
+Each step may narrow the previous one. None of the later layers may enlarge authority.
 
-Physical placement is not semantic. A child may execute remotely without changing the meaning of `spawn`, `call`, Event, or Effect.
+This is important when an application knows about thousands of tools, resources, memory interfaces, Skills, or Agent/Workflow services. Arrokoth should discover and expose a small relevant subset instead of placing the whole catalog into model context.
 
-A simple application may use the same architecture with an in-memory store and simple scheduler. More demanding deployments can progressively add durability, remote workers, richer policy, and distribution.
+> **Discovery, description, or model exposure never grants permission.**
 
-> **The same programming model should impose little overhead on simple programs and expose additional runtime mechanisms only when needed.**
+The Harness still authorizes the resulting Effect at execution time.
+
+Runtime identity is also not automatically application identity:
+
+> **Execution identity ≠ application security principal identity.**
+
+Application policy may consider a human, tenant, world, service identity, an Agent acting on behalf of someone, or other authenticated domain facts. Those facts may influence authority, but they do not redefine what an Execution is.
+
+The detailed authority, delegation, Active View, and discovery model will live in the dedicated authority document during this documentation reorganization.
 
 ---
 
-## 14. Core invariants
+## 7. Memory is not context
 
-The design should protect these distinctions aggressively:
+**Memory** is retained information.
+
+**Context** is the selected information presented to the current computation or model call.
+
+```text
+memory / Events / resources / instructions
+                 ↓
+          context selection
+                 ↓
+          current model context
+```
+
+Arrokoth distinguishes different forms of retained information because they have different trust and lifecycle semantics:
+
+```text
+Structured Memory
+  explicit, schema-bound state
+
+Derived Semantic Memory
+  inferred/retrieval-oriented knowledge with provenance
+
+Working Notes
+  temporary scratch reasoning state
+
+Artifacts / Files
+  larger durable work products
+```
+
+Execution history—Events, Effects, messages, lifecycle transitions, traces—is important provenance, but history is not automatically semantic memory.
+
+A derived claim is also not automatically authoritative structured state. In particular:
+
+```text
+retrieved/model/tool content
+        ↓ may influence
+Derived Semantic Memory
+        ↓ may influence
+future reasoning
+
+but does not automatically become
+  authority / consent / trusted Structured Memory
+```
+
+Cross-Execution visibility is explicit. A child does not see all parent memory or notes merely because it is a descendant.
+
+The detailed memory forms, scopes, provenance, visibility, supersession, and context-selection rules will live in the dedicated memory document during this documentation reorganization.
+
+---
+
+## 8. Response is not completion
+
+A long-lived Execution is not necessarily an `input → output` function.
+
+An Agent may respond many times while remaining alive:
+
+```text
+message
+  ↓
+Agent responds
+  ↓
+waits
+  ↓
+next message
+```
+
+A **response/message** is communication.
+
+A **terminal result** is the optional final result of a completed Execution.
+
+```text
+response ≠ terminal result
+```
+
+This distinction also matters for child composition: a peer or child may send messages without terminating.
+
+---
+
+## 9. Interoperability is a projection boundary
+
+Arrokoth's kernel semantics should remain independent of any one external protocol while mapping naturally to standard interfaces.
+
+```text
+kernel semantics
+  Execution / Event / Effect / authority / memory / lifecycle
+        ↓
+portable interface and composition semantics
+  operations / resources / services / Skills /
+  interaction templates / async handles / change signals
+        ↓
+protocol and client bindings
+  MCP / A2A / Agent Skills / HTTP / SDK / UI protocols / future standards
+```
+
+The same semantic operation should be describable once and projected into multiple environments.
+
+Examples:
+
+```text
+portable Operation
+  → model tool
+  → MCP Tool
+  → HTTP/SDK operation
+
+exported Agent/Workflow service
+  → MCP service operation
+  → A2A Agent/Task interaction
+  → ordinary API
+
+Skill
+  → native Arrokoth composition package
+  → Agent Skills-compatible profile where possible
+```
+
+External protocol objects do not replace kernel identities:
+
+```text
+Effect          ≠ protocol operation
+Event           ≠ protocol notification
+Execution       ≠ external task/job
+PendingOperation≠ external async handle
+```
+
+And protocol discovery/authentication does not grant Arrokoth authority.
+
+External standards are design references, not masters of the kernel. When they reveal a genuinely more general concept, Arrokoth should adopt the concept at the correct layer without making the wire format core truth.
+
+Detailed mappings belong in [`interoperability.md`](interoperability.md).
+
+---
+
+## 10. Core invariants
+
+The architecture should protect these distinctions aggressively:
 
 ```text
 Definition        ≠ Execution
-Event             ≠ Effect
-response          ≠ terminal result
-authority         ≠ exposure
-memory            ≠ context
-ownership         ≠ communication
-semantic control  ≠ operational control
 Workflow          ≠ Agent
 Stage             ≠ Execution
 Capability        ≠ Execution
+Event             ≠ Effect
+response          ≠ terminal result
+semantic control  ≠ operational control
+authority         ≠ exposure
+Execution identity≠ application principal identity
+memory            ≠ context
+explicit memory   ≠ derived semantic memory
+ownership         ≠ communication
+Skill             ≠ Execution
 Effect            ≠ protocol operation
 Event             ≠ protocol notification
 Execution         ≠ external task/job handle
 protocol exposure ≠ authority grant
 ```
 
-And these positive rules:
+And these positive rules summarize the system:
 
 > **Execution means independent runtime identity.**
 
-> **Workflow topology is system-defined.**
+> **Workflow progression is system-defined; Agent progression is model-directed and open-ended.**
 
-> **Agent progression is model-directed and open-ended.**
+> **Events are observations; Effects are proposals for runtime-mediated interaction.**
 
-> **Models/controllers request; the runtime and environment establish reality.**
+> **The Harness owns operational reality and authority enforcement.**
 
-> **Composition alone does not imply another Execution boundary.**
+> **Composition alone does not create an Execution boundary.**
 
-> **Cross-Execution memory/context visibility is explicitly delegated; ancestry alone grants no visibility.**
+> **Authority is broader than what the model currently sees.**
 
-> **Kernel semantics are protocol-independent but intentionally projectable to portable interoperability interfaces.**
+> **Memory is broader than the current context, and inferred memory is not automatically trusted state.**
 
-> **External protocols may enrich ArrokothI design, but wire contracts do not become kernel truth merely because a protocol is popular.**
+> **Ownership, communication, application identity, and authority are related but distinct.**
 
-The lower-level documents define Workflow Stage semantics, Adapter behavior, Working Notes policy, pending operations, durability, interoperability mapping, and implementation guidance without changing these fundamentals.
+> **Kernel semantics are protocol-independent but intentionally projectable to standard interfaces.**
+
+This is the whole picture. The deeper canonical documents should explain the difficult semantics without redefining these concepts.
