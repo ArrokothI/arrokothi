@@ -1,37 +1,180 @@
 # ArrokothI Architecture Documents
 
-These documents describe the current design target for ArrokothI. They are separated by abstraction level so the conceptual model stays small while composition/runtime mechanics and interoperability can evolve independently.
+This directory contains the canonical architecture for ArrokothI plus implementation working documents and one retained research dossier.
 
-## Recommended reading order
+The canonical documents intentionally have **non-overlapping ownership**:
 
-1. [`mental-model.md`](mental-model.md) — canonical conceptual model: Execution, Workflow vs Agent, Event/Effect, authority/exposure, memory/context, ownership/communication, and the core invariants.
-2. [`composition.md`](composition.md) — composition semantics shared across Agents and Workflows: local computation vs child Executions, Workflow Stages, Effects, pending work, completion boundaries, retrieval patterns, and Adapters.
-3. [`runtime-architecture.md`](runtime-architecture.md) — Harness/runtime semantics: ExecutionContext, lifecycle, scheduling, pending operations, messaging, authority, memory visibility, Working Notes, confirmation, durability, and provenance.
-4. [`interoperability.md`](interoperability.md) — canonical mapping between kernel semantics and portable service interfaces/protocols, with MCP as a first-class interoperability target.
-5. [`security-guarantees.md`](security-guarantees.md) — kernel security guarantees, trust/deployment profiles, untrusted-code boundaries, Execution-to-Execution isolation, resource exposure, and reusable sandbox backends.
-6. [`implementation-guide.md`](implementation-guide.md) — non-normative implementation mapping, suggested contracts, conformance scenarios, and a practical way to derive a coding plan.
-7. [`future-plan.md`](future-plan.md) — unresolved questions, experiments, and likely future work.
+> **A concept is defined once. Other documents reference it; they do not redefine it.**
 
-For a new engineer or coding agent, reading the first six in order should be enough to understand the target architecture before inspecting the codebase.
+---
+
+## Canonical document map
+
+| Document | Sole responsibility |
+|---|---|
+| [`mental-model.md`](mental-model.md) | Whole-system conceptual picture and strongest invariants |
+| [`execution-runtime.md`](execution-runtime.md) | Execution, Harness, lifecycle, Activation, Events/Effects, waiting/resumption, scheduling, concurrency, correlation, cancellation, supervision, durability |
+| [`composition.md`](composition.md) | Agent/Workflow composition, Stage, local compute, parallel branches, spawn/call/send/ask, Adapter, Skill |
+| [`authority.md`](authority.md) | authority, delegation, application principals/policy inputs, Catalog → Effective Authority → Active View → Model Projection, confirmation/evidence |
+| [`memory.md`](memory.md) | Structured/Derived/Working/Artifact memory forms, scopes/views, provenance, promotion, retrieval, context compilation |
+| [`interoperability.md`](interoperability.md) | portable Operations/Resources/services/Skills/templates/handles and MCP/A2A/Agent Skills/API/protocol bindings |
+| [`security-guarantees.md`](security-guarantees.md) | security guarantees, trust assumptions, deployment profiles, control-plane vs runtime authority, containment boundary |
+| [`future-plan.md`](future-plan.md) | unresolved or post-v0.4 questions only |
+
+Supporting material:
+
+| Path | Role |
+|---|---|
+| [`development/`](development/) | current implementation plans, audits, slice decisions, reviews, migration notes |
+| [`architecture-research-dossier.md`](architecture-research-dossier.md) | retained non-canonical research/source dossier; useful evidence and external-system survey |
+
+The research dossier is intentionally **not** canonical even when it contains useful reasoning. When it conflicts with a canonical document, the canonical document wins.
+
+---
+
+## Reading paths
+
+### Want the whole system?
+
+```text
+README → mental-model
+```
+
+### Building/composing Agents and Workflows?
+
+```text
+mental-model → composition
+```
+
+Then follow links from `composition.md` to:
+
+```text
+execution-runtime  for waiting/concurrency/lifecycle
+memory             for Working Notes/shared state/context
+Authority          for child/peer/resource permissions
+interoperability   for Skill/service/protocol projection
+security           for trust/containment implications
+```
+
+### Working on runtime semantics?
+
+```text
+mental-model → execution-runtime
+```
+
+Use `composition.md` when the runtime question depends on Stages/Agents/children, `authority.md` for authorization, and `memory.md` for retained state.
+
+### Working on permissions/exposure/policy?
+
+```text
+mental-model → authority
+```
+
+Then use:
+
+```text
+execution-runtime      concrete Effect enforcement and settlement
+memory                 memory views/trust/evidence implications
+interoperability       descriptor/protocol exposure
+security-guarantees    deployment/security claims
+```
+
+### Working on memory/context?
+
+```text
+mental-model → memory
+```
+
+Use `authority.md` for visibility/permission and `composition.md` for Working Note/Stage/child handoff consequences.
+
+### Working on MCP/A2A/Agent Skills/APIs?
+
+```text
+mental-model → interoperability
+```
+
+Read `authority.md` first when discovery/exposure is involved. Read `execution-runtime.md` when async handles/tasks map to runtime waiting/correlation.
+
+### Working on security guarantees?
+
+```text
+mental-model → authority → security-guarantees
+```
+
+Also read `memory.md` for inferred-vs-trusted information and `interoperability.md` for protocol/control-plane boundaries.
+
+### Working on something intentionally beyond current semantics?
+
+```text
+future-plan
+```
+
+### Actually implementing or reviewing the current slice?
+
+```text
+development/
+```
+
+Development docs may contain historical assumptions. Canonical docs take precedence when they disagree.
+
+---
 
 ## Document authority
 
-When documents appear to disagree, use this priority:
+When documents appear to disagree, resolve by **concept ownership**, not by recency or file length.
 
 ```text
 mental-model.md
-    ↓ conceptual truth
-composition.md / runtime-architecture.md / interoperability.md
-    ↓ domain refinements
+  owns the whole-system conceptual picture
+
+execution-runtime.md
+  owns runtime truth
+
+composition.md
+  owns composition truth
+
+authority.md
+  owns authority/exposure/policy-boundary truth
+
+memory.md
+  owns memory/context/provenance truth
+
+interoperability.md
+  owns portable interface/protocol mapping truth
+
 security-guarantees.md
-    ↓ security contract derived from those semantics
-implementation-guide.md
-    ↓ implementation proposal
+  owns security/deployment guarantee claims
+
 future-plan.md
-    ↓ open questions / experiments
+  owns only unresolved/future questions
+
+development/
+  owns implementation work-in-progress, not architecture truth
+
+architecture-research-dossier.md
+  research evidence only, never canonical truth
 ```
 
-`interoperability.md` is authoritative for the boundary between ArrokothI-owned semantics and external protocols. It must not redefine Execution, Event, Effect, authority, or lifecycle; those concepts remain owned by the higher-level mental/runtime documents.
+For example:
+
+```text
+What does WAITING mean?
+  → execution-runtime.md
+
+Can a child see parent Working Notes?
+  → memory.md for visibility semantics
+  → composition.md for child-composition consequence
+
+Does an MCP Tool grant permission?
+  → authority.md says exposure ≠ authority
+  → interoperability.md owns the MCP mapping
+
+Does a sandbox define Execution?
+  → execution-runtime.md says no
+  → security-guarantees.md owns containment guarantees
+```
+
+---
 
 ## Architecture in one picture
 
@@ -54,29 +197,15 @@ future-plan.md
                               Events
 ```
 
-Portable interoperability sits outside, not inside, those kernel semantics:
-
-```text
-Arrokoth kernel semantics
-  Execution / Event / Effect / authority
-              ↓
-portable interface semantics
-  operations / resources / templates /
-  async handles / input requirements / change signals
-              ↓
-MCP / HTTP+OpenAPI / SDK / future protocols
-```
-
-MCP is a first-class compatibility target and design reference, but MCP wire types do not define the kernel ontology.
-
 Inside a Workflow:
 
 ```text
 Workflow Execution
   └── Stage
-      ├── Function computation
-      ├── LLM inference
+      ├── Function/local computation
+      ├── bounded LLM inference
       ├── Effects
+      ├── structured parallel branches
       ├── call Agent Execution
       └── call Workflow Execution
 ```
@@ -84,102 +213,202 @@ Workflow Execution
 Inside an Agent:
 
 ```text
-context
-  ↓
-LLM
-  ↓
-model chooses next semantic action
-  ↓
-Effects / child calls / messages
-  ↓
-Events and observations
-  ↓
-next agentic step
+selected context + exposed operations
+        ↓
+LLM/controller progression
+        ↓
+Effect / child call / message / response / stop
+        ↓
+observations and resumptions
+        ↓
+next progression
 ```
 
 The central boundary is:
 
 > **An Execution is an independently managed runtime entity. Composition alone does not create an Execution boundary.**
 
-In v0.4, Agent and Workflow are the Execution kinds we need. Function calls, LLM inference, Stages, and Adapters normally run inside an enclosing Execution.
+---
 
-A useful practical test is: if a unit does not need independently meaningful identity/addressability, lifecycle/waiting, authority/budget, mailbox/Events, cancellation/supervision, durability/recovery, or child ownership, it normally should not become another Execution.
+## Authority/exposure in one picture
+
+```text
+Catalog
+  what exists
+      ↓
+Effective Authority
+  what this Execution may legally use/access
+      ↓
+Active/Exposed View
+  authorized subset useful to expose now
+      ↓
+Model Invocation Projection
+  exact names/schemas/bindings for this model call
+```
+
+Each layer narrows the previous one.
+
+> **Discovery and exposure never grant authority. The Harness authorizes the concrete Effect.**
+
+Application security principals/on-behalf-of facts may influence policy, but:
+
+```text
+Execution identity ≠ application principal identity
+```
+
+See [`authority.md`](authority.md).
+
+---
+
+## Memory/context in one picture
+
+```text
+Memory / retained information
+
+Structured Memory
+  explicit/schema-bound application state
+
+Derived Semantic Memory
+  inferred/provenance-bearing knowledge
+
+Working Notes
+  temporary scratch state
+
+Artifacts / Files
+  large durable work products
+
+source observations/history
+  provenance, not automatically semantic memory
+```
+
+Then:
+
+```text
+authorized memory/resources/events/instructions
+                 ↓
+          context compilation
+                 ↓
+        current model context
+```
+
+Key rule:
+
+```text
+source observation ≠ derived claim ≠ explicit Structured Memory
+memory             ≠ current context
+```
+
+See [`memory.md`](memory.md).
+
+---
+
+## Interoperability in one picture
+
+```text
+1. Kernel Semantic Interface
+   Execution / Event / Effect / authority / memory / lifecycle
+
+2. Portable Interoperability Interface
+   Operation / Resource / service / Skill / template /
+   async handle / input requirement / change signal
+
+3. Protocol/API Bindings
+   MCP / A2A / Agent Skills / HTTP+OpenAPI /
+   local SDK / UI/message protocols / future standards
+```
+
+> **Kernel semantics and interoperability semantics are separate but intentionally mappable.**
+
+Examples:
+
+```text
+portable Operation        ↔ MCP Tool / HTTP operation / model tool
+portable Resource         ↔ MCP Resource
+exported Agent service    ↔ A2A Agent Card / API service
+external async handle     ↔ MCP/A2A Task where appropriate
+Skill instruction profile ↔ Agent Skills package
+```
+
+But:
+
+```text
+Execution ≠ A2A/MCP Task
+Event     ≠ protocol notification
+Effect    ≠ portable Operation
+Skill     ≠ Execution
+```
+
+See [`interoperability.md`](interoperability.md).
+
+---
 
 ## Security in one picture
 
 ```text
-application policy
+application/world/platform policy
   decides what should be allowed
         ↓
 Harness / kernel
-  enforces authority, visibility,
-  messaging, ownership, and Effects
+  enforces authority and runtime boundaries
         ↓
-execution-isolation backend
-  prevents hostile code from bypassing
-  the Harness through ambient privilege
+execution-isolation substrate
+  prevents hostile code from bypassing Harness
         ↓
-external resources / world state
+external resources / host/world state
 ```
 
-The kernel-level rule is:
+Security profiles differ:
 
-> **An Execution receives authority, not ambient privilege. A request is not permission.**
+```text
+trusted-local / embedded
+hosted declarative
+isolated hostile-code
+```
 
-The same remains true at interoperability boundaries: discovering an operation/resource or authenticating to a protocol endpoint does not grant an Execution authority to use it.
+A trusted-local deployment provides Arrokoth-mediated semantic enforcement but does not contain the owner of the host process. A hostile-code profile additionally requires real filesystem/network/secret/resource isolation.
 
-The trusted local SDK profile enforces ArrokothI-mediated operations but cannot contain the owner of the host process. A stronger hosted/untrusted-code profile additionally requires a reviewed sandbox/isolation backend. See [`security-guarantees.md`](security-guarantees.md).
+See [`security-guarantees.md`](security-guarantees.md).
 
-## Stable invariants vs current hypotheses
+---
 
-### Stable target invariants
+## Stable distinctions to protect
 
-- Definition and Execution are different concepts.
-- Agent and Workflow are the primary independently managed Execution kinds in v0.4.
-- Workflow means system-defined semantic topology.
-- Agent means model-directed open-ended semantic progression.
-- Events are observations; Effects are requests to the runtime.
-- The runtime/executor/environment establishes what actually happened.
-- Authority is different from what the model currently sees.
-- Memory is different from current model context.
-- Ownership is different from communication permission.
-- A response/message is different from a terminal result.
-- Execution terminal-result typing is independent from Workflow Stage-result typing.
-- One logical Harness manages many Executions.
-- A Stage is not another Execution and does not own Effects.
-- Adapters are attached transformations, not independent controllers.
-- Cross-Execution memory/context visibility is explicitly delegated; ancestry alone grants no visibility.
-- Effect requests are not grants of authority.
-- Knowing or messaging an Execution does not grant access to its private runtime or memory state.
-- Strong hostile-code containment requires an isolation substrate in addition to kernel authority checks.
-- Kernel semantics are protocol-independent but intentionally projectable to standard interoperability protocols.
-- Portable descriptors/exposure do not grant authority.
-- External task handles do not replace Execution identity or PendingOperation semantics.
-- Protocol notifications do not automatically become Execution Events.
-- Core semantic contracts must not depend on MCP SDK or wire types.
+```text
+Definition              ≠ Execution
+Workflow                ≠ Agent
+Stage                   ≠ Execution
+Event                   ≠ Effect
+Event                   ≠ ControllerResumption
+PendingOperation        ≠ ControllerResumption
+response/message        ≠ terminal result
+semantic control        ≠ operational control
+authority               ≠ exposure
+Execution identity      ≠ application principal identity
+memory                  ≠ context
+Structured Memory       ≠ Derived Semantic Memory
+memory form             ≠ memory scope
+ownership               ≠ communication
+Skill                   ≠ Execution
+portable Operation      ≠ Effect
+protocol task/handle    ≠ Execution
+protocol notification   ≠ Event
+semantic enforcement    ≠ physical containment
+```
 
-### Current v0.4 hypotheses to test
+These distinctions are more important than any particular class name, library, provider, storage engine, policy backend, or protocol implementation.
 
-- Stage transitions carry only `text | none`; larger structured shared information goes through Structured Memory or Artifacts.
-- Work designated as required for the current Stage settles before a Stage transition.
-- Working Notes use stack-like ancestry plus a visibility/delegation filter: a child may receive selected parent notes read-only and writes only its own frame.
-- Sequential Stage note handoff is opt-in and defaults to no handoff.
-- Adapters are Effect-free in v0.4.
-- Broad non-blocking and detached-child semantics remain intentionally conservative until tested.
-- Dynamic model-driven mutation of Workflow topology is out of scope; prefer model-driven changes to data.
-- The initial runtime may execute trusted Stage code in-process; hostile uploaded code requires a later isolated execution profile rather than pretending that static analysis is containment.
-- The exact portable descriptor TypeScript surface is intentionally deferred until an implementation slice requires it; the semantic categories in `interoperability.md` are canonical first.
+---
 
-## Using these docs to make a coding plan
+## Using the docs during development
 
-Before mapping files to tasks:
+Before changing architecture or implementing a slice:
 
-1. read the six architecture/security documents;
-2. list the invariants the feature or migration must preserve;
-3. inspect the current code and identify components that already satisfy those responsibilities;
-4. separate semantic gaps from naming/package cleanup;
-5. when introducing a new externally meaningful abstraction, ask whether it belongs to kernel semantics, portable interoperability semantics, or only a protocol adapter;
-6. implement the smallest slice that can be validated by a conformance scenario;
-7. leave unresolved questions explicit instead of freezing them accidentally in an API.
+1. Find the canonical concept owner above.
+2. List the invariants the change must preserve.
+3. Inspect the relevant files under [`development/`](development/) for current implementation decisions/history.
+4. Separate semantic changes from package/naming/backend changes.
+5. For external standards, decide whether the idea belongs in kernel semantics, portable interoperability semantics, or only an adapter/backend.
+6. Test the smallest vertical slice that proves the semantic boundary.
+7. Put unresolved questions in [`future-plan.md`](future-plan.md), not into canonical APIs accidentally.
 
-See [`implementation-guide.md`](implementation-guide.md) for suggested implementation slices and conformance tests.
+The retained [`architecture-research-dossier.md`](architecture-research-dossier.md) can be consulted for external references and the reasoning behind several recent distinctions, but it is intentionally broader and less authoritative than the canonical documents.
