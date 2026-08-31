@@ -1,6 +1,6 @@
 # Arrokoth Agent Kernel
 
-A provider-neutral execution kernel for building long-lived Agents and Workflows with bounded authority, explicit memory, durable waiting, and composable communication.
+A provider-neutral execution kernel for building long-lived Agents and Workflows with bounded authority, explicit memory, durable waiting, composable communication, and protocol-neutral service interoperability.
 
 > **Executions receive Events and request Effects. Workflows use system-defined semantic topology; Agents use model-directed open-ended semantic progression.**
 
@@ -23,8 +23,10 @@ Start with [`docs/README.md`](docs/README.md). The recommended reading order is:
 1. [`docs/mental-model.md`](docs/mental-model.md) — canonical conceptual model.
 2. [`docs/composition.md`](docs/composition.md) — composition semantics: local computation vs child Executions, Workflow Stages, Effects, completion boundaries, retrieval, and Adapters.
 3. [`docs/runtime-architecture.md`](docs/runtime-architecture.md) — Harness, lifecycle, memory visibility, messaging, pending work, confirmation, and durability.
-4. [`docs/implementation-guide.md`](docs/implementation-guide.md) — implementation mapping, conformance scenarios, and coding-plan guidance.
-5. [`docs/future-plan.md`](docs/future-plan.md) — open questions and future experiments.
+4. [`docs/interoperability.md`](docs/interoperability.md) — portable service-interface semantics and protocol mappings, with MCP as a first-class interoperability target.
+5. [`docs/security-guarantees.md`](docs/security-guarantees.md) — kernel and deployment security guarantees.
+6. [`docs/implementation-guide.md`](docs/implementation-guide.md) — implementation mapping, conformance scenarios, and coding-plan guidance.
+7. [`docs/future-plan.md`](docs/future-plan.md) — open questions and future experiments.
 
 Files under [`docs/legacy/`](docs/legacy/) are historical design material and are not canonical.
 
@@ -143,6 +145,36 @@ Communication
 
 Messaging permission does not imply ownership, cancellation rights, or memory access.
 
+### Interoperability
+
+Arrokoth deliberately separates kernel semantics from portable service-interface semantics and protocol bindings:
+
+```text
+Arrokoth kernel
+  Execution / Event / Effect / authority / memory / lifecycle
+        ↓
+portable interoperability surface
+  operations / resources / interaction templates /
+  async handles / input requirements / change signals
+        ↓
+MCP / HTTP+OpenAPI / local SDK / future protocols
+```
+
+MCP is a **first-class compatibility target and design reference**, not the owner of ArrokothI kernel semantics.
+
+This means an Arrokoth capability, Agent, Workflow, resource, or interaction template can eventually be projected into MCP or another service protocol, while an imported MCP service can be adapted into Arrokoth portable descriptors and Effects.
+
+The critical distinction is:
+
+```text
+Effect            ≠ protocol operation
+Event             ≠ protocol notification
+Execution         ≠ external task/job handle
+protocol exposure ≠ authority grant
+```
+
+The kernel remains protocol-independent so a maturing MCP or future protocol can improve the appropriate Arrokoth abstraction without forcing wire-level concepts into core semantic contracts. See [`docs/interoperability.md`](docs/interoperability.md).
+
 ## Current implementation
 
 The repository is being migrated toward the architecture documented above. Existing components such as Agent execution, model-provider boundaries, capability gateways, memory, context compilation, durability, and storage should be preserved where their responsibilities still match the target semantics.
@@ -184,15 +216,17 @@ The intended dependency direction is:
 ```text
 applications / presets
         ↓
-implementation packages
+implementation / protocol-adapter packages
         ↓
 @arrokoth/core
 ```
 
-Concrete Agent frameworks, model SDKs, retrieval frameworks, databases, and tool transports may be first-class supported packages without defining kernel semantics.
+Concrete Agent frameworks, model SDKs, retrieval frameworks, databases, tool transports, MCP SDKs, HTTP frameworks, and other protocol implementations may be first-class supported packages without defining kernel semantics.
 
 ## One-minute explanation
 
 Arrokoth treats an Agent or Workflow as a potentially long-lived, addressable **Execution**. The Harness manages many Executions and owns operational concerns such as scheduling, authorization, waiting, routing, and recovery. Events are observations delivered into an Execution; Effects are requests to interact with capabilities, memory, users, or other Executions.
 
 A Workflow uses system-defined semantic topology made from Stages. An Agent uses a model-directed semantic loop. Functions, LLM calls, and Adapters normally remain local computation inside those Executions rather than receiving independent runtime identity.
+
+Outside the kernel, Arrokoth defines portable service/interface semantics that can be projected into MCP, HTTP/OpenAPI, SDK functions, model tool calling, and future protocols. This lets Arrokoth Agents and Workflows be packaged as services without making those protocols part of the kernel ontology.
