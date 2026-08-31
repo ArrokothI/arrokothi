@@ -214,3 +214,65 @@ Before beginning Workflow Stages, review the actual implementation of:
 - Slice-B conformance tests.
 
 The question at that gate is not API polish. It is whether all external action still crosses one inspectable, authorized, correlated Harness boundary.
+
+---
+
+## 7. Post-review clarification: Event ownership after mailbox consumption
+
+The current Slice-A mailbox model has a useful ownership handoff that should remain explicit as later controllers become real:
+
+```text
+before Activation
+mailbox owns delivery responsibility
+        ↓ consume pending Events
+ActivationInput.events
+        ↓
+during Activation
+controller owns semantic interpretation
+        ↓ controller reports what is still needed
+after Activation
+Harness inspects only newly pending mailbox Events
+when deciding READY vs WAITING
+```
+
+An Event delivered into an Activation is delivered once for that Activation. The mailbox consumption cursor advances when the Activation begins. If the controller later reports that it still needs an Event of the same kind/correlation, that is a new prospective dependency; the Harness must not search the already-consumed Activation input and reuse an old observation to satisfy it.
+
+If information from a consumed Event remains relevant to future Activations, the controller should preserve the relevant semantic fact in durable controller progress/state rather than expecting the mailbox to redeliver that Event.
+
+Example:
+
+```text
+mailbox: [A]
+    ↓ Activation starts and consumes A
+mailbox: []
+controller interprets A
+    ↓
+controller: "I still need another A"
+    ↓
+Harness peeks mailbox
+    ↓
+empty → WAITING
+```
+
+If a new matching Event arrives during that Activation:
+
+```text
+Activation already consumed old A
+    ↓
+new A arrives while controller runs
+    ↓
+mailbox: [new A]
+    ↓
+controller: "I still need another A"
+    ↓
+Harness peeks mailbox
+    ↓
+new A exists → READY, not WAITING
+```
+
+This model has two consequences for later work:
+
+1. wake conditions should become sufficiently specific (especially through correlation IDs) once multiple Effects or interactions may be outstanding;
+2. durability/restart logic must eventually distinguish mailbox delivery/consumption from committed controller progress, because a crash after Events are consumed into an Activation but before controller progress commits is an Activation-recovery problem, not a reason to blur mailbox and controller ownership.
+
+Do not add Event "put back" or redelivery semantics unless a real Agent/Workflow scenario demonstrates that controller-owned deferral is insufficient. The current ownership model is internally consistent and should remain the default through Slice B.
