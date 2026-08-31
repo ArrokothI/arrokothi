@@ -420,6 +420,142 @@ requires it. The current Workflow input Event convention may remain temporary un
 
 ---
 
+## DEC-I12 — Freeze four distinct exposure layers
+
+**Decision: Accepted.**
+
+Agent interoperability, large catalogs, and model context should use four distinct conceptual layers:
+
+```text
+1. Catalog
+   What exists?
+
+2. Effective Authority
+   What could this Execution legally use/access?
+
+3. Active/Exposed View
+   What authorized subset is currently useful/appropriate to expose?
+
+4. Model Invocation Projection
+   What does this particular model call actually receive, and under what model-facing names/shapes?
+```
+
+The subset notation is conceptual rather than a requirement that every layer be materialized as one
+large in-memory set:
+
+```text
+Model Invocation Projection
+        ⊆
+Active/Exposed View
+        ⊆
+Effective Authority
+        ⊆
+Catalog universe
+```
+
+The Catalog is also a conceptual layer, not a requirement for one universal mega-registry. Different
+portable domains may have typed catalogs/registries for capability operations, resources,
+Definitions/services, memory interfaces, or peers. Do not collapse them merely to satisfy the diagram.
+
+### Catalog
+
+Catalog metadata describes portable semantic things that exist. It does not imply permission,
+current relevance, model exposure, or a concrete backend implementation.
+
+### Effective Authority
+
+Authority is the legal/runtime ceiling. It may be represented through grants, rules, refs, resource
+bindings, and policy rather than by copying thousands of complete descriptors into each Execution.
+
+Authority remains enforceable at the Harness even if exposure code is buggy or stale.
+
+### Active/Exposed View
+
+The Active View is the currently eligible exposure set for an Execution/controller. Changing it
+inside already-granted authority is context/exposure policy, not privilege escalation.
+
+The Active View is **not** itself an authority grant and must not be able to enlarge effective
+authority. An implementation should derive/intersect it against effective authority rather than trust
+a caller-supplied list as permission.
+
+For Slice D, only an **active operation view** needs to become concrete. Resource/memory/peer views can
+continue to use their owning slices and later converge under the same conceptual model.
+
+### Model Invocation Projection
+
+The per-model-call projection is ephemeral provider/model vocabulary. It may narrow the Active View
+again for token cost, provider tool limits, relevance, or context packing and may alias operation
+names for that invocation.
+
+A model-returned callable name must resolve against the **same projection/binding snapshot that was
+shown to that model invocation**. Catalog/view refresh, alias reuse, or descriptor change must not
+silently rebind an old model response to a different operation.
+
+Use a projection/view revision, binding identity, or equivalent deterministic mechanism; the exact
+v0.4 representation is implementation detail. These identifiers are correlation/integrity aids, not
+authority credentials.
+
+The Harness still authorizes the resulting typed Effect.
+
+---
+
+## DEC-I13 — Slice D needs the seam, not an expensive dynamic selector
+
+**Decision: Accepted.**
+
+Large-catalog selection is a real scaling/context-quality problem, but Slice D must not solve it by
+adding a mandatory extra LLM call before every Agent model turn.
+
+The Slice-D requirement is only:
+
+```text
+portable/intrinsic operation information
+        +
+effective authority
+        ↓
+deterministic Active Operation View
+        ↓
+per-call model projection
+```
+
+A valid first implementation may use deterministic/static inputs such as:
+
+```text
+explicit operation refs
+authored logical capability groups
+tags/categories
+application-provided task scope
+simple metadata filters
+bounded top-N policy
+cached prior Active View
+```
+
+No additional model inference is required merely to construct the view.
+
+Future large/dynamic-catalog strategies may include:
+
+```text
+lexical/BM25 descriptor search
+embedding retrieval
+provider-aware top-N packing
+progressive discovery/search operations
+cached view expansion/contraction
+catalog-change invalidation
+an optional learned/LLM selector when measurements justify its cost
+```
+
+Those strategies belong behind the same view/projection seam and should be benchmarked rather than
+made kernel semantics.
+
+A model may later request discovery/expansion through a deliberately exposed operation, but discovery
+still cannot enlarge authority. Returned descriptors are information, not grants.
+
+Protocol catalog/resource change signals should normally invalidate discovery/view caches or trigger
+a view refresh. They should become Execution Events only when an Execution explicitly depends on the
+change itself.
+
+---
+
 ## Slice D implementation guidance
 
 Before coding Slice D, preserve these existing boundaries:
@@ -472,7 +608,7 @@ ModelCapabilitySpec
         ↓
 ModelCapabilityCall
         ↓
-Agent controller resolves exposed binding
+Agent controller resolves exposed binding from the same invocation snapshot
         ↓
 UseCapability Effect (or another explicit typed Effect when the selected action is not a capability)
         ↓
@@ -501,6 +637,7 @@ portable Resource descriptor registry
 full public service/export manifest
 persistent external Agent handles
 protocol version negotiation
+large-catalog learned/LLM selector
 ```
 
 These are later vertical slices. Slice D should leave clean seams for them.
@@ -515,6 +652,7 @@ After Slice D lands, review specifically:
 AgentSpec
 Agent Active/Exposed View
 model-facing callable projection
+projection/binding snapshot stability
 capability/operation descriptor ownership
 context compiler inputs
 Effect proposal resolution
