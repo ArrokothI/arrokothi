@@ -56,7 +56,7 @@ Signals include independent identity/addressability, lifecycle or waiting, autho
 
 The security direction is also stable enough to build against:
 
-> **An Execution receives authority, not ambient privilege. Application policy decides what should be allowed; the kernel enforces Arrokoth authority/visibility semantics; hostile-code containment requires an execution-isolation substrate.**
+> **An Execution receives authority, not ambient privilege. Application policy decides what should be allowed; the kernel enforces ArrokothI authority/visibility semantics; hostile-code containment requires an execution-isolation substrate.**
 
 Prompt/model/retrieved/tool content may influence what an Agent requests, but must not grant new authority by itself.
 
@@ -228,7 +228,7 @@ Before building hostile-code infrastructure, make the baseline security claim ex
 ```text
 trusted application process
   ↓
-Arrokoth runtime
+ArrokothI runtime
   enforces authority / memory / messaging / Effect semantics
 ```
 
@@ -268,7 +268,7 @@ client
   ↓ authenticated API
 untrusted definition/configuration
   ↓
-trusted Arrokoth runtime implementation
+trusted ArrokothI runtime implementation
   ↓
 Harness / Effects / authority
 ```
@@ -291,7 +291,7 @@ controlled Effect/capability bridge
 per-principal isolation appropriate to the threat model
 ```
 
-Do not build all low-level isolation machinery from scratch if an existing backend can satisfy the contract behind an Arrokoth-owned interface.
+Do not build all low-level isolation machinery from scratch if an existing backend can satisfy the contract behind an ArrokothI-owned interface.
 
 ---
 
@@ -576,7 +576,7 @@ None of these should become the hostile-code security boundary. Isolation must r
 
 ### 4.15 Isolation backend contract
 
-We need to test the smallest Arrokoth-owned port that can support multiple existing isolation mechanisms without inheriting their semantics.
+We need to test the smallest ArrokothI-owned port that can support multiple existing isolation mechanisms without inheriting their semantics.
 
 Potential implementations/references include:
 
@@ -604,7 +604,7 @@ crash/recovery semantics
 observability
 ```
 
-Do not make Docker, Hermes, OpenClaw, Dify, or any managed provider part of kernel semantics. Reuse mechanisms behind Arrokoth interfaces after threat-model, security, maintenance, and license review.
+Do not make Docker, Hermes, OpenClaw, Dify, or any managed provider part of kernel semantics. Reuse mechanisms behind ArrokothI interfaces after threat-model, security, maintenance, and license review.
 
 ### 4.16 Multi-tenant principal model
 
@@ -792,7 +792,7 @@ Per-Execution keypairs should not be a default assumption. They introduce lifecy
 
 The invariant to preserve is:
 
-> **Cryptographic identity and authorization are transport/enforcement mechanisms; they must not redefine Arrokoth's semantic authority model. A valid signature can prove who sent a request, but does not imply that the sender is authorized to perform the requested Effect.**
+> **Cryptographic identity and authorization are transport/enforcement mechanisms; they must not redefine ArrokothI's semantic authority model. A valid signature can prove who sent a request, but does not imply that the sender is authorized to perform the requested Effect.**
 
 ---
 

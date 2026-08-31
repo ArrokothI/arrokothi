@@ -2,11 +2,11 @@
 
 > **Status: canonical conceptual model.**
 >
-> This document defines what Arrokoth means. It intentionally avoids detailed TypeScript APIs, persistence layouts, scheduler algorithms, or provider-specific mechanisms. Those belong in the lower-level documents.
+> This document defines what ArrokothI means. It intentionally avoids detailed TypeScript APIs, persistence layouts, scheduler algorithms, or provider-specific mechanisms. Those belong in the lower-level documents.
 
 ## 1. The core idea
 
-Arrokoth is an execution kernel for long-lived Agents and Workflows.
+ArrokothI is an execution kernel for long-lived Agents and Workflows.
 
 Its central runtime concept is an **Execution**:
 
@@ -52,7 +52,7 @@ trace identity
 
 A local function call does not normally need these semantics. A single LLM inference does not normally need them either.
 
-This is why Arrokoth does **not** define every computation as an Execution and then rely on an implementation optimization to erase the simple cases. If identity, mailbox, lifecycle, and cancellation are part of the semantics, they cannot be optimized away while remaining observationally equivalent.
+This is why ArrokothI does **not** define every computation as an Execution and then rely on an implementation optimization to erase the simple cases. If identity, mailbox, lifecycle, and cancellation are part of the semantics, they cannot be optimized away while remaining observationally equivalent.
 
 Instead:
 

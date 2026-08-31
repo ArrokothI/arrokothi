@@ -1,6 +1,6 @@
-# Arrokoth Architecture Documents
+# ArrokothI Architecture Documents
 
-These documents describe the current design target for Arrokoth. They are separated by abstraction level so the conceptual model stays small while composition/runtime mechanics can evolve independently.
+These documents describe the current design target for ArrokothI. They are separated by abstraction level so the conceptual model stays small while composition/runtime mechanics can evolve independently.
 
 ## Recommended reading order
 
@@ -108,7 +108,7 @@ The kernel-level rule is:
 
 > **An Execution receives authority, not ambient privilege. A request is not permission.**
 
-The trusted local SDK profile enforces Arrokoth-mediated operations but cannot contain the owner of the host process. A stronger hosted/untrusted-code profile additionally requires a reviewed sandbox/isolation backend. See [`security-guarantees.md`](security-guarantees.md).
+The trusted local SDK profile enforces ArrokothI-mediated operations but cannot contain the owner of the host process. A stronger hosted/untrusted-code profile additionally requires a reviewed sandbox/isolation backend. See [`security-guarantees.md`](security-guarantees.md).
 
 ## Stable invariants vs current hypotheses
 

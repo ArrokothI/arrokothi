@@ -12,7 +12,7 @@ The central security principle is:
 
 ## 1. Security goal
 
-Arrokoth should support both ordinary developer-controlled applications and future public ecosystems in which Agents, Workflows, peers, models, tools, retrieved content, plugins, and uploaded code may be mutually untrusted.
+ArrokothI should support both ordinary developer-controlled applications and future public ecosystems in which Agents, Workflows, peers, models, tools, retrieved content, plugins, and uploaded code may be mutually untrusted.
 
 The responsibilities separate into three layers:
 
@@ -20,7 +20,7 @@ The responsibilities separate into three layers:
 application / world / platform policy
   decides what should be allowed
         ↓
-Arrokoth kernel
+ArrokothI kernel
   represents and enforces authority,
   visibility, ownership, messaging,
   Effect authorization, and lifecycle
@@ -46,10 +46,10 @@ isolation:            can executable code bypass that decision?
 
 ## 2. Guarantee composition
 
-Arrokoth security is deliberately layered:
+ArrokothI security is deliberately layered:
 
 ```text
-Arrokoth semantic guarantees
+ArrokothI semantic guarantees
         +
 optional containment guarantees
         =
@@ -98,13 +98,13 @@ external messages
 
 The trusted computing base includes the logical Harness, policy evaluation, the stores that protect kernel state, the platform control plane that authenticates callers, and any sandbox/isolation backend used to execute untrusted code. A vulnerability in that trusted substrate can invalidate the corresponding guarantee.
 
-Arrokoth v0.4 does **not** attempt full information-flow control. In particular, a parent that legitimately learns a secret may intentionally copy that information into an authorized message or result unless the application adds stronger policy. The current guarantee is narrower: runtime ancestry, resource bindings, Working Notes, or peer identity must not silently create access that was not delegated.
+ArrokothI v0.4 does **not** attempt full information-flow control. In particular, a parent that legitimately learns a secret may intentionally copy that information into an authorized message or result unless the application adds stronger policy. The current guarantee is narrower: runtime ancestry, resource bindings, Working Notes, or peer identity must not silently create access that was not delegated.
 
 ---
 
 ## 4. Kernel-level guarantees
 
-When operations go through the Arrokoth runtime, the kernel should preserve these properties:
+When operations go through the ArrokothI runtime, the kernel should preserve these properties:
 
 ```text
 Effect request       ≠ authorization
@@ -180,13 +180,13 @@ The same kernel semantics can run under different trust assumptions. The securit
 
 In this profile, the developer owns the host process and may run ordinary application code in-process.
 
-Arrokoth can guarantee that operations performed **through the kernel** obey its authority, memory, messaging, ownership, and Effect semantics.
+ArrokothI can guarantee that operations performed **through the kernel** obey its authority, memory, messaging, ownership, and Effect semantics.
 
 It cannot guarantee that arbitrary host code cannot bypass the SDK. A developer-controlled Node/Python process can directly open files, sockets, databases, or subprocesses if the operating system permits it.
 
 Therefore:
 
-> **The trusted SDK profile provides semantic enforcement for Arrokoth-mediated operations, not containment against the owner of the host process.**
+> **The trusted SDK profile provides semantic enforcement for ArrokothI-mediated operations, not containment against the owner of the host process.**
 
 Static checks, lint rules, or runtime assertions can catch mistakes, but they are not an operating-system security boundary.
 
@@ -197,7 +197,7 @@ A useful intermediate hosted profile allows users to supply untrusted definition
 ```text
 untrusted definition/configuration
         ↓
-trusted Arrokoth controller implementation
+trusted ArrokothI controller implementation
         ↓
 Harness / Effects / authority
 ```
@@ -232,7 +232,7 @@ In this profile, static analysis and AI-assisted rewriting remain developer-expe
 
 ## 7. Integration does not require a sandbox
 
-Arrokoth should remain embeddable in ordinary applications:
+ArrokothI should remain embeddable in ordinary applications:
 
 ```text
 simple web/server application
@@ -253,7 +253,7 @@ multi-Agent world
       └── Harness managing many principals/Executions
 ```
 
-A simple chatbot or research application should not have to start one container per Execution to obtain Arrokoth's semantic guarantees. Strong containment is only required when the deployment claims protection from hostile executable code.
+A simple chatbot or research application should not have to start one container per Execution to obtain ArrokothI's semantic guarantees. Strong containment is only required when the deployment claims protection from hostile executable code.
 
 The same Agent/Workflow definition should ideally be runnable under a trusted in-process environment for local development and a stronger isolated environment in hosted deployment without changing its semantic meaning.
 
@@ -317,7 +317,7 @@ This keeps authority enforcement meaningful while still allowing rich Stage-loca
 
 ## 9. Uploaded code: validation is not containment
 
-Future UI/UX may allow a user to upload Function Stage or other executable code. Arrokoth may provide:
+Future UI/UX may allow a user to upload Function Stage or other executable code. ArrokothI may provide:
 
 ```text
 syntax/type validation
@@ -459,9 +459,9 @@ No single layer should be treated as sufficient for hostile multi-tenant code.
 
 ---
 
-## 13. Existing implementations we can reuse behind Arrokoth ports
+## 13. Existing implementations we can reuse behind ArrokothI ports
 
-Arrokoth should not reimplement every sandbox/security mechanism from scratch. Existing open-source projects already provide useful components and patterns. They should remain **implementation backends or references**, not sources of kernel semantics.
+ArrokothI should not reimplement every sandbox/security mechanism from scratch. Existing open-source projects already provide useful components and patterns. They should remain **implementation backends or references**, not sources of kernel semantics.
 
 ### OpenClaw
 
@@ -472,7 +472,7 @@ Relevant upstream references:
 - [OpenClaw security model](https://docs.openclaw.ai/gateway/security)
 - [OpenClaw sandboxing](https://docs.openclaw.ai/gateway/sandboxing)
 
-Useful Arrokoth lessons are the separation of sandbox scope from Agent semantics, explicit workspace exposure, fail-closed path/mount handling, and the need to keep control-plane authentication distinct from runtime/session identifiers.
+Useful ArrokothI lessons are the separation of sandbox scope from Agent semantics, explicit workspace exposure, fail-closed path/mount handling, and the need to keep control-plane authentication distinct from runtime/session identifiers.
 
 ### Hermes Agent
 
@@ -483,7 +483,7 @@ Relevant upstream references:
 - [Hermes security model](https://hermes-agent.nousresearch.com/docs/user-guide/security/)
 - [Hermes code execution](https://hermes-agent.nousresearch.com/docs/user-guide/features/code-execution/)
 
-Hermes explicitly distinguishes guardrails such as dangerous-command detection or write-path checks from a real sandbox against adversarial code. That matches Arrokoth's separation between semantic authorization, diagnostics/approvals, and containment.
+Hermes explicitly distinguishes guardrails such as dangerous-command detection or write-path checks from a real sandbox against adversarial code. That matches ArrokothI's separation between semantic authorization, diagnostics/approvals, and containment.
 
 ### Dify
 
@@ -496,16 +496,16 @@ Relevant upstream references:
 - [Dify Docker deployment / SSRF proxy](https://github.com/langgenius/dify/blob/main/docker/docker-compose.yaml)
 - [Dify Plugin Daemon](https://github.com/langgenius/dify-plugin-daemon)
 
-Useful Arrokoth lessons are that sandboxing and network egress/SSRF control are separate concerns, environment-variable propagation should be explicit, and third-party executable packages eventually need a supply-chain trust story in addition to runtime isolation.
+Useful ArrokothI lessons are that sandboxing and network egress/SSRF control are separate concerns, environment-variable propagation should be explicit, and third-party executable packages eventually need a supply-chain trust story in addition to runtime isolation.
 
 ### Reuse rule
 
-Any adopted backend should sit behind an Arrokoth-owned abstraction such as an execution-environment/isolation port:
+Any adopted backend should sit behind an ArrokothI-owned abstraction such as an execution-environment/isolation port:
 
 ```text
-Arrokoth Execution / Stage semantics
+ArrokothI Execution / Stage semantics
         ↓
-Arrokoth ExecutionEnvironment / isolation port
+ArrokothI ExecutionEnvironment / isolation port
         ↓
 trusted in-process / Docker / OpenClaw-derived backend /
 Hermes-derived backend / Dify Sandbox / managed sandbox /
@@ -516,7 +516,7 @@ Before incorporating upstream code or depending on a backend, review its current
 
 ---
 
-## 14. What Arrokoth cannot guarantee
+## 14. What ArrokothI cannot guarantee
 
 The kernel cannot preserve a strong hosted isolation claim if the application or deployment deliberately bypasses its boundary. Examples include:
 
@@ -555,7 +555,7 @@ Before claiming the isolated hosted profile, executable tests should demonstrate
 10. An Internet-facing control plane rejects callers who know an Execution/session identifier but lack application/tenant authorization.
 11. The trusted local profile remains usable without pretending to provide hostile-code containment.
 
-These scenarios should be rerun for every isolation backend that Arrokoth advertises as compatible with the hosted profile.
+These scenarios should be rerun for every isolation backend that ArrokothI advertises as compatible with the hosted profile.
 
 ---
 

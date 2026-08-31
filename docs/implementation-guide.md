@@ -504,7 +504,7 @@ Effect later completes before its actual deadline
 Event → mailbox → READY → future Activation
 ```
 
-An ordinary language-level `await` also does not by itself imply Arrokoth lifecycle `WAITING`. The lifecycle transition occurs only when the runtime yields the Activation because required runtime-mediated work remains unresolved.
+An ordinary language-level `await` also does not by itself imply ArrokothI lifecycle `WAITING`. The lifecycle transition occurs only when the runtime yields the Activation because required runtime-mediated work remains unresolved.
 
 The Stage itself never enters lifecycle `WAITING`; the enclosing Workflow Execution does, while Workflow control state records which Stage is still active.
 
@@ -760,7 +760,7 @@ Two profiles should remain explicit:
 trusted local profile
   developer owns the host process
   → in-process execution is acceptable
-  → kernel guarantees Arrokoth-mediated semantics,
+  → kernel guarantees ArrokothI-mediated semantics,
     not containment from arbitrary host code
 
 isolated hosted profile
@@ -771,13 +771,13 @@ isolated hosted profile
 
 Static code analysis, restricted-import checks, and AI suggestions are useful front-end tooling but must not be the only defense for hostile uploaded code.
 
-Before building sandbox primitives from scratch, evaluate existing open-source mechanisms such as OpenClaw sandbox backends, Hermes execution environments/tool RPC patterns, and Dify Sandbox. Reuse should occur behind an Arrokoth-owned port and only after reviewing threat model, configuration defaults, escape hatches, licenses/notices, and security maintenance. See [`security-guarantees.md`](security-guarantees.md) for the current security contract and upstream references.
+Before building sandbox primitives from scratch, evaluate existing open-source mechanisms such as OpenClaw sandbox backends, Hermes execution environments/tool RPC patterns, and Dify Sandbox. Reuse should occur behind an ArrokothI-owned port and only after reviewing threat model, configuration defaults, escape hatches, licenses/notices, and security maintenance. See [`security-guarantees.md`](security-guarantees.md) for the current security contract and upstream references.
 
 ---
 
 ## 17. Application integration profiles
 
-Arrokoth should be usable as an embedded runtime before it becomes a hosted platform.
+ArrokothI should be usable as an embedded runtime before it becomes a hosted platform.
 
 ### Simple web/chat application
 
@@ -786,7 +786,7 @@ browser
   ↓ HTTP
 application server
   ├── ordinary app logic
-  └── embedded Arrokoth Harness
+  └── embedded ArrokothI Harness
         └── trusted in-process Agent Execution
 ```
 
@@ -802,7 +802,7 @@ Agent or Workflow Execution
 ordinary program continues
 ```
 
-Arrokoth is one subsystem rather than the whole application. Authoring definitions should remain separate from runtime management so an application can construct a Workflow without owning scheduler/mailbox/Effect internals.
+ArrokothI is one subsystem rather than the whole application. Authoring definitions should remain separate from runtime management so an application can construct a Workflow without owning scheduler/mailbox/Effect internals.
 
 ### Hosted declarative Agent/Workflow service
 
@@ -1148,6 +1148,6 @@ Before replacing an existing component, ask whether its responsibility already m
 
 Do not combine the deepest semantic migration with unrelated package movement, provider replacement, or stylistic refactoring unless necessary.
 
-For security mechanisms, prefer a small Arrokoth-owned interface around a reviewed existing backend over reimplementing mature isolation machinery merely for architectural purity. Reuse the mechanism; keep Arrokoth's authority and Execution semantics as the source of truth.
+For security mechanisms, prefer a small ArrokothI-owned interface around a reviewed existing backend over reimplementing mature isolation machinery merely for architectural purity. Reuse the mechanism; keep ArrokothI's authority and Execution semantics as the source of truth.
 
 The target is not maximum abstraction. It is the smallest implementation that makes the mental model and stated security profile true and testable.
