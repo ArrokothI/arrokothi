@@ -1,14 +1,20 @@
 # Future Plan
 
-> **Status: roadmap and open design questions, not canonical semantics.**
+> **Status: unresolved and post-v0.4 work only. Not canonical current semantics.**
 >
-> This document records unresolved or post-v0.4 questions. Current runtime truth belongs in [`execution-runtime.md`](execution-runtime.md); current composition truth belongs in [`composition.md`](composition.md).
+> Read the canonical documents first: [`mental-model.md`](mental-model.md), [`execution-runtime.md`](execution-runtime.md), [`composition.md`](composition.md), [`authority.md`](authority.md), [`memory.md`](memory.md), [`interoperability.md`](interoperability.md), and [`security-guarantees.md`](security-guarantees.md).
+>
+> Current implementation/slice decisions belong under [`development/`](development/). The research basis and external-system survey remain in [`architecture-research-dossier.md`](architecture-research-dossier.md).
 
-## Open questions
+This file records questions that are deliberately **not frozen** into the current architecture.
 
-### Controller-local resumption vs `PendingOperation`
+---
 
-Current v0.4 direction deliberately keeps two semantic roles separate:
+## 1. Runtime and concurrency
+
+### 1.1 `ControllerResumption` vs a more general suspension record
+
+Current v0.4 semantics keep:
 
 ```text
 PendingOperation
@@ -18,68 +24,51 @@ PendingOperation
 ControllerResumption
   controller-local asynchronous dependency
   settlement makes controller work runnable
-  does not by itself enter the semantic Event mailbox
 ```
 
-Typical `ControllerResumption` use includes a model-provider invocation that is semantically local to an Agent/Workflow controller but slow enough that the current Activation should yield rather than occupy a worker.
+Implementations may share lower-level correlation/storage/scheduler machinery.
 
-This is currently preferred over generalizing `PendingOperation` to every kind of asynchronous suspension because it preserves:
+Questions to validate:
 
 ```text
-Event ≠ every asynchronous completion
-runtime-mediated semantic dependency ≠ controller implementation dependency
+Does the semantic distinction remain useful in durable implementations?
+
+Should there eventually be one internal Suspension/WaitingRecord
+with typed projections such as PendingOperation and ControllerResumption?
+
+Can such unification remain invisible to application semantics
+without turning every async completion into an Event?
+
+How should cancellation, deadline, deduplication, crash recovery,
+and unknown outcome work for controller-local model/provider calls?
 ```
 
-The implementation may still share lower-level storage, correlation, queues, futures, durability machinery, and scheduler wake-up paths between the two.
+Do not generalize only for implementation uniformity.
 
-Questions to test through implementation:
+### 1.2 Interleaving and stale continuations
 
-```text
-Does keeping two semantic types materially simplify Event/Effect reasoning?
-
-Does durability become awkward because both need almost identical
-settlement/recovery state?
-
-Should there eventually be a more general internal Suspension/WaitingRecord
-with typed semantic projections such as PendingOperation and
-ControllerResumption?
-
-Can a unified mechanism remain invisible to application semantics without
-turning model/local completions into Events?
-
-How are cancellation, deadline, deduplication, crash recovery, and unknown
-outcome represented for controller-local provider calls?
-
-How does a resumed model continuation prove that the controller/context
-revision it was computed against is still applicable after interleaving?
-```
-
-Do not generalize merely for implementation uniformity. Change the semantic model only if real implementations show that the current separation is artificial or prevents correct recovery/composition.
-
-### Interleaving and stale continuations
-
-Single-writer Activations prevent simultaneous mutation but not logical races across suspension points.
+Single-writer Activations prevent physical data races but not logical races across suspension points.
 
 ```text
 A1 computes from controller revision N
 A1 suspends
-A2 handles another Event and commits revision N+1
+A2 handles another Event → revision N+1
 A1 result returns
 ```
 
 Open questions:
 
 ```text
-controller revision/version binding
-re-evaluation vs rejection of stale results
-which Agent/Workflow continuations permit interleaving
-whether model invocation snapshots bind context/projection/controller revision
-how cancellation of obsolete in-flight model calls works
+controller/context revision binding
+re-evaluate vs reject stale model result
+which continuations permit interleaving
+obsolete in-flight call cancellation
+binding model input + operation projection + controller revision
 ```
 
-### Parallel Workflow branches
+### 1.3 Parallel Workflow branches
 
-Parallel Stages should eventually use structured concurrency rather than concurrent free mutation of Workflow controller state.
+Parallel Workflow topology should use structured concurrency rather than concurrent free mutation.
 
 Open questions:
 
@@ -89,22 +78,22 @@ branch-local delta representation
 join/reducer API
 ordering guarantees
 conflict handling
-parallel Effects and child calls
-cancellation/failure propagation
-when a branch should instead become a child Execution
+failure/cancellation propagation
+parallel branch Working Notes
+when branch complexity should become child Execution
 ```
 
-The invariant to preserve is that ambiguous concurrent writes do not silently become timing-dependent last-write-wins.
+Invariant to preserve:
 
-### Shared mutable resources
+> **Ambiguous shared-state writes must not silently become timing-dependent last-write-wins.**
 
-Parallel Executions and Effects require explicit resource concurrency semantics.
+### 1.4 Shared mutable resources
 
-Future APIs may need some combination of:
+Concrete resource/memory APIs may need:
 
 ```text
 optimistic versions / preconditions
-commutative/reducer operations
+commutative/reducer updates
 transactions
 conflict Events/failures
 leases / semaphores / permits
@@ -112,179 +101,472 @@ fencing tokens
 provider-defined conflict semantics
 ```
 
-Do not impose a universal global mutex. Prefer the least powerful concurrency mechanism that preserves the resource's correctness contract.
+Prefer the weakest mechanism that preserves the resource's correctness contract. Do not impose a universal global mutex.
 
-### Recursive expansion and deadlock diagnostics
+### 1.5 Recursive expansion, supervision, and deadlock diagnostics
 
-Recursive composition is legal, but implementation still needs to validate practical policies for:
+Still to validate:
 
 ```text
-lineage/root-scoped structural spawn budget
-spawn depth / active-descendant bounds
-restart intensity / retry bounds
+lineage/root-scoped spawn budgets
+spawn depth / active-descendant limits
+restart intensity / retry budgets
+explicit child supervision policies
 wait-for graph diagnostics
-deadlock-candidate detection
 resource-wait edges
+deadlock-candidate detection
 configured timeout/cancellation recovery
 ```
-
-A Definition cycle is not itself an error, and a wait cycle is not automatically a deadlock.
-
-### Non-blocking work
-
-Broad detached/non-blocking semantics remain intentionally conservative.
-
-Questions include:
-
-```text
-which pending work blocks Stage completion
-which pending work blocks Agent progression or terminal completion
-how late results enter later context
-ordering/correlation
-cancellation
-what happens when an Execution completes with work still in flight
-```
-
-### Memory concurrency
-
-Parallel child Executions and Workflow branches will require concrete memory consistency tests:
-
-```text
-Structured Memory concurrent writes
-optimistic versioning
-field-level conflict/merge policy
-transactions
-provenance-preserving merge
-Derived Semantic Memory concurrent extraction/supersession
-```
-
-Memory form and memory scope must remain separate from the chosen consistency mechanism.
-
-### Durability backend
-
-After in-memory semantics stabilize, evaluate durable implementations for:
-
-```text
-Execution runtime state
-mailboxes
-PendingOperations
-ControllerResumptions
-Effect journal / idempotency
-wait-for dependencies
-restart recovery
-```
-
-Existing durable execution systems may implement Arrokoth-owned ports, but must not redefine Execution, Event, Effect, Agent, or Workflow semantics.
-
-### Isolation and hosted profiles
-
-The trusted-local profile should remain simple. Hosted arbitrary-code profiles later need reviewed isolation with:
-
-```text
-deny-by-default ambient privilege
-filesystem/workspace isolation
-network/egress policy
-no raw production secrets
-CPU/memory/time/process/output limits
-controlled Effect bridge
-per-principal/tenant isolation
-```
-
-The isolation backend is replaceable mechanism, not kernel semantics.
-
-### Principal/policy model
-
-Execution identity is not sufficient as application security identity.
-
-Future hosted/federated systems need to validate how policy context represents:
-
-```text
-application actor
-user / on-behalf-of principal
-tenant / organization
-resource owner
-task/session context
-```
-
-Applications define domain policy; the kernel should expose reusable authority enforcement hooks rather than hard-code one principal ontology.
-
-### Progressive discovery and Active View
-
-The current direction is deterministic authorized narrowing before model projection. Future scale may justify:
-
-```text
-lexical/BM25 descriptor search
-embedding/hybrid retrieval
-progressive discovery operations
-cached expansion/contraction
-catalog-change invalidation
-provider-aware top-N packing
-```
-
-Discovery may cover heterogeneous descriptors—Operations, Resources, Agent/Workflow services, Skills, memory interfaces—without collapsing their types or granting authority.
-
-### Memory model details
-
-The dedicated memory design still needs to settle:
-
-```text
-Structured Memory provenance links
-Derived Semantic Memory provenance and confidence
-source observations / episodes
-supersession and temporal validity
-scope/view inheritance
-Working Note handoff
-context-selection rules
-```
-
-Structured Memory may cite raw observations, Artifacts, other structured state, or Derived Semantic Memory as provenance. Derived Semantic Memory is not a required intermediary for explicit writes and is not automatically authoritative state.
-
-### Interoperability evolution
-
-Continue evaluating MCP, A2A, Agent Skills, HTTP/OpenAPI, UI/message protocols, and future standards through the existing admission rule:
-
-```text
-changes kernel runtime truth?
-  → consider semantic-kernel evolution
-
-portable cross-protocol concept?
-  → Arrokoth-owned intermediate abstraction
-
-implementation mechanism only?
-  → port/backend
-```
-
-External Task/Message/Agent Card/Skill/protocol objects must not silently replace Arrokoth runtime identities.
-
-### Skills
-
-A future native Skill may package instructions, resources, assets/scripts, requested capabilities, and a root Agent/Workflow Definition.
 
 Keep:
 
 ```text
-Skill ≠ Execution
-allowed/recommended tools ≠ authority grant
+Definition cycle ≠ runtime error
+wait cycle       ≠ automatic deadlock
 ```
 
-Instruction-only Skills and composition-backed Skills may be profiles of the same broader package abstraction.
+### 1.6 Broad non-blocking work
 
-## Evidence before abstraction
+Current semantics are intentionally conservative for detached/background work.
 
-Future machinery should be justified with concrete conformance cases and measurements rather than architectural uniformity alone.
-
-Important tests include:
+Questions:
 
 ```text
-slow model invocation yields worker and later resumes correctly
-controller-local resumption survives restart
-Event and ControllerResumption remain distinguishable in traces
-stale model result after interleaving is detected/handled
+which work blocks Stage completion
+which work blocks Agent progression/terminal completion
+how late observations enter later context
+ordering/correlation
+cancellation
+Execution completion with work still in flight
+```
+
+---
+
+## 2. Authority and policy evolution
+
+Current authority semantics are canonical in [`authority.md`](authority.md). Future work concerns richer mechanisms and scale.
+
+### 2.1 Grant/evidence representation
+
+Validate whether a concrete grant/evidence record needs first-class:
+
+```text
+issuer/delegator
+holder/subject
+scope
+constraints
+delegable flag
+validity/expiry
+provenance
+revocation/consumption state
+exact payload binding where applicable
+receipt/outcome reference
+```
+
+Do not freeze a universal token format prematurely.
+
+### 2.2 Policy backend capability
+
+The conceptual policy seam supports:
+
+```text
+check
+optional filterAllowed
+optional enumerateAllowed
+```
+
+Evaluate Cedar, OpenFGA, and application-native implementations only after concrete policy workloads exist. Backend entity models must not redefine Arrokoth authority.
+
+### 2.3 Progressive descriptor discovery mechanics
+
+The semantic principle is already canonical: authority filtering precedes discovery/exposure.
+
+Open implementation questions:
+
+```text
+BM25 vs embedding vs hybrid ranking
+cache/invalidations
+lazy schema hydration
+per-domain tiering
+provider-aware top-N packing
+model-visible discover/search operation
+search→describe→call without extra model turns
+quality/recall/latency/token benchmarks
+```
+
+Discovery should remain heterogeneous and typed:
+
+```text
+Operation
+Resource
+Agent/Workflow service
+memory interface
+Skill
+interaction template
+```
+
+---
+
+## 3. Memory evolution
+
+The four memory forms and provenance rules are canonical in [`memory.md`](memory.md). Future work is about exact APIs/backends.
+
+### 3.1 Derived Semantic Memory provider contract
+
+Still to settle:
+
+```text
+portable claim representation
+minimal provenance requirements
+confidence/quality metadata
+derivation model/version metadata
+correction/supersession links
+temporal validity / reference-time support
+source indexing/materialization
+```
+
+Do not require a graph representation in the kernel.
+
+### 3.2 Promotion and trust policy
+
+Need concrete application patterns for:
+
+```text
+when inferred claim can become Structured Memory
+human vs deterministic verification
+source trust classes
+multi-source agreement
+promotion provenance
+revocation/correction of promoted state
+```
+
+Derived Semantic Memory remains non-authoritative by default.
+
+### 3.3 Memory scope/view implementation
+
+Validate how application-defined scopes are represented across:
+
+```text
+storage namespaces
+policy relations
+MemoryView resolution
+cross-Execution delegation
+shared organization/world memory
+```
+
+Scope must not become an authorization shortcut.
+
+### 3.4 Memory concurrency
+
+Test:
+
+```text
+Structured Memory compare-and-set
+field-level conflict/merge
+transactional writes
+provenance-preserving merge
+Derived Memory concurrent extraction/dedup/supersession
+Working Note branch handoff/commit
+```
+
+### 3.5 Memory backends
+
+Evaluate simple native storage first, then optional adapters such as Mem0/Graphiti or application-specific systems.
+
+A backend must not redefine:
+
+```text
+Structured vs Derived epistemic status
+memory visibility/authority
+Working Note semantics
+Event/Effect/runtime semantics
+```
+
+---
+
+## 4. Interoperability evolution
+
+Current portable concepts and MCP/A2A/Agent Skills mappings are canonical in [`interoperability.md`](interoperability.md).
+
+Future work includes implementing and testing actual bindings.
+
+### 4.1 MCP
+
+Build import/export vertical slices for:
+
+```text
+Tools / Operations
+Resources
+Prompts/templates
+long-running Tasks
+elicitation/input requirements
+change notifications/subscriptions
+```
+
+The goal is semantic round-trip compatibility, not merely wire compatibility.
+
+### 4.2 A2A
+
+Implement client/server adapters when exported Agent services become concrete.
+
+Validate:
+
+```text
+Agent Card projection
+Task ↔ external async handle
+Message/Artifact mapping
+input-required/auth-required continuation handling
+persistent interaction/context grouping
+cancellation/progress
+```
+
+Do not replace internal `call/spawn/send/ask` semantics with A2A.
+
+### 4.3 Agent Skills and native Skill packaging
+
+Composition owns the native Skill concept; interoperability owns the Agent Skills profile.
+
+Open packaging questions:
+
+```text
+input/default binding format
+one root Definition vs richer package roots
+instruction-only vs composition-backed manifest
+resource/reference packaging
+requested authority/resource metadata
+lossy export of composition-backed Skills
+registry/versioning/distribution
+```
+
+### 4.4 Portable schema maturity
+
+Evaluate when JSON Schema 2020-12 becomes the concrete portable service-schema contract rather than only the architectural direction.
+
+Provider-facing schemas may remain constrained projections.
+
+### 4.5 Optional client/projection protocols
+
+Watch/build only when product surfaces require them:
+
+```text
+AG-UI
+A2UI
+MCP Apps
+ACP
+AsyncAPI
+CloudEvents
+other UI/message protocols
+```
+
+These remain projections, not kernel semantics.
+
+---
+
+## 5. Durability and scaling
+
+After in-memory semantics are well tested, define durable ports/conformance for:
+
+```text
+Execution state
+controller state
+mailbox/Event cursors
+PendingOperations
+ControllerResumptions
+Effect journal/idempotency
+wait-for dependencies
+structural/runtime budgets
+projection snapshots/correlation
+restart recovery
+```
+
+Candidate implementation families include:
+
+```text
+native database-backed runtime
+DBOS
+Temporal
+other durable service/workflow runtimes
+```
+
+The selection criterion is Arrokoth semantic conformance, not feature count.
+
+### Distributed Harness
+
+A distributed implementation may later add:
+
+```text
+persistent scheduler queues
+remote workers
+large dormant Execution populations
+worker affinity/placement
+load/fairness controls
+```
+
+but must preserve one logical Harness and the same Execution/Event/Effect model.
+
+---
+
+## 6. Security evolution
+
+Current guarantees/profiles live in [`security-guarantees.md`](security-guarantees.md).
+
+### 6.1 Isolated hostile-code backend
+
+Before claiming arbitrary-code containment, implement and review at least one backend satisfying the advertised profile:
+
+```text
+deny-by-default ambient access
+scoped filesystem/workspace
+network/egress restrictions
+no raw production secrets
+CPU/memory/time/process/output bounds
+controlled Effect bridge
+cross-principal isolation
+fail-closed behavior
+```
+
+Candidate/reference mechanisms may include containers, gVisor, microVMs, WASM/isolate systems, Dify-Sandbox-like services, or managed sandbox providers.
+
+### 6.2 Network/SSRF and filesystem hardening
+
+Concrete hosted implementations still need APIs/policies for:
+
+```text
+private/metadata destination blocking
+DNS/redirect validation
+HTTP proxy/broker
+path canonicalization
+symlink/traversal protection
+mount policy
+workspace ownership
+runtime-socket protection
+```
+
+### 6.3 Multi-tenant principal/control-plane model
+
+Applications need concrete authenticated identities for:
+
+```text
+human/user
+application/world
+tenant/organization
+Agent/service principal
+resource owner
+publisher
+```
+
+Validate how authenticated facts enter the authority policy seam without putting product tenancy semantics into the kernel.
+
+### 6.4 Distributed/federated trust
+
+When one logical system crosses administrative boundaries, evaluate:
+
+```text
+mTLS/workload identity
+SPIFFE/SPIRE-like mechanisms
+OAuth/OIDC service flows
+signed/MACed delegated capabilities
+UCAN-like attenuation proofs
+remote worker attestation where useful
+```
+
+Do not add per-Execution keypairs merely for local conceptual purity.
+
+### 6.5 Information-flow controls
+
+Future high-security deployments may need:
+
+```text
+confidentiality labels
+taint/provenance propagation
+explicit declassification
+message/result policy checks
+resource-derived trust labels
+```
+
+This is beyond v0.4's explicit view/authority guarantees.
+
+---
+
+## 7. Public Skill/plugin ecosystem
+
+A public distribution ecosystem will eventually need a supply-chain model separate from runtime authority:
+
+```text
+publisher identity
+content addressing/hashes
+signatures
+version pinning/lockfiles
+requested-authority manifests
+sandbox-profile requirements
+malware/static scanning
+revocation/blocklists
+provenance/audit
+```
+
+Keep:
+
+```text
+package provenance/integrity ≠ Effect authority
+```
+
+Recheck licenses/security posture for any reused implementation at the exact version selected.
+
+---
+
+## 8. Provider, telemetry, and backend reuse
+
+Potential implementation reuse identified in research includes:
+
+```text
+ModelProvider
+  native providers / Vercel AI SDK-like adapter
+
+Policy
+  Cedar / OpenFGA / application backend
+
+Derived Semantic Memory
+  Mem0 / Graphiti / application backend
+
+Durability
+  native DB / DBOS / Temporal / other
+
+Isolation
+  container/gVisor/microVM/WASM/managed backend
+
+Telemetry
+  OpenTelemetry GenAI projection
+```
+
+These are mechanisms behind Arrokoth-owned ports.
+
+No backend should define Agent/Workflow progression, authority, memory epistemic status, Event/Effect meaning, or lifecycle semantics.
+
+---
+
+## 9. Conformance/evidence before abstraction
+
+Future architecture changes should be justified by executable scenarios and measurements.
+
+Important unresolved tests include:
+
+```text
+slow model invocation yields and resumes durably
+ControllerResumption survives restart
+stale model result after interleaving is detected
 parallel Workflow branches merge deterministically
-parallel Executions conflict safely on Structured Memory/resource writes
+parallel Executions conflict safely on shared memory/resource
 recursive spawn cannot exceed lineage structural budget
-wait cycles can be diagnosed without rejecting legal recursion
-shared-resource lease survives crash/expiry correctly
+wait/deadlock candidates are diagnosable
+lease expiry/fencing prevents stale holder mutation
+Derived Memory preserves provenance/supersession
+policy reverse enumeration scales Active View construction
+progressive discovery improves token/latency without unacceptable recall loss
+MCP/A2A round trips preserve authority/lifecycle distinctions
+hostile-code profile blocks ambient filesystem/network/secret access
+control-plane IDs are not bearer authorization
 ```
 
 > **Add runtime machinery only when it makes real applications easier to express, operate, secure, or reason about.**
+
+> **Prefer semantic evidence over architectural uniformity.**
