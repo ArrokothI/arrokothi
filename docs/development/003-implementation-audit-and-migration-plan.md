@@ -8,6 +8,12 @@
 >
 > **Scope:** the complete repository at version `0.37.0`, including packages, Studio, examples, benchmark subjects, tests, dependencies, and the ignored Studio SQLite database.
 
+> **Post-Slice-C audit amendment (2026-08-31):** Slices A-C, the Slice-B
+> consequentiality/idempotency correction, and the provider foundation are implemented; the current
+> target path passes 441 repository tests at commit `4b2b76e`. The Slice-D-and-later guidance in this
+> document has been refined against the canonical interoperability model and the implemented code.
+> The amendment does not reopen accepted A-C semantics and does not authorize Slice D implementation.
+
 This document records what exists, what is semantically fit for v0.4, and how to migrate. It does not authorize coding, preserve a legacy API, or freeze illustrative APIs from the authority documents.
 
 ## 1. Executive assessment
@@ -427,7 +433,7 @@ Gemini should adopt this suite and keep only provider-specific projection tests 
 
 `StrandsLoopEngine` contains useful translation, invocation-local state, tool interception, context refresh, cancellation, and summarization integration. In v0.4 it should implement a narrow `AgentExecutor` port and receive model access through ArrokothI-owned resolution. It must not infer a vendor from definition data or construct Google as the default path.
 
-If Strands requires its own `Model` object, the integration package should provide an ArrokothI-`ModelProvider`-to-Strands bridge so requests still cross the stable provider contract. Any optional native Strands provider bridge belongs in an explicit integration subpath and application wiring, with the same portable capability checks and contract outcomes. This is the one area that merits a focused spike in Slice D; it does not block Slice A.
+If Strands requires its own `Model` object, the integration package should provide an ArrokothI-`ModelProvider`-to-Strands bridge so requests still cross the stable provider contract. Any optional native Strands provider bridge belongs in an explicit integration subpath and application wiring, with the same portable capability checks and contract outcomes. This is the one area that merits a focused spike in Slice D; it is an acceptance checkpoint for the optional Strands executor, not a blocker for the reference Agent semantics.
 
 ## 8. Rewrite, reuse, and delete matrix
 
@@ -457,13 +463,13 @@ This matrix names concrete current units so that “reuse” cannot become accid
 | structured memory validator | typed values, correction, provenance | Execution memory service | **REUSE_BEHIND_NEW_BOUNDARY** |
 | flat working-note store | TTL and recency | frame-aware note service | **REWRITE** |
 | host-context validation/filtering | explicit visibility and trust labels | input adapter/resource/policy facts | **REUSE_BEHIND_NEW_BOUNDARY**; delete generic host-context ownership |
-| current context compiler | pure selection/rendering and withheld audit | Agent/LLM compiler | **REWRITE** inputs/ownership; preserve auditable filtering tests |
+| current context compiler | pure selection/rendering and withheld audit | information-only Agent/LLM compiler | **REWRITE** inputs/ownership; preserve auditable filtering tests; operation projection is a separate input to provider-request assembly |
 | `KnowledgeIndex` | unified convenience implementation | local retrieval package registry | **REWRITE** public ownership; extract algorithms |
 | record query evaluator | deterministic typed results | local retrieval capability | **REUSE_BEHIND_NEW_BOUNDARY** |
 | LangChain lexical retriever | useful local retrieval behavior | `packages/retrieval/local` | **REUSE_BEHIND_NEW_BOUNDARY**; remove dependency from core |
 | `ModelProvider` request/response | useful neutral seam | stable provider port + resolver | **REUSE_BEHIND_NEW_BOUNDARY** with feature/error contract |
 | Gemini provider | clean REST boundary and normalization | Gemini implementation package | **REUSE_BEHIND_NEW_BOUNDARY**; adopt conformance suite |
-| Strands loop | framework translation/interception | Strands AgentExecutor | **REUSE_BEHIND_NEW_BOUNDARY** after model and lifecycle separation |
+| Strands loop | framework translation/interception, interrupt/resume, and serializable snapshots | Strands AgentExecutor | **REUSE_BEHIND_NEW_BOUNDARY** after model/lifecycle separation; replace native dispatch with Effect-boundary pause/resume |
 | SQLite transaction code | `BEGIN IMMEDIATE`, CAS discipline | v0.4 storage adapter | **REUSE_BEHIND_NEW_BOUNDARY**; new schema |
 | Studio | useful manual observability surface | development/test-only v0.4 Studio | **REWRITE** after semantics stabilize |
 | examples/benchmarks | realistic safety and conversation scenarios | migration acceptance fixtures | **TEMPORARY_COMPATIBILITY**, then rewrite internals and remove legacy facade |
@@ -477,15 +483,20 @@ Every new type or operation should have exactly one semantic owner. This table i
 | Definition kind and serializable spec | `definitions/` | schema declarations, logical refs | lifecycle, provider clients, credentials, runtime queues |
 | Execution identity/owner/root/lifecycle/result refs | `execution/` | authority/view/control refs | controller algorithms, storage transactions |
 | Lifecycle transitions and Activation scheduling | `runtime/Harness` | scheduler/store/controller ports | model reasoning, Workflow topology decisions |
-| Agent progression | `controllers/agent` | compiler, AgentExecutor, Effect requester | persistence, lifecycle transitions, vendor SDKs |
+| Agent progression | `controllers/agent` | information compiler, Active Operation View resolver, operation projector, AgentExecutor; reports typed Effect proposals in its Activation outcome | persistence, lifecycle transitions, vendor SDKs, direct dispatch |
 | Workflow progression/Stage barrier | `controllers/workflow` | local Stage executors, Effect requester | separate Stage lifecycle/identity, operational scheduling |
 | Event delivery/mailbox | `interaction` semantics + Harness operations | router/store/outbox | audit-retention policy, arbitrary state mutation |
 | Effect authorization/dispatch/result conversion | `runtime/Harness` | authority, policy, executor/environment ports | controller-specific progression |
 | Capability implementation | external executor or dependency-free reference | validated request/resource handles | authority grants, memory mutation, lifecycle |
+| Capability operation catalog | `CapabilityCatalog` / portable capability semantics | stable operation identity, reusable description/schema, consequentiality, minimal grouping metadata | caller grants, exposure state, executors, clients, credentials, tenancy |
+| Effective operation authority | `runtime/Harness` from application/runtime policy | compact operation/resource grants or refs; current authorization checks | model relevance, aliases, descriptor rendering |
+| Active Operation View | context/exposure resolver under runtime policy | Agent exposure request, catalog metadata, effective authority, task scope | enlarging authority, dispatch, provider schemas |
+| Model invocation projection | operation projector for one provider call | immutable Active View snapshot, provider limits, model-facing aliases | authority, executor lookup, rebinding against a later view |
 | Resource registration/materialization | application + resource ports | opaque implementation handles | raw credentials in definition/context/model |
 | Model selection | application/deployment `ModelResolver` | provider implementations | definition-owned provider keys/models |
 | Memory semantics | `memory/` | schema, provenance, visibility | prompt rendering |
-| Context selection/rendering | `context/` under Agent/LLM use | read-only events/views/memory/artifacts/notes | retrieval, capability dispatch, hidden writes |
+| Information context selection/rendering | `context/` under Agent/LLM use | read-only Events, memory/artifact/note/resource views and instructions | operation selection/projection, retrieval, capability dispatch, hidden writes |
+| Provider-request assembly | controller/executor boundary | compiled information plus the independently produced model-operation projection | authority mutation, operation resolution after the response |
 | Runtime policy | core port implemented/configured by deployment | opaque authenticated subject facts | product business authorization or tenancy schema |
 | Application auth/tenancy | application | kernel control API and policy inputs | changing kernel authority without explicit grant |
 | Environment containment | external `ExecutionEnvironment` | selected resource views/capability runtime | semantic authority or false containment claims |
@@ -501,6 +512,8 @@ Validation rules:
 5. If an Event grants authority or a message implies ownership, ownership is wrong.
 6. If a memory write appears merely because text entered context, ownership is wrong.
 7. If an adapter can request an Effect, ownership is wrong.
+8. If a context compiler chooses model-callable operations, or an operation projector selects memory/resource snippets, ownership is wrong.
+9. If a model-returned name is resolved against the latest view instead of the exact invocation projection, ownership is wrong.
 
 ## 10. Answers to audit questions
 
@@ -594,8 +607,10 @@ Every conformance case must be runnable against deterministic reference componen
 4. **Mailbox/router contract:** destination validation, deduplication, cursor/ack behavior, correlation preservation, wake-up enqueue.
 5. **CapabilityExecutor contract:** validated request, cancellation/deadline, success/definite failure/unknown outcome, no direct state mutation.
 6. **ModelProvider contract:** the portable cases in Section 7.4.
-7. **AgentExecutor contract:** consumes selected context/observations, can propose repeated Effects, cannot mutate lifecycle/authority/persistence.
-8. **ExecutionEnvironment contract:** declared profile, selected views only, controlled capability bridge; stronger containment cases only for an actually selected isolated backend.
+7. **ActiveOperationViewResolver contract:** intersects authored/application exposure requests with effective operation authority, is deterministic for the same inputs, and cannot enlarge authority.
+8. **OperationProjection contract:** creates an immutable per-invocation binding snapshot, produces provider-facing specs, and resolves returned names only against that snapshot.
+9. **AgentExecutor contract:** consumes compiled information, observations, and a model-operation projection; returns model-directed semantic outcomes without dispatching, authorizing, settling, persisting, or mutating lifecycle/authority.
+10. **ExecutionEnvironment contract:** declared profile, selected views only, controlled capability bridge; stronger containment cases only for an actually selected isolated backend.
 
 Each suite should be a factory that an implementation package imports and instantiates. A package-specific test that merely resembles the reference test is not conformance.
 
@@ -609,12 +624,17 @@ Each suite should be a factory that an implementation package imports and instan
 | Local-corpus RAG Stage | C/H | exposed read-only local data needs no Effect; cannot access unexposed data |
 | Bounded multi-LLM Workflow Stage | C | predefined calls and barrier; remains Workflow behavior |
 | Agentic research loop | D | model-directed repeated Effects; authority enforced by Harness |
+| Four-layer operation exposure | D | catalog, effective authority, Active View, and per-call projection remain distinct; each narrowing is test-visible |
+| Projection snapshot stability | D | a response resolves against the binding snapshot shown to that invocation even after catalog/view refresh; snapshot IDs grant no authority |
+| Information/operation separation | D/F | context compilation selects information only; operation projection is independent and they meet only at provider-request assembly |
+| Narrow MCP capability round trip | after D | one imported and one exported synchronous Tool use the same portable descriptor/Effect semantics; no MCP type enters core |
 | Workflow containing child Agent | E | child identity/result/authority; Stage barrier waits |
 | Parent Agent with two child Agents | E | distinct children and correlations; no shared mutable scratch |
 | Memory visibility/confidentiality | F | delegated read-only view, local writes, no implicit upward notes |
 | Long-lived Agent waiting for user | G | RequestUserInput pending survives and resumes by correlated Event |
 | Peer Agents | G | message authority only; no ownership, inspection, memory, or cancellation powers |
 | Exact confirmation | G | persisted exact payload/evidence; changed payload invalidates consent |
+| MCP composition/interaction proof | after E/G | declared Definition service, external async handle, and input-required mapping preserve Execution/PendingOperation/RequestUserInput distinctions |
 | Prompt-injected Agent | D/E/H | model content cannot grant authority or expose unavailable capability/resource |
 | Hostile Stage code | H when isolated backend exists | no host secrets/direct resource access; allowed operation only through Harness |
 | Hosted control plane | H | app auth precedes kernel; opaque subject policy cannot enlarge authority |
@@ -864,27 +884,173 @@ The largest risk is a superficially new API backed by legacy Session machinery. 
 
 ### Slice D — Agent Execution
 
-**Goal.** Deliver model-open-ended Agent progression through a narrow executor, portable model resolution, repeated Effects/Event observations, and effect-free Agent-loop Adapters.
+**Goal.** Deliver model-open-ended Agent progression through a narrow executor, portable model
+resolution, repeated Effect/Event observations, effect-free Agent-loop Adapters, and the minimum
+four-layer operation-exposure boundary required by interoperability.
 
 **Preconditions.** Slices A/B and the Slice C provider foundation. Workflow implementation need not be feature-complete for Agent work, but the provider contract and Effect gateway must be stable.
 
-**New structures.** `AgentSpec`, `AgentControlState`, `AgentController`, `AgentExecutor` request/outcome, context selection/compiler inputs, model-directed continuation/stop proposal, Adapter attachment points limited to those required now, and reference executor. Executor receives active/exposed views and an Effect requester, never stores, lifecycle mutators, or authority grants.
+**New structures.** Add:
 
-**Existing code disposition.** Adapt the useful `ReferenceLoopEngine` logic behind the new executor contract. Rewrite current compiler inputs and remove Phase/Session/turn assumptions. Delete semantic-preflight requirement. Adapt Strands translation/interception and invocation state, but remove hard-coded Gemini/provider selection and route model calls through ArrokothI resolution. Migrate the minimal and Strands examples; P01 is a good simple Agent comparison fixture.
+```text
+AgentSpec
+AgentControlState
+AgentController
+AgentExecutor request/outcome + reference executor
+information-only Agent context compiler
+minimum enriched CapabilityOperationDescriptor
+effective operation-authority record/ref
+ActiveOperationViewResolver
+ActiveOperationView snapshot
+ModelOperationProjection + binding snapshot
+model-directed continue/respond/operation-call/stop outcomes
+Agent-loop Adapter attachment points required now
+```
 
-**File-level scope.** Add `controllers/agent/`, `executors/reference/`, Agent context/compiler modules, Agent conformance tests, provider contract runner, and Strands `AgentExecutor` tests. Replace `packages/core/src/harness/agent-harness.ts`, `packages/core/src/loop/`, `packages/core/src/planning/`, and the Agent-owned portions of `packages/core/src/compiler/context-compiler.ts`; refine `packages/core/src/provider/types.ts` and `packages/models/gemini`; substantially rewrite `packages/agents/strands/src/index.ts` and its tests. Migrate `examples/minimal-agent`, `examples/strands-gemini`, and then the P01 subject internals.
+`AgentSpec` is the smallest portable authored request: logical model request, instructions, bounded
+Agent semantic limits, effect-free Adapter declarations when used, and operation-exposure requests
+such as explicit operation refs and optional logical groups/tags. It does not contain descriptors,
+provider schemas, authority grants, executors, credentials, application principals, or a complete
+catalog.
 
-**Public API impact.** Add `defineAgent` target spec and Agent executor port under `/ports`; expose reference executor under `/reference`. Concrete framework types remain in the Strands package. Logical model refs replace provider IDs in target definitions.
+Enrich the existing `CapabilityCatalog` rather than create a second operation ontology. The minimum
+reusable descriptor for D is the already-stable `(capability, operation)` identity plus title/name,
+description, input schema, existing consequentiality, and only the grouping metadata actually used
+by the first deterministic resolver. Output schema, broad versioning, abstract resource
+requirements, and richer idempotency metadata remain deferred until a consumer needs them.
 
-**Persistence impact.** Persist only Agent control/progression and semantic observations needed for restart. Provider raw payloads and framework objects never enter Execution state.
+The Harness/runtime owns effective operation authority. For a root Execution, application/runtime
+policy supplies a compact grant/ref when the Execution is created; Slice E later extends the same
+record with child delegation/narrowing. `EffectAuthorizer` continues to answer current invocation
+permission and must not become a tool selector. Both exposure derivation and dispatch authorization
+must read consistent authority truth, while the dispatch check remains decisive if authority changes
+or an exposed view is stale.
 
-**Tests first.** Repeated retrieval/action loop; stop without completing Execution unless controller explicitly proposes completion; model end-turn emits response only; prompt injection cannot enlarge active authority; context refresh after observations; provider switch using unchanged definition; unsupported feature error; reference and Strands executor contract parity; cancellation and bounded iterations.
+The Active Operation View resolver receives only catalog descriptors, the Agent's authored exposure
+request, application task/exposure policy, and read-only effective authority. It deterministically
+intersects/narrows; it cannot grant. The first implementation needs only explicit refs, one simple
+group/tag filter if the example needs it, an optional stable bound, and cached-view reuse. It makes
+no mandatory LLM call.
 
-**Acceptance criteria.** Same target Agent definition runs with Gemini through reference and Strands paths where supported; changing deployment model mapping does not edit definition; Harness owns all Effects/lifecycle; no Strands/Google dependency enters core; no preflight call is structurally required.
+For each provider call, create an immutable `ModelOperationProjection` containing a projection
+identity/revision and bindings from model-facing names to stable operation identities. The model
+response resolves only against that object, never by re-reading the latest Active View. Projection
+and binding identities are correlation/integrity metadata, not bearer authority; the resulting
+typed Effect still crosses current Harness authorization. When inference completes inside one
+Activation the immutable in-memory object is sufficient; any executor continuation that crosses an
+Activation persists the relevant snapshot/binding data as JSON in `AgentControlState`.
+
+The information compiler and operation projector are independent:
+
+```text
+eligible information -> context compiler -> instructions/messages/snippets
+Active Operation View -> operation projector -> ModelCapabilitySpec[] + bindings
+                                             \ /
+                                provider-request assembly
+```
+
+The executor consumes the compiled information, observations, resolved model, and per-call operation
+projection. It returns semantic output or model operation calls. It receives no Effect requester,
+`CapabilityExecutor`, `EffectAuthorizer`, Harness, settlement function, store, lifecycle mutator, or
+authority grant. The Agent controller resolves calls against the same projection and reports typed
+Effect proposals in its ordinary `ActivationOutcome`; only the Harness acts on them.
+
+**Existing code disposition.** Adapt the useful `ReferenceLoopEngine` iteration and bounded-result
+mechanisms behind the new step/outcome contract, but remove its direct `requestCapability` callback.
+Rewrite current compiler inputs and remove Phase/Session/turn assumptions. Delete semantic-preflight
+as a requirement. Preserve Slice-C `ModelCallableDeclaration` as a Workflow-stage declaration; a
+future authoring helper may resolve it from the richer catalog, but D does not rewrite Workflow
+semantics. Migrate the minimal and Strands examples; P01 is a useful simple Agent comparison fixture.
+
+For Strands, route model calls through an ArrokothI `ModelProvider`-backed Strands `Model`. Build
+Strands `FunctionTool`s only from the immutable invocation projection. Their callbacks are
+observation adapters only: they must never call `CapabilityExecutor`, MCP, HTTP, or the old
+`CapabilityGateway`. At `BeforeToolCall`, capture the tool-use id/name/input and projection binding,
+raise an adapter-local interrupt before native execution, and return the model-directed operation
+call plus a serializable Strands snapshot/continuation. After the Harness result Event arrives, the
+controller resumes the executor with that observation; the observation-only callback returns it to
+Strands and the model loop may continue. The Arrokoth binding snapshot is stored alongside the
+continuation and remains the resolver of record.
+
+The installed Strands 1.14 surface makes this feasible through `BeforeToolCallEvent.interrupt()` and
+JSON snapshots (`takeSnapshot`/`loadSnapshot`). Do not use the experimental `afterModel` checkpoint
+as the correctness boundary: its current JavaScript resume path may re-invoke the model and
+regenerate the tool call. Begin with a focused spike proving one and multiple tool calls,
+interrupt/snapshot JSON round trips, observation resume, cancellation, and context refresh. If
+Strands cannot preserve these semantics, limit or omit that executor rather than weaken the core
+boundary.
+
+**File-level scope.** Add `controllers/agent/`, `executors/reference/`, `operations/` (or another
+narrow capability-operation view/projection area), information-context modules, Agent conformance
+tests, the view/projection contract runners, and Strands `AgentExecutor` tests. Extend
+`ports/capability-catalog.ts` minimally and replace the `ExecutionContext.slots.authority` /
+`activeView` placeholders with typed refs/records sufficient for operation authority and exposure.
+Replace `packages/core/src/harness/agent-harness.ts`, `packages/core/src/loop/`,
+`packages/core/src/planning/`, and the Agent-owned portions of the legacy context compiler; refine
+the provider bridge as needed; substantially rewrite `packages/agents/strands/src/index.ts` and its
+tests. Migrate `examples/minimal-agent`, `examples/strands-gemini`, and then P01 internals. Do not add
+an MCP dependency to core or redesign Slice-C Workflow/local-resource types.
+
+**Public API impact.** Add the target `defineAgent` spec, operation refs/descriptors, Active View and
+projection ports, and Agent executor port under the appropriate curated surfaces; expose the
+reference resolver/projector/executor under `/reference`. Concrete framework and MCP types remain in
+their external packages. Logical model refs replace provider IDs in target definitions.
+
+**Persistence impact.** Persist only Agent control/progression, the effective-authority ref, and any
+projection/binding or executor-continuation snapshot that must cross an Activation. Provider raw
+payloads and live framework objects never enter Execution state. A stored projection ID is not an
+authorization token and cannot settle or invoke anything.
+
+**Tests first.** Four-layer narrowing; an exposure request outside authority is omitted; an exposed
+but newly denied/stale operation is still rejected by the Harness; deterministic explicit-ref/group
+selection; no mandatory selector model call; per-invocation alias collision rejection; stale-view
+response resolves against its original projection; unknown model names resolve to nothing;
+projection IDs grant no authority; information compilation contains no operation-selection
+responsibility; repeated retrieval/action loop; stop without completing the Execution unless the
+controller explicitly proposes completion; model end-turn emits only a response; prompt injection
+cannot enlarge authority or exposure; context refresh after observations; provider switch using an
+unchanged definition; unsupported feature error; reference and Strands executor contract parity;
+Strands native callbacks cannot dispatch; cancellation and bounded iterations.
+
+**Acceptance criteria.** The same target Agent definition runs with Gemini through reference and
+Strands paths where supported; changing deployment model mapping does not edit the definition;
+the model sees only an authorized Active Operation View projection; every returned name resolves
+through the exact invocation snapshot; the Harness owns every Effect/lifecycle decision and can deny
+stale exposure; no Strands/Google/MCP dependency enters core; no preflight or exposure-selector model
+call is structurally required.
 
 **Cleanup unlocked.** Delete current loop/harness/planning/compiler code after all current Agent consumers migrate. Remove `createStrandsGeminiEngine` default and provider-ID branch. Retain only explicitly useful compatibility until P01/P02/Studio migration.
 
-**Risk.** Framework leakage into the port or a Strands-native provider bypass. Run the executor contract suite and architecture import checks against both paths.
+**Risk.** Framework leakage, a Strands-native provider/tool-dispatch bypass, authority/exposure
+collapse, a second operation ontology, or late binding against the newest view. Run executor,
+authority/view, projection-snapshot, and architecture import suites against both paths.
+
+### Interoperability proof 1 — synchronous capability operation (immediately after D)
+
+**Goal.** Prove the portable operation seam while it is still small, before composition, memory,
+interaction, security-profile, or durability work can hide a bad boundary.
+
+Implement this in an external MCP adapter package against the current official MCP SDK/spec, never
+in core:
+
+```text
+MCP Tool -> validated portable capability-operation descriptor + executor binding
+         -> effective authority -> Active View -> invocation projection
+         -> ModelCapabilityCall -> UseCapability -> Harness
+
+native portable capability operation -> explicit MCP Tool export
+```
+
+Scope is exactly one synchronous import and one export, with description/input schema and ordinary
+success/failure. Exclude MCP Tasks, Prompts, Resources, MRTR/input-required, subscriptions,
+persistent Agent handles, and Definition export. Test that imported descriptions/schemas/results are
+untrusted data, discovery does not grant authority, export is explicit, the same stable operation
+identity reaches the same Effect semantics from model and MCP paths, and no MCP type crosses the
+adapter boundary.
+
+This proof is a post-D architecture gate and may be implemented in parallel with early E work. It
+does not change the D-I semantic dependency order and must not grow into a complete MCP product
+slice.
 
 ### Slice E — Recursive composition
 
@@ -958,6 +1124,27 @@ The largest risk is a superficially new API backed by legacy Session machinery. 
 
 **Risk.** Reintroducing chat Session as the runtime center or equating affirmative text with authorization. Keep application interpretation and kernel evidence separate.
 
+### Interoperability proof 2 — composition and interaction (after E/G)
+
+After recursive composition and human interaction semantics exist, extend the external adapter proof
+without changing kernel identities:
+
+```text
+declared Agent/Workflow service operation -> create/call Execution
+long-running exported call -> external MCP Task/handle around runtime work
+input_required / MRTR -> RequestUserInput + correlated resume
+selected catalog/resource change -> cache/view invalidation or Event only for a declared dependency
+```
+
+This proof may use the in-memory runtime and must state that it is not a restart-durability claim.
+After Slice I, rerun the long-running Task/handle scenarios through the durable runtime. Portable
+Resource and interaction-template coverage can be added with their owning semantic contracts; do not
+turn `LocalResource` into the universal Resource descriptor to make the demo larger.
+
+Protocol authentication remains outside Execution authority; task/Execution/projection IDs are not
+bearer credentials; input-required UI is not mechanical Effect authorization; and external results
+reach settlement only through authenticated trusted ingress.
+
 ### Slice H — Security profile and execution environment
 
 **Goal.** Make the trusted-local threat model explicit, stabilize the ExecutionEnvironment and runtime-policy boundary, and prevent static checks from being described as containment.
@@ -1021,13 +1208,16 @@ The largest risk is a superficially new API backed by legacy Session machinery. 
  C Workflow + model/provider foundation │
                     │                    ▼
                     └──────────────► D Agent Execution
-                                      │
+                                      ├──► Interop proof 1
+                                      │      sync MCP capability round trip
                          C ────────────┤
                                       ▼
                              E Recursive composition
                                 ┌─────┴─────┐
                                 ▼           ▼
                              F Memory   G Interaction
+                                             └──► Interop proof 2
+                                                  service/task/input mapping
                                 └─────┬─────┘
                                       ▼
                          H Security/environment profile
@@ -1043,6 +1233,10 @@ The model/provider foundation is delivered at the start of C because LLM Stage n
 
 F and G can proceed in parallel after E if they agree on visibility/provenance and pending-interaction records. The trusted-local environment-port shell may start in A, but H cannot claim complete security-profile conformance until authority, composition, memory, and interaction exist. SQLite implementation waits for semantic records to stabilize; storage contract tests begin earlier.
 
+Interop proof 1 follows D and is an architecture-feedback gate, not a new kernel dependency. Interop
+proof 2 follows E/G and its durable long-running cases are rerun after I. Neither proof reorders the
+semantic slices or permits MCP types to leak inward.
+
 ### 14.2 Critical path
 
 The semantic critical path is:
@@ -1051,12 +1245,22 @@ The semantic critical path is:
 A → B → provider foundation → C + D → E → F/G → H → I
 ```
 
+The interoperability validation points are:
+
+```text
+D → synchronous capability-operation MCP import/export proof
+E/G → Agent/Workflow service + Task/handle + input-required proof
+I → durable rerun of long-running protocol cases
+```
+
 The following are parallel support tracks, not reasons to reorder semantics:
 
 - contract-suite infrastructure begins in A and grows every slice;
 - architecture/import/export checks begin in A/B;
 - Gemini provider conformance begins in C and finishes by D;
 - retrieval extraction occurs with C after the capability/resource boundary exists;
+- the first MCP adapter proof starts only after D has frozen the portable operation/view/projection seam;
+- later MCP features wait for the kernel semantics they map to instead of landing as one protocol-shaped batch;
 - legacy examples migrate with their owning semantic slice;
 - Studio migration waits until I and must not drive core APIs.
 
@@ -1100,6 +1304,12 @@ Deletion should happen in the slice that proves the replacement, not in one fina
 | Feature fallback silently changes semantics | adapter ignores schema/tool requirement | required/optional negotiation and observable fallback metadata |
 | Kernel retrieval ontology regrows | source-specific methods/data return to core | smallest capability/resource port and core manifest check |
 | Authority equals model exposure | exposed tool automatically executable or hidden grant ignored | active-view subset and Harness denial tests |
+| EffectAuthorizer becomes a tool selector | exposure resolver invokes per-request authorization or embeds policy decisions in descriptors | separate read-only effective-authority input; current Harness authorization remains decisive |
+| Second operation ontology appears | Agent or MCP registry duplicates capability identity/consequentiality/schema | enrich `CapabilityCatalog` minimally and project from one semantic source |
+| Model response is rebound to a new view | an alias is looked up in the current registry after the invocation returns | immutable per-invocation projection/binding snapshot and stale-view conformance |
+| Context and operation selection collapse | one `ModelContext` owns memory visibility, authority, tool selection, and provider aliases | separate information compiler and operation projector; meet only at request assembly |
+| Strands dispatches natively | `FunctionTool` callback reaches a gateway/executor/MCP/HTTP client | interrupt before native execution; resume only with Harness-produced observations; architecture test imports/calls |
+| Projection or task IDs become credentials | lookup by ID alone authorizes invoke/settle/control | IDs are correlation only; application authentication plus current Harness authorization/settlement ingress |
 | Ownership implies communication/control | parent or peer reads/cancels by ID | separate authority categories and negative composition/peer tests |
 | Memory becomes all context | complete history/secret notes enter prompts | selected-view tests inspect compiled context and withheld reasons |
 | Confirmation is natural-language heuristic | affirmative text directly authorizes changed payload | exact persisted evidence and supersession tests |
@@ -1111,9 +1321,13 @@ Deletion should happen in the slice that proves the replacement, not in one fina
 
 ## 17. Remaining human decisions
 
-### Not blocking Slice A
+### Not blocking Slice D
 
-No unresolved human decision blocks the first implementation slice. The authority documents and accepted decisions already settle package strategy, Execution kinds, Session/Flow disposition, Harness ownership, dependency direction, provider-selection ownership, Studio status, transport neutrality, application-auth separation, reference implementations, and compatibility priority.
+No unresolved human decision blocks Slice D. The post-Slice-C audit settles the required ownership
+direction: enrich the existing catalog minimally; give the Harness/runtime effective operation
+authority; derive Active Views through deterministic narrowing; snapshot each invocation projection;
+keep information compilation independent; and keep all Strands/native execution behind semantic
+outcomes and the Effect gateway. Exact type and package names remain implementation choices.
 
 The following intentionally remain open and must not acquire permanent APIs incidentally:
 
@@ -1135,21 +1349,41 @@ The following intentionally remain open and must not acquire permanent APIs inci
 2. **Before claiming hostile-code containment in Slice H or later:** select a concrete isolated backend and threat model for review. Do not create a placeholder environment package as a substitute.
 3. **If the Strands model-provider bridge spike shows the framework cannot honor the stable provider contract without semantic loss:** choose explicitly between limiting Strands to a documented optional native-provider extension or not offering Strands for that provider. Do not weaken the core provider boundary by default.
 
-None of these decisions should delay tests and implementation for Slice A.
+None of these decisions should delay Slice D reference implementation. The Strands pause/resume
+spike is a Slice-D acceptance checkpoint; failure limits the optional Strands executor rather than
+blocking the reference Agent semantics.
 
-## 18. Recommended first implementation task
+## 18. Recommended next implementation task
 
-Implement **Slice A.1 — Execution lifecycle and Harness conformance skeleton** as one reviewable change.
+Implement **Slice D.0 — Agent operation exposure and projection skeleton** as one reviewable change
+before the open-ended loop is allowed to dispatch anything.
 
 The task should:
 
-1. create `tests/conformance/execution/` with failing cases for definition-kind pinning, lifecycle, one Harness/many contexts, response-not-completion, wait/Event/wake/resume, and typed terminal results;
-2. add only the target `definitions/`, `execution/`, `runtime/`, `ports/`, and dependency-free `reference/` structures needed to pass them;
-3. use an in-memory store, FIFO scheduler, minimal event envelope/inbox, and scripted controllers;
-4. add curated `/ports`, `/reference`, and `/testing` exports without removing legacy exports yet;
-5. add an architecture assertion that the new modules import none of `session/`, `flow/`, `planning/`, current `harness/`, current `runtime/runtime.ts`, LangChain, Strands, Gemini, SQLite, Studio, or examples;
-6. run the new conformance suite, the existing 167 package tests, the 8 benchmark-subject tests, and typecheck.
+1. replace generic `AgentSpec` with logical model, instructions, bounds, Adapter declarations used now,
+   and a compact operation-exposure request that contains refs/groups rather than descriptors or grants;
+2. enrich `CapabilityOperationDescriptor` only with stable descriptive/model-projection facts required
+   by the first Agent call;
+3. replace the operation-authority and Active-View deferred placeholders with a compact read-only
+   authority ref/record and deterministic `ActiveOperationViewResolver`;
+4. add `ModelOperationProjection` with immutable bindings and a resolver that accepts only that
+   projection snapshot;
+5. keep information context compilation independent, then assemble both branches into the provider
+   request;
+6. implement a one-step reference `AgentExecutor` that returns semantic response/operation-call
+   outcomes and has no Effect requester or execution backend;
+7. make `AgentController` resolve the returned call through its exact projection and return an
+   ordinary typed Effect proposal for Harness handling;
+8. write failing conformance for authority narrowing, deterministic exposure, stale projection
+   stability, unknown aliases, Harness reauthorization, and ID non-authority;
+9. add the Strands bridge spike only after the reference boundary passes, proving provider bridging,
+   interrupt-before-tool, JSON snapshot/resume, observation-only callbacks, multi-call behavior,
+   cancellation, and no native dispatch;
+10. run the complete repository test suite, benchmark-subject suite, and typecheck without modifying
+    Slice-C Workflow semantics or importing MCP/Strands/provider types into core.
 
-The change is done only when one Harness demonstrably advances two independent contexts, a nonterminal response leaves one alive, an Event wakes a WAITING one, and a schema-valid terminal result completes another. It must not implement Events/Effects broadly, Workflow Stages, Agent loops, SQLite, compatibility translation, or repository-wide file moves.
-
-That task establishes the semantic spine every later slice depends on and has no blocking human decision.
+The task is done when a model can select an authorized portable operation through a stable
+invocation projection, the controller can propose the corresponding `UseCapability`, and the
+Harness can still deny it from current authority. It must not implement MCP, recursive composition,
+memory, messaging, human input, sandboxing, durability, large-catalog retrieval, or an LLM-based
+operation selector.

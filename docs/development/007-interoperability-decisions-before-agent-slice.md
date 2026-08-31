@@ -556,6 +556,314 @@ change itself.
 
 ---
 
+## DEC-I14 — Enrich the existing capability-operation catalog; do not create a second ontology
+
+**Decision: Accepted after post-Slice-C implementation audit.**
+
+The implemented `CapabilityCatalog` already owns the stable capability/operation pair and baseline
+consequentiality. Slice D should extend that same operation-intrinsic source with only the reusable
+facts needed to build an Agent operation view:
+
+```text
+stable identity: capability + operation
+title/name
+description
+input schema
+existing consequentiality
+minimal tags/group metadata only if the first deterministic resolver consumes it
+```
+
+Output schema, generalized version negotiation, abstract resource requirements, rich idempotency
+descriptions, icons, protocol annotations, and every other plausible field remain deferred until a
+real consumer needs them.
+
+This catalog remains the semantic source of operation truth. An MCP import adapter may translate a
+Tool into it; an MCP export adapter may project from it; an Agent may derive a model view from it.
+None of those creates a parallel `AgentTool`, `McpTool`, or service-operation ontology with a second
+identity/consequentiality/schema record.
+
+Workflow `ModelCallableDeclaration` remains an authored Stage-specific exposure/binding. A later
+helper may resolve reusable description/schema data from the catalog and then apply the Stage alias,
+resources, and deadline. Slice D does not rewrite existing Workflow definitions.
+
+---
+
+## DEC-I15 — Harness owns effective operation authority; exposure policy only narrows it
+
+**Decision: Accepted after post-Slice-C implementation audit.**
+
+The implemented Slice-B `EffectAuthorizer` provides the decisive per-dispatch authorization check,
+but it is not an enumerable effective-authority view and must not become a tool selector.
+
+Slice D needs the smallest explicit operation-authority representation that can safely feed exposure:
+
+```text
+application/runtime grant policy at root creation
+        ↓
+Harness-owned effective operation authority record/ref
+        ↓ read-only input
+ActiveOperationViewResolver
+```
+
+This record may contain compact operation/resource grants, rules, or refs. It need not contain
+complete descriptors or materialize a large set. Slice E extends the same ownership with child
+delegation and monotonic narrowing; D does not pre-implement general spawn authority.
+
+The clean responsibility split is:
+
+```text
+application/deployment policy
+  supplies root grants, task/exposure hints, and resolver configuration
+
+Harness/runtime
+  computes/stores effective authority
+  supplies it read-only to exposure resolution
+  performs current Effect authorization at dispatch
+
+context/exposure resolver
+  intersects Agent request + task policy + catalog with effective authority
+  returns an Active Operation View
+  cannot grant or dispatch
+
+Agent controller
+  decides when to resolve/refresh a view and when to make a model call
+  cannot mutate authority
+```
+
+Both view derivation and dispatch authorization must read consistent authority truth, but dispatch is
+always decisive. A stale or buggy Active View can therefore cause a denied request, never an
+authority bypass. Changing the view within authority remains context policy, not authority mutation.
+
+---
+
+## DEC-I16 — Information context and operation projection are independent inputs
+
+**Decision: Accepted after post-Slice-C implementation audit.**
+
+Do not make one `ModelContext` or context compiler own instructions, memory visibility, resource
+snippets, tool relevance, operation authority, model aliases, and provider limits.
+
+Slice D should implement two branches:
+
+```text
+eligible information
+    ↓
+information context compilation
+    ↓
+instructions / messages / selected Events / snippets
+
+Active Operation View
+    ↓
+operation projection
+    ↓
+ModelCapabilitySpec[] + immutable bindings
+```
+
+They meet only when the controller/executor assembles one provider request. The information compiler
+does not choose callable operations. The operation resolver/projector does not select memory,
+Working Notes, resource snippets, or message history.
+
+This preserves all three distinctions:
+
+```text
+memory != context
+authority != exposure
+operation exposure != information visibility
+```
+
+---
+
+## DEC-I17 — Projection binding is invocation-local integrity state
+
+**Decision: Accepted after post-Slice-C implementation audit.**
+
+Slice D must implement projection snapshot stability now, not defer it to MCP or durability.
+
+A minimum snapshot contains:
+
+```text
+projection identity/revision
+source Active View identity/revision
+bindings:
+  binding identity
+  model-facing name
+  stable operation identity
+  projected input schema/description as needed
+```
+
+The object handed to the provider is immutable. A returned name is resolved only through these
+bindings. The controller must not consult the latest catalog or Active View after the response
+arrives, even if a catalog refresh reused the same alias for another operation.
+
+When model inference starts and finishes inside one Activation, closing over the immutable snapshot
+is sufficient. When an AgentExecutor continuation crosses an Activation, the necessary projection
+and binding data is persisted as plain JSON in Agent control state.
+
+Projection, binding, tool-use, task, correlation, and Execution identifiers are not authority or
+settlement credentials. They explain which meaning the model saw. The resolved Effect still crosses
+the current Harness authorization boundary.
+
+---
+
+## DEC-I18 — AgentExecutor returns semantic calls; it receives no Effect requester
+
+**Decision: Accepted after post-Slice-C implementation audit.**
+
+The original migration plan allowed the executor to receive an Effect requester. The implemented
+A-C controller contract makes a narrower boundary both possible and clearer.
+
+Use:
+
+```text
+AgentExecutor
+  input:
+    compiled information
+    observations
+    resolved model
+    one Model Operation Projection
+    bounded semantic config / continuation
+  output:
+    response
+    operation call(s) tied to that projection
+    continue/stop/failure proposal
+
+AgentController
+  resolves returned calls against the same projection
+  returns typed Effect proposal(s) in ActivationOutcome
+
+Harness
+  authorizes / journals / dispatches / correlates / settles
+```
+
+The executor receives no Effect requester, `CapabilityExecutor`, MCP/HTTP client, authorizer,
+settlement function, runtime store, lifecycle mutator, or mutable authority. This makes the reference
+executor and Strands executor share the same semantic contract and prevents a framework-native tool
+loop from becoming an alternate gateway.
+
+The minimum `AgentSpec` is correspondingly small:
+
+```text
+logical model request
+instructions
+bounded Agent semantic limits
+effect-free input/output Adapter declarations when used
+portable operation-exposure request (refs/groups/tags/bound, only as needed)
+```
+
+It contains neither the catalog nor the authority grant nor the active view nor the invocation
+projection.
+
+---
+
+## DEC-I19 — Strands must pause before native tool execution and resume with an observation
+
+**Decision: Accepted after installed-package audit.**
+
+The installed Strands 1.14 package is bridgeable without allowing native tool dispatch to bypass the
+Effect gateway:
+
+```text
+Arrokoth Active Operation View
+        ↓ immutable invocation projection
+Strands FunctionTool specs
+        ↓ model returns tool use
+BeforeToolCall interception
+        ↓ capture name/input/tool-use id + interrupt before execution
+Strands executor returns semantic operation call + JSON snapshot
+        ↓
+Agent controller resolves original binding and proposes Effect
+        ↓
+Harness result Event
+        ↓
+resume Strands snapshot with observation
+        ↓
+observation-only FunctionTool callback returns the result to Strands/model
+```
+
+The Strands package must also provide a `ModelProvider`-backed Strands `Model`; it may not infer a
+vendor or default to Google from Agent definition data.
+
+Use `BeforeToolCallEvent.interrupt()` plus `takeSnapshot`/`loadSnapshot` for the first spike. Do not
+base correctness on the experimental `afterModel` checkpoint because the current JavaScript SDK may
+re-invoke the model when resuming that boundary. Prove serializable pause/resume, one and multiple
+calls, exact observation correlation, cancellation, context/view refresh, and that no FunctionTool
+callback imports or calls the Arrokoth gateway/executor. If this cannot be made reliable, limit the
+optional Strands executor instead of weakening the kernel contract.
+
+---
+
+## DEC-I20 — Keep D-I ordering; add two staged MCP proofs
+
+**Decision: Accepted after roadmap audit.**
+
+Interoperability changes seams and validation points, not the semantic dependency order:
+
+```text
+D Agent
+E composition
+F memory
+G interaction
+H environment/security profile
+I durability
+```
+
+Add two deliberately narrow vertical proofs:
+
+```text
+after D:
+  import one synchronous MCP Tool into the portable capability-operation surface
+  run it through authority -> Active View -> model projection -> UseCapability
+  export one native portable capability operation as an MCP Tool
+
+after E/G:
+  export a declared Agent/Workflow service operation
+  map a long-running call to an external Task/handle without equating identities
+  map input_required/MRTR to RequestUserInput and correlated resume
+  map selected change notifications to cache/view invalidation or a declared Event
+
+after I:
+  rerun the long-running proof with restart durability
+```
+
+The first proof excludes Resources, Prompts, Tasks, MRTR, persistent Agents, subscriptions, and broad
+service export. The second excludes claims of durable recovery until I. Both live in an external MCP
+adapter package and use official current SDK/wire types only at that edge.
+
+This staged sequence gives the operation seam early architectural feedback without making MCP
+fashion drive kernel ordering or forcing all protocol features into one slice.
+
+---
+
+## DEC-I21 — No Effect or A-C retrofit follows from interoperability
+
+**Decision: Accepted after post-Slice-C implementation audit.**
+
+The closed Effect union remains:
+
+```text
+UseCapability
+WriteMemory
+SpawnExecution
+SendMessage
+RequestUserInput
+```
+
+No protocol symmetry exposes a missing runtime invariant. Portable Operations map to these Effects
+or to local computation as appropriate. No MCP Event/Task/notification kinds are added.
+
+Slices A-C need no source retrofit. In particular, preserve:
+
+```text
+ModelCallableDeclaration as Workflow Stage exposure/binding
+ModelCapabilitySpec as provider-facing projection
+LocalResource as materialized local-computation form
+live access through UseCapability and Harness authorization
+```
+
+Only the D-and-later implementation plan changes.
+
+---
+
 ## Slice D implementation guidance
 
 Before coding Slice D, preserve these existing boundaries:
@@ -587,8 +895,10 @@ AgentSpec
 AgentControlState
 AgentController
 AgentExecutor / reference executor
-context selection/compiler inputs
-Active operation/capability exposure projection
+information context compiler inputs
+effective operation-authority ref/record
+deterministic Active Operation View resolver
+per-invocation operation projection + binding snapshot
 model-directed continue/stop interpretation
 ```
 
@@ -601,6 +911,8 @@ A healthy dependency path should look like:
 
 ```text
 portable/intrinsic operation information
+        +
+effective operation authority
         ↓
 Agent Active/Exposed View
         ↓
@@ -650,11 +962,12 @@ After Slice D lands, review specifically:
 
 ```text
 AgentSpec
+effective operation-authority ownership
 Agent Active/Exposed View
 model-facing callable projection
 projection/binding snapshot stability
 capability/operation descriptor ownership
-context compiler inputs
+information context compiler inputs vs operation projection
 Effect proposal resolution
 Strands interception/bridge
 ```
