@@ -5,6 +5,8 @@
 > Read [`mental-model.md`](mental-model.md) first. This document explains how work composes inside and across Executions. Workflow Stages provide the main explicit composition structure, but several mechanisms here—local computation, Effects, pending work, Adapters, child Executions, retrieval, and completion dependencies—are shared by both Workflows and Agents.
 >
 > Runtime ownership, scheduling, persistence, mailboxes, authority enforcement, and Working Note visibility are defined in [`runtime-architecture.md`](runtime-architecture.md).
+>
+> Portable service/interface projection and protocol mapping are defined in [`interoperability.md`](interoperability.md). Those projections do not create new composition boundaries or replace Event/Effect semantics.
 
 ## 1. Composition does not imply an Execution boundary
 
@@ -339,6 +341,20 @@ runtime action
 ```
 
 Effects remain attributed to the enclosing Execution. Local Stage or Agent-step structure does not become runtime ownership.
+
+### Portable operation projection
+
+The same semantic action may also be described through a portable Operation for model-facing or external interfaces. For example, a capability operation, child invocation, memory write, or peer interaction may be projected as a model tool, MCP Tool, HTTP/OpenAPI operation, or typed SDK function.
+
+```text
+portable Operation
+      ↓ model/authored/external selection
+resolve to local computation or typed Effect
+      ↓ when runtime-mediated
+Harness
+```
+
+The projection does not create another Stage or Execution, and its description/schema does not grant authority. Interaction templates such as MCP Prompts are similarly reusable composition/context objects rather than Effects by themselves. See [`interoperability.md`](interoperability.md).
 
 ---
 
@@ -775,6 +791,8 @@ The implementation should preserve:
 > **A Stage may hide complex local computation, LLM inference, Effects, Adapters, and child calls.**
 
 > **Effects are attributed to the enclosing Execution; local composition boundaries only define completion/correlation requirements.**
+
+> **Portable operations and protocol projections do not replace Effects or create new composition boundaries.**
 
 > **All work required for the current Stage's semantic completion settles before transition.**
 
