@@ -2,7 +2,9 @@
 
 > **Status: canonical memory semantics for ArrokothI v0.4.**
 >
-> Read [`mental-model.md`](mental-model.md) first. This document owns the meanings of Structured Memory, Derived Semantic Memory, Working Notes, Artifacts / Files, memory scope/view, provenance, promotion, retrieval, and context compilation. Authority/visibility is defined in [`authority.md`](authority.md); runtime lifecycle/history is defined in [`execution-runtime.md`](execution-runtime.md).
+> Read [`mental-model.md`](mental-model.md) first. This document owns Structured Memory, Derived Semantic Memory, Working Notes, Artifacts / Files, memory scope/view, provenance, promotion, retrieval, context compilation, and memory consistency consequences.
+>
+> Permission/delegation/Active View belongs in [`authority.md`](authority.md). Runtime lifecycle/history/concurrency belongs in [`execution-runtime.md`](execution-runtime.md). Stage/child/parallel-branch handoff belongs in [`composition.md`](composition.md). Portable Resource/service/protocol mapping belongs in [`interoperability.md`](interoperability.md). Trust/security consequences belong in [`security-guarantees.md`](security-guarantees.md). Unresolved memory provider/API/concurrency questions belong in [`future-plan.md`](future-plan.md).
 
 ## 1. Memory is retained information, not current prompt context
 
@@ -24,7 +26,7 @@ memory ≠ context
 
 A piece of memory may never appear in a particular model call. Conversely, model context may include recent Events, instructions, schemas, or transient observations that are not durable memory.
 
-Context compilation is an information-selection problem. It does not choose operation exposure; that belongs to authority/Active View projection.
+Context compilation is an information-selection problem. It does not choose operation exposure; that belongs to authority/Active View projection in [`authority.md`](authority.md).
 
 ---
 
@@ -75,7 +77,7 @@ The defining property is not simply that the data is JSON or typed.
 
 > **Structured Memory means the application intentionally asserts this state.**
 
-A model may propose `WriteMemory`, but the Harness/application controls whether the write is permitted and how the schema is interpreted.
+A model may propose `WriteMemory`, but the Harness/application controls whether the write is permitted and how the schema is interpreted. Effect authorization belongs in [`authority.md`](authority.md); Effect execution semantics belong in [`execution-runtime.md`](execution-runtime.md).
 
 Structured Memory may be updated destructively when the schema represents current state. For example, replacing a current shipping address is semantically different from erasing historical source observations.
 
@@ -147,7 +149,7 @@ A parent/child ownership relation does not imply note visibility.
 note ancestry ≠ note visibility
 ```
 
-A child may receive an explicitly delegated read-only subset plus its own local writable frame. Sequential Workflow Stages may also use explicit handoff policy rather than inheriting all previous scratch state automatically.
+A child may receive an explicitly delegated read-only subset plus its own local writable frame. Sequential Workflow Stages may also use explicit handoff policy rather than inheriting all previous scratch state automatically. Composition consequences are defined in [`composition.md`](composition.md).
 
 ---
 
@@ -170,6 +172,8 @@ model-generated deliverables
 Artifacts may participate in provenance and context compilation, but they remain separate from Structured Memory fields and Derived Semantic claims.
 
 An Artifact may itself be an authoritative application object, but its contents do not automatically become semantic memory until an application/controller reads, extracts, or references them.
+
+Portable Resource/export mappings belong in [`interoperability.md`](interoperability.md).
 
 ---
 
@@ -305,6 +309,8 @@ NOT trusted Structured Memory automatically
 
 > **Inference cannot create authority.**
 
+Authorization-evidence semantics are defined in [`authority.md`](authority.md); security consequences are defined in [`security-guarantees.md`](security-guarantees.md).
+
 ---
 
 ## 10. Derived memory should preserve source/provenance and supersession
@@ -332,7 +338,7 @@ supersedes / contradicted-by links
 scope/view refs
 ```
 
-This document does not freeze one universal claim schema.
+This document does not freeze one universal claim schema. Exact portable/provider APIs remain in [`future-plan.md`](future-plan.md).
 
 A useful default is additive history rather than destructive rewriting of inferred claims.
 
@@ -395,7 +401,7 @@ A storage namespace or scope identifier is not itself authorization.
 scope membership ≠ permission
 ```
 
-Authority determines which memory views an Execution may read/write; scope describes the intended sharing/association dimension.
+Authority determines which memory views an Execution may read/write; scope describes the intended sharing/association dimension. See [`authority.md`](authority.md).
 
 ---
 
@@ -429,7 +435,7 @@ model context
   ⊆ information selected from authorized memory/resource views
 ```
 
-Authority/view semantics are defined in [`authority.md`](authority.md).
+Authority/view semantics are defined in [`authority.md`](authority.md). Child/Stage handoff consequences are in [`composition.md`](composition.md).
 
 ---
 
@@ -477,7 +483,7 @@ operation projector / Active View
   does NOT choose memory/resource snippets
 ```
 
-These mechanisms may both consume a token/context budget, but they remain semantically separate.
+These mechanisms may both consume a token/context budget, but they remain semantically separate. Operation exposure/projection is defined in [`authority.md`](authority.md); provider/protocol descriptor projection is defined in [`interoperability.md`](interoperability.md).
 
 ---
 
@@ -510,6 +516,8 @@ simple implementation / Mem0 / Graphiti / application backend / other
 
 No provider may redefine Structured Memory authority, Working Note visibility, cross-Execution delegation, or the meaning of an Event.
 
+Backend selection belongs in [`future-plan.md`](future-plan.md) and implementation decisions under [`development/`](development/).
+
 ---
 
 ## 15. Memory writes and concurrency
@@ -527,11 +535,11 @@ lease/exclusive ownership
 provenance-preserving merge
 ```
 
-The exact API is not frozen by this document.
+The exact API is not frozen by this document and remains in [`future-plan.md`](future-plan.md).
 
 Derived Semantic Memory often tolerates additive concurrent ingestion more naturally, followed by deduplication/supersession/conflict relations. That does not imply every backend is eventually consistent or conflict-free.
 
-Working Notes should normally avoid cross-Execution shared mutation altogether; explicit handoff/commit is safer than turning scratch state into ambient shared memory.
+Working Notes should normally avoid cross-Execution shared mutation altogether; explicit handoff/commit is safer than turning scratch state into ambient shared memory. Parallel-branch composition consequences are defined in [`composition.md`](composition.md).
 
 ---
 
@@ -559,7 +567,7 @@ Artifacts / Files
 
 Even Structured Memory is not automatically an authority grant merely because a field exists. [`authority.md`](authority.md) owns which evidence is sufficient for authorization.
 
-Mechanical confirmation remains separate from memory entirely.
+Mechanical confirmation remains separate from memory entirely. Security/deployment consequences are defined in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -600,4 +608,4 @@ And these positive rules summarize the model:
 
 > **Retrieval engines are replaceable mechanisms behind Arrokoth-owned memory semantics.**
 
-This document owns these memory meanings. Other canonical documents should reference them rather than redefine them.
+This document owns these memory meanings. Use [`README.md`](README.md) to locate adjacent canonical owners instead of redefining them here.
