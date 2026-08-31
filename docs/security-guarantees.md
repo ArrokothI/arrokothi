@@ -2,7 +2,7 @@
 
 > **Status: v0.4 semantic security contract plus deployment-dependent containment guarantees.**
 >
-> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), and [`runtime-architecture.md`](runtime-architecture.md) first. This document does not redefine Execution, Event, Effect, authority, memory, or lifecycle. It states what security properties the kernel should enforce, which guarantees depend on the deployment environment, and where application/platform policy remains responsible.
+> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), and [`runtime-architecture.md`](runtime-architecture.md) first. Portable interface and protocol mappings are defined in [`interoperability.md`](interoperability.md). This document does not redefine Execution, Event, Effect, authority, memory, or lifecycle. It states what security properties the kernel should enforce, which guarantees depend on the deployment environment, and where application/platform policy remains responsible.
 
 The central security principle is:
 
@@ -94,6 +94,9 @@ third-party skills/plugins
 retrieved documents and web content
 capability/tool results
 external messages
+imported protocol descriptors / schemas
+imported resources and prompt/interaction templates
+external task/notification payloads
 ```
 
 The trusted computing base includes the logical Harness, policy evaluation, the stores that protect kernel state, the platform control plane that authenticates callers, and any sandbox/isolation backend used to execute untrusted code. A vulnerability in that trusted substrate can invalidate the corresponding guarantee.
@@ -117,6 +120,9 @@ note ancestry        ≠ note visibility
 child ownership      ≠ unrestricted parent authority
 model instruction    ≠ authority grant
 retrieved content    ≠ authority grant
+protocol discovery   ≠ invocation permission
+protocol auth        ≠ Execution authority
+external task/handle ≠ bearer authorization
 ```
 
 Child authority must be derived from the creator's delegable authority plus application/runtime policy. A child must not gain authority merely by requesting it.
@@ -392,6 +398,25 @@ The kernel's Execution authority model does not replace API authentication. A ho
 
 The same rule applies to Effect settlement. Authorization and settlement are different boundaries: authorization asks whether an Execution may perform a requested operation, and settlement reports what an already-authorized, already-dispatched operation actually produced. A controller or Workflow Stage may propose an Effect; it must never be given settlement authority. `PendingOperationId`, `EffectId`, correlation identifiers, and Execution identifiers name records for the purpose of reporting a result against them - they are not bearer tokens, and knowing one is not authorization to invoke settlement. In an embedded trusted-local deployment, host/integration code may call settlement directly because the host process is already trusted. In a hosted deployment, any provider webhook, remote worker, or queue consumer must be authenticated by the application/integration layer - using the same control-plane authentication already required above - before it is allowed to reach kernel settlement.
 
+### Protocol/service boundary
+
+The same separation applies when ArrokothI imports or exports MCP, HTTP/OpenAPI, SDK, or future agent protocols.
+
+```text
+protocol authentication
+  authenticates the external caller/server connection
+
+application authorization
+  decides which exported service/resource the caller may use
+
+Execution authority
+  decides what the invoked Execution may do after entry
+```
+
+These are independent checks. An MCP client that can discover a Tool does not thereby gain permission to invoke the underlying operation; an MCP Resource URI does not grant Resource Authority; an async task or persistent Agent handle must not become a bearer credential merely because the caller knows it.
+
+Likewise, imported protocol metadata and content are untrusted inputs. Descriptions, schemas, prompt templates, resource contents, operation results, and notifications may influence model/controller behavior, but they cannot grant authority or settlement rights. Export adapters must expose only an explicitly approved public surface rather than reflecting every internal Effect, peer, memory field, or capability automatically. See [`interoperability.md`](interoperability.md).
+
 ---
 
 ## 11. No ambient credentials
@@ -556,6 +581,8 @@ Before claiming the isolated hosted profile, executable tests should demonstrate
 9. Resource limits prevent one Execution from trivially exhausting the host or monopolizing the scheduler.
 10. An Internet-facing control plane rejects callers who know an Execution/session identifier but lack application/tenant authorization.
 11. The trusted local profile remains usable without pretending to provide hostile-code containment.
+12. Protocol discovery/exposure does not grant invocation or Resource Authority, and an external task/Execution handle is insufficient without application authorization.
+13. Imported protocol descriptions, prompts, resources, results, and notifications may influence requests but cannot grant Effect authority or settlement rights.
 
 These scenarios should be rerun for every isolation backend that ArrokothI advertises as compatible with the hosted profile.
 
