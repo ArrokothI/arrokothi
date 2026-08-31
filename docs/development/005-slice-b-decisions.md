@@ -26,6 +26,10 @@ idempotency
   operation-specific,
   generic default none,
   identical payloads are not automatically the same logical request
+
+CapabilityCatalog
+  portable operation-intrinsic semantics only,
+  not authorization, exposure, executor binding, credentials, or application identity
 ```
 
 ---
@@ -270,6 +274,61 @@ This is separate from future cryptographic consent binding. If an adversarially 
 
 ---
 
+## DEC-B06 — CapabilityCatalog owns portable operation semantics only
+
+`CapabilityCatalog` is the kernel's portable semantic description of capability operations. It answers:
+
+```text
+What is this operation semantically?
+```
+
+It does not answer:
+
+```text
+Who may use it?
+Should this controller/model see it now?
+How is it implemented?
+Which credential or endpoint performs it?
+Which application user/tenant owns it?
+```
+
+**Accepted ownership:**
+
+```text
+CapabilityCatalog
+  → portable, operation-intrinsic semantics
+
+EffectAuthorizer / runtime policy
+  → whether this Execution may perform the request
+
+active view / exposure
+  → whether the controller/model can currently see or select it
+
+CapabilityExecutor
+  → concrete implementation and transport
+
+resource bindings
+  → concrete authorized resource access
+```
+
+Consequentiality is the first operation-intrinsic fact owned by the catalog. Later fields may be added only when a concrete slice requires them and only if they remain operation-intrinsic and portable. Reasonable future candidates include portable input/output schemas, supported idempotency semantics, and abstract resource requirements.
+
+Do not put authorization grants, confirmation policy, active/model exposure, concrete executor bindings, credentials, provider/transport details, tenant/user/role/billing data, or concrete resource grants into the catalog.
+
+Preserve:
+
+```text
+authority != exposure
+semantic capability != implementation backend
+resource requirement != resource grant
+```
+
+A new Effect represents a new logical operation by default. Future idempotency mechanisms should identify retries of the same logical operation rather than infer identity solely from equal payloads. `per_input` remains an optional specific strategy, not the general identity model.
+
+Do not proactively grow the catalog before a concrete capability/Stage/Agent requirement needs another portable semantic field.
+
+---
+
 ## Required correction before Slice C
 
 Before beginning real Workflow Stages, make the following narrow Slice-B corrections:
@@ -284,3 +343,5 @@ Before beginning real Workflow Stages, make the following narrow Slice-B correct
 Do not implement Slice G input-label wake selectors yet. Record the requirement and leave the exact representation deferred.
 
 After this correction, Slice C may proceed.
+
+> **Post-correction status:** the Slice-B correction implementing the checklist above is complete and green. DEC-B06 adds an ownership guardrail for future catalog growth; it requires no additional Slice-B implementation before the provider foundation / Slice C-D work.
