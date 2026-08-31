@@ -2,7 +2,7 @@
 
 > **Status: roadmap and open design questions, not canonical semantics.**
 >
-> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), [`runtime-architecture.md`](runtime-architecture.md), [`security-guarantees.md`](security-guarantees.md), and [`implementation-guide.md`](implementation-guide.md) first.
+> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), [`runtime-architecture.md`](runtime-architecture.md), [`interoperability.md`](interoperability.md), [`security-guarantees.md`](security-guarantees.md), and [`implementation-guide.md`](implementation-guide.md) first.
 
 The immediate goal is to validate the current architecture through implementation rather than add more abstractions.
 
@@ -44,9 +44,14 @@ semantic control ≠ operational control
 Stage            ≠ Execution
 request          ≠ authorization
 Execution        ≠ process/sandbox
+Effect           ≠ protocol operation
+Event            ≠ protocol notification
+Execution        ≠ external task/job handle
 ```
 
 Function calls, LLM inference, and Adapters normally remain local computation inside an enclosing Execution.
+
+Portable service/interface descriptors are intentionally mappable to MCP, model tools, HTTP/OpenAPI, SDKs, and future protocols, but they do not replace the kernel Event/Effect vocabulary or grant authority. MCP is a first-class interoperability target rather than a kernel dependency.
 
 A useful decision rule is:
 
@@ -58,7 +63,7 @@ The security direction is also stable enough to build against:
 
 > **An Execution receives authority, not ambient privilege. Application policy decides what should be allowed; the kernel enforces ArrokothI authority/visibility semantics; hostile-code containment requires an execution-isolation substrate.**
 
-Prompt/model/retrieved/tool content may influence what an Agent requests, but must not grant new authority by itself.
+Prompt/model/retrieved/tool/protocol content may influence what an Agent requests, but must not grant new authority by itself.
 
 ---
 
@@ -293,6 +298,45 @@ per-principal isolation appropriate to the threat model
 
 Do not build all low-level isolation machinery from scratch if an existing backend can satisfy the contract behind an ArrokothI-owned interface.
 
+### 2.12 Interoperability surface and first MCP bridge
+
+Do this as a vertical slice after the kernel contracts it depends on are stable enough; do not retrofit MCP wire types into Slices A–C merely to start early.
+
+First stabilize only the portable semantics required by a concrete round trip:
+
+```text
+portable Operation descriptor
+portable Resource descriptor where needed
+interaction-template descriptor where needed
+model-facing projection
+protocol adapter boundary
+explicit export/service interface
+```
+
+Then prove both directions:
+
+```text
+MCP import
+  Tool/Resource/Prompt
+      ↓
+  portable Arrokoth descriptors
+      ↓
+  authority + Active/Exposed View
+      ↓
+  typed Effect/local operation
+
+MCP export
+  declared Agent/Workflow/capability/resource interface
+      ↓
+  portable descriptors
+      ↓
+  MCP server adapter
+      ↓
+  non-Arrokoth client
+```
+
+Add long-running Tasks, elicitation/multi-round input, notifications/subscriptions, persistent Agent handles, and richer protocol features only when their underlying Arrokoth semantics are clear. The point of this slice is to prove the abstraction boundary, not to implement every MCP feature at once.
+
 ---
 
 ## 3. Required conformance programs
@@ -314,6 +358,10 @@ Before declaring the model stable, implement and evaluate at least these program
 13. **Hostile Stage case** — under an isolated profile, direct ambient filesystem/network/secret/peer-state access fails while the same authorized action succeeds through an Effect.
 14. **Hosted control-plane case** — knowledge of another user's Execution/session identifier does not authorize inspection, messaging, cancellation, or reconfiguration.
 15. **Minimal runtime profile** — the same semantics run in-process without durable/distributed/sandbox machinery for trusted applications.
+16. **Portable operation round trip** — one semantic operation is projected into a model tool and external protocol/API binding, and both resolve through the same authority/Effect semantics rather than duplicated implementations.
+17. **MCP import case** — import Tool/Resource/Prompt metadata without granting authority merely through discovery; an imported operation executes only through authorized Arrokoth boundaries.
+18. **Agent/Workflow MCP export case** — a non-Arrokoth client invokes an explicitly exported Definition service, while private Effects/memory/peers remain unexposed.
+19. **Async/input/change protocol case** — external task completion, input-required interaction, and selected resource-change notifications map to PendingOperation/RequestUserInput/Event semantics without equating external task, notification, or handle identity with the corresponding kernel concepts.
 
 Architecture changes should be justified against these scenarios rather than aesthetics alone.
 
@@ -794,6 +842,39 @@ The invariant to preserve is:
 
 > **Cryptographic identity and authorization are transport/enforcement mechanisms; they must not redefine ArrokothI's semantic authority model. A valid signature can prove who sent a request, but does not imply that the sender is authorized to perform the requested Effect.**
 
+### 4.23 Protocol evolution and portable descriptor scope
+
+MCP and other agent protocols will continue to evolve. The open question is not whether ArrokothI should track them; it should. The question is **which layer should absorb each useful idea**.
+
+For each protocol feature, ask:
+
+```text
+wire/transport-specific?
+  → adapter only
+
+portable service/interface semantic?
+  → portable descriptor/interoperability layer
+
+requires durable authority/lifecycle/runtime truth?
+  → consider kernel evolution deliberately
+```
+
+Concrete areas to watch include:
+
+```text
+operation/tool metadata and schema evolution
+resource identity/templates/subscriptions
+prompt/interaction templates
+async tasks and cancellation
+elicitation / multi-round input
+progress and change notifications
+service/agent discovery and composition
+version negotiation / extension mechanisms
+cross-agent communication standards
+```
+
+Do not preserve an Arrokoth-specific abstraction merely because it existed first if a mature external design is more general. Conversely, do not import a protocol feature into kernel semantics merely because MCP exposes it today. The test is whether the concept remains meaningful across protocols and whether it changes actual runtime truth.
+
 ---
 
 ## 5. Security evolution: v0.4 vs future
@@ -905,11 +986,11 @@ Later work may include:
 persistent distributed scheduler
 remote workers
 large dormant Agent populations
-capability/resource discovery
+portable operation/resource/template discovery
 Active View retrieval
 large knowledge collections
 heterogeneous models/executors
-MCP and additional tool transports
+MCP import/export and additional protocol bindings
 remote sandbox/computer use
 OpenTelemetry/exporters
 production databases/brokers
@@ -946,7 +1027,7 @@ root Agent/Workflow Definition
 
 A Skill should not become another controller or alternate execution substrate.
 
-For public Skill/Agent ecosystems, packaging may later need security metadata such as requested authority, resource requirements, sandbox profile, provenance/signatures, or publisher identity. Keep those questions separate from the core semantic meaning of Skill until real distribution use cases are tested.
+For public Skill/Agent ecosystems, packaging may later need security metadata such as requested authority, resource requirements, sandbox profile, provenance/signatures, or publisher identity. Portable interaction templates and protocol-export metadata may also become part of packaging, but they should remain interface/packaging concerns rather than alternate kernel semantics.
 
 ---
 
@@ -965,6 +1046,9 @@ memory provenance
 messaging isolation
 context selection quality
 retrieval quality
+interop import/export round-trip tests
+protocol discovery vs authority tests
+async task/input/change mapping tests
 sandbox escape/containment tests
 resource-limit tests
 denied-Effect mutation tests
@@ -987,6 +1071,8 @@ race/failure behavior near the yield threshold
 ```
 
 For any advertised hosted isolation backend, rerun the same security conformance suite rather than assuming that backend choice alone provides the guarantee.
+
+For any advertised protocol binding, test semantic equivalence at the Arrokoth boundary rather than only wire compatibility: the same declared operation should retain its authority, consequentiality, correlation, result, and failure semantics across model-facing, local SDK, and external protocol projections.
 
 A new kernel abstraction should normally require at least one concrete application where existing primitives are awkward or semantically wrong.
 
