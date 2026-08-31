@@ -2,7 +2,7 @@
 
 > **Status: non-normative implementation translation.**
 >
-> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), [`runtime-architecture.md`](runtime-architecture.md), and [`security-guarantees.md`](security-guarantees.md) first. This guide translates those semantics into implementation boundaries and a practical coding-plan strategy. Exact APIs are intentionally illustrative.
+> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), [`runtime-architecture.md`](runtime-architecture.md), [`interoperability.md`](interoperability.md), and [`security-guarantees.md`](security-guarantees.md) first. This guide translates those semantics into implementation boundaries and a practical coding-plan strategy. Exact APIs are intentionally illustrative.
 
 ## 1. Implementation goal
 
@@ -25,14 +25,14 @@ Event(s)
 The critical dependency direction is:
 
 ```text
-provider/framework/storage implementations
+provider/framework/storage/protocol implementations
                 ↓
             kernel ports
                 ↓
           kernel semantics
 ```
 
-Provider SDKs, Agent-loop frameworks, retrieval libraries, tool transports, databases, observability systems, and sandbox backends should not define what Execution, Workflow, Agent, Event, Effect, authority, memory, or security boundaries mean.
+Provider SDKs, Agent-loop frameworks, retrieval libraries, tool transports, protocol SDKs, databases, observability systems, and sandbox backends should not define what Execution, Workflow, Agent, Event, Effect, authority, memory, or security boundaries mean.
 
 ---
 
@@ -666,6 +666,30 @@ external system
 
 A resource being bound to an Execution means the runtime may expose an authorized mode of use. It should not automatically mean that the underlying credential is placed in `process.env`, that arbitrary network egress is opened, or that a raw database client is handed to hostile code.
 
+### Portable descriptors and protocol adapters
+
+The capability gateway is the execution boundary; it is **not** the complete interoperability model. A separate portable descriptive surface should be able to describe Operations, Resources, and interaction templates independently from their concrete executor or protocol.
+
+Exact APIs are intentionally deferred, but the dependency should look like:
+
+```text
+model tool / MCP / HTTP+OpenAPI / SDK / Studio
+              ↑ project/export
+portable Arrokoth descriptors
+              ↓ bind/resolve
+controller or application call
+              ↓ when runtime-mediated
+typed Effect
+              ↓
+Harness / CapabilityGateway / other kernel path
+```
+
+Portable operation-intrinsic metadata may eventually include name/title, description, input/output schemas, consequentiality, supported idempotency semantics, and abstract resource requirements. Keep authorization, Active/Exposed View decisions, credentials, tenant/application identity, concrete backend clients, and settlement authority out of those descriptors.
+
+Protocol-specific SDK/wire types should live in adapter packages, not in core semantic records. An MCP client adapter may import Tools/Resources/Prompts into portable descriptors and executors; an MCP server adapter may export explicitly declared Agent/Workflow/capability/resource interfaces. The same Arrokoth descriptor should be reusable for model-facing projection without making the model tool schema itself the public capability contract.
+
+Do not automatically expose the five raw Effect kinds as a public protocol API. Export a declared service interface that resolves to typed Effects internally. See [`interoperability.md`](interoperability.md).
+
 ---
 
 ## 14. Confirmation and user input
@@ -819,6 +843,8 @@ platform-owned controller/Stage implementation
 Untrusted prompts/configuration are different from arbitrary uploaded executable code. This profile can be substantially safer before a full sandbox backend exists, provided the platform authenticates callers and keeps privileged operations behind the Harness.
 
 An `ExecutionId`, session id, mailbox reference, or resource handle should not accidentally act as authorization merely because a client knows it. API/control-plane authentication and tenant/resource authorization remain application/platform responsibilities.
+
+The same hosted Definition may later be exported through a declared MCP, HTTP/OpenAPI, or SDK service interface. Protocol authentication and application authorization happen outside the kernel; the invoked Execution then runs under its own effective authority. Exported handles must not become bearer authorization accidentally.
 
 ### Hosted arbitrary-code or multi-agent ecosystem
 
@@ -1040,6 +1066,8 @@ Checkpoint:
 - a consequential Effect is not duplicated after crash/retry;
 - pending Effects yielded because of the Activation wait budget retain their original operation deadline/correlation across restart.
 
+The canonical interoperability model does not require these existing slices to be reordered. After the core semantics needed by a concrete integration are stable, add interoperability work as its own vertical slice rather than leaking protocol types into earlier kernel slices.
+
 ---
 
 ## 20. Conformance scenarios
@@ -1136,6 +1164,12 @@ A caller that knows another user's Execution/session identifier but lacks applic
 
 Runs representative Workflow/Agent cases entirely in-process to verify that the architecture does not require heavyweight sandbox/durable/distributed infrastructure for trusted simple applications.
 
+### 16. Interoperability round trip
+
+Project one portable operation into a model-facing tool and at least one external protocol/API binding, invoke it, and verify that both paths resolve to the same typed kernel semantics and authority checks rather than separate implementations.
+
+For MCP specifically, later conformance should cover importing Tool/Resource/Prompt descriptors, exporting an Agent or Workflow service, long-running work through an external task handle, input-required/elicitation mapping, and notification/change handling without equating protocol notifications with mailbox Events.
+
 ---
 
 ## 21. Coding-plan rule
@@ -1146,8 +1180,10 @@ When converting these docs into issues/tasks:
 
 Before replacing an existing component, ask whether its responsibility already matches the target model. Preserve useful working code behind corrected interfaces where possible.
 
-Do not combine the deepest semantic migration with unrelated package movement, provider replacement, or stylistic refactoring unless necessary.
+Do not combine the deepest semantic migration with unrelated package movement, provider replacement, protocol integration, or stylistic refactoring unless necessary.
 
 For security mechanisms, prefer a small ArrokothI-owned interface around a reviewed existing backend over reimplementing mature isolation machinery merely for architectural purity. Reuse the mechanism; keep ArrokothI's authority and Execution semantics as the source of truth.
+
+For interoperability mechanisms, prefer ArrokothI-owned portable descriptors/ports plus edge adapters over importing MCP/OpenAPI/provider wire types into kernel semantic contracts. Reuse the protocol; keep ArrokothI's Event/Effect/Execution semantics as the source of truth.
 
 The target is not maximum abstraction. It is the smallest implementation that makes the mental model and stated security profile true and testable.
