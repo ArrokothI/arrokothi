@@ -2,7 +2,7 @@
 
 > **Status: canonical conceptual model.**
 >
-> This document defines what ArrokothI means. It intentionally avoids detailed TypeScript APIs, persistence layouts, scheduler algorithms, or provider-specific mechanisms. Those belong in the lower-level documents.
+> This document defines what ArrokothI means. It intentionally avoids detailed TypeScript APIs, persistence layouts, scheduler algorithms, provider-specific mechanisms, or protocol wire formats. Those belong in the lower-level documents.
 
 ## 1. The core idea
 
@@ -152,8 +152,8 @@ The category describes control ownership, not task output.
 
 An Execution is advanced by a **controller** appropriate to its kind.
 
-- A Workflow controller runs Stages and follows application-defined transitions. 
-- An Agent controller runs the agentic loop in which the model chooses the next semantic action. .
+- A Workflow controller runs Stages and follows application-defined transitions.
+- An Agent controller runs the agentic loop in which the model chooses the next semantic action.
 
 When the controller needs to interact with the runtime or outside world, it requests an Effect. Results return to the Execution as Events.
 
@@ -180,6 +180,7 @@ controller
               ↓
       relevant Execution(s)
 ```
+
 ### Event
 
 An **Event** is an observation delivered to an Execution.
@@ -477,7 +478,63 @@ Retrieval is usually a capability, not its own fundamental Execution kind.
 
 ---
 
-## 11. Parent/child composition
+## 11. Interoperability is a projection boundary
+
+ArrokothI kernel semantics should be independent of any one external protocol while remaining intentionally easy to import from and export to standard protocols.
+
+Conceptually:
+
+```text
+kernel semantics
+  Execution / Event / Effect / authority / memory / lifecycle
+        ↓
+portable interface semantics
+  operations / resources / interaction templates /
+  async handles / input requirements / change signals
+        ↓
+protocol bindings
+  MCP / HTTP+OpenAPI / SDK / future protocols
+```
+
+The purpose of the portable interface layer is to let the same semantic service be described once and projected into different environments without making wire formats kernel truth.
+
+Examples include:
+
+```text
+Capability Operation  → model tool / MCP Tool / SDK function
+bound Resource        → MCP Resource / HTTP resource / local binding
+interaction template  → MCP Prompt / UI recipe / SDK template
+Agent/Workflow call   → service operation / MCP Tool
+long-running service  → protocol task/job handle around runtime work
+```
+
+These mappings do not create identity:
+
+```text
+Effect             ≠ protocol operation
+Event              ≠ protocol notification
+Execution          ≠ external task/job
+Capability         ≠ MCP Tool
+bound Resource     ≠ MCP Resource
+```
+
+And descriptors do not create permission:
+
+```text
+protocol discovery ≠ authority
+model exposure     ≠ authority
+external handle    ≠ authorization
+```
+
+MCP is a first-class interoperability target and design reference because its Tools, Resources, Prompts, Tasks, elicitation, and notification/subscription concepts overlap strongly with agent-facing service interfaces. But MCP wire types and SDK types must not define ArrokothI core semantic contracts.
+
+When a maturing external protocol reveals a genuinely better general abstraction, ArrokothI should evaluate whether that concept belongs in the portable interoperability layer or, if it changes true runtime semantics, in the kernel itself. The goal is to adopt general ideas at the correct layer rather than preserve unnecessary proprietary concepts.
+
+See [`interoperability.md`](interoperability.md) for the detailed mapping and import/export model.
+
+---
+
+## 12. Parent/child composition
 
 `spawn` creates a new child Agent or Workflow Execution.
 
@@ -512,7 +569,7 @@ This distinction should remain explicit.
 
 ---
 
-## 12. One logical Harness
+## 13. One logical Harness
 
 Executions do not each own a separate Harness.
 
@@ -533,21 +590,25 @@ A simple application may use the same architecture with an in-memory store and s
 
 ---
 
-## 13. Core invariants
+## 14. Core invariants
 
 The design should protect these distinctions aggressively:
 
 ```text
-Definition       ≠ Execution
-Event            ≠ Effect
-response         ≠ terminal result
-authority        ≠ exposure
-memory           ≠ context
-ownership        ≠ communication
-semantic control ≠ operational control
-Workflow         ≠ Agent
-Stage            ≠ Execution
-Capability       ≠ Execution
+Definition        ≠ Execution
+Event             ≠ Effect
+response          ≠ terminal result
+authority         ≠ exposure
+memory            ≠ context
+ownership         ≠ communication
+semantic control  ≠ operational control
+Workflow          ≠ Agent
+Stage             ≠ Execution
+Capability        ≠ Execution
+Effect            ≠ protocol operation
+Event             ≠ protocol notification
+Execution         ≠ external task/job handle
+protocol exposure ≠ authority grant
 ```
 
 And these positive rules:
@@ -564,4 +625,8 @@ And these positive rules:
 
 > **Cross-Execution memory/context visibility is explicitly delegated; ancestry alone grants no visibility.**
 
-The lower-level documents define Workflow Stage semantics, Adapter behavior, Working Notes policy, pending operations, durability, and implementation mapping without changing these fundamentals.
+> **Kernel semantics are protocol-independent but intentionally projectable to portable interoperability interfaces.**
+
+> **External protocols may enrich ArrokothI design, but wire contracts do not become kernel truth merely because a protocol is popular.**
+
+The lower-level documents define Workflow Stage semantics, Adapter behavior, Working Notes policy, pending operations, durability, interoperability mapping, and implementation guidance without changing these fundamentals.
