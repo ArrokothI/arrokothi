@@ -2,7 +2,9 @@
 
 > **Status: canonical interoperability semantics for ArrokothI v0.4.**
 >
-> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), [`execution-runtime.md`](execution-runtime.md), [`authority.md`](authority.md), and [`memory.md`](memory.md) first. This document owns the portable service/interface layer and the mappings between Arrokoth semantics and external protocols such as MCP, A2A, Agent Skills, HTTP/OpenAPI, SDKs, and future standards.
+> Read [`mental-model.md`](mental-model.md) first. This document owns the portable service/interface layer and the mappings between Arrokoth semantics and external protocols such as MCP, A2A, Agent Skills, HTTP/OpenAPI, SDKs, and future standards.
+>
+> Agent/Workflow/Skill composition belongs in [`composition.md`](composition.md). Runtime Event/Effect/lifecycle/PendingOperation/ControllerResumption semantics belong in [`execution-runtime.md`](execution-runtime.md). Authority/Active View/model projection belongs in [`authority.md`](authority.md). Memory/context/provenance belongs in [`memory.md`](memory.md). Protocol/control-plane/trust/containment guarantees belong in [`security-guarantees.md`](security-guarantees.md). Unresolved binding/schema/protocol work belongs in [`future-plan.md`](future-plan.md).
 
 ## 1. Kernel semantics and interoperability semantics are separate but mappable
 
@@ -130,7 +132,7 @@ UseCapability {
 }
 ```
 
-The descriptor explains the interface. The Effect records the concrete requested runtime action.
+The descriptor explains the interface. The Effect records the concrete requested runtime action. Concrete Effect authorization belongs to [`authority.md`](authority.md), and dispatch/settlement belongs to [`execution-runtime.md`](execution-runtime.md).
 
 ---
 
@@ -168,7 +170,7 @@ indexed/retrieval source
 
 depending on its semantics.
 
-The portable descriptor should not expose backing credentials.
+The portable descriptor should not expose backing credentials. Resource/memory trust and provenance belong in [`memory.md`](memory.md); permission/exposure belongs in [`authority.md`](authority.md); hostile-code credential isolation belongs in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -211,6 +213,8 @@ A2A / MCP / HTTP / SDK / other binding
 ```
 
 > **Exported service interface ≠ Definition internals.**
+
+Composition semantics for the underlying Definition remain in [`composition.md`](composition.md).
 
 ---
 
@@ -267,6 +271,8 @@ into the appropriate Arrokoth runtime/service behavior.
 
 An exported long-running Agent service may map one external Task/handle to one long-lived Execution. A capability adapter may instead map it to one PendingOperation. Both are valid.
 
+The internal runtime meanings of Execution/PendingOperation are defined in [`execution-runtime.md`](execution-runtime.md).
+
 ---
 
 ## 8. Input and continuation requirements
@@ -291,7 +297,7 @@ user input required     ≠ exact mechanical confirmation
 
 `RequestUserInput` is the current kernel Effect for semantic user input. Protocol adapters may project it to MCP/A2A/HTTP/UI-specific mechanisms.
 
-A future broader `ContinuationRequirement` abstraction may be useful if concrete adapters need to represent non-user prerequisites consistently; it is not required as a new kernel Effect.
+A future broader `ContinuationRequirement` abstraction may be useful if concrete adapters need to represent non-user prerequisites consistently; it is not required as a new kernel Effect. This remains tracked in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -324,6 +330,8 @@ Similarly, progress updates may remain UI/telemetry data unless controller seman
 
 > **Protocol maintenance/change traffic does not automatically enter Execution mailboxes.**
 
+Event/mailbox semantics belong in [`execution-runtime.md`](execution-runtime.md).
+
 ---
 
 ## 10. Portable schema language and provider projection
@@ -352,6 +360,8 @@ validate before/after provider invocation
 ```
 
 Schema compatibility does not grant authority or exposure.
+
+When the portable schema contract should become a concrete implementation requirement remains in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -386,6 +396,8 @@ protocol discovery ≠ authority
 schema visibility    ≠ authority
 external identifier ≠ bearer credential
 ```
+
+Control-plane/application authorization for exported services is a separate deployment boundary defined in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -434,6 +446,8 @@ Ranking may use BM25, embeddings, hybrid retrieval, application scope, cached ma
 The first pass should normally avoid an extra LLM routing call. A model-visible discovery/search operation can be added when the initial view is insufficient, but it searches only already-authorized descriptors.
 
 > **Progressive discovery scales descriptor exposure; it does not enlarge authority.**
+
+The authority invariant belongs in [`authority.md`](authority.md); exact ranking/caching/search mechanics are future work in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -486,6 +500,8 @@ The export is explicit. Private memory, private peer topology, undeclared Effect
 
 MCP SDK/wire types remain outside kernel/core semantics.
 
+Concrete MCP import/export implementation work belongs in [`future-plan.md`](future-plan.md) and [`development/`](development/).
+
 ---
 
 ## 14. A2A binding
@@ -525,7 +541,7 @@ A remote A2A Agent is intentionally opaque. Its internal tools, memory, topology
 
 A local Arrokoth `call/spawn/send/ask` remains stronger because it may carry ownership, delegation, supervision, memory visibility, cancellation, and runtime correlation semantics unavailable to a generic remote protocol.
 
-Use A2A when crossing a service/implementation boundary; do not replace internal composition with A2A merely for uniformity.
+Use A2A when crossing a service/implementation boundary; do not replace internal composition with A2A merely for uniformity. Internal composition belongs in [`composition.md`](composition.md).
 
 ---
 
@@ -569,6 +585,8 @@ authority granted
 ```
 
 Progressive disclosure of Skill metadata/instructions/resources is compatible with Arrokoth's broader descriptor/context-discovery principles.
+
+Native Skill packaging questions remain in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -651,7 +669,7 @@ agent.status(handle)
 
 The external handle resolves through application policy to an Arrokoth service/Execution.
 
-It is not implicit authorization.
+It is not implicit authorization. Hosted control-plane authorization is defined in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -717,7 +735,7 @@ OTel span  ≠ Execution lifecycle record
 AG-UI event ≠ automatic mailbox Event
 ```
 
-Arrokoth should define semantic/runtime truth once and export the projection needed by the product surface.
+Arrokoth should define semantic/runtime truth once and export the projection needed by the product surface. Which optional bindings to implement is tracked in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -739,6 +757,8 @@ Is it transport/provider/storage machinery?
 Do not preserve a proprietary Arrokoth abstraction merely because it existed first if an external standard reveals a more general semantic distinction.
 
 Conversely, do not promote a wire feature into the kernel merely because a popular protocol exposes it.
+
+The retained [`architecture-research-dossier.md`](architecture-research-dossier.md) contains broader external-system evidence; this document remains the canonical interoperability owner.
 
 ---
 
@@ -779,4 +799,4 @@ And these positive rules summarize the model:
 
 > **When external standards reveal a better general abstraction, adopt it at the correct layer rather than copying the protocol object model into the kernel.**
 
-This document owns these interoperability meanings. Other canonical documents should reference them rather than redefine them.
+This document owns these interoperability meanings. Use [`README.md`](README.md) to locate adjacent canonical owners instead of redefining them here.
