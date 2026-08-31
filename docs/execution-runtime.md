@@ -2,7 +2,9 @@
 
 > **Status: canonical runtime semantics for ArrokothI v0.4.**
 >
-> Read [`mental-model.md`](mental-model.md) first. This document deepens only the runtime concepts behind `Execution`, `Harness`, lifecycle, Activation, Events, Effects, pending work, concurrency, wake-up, structural bounds, cancellation, supervision, durability, and recovery. Agent/Workflow composition belongs in [`composition.md`](composition.md).
+> Read [`mental-model.md`](mental-model.md) first. This document owns `Execution`, `Harness`, lifecycle, Activation, Events, Effects, pending work, controller resumption, scheduling, concurrency, wake-up, structural bounds, cancellation, supervision, durability, recovery, settlement, and runtime causation.
+>
+> Agent/Workflow/Stage/Skill composition belongs in [`composition.md`](composition.md). Authority/delegation/Active View/confirmation meaning belongs in [`authority.md`](authority.md). Memory forms/views/context compilation belong in [`memory.md`](memory.md). Protocol/task/handle mappings belong in [`interoperability.md`](interoperability.md). Trust/deployment guarantees belong in [`security-guarantees.md`](security-guarantees.md). Unresolved runtime/concurrency questions belong in [`future-plan.md`](future-plan.md).
 
 ## 1. One logical Harness
 
@@ -30,6 +32,8 @@ persistence / recovery
 routing
 mechanical confirmation
 ```
+
+The authority policy used for Effect authorization/confirmation is defined in [`authority.md`](authority.md); this document owns only the runtime act of enforcing/coordinating that decision.
 
 A simple application may implement the Harness in one process. A larger deployment may spread it across workers, stores, queues, and isolated environments.
 
@@ -184,7 +188,7 @@ Execution A ─┐
 Execution B ─┘
 ```
 
-That conflict is not solved by serializing each Execution internally. The resource/operation needs explicit concurrency semantics; see §11.
+That conflict is not solved by serializing each Execution internally. The resource/operation needs explicit concurrency semantics; see §11. Memory-specific consequences also appear in [`memory.md`](memory.md).
 
 ---
 
@@ -320,6 +324,8 @@ ControllerResumption
   runtime scheduling/resumption fact for controller-local async work
 ```
 
+Whether these should later share a more general internal suspension record is explicitly tracked in [`future-plan.md`](future-plan.md).
+
 ---
 
 ## 7. Events are delivered observations
@@ -350,6 +356,8 @@ runtime/external observation
 ```
 
 If normally local work is instead modeled as an independently managed external/runtime operation whose completion is semantically observable, its completion may legitimately enter through an Event. Event-ness follows the semantic boundary, not latency or implementation technology.
+
+External protocol notifications/tasks are not Events merely because they exist; their mapping belongs in [`interoperability.md`](interoperability.md).
 
 ---
 
@@ -383,11 +391,13 @@ RequestUserInput
 
 The Effect belongs to the requesting Execution even when a local Workflow Stage or Agent progression originated it.
 
+This means the Effect is requested under the identity/authority of the enclosing Execution. The Stage or Agent progression may remain causation/provenance metadata, but it is not an independent authority holder or runtime owner. See [`composition.md`](composition.md) and [`authority.md`](authority.md).
+
 The Harness may deny it, require confirmation, execute it immediately, dispatch it asynchronously, create runtime state, route a message, or record unresolved work.
 
 > **Effect request ≠ authorization ≠ completion.**
 
-The decisive authorization remains at the Harness boundary.
+The decisive authorization remains at the Harness boundary, according to [`authority.md`](authority.md).
 
 Independent Effects from one or many Executions may execute concurrently when their operation/resource semantics permit it.
 
@@ -486,7 +496,7 @@ ControllerResumption
   settlement resumes controller-local work
 ```
 
-A future design may discover that a more general pending/suspension abstraction is useful, but that should be justified by implementation evidence rather than assumed now.
+A future design may discover that a more general pending/suspension abstraction is useful, but that question belongs in [`future-plan.md`](future-plan.md), not current runtime truth.
 
 A PendingOperation is not necessarily the work itself.
 
@@ -547,7 +557,7 @@ state becomes revision N+1
 A1 later resumes
 ```
 
-The resumed continuation must not silently commit stale assumptions when those assumptions are no longer valid. Exact mechanisms—controller-state revision checks, re-evaluation, restricted interleaving, or explicit merge rules—remain controller/runtime design questions and should be validated before broad reentrant progression is exposed.
+The resumed continuation must not silently commit stale assumptions when those assumptions are no longer valid. Exact mechanisms—controller-state revision checks, re-evaluation, restricted interleaving, or explicit merge rules—remain controller/runtime design questions tracked in [`future-plan.md`](future-plan.md).
 
 ### Completion dependency
 
@@ -628,7 +638,7 @@ controller receives conflict/failure observation
 
 The controller/application can then re-read, merge, retry, or deliberately fail.
 
-Structured Memory and BoundResource APIs may eventually expose version/precondition/transaction semantics where applications require them; the exact API belongs to the memory/resource design rather than the Effect vocabulary.
+Structured Memory and BoundResource APIs may eventually expose version/precondition/transaction semantics where applications require them; memory-specific design belongs in [`memory.md`](memory.md), and still-unresolved exact APIs belong in [`future-plan.md`](future-plan.md).
 
 ### Durable exclusivity should use explicit leases/permits
 
@@ -672,7 +682,7 @@ A true deadlock requires the stronger condition that the participants have no ru
 
 The runtime should therefore treat cycles as **deadlock candidates**, not automatically kill them.
 
-At minimum, a durable/diagnostic runtime should be able to surface suspicious required-wait cycles. More advanced implementations may detect strongly connected blocked components and apply configured timeout, cancellation, or failure policy.
+At minimum, a durable/diagnostic runtime should be able to surface suspicious required-wait cycles. More advanced detection/policies are future work tracked in [`future-plan.md`](future-plan.md).
 
 ### Runtime locks must not create hidden deadlocks
 
@@ -717,7 +727,7 @@ unknown / indeterminate outcome
 
 Unknown is not success and is not necessarily definite failure. This matters when an external system may have acted even though its response was lost.
 
-Duplicate completion must not settle the same pending dependency twice. Correlation identifiers are integrity/causation data, not authority credentials.
+Duplicate completion must not settle the same pending dependency twice. Correlation identifiers are integrity/causation data, not authority credentials. Security requirements for who may call a settlement path are defined in [`security-guarantees.md`](security-guarantees.md).
 
 ### Two wake-up paths
 
@@ -782,6 +792,8 @@ runtime budgets
 ```
 
 The owner/parent relationship supports delegation, budget allocation, cancellation, supervision, and trace ancestry. Ownership does not imply unrestricted access to the child's private state.
+
+Authority attenuation is defined in [`authority.md`](authority.md); child memory/context visibility is defined in [`memory.md`](memory.md); the semantic use of child composition is defined in [`composition.md`](composition.md).
 
 ### Recursive composition is legal
 
@@ -877,7 +889,7 @@ propagate cancellation downward
 
 > **Ownership provides a supervision relationship; it does not mean every child failure automatically fails the parent.**
 
-Restart loops, like spawn loops, must remain bounded by runtime retry/restart policy rather than creating unlimited autonomous work.
+Restart loops, like spawn loops, must remain bounded by runtime retry/restart policy rather than creating unlimited autonomous work. Exact supervision/restart policies remain tracked in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -970,7 +982,7 @@ mechanical confirmation
 unknown-outcome reporting
 ```
 
-Existing durable execution systems may later implement runtime ports, but their own Workflow/object models must not redefine Arrokoth's Execution semantics.
+Existing durable execution systems may later implement runtime ports, but their own Workflow/object models must not redefine Arrokoth's Execution semantics. Backend selection is future work in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -1000,7 +1012,7 @@ message sender → receiver
 spawn request → child Execution
 ```
 
-This history supports audit, debugging, deadlock diagnostics, memory provenance, evaluation, and recovery. Observability systems such as OpenTelemetry should project this truth rather than define it.
+This history supports audit, debugging, deadlock diagnostics, memory provenance, evaluation, and recovery. Memory may cite runtime history as provenance according to [`memory.md`](memory.md). Observability systems such as OpenTelemetry should project this truth rather than define it.
 
 External protocol objects remain separate from runtime identities:
 
@@ -1082,4 +1094,4 @@ And these positive rules summarize the runtime:
 
 > **Durability and distribution may change mechanisms without changing application semantics.**
 
-This document owns these runtime meanings. Other canonical documents should reference them rather than restating them.
+This document owns these runtime meanings. Use [`README.md`](README.md) to find the canonical owner of adjacent concepts rather than redefining them here.
