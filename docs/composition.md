@@ -2,11 +2,9 @@
 
 > **Status: current v0.4 composition semantics.**
 >
-> Read [`mental-model.md`](mental-model.md) first. This document explains how work composes inside and across Executions. Workflow Stages provide the main explicit composition structure, but several mechanisms here—local computation, Effects, pending work, Adapters, child Executions, retrieval, and completion dependencies—are shared by both Workflows and Agents.
+> Read [`mental-model.md`](mental-model.md) first. This document owns how work composes inside and across Executions: Workflow Stages, Agent composition, local computation, structured parallelism, Effects as composition primitives, child Executions, peer interaction, Adapters, retrieval patterns, completion boundaries, and Skill packaging.
 >
-> Runtime lifecycle, scheduling, pending work, concurrency, structural budgets, wait-for dependencies, cancellation, and supervision are defined in [`execution-runtime.md`](execution-runtime.md).
->
-> Portable service/interface projection and protocol mapping are defined in [`interoperability.md`](interoperability.md). Those projections do not create new composition boundaries or replace Event/Effect semantics.
+> Runtime lifecycle, scheduling, waiting/resumption, concurrency, structural budgets, deadlock, cancellation, and supervision are defined in [`execution-runtime.md`](execution-runtime.md). Authority/delegation/exposure are defined in [`authority.md`](authority.md). Memory forms/views/Working Notes/context compilation are defined in [`memory.md`](memory.md). Portable service/interface projection and protocol mapping are defined in [`interoperability.md`](interoperability.md). Security/trust implications belong in [`security-guarantees.md`](security-guarantees.md). Unresolved composition/runtime questions belong in [`future-plan.md`](future-plan.md).
 
 ## 1. Composition does not imply an Execution boundary
 
@@ -344,7 +342,7 @@ runtime action
   authorized/coordinated through Harness
 ```
 
-Effects remain attributed to the enclosing Execution. Local Stage or Agent-step structure does not become runtime ownership.
+Effects remain attributed to the enclosing Execution. Local Stage or Agent-step structure does not become runtime ownership. The concrete Effect is authorized under the enclosing Execution's current authority as defined in [`authority.md`](authority.md).
 
 ### Portable operation projection
 
@@ -382,7 +380,7 @@ result/observation arrives
 continuation may resume
 ```
 
-The enclosing Execution may operationally move to `WAITING` when nothing else is runnable. Runtime suspension, interleaving, wake-up, and PendingOperation semantics belong to [`execution-runtime.md`](execution-runtime.md).
+The enclosing Execution may operationally move to `WAITING` when nothing else is runnable. Runtime suspension, interleaving, wake-up, PendingOperation, and ControllerResumption semantics belong to [`execution-runtime.md`](execution-runtime.md).
 
 The important composition rule is:
 
@@ -408,7 +406,7 @@ Event enters mailbox
 future progression may consume it
 ```
 
-This needs careful rules for correlation, cancellation, context insertion, and terminal completion, so broad non-blocking semantics remain future work.
+This needs careful rules for correlation, cancellation, context insertion, and terminal completion, so broad non-blocking semantics remain future work; see [`future-plan.md`](future-plan.md).
 
 The shared concept is:
 
@@ -504,7 +502,7 @@ rather than both branches freely overwriting the same controller field.
 
 > **Parallel execution is allowed; ambiguous shared-state mutation is not silently resolved by timing.**
 
-The exact branch snapshot/delta/reducer API is not frozen in v0.4 and should be validated against real parallel Workflow programs.
+The exact branch snapshot/delta/reducer API is not frozen in v0.4 and belongs in [`future-plan.md`](future-plan.md) until validated against real parallel Workflow programs.
 
 > **Not every computation deserves a Stage, just as not every computation deserves an Execution.**
 
@@ -667,7 +665,7 @@ Therefore:
 
 A static authoring tool may warn about recursive dependencies, but runtime safety must come from finite structural/runtime budgets rather than banning recursion.
 
-The runtime owns lineage-scoped limits such as descendant/spawn budget, active-descendant limits, depth, and parallelism. A child may receive only a bounded share of the remaining structural budget and cannot mint unlimited new descendant capacity. See [`execution-runtime.md`](execution-runtime.md).
+The runtime owns lineage-scoped limits such as descendant/spawn budget, active-descendant limits, depth, and parallelism. A child may receive only a bounded share of the remaining structural budget and cannot mint unlimited new descendant capacity. See [`execution-runtime.md`](execution-runtime.md). Child permission attenuation belongs to [`authority.md`](authority.md), and child memory visibility belongs to [`memory.md`](memory.md).
 
 ---
 
@@ -782,6 +780,8 @@ stop?
 
 The distinction is not "RAG vs no RAG". It is who owns the continuation space and whether retrieval deserves an explicit semantic boundary.
 
+Memory retrieval/provenance semantics belong to [`memory.md`](memory.md); live external access and portable Resource/Operation projection belong to [`interoperability.md`](interoperability.md).
+
 ---
 
 ## 14. Adapters are shared boundary transformations
@@ -860,7 +860,7 @@ The timing rule is symmetrical:
 
 ## 15. Working Notes at composition boundaries
 
-Working Notes are memory semantics and will ultimately be owned by the dedicated memory document. Composition needs two consequences of that policy.
+Working Notes are defined in [`memory.md`](memory.md). Composition needs two consequences of that memory policy.
 
 ### Across child Execution boundaries
 
@@ -901,7 +901,44 @@ Parallel branches should likewise avoid implicitly sharing mutable Working Notes
 
 ---
 
-## 16. What is not a new Stage type
+## 16. Skill is a composition/package abstraction
+
+A **Skill** is reusable packaging around instructions, resources, scripts/assets, bindings, and optionally Agent/Workflow composition. It is not a new Execution kind or Effect.
+
+Conceptually:
+
+```text
+Skill
+  descriptor
+  input/default bindings
+  instructions/templates
+  resources/references/assets
+  optional scripts
+  requested/recommended capabilities/resources
+  optional root composition
+      Agent Definition
+      or Workflow Definition
+```
+
+Two useful profiles are:
+
+```text
+instruction-only Skill
+  enriches current Agent context/resources
+  no child Execution required by default
+
+composition-backed Skill
+  invokes/calls/spawns root Agent or Workflow Definition
+  may therefore create child Execution(s)
+```
+
+A Skill may request/recommend operations/resources, but those declarations do not grant authority; see [`authority.md`](authority.md). Mapping to the external Agent Skills format belongs in [`interoperability.md`](interoperability.md).
+
+> **Skill ≠ Execution ≠ Effect.**
+
+---
+
+## 17. What is not a new Stage type
 
 A DSL or UI may expose convenient semantic labels such as:
 
@@ -921,7 +958,7 @@ This keeps the semantic vocabulary small while allowing richer authoring experie
 
 ---
 
-## 17. Composition invariants
+## 18. Composition invariants
 
 The implementation should preserve:
 
@@ -951,6 +988,8 @@ The implementation should preserve:
 
 > **Adapters transform boundaries; they do not own topology or independent runtime actions.**
 
+> **Skill is reusable composition/package metadata, not an Execution or Effect.**
+
 > **Prefer explicit shared state/results over hidden scratch-memory coupling.**
 
-Broad non-blocking semantics, detached child semantics, stale-continuation policy, exact parallel-branch snapshot/merge semantics, Adapter permissions, and Working Notes handoff remain deliberately conservative or subject to validation.
+Broad non-blocking semantics, detached child semantics, stale-continuation policy, exact parallel-branch snapshot/merge semantics, richer Skill packaging, Adapter permissions, and Working Notes handoff remain deliberately conservative or are tracked in [`future-plan.md`](future-plan.md).
