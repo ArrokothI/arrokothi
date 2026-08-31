@@ -1,0 +1,61 @@
+/**
+ * One-call wiring of a Harness over the dependency-free reference components.
+ *
+ * Conformance tests should spend their words on semantics, not construction. Note what this
+ * returns: the same single `harness` regardless of how many definitions are later registered. A
+ * helper that handed back one Harness per definition would quietly contradict the architecture it
+ * is supposed to be testing.
+ */
+
+import { ControllerRegistry } from "../runtime/controller-registry.ts";
+import { Harness } from "../runtime/harness.ts";
+import type { HarnessOptions } from "../runtime/harness.ts";
+import type { Clock } from "../ports/clock.ts";
+import type { IdGenerator } from "../ports/ids.ts";
+import type { ExecutionController } from "../ports/controller.ts";
+import { createDeterministicIds, createFixedClock } from "../reference/deterministic.ts";
+import { FifoScheduler } from "../reference/fifo-scheduler.ts";
+import { InMemoryDefinitionStore } from "../reference/in-memory-definition-store.ts";
+import { InMemoryRuntimeStore } from "../reference/in-memory-runtime-store.ts";
+import { createScriptedAgentController, createScriptedWorkflowController } from "./scripted-controllers.ts";
+
+export interface TestHarnessBundle {
+  readonly harness: Harness;
+  readonly definitions: InMemoryDefinitionStore;
+  readonly store: InMemoryRuntimeStore;
+  readonly scheduler: FifoScheduler;
+  readonly controllers: ControllerRegistry;
+  readonly clock: Clock;
+  readonly ids: IdGenerator;
+}
+
+export interface TestHarnessOptions {
+  /** Replaces the default scripted Agent/Workflow pair when a test needs its own controllers. */
+  readonly controllers?: readonly ExecutionController[];
+  readonly activationBudget?: HarnessOptions["activationBudget"];
+  readonly maxActivationsPerRun?: number;
+}
+
+export function createTestHarness(options: TestHarnessOptions = {}): TestHarnessBundle {
+  const definitions = new InMemoryDefinitionStore();
+  const store = new InMemoryRuntimeStore();
+  const scheduler = new FifoScheduler();
+  const controllers = new ControllerRegistry(
+    options.controllers ?? [createScriptedAgentController(), createScriptedWorkflowController()],
+  );
+  const clock = createFixedClock();
+  const ids = createDeterministicIds();
+
+  const harness = new Harness({
+    definitions,
+    store,
+    scheduler,
+    controllers,
+    clock,
+    ids,
+    ...(options.activationBudget !== undefined ? { activationBudget: options.activationBudget } : {}),
+    ...(options.maxActivationsPerRun !== undefined ? { maxActivationsPerRun: options.maxActivationsPerRun } : {}),
+  });
+
+  return { harness, definitions, store, scheduler, controllers, clock, ids };
+}
