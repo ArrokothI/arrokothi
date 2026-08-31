@@ -4,7 +4,7 @@
 >
 > Read [`mental-model.md`](mental-model.md) first. This document explains how work composes inside and across Executions. Workflow Stages provide the main explicit composition structure, but several mechanisms here—local computation, Effects, pending work, Adapters, child Executions, retrieval, and completion dependencies—are shared by both Workflows and Agents.
 >
-> Runtime ownership, scheduling, persistence, mailboxes, authority enforcement, and Working Note visibility are defined in [`runtime-architecture.md`](runtime-architecture.md).
+> Runtime lifecycle, scheduling, pending work, structural budgets, wait-for dependencies, cancellation, and supervision are defined in [`execution-runtime.md`](execution-runtime.md).
 >
 > Portable service/interface projection and protocol mapping are defined in [`interoperability.md`](interoperability.md). Those projections do not create new composition boundaries or replace Event/Effect semantics.
 
@@ -25,7 +25,6 @@ result collection
 
 When composition introduces a new Execution boundary in v0.4, it does so by creating or calling a child Agent or Workflow Execution. Existing Executions may also interact across boundaries through **messaging**, without forming a parent/child composition relationship.
 
-
 The important distinction is:
 
 ```text
@@ -38,6 +37,7 @@ child Execution composition
 peer interaction
   send/ask communicates with an already-existing Execution
 ```
+
 ---
 
 ## 2. Recap: Workflow and Agent composition
@@ -358,27 +358,33 @@ The projection does not create another Stage or Execution, and its description/s
 
 ---
 
-## 7. Pending work: blocking and future non-blocking composition
+## 7. Pending work and semantic completion dependencies
 
-An Effect or child operation may complete later. Whether semantic work can continue depends on whether the result is required for the current completion boundary.
+An Effect, peer interaction, or child operation may complete later. Whether semantic work can continue depends on which continuation or completion boundary requires the result.
 
-### Blocking work
+### Required work
 
-If the current Stage or Agent step depends on the result:
+If the current Stage or Agent progression depends on the result:
 
 ```text
 request operation
    ↓
-result required
+result required for this continuation
    ↓
-wait
+continuation suspends
    ↓
 Event/result arrives
    ↓
-continue
+continuation may resume
 ```
 
-The enclosing Execution may operationally move to `WAITING`. Runtime suspension, wake-up, and pending-operation storage belong to [`runtime-architecture.md`](runtime-architecture.md).
+The enclosing Execution may operationally move to `WAITING` when nothing else is runnable. Runtime suspension, interleaving, wake-up, and PendingOperation semantics belong to [`execution-runtime.md`](execution-runtime.md).
+
+The important composition rule is:
+
+> **Waiting for one required result suspends the dependent continuation; it does not necessarily make the whole Execution semantically incapable of processing every other Event.**
+
+For a long-lived Agent, another message or request may legitimately create a runnable progression before the original wait has resolved. For a Workflow blocked inside a Stage with no handler for that Event, it may remain non-runnable.
 
 ### Future non-blocking Agent work
 
@@ -395,14 +401,14 @@ Effect A later completes
    ↓
 Event enters mailbox
    ↓
-future agentic step may consume it
+future progression may consume it
 ```
 
 This needs careful rules for correlation, cancellation, context insertion, and terminal completion, so broad non-blocking semantics remain future work.
 
-The key shared concept is:
+The shared concept is:
 
-> **Pending work belongs to the Execution; composition boundaries identify which pending operations must settle before a particular semantic boundary can complete.**
+> **Pending work belongs to the Execution; composition boundaries identify the particular continuations/completion boundaries that depend on it.**
 
 ---
 
@@ -425,18 +431,7 @@ collect [resultA, resultB, resultC]
 
 that is a **mechanical join**. It does not require a dedicated Aggregator Stage.
 
-If the results need semantic processing—such as ranking, deduplication, conflict resolution, or synthesis—that work should be performed by Function or LLM logic, either:
-
-```text
-inside the current bounded Stage
-```
-
-or:
-
-```text
-as a separate Stage when the semantic operation deserves
-an explicit Workflow boundary
-```
+If the results need semantic processing—such as ranking, deduplication, conflict resolution, or synthesis—that work should be performed by Function or LLM logic, either inside the current bounded Stage or as a separate Stage when the semantic operation deserves an explicit Workflow boundary.
 
 > **Not every computation deserves a Stage, just as not every computation deserves an Execution.**
 
@@ -516,7 +511,7 @@ choose next semantic action
 Effect / child call / message / stop
         ↓
 observation
-        └──────────────→ next agentic step
+        └──────────────→ next agentic progression
 ```
 
 The Agent may use deterministic functions internally. Those functions do not make it a Workflow. Conversely, repeated LLM calls do not by themselves make a Workflow an Agent.
@@ -525,28 +520,30 @@ The defining property remains:
 
 > **The model owns an open-ended semantic continuation space.**
 
-### Completion of an Agent step vs completion of an Agent Execution
+### Agent progression vs Agent Execution
 
 These are different boundaries.
 
-An Agent may need an Effect result before making its next model decision, while still remaining a long-lived Execution afterward.
+An Agent may suspend one progression while waiting for an observation and later remain alive for another message or another progression.
 
 ```text
-current agentic step
-  waits for required observation
-        ↓
-next agentic step
-        ↓
-Agent may later WAIT for user/peer input
-        ↓
-Execution remains alive
+progression A
+  waits for child/peer/tool result
+
+another processable Event arrives
+  ↓
+Agent may run another Activation/progression
+  ↓
+original dependency remains pending
 ```
+
+Whether such interleaving is permitted depends on the controller semantics and runtime safety rules. It must not become uncontrolled concurrent mutation of one Agent's controller state.
 
 A response or completed model turn does not imply terminal Execution completion.
 
 ---
 
-## 11. Child Execution composition
+## 11. Recursive child composition
 
 Agent and Workflow Executions may compose recursively using child Executions.
 
@@ -557,7 +554,7 @@ Agent → Agent
 Agent → Workflow
 ```
 
-The child is independently managed by the Harness and receives its own runtime identity, lifecycle, authority, mailbox, pending operations, and delegated memory/context view.
+The child is independently managed by the Harness and receives its own runtime identity, lifecycle, authority, mailbox, pending operations, runtime budgets, and delegated memory/context view.
 
 ### `call`
 
@@ -576,11 +573,86 @@ Use `call` when the current semantic operation depends on the child's completion
 
 For v0.4, detached/background child semantics should be used conservatively. A Stage that semantically depends on a child should use `call` or otherwise mark the child's completion as required before Stage transition.
 
-Ownership and peer communication remain separate; `send`/`ask` semantics are defined at the runtime level in [`runtime-architecture.md`](runtime-architecture.md).
+### Recursive Definition graphs are allowed
+
+Composition is not required to form an acyclic Definition graph.
+
+These can be legitimate designs:
+
+```text
+Agent A → Agent B → Agent A
+Workflow A → Workflow B → Workflow A
+```
+
+as can recursive divide-and-conquer or recursive search.
+
+Therefore:
+
+> **A Definition appearing in its own indirect ancestry is not, by itself, an invalid composition.**
+
+A static authoring tool may warn about recursive dependencies, but runtime safety must come from finite structural/runtime budgets rather than banning recursion.
+
+The runtime owns lineage-scoped limits such as descendant/spawn budget, active-descendant limits, depth, and parallelism. A child may receive only a bounded share of the remaining structural budget and cannot mint unlimited new descendant capacity. See [`execution-runtime.md`](execution-runtime.md).
+
+This preserves useful recursive composition while preventing autonomous spawn loops from expanding forever.
 
 ---
 
-## 12. Retrieval / RAG patterns
+## 12. Cyclic waits and peer/child interaction
+
+Composition can also form **wait cycles**, which are different from recursive Definition graphs.
+
+Example:
+
+```text
+A calls B
+A waits for B terminal result
+
+B asks A for clarification
+B waits for A reply
+```
+
+This is not necessarily a deadlock.
+
+If A can safely process B's message while its original child-completion continuation is suspended, the sequence can progress:
+
+```text
+A waits for B
+B asks A
+A handles message in a later Activation
+A replies
+B continues and completes
+A receives B result
+```
+
+The composition rule is therefore:
+
+> **A dependency suspends the continuation that requires it; it does not automatically forbid all other semantically valid progress by that Execution.**
+
+Runtime `WAITING`, mailbox interleaving, wait-for dependency tracking, and deadlock diagnostics are defined in [`execution-runtime.md`](execution-runtime.md).
+
+### Semantic deadlocks remain possible
+
+Some cycles are genuine contradictions:
+
+```text
+A cannot produce X until B produces Y
+B cannot produce Y until A produces X
+```
+
+or resource dependencies may form an unbreakable cycle.
+
+The kernel cannot invent a correct semantic answer. It can expose the wait graph, apply deadlines/cancellation policy, and surface diagnostics so Agent/Workflow/application logic can recover or fail deliberately.
+
+This is why:
+
+```text
+recursive composition cycle ≠ wait cycle ≠ proven deadlock
+```
+
+---
+
+## 13. Retrieval / RAG patterns
 
 Retrieval is not one fixed architectural shape.
 
@@ -639,7 +711,7 @@ The distinction is not "RAG vs no RAG". It is who owns the continuation space an
 
 ---
 
-## 13. Adapters are shared boundary transformations
+## 14. Adapters are shared boundary transformations
 
 An **Adapter** is a lightweight, boundary-attached computation that transforms or validates data without owning semantic topology or independently interacting with the environment.
 
@@ -713,13 +785,13 @@ The timing rule is symmetrical:
 
 ---
 
-## 14. Working Notes at composition boundaries
+## 15. Working Notes at composition boundaries
 
-Working Notes are runtime memory policy and are defined in detail in [`runtime-architecture.md`](runtime-architecture.md). Composition needs two consequences of that policy.
+Working Notes are memory semantics and will ultimately be owned by the dedicated memory document. Composition needs two consequences of that policy.
 
 ### Across child Execution boundaries
 
-Ownership ancestry does not automatically expose parent notes to a child. The child receives an explicitly delegated Working Note view from the runtime.
+Ownership ancestry does not automatically expose parent notes to a child. The child receives an explicitly delegated Working Note view.
 
 ```text
 parent notes
@@ -727,8 +799,6 @@ parent notes
 selected inherited read-only view
    + child-local writable frame
 ```
-
-This is a runtime memory/visibility rule rather than Stage semantics.
 
 ### Across sequential Workflow Stages
 
@@ -756,7 +826,7 @@ Artifact/File
 
 ---
 
-## 15. What is not a new Stage type
+## 16. What is not a new Stage type
 
 A DSL or UI may expose convenient semantic labels such as:
 
@@ -770,15 +840,13 @@ guard
 retriever
 ```
 
-These do not need to become kernel Stage kinds.
-
-They can usually compile to Function or LLM Stages plus predefined transitions.
+These do not need to become kernel Stage kinds. They can usually compile to Function or LLM Stages plus predefined transitions.
 
 This keeps the semantic vocabulary small while allowing richer authoring experiences.
 
 ---
 
-## 16. Composition invariants
+## 17. Composition invariants
 
 The implementation should preserve:
 
@@ -788,15 +856,17 @@ The implementation should preserve:
 
 > **A Stage is a semantic Workflow boundary, not another Execution.**
 
-> **A Stage may hide complex local computation, LLM inference, Effects, Adapters, and child calls.**
-
-> **Effects are attributed to the enclosing Execution; local composition boundaries only define completion/correlation requirements.**
-
-> **Portable operations and protocol projections do not replace Effects or create new composition boundaries.**
+> **Effects are attributed to the enclosing Execution; local composition boundaries define completion/correlation requirements.**
 
 > **All work required for the current Stage's semantic completion settles before transition.**
 
 > **A mechanical join does not require an Aggregator Stage.**
+
+> **A suspended dependency blocks its continuation, not automatically every possible future Event.**
+
+> **Recursive Definition/Execution composition is legal; finite structural budget, not acyclicity, bounds autonomous expansion.**
+
+> **A recursive composition cycle is different from a wait cycle, and a wait cycle is not automatically a deadlock.**
 
 > **The number of LLM calls does not determine Workflow vs Agent.**
 
@@ -804,4 +874,4 @@ The implementation should preserve:
 
 > **Prefer explicit shared state/results over hidden scratch-memory coupling.**
 
-The exact Stage result type, broad non-blocking semantics, detached child semantics, Adapter permissions, and Working Notes handoff policy remain hypotheses to validate through implementation and conformance tests.
+Broad non-blocking semantics, detached child semantics, exact interleaving policy, Adapter permissions, and Working Notes handoff remain deliberately conservative or subject to validation.
