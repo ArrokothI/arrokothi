@@ -7,9 +7,14 @@
  * triple listed for this Execution, and what narrowing applies?
  *
  * Everything it does is subtractive. It can deny, it can restrict the resource bindings a request
- * gets, it can cap the operation deadline, it can force duplicate-suppression, and it can declare an
- * operation consequential. It cannot grant anything that was not asked for, and there is no rule
- * shape that says "allow whatever the controller wanted".
+ * gets, it can cap the operation deadline, and it can force duplicate-suppression. It cannot grant
+ * anything that was not asked for, and there is no rule shape that says "allow whatever the
+ * controller wanted".
+ *
+ * Consequentiality is deliberately not something a grant can turn off. Its baseline lives on a
+ * `CapabilityCatalog` descriptor (see `ports/capability-catalog.ts`); a rule here may only set
+ * `forceConsequential: true` to promote handling beyond that baseline, never to relax it. There is
+ * no way to write a rule that downgrades a descriptor-declared consequential operation.
  *
  * Effect kinds other than `UseCapability` are denied here too, though the Harness refuses them
  * before policy is ever consulted - which kind of Effect the runtime can perform is a kernel fact,
@@ -32,13 +37,13 @@ export interface CapabilityGrantRule {
   /** Resource bindings permitted. Omitted means the capability needs none. */
   readonly resources?: readonly { readonly bindingId: string; readonly mode: ResourceAccessMode }[];
   /**
-   * Whether this operation may change world state.
+   * Promotes this operation to consequential handling beyond its catalog baseline.
    *
-   * Defaults to `true`, which is the safe direction: a lost response for an operation that might
-   * have taken effect is an unknown outcome, not a failure. Declare `false` only for genuinely
-   * read-only capabilities.
+   * Only `true` does anything; there is no way to use this field to make a descriptor-declared
+   * consequential operation non-consequential. Whether an operation is *normally* safe to retry
+   * blind is declared on a `CapabilityCatalog` descriptor, not here.
    */
-  readonly consequential?: boolean;
+  readonly forceConsequential?: boolean;
   /** Forces duplicate-suppression regardless of what the requester asked for. */
   readonly idempotency?: EffectIdempotencyScope;
   readonly maxDeadlineMs?: number;
@@ -114,7 +119,7 @@ export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): 
         grantId: `grant_${issued}`,
         constraints: {
           resources,
-          consequential: rule.consequential ?? true,
+          ...(rule.forceConsequential === true ? { forceConsequential: true } : {}),
           ...(rule.idempotency !== undefined ? { idempotency: rule.idempotency } : {}),
           ...(rule.maxDeadlineMs !== undefined ? { maxDeadlineMs: rule.maxDeadlineMs } : {}),
         },

@@ -30,7 +30,7 @@ const busy = () =>
 
 const wired = () =>
   createTestHarness({
-    authorizer: createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", consequential: false }] }),
+    authorizer: createAllowListAuthorizer({ grants: [{ capability: "knowledge.query" }] }),
     capabilities: createScriptedCapabilityExecutor({
       handlers: { "knowledge.query:search": () => ({ status: "success", observation: { hits: 1 } }) },
     }),
@@ -135,7 +135,7 @@ describe("the Event vocabulary", () => {
       },
     });
     const { harness, definitions } = createTestHarness({
-      authorizer: createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", consequential: false }] }),
+      authorizer: createAllowListAuthorizer({ grants: [{ capability: "knowledge.query" }] }),
       capabilities: executor,
     });
     const ref = await definitions.save(busy());

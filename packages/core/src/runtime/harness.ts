@@ -44,6 +44,8 @@ import type { SecurityProfile } from "../effects/capability.ts";
 import type { DeliveredEvent, EventEnvelope, EventId, WakeCondition } from "../interaction/event-envelope.ts";
 import { eventSatisfiesWake } from "../interaction/event-envelope.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
+import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
+import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
 import { denyAllEffects } from "../ports/effect-authorizer.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
@@ -87,6 +89,13 @@ export interface HarnessOptions {
    * allowed it" must never look the same.
    */
   readonly authorizer?: EffectAuthorizer;
+  /**
+   * Where capability-operation consequentiality is declared.
+   *
+   * Omitting it classifies nothing, and an unclassified operation is treated as consequential -
+   * the conservative default, not a missing feature.
+   */
+  readonly capabilityCatalog?: CapabilityCatalog;
   /** Where authorized capability work actually happens. Omitting it refuses capability Effects. */
   readonly capabilities?: CapabilityExecutor;
   /**
@@ -178,6 +187,9 @@ export class Harness {
       ids: options.ids,
       // Fail closed. An unconfigured Harness denies every Effect rather than permitting them.
       authorizer: options.authorizer ?? denyAllEffects,
+      // Fail conservative. An unconfigured catalog classifies nothing, and nothing classified
+      // means every capability operation is treated as consequential.
+      catalog: options.capabilityCatalog ?? emptyCapabilityCatalog,
       capabilities: options.capabilities ?? null,
       inlineWait: options.inlineWait ?? microtaskInlineWaitBudget(),
       defaultEffectDeadlineMs: options.defaultEffectDeadlineMs ?? DEFAULT_EFFECT_DEADLINE_MS,

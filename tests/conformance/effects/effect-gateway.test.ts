@@ -31,7 +31,7 @@ const searcher = () =>
 
 const allowSearch = () =>
   createAllowListAuthorizer({
-    grants: [{ capability: "knowledge.query", operations: ["search"], consequential: false }],
+    grants: [{ capability: "knowledge.query", operations: ["search"] }],
   });
 
 const searchExecutor = () =>
@@ -161,7 +161,6 @@ describe("the Effect gateway", () => {
               { bindingId: "knowledge://papers", mode: "read" },
               { bindingId: "knowledge://private", mode: "read" },
             ],
-            consequential: false,
           },
         ],
       }),

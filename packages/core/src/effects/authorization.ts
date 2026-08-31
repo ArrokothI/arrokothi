@@ -53,8 +53,17 @@ export interface AuthorizationConstraints {
   readonly resources?: readonly ResourceBindingRef[];
   /** Caps the Effect's operation deadline. */
   readonly maxDeadlineMs?: number;
-  /** Policy's view of whether this changes world state. Overrides any requester opinion. */
-  readonly consequential?: boolean;
+  /**
+   * Promotes this operation to consequential handling, regardless of what its capability-operation
+   * descriptor says.
+   *
+   * There is deliberately no way to express the opposite here. Consequentiality is a baseline
+   * property of the operation (see `ports/capability-catalog.ts`); an authorization decision may
+   * only make handling *more* conservative than that baseline. Only `true` is a representable
+   * value, so a policy author cannot even accidentally write the field that would turn a payment
+   * into "safe to retry blind" - the type has no such field to write.
+   */
+  readonly forceConsequential?: true;
   /** Policy may force duplicate-suppression that the requester did not ask for. */
   readonly idempotency?: EffectIdempotencyScope;
 }

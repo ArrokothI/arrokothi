@@ -100,8 +100,15 @@ export type {
   ResourceBindingId,
 } from "./effects/ids.ts";
 export { capabilityId, isCapabilityId, isOperationId, isResourceBindingId, operationId, resourceBindingId } from "./effects/ids.ts";
-export type { EffectIdempotencyScope } from "./effects/fingerprint.ts";
+export type { EffectIdempotencyScope, IdempotencyKeyInput } from "./effects/fingerprint.ts";
 export { isEffectIdempotencyScope } from "./effects/fingerprint.ts";
+/**
+ * Index-only: builds the key `findByIdempotencyKey` searches by, from a non-cryptographic
+ * fingerprint. Two requests sharing this value are *candidates* for being the same logical
+ * operation, never proof of it - see `effects/duplicate-detection.ts` for the exact comparison
+ * that actually decides duplication.
+ */
+export { effectIdempotencyKey } from "./effects/fingerprint.ts";
 export type {
   AuthorizationEvidence,
   EffectKind,
@@ -123,12 +130,21 @@ export type {
   EffectAuthorizationRequest,
 } from "./effects/authorization.ts";
 export type {
+  CreatePendingOperationInput,
   PendingDispatchState,
   PendingOperation,
   PendingOperationStatus,
   PendingOutcomeState,
 } from "./effects/pending.ts";
-export { isExpired, isUnresolved, isUnresolvedDispatch } from "./effects/pending.ts";
+export {
+  createPendingOperation,
+  isExpired,
+  isUnresolved,
+  isUnresolvedDispatch,
+  markAbandoned,
+  markDispatched,
+  markSettled,
+} from "./effects/pending.ts";
 export type { EffectJournalEntry, EffectJournalPhase } from "./effects/journal.ts";
 export { EFFECT_JOURNAL_PHASES, effectRequestsIn, isTerminalEffectPhase, latestPhase } from "./effects/journal.ts";
 

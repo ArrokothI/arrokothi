@@ -146,7 +146,7 @@ describe("event delivery semantics", () => {
     // was routed into the mailbox before the Harness derived the next state.
     const executor = createDeferredCapabilityExecutor();
     const { harness, definitions } = createTestHarness({
-      authorizer: createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", consequential: false }] }),
+      authorizer: createAllowListAuthorizer({ grants: [{ capability: "knowledge.query" }] }),
       capabilities: executor,
     });
     const ref = await definitions.save(

@@ -48,7 +48,7 @@ const scenario = () =>
   });
 
 const policy = () =>
-  createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", operations: ["search"], consequential: false }] });
+  createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", operations: ["search"] }] });
 
 const OBSERVATION: JsonValue = { hits: ["alpha", "beta"] };
 

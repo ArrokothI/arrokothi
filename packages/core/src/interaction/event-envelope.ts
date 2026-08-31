@@ -63,6 +63,14 @@ export type DeliveredEvent = EventEnvelope & {
  * The condition is prospective. It describes what is still needed *after* the controller's semantic
  * work, so Events already delivered into the Activation that reported it can never satisfy it -
  * those were consumed observations, and the controller already decided they were not enough.
+ *
+ * Matching stops at kind and correlation on purpose. It cannot yet select `external.input` by its
+ * application-defined `label`, so an Execution waiting for one kind of application input still wakes
+ * for every other one addressed to it - at worst a spurious Activation, never an incorrect semantic
+ * result, since the controller can simply report the same prospective condition again. Selective
+ * input matching is accepted future work (see `docs/development/005-slice-b-decisions.md`, DEC-B01)
+ * and is deliberately deferred rather than solved here with an arbitrary predicate: a wake condition
+ * must stay declarative, serializable runtime data, not a callback or a query language.
  */
 export interface WakeCondition {
   /** Empty means "any Event addressed to me". */

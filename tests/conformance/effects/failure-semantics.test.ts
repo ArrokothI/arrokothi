@@ -16,14 +16,23 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
+import {
+  createAllowListAuthorizer,
+  createCapabilityCatalog,
+  createScriptedCapabilityExecutor,
+} from "@agent-sdk/core/reference";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
-const consequential = () =>
-  createAllowListAuthorizer({ grants: [{ capability: "mail.send", operations: ["send"], consequential: true }] });
+const consequential = () => createAllowListAuthorizer({ grants: [{ capability: "mail.send", operations: ["send"] }] });
 
-const readOnly = () =>
-  createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", operations: ["search"], consequential: false }] });
+const readOnly = () => createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", operations: ["search"] }] });
+
+/**
+ * `mail.send` needs no catalog: an unclassified operation already defaults to consequential.
+ * `knowledge.query.search` needs one to be genuinely non-consequential, because a grant can no
+ * longer downgrade a baseline it does not own.
+ */
+const readCatalog = () => createCapabilityCatalog([{ capability: "knowledge.query", operation: "search", consequential: false }]);
 
 const tries = (capability: string, operation: string, then: "complete" | "fail") =>
   scriptedAgentDefinition({
@@ -170,6 +179,7 @@ describe("failure semantics", () => {
 
     const readRun = createTestHarness({
       authorizer: readOnly(),
+      capabilityCatalog: readCatalog(),
       capabilities: createScriptedCapabilityExecutor({
         handlers: {
           "knowledge.query:search": () => {
@@ -278,6 +288,7 @@ describe("failure semantics", () => {
     }
     const { harness, definitions } = createTestHarness({
       authorizer: readOnly(),
+      capabilityCatalog: readCatalog(),
       capabilities: {
         // A plausible mistake: handing back the provider's own object instead of an observation.
         execute: async () => ({ status: "success", observation: new ProviderClient() }) as never,
@@ -298,6 +309,7 @@ describe("failure semantics", () => {
   test("an authorized capability with no executor fails loudly instead of appearing to work", async () => {
     const { harness, definitions } = createTestHarness({
       authorizer: readOnly(),
+      capabilityCatalog: readCatalog(),
       capabilities: createScriptedCapabilityExecutor({ handlers: { "other.thing": () => ({ status: "success", observation: null }) } }),
     });
     const ref = await definitions.save(tries("knowledge.query", "search", "complete"));

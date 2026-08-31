@@ -39,6 +39,9 @@ export { UnknownCapabilityError } from "./capability-executor.ts";
 export type { EffectAuthorizer } from "./effect-authorizer.ts";
 export { denyAllEffects } from "./effect-authorizer.ts";
 
+export type { CapabilityCatalog, CapabilityOperationDescriptor } from "./capability-catalog.ts";
+export { emptyCapabilityCatalog } from "./capability-catalog.ts";
+
 export type { InlineWaitBudget, InlineWaitResult } from "./inline-wait.ts";
 export { microtaskInlineWaitBudget } from "./inline-wait.ts";
 

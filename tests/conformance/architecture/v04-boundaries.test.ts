@@ -251,6 +251,26 @@ describe("v0.4 architecture boundaries", () => {
     );
   });
 
+  test("no controller-reachable module mentions settlement ingress", async () => {
+    // Belt and suspenders alongside the import-graph check above: `settleEffect` is trusted
+    // runtime/integration ingress (see docs/development/005-slice-b-decisions.md, DEC-B02), never
+    // an Agent/Workflow/Stage capability. This greps text, not just imports, so the rule survives
+    // even a future refactor that moves `settleEffect` somewhere the import-graph check does not
+    // yet name - and it is written against `ports/controller.ts` specifically so it keeps
+    // protecting the same boundary once a Stage execution context exists in a later slice.
+    const { files } = await walkGraph(["ports/controller.ts"]);
+    const violations: string[] = [];
+    for (const path of files) {
+      const source = await readFile(resolve(CORE_SRC, path), "utf8");
+      if (source.includes("settleEffect")) violations.push(path);
+    }
+    assert.deepEqual(
+      violations,
+      [],
+      "a controller may propose an Effect; only trusted runtime/integration ingress may report what happened to one",
+    );
+  });
+
   test("the capability boundary cannot reach Execution state, the store, or the Harness", async () => {
     const { files } = await walkGraph(["ports/capability-executor.ts"]);
     const forbidden = [

@@ -45,6 +45,7 @@ import type { CapabilityOutcome } from "../effects/outcome.ts";
 import { capabilityOutcomeIssues } from "../effects/outcome.ts";
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
 import { effectIdempotencyKey } from "../effects/fingerprint.ts";
+import { sameLogicalCapabilityRequest } from "../effects/duplicate-detection.ts";
 import type { CapabilityId, EffectId, IdempotencyKey, OperationId, PendingOperationId } from "../effects/ids.ts";
 import { EFFECT_ID_PREFIXES } from "../effects/ids.ts";
 import type { EffectJournalPhase } from "../effects/journal.ts";
@@ -62,6 +63,8 @@ import { nowIso } from "../ports/clock.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
 import { UnknownCapabilityError } from "../ports/capability-executor.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
+import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
+import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
 import type { IdGenerator } from "../ports/ids.ts";
 import { ID_PREFIXES } from "../ports/ids.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
@@ -122,6 +125,14 @@ export interface EffectProcessorDeps {
   readonly clock: Clock;
   readonly ids: IdGenerator;
   readonly authorizer: EffectAuthorizer;
+  /**
+   * Where a capability operation's baseline consequentiality is declared.
+   *
+   * Defaults to `emptyCapabilityCatalog`, which classifies nothing - and an unclassified operation
+   * is treated as consequential, so an unwired catalog fails toward the conservative reading rather
+   * than the convenient one.
+   */
+  readonly catalog: CapabilityCatalog;
   /** `null` means this deployment has no capability execution at all; requests are refused. */
   readonly capabilities: CapabilityExecutor | null;
   readonly inlineWait: InlineWaitBudget;
@@ -306,7 +317,16 @@ export class EffectProcessor {
   ): Promise<EffectDispatchRecord> {
     const executionId = input.context.executionId;
     const constraints: AuthorizationConstraints = decision.constraints ?? {};
-    const consequential = constraints.consequential ?? true;
+
+    // Consequentiality is a baseline property of the operation, not a policy opinion: the
+    // descriptor sets the floor, and a decision may only raise it. An unclassified operation
+    // defaults to consequential, so a catalog with a gap fails toward the safe interpretation.
+    // There is structurally no way to read this as `false` when the descriptor says `true` - the
+    // authorization type has no field that could express a downgrade.
+    const descriptor = this.deps.catalog.describe(proposal.capability, proposal.operation);
+    const descriptorConsequential = descriptor?.consequential ?? true;
+    const consequential = descriptorConsequential || constraints.forceConsequential === true;
+
     const scope: EffectIdempotencyScope = constraints.idempotency ?? proposal.idempotency ?? "none";
     const idempotencyKey = effectIdempotencyKey({
       scope,
@@ -317,7 +337,7 @@ export class EffectProcessor {
       input: proposal.input,
     });
 
-    const guard = await this.checkPriorOperations(executionId, idempotencyKey, consequential);
+    const guard = await this.checkPriorOperations(executionId, idempotencyKey, consequential, proposal);
     if (guard.kind === "refuse") {
       return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
         code: guard.code,
@@ -719,22 +739,43 @@ export class EffectProcessor {
   /**
    * The duplicate/unresolved guard, mined from the legacy runtime's external-execution rules.
    *
-   * A prior success replays. A prior *definite* failure does not block anything - suppressing
-   * retries would turn a transient failure into a permanent one. A prior unknown outcome, or a
-   * dispatch that was never resolved, blocks automatic redispatch of a consequential operation,
-   * because "we do not know whether it happened" is not a licence to do it again.
+   * `idempotencyKey` only narrows candidates - it is built from a non-cryptographic fingerprint,
+   * and a shared key does not by itself prove two requests are the same logical operation. Every
+   * candidate is checked against the *persisted* request it actually recorded, with an exact
+   * comparison of capability, operation, input, and resources, before it is treated as a duplicate.
+   * A coincidental or contrived key collision can therefore never merge two different requests: it
+   * can only make the candidate list slightly longer to filter.
+   *
+   * Once a candidate is confirmed identical: a prior success replays. A prior *definite* failure
+   * does not block anything - suppressing retries would turn a transient failure into a permanent
+   * one. A prior unknown outcome, or a dispatch that was never resolved, blocks automatic
+   * redispatch of a consequential operation, because "we do not know whether it happened" is not a
+   * licence to do it again.
    */
   private async checkPriorOperations(
     executionId: ExecutionId,
     idempotencyKey: IdempotencyKey,
     consequential: boolean,
+    proposal: UseCapabilityProposal,
   ): Promise<
     | { readonly kind: "proceed" }
     | { readonly kind: "refuse"; readonly code: string; readonly message: string }
     | { readonly kind: "replay"; readonly operation: PendingOperation; readonly observation: JsonValue }
   > {
     return this.deps.store.transact(executionId, async (tx) => {
-      const prior = await tx.pendingOperations.findByIdempotencyKey(executionId, idempotencyKey);
+      const candidates = await tx.pendingOperations.findByIdempotencyKey(executionId, idempotencyKey);
+      if (candidates.length === 0) return { kind: "proceed" } as const;
+
+      const prior: PendingOperation[] = [];
+      for (const candidate of candidates) {
+        const entries = await tx.effectJournal.listByEffect(candidate.effectId);
+        const requested = entries.find((entry) => entry.phase === "requested");
+        const recorded = requested?.detail["proposal"];
+        if (recorded === undefined) continue;
+        if (sameLogicalCapabilityRequest(recorded as unknown as UseCapabilityProposal, proposal)) {
+          prior.push(candidate);
+        }
+      }
       if (prior.length === 0) return { kind: "proceed" } as const;
 
       const succeeded = prior.find((operation) => operation.status === "settled" && operation.outcome === "success");

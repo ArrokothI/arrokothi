@@ -34,10 +34,10 @@ import {
 } from "@agent-sdk/core/testing";
 
 const policy = () =>
-  createAllowListAuthorizer({ grants: [{ capability: "mail.send", operations: ["send"], consequential: true }] });
+  createAllowListAuthorizer({ grants: [{ capability: "mail.send", operations: ["send"] }] });
 
 const readPolicy = () =>
-  createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", operations: ["search"], consequential: false }] });
+  createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", operations: ["search"] }] });
 
 const sender = (deadlineMs?: number) =>
   scriptedAgentDefinition({

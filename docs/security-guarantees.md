@@ -390,6 +390,8 @@ A separate hosted-platform rule is also required:
 
 The kernel's Execution authority model does not replace API authentication. A hosted service must authenticate the human/application/tenant making control-plane requests before allowing it to create, inspect, message, cancel, or reconfigure Executions.
 
+The same rule applies to Effect settlement. Authorization and settlement are different boundaries: authorization asks whether an Execution may perform a requested operation, and settlement reports what an already-authorized, already-dispatched operation actually produced. A controller or Workflow Stage may propose an Effect; it must never be given settlement authority. `PendingOperationId`, `EffectId`, correlation identifiers, and Execution identifiers name records for the purpose of reporting a result against them - they are not bearer tokens, and knowing one is not authorization to invoke settlement. In an embedded trusted-local deployment, host/integration code may call settlement directly because the host process is already trusted. In a hosted deployment, any provider webhook, remote worker, or queue consumer must be authenticated by the application/integration layer - using the same control-plane authentication already required above - before it is allowed to reach kernel settlement.
+
 ---
 
 ## 11. No ambient credentials

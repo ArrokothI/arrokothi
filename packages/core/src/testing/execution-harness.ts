@@ -14,6 +14,7 @@ import type { Clock } from "../ports/clock.ts";
 import type { IdGenerator } from "../ports/ids.ts";
 import type { ExecutionController } from "../ports/controller.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
+import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import { createDeterministicIds, createFixedClock } from "../reference/deterministic.ts";
@@ -42,6 +43,8 @@ export interface TestHarnessOptions {
    * asserting "requesting is not permission" wants.
    */
   readonly authorizer?: EffectAuthorizer;
+  /** Where an operation's baseline consequentiality is declared. Left unset, nothing is classified. */
+  readonly capabilityCatalog?: CapabilityCatalog;
   readonly capabilities?: CapabilityExecutor;
   /** Swap in `createNoInlineWaitBudget()` to force the slow path for work that could settle inline. */
   readonly inlineWait?: InlineWaitBudget;
@@ -68,6 +71,7 @@ export function createTestHarness(options: TestHarnessOptions = {}): TestHarness
     ...(options.activationBudget !== undefined ? { activationBudget: options.activationBudget } : {}),
     ...(options.maxActivationsPerRun !== undefined ? { maxActivationsPerRun: options.maxActivationsPerRun } : {}),
     ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
+    ...(options.capabilityCatalog !== undefined ? { capabilityCatalog: options.capabilityCatalog } : {}),
     ...(options.capabilities !== undefined ? { capabilities: options.capabilities } : {}),
     ...(options.inlineWait !== undefined ? { inlineWait: options.inlineWait } : {}),
     ...(options.defaultEffectDeadlineMs !== undefined ? { defaultEffectDeadlineMs: options.defaultEffectDeadlineMs } : {}),
