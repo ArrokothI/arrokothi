@@ -219,8 +219,12 @@ no runnable continuation remains,
 but unresolved work may later enable progress
   RUNNING → WAITING
 
-processable Event/resumption makes work runnable
+processable Event arrives
+or suspended controller-local work becomes resumable
   WAITING → READY
+
+scheduler selects again
+  READY → RUNNING
 
 controller reports terminal success
   RUNNING → COMPLETED
@@ -238,6 +242,8 @@ The key meaning is:
 
 A controller does not enter `WAITING` by emitting a semantic `yield`. The Harness derives it from runtime truth.
 
+Likewise, asynchronous completion does not jump directly from `WAITING` to `RUNNING`. Completion first makes work runnable (`READY`); the scheduler later selects the next Activation (`RUNNING`).
+
 ---
 
 ## 6. Semantic locality is not physical synchrony
@@ -250,16 +256,28 @@ But a provider call may take tens of seconds:
 
 ```text
 Activation A1
-  decide/model-input preparation
+  prepare model request
+  register controller-local resumption state
   dispatch provider request
-  persist enough resumption/correlation state
   nothing else runnable
   → yield
+  → Execution WAITING
 
 ... provider works asynchronously ...
 
 provider response arrives
-  → Execution becomes runnable
+  ↓
+model executor settles the suspended invocation
+  ↓
+result/resumption state becomes available
+  ↓
+Harness observes runnable controller work
+  ↓
+WAITING → READY
+  ↓
+scheduler selects Execution
+  ↓
+READY → RUNNING
 
 Activation A2
   consume model result
@@ -270,7 +288,37 @@ No worker needs to remain occupied merely because the work is semantically local
 
 > **Local to the Execution means “no independent Execution identity,” not “must complete synchronously inside one Activation.”**
 
-A controller-internal asynchronous result does not automatically become a public Arrokoth Event merely because the runtime suspended while waiting for it. Implementations may use internal continuation/resumption records while preserving the Event boundary defined below.
+### Controller-local resumption is not automatically an Event
+
+A controller-internal asynchronous result does not automatically become a public Arrokoth Event merely because the runtime suspended while waiting for it.
+
+For v0.4, the preferred semantic direction is to keep a separate controller-local resumption record/mechanism—conceptually a **ControllerResumption**—for work such as a model-provider invocation:
+
+```text
+ControllerResumption
+  belongs to one Execution/controller continuation
+  records enough correlation/resumption state
+  settlement makes controller work runnable
+  does not by itself enter the semantic Event mailbox
+```
+
+The exact implementation/API is not frozen. An in-memory runtime may use a Future/Promise or scheduler task; a durable runtime may persist a resumption record. The Harness only needs generic information such as:
+
+```text
+exec-A has controller-local work that became runnable
+```
+
+It does not need to interpret what the model result means. The Agent/Workflow controller owns that semantic interpretation.
+
+This preserves the distinction:
+
+```text
+Event
+  semantic observation delivered through runtime boundary
+
+ControllerResumption
+  runtime scheduling/resumption fact for controller-local async work
+```
 
 ---
 
@@ -295,7 +343,7 @@ Ordinary local function returns and model inference results do not become Events
 
 ```text
 controller-local result
-  resumes/returns to controller semantics
+  settles ControllerResumption / returns to controller semantics
 
 runtime/external observation
   is delivered as Event
@@ -361,7 +409,7 @@ result becomes available quickly?
 
 Whether completion occurs now or after a later wake-up must not change authorization, correlation, consequence/idempotency policy, trace identity, or result meaning.
 
-The same principle applies to other asynchronous controller work such as model-provider calls: the runtime may keep an Activation alive briefly for a fast result or suspend and resume later without changing the semantic meaning of that work.
+The same principle applies to controller-local asynchronous work such as model-provider calls: the runtime may keep an Activation alive briefly for a fast result or suspend and resume later without changing the semantic meaning of that work.
 
 ### Activation wait budget vs operation deadline
 
@@ -386,9 +434,9 @@ not “cancel the underlying operation.” Cancellation follows the operation de
 
 ---
 
-## 10. PendingOperation records unresolved runtime dependency/correlation
+## 10. PendingOperation and ControllerResumption are different
 
-A **PendingOperation** records unresolved runtime-mediated work that an Execution may need to correlate with a later observation.
+A **PendingOperation** records unresolved **runtime-mediated semantic work** that an Execution may need to correlate with a later observation.
 
 Examples include waiting for:
 
@@ -402,12 +450,10 @@ timer
 remote job completion
 ```
 
-Controller-internal asynchronous work such as a model-provider invocation may use the same underlying durable suspension machinery or a controller-owned resumption record; this is an implementation choice as long as it does not incorrectly turn every local provider result into a public Event/Effect.
-
-Conceptually for runtime-mediated work:
+Conceptually:
 
 ```text
-runtime-mediated work
+runtime-mediated semantic work
       ↓ unresolved
 PendingOperation
       ↓
@@ -415,6 +461,32 @@ trusted settlement / observation
       ↓
 correlated Event
 ```
+
+Controller-local asynchronous work such as a model-provider invocation follows the separate resumption path described in §6:
+
+```text
+controller-local async work
+      ↓ unresolved
+ControllerResumption
+      ↓
+internal settlement
+      ↓
+controller continuation becomes runnable
+```
+
+For v0.4, keep these semantic roles separate even if an implementation shares lower-level storage, queues, correlation utilities, or scheduling machinery between them.
+
+```text
+PendingOperation
+  runtime-mediated semantic dependency
+  settlement normally produces/delivers an Event
+
+ControllerResumption
+  controller-local async dependency
+  settlement resumes controller-local work
+```
+
+A future design may discover that a more general pending/suspension abstraction is useful, but that should be justified by implementation evidence rather than assumed now.
 
 A PendingOperation is not necessarily the work itself.
 
@@ -426,7 +498,8 @@ Arrokoth waiting record: pending-77
 Likewise:
 
 ```text
-external async handle ≠ PendingOperation
+external async handle  ≠ PendingOperation
+ControllerResumption   ≠ PendingOperation
 Execution              ≠ PendingOperation
 ```
 
@@ -646,17 +719,47 @@ Unknown is not success and is not necessarily definite failure. This matters whe
 
 Duplicate completion must not settle the same pending dependency twice. Correlation identifiers are integrity/causation data, not authority credentials.
 
-The logical wake-up path is:
+### Two wake-up paths
+
+An Execution may become runnable in two conceptually different ways.
+
+Semantic observation path:
 
 ```text
-result / message / timer / user input / controller resumption
+result / message / timer / user input
              ↓
-   Event or internal resumption signal
+           Event
              ↓
-processable work exists?
-  ├── yes → WAITING → READY → scheduler → Activation
-  └── no  → remain non-runnable until something relevant changes
+          mailbox
+             ↓
+processable semantic work exists
+             ↓
+       WAITING → READY
 ```
+
+Controller-local resumption path:
+
+```text
+model/local async completion
+             ↓
+settle ControllerResumption
+             ↓
+controller continuation becomes runnable
+             ↓
+       WAITING → READY
+```
+
+Both paths only establish **readiness**. The scheduler separately chooses when to run the Execution:
+
+```text
+READY
+  ↓ scheduler selects
+RUNNING
+  ↓
+Activation
+```
+
+The Harness need only understand that runnable work now exists. It does not need to interpret the semantic contents of a controller-local result.
 
 Scheduling strategy—FIFO, priority, fairness, deadlines, worker affinity, distributed queues—is implementation policy as long as these lifecycle meanings hold.
 
@@ -831,8 +934,8 @@ A durable implementation persists enough truth to reconstruct, as applicable:
 Execution identity and lifecycle
 controller progress
 mailboxes / Event cursors
-pending operations and wait-for dependencies
-controller-internal resumption state when needed
+PendingOperations and wait-for dependencies
+ControllerResumptions or equivalent controller-local resumption state
 Effect records and settlement state
 owner/child relationships
 structural/runtime budgets
@@ -876,7 +979,7 @@ Existing durable execution systems may later implement runtime ports, but their 
 Runtime history should preserve enough causation to answer questions such as:
 
 ```text
-Which Event/resumption triggered this Activation?
+Which Event or ControllerResumption triggered this Activation?
 Which Execution proposed this Effect?
 Which Effect caused this result Event?
 Which child was spawned by which request?
@@ -889,7 +992,8 @@ Useful logical edges include:
 ```text
 ownership edges
 wait-for edges
-Event/resumption → Activation causation
+Event → Activation causation
+ControllerResumption → Activation causation
 Activation → Effect causation
 Effect → result Event correlation
 message sender → receiver
@@ -922,26 +1026,28 @@ external handle ≠ Execution ≠ PendingOperation
 The runtime should preserve these distinctions:
 
 ```text
-Execution          ≠ physical worker/process
-Execution          ≠ Activation
-Activation         ≠ Execution lifetime
-semantic locality  ≠ synchronous worker occupancy
+Execution             ≠ physical worker/process
+Execution             ≠ Activation
+Activation            ≠ Execution lifetime
+semantic locality     ≠ synchronous worker occupancy
 one controller writer ≠ one in-flight operation
-Event              ≠ every asynchronous result
-Effect proposal    ≠ authorization
-Effect proposal    ≠ completion
-PendingOperation   ≠ underlying work
-PendingOperation   ≠ global mailbox lock
-wait-for graph     ≠ ownership graph
-wait-for cycle     ≠ automatic deadlock
-Definition cycle   ≠ invalid Execution
+Event                 ≠ every asynchronous result
+Event                 ≠ ControllerResumption
+PendingOperation      ≠ ControllerResumption
+Effect proposal       ≠ authorization
+Effect proposal       ≠ completion
+PendingOperation      ≠ underlying work
+PendingOperation      ≠ global mailbox lock
+wait-for graph        ≠ ownership graph
+wait-for cycle        ≠ automatic deadlock
+Definition cycle      ≠ invalid Execution
 Execution-local serialization ≠ shared-resource serialization
-external handle    ≠ PendingOperation
-response/message   ≠ terminal result
-operation failure  ≠ automatic Execution failure
-authority          ≠ runtime/structural budget
-persistence        ≠ wake-up
-correlation id     ≠ authority credential
+external handle       ≠ PendingOperation
+response/message      ≠ terminal result
+operation failure     ≠ automatic Execution failure
+authority             ≠ runtime/structural budget
+persistence           ≠ wake-up
+correlation id        ≠ authority credential
 ```
 
 And these positive rules summarize the runtime:
@@ -952,7 +1058,11 @@ And these positive rules summarize the runtime:
 
 > **Serialize controller-state mutation, while allowing independent Executions and in-flight operations to run concurrently.**
 
-> **Semantically local asynchronous work may suspend an Activation without becoming another Execution.**
+> **Semantically local asynchronous work may suspend an Activation without becoming another Execution or semantic Event.**
+
+> **For v0.4, runtime-mediated semantic waits use PendingOperation, while controller-local async waits use a separate resumption path even if implementations share low-level machinery.**
+
+> **Asynchronous completion makes an Execution READY; the scheduler separately decides when it becomes RUNNING.**
 
 > **WAITING means no work is runnable now, not that the mailbox is closed.**
 
