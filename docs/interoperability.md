@@ -1,199 +1,111 @@
 # Interoperability Model
 
-> **Status: canonical interoperability semantics.**
+> **Status: canonical interoperability semantics for ArrokothI v0.4.**
 >
-> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), and [`runtime-architecture.md`](runtime-architecture.md) first. This document defines how ArrokothI kernel semantics relate to external protocols and service interfaces, with Model Context Protocol (MCP) as a first-class interoperability target.
->
-> The goal is not to make the kernel depend on MCP. The goal is to make ArrokothI semantics project cleanly into MCP and other protocols, import them cleanly, and remain able to adopt better protocol ideas without confusing wire contracts with kernel truth.
+> Read [`mental-model.md`](mental-model.md), [`composition.md`](composition.md), [`execution-runtime.md`](execution-runtime.md), [`authority.md`](authority.md), and [`memory.md`](memory.md) first. This document owns the portable service/interface layer and the mappings between Arrokoth semantics and external protocols such as MCP, A2A, Agent Skills, HTTP/OpenAPI, SDKs, and future standards.
 
-## 1. Core principle
+## 1. Kernel semantics and interoperability semantics are separate but mappable
 
-ArrokothI separates three layers:
+Arrokoth uses three layers:
 
 ```text
-Kernel semantics
-  Execution / Event / Effect / authority / memory / lifecycle
-        ↓
-Portable interoperability surface
-  operations / resources / templates / async handles /
-  input requirements / change signals
-        ↓
-Protocol and API bindings
-  MCP / HTTP+OpenAPI / local SDK / generated functions /
-  future agent protocols
+1. Kernel Semantic Interface
+   Execution / Event / Effect / authority / memory / lifecycle
+
+2. Portable Interoperability Interface
+   Operation / Resource / service / Skill / template /
+   async handle / input requirement / change signal
+
+3. Protocol/API Bindings
+   MCP / A2A / Agent Skills / HTTP+OpenAPI /
+   local SDK / generated functions / future standards
 ```
 
 The central rule is:
 
 > **Kernel semantics and interoperability semantics are separate but intentionally mappable.**
 
-This protects both sides of the architecture:
+This prevents two opposite mistakes:
 
-- ArrokothI does not freeze a changing external protocol into its kernel ontology.
-- Agent and Workflow authors do not need to redefine the same service separately for model tools, MCP, HTTP, SDKs, and Studio.
-- External standards can improve ArrokothI when they reveal genuinely reusable semantics.
-- An ArrokothI Agent or Workflow can be packaged as a service for clients that do not use ArrokothI internally.
+```text
+wire protocol object becomes kernel truth
+```
 
-MCP is therefore more than an incidental `UseCapability` transport. It is a **first-class compatibility target and design reference**, while remaining outside the kernel semantic boundary.
+or:
+
+```text
+same semantic service is redefined separately for
+model tools, MCP, HTTP, SDKs, Studio, and Agent-to-Agent APIs
+```
+
+The portable layer is Arrokoth-owned. External standards bind to it; they do not define it.
 
 ---
 
-## 2. Identity is not mapping
+## 2. Mapping is not identity
 
-Several concepts are related without being identical:
-
-```text
-Effect              ≠ protocol operation
-Event               ≠ protocol notification
-Execution           ≠ external async task
-Capability          ≠ MCP Tool
-bound resource      ≠ MCP Resource
-RequestUserInput    ≠ MCP elicitation wire shape
-```
-
-But useful projections exist:
+Several concepts are related without being equivalent:
 
 ```text
-Capability Operation        ↔ MCP Tool
-exposed Resource            ↔ MCP Resource
-interaction template        ↔ MCP Prompt
-pending external work       ↔ MCP Task when appropriate
-input requirement           ↔ MCP elicitation / MRTR when appropriate
-external change signal      ↔ MCP notification / subscription
-Effect completion           ← protocol result / task completion
-                            → Arrokoth Event
+Effect                ≠ portable Operation
+Event                 ≠ protocol notification
+Execution             ≠ external task/job
+Capability            ≠ MCP Tool
+bound resource        ≠ MCP Resource
+Definition            ≠ A2A Agent Card
+SendMessage           ≠ A2A Message
+Skill                 ≠ Agent Skills directory
+RequestUserInput      ≠ one protocol's elicitation wire shape
 ```
 
-A protocol adapter may therefore translate between these concepts while preserving the stronger ArrokothI runtime semantics.
+Useful mappings still exist:
 
-> **Mapping does not grant authority, collapse lifecycle boundaries, or redefine what an Event or Effect means.**
+```text
+Capability operation        ↔ portable Operation ↔ MCP Tool / HTTP operation
+exposed information         ↔ portable Resource  ↔ MCP Resource
+interaction template        ↔ portable template  ↔ MCP Prompt
+exported Agent/Workflow     ↔ portable service   ↔ A2A Agent Card / API service
+long-running external work  ↔ async handle       ↔ MCP/A2A task/job representation
+input requirement           ↔ protocol elicitation / input-required state
+change signal               ↔ notification/subscription mechanism
+Skill instruction profile   ↔ Agent Skills package
+```
+
+A binding must preserve the stronger Arrokoth semantics instead of flattening them into protocol terminology.
 
 ---
 
-## 3. Portable interoperability surface
+## 3. Portable Operation
 
-ArrokothI should support a portable descriptive layer that can be projected into model-facing tools, MCP, HTTP/OpenAPI, SDK functions, Studio UI, and future protocols.
+A **portable Operation** describes an invocable semantic action independent of one transport or model provider.
 
-This document defines the **semantic categories**, not a frozen v0.4 TypeScript API. Concrete descriptor types should be introduced only when an implementation slice requires them.
-
-### 3.1 Operation
-
-An **Operation** describes an invocable semantic action.
-
-Typical portable metadata may include:
+Typical metadata may include:
 
 ```text
-stable identity
+stable reference
 name / title
 description
 input schema
 optional output schema
-portable consequentiality semantics
-portable idempotency semantics
-abstract resource requirements
-version / compatibility metadata when needed
+consequentiality/idempotency metadata
+resource/interface requirements
+tags/groups/version metadata when useful
 ```
 
-An Operation descriptor does **not** contain:
+An Operation descriptor does not carry:
 
 ```text
 caller authorization
 active exposure decision
-credentials / secrets
-concrete backend clients
-tenant/application identity
+credentials/secrets
+concrete backend client
+current tenant/user identity
 runtime settlement authority
 ```
 
-Those remain runtime/application concerns.
+Those belong to authority/runtime/application layers.
 
-One Operation may compile to an Effect such as `UseCapability`, `SpawnExecution`, `SendMessage`, or `WriteMemory`. Some purely local authored operations may instead remain local computation and produce no Effect.
-
-### 3.2 Resource
-
-A **Resource** descriptor represents information or state addressable through a portable interface.
-
-Useful portable properties may include:
-
-```text
-logical identity / URI-like reference
-name / title
-description
-content or media type
-schema where applicable
-version / provenance metadata
-parameterized/template form when useful
-change-observation capability when useful
-```
-
-A portable Resource descriptor is not itself Resource Authority. A client knowing a resource identifier does not imply permission to read or mutate it.
-
-ArrokothI bound resources may be projected as external Resources when explicitly exported. Imported protocol resources may become bound-resource implementations or capability-backed reads depending on their semantics.
-
-### 3.3 Interaction template
-
-A reusable **interaction template** describes a parameterized way to begin or guide an interaction.
-
-Examples include:
-
-```text
-Agent starter prompts
-Workflow invocation recipes
-few-shot task templates
-domain-specific interaction patterns
-recommended combinations of operations and resources
-```
-
-MCP Prompt is a natural protocol projection for this category.
-
-Instantiating a template is normally local composition/context construction, not an Effect by itself. If obtaining the template requires external access, that access may cross the appropriate capability/resource boundary.
-
-The final public name for this concept may be `PromptTemplate`, `InteractionTemplate`, `Recipe`, or another term. The semantic distinction matters more than the v0.4 name.
-
-### 3.4 Async operation handle
-
-External protocols may represent long-running work with a task/job handle.
-
-That handle is not an ArrokothI Execution identity by definition. It may correspond to:
-
-```text
-an external capability job
-an Arrokoth PendingOperation
-an exported Arrokoth Execution
-another remote runtime object
-```
-
-Adapters preserve the distinction and store enough correlation to translate eventual completion, failure, cancellation, or progress into ArrokothI runtime observations.
-
-### 3.5 Input requirement
-
-An **input requirement** means an in-progress semantic operation needs additional information or a decision before it can continue.
-
-Internally this often maps to `RequestUserInput` plus waiting/resumption semantics. Externally it may map to protocol-specific elicitation or multi-round-trip mechanisms.
-
-Input requirements and mechanical Effect confirmation remain distinct. A protocol mechanism that can ask the user a question does not erase ArrokothI's confirmation policy boundary.
-
-### 3.6 Change signal
-
-A **change signal** says that externally observed state or an exposed catalog may have changed.
-
-Examples:
-
-```text
-operation catalog changed
-resource catalog changed
-resource content changed
-external job status changed
-peer/service availability changed
-```
-
-A change signal is not automatically an Event delivered to every Execution. It may instead invalidate a cache, refresh an Active View, or become an Event only for Executions that explicitly subscribed to or await that semantic observation.
-
----
-
-## 4. Effects and portable operations
-
-Effects remain the small kernel vocabulary for runtime-mediated interactions:
+One portable Operation may resolve to:
 
 ```text
 UseCapability
@@ -203,33 +115,14 @@ SendMessage
 RequestUserInput
 ```
 
-Portable Operations sit **above** this vocabulary.
+or, when genuinely local, to ordinary computation with no Effect.
+
+Example:
 
 ```text
-portable Operation
-      ↓ resolve/bind
-controller or authored code
-      ↓
-typed Effect proposal
-      ↓
-Harness authorization / coordination
-      ↓
-executor / environment
-```
-
-This means:
-
-- many Operations may map to the same Effect kind;
-- one Effect kind does not imply one public API operation;
-- protocol metadata does not need to be copied into every Effect request;
-- Effect requests remain compact, durable, auditable semantic records;
-- public interfaces can evolve without changing the closed Effect vocabulary unnecessarily.
-
-For example:
-
-```text
-Operation: github.create_issue
-  ↓
+portable Operation:
+  github.create_issue
+      ↓ bound invocation
 UseCapability {
   capability: "github",
   operation: "create_issue",
@@ -237,352 +130,476 @@ UseCapability {
 }
 ```
 
-or:
-
-```text
-Operation: research.start
-  ↓
-SpawnExecution {
-  definitionId: "research-agent",
-  input: ...
-}
-```
-
-The Operation descriptor carries description/schema/interface metadata. The Effect proposal carries the concrete requested semantic action.
-
-> **A model selecting an Operation still only proposes an Effect. The Harness decides whether and how it may occur.**
+The descriptor explains the interface. The Effect records the concrete requested runtime action.
 
 ---
 
-## 5. Effect-specific interoperability
+## 4. Portable Resource
 
-### 5.1 `UseCapability`
+A **portable Resource** describes information/state addressable through a service interface.
 
-`UseCapability` has the most direct mapping to MCP and ordinary APIs.
-
-```text
-external Tool / API operation
-      ↓ import
-portable Operation descriptor
-      ↓ exposure projection
-model/tool or authored call
-      ↓
-UseCapability
-      ↓
-CapabilityExecutor
-      ↓
-native / MCP / HTTP / browser / retrieval / remote job / ...
-```
-
-A capability executor may therefore use MCP as its concrete protocol without the kernel importing MCP SDK types.
-
-Knowledge retrieval follows the same rule. Live browser, database, vector, private API, or remote MCP access normally crosses `UseCapability`; computation over already materialized/exposed data may remain local.
-
-### 5.2 `WriteMemory`
-
-Structured Memory has both resource-like and operation-like aspects:
+Useful metadata may include:
 
 ```text
-readable memory view  → Resource projection
-writable field/action → Operation projection
-```
-
-Field descriptions and schemas belong to the memory schema/interface, not to every `WriteMemory` Effect proposal.
-
-The model or external client should only see the readable/writable subset permitted by the Active/Exposed View. A raw generic `write_memory` operation should not be exported automatically when a narrower domain interface is safer and clearer.
-
-### 5.3 `SpawnExecution`
-
-Agent and Workflow Definitions may expose a public invocation interface containing portable metadata such as:
-
-```text
+stable logical reference / URI-like identity
 name / title
 description
-input schema
-terminal-result schema
-service/export metadata
+media/content type
+schema where applicable
+version/provenance metadata
+parameterized/template form when useful
+change-observation capability
 ```
 
-A model-facing or external operation may then compile to `SpawnExecution` or higher-level `call` semantics.
-
-This enables an ArrokothI Agent or Workflow to be packaged as a service without requiring the caller to use ArrokothI.
-
-Quick execution may return an ordinary protocol result. Long-running execution may be represented externally by a protocol task/job handle while the Arrokoth Execution retains its own independent lifecycle and identity.
-
-### 5.4 `SendMessage`
-
-Addressable peer interactions may be represented through portable Operations.
-
-The preferred exported API is usually domain-oriented:
+Resource description is not Resource Authority.
 
 ```text
-request_review(...)
-ask_editor(...)
-submit_bid(...)
+knowing resource ref ≠ permission to read/write it
 ```
 
-rather than exposing raw kernel verbs such as `send_message` to every external client.
+A bound Arrokoth resource may be exported as a portable Resource. An imported protocol Resource may become:
 
-Internally those Operations may compile to `SendMessage` after target resolution and Message Authority checks.
+```text
+materialized local view
+capability-backed read
+remote handle
+indexed/retrieval source
+```
 
-Descriptions of available peers/roles belong to an exposed peer/service directory, not to the `SendMessage` Effect payload.
+depending on its semantics.
 
-### 5.5 `RequestUserInput`
-
-`RequestUserInput` is better understood as an input-requirement semantic than as a generic Tool.
-
-Protocol adapters may bridge it to elicitation or multi-round-trip input mechanisms. Internally the Execution still waits for a correlated `UserInput` Event, and the Harness retains control over presentation, authorization, and resumption.
+The portable descriptor should not expose backing credentials.
 
 ---
 
-## 6. Events and external protocol observations
+## 5. Portable service interface
 
-An ArrokothI **Event** is an observation delivered to an Execution. External protocols may produce several kinds of observations that can become Events after translation.
+An Agent or Workflow Definition may expose an explicit service interface without exposing its internals.
 
-### 6.1 Direct operation results
-
-```text
-Effect
-  ↓
-external request
-  ↓
-result / error
-  ↓
-trusted adapter settlement
-  ↓
-correlated Arrokoth Event
-```
-
-This is the most direct mapping.
-
-### 6.2 Async task/job completion
+A service description may contain:
 
 ```text
-Effect
-  ↓
-external protocol returns task/job handle
-  ↓
-PendingOperation stores correlation
-  ↓
-completion / failure / cancellation
-  ↓
-Event
+stable service identity
+name / description
+input interface
+terminal-result/output interface
+supported interaction patterns
+selected operations/resources/templates
+long-running capability if relevant
+version/authentication metadata when needed
 ```
 
-The external task is provider state. The PendingOperation is Arrokoth runtime state. The resulting Event is the semantic observation delivered to an Execution.
-
-### 6.3 Notifications and subscriptions
-
-Protocol notifications are not automatically Arrokoth Events.
-
-A notification may mean only:
+The caller does not need to know the internal:
 
 ```text
-catalog changed → refresh discovery cache
-resource changed → invalidate cached materialization
+Stages
+Effects
+memory
+child Executions
+model provider
+authority envelope
 ```
 
-It becomes an Execution Event only when there is an explicit semantic reason to deliver it, for example:
+This supports:
 
 ```text
-Execution subscribed to resource updates
-Execution awaits an external state change
-Workflow logic declared the signal relevant
-Agent's active service contract includes the observation
+Arrokoth Definition
+      ↓ explicit exported service
+portable service descriptor
+      ↓
+A2A / MCP / HTTP / SDK / other binding
 ```
 
-This avoids flooding mailboxes with protocol-maintenance noise and preserves the stronger meaning of Event.
-
-### 6.4 Progress
-
-Progress is similarly separate from terminal completion. A protocol may expose progress for observability or user experience without requiring every progress update to enter controller context.
-
-When progress is semantically relevant, an adapter may translate selected updates into Events. Otherwise it remains trace/telemetry/UI data.
+> **Exported service interface ≠ Definition internals.**
 
 ---
 
-## 7. MCP as a first-class target
+## 6. Interaction templates
 
-MCP is an important interoperability target because its abstractions overlap strongly with agent-facing service interfaces:
+A reusable **interaction template** describes a parameterized way to begin or guide an interaction.
+
+Examples:
 
 ```text
-MCP Tool              ↔ portable Operation
-MCP Resource          ↔ portable Resource
-MCP Prompt            ↔ interaction template
-MCP Task extension    ↔ async operation handle
-MCP elicitation/MRTR  ↔ input requirement
-MCP notifications     ↔ change signals / selected Events
+starter prompt
+Workflow invocation recipe
+few-shot task template
+domain interaction pattern
+recommended operation/resource combination
 ```
 
-As of MCP `2026-07-28`, the protocol core is stateless, requests are self-describing, discovery is optional, Tasks are an extension for long-running work, and notification delivery is subscription-based. These details are useful evidence for ArrokothI's design, but they are **not kernel invariants**.
+Instantiation is normally local composition/context construction, not an Effect by itself.
 
-MCP will evolve. ArrokothI should therefore target semantic compatibility rather than copy the current wire schema into core types.
+MCP Prompt is a natural binding for this category, but the portable concept is not defined by MCP.
 
-### MCP import
+---
 
-ArrokothI may act as an MCP client through an adapter package:
+## 7. Async handles are external correlation identities
+
+External protocols often represent long-running work with a Task/job/handle.
+
+That handle may correlate to:
+
+```text
+an Arrokoth Execution
+an Arrokoth PendingOperation
+an external provider job
+another remote runtime object
+```
+
+It is not automatically any one of them.
+
+```text
+external async handle ≠ Execution ≠ PendingOperation
+```
+
+Adapters preserve enough correlation to translate:
+
+```text
+status
+completion
+failure
+cancellation
+progress
+```
+
+into the appropriate Arrokoth runtime/service behavior.
+
+An exported long-running Agent service may map one external Task/handle to one long-lived Execution. A capability adapter may instead map it to one PendingOperation. Both are valid.
+
+---
+
+## 8. Input and continuation requirements
+
+An in-progress external interaction may require additional information before continuing.
+
+Examples:
+
+```text
+user/external input required
+external authentication/credential refresh required
+other externally satisfied prerequisite
+```
+
+These should not be collapsed into authority denial.
+
+```text
+external auth required ≠ Harness authority denied
+external auth succeeds  ≠ new Arrokoth authority grant
+user input required     ≠ exact mechanical confirmation
+```
+
+`RequestUserInput` is the current kernel Effect for semantic user input. Protocol adapters may project it to MCP/A2A/HTTP/UI-specific mechanisms.
+
+A future broader `ContinuationRequirement` abstraction may be useful if concrete adapters need to represent non-user prerequisites consistently; it is not required as a new kernel Effect.
+
+---
+
+## 9. Change signals and notifications
+
+External protocols may provide notifications/subscriptions such as:
+
+```text
+operation catalog changed
+resource catalog changed
+resource content changed
+remote task status changed
+service availability changed
+```
+
+A protocol notification is not automatically an Arrokoth Event.
+
+It may only:
+
+```text
+invalidate descriptor cache
+refresh discovery index
+refresh Active View candidate universe
+update external task adapter state
+```
+
+It becomes an Execution Event only when there is an explicit semantic reason to deliver that observation to that Execution.
+
+Similarly, progress updates may remain UI/telemetry data unless controller semantics actually depend on them.
+
+> **Protocol maintenance/change traffic does not automatically enter Execution mailboxes.**
+
+---
+
+## 10. Portable schema language and provider projection
+
+Portable service interfaces should prefer a mature general schema vocabulary instead of growing an unnecessary proprietary one.
+
+The likely portable boundary is:
+
+```text
+portable Operation / service input-output
+  → JSON Schema 2020-12 or declared compatible dialect
+
+model-provider invocation
+  → provider-supported constrained ObjectSchema subset
+```
+
+Provider limitations do not redefine the portable interface.
+
+Projection may:
+
+```text
+restrict unsupported keywords
+rename/bind operations
+flatten schemas where required
+validate before/after provider invocation
+```
+
+Schema compatibility does not grant authority or exposure.
+
+---
+
+## 11. Authority and Active View sit before model/protocol invocation
+
+Portable descriptors describe what can be exposed; [`authority.md`](authority.md) decides what an Execution may actually use.
+
+The model-facing path is:
+
+```text
+Catalog / portable descriptors
+      ↓
+Effective Authority
+      ↓
+Active/Exposed View
+      ↓
+provider-specific Model Invocation Projection
+      ↓
+model selects operation
+      ↓
+resolve against exact projection snapshot
+      ↓
+typed Effect proposal
+      ↓
+Harness authorizes concrete Effect
+```
+
+The same principle applies to external clients: discovering or importing a descriptor does not grant authority to the local Execution.
+
+```text
+protocol discovery ≠ authority
+schema visibility    ≠ authority
+external identifier ≠ bearer credential
+```
+
+---
+
+## 12. Progressive heterogeneous discovery
+
+Large systems may contain thousands of descriptors:
+
+```text
+Operations
+Resources
+Agent services
+Workflow services
+memory interfaces
+Skills
+interaction templates
+```
+
+The portable layer should support compact typed summaries without pretending all descriptors are one semantic kind.
+
+Conceptually:
+
+```text
+DiscoverableSummary
+  kind
+  stableRef
+  name/title
+  short description
+  tags/groups
+  compact interface hints
+```
+
+Discovery pipeline:
+
+```text
+registered typed descriptors
+      ↓ authority filtering/enumeration
+already-authorized universe
+      ↓ deterministic search/ranking
+small Active View
+      ↓ lazy full descriptor/schema hydration
+model/protocol projection
+```
+
+Ranking may use BM25, embeddings, hybrid retrieval, application scope, cached manifests, or other mechanisms.
+
+The first pass should normally avoid an extra LLM routing call. A model-visible discovery/search operation can be added when the initial view is insufficient, but it searches only already-authorized descriptors.
+
+> **Progressive discovery scales descriptor exposure; it does not enlarge authority.**
+
+---
+
+## 13. MCP binding
+
+MCP is a first-class interoperability target because its major concepts map naturally to the portable layer.
+
+```text
+MCP Tool         ↔ portable Operation
+MCP Resource     ↔ portable Resource
+MCP Prompt       ↔ interaction template
+MCP Task         ↔ external async handle when appropriate
+MCP elicitation  ↔ input requirement
+MCP notification ↔ change signal / selected Event
+```
+
+### Import
 
 ```text
 MCP server
-   ↓ discover/list
+  ↓ discovery
 MCP adapter
-   ↓
-portable descriptors
-   ↓
-authority + Active/Exposed View
-   ↓
-model/authored operation
-   ↓
-Effect
-   ↓
-MCP call/read/interaction
+  ↓
+portable typed descriptors
+  ↓
+authority + Active View
+  ↓
+model/authored invocation
+  ↓
+typed Effect/local action
+  ↓
+MCP request
 ```
 
 Imported MCP metadata never grants authority by itself.
 
-### MCP export
-
-ArrokothI may expose declared service interfaces as an MCP server:
+### Export
 
 ```text
-Agent / Workflow / capability / resource
-        ↓
-explicit exported interface
-        ↓
-portable descriptors
-        ↓
-MCP adapter
-        ↓
-MCP client that may know nothing about ArrokothI
+explicit Arrokoth service/resource/template interface
+  ↓
+portable descriptor layer
+  ↓
+MCP server adapter
+  ↓
+non-Arrokoth client
 ```
 
-The adapter may expose:
+The export is explicit. Private memory, private peer topology, undeclared Effects, and internal capabilities are not automatically published.
 
-```text
-operations as Tools
-selected data as Resources
-interaction templates as Prompts
-long-running calls through Tasks
-input requirements through MCP interaction mechanisms
-selected change signals through subscriptions
-```
-
-The exported interface is explicit. Internal Effects, private memory, private peer topology, and unexposed capabilities are not automatically published.
+MCP SDK/wire types remain outside kernel/core semantics.
 
 ---
 
-## 8. Agent and Workflow as a service
+## 14. A2A binding
 
-A major interoperability goal is that an ArrokothI Definition can become a service boundary.
+A2A is a first-class target for **opaque Agent-to-Agent service interoperability**.
 
-### One-shot service
-
-```text
-external client
-   ↓ call exported operation
-Arrokoth adapter
-   ↓
-create/call Execution
-   ↓
-terminal result
-   ↓
-external result
-```
-
-### Long-running service
+Useful mappings are:
 
 ```text
-external client
-   ↓ call exported operation
-Arrokoth adapter
-   ↓
-create Execution
-   ↓
-return external async handle
-   ↓
-Execution continues independently
-   ↓
-client polls/subscribes/cancels as supported
+exported Agent/Workflow service
+      ↔ portable service descriptor
+      ↔ A2A Agent Card
+
+A2A Task
+      ↔ external async/stateful work handle
+
+A2A Message
+      ↔ protocol communication turn
+
+A2A Artifact
+      ↔ exported task deliverable / Artifact
+
+A2A contextId
+      ↔ external interaction/session grouping when useful
 ```
 
-### Persistent conversational service
-
-A stateful Agent may mint an explicit external handle:
+Important non-equivalences:
 
 ```text
-agent.start(...) → externalHandle
-agent.send(externalHandle, message)
-agent.status(externalHandle)
+A2A Task       ≠ Arrokoth Execution
+A2A Message    ≠ SendMessage Effect
+A2A Agent Card ≠ Agent/Workflow Definition
+A2A contextId  ≠ mandatory runtime identity
 ```
 
-The handle resolves to an Arrokoth Execution through application policy.
+A remote A2A Agent is intentionally opaque. Its internal tools, memory, topology, and runtime are not part of the local kernel model.
 
-> **An external handle or Execution identifier is not bearer authorization.**
+A local Arrokoth `call/spawn/send/ask` remains stronger because it may carry ownership, delegation, supervision, memory visibility, cancellation, and runtime correlation semantics unavailable to a generic remote protocol.
 
-Authentication and application access policy govern who may use the handle. The Arrokoth Harness separately governs what the Execution itself may do.
+Use A2A when crossing a service/implementation boundary; do not replace internal composition with A2A merely for uniformity.
 
 ---
 
-## 9. Model-facing projection
+## 15. Agent Skills binding
 
-Model tool/function calling is another projection of the same portable interface, not a separate source of authority.
+Arrokoth `Skill` is defined in [`composition.md`](composition.md) as a reusable package/composition abstraction, not an Execution kind.
 
-```text
-portable descriptors
-      ↓
-effective authority
-      ↓
-Active/Exposed View
-      ↓
-model-facing operation specs
-      ↓
-model chooses
-      ↓
-controller resolves binding
-      ↓
-typed Effect proposal
-```
+The Agent Skills standard is an important compatibility profile for instruction-oriented Skills.
 
-This preserves the existing rule:
-
-> **Authority is not exposure. Exposure is not authorization. A model-facing descriptor grants neither.**
-
-A model-facing projection may choose different shapes depending on catalog size and provider constraints:
+Conceptually:
 
 ```text
-small catalog
-  dedicated operation per action
-
-larger catalog
-  generic dispatcher + discovered descriptors
-
-very large/dynamic catalog
-  discovery/search + generic invocation
+Arrokoth Skill
+  ├── instruction-only profile
+  │      ↕ Agent Skills SKILL.md + refs/assets/scripts
+  │
+  └── composition-backed profile
+         root Agent/Workflow Definition
+         input bindings
+         richer resource/authority requirements
 ```
 
-The projection strategy may evolve independently from kernel semantics.
+A composition-backed Skill may not losslessly fit an instruction-only external package. It can instead export a service operation that conventional clients invoke.
+
+External fields such as `allowed-tools` map only to requested/recommended exposure requirements:
+
+```text
+Skill declares requested/recommended operations
+      ↓
+intersect with Effective Authority
+      ↓
+Active View
+```
+
+Never:
+
+```text
+SKILL.md says allowed
+      ↓
+authority granted
+```
+
+Progressive disclosure of Skill metadata/instructions/resources is compatible with Arrokoth's broader descriptor/context-discovery principles.
 
 ---
 
-## 10. Author-facing API and normal function calls
+## 16. HTTP/OpenAPI and local SDK bindings
 
-Programmers should be able to use ordinary typed APIs without manually constructing Effect records everywhere.
+Programmers and non-Agent clients should be able to use ordinary APIs.
 
-For example:
+```text
+portable Operation
+      ↓
+HTTP/OpenAPI endpoint
+local/generated typed function
+CLI/Studio action
+```
+
+Example author-facing call:
 
 ```text
 await github.createIssue(...)
 ```
 
-may be a generated/bound SDK function whose implementation inside an Arrokoth Execution becomes:
+may internally resolve to:
 
 ```text
-UseCapability
-  capability = github
-  operation = create_issue
+UseCapability {
+  capability: github
+  operation: create_issue
+}
 ```
 
-while ordinary local code such as:
+while ordinary local code remains ordinary code:
 
 ```text
 JSON.parse
@@ -592,165 +609,174 @@ local transformation
 computation over already exposed/materialized data
 ```
 
-remains direct local computation.
-
-The semantic boundary is whether the operation expands interaction with the runtime/environment or requires Harness guarantees such as authority, confirmation, idempotency, correlation, durability, recovery, or provenance.
-
-> **Good developer ergonomics should hide unnecessary Effect boilerplate without bypassing the Effect gateway.**
+> **Developer ergonomics may hide Effect boilerplate; they must not bypass the Effect boundary.**
 
 ---
 
-## 11. Security boundary
+## 17. Agent/Workflow service patterns
 
-Protocol interoperability must preserve ArrokothI's authority model.
-
-The following are explicit non-equivalences:
+### One-shot service
 
 ```text
-protocol authentication        ≠ Execution authority
-operation discovery            ≠ permission to invoke
-resource identifier            ≠ Resource Authority
-external async handle          ≠ bearer authorization
-model-facing exposure          ≠ authority grant
-external input/confirmation UI ≠ automatic Effect authorization
+external client
+  ↓ invoke exported operation
+adapter
+  ↓ create/call Execution
+Execution completes
+  ↓ terminal result
+external result
 ```
 
-Imported protocol content is untrusted input unless a stronger trust policy explicitly says otherwise. This includes:
+### Long-running service
 
 ```text
-tool descriptions
-resource contents
-prompt templates
-operation results
-notification payloads
-schema annotations
+external client
+  ↓ invoke
+adapter creates Execution
+  ↓
+return external Task/job handle
+  ↓
+Execution continues independently
+  ↓
+poll/subscribe/cancel through supported binding
 ```
 
-Protocol adapters must not smuggle concrete credentials, ambient host clients, application tenancy, or settlement authority into model/controller-visible descriptors.
+### Persistent conversational service
 
-Export adapters must publish only an explicitly authorized public surface.
+```text
+agent.start(...) → external handle
+agent.send(handle, message)
+agent.status(handle)
+```
 
-See [`security-guarantees.md`](security-guarantees.md) for the general containment and authority contract.
+The external handle resolves through application policy to an Arrokoth service/Execution.
+
+It is not implicit authorization.
 
 ---
 
-## 12. Versioning and protocol evolution
+## 18. External protocols may reuse runtime mechanisms without redefining them
 
-ArrokothI should expect MCP and other protocols to improve.
-
-The architecture should make upgrades mostly adapter/projection work:
+A protocol adapter may need:
 
 ```text
-new protocol feature
-      ↓
-Does it reveal a general semantic concept?
-      ├── no  → keep it in protocol adapter
-      └── yes
-           ↓
-Does it belong to portable interop semantics?
-      ├── yes → add/generalize descriptor or projection concept
-      └── no
-           ↓
-Does it change a genuine kernel runtime invariant?
-      ├── yes → evolve Event/Effect/runtime semantics deliberately
-      └── no  → do not leak it into core
+PendingOperation
+correlation IDs
+RequestUserInput
+message routing
+Execution creation
+cancellation
+resource change subscriptions
 ```
 
-A protocol feature should not enter the kernel merely because MCP supports it. Conversely, ArrokothI should not preserve a proprietary mechanism when an external design reveals a more general semantic model.
+That does not make protocol objects kernel objects.
 
-Useful admission questions are:
+For example:
 
-1. Is the concept meaningful without MCP or another specific protocol?
-2. Does it describe runtime truth, portable service/interface truth, or only wire mechanics?
-3. Does it require authority/lifecycle/durability semantics stronger than the protocol supplies?
-4. Can the concept survive protocol-version changes?
-5. Can it be expressed through an adapter without weakening the kernel?
-6. Would adopting it remove an unnecessary Arrokoth-specific concept?
+```text
+MCP/A2A external task
+      ↓ adapter correlation
+PendingOperation or Execution
+```
 
-This is the intended mechanism by which a maturing protocol can **empower** ArrokothI without owning ArrokothI.
+and:
+
+```text
+protocol task completes
+      ↓ adapter settles runtime state
+Event delivered when semantically relevant
+```
+
+Controller-local asynchronous work such as an LLM provider call remains a `ControllerResumption` concern from [`execution-runtime.md`](execution-runtime.md), not an interoperability task merely because both involve asynchronous waiting.
 
 ---
 
-## 13. Dependency direction
+## 19. Observability and frontend protocols are projections
 
-Protocol packages depend inward on stable Arrokoth interfaces.
-
-```text
-MCP SDK / HTTP framework / provider SDK
-            ↓
-protocol adapter package
-            ↓
-portable descriptor / executor / ingress ports
-            ↓
-@arrokoth/core
-```
-
-Never invert this into:
+Protocols such as:
 
 ```text
-@arrokoth/core
-    ↓
-MCP SDK types
+AG-UI
+A2UI
+MCP Apps
+ACP
+CloudEvents
+AsyncAPI
+OpenTelemetry GenAI
 ```
 
-Core semantic records should use Arrokoth-owned types. Protocol adapters translate at the edge.
+may be useful projections for UI, editor, message, event, or telemetry surfaces.
 
-This supports multiple MCP versions, alternate MCP SDKs, HTTP/OpenAPI export, local-only deployments, and future protocols without changing the Execution model.
+They do not define Arrokoth runtime truth.
+
+Examples:
+
+```text
+CloudEvent ≠ Arrokoth Event
+OTel span  ≠ Execution lifecycle record
+AG-UI event ≠ automatic mailbox Event
+```
+
+Arrokoth should define semantic/runtime truth once and export the projection needed by the product surface.
 
 ---
 
-## 14. Conformance targets
+## 20. Protocol evolution rule
 
-The interoperability model should eventually be validated by scenarios such as:
+External standards will evolve. For each useful new concept, ask:
 
 ```text
-import an MCP Tool as a capability operation
-import an MCP Resource as an authorized resource/read path
-import an MCP Prompt as an interaction template
+Does it change actual runtime truth?
+  → consider kernel semantic admission
 
-export a capability operation through MCP
-export a Workflow as an MCP Tool
-export a short-lived Agent as an MCP Tool
-export a long-running Agent through an MCP async Task/handle
-export a persistent Agent through explicit state handles
+Is it a reusable portable service/interface concept?
+  → add/refine portable layer
 
-translate external elicitation/input-required into RequestUserInput
-translate external completion/failure into correlated Events
-translate resource-update notifications only for explicit semantic subscribers
-
-prove MCP authentication does not become Execution authority
-prove discovery/exposure does not grant invocation permission
-prove private Effects/memory/peers are not automatically exported
-
-project the same portable operation into
-  model tool calling
-  MCP
-  HTTP/OpenAPI or SDK
-without redefining its semantic contract
+Is it transport/provider/storage machinery?
+  → adapter/backend only
 ```
 
-These scenarios are architectural targets; not all are required for the first v0.4 runtime slice.
+Do not preserve a proprietary Arrokoth abstraction merely because it existed first if an external standard reveals a more general semantic distinction.
+
+Conversely, do not promote a wire feature into the kernel merely because a popular protocol exposes it.
 
 ---
 
-## 15. Interoperability invariants
+## 21. Interoperability invariants
 
-> **Effects are kernel semantics; descriptors are portable interface semantics; protocols are bindings.**
+Preserve these distinctions:
 
-> **MCP is a first-class interoperability target, not the owner of ArrokothI kernel semantics.**
+```text
+kernel Effect          ≠ portable Operation
+kernel Event           ≠ protocol notification
+Execution              ≠ external task/job
+Definition             ≠ public service descriptor
+portable descriptor    ≠ authority grant
+external handle        ≠ bearer authorization
+MCP Tool               ≠ Capability
+A2A Task               ≠ Execution
+A2A Message            ≠ SendMessage Effect
+Agent Skills package   ≠ all Arrokoth Skill semantics
+CloudEvent             ≠ Arrokoth Event
+provider schema subset ≠ portable schema language
+```
 
-> **Protocol descriptors grant no authority.**
+And these positive rules summarize the model:
 
-> **An exported interface is explicit and may be narrower than an Execution's internal capabilities and Effects.**
+> **Arrokoth owns a portable interoperability layer between kernel semantics and protocol bindings.**
 
-> **An imported protocol operation must still pass ArrokothI authority, exposure, correlation, and settlement boundaries.**
+> **MCP is a first-class operation/resource/template interoperability target, not a kernel dependency.**
 
-> **External tasks/jobs do not replace Execution identity or PendingOperation semantics.**
+> **A2A is a first-class opaque Agent/service interoperability target, not a replacement for internal Execution composition.**
 
-> **Protocol notifications become Events only when they represent an observation semantically relevant to an Execution.**
+> **Agent Skills is an important instruction-oriented Skill compatibility profile, while Arrokoth Skills may also be composition-backed.**
 
-> **Prompt/interaction templates are reusable context/interface objects, not Effects by themselves.**
+> **Large descriptor universes may be discovered progressively after authority filtering and lazily hydrated into Active Views/projections.**
 
-> **Core does not depend on MCP SDK or wire types.**
+> **External async handles, tasks, notifications, and protocol identities remain distinct from Execution/Event/PendingOperation semantics.**
 
-> **When a maturing external protocol reveals a better general abstraction, ArrokothI should evaluate and adopt the abstraction at the correct layer rather than preserve unnecessary proprietary concepts.**
+> **Ordinary API/SDK ergonomics can project the same semantic interface without bypassing Effects or authority.**
+
+> **When external standards reveal a better general abstraction, adopt it at the correct layer rather than copying the protocol object model into the kernel.**
+
+This document owns these interoperability meanings. Other canonical documents should reference them rather than redefine them.
