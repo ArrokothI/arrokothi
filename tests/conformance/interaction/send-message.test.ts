@@ -9,6 +9,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { createAllowListAuthorizer } from "@agent-sdk/core/reference";
+import type { ExecutionId } from "@agent-sdk/core/execution";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 import type { ScriptedControllerStep } from "@agent-sdk/core/testing";
 
@@ -187,7 +188,10 @@ describe("ask", () => {
     const cRef = await definitions.save(
       scriptedAgentDefinition({
         id: "C",
-        program: [{ do: "reply", body: { forged: true }, toMessageId: link!.messageId, requestKey: "c1" }, { do: "complete" }],
+        program: [
+          { do: "reply", to: a.executionId, body: { forged: true }, toMessageId: link!.messageId, requestKey: "c1", await: true },
+          { do: "complete" },
+        ],
       }),
     );
     const c = await harness.createExecution({ definition: cRef });
@@ -205,6 +209,113 @@ describe("ask", () => {
 });
 
 describe("reply authorization", () => {
+  test("destination-scoped policy authorizes the concrete reply target", async () => {
+    let aId: ExecutionId | null = null;
+    let bId: ExecutionId | null = null;
+    const { harness, definitions } = createTestHarness({
+      authorizer: {
+        authorize(request) {
+          const destinations = request.executionId === bId ? (aId ? [aId] : []) : (bId ? [bId] : []);
+          return createAllowListAuthorizer({ grants: [], message: { destinations } }).authorize(request);
+        },
+      },
+    });
+    const bRef = await definitions.save(
+      scriptedAgentDefinition({ id: "B-scoped", program: [HOLD_INTERLEAVING, { do: "reply", body: { ok: true } }, { do: "complete" }] }),
+    );
+    const b = await harness.createExecution({ definition: bRef });
+    bId = b.executionId;
+    await harness.runUntilIdle();
+    const aRef = await definitions.save(
+      scriptedAgentDefinition({ id: "A-scoped", program: [{ do: "ask", to: bId, body: {}, requestKey: "a1" }, { do: "complete" }] }),
+    );
+    const a = await harness.createExecution({ definition: aRef });
+    aId = a.executionId;
+    await harness.runUntilIdle();
+    assert.equal((await harness.inspect(aId!))?.lifecycle, "COMPLETED");
+    assert.equal((await harness.peerRequestLinksOf(aId!))[0]?.state, "settled");
+  });
+
+  test("destination-scoped policy can deny a reply to the original requester", async () => {
+    let aId: ExecutionId | null = null;
+    let bId: ExecutionId | null = null;
+    const { harness, definitions } = createTestHarness({
+      authorizer: {
+        authorize(request) {
+          const destinations = request.executionId === bId ? ["exe_someone_else"] : (bId ? [bId] : []);
+          return createAllowListAuthorizer({ grants: [], message: { destinations } }).authorize(request);
+        },
+      },
+    });
+    const bRef = await definitions.save(
+      scriptedAgentDefinition({ id: "B-scoped-deny", program: [HOLD_INTERLEAVING, { do: "reply", body: {}, await: true }, { do: "complete" }] }),
+    );
+    const b = await harness.createExecution({ definition: bRef });
+    bId = b.executionId;
+    await harness.runUntilIdle();
+    const aRef = await definitions.save(
+      scriptedAgentDefinition({ id: "A-scoped-deny", program: [{ do: "ask", to: bId, body: {}, requestKey: "a1" }, { do: "complete" }] }),
+    );
+    const a = await harness.createExecution({ definition: aRef });
+    aId = a.executionId;
+    await harness.runUntilIdle();
+    const progress = readScriptedProgress((await harness.inspect(bId!))!.control.progress);
+    assert.ok(progress.observations.some((value) => (value as { code?: string }).code === "message_not_authorized"));
+    assert.equal((await harness.peerRequestLinksOf(aId!))[0]?.state, "open");
+  });
+
+  test("a reply cannot redirect away from the requester recorded by the runtime", async () => {
+    const { harness, definitions } = rig();
+    const cRef = await definitions.save(scriptedAgentDefinition({ id: "redirect-target", program: [HOLD_INTERLEAVING] }));
+    const c = await harness.createExecution({ definition: cRef });
+    await harness.runUntilIdle();
+    const bRef = await definitions.save(
+      scriptedAgentDefinition({
+        id: "B-redirect",
+        program: [HOLD_INTERLEAVING, { do: "reply", to: c.executionId, body: { redirected: true }, await: true }, { do: "complete" }],
+      }),
+    );
+    const b = await harness.createExecution({ definition: bRef });
+    await harness.runUntilIdle();
+    const aRef = await definitions.save(
+      scriptedAgentDefinition({ id: "A-redirect", program: [{ do: "ask", to: b.executionId, body: {}, requestKey: "a1" }, { do: "complete" }] }),
+    );
+    const a = await harness.createExecution({ definition: aRef });
+    await harness.runUntilIdle();
+    const bp = readScriptedProgress((await harness.inspect(b.executionId))!.control.progress);
+    assert.ok(bp.observations.some((value) => (value as { code?: string }).code === "reply_destination_mismatch"));
+    assert.equal((await harness.peerRequestLinksOf(a.executionId))[0]?.state, "open");
+    assert.deepEqual(readScriptedProgress((await harness.inspect(c.executionId))!.control.progress).peerMessages, []);
+  });
+
+  test("reply proposals structurally reject awaitReply", async () => {
+    const { harness, definitions } = rig();
+    const ref = await definitions.save(
+      scriptedAgentDefinition({
+        id: "reply-and-ask-rejected",
+        program: [
+          {
+            do: "propose_effect",
+            effect: {
+              kind: "send_message",
+              to: "exe_requester",
+              inReplyToMessageId: "msg_request",
+              awaitReply: true,
+              body: {},
+            },
+            await: false,
+          },
+        ],
+      }),
+    );
+    const handle = await harness.createExecution({ definition: ref });
+    await harness.runUntilIdle();
+    const context = await harness.inspect(handle.executionId);
+    assert.equal(context?.lifecycle, "FAILED");
+    assert.match(context?.failure?.code ?? "", /invalid_effect/);
+    assert.deepEqual(await harness.effectJournalOf(handle.executionId), []);
+  });
+
   test("a responder whose current policy denies messaging cannot reply, despite holding the request metadata", async () => {
     // A different policy per Execution: A may message (it must, to create the request); B may not.
     const permitA = createAllowListAuthorizer({ grants: [], message: true });

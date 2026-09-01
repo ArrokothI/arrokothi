@@ -125,9 +125,13 @@ export function markSettled(
   return { ...operation, status: "settled", outcome, resultEventId, settledAt: at };
 }
 
-/** The Execution went terminal before the result arrived. Recorded, not delivered. */
-export function markAbandoned(operation: PendingOperation, at: string): PendingOperation {
-  return { ...operation, status: "abandoned", settledAt: at };
+/** The Execution can no longer observe the result; retain any outcome already known for audit. */
+export function markAbandoned(
+  operation: PendingOperation,
+  at: string,
+  outcome: Exclude<PendingOutcomeState, null> | null = null,
+): PendingOperation {
+  return { ...operation, status: "abandoned", outcome, settledAt: at };
 }
 
 export function isUnresolved(operation: PendingOperation): boolean {

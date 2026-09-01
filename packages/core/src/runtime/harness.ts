@@ -39,8 +39,9 @@ import type { ExecutionDefinition } from "../definitions/types.ts";
 import type { CancellationRequest } from "../execution/cancellation-request.ts";
 import { createCancellationRequest, markCancellationApplied } from "../execution/cancellation-request.ts";
 import type { ChildExecutionLink } from "../execution/child-link.ts";
-import { markChildLinkSettled } from "../execution/child-link.ts";
+import { markChildLinkAbandoned, markChildLinkSettled } from "../execution/child-link.ts";
 import type { PeerRequestLink } from "../execution/peer-request-link.ts";
+import { markPeerRequestLinkAbandoned } from "../execution/peer-request-link.ts";
 import type { WaitForEdge } from "../execution/wait-for.ts";
 import type { ExecutionContext, ExecutionWait } from "../execution/context.ts";
 import {
@@ -54,6 +55,7 @@ import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ActivationId, ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
 import { activationId as toActivationId, executionId as toExecutionId } from "../execution/ids.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
+import { invalidateControllerResumptionAtSuspension } from "../execution/resumption.ts";
 import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
 import { createLineageSpawnBudget, spawnBudgetCapacityIssues } from "../execution/structural-budget.ts";
 import type { EffectiveOperationAuthority, OperationAuthorityGrant } from "../operations/authority.ts";
@@ -615,6 +617,7 @@ export class Harness {
         await tx.executions.update(cancelled, context.revision);
         await tx.cancellationRequests.update(markCancellationApplied(cancelRequest, startedAt));
         await this.record(tx, executionId, context.lifecycle, "CANCELLED", startedAt, activationId, "cancellation requested");
+        await this.abandonOutgoingDependencies(tx, executionId, startedAt, "execution CANCELLED");
         return { kind: "cancelled", context: cancelled, reason: cancelRequest.reason };
       }
 
@@ -777,38 +780,38 @@ export class Harness {
     }
 
     const applied = await this.options.store.transact(executionId, async (tx) => {
-      const emissionIds = await this.persistEmissions(tx, running, activationId, outcome, finishedAt);
-
       // The wake dependency is only real if nothing already satisfies it. Events that arrived while
       // the controller was running are runnable local work, so WAITING would be wrong.
-      let to: LifecycleState;
+      let to: LifecycleState = "CANCELLED";
       let terminalResult: TerminalResultEnvelope | null = null;
       let failure: ExecutionFailure | null = null;
       let waitingFor: ExecutionWait | null = null;
-      let result: ActivationResultKind;
+      let result: ActivationResultKind = "cancelled";
       let rejection: string | null = null;
       let requeue = false;
       let cancellationReason: string | null = null;
+      let attachResumption = false;
+      let emissionIds: readonly string[] = [];
 
       // A cancellation request that arrived while this Activation was running is applied at this
-      // safe boundary: future semantic progression stops. The controller's reported `next` is
-      // discarded unless it is *already* terminal - a race the controller won stands.
+      // safe boundary: future semantic progression stops. If the request committed first, every
+      // controller report loses, including complete/fail, and no emission is published.
       const cancelRequest = await tx.cancellationRequests.get(executionId);
-      const cancelling =
-        cancelRequest !== undefined &&
-        cancelRequest.state === "pending" &&
-        next.status !== "complete" &&
-        next.status !== "fail";
+      const cancelling = cancelRequest !== undefined && cancelRequest.state === "pending";
       if (cancelling) {
         to = "CANCELLED";
         result = "cancelled";
         cancellationReason = cancelRequest!.reason;
         await tx.cancellationRequests.update(markCancellationApplied(cancelRequest!, finishedAt));
-      } else if (next.status === "continue") {
+      } else {
+        emissionIds = await this.persistEmissions(tx, running, activationId, outcome, finishedAt);
+      }
+
+      if (!cancelling && next.status === "continue") {
         to = "READY";
         result = "continued";
         requeue = true;
-      } else if (next.status === "await_event") {
+      } else if (!cancelling && next.status === "await_event") {
         const pending = await tx.mailboxes.peek(running.mailbox.mailboxId);
         // Either the primary dependency or, when the controller opted in, an interleave Event that
         // is already in the mailbox is runnable local work - so WAITING would be wrong.
@@ -824,30 +827,48 @@ export class Harness {
           waitingFor = eventWait(next.wake, next.interleave);
           result = "waiting";
         }
-      } else if (next.status === "await_resumption") {
+      } else if (!cancelling && next.status === "await_resumption") {
         // One transaction: the controller's progress, the pending resumption record, and WAITING.
         // Splitting these would leave either a record nothing waits on or an Execution waiting on a
         // record that does not exist. A recovered dependency already has its record and needs only
         // the wait.
-        if (dependency!.status === "new") await tx.controllerResumptions.insert(dependency!.record);
-        // An interleave Event that arrived while the controller was running is runnable local work:
-        // stay READY and let the next Activation consume it. The freshly registered resumption is
-        // still followed in the background - a later Activation recovers its outcome by key, or
-        // re-suspends on it if it is still pending.
         const pending =
           next.interleave !== undefined ? await tx.mailboxes.peek(running.mailbox.mailboxId) : [];
-        const interleaveReady =
-          next.interleave !== undefined && pending.some((event) => eventSatisfiesWake(event, next.interleave!));
-        if (interleaveReady) {
+        const interleaveEvent =
+          next.interleave !== undefined
+            ? pending.find((event) => eventSatisfiesWake(event, next.interleave!))
+            : undefined;
+        if (interleaveEvent !== undefined) {
+          // The Event committed while this Activation was still RUNNING, before the suspension
+          // boundary. The pre-Event continuation must never become reusable. A new record is
+          // inserted directly as invalidated; a recovered record is invalidated in place. This
+          // also covers the narrow case where its promise settled after the Event but before this
+          // transaction - the Event still won the semantic ordering.
+          const current =
+            dependency!.status === "new"
+              ? dependency!.record
+              : await tx.controllerResumptions.get(next.resumptionId);
+          if (current !== undefined) {
+            const invalidated = invalidateControllerResumptionAtSuspension(
+              current,
+              finishedAt,
+              interleaveEvent.eventId,
+              running.revision,
+            );
+            if (dependency!.status === "new") await tx.controllerResumptions.insert(invalidated);
+            else await tx.controllerResumptions.update(invalidated);
+          }
           to = "READY";
           result = "continued";
           requeue = true;
         } else {
+          if (dependency!.status === "new") await tx.controllerResumptions.insert(dependency!.record);
           to = "WAITING";
           waitingFor = controllerResumptionWait(next.resumptionId, next.interleave);
           result = "waiting";
+          attachResumption = true;
         }
-      } else if (next.status === "complete") {
+      } else if (!cancelling && next.status === "complete") {
         const validation = validateTerminalResult(definition.terminalResult, next.result, {
           activationId,
           completedAt: finishedAt,
@@ -870,7 +891,7 @@ export class Harness {
             details: validation.rejection.issues.length > 0 ? (validation.rejection.issues as unknown as JsonValue) : undefined,
           };
         }
-      } else {
+      } else if (!cancelling && next.status === "fail") {
         to = "FAILED";
         result = "failed";
         failure = {
@@ -891,7 +912,11 @@ export class Harness {
       await tx.executions.update(updated, running.revision);
       await this.record(tx, executionId, "RUNNING", to, finishedAt, activationId, `activation ${result}`);
 
-      return { emissionIds, to, result, rejection, requeue, terminalResult, failure, cancellationReason };
+      if (isTerminalLifecycle(to)) {
+        await this.abandonOutgoingDependencies(tx, executionId, finishedAt, `execution ${to}`);
+      }
+
+      return { emissionIds, to, result, rejection, requeue, terminalResult, failure, cancellationReason, attachResumption };
     });
 
     setRequeue(applied.requeue);
@@ -914,7 +939,7 @@ export class Harness {
     // still RUNNING - before the record it settles existed. Everything else this Activation
     // registered is abandoned by never being attached, and can no longer wake anything. A cancelled
     // Execution is terminal, so nothing is followed.
-    if (next.status === "await_resumption" && applied.to !== "CANCELLED") resumptions.attach(next.resumptionId);
+    if (next.status === "await_resumption" && applied.attachResumption) resumptions.attach(next.resumptionId);
 
     return {
       activationId,
@@ -956,6 +981,72 @@ export class Harness {
     return ids;
   }
 
+  /**
+   * Closes cross-Execution dependencies whose source can no longer observe a result.
+   *
+   * This is diagnostic/runtime cleanup only: the peer or child remains independently managed and
+   * is not cancelled. `abandoned` is distinct from `settled` because no semantic reply/child result
+   * was delivered.
+   */
+  private async abandonOutgoingDependencies(
+    tx: RuntimeTransaction,
+    executionId: ExecutionId,
+    at: string,
+    reason: string,
+  ): Promise<void> {
+    // Keep the no-composition terminal path cheap: if no live cross-Execution operation exists,
+    // do not touch either link facet. The pending-operation facet is the shared dependency index.
+    const pendingDependencies = (await tx.pendingOperations.listByExecution(executionId)).filter(
+      (operation) =>
+        operation.status === "pending" &&
+        (operation.effectKind === "send_message" || operation.effectKind === "spawn_execution"),
+    );
+    if (pendingDependencies.length === 0) return;
+    const pendingById = new Map(pendingDependencies.map((operation) => [operation.pendingOperationId, operation]));
+
+    if (pendingDependencies.some((operation) => operation.effectKind === "send_message")) {
+      for (const link of await tx.peerRequestLinks.listByRequester(executionId)) {
+        if (link.state !== "open") continue;
+        const pending = pendingById.get(link.requestPendingOperationId);
+        if (pending !== undefined) {
+          await tx.pendingOperations.update(markAbandoned(pending, at));
+          await tx.effectJournal.append({
+            effectId: link.requestEffectId,
+            executionId,
+            effectKind: "send_message",
+            phase: "abandoned",
+            activationId: null,
+            pendingOperationId: pending.pendingOperationId,
+            at,
+            detail: { reason, responderExecutionId: link.responderExecutionId },
+          });
+        }
+        await tx.peerRequestLinks.update(markPeerRequestLinkAbandoned(link, at));
+      }
+    }
+
+    if (pendingDependencies.some((operation) => operation.effectKind === "spawn_execution")) {
+      for (const link of await tx.childExecutionLinks.listByParent(executionId)) {
+        if (link.state !== "active" || link.pendingOperationId === null) continue;
+        const pending = pendingById.get(link.pendingOperationId);
+        if (pending !== undefined) {
+          await tx.pendingOperations.update(markAbandoned(pending, at));
+          await tx.effectJournal.append({
+            effectId: link.effectId,
+            executionId,
+            effectKind: "spawn_execution",
+            phase: "abandoned",
+            activationId: null,
+            pendingOperationId: pending.pendingOperationId,
+            at,
+            detail: { reason, childExecutionId: link.childExecutionId },
+          });
+        }
+        await tx.childExecutionLinks.update(markChildLinkAbandoned(link, at));
+      }
+    }
+  }
+
   /** Terminates an Activation the Harness refuses to trust. Controller progress is not persisted. */
   private async failActivation(
     running: ExecutionContext,
@@ -965,21 +1056,37 @@ export class Harness {
     failure: { readonly code: string; readonly message: string },
   ): Promise<ActivationRecord> {
     const finishedAt = nowIso(this.options.clock);
-    await this.options.store.transact(running.executionId, async (tx) => {
-      const failed = transitionContext(running, "FAILED", finishedAt, {
-        failure: { ...failure, failedByActivationId: activationId, failedAt: finishedAt },
-      });
-      await tx.executions.update(failed, running.revision);
-      await this.record(tx, running.executionId, "RUNNING", "FAILED", finishedAt, activationId, failure.code);
+    const applied = await this.options.store.transact(running.executionId, async (tx) => {
+      const cancelRequest = await tx.cancellationRequests.get(running.executionId);
+      const cancelling = cancelRequest !== undefined && cancelRequest.state === "pending";
+      const to = cancelling ? "CANCELLED" as const : "FAILED" as const;
+      const recordedFailure = cancelling
+        ? null
+        : { ...failure, failedByActivationId: activationId, failedAt: finishedAt };
+      const terminal = transitionContext(running, to, finishedAt, { failure: recordedFailure });
+      await tx.executions.update(terminal, running.revision);
+      if (cancelling) await tx.cancellationRequests.update(markCancellationApplied(cancelRequest, finishedAt));
+      await this.record(
+        tx,
+        running.executionId,
+        "RUNNING",
+        to,
+        finishedAt,
+        activationId,
+        cancelling ? "cancellation requested" : failure.code,
+      );
+      await this.abandonOutgoingDependencies(tx, running.executionId, finishedAt, `execution ${to}`);
+      return { to, recordedFailure, cancellationReason: cancelling ? cancelRequest.reason : null };
     });
 
     // A child the Harness itself refused to trust still terminated; a `call` parent must be told.
     await this.settleOwnerOnChildTerminal(
       running,
-      "FAILED",
+      applied.to,
       null,
-      { ...failure, failedByActivationId: activationId, failedAt: finishedAt },
+      applied.recordedFailure,
       finishedAt,
+      applied.cancellationReason,
     );
 
     return {
@@ -992,9 +1099,9 @@ export class Harness {
       emissionIds: [],
       effects: [],
       lifecycleBefore: "RUNNING",
-      lifecycleAfter: "FAILED",
-      result: "failed",
-      rejection: `${failure.code}: ${failure.message}`,
+      lifecycleAfter: applied.to,
+      result: applied.to === "CANCELLED" ? "cancelled" : "failed",
+      rejection: applied.to === "CANCELLED" ? null : `${failure.code}: ${failure.message}`,
     };
   }
 
@@ -1036,7 +1143,7 @@ export class Harness {
   ): Promise<void> {
     if (child.ownerExecutionId === null) return;
     const link = await this.options.store.readChildExecutionLink(child.executionId);
-    if (!link || link.pendingOperationId === null || link.state === "settled") return;
+    if (!link || link.pendingOperationId === null || link.state !== "active") return;
 
     const parentId = link.parentExecutionId;
     const eventId = this.options.ids.next(ID_PREFIXES.event) as EventId;
@@ -1047,7 +1154,7 @@ export class Harness {
 
     const woke = await this.options.store.transact(parentId, async (tx): Promise<ExecutionId | null> => {
       const currentLink = await tx.childExecutionLinks.get(child.executionId);
-      if (!currentLink || currentLink.state === "settled" || currentLink.pendingOperationId === null) return null;
+      if (!currentLink || currentLink.state !== "active" || currentLink.pendingOperationId === null) return null;
       const pending = await tx.pendingOperations.get(currentLink.pendingOperationId);
       if (!pending || pending.status !== "pending") return null;
 
@@ -1181,7 +1288,7 @@ export class Harness {
    *
    * Derived from the child-call and peer-ask links, not a third stored graph. A cycle across these
    * edges is a deadlock *candidate* for diagnostics - the runtime never terminates one. Once a
-   * dependency settles its edge disappears from this view.
+   * dependency settles or is abandoned its edge disappears from this view.
    */
   async waitForEdgesFrom(executionId: ExecutionId): Promise<readonly WaitForEdge[]> {
     const edges: WaitForEdge[] = [];
@@ -1275,6 +1382,7 @@ export class Harness {
         null,
         reason !== null ? `cancelled: ${reason}` : "cancelled",
       );
+      await this.abandonOutgoingDependencies(tx, executionId, at, "execution CANCELLED");
       return { status: "cancelled" as const, lifecycle: "CANCELLED", child: cancelled as ExecutionContext, reason };
     });
 

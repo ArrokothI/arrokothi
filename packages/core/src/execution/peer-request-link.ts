@@ -23,7 +23,7 @@
 import type { EffectId, PendingOperationId } from "../effects/ids.ts";
 import type { ExecutionId } from "./ids.ts";
 
-export type PeerRequestLinkState = "open" | "settled";
+export type PeerRequestLinkState = "open" | "settled" | "abandoned";
 
 export interface PeerRequestLink {
   /** Runtime-minted identity of the request message. A reply names this; it is not a credential. */
@@ -40,6 +40,7 @@ export interface PeerRequestLink {
   readonly requestCorrelationId: string;
   readonly state: PeerRequestLinkState;
   readonly createdAt: string;
+  /** Set when the request is answered or abandoned by a terminal requester. */
   readonly settledAt: string | null;
 }
 
@@ -69,8 +70,14 @@ export function createPeerRequestLink(input: CreatePeerRequestLinkInput): PeerRe
 
 /** Marks the request answered. Idempotent, so a duplicate reply cannot settle it a second time. */
 export function markPeerRequestLinkSettled(link: PeerRequestLink, at: string): PeerRequestLink {
-  if (link.state === "settled") return link;
+  if (link.state !== "open") return link;
   return { ...link, state: "settled", settledAt: at };
+}
+
+/** The requester became terminal before it could observe a reply. */
+export function markPeerRequestLinkAbandoned(link: PeerRequestLink, at: string): PeerRequestLink {
+  if (link.state !== "open") return link;
+  return { ...link, state: "abandoned", settledAt: at };
 }
 
 export function isOpenPeerRequest(link: PeerRequestLink): boolean {

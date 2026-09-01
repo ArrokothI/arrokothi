@@ -1,6 +1,7 @@
 # Slice E.1 — Controlled Interleaving, Peer Interaction, and Child Cancellation
 
-> **Status: implemented checkpoint on `slice-e-composition`. Not merged to `main`.**
+> **Status: implemented E.1 checkpoint plus E.1.1 independent-review retrofit on
+> `slice-e-composition`. Not merged to `main`.**
 >
 > E.1 is the second checkpoint of Slice E. It lifts v0.4's exclusive `ControllerResumption`
 > suspension with a minimal, serializable interleaving opt-in and the minimal stale-continuation
@@ -220,14 +221,17 @@ duplicate-reply, third-party-reply, and unknown/terminal-destination.
 
 `PeerRequestLink` (`execution/peer-request-link.ts`) is runtime state, keyed by a runtime-minted
 `messageId`. It records the requester, the **expected** responder, the requester's effect / pending
-operation / correlation, and `state: open | settled`.
+operation / correlation, and `state: open | settled | abandoned` (`abandoned` was added by E.1.1
+when the requester terminalizes before receiving a reply).
 
 `dispatchSendMessage` for a `reply` checks, inside the transaction:
 
 - an open link named by `inReplyToMessageId` exists (`reply_no_such_request` otherwise);
 - its `state` is `open` (`reply_already_settled` otherwise - a duplicate reply settles nothing twice);
 - `link.responderExecutionId === senderId` (`reply_not_addressee` otherwise - a third Execution
-  holding the id cannot answer).
+  holding the id cannot answer);
+- `link.requesterExecutionId === proposal.to` (`reply_destination_mismatch` otherwise - a reply
+  cannot redirect itself).
 
 The reply `peer.message` carries `correlationId = link.requestCorrelationId`, so it settles the
 asker's **exact** original PendingOperation and no other. A guessed message/correlation id, an
@@ -242,17 +246,19 @@ else's ask, even holding the message id").
 `SendMessage` is authorized by the `EffectAuthorizer`, deny-by-default. The reference allow-list
 policy gains `message?: boolean | { destinations: string[] }` (omitted = every send denied).
 
-**Order.** `decide()` runs **before** any destination lookup. A policy `deny` returns
+**Order.** `decide()` runs **before** any destination or reply-link lookup. A policy `deny` returns
 `effect.denied` and reads no destination Execution at all (`messaging-authority.test.ts` counts
 `readExecution` calls: a denied send to a real target and to a guessed target both produce the same
 `message_not_authorized` denial and zero destination reads). Destination existence /
 terminal-state checks (`message_destination_not_found`, `message_destination_terminal`,
-`reply_no_such_request`, `reply_not_addressee`) happen only **after** authorization, as
+`reply_no_such_request`, `reply_not_addressee`, `reply_destination_mismatch`) happen only **after** authorization, as
 `effect.rejected`.
 
 **A reply is an outbound send** and passes the responder's current policy
 (`send-message.test.ts` "a responder whose current policy denies messaging cannot reply, despite
-holding the request metadata"). Message body/content is an input to policy at most; it cannot
+holding the request metadata"). E.1.1 makes `to` explicit on replies, so a destination-scoped rule
+authorizes that concrete requester before the runtime resolves and verifies the link. Message
+body/content is an input to policy at most; it cannot
 influence the grant, and the `peer.message` source identity comes from runtime context, never a
 controller-provided `from` field.
 
@@ -348,11 +354,13 @@ idempotent / detached / sibling.
 
 ### RUNNING cancellation behaviour
 
-The current Activation may already have dispatched work that cannot be undone. Cancellation means:
-stop future semantic progression; do not claim rollback of already-dispatched external effects. The
-`CancellationRequest` record is the narrow persisted seam that lets the current Activation reach a
-safe boundary rather than racing an uncontrolled context mutation. This did **not** require a
-broader runtime-control redesign - §32.10 stop condition was checked and not hit.
+The current Activation may already have dispatched work that cannot be undone. E.1.1 defines the
+order by committed runtime facts: a dispatch-intent transaction that wins first remains dispatched;
+a `CancellationRequest` that commits first is checked by every later dispatch-intent transaction,
+which records the proposal as abandoned and performs no executor call, child creation, or peer
+delivery. At the Activation boundary the pending request wins over every later controller outcome
+and suppresses emissions. The narrow request record preserves serialized controller mutation and
+does not require holding a store lock across external work.
 
 ---
 
@@ -399,9 +407,10 @@ cancellationRequests.{insert,update}
 controllerResumptions.update:invalidated
 ```
 
-The **only** always-on new cost on the simple path is a single-record `cancellationRequests.get`
-branch check on the claim path and in `applyOutcome` - `O(Activations)`, never a scan. `014` §
-"a small constant branch/check inside normal runtime code is acceptable" covers this. No
+Cancellation checks are single-record key reads on the claim and outcome paths, plus the request and
+dispatch-intent transaction for each proposed Effect. That is `O(Activations + Effects)`, never a
+scan; the second per-Effect check is required to close the race with irreversible dispatch. `014`'s
+small-constant-branch guidance covers this attributable cost. No
 no-message / no-interleave workload gains an invisible replacement model call: `routeEvent` starts
 no controller work, and the resumption path is unchanged when no interleave condition is present.
 
@@ -574,3 +583,114 @@ four new read methods).
 - **Does child cancellation settle a `call` as failure?** No — `outcome: "cancelled"`,
   `child.cancelled`. (`child-cancellation.test.ts`.)
 - **Did E.1 implement `RequestUserInput`, confirmation, Agent Stage, or Workflow Stage?** No.
+
+---
+
+## 18. E.1.1 post-review retrofit
+
+E.1.1 preserves E.1's accepted design shape and corrects five concrete runtime-truth defects. It
+adds no E.2 surface and requires no canonical-document change: the corrections make the
+implementation satisfy the existing runtime, composition, authority, and security contracts.
+
+### 18.1 RUNNING-window suspension linearization
+
+E.1 invalidated a pending `ControllerResumption` when an interleave Event overtook an already
+`WAITING` Execution. E.1.1 also handles the inverse commit window:
+
+```text
+Activation still RUNNING
+  local work R suspends
+  matching Event E commits to the mailbox
+  Activation later reports await_resumption(R)
+```
+
+At the suspension transaction, the Harness selects one matching queued Event as provenance and
+inserts a newly registered R directly as `invalidated`, or invalidates the recovered record in
+place. This suspension-boundary invalidation may replace a result that settled after E but before
+the transaction: E already won the semantic order, so pre-E work cannot become reusable. The
+Execution stays `READY`, the new registration is not followed, and stable-key lookup skips it.
+
+The deterministic RUNNING-window test holds the controller after `run(key)` returns `suspended`,
+queues an E1/E2/E3 burst while lifecycle remains `RUNNING`, then releases the controller. It proves
+one invalidated R1, no late wake/reuse, one Activation consuming all three Events, and at most one
+deliberately created R2.
+
+### 18.2 Cancellation linearization
+
+A `CancellationRequest` committed while an Activation is `RUNNING` now wins at the safe boundary
+against every later controller report: `continue`, `await_event`, `await_resumption`, `complete`,
+and `fail`. It also suppresses controller emissions. The request moves `pending -> applied` in the
+same transaction as `RUNNING -> CANCELLED`; no controller result or failure can override it.
+
+Every dispatchable Effect checks the current `CancellationRequest` inside the transaction that
+would commit dispatch intent:
+
+```text
+dispatch_started / child creation / peer delivery commits first
+  -> later cancellation does not claim rollback
+
+CancellationRequest commits first
+  -> dispatch transaction records abandoned
+  -> no executor call, child creation, or peer delivery
+```
+
+The store lock is never held across executor work. If capability dispatch committed first, its
+external work may finish; a cancellation-pending/terminal Execution receives no new result Event,
+while the dispatched PendingOperation retains the known outcome for audit and remains visibly
+`abandoned`, not rolled back.
+
+### 18.3 Reply authority and contract
+
+`reply` now proposes both the concrete `to` Execution and `inReplyToMessageId`. Policy therefore
+authorizes the actual outbound target before request-link resolution. Only after allow does the
+runtime resolve the link and require:
+
+```text
+link.requesterExecutionId === proposal.to
+link.responderExecutionId === current sender
+```
+
+A mismatch is `reply_destination_mismatch`; it never redirects. Denied replies do not consult the
+link, preserving the pre-policy existence-disclosure boundary. Destination-scoped message rules
+therefore constrain replies exactly as they constrain sends and asks.
+
+The false reply-and-ask contract is removed. `ReplyMessageInput` has no `awaitReply`; a reply always
+has `peer.message.expectsReply = false`, settles the existing ask, and creates no new request link.
+A proposal combining `inReplyToMessageId` with `awaitReply = true` is structurally invalid. The fully
+implemented compound interaction remains deferred in `docs/future-plan.md` §1.7.
+
+### 18.4 Terminal dependency abandonment
+
+When an Execution reaches `COMPLETED`, `FAILED`, or `CANCELLED`, outstanding source-side semantic
+dependencies are closed in the terminal lifecycle transaction:
+
+```text
+peer ask:  PendingOperation -> abandoned; PeerRequestLink -> abandoned
+child call: PendingOperation -> abandoned; ChildExecutionLink -> abandoned
+```
+
+`settled` continues to mean the expected semantic result was delivered; `abandoned` means the
+source terminalized first. Wait-for diagnostics expose neither abandoned edge. The independently
+managed peer or child is not cancelled, and a late reply/child terminal result delivers nothing to
+the terminal source.
+
+The no-composition terminal path first consults the shared pending-operation index and does not scan
+peer/child link facets when no cross-Execution dependency exists. Cancellation checks are bounded
+single-record reads on Activation claim/outcome and on each Effect request/dispatch transaction.
+
+### 18.5 E.1.1 acceptance answers
+
+- A matching interleave Event queued while the suspending Activation is still RUNNING cannot leave
+  the old continuation reusable.
+- A cancellation request committed before the Activation outcome prevents later Effect dispatch,
+  emissions, completion, and failure from winning.
+- A dispatch intent committed before cancellation remains honestly dispatched; cancellation does
+  not claim rollback.
+- Destination-scoped message rules constrain replies, and a reply cannot redirect away from the
+  requester recorded in the runtime link.
+- `expectsReply = true` exists only for an ask with an open runtime-owned request dependency.
+- Terminal requesters/parents expose no active peer/child wait edge, while peers/children continue
+  independently.
+- A<->B liveness, normal WAITING-time invalidation, E.0/E.0.1 composition/authority bounds, and the
+  anti-thrashing Event-burst rule remain intact.
+- No E.2 behavior was implemented.

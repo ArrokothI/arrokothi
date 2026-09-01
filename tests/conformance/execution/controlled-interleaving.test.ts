@@ -14,6 +14,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { ControllerRegistry, Harness } from "@agent-sdk/core/execution";
+import type { ActivationOutcome, ExecutionController } from "@agent-sdk/core/ports";
 import {
   createAllowListAuthorizer,
   createDeterministicIds,
@@ -84,6 +85,104 @@ const INTERLEAVING_WORK: ScriptedControllerStep = {
 };
 
 describe("controlled interleaving", () => {
+  test("RUNNING-window race - a queued interleave Event invalidates the not-yet-committed suspension", async () => {
+    let reportSuspension!: () => void;
+    const suspensionReady = new Promise<void>((resolve) => { reportSuspension = resolve; });
+    let releaseController!: () => void;
+    const controllerRelease = new Promise<void>((resolve) => { releaseController = resolve; });
+    let releaseR1!: () => void;
+    const r1 = new Promise<string>((resolve) => { releaseR1 = () => resolve("obsolete"); });
+    let releaseR2!: () => void;
+    const r2 = new Promise<string>((resolve) => { releaseR2 = () => resolve("fresh"); });
+    let workStarts = 0;
+    let activations = 0;
+
+    const controller: ExecutionController = {
+      kind: "agent",
+      async activate(input, resumptions): Promise<ActivationOutcome> {
+        activations += 1;
+        const attempt = await resumptions.run("stable-R", () => {
+          workStarts += 1;
+          return workStarts === 1 ? r1 : r2;
+        });
+        if (activations === 1) {
+          assert.equal(attempt.status, "suspended");
+          reportSuspension();
+          await controllerRelease;
+          return {
+            control: { kind: "agent", progress: { activations } },
+            next: {
+              status: "await_resumption",
+              resumptionId: attempt.resumptionId,
+              interleave: { eventKinds: ["external.input"], correlationId: null },
+            },
+          };
+        }
+        if (attempt.status === "suspended") {
+          return {
+            control: { kind: "agent", progress: { activations, events: input.events.length } },
+            next: {
+              status: "await_resumption",
+              resumptionId: attempt.resumptionId,
+              interleave: { eventKinds: ["external.input"], correlationId: null },
+            },
+          };
+        }
+        assert.equal(attempt.status, "settled");
+        return { control: { kind: "agent", progress: { activations, value: attempt.value } }, next: { status: "complete" } };
+      },
+    };
+
+    const definitions = new InMemoryDefinitionStore();
+    const store = new InMemoryRuntimeStore();
+    const harness = new Harness({
+      definitions,
+      store,
+      scheduler: new FifoScheduler(),
+      controllers: new ControllerRegistry([controller]),
+      clock: createFixedClock(),
+      ids: createDeterministicIds(),
+      inlineWait: createNoInlineWaitBudget(),
+    });
+    const ref = await definitions.save(scriptedAgentDefinition({ id: "running-window", program: [{ do: "complete" }] }));
+    const handle = await harness.createExecution({ definition: ref });
+
+    const firstActivation = harness.runOnce();
+    await suspensionReady;
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "RUNNING");
+
+    // E1/E2/E3 commit while A1 is still RUNNING and deliberately held before reporting its wait.
+    await harness.deliverExternalInput({ destination: handle.executionId, label: "e1" });
+    await harness.deliverExternalInput({ destination: handle.executionId, label: "e2" });
+    await harness.deliverExternalInput({ destination: handle.executionId, label: "e3" });
+    releaseController();
+    await firstActivation;
+
+    const [obsolete] = await harness.controllerResumptionsOf(handle.executionId);
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "READY");
+    assert.equal(obsolete?.state, "invalidated", "the suspension commit records durable invalidation");
+    assert.ok(obsolete?.invalidatedByEventId, "one matching queued Event supplies provenance");
+    assert.equal(await store.findControllerResumptionByKey(handle.executionId, "stable-R"), undefined);
+
+    // Late R1 completion is not followed and cannot wake or become reusable.
+    releaseR1();
+    await Promise.resolve();
+    assert.equal((await harness.controllerResumption(obsolete!.resumptionId))?.state, "invalidated");
+
+    const secondActivation = await harness.runOnce();
+    assert.equal(secondActivation?.deliveredEventIds.length, 3, "the burst is consumed by one Activation");
+    assert.equal(workStarts, 2, "one fresh R2 starts after consolidated Event processing");
+    const records = await harness.controllerResumptionsOf(handle.executionId);
+    assert.equal(records.filter((record) => record.state === "invalidated").length, 1);
+    assert.equal(records.filter((record) => record.state === "pending").length, 1);
+
+    releaseR2();
+    await harness.drainResumptions();
+    await harness.runUntilIdle();
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "COMPLETED");
+    assert.equal(workStarts, 2, "stable-key recovery did not start a duplicate R2");
+  });
+
   test("R5 - a controller with no interleave declaration keeps the exact v0.4 exclusive-resumption behaviour", async () => {
     const { harness, definitions, open } = rig();
     const ref = await definitions.save(

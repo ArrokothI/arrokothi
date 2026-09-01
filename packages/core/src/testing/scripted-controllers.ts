@@ -95,6 +95,7 @@ export type ScriptedControllerStep =
       readonly childInput?: JsonValue;
       readonly requestedOperations?: readonly OperationRefInput[];
       readonly requestKey?: string;
+      readonly interleave?: { readonly eventKinds?: readonly EventKind[]; readonly correlationId?: string };
       /** `spawn` only: report `continue` instead of waiting for `child.spawned`. */
       readonly await?: boolean;
     }
@@ -126,13 +127,16 @@ export type ScriptedControllerStep =
    * Propose a `reply` to a peer request this Execution received.
    *
    * `toMessageId` names the request; omitted, it replies to the most recent `peer.message` this
-   * Execution saw that had `expectsReply: true`.
+   * Execution saw that had `expectsReply: true`. `to` is normally derived from that runtime-owned
+   * message; tests may provide it explicitly to exercise integrity rejection.
    */
   | {
       readonly do: "reply";
       readonly body?: JsonValue;
       readonly toMessageId?: string;
+      readonly to?: string;
       readonly requestKey?: string;
+      /** Wait for the reply's delivery acknowledgement or refusal. */
       readonly await?: boolean;
     }
   /**
@@ -445,7 +449,13 @@ class ScriptedController implements ExecutionController {
                 correlationId: requestKey,
                 description: `${step.definitionId} spawned`,
               };
-        return this.outcome(progress, { status: "await_event", wake }, [], [proposal]);
+        const interleave = interleaveWake(step.interleave);
+        return this.outcome(
+          progress,
+          interleave !== undefined ? { status: "await_event", wake, interleave } : { status: "await_event", wake },
+          [],
+          [proposal],
+        );
       }
 
       case "send": {
@@ -499,21 +509,23 @@ class ScriptedController implements ExecutionController {
 
       case "reply": {
         progress.step += 1;
-        const target =
-          step.toMessageId ??
-          [...progress.peerMessages].reverse().find((message) => message.expectsReply)?.messageId;
-        if (target === undefined) {
+        const request = step.toMessageId !== undefined
+          ? [...progress.peerMessages].reverse().find((message) => message.messageId === step.toMessageId)
+          : [...progress.peerMessages].reverse().find((message) => message.expectsReply);
+        const target = step.toMessageId ?? request?.messageId;
+        const to = step.to ?? request?.fromExecutionId;
+        if (target === undefined || to === undefined) {
           return this.outcome(progress, {
             status: "fail",
-            failure: { code: "no_peer_request_to_reply_to", message: "reply step ran with no pending peer request" },
+            failure: { code: "no_peer_request_to_reply_to", message: "reply step needs a request id and concrete requester" },
           });
         }
         const requestKey = step.requestKey ?? `reply:${progress.step}`;
         const proposal = reply({
+          to,
           inReplyToMessageId: target,
           ...(step.body !== undefined ? { body: step.body } : {}),
           requestKey,
-          ...(step.await === true ? { awaitReply: true } : {}),
         });
         if (step.await !== true) {
           // A plain reply settles as soon as it is admitted; do not block on it.
@@ -524,7 +536,7 @@ class ScriptedController implements ExecutionController {
           progress,
           {
             status: "await_event",
-            wake: { eventKinds: ["peer.message", "effect.denied", "effect.rejected"], correlationId: requestKey },
+            wake: { eventKinds: ["message.sent", "effect.denied", "effect.rejected"], correlationId: requestKey },
           },
           [],
           [proposal],

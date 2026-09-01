@@ -24,7 +24,7 @@ import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { EffectId, PendingOperationId } from "../effects/ids.ts";
 import type { ActivationId, ExecutionId } from "./ids.ts";
 
-export type ChildLinkState = "active" | "settled";
+export type ChildLinkState = "active" | "settled" | "abandoned";
 
 export interface ChildExecutionLink {
   readonly childExecutionId: ExecutionId;
@@ -43,7 +43,7 @@ export interface ChildExecutionLink {
   readonly resultCorrelationId: string | null;
   readonly state: ChildLinkState;
   readonly createdAt: string;
-  /** Set once a terminal result has been delivered to the parent (a `call` only). */
+  /** Set once the dependency is settled or abandoned (a `call` only). */
   readonly settledAt: string | null;
 }
 
@@ -77,8 +77,14 @@ export function createChildExecutionLink(input: CreateChildExecutionLinkInput): 
 
 /** Marks that the child's terminal result has been delivered to the waiting parent. */
 export function markChildLinkSettled(link: ChildExecutionLink, at: string): ChildExecutionLink {
-  if (link.state === "settled") return link;
+  if (link.state !== "active") return link;
   return { ...link, state: "settled", settledAt: at };
+}
+
+/** The parent became terminal before it could observe this call's terminal result. */
+export function markChildLinkAbandoned(link: ChildExecutionLink, at: string): ChildExecutionLink {
+  if (link.state !== "active") return link;
+  return { ...link, state: "abandoned", settledAt: at };
 }
 
 /** A `call` whose child has not yet delivered its terminal result. */

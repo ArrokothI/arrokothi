@@ -16,18 +16,18 @@
  * no authorization       no journal phase
  * ```
  *
- * Every one of those belongs to work the world may have observed. Local work either produced a
- * value or threw, so `pending | settled` with a value or a normalized failure is the whole truth.
- * Nothing here is delivered to a mailbox and nothing here is an Event.
+ * Every one of those belongs to work the world may have observed. Local work either produces a
+ * value/failure or is invalidated because later semantic input overtook it; none of those outcomes
+ * is delivered to a mailbox and nothing here is an Event.
  *
  * `observedRevision` records the `ExecutionContext.revision` the suspending Activation read. It is
  * retained provenance, and E.1 deliberately does **not** use a naive `current.revision !==
  * observedRevision` equality to detect staleness: `ExecutionContext.revision` also advances for
  * ordinary lifecycle bookkeeping (`READY -> RUNNING`, `RUNNING -> WAITING`, `WAITING -> READY`), so
  * that comparison would classify a normal suspension as an intervening semantic mutation. See
- * [`../../../../docs/development/015-slice-e1-interleaving-peer-interaction.md`](../../../../docs/development/015-slice-e1-interleaving-peer-interaction.md).
+ * [`../../../../docs/development/016-slice-e1-interleaving-peer-interaction.md`](../../../../docs/development/016-slice-e1-interleaving-peer-interaction.md).
  *
- * ## `invalidated` (Slice E.1)
+ * ## `invalidated` (Slice E.1 / E.1.1)
  *
  * E.1 lets an explicitly opted-in interleave Event overtake a still-pending resumption. When that
  * happens the resumption is moved to `invalidated` in the same transaction that queues the Event and
@@ -36,7 +36,8 @@
  * ```text
  * - its underlying promise may still finish, but that late result cannot wake the Execution,
  *   cannot become an Event, and is never returned by stable-key recovery
- * - invalidating twice, or invalidating an already-settled record, is a no-op
+ * - ordinary WAITING-time invalidation is a no-op once settled; suspension-boundary invalidation
+ *   may discard work that settled only after the Event already committed
  * - re-running the same semantic stable key after invalidation starts fresh work
  * ```
  *
@@ -170,6 +171,33 @@ export function invalidateControllerResumption(
   return {
     ...resumption,
     state: "invalidated",
+    invalidatedAt: at,
+    invalidatedByEventId: byEventId,
+    invalidatedAtRevision: atRevision,
+  };
+}
+
+/**
+ * Invalidates work at the `RUNNING -> await_resumption` commit boundary.
+ *
+ * Unlike ordinary WAITING-time invalidation, this may invalidate a record that settled after the
+ * interleave Event was queued but before the Activation committed its wait. The Event still won
+ * the semantic ordering: the outcome was computed from pre-Event state and must not become
+ * reusable merely because its promise happened to settle in that narrow window.
+ */
+export function invalidateControllerResumptionAtSuspension(
+  resumption: ControllerResumption,
+  at: string,
+  byEventId: string,
+  atRevision: number,
+): ControllerResumption {
+  if (resumption.state === "invalidated") return resumption;
+  return {
+    ...resumption,
+    state: "invalidated",
+    value: null,
+    failure: null,
+    settledAt: null,
     invalidatedAt: at,
     invalidatedByEventId: byEventId,
     invalidatedAtRevision: atRevision,

@@ -145,12 +145,13 @@ describe("interleaving cost discipline", () => {
     ]) {
       assert.equal(store.counts[facet] ?? 0, 0, `no-message/no-interleave path must not touch ${facet}`);
     }
-    // The only cancellation-request touch is a single-record `get` branch check on the claim path
-    // and in applyOutcome - O(Activations), never a scan. `docs/development/014` accepts a small
-    // constant branch/check inside normal runtime code.
+    // Cancellation is checked by key on claim/outcome and inside each Effect's requested and
+    // dispatch-intent transactions. This is O(Activations + Effects), never a scan; the second
+    // per-Effect check is what closes cancellation racing with irreversible dispatch.
+    const effectCount = records.reduce((count, record) => count + record.effects.length, 0);
     assert.ok(
-      (store.counts["cancellationRequests.get"] ?? 0) <= 2 * records.length + 2,
-      "cancellation check is a small constant per Activation, not a scan",
+      (store.counts["cancellationRequests.get"] ?? 0) <= 2 * records.length + 2 * effectCount + 2,
+      "cancellation checks are a small constant per Activation/Effect, not a scan",
     );
   });
 

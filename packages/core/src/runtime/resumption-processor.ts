@@ -35,19 +35,20 @@
  *
  * Harness validates that outcome, then ONE transaction:
  *   persist controller progress
- *   insert the pending ControllerResumption
- *   RUNNING -> WAITING, waitingFor = that resumption
+ *   no matching queued interleave Event -> insert pending R; RUNNING -> WAITING on R
+ *   matching queued interleave Event    -> insert/in-place update R as invalidated; -> READY
  * commit
  *
- * only then: attach the continuation
+ * only after a WAITING commit: attach the continuation
  * ```
  *
  * Nothing durable exists until the controller has actually declared itself suspended on it. That
  * ordering is what prevents an orphaned record when a controller throws after starting work, a
  * durable record for an outcome the Harness rejected, and an Execution woken for work it never
  * said it was waiting on. And because the continuation is attached *after* the WAITING commit, a
- * promise that resolved during the commit window still drives the normal settlement path - it just
- * does so on the next microtask instead of later.
+ * promise that resolved during the ordinary WAITING commit window still drives the normal
+ * settlement path - it just does so on the next microtask instead of later. If an interleave Event
+ * committed first, the registration is durably invalidated and deliberately never attached.
  *
  * A registration the controller never waited on is abandoned: the promise keeps running to
  * completion, its result is discarded, and no record ever names it. The normalized promise cannot

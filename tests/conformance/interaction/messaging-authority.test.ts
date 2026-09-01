@@ -10,16 +10,32 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import type { ExecutionId } from "@agent-sdk/core/execution";
-import type { RuntimeStore } from "@agent-sdk/core/ports";
+import type { RuntimeStore, RuntimeTransaction } from "@agent-sdk/core/ports";
 import { createAllowListAuthorizer, InMemoryRuntimeStore } from "@agent-sdk/core/reference";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
 /** Counts `readExecution` calls, so "zero destination lookup before policy" is measurable. */
 class LookupCountingStore extends InMemoryRuntimeStore {
   reads: string[] = [];
+  peerLinkReads = 0;
   override readExecution(id: ExecutionId): ReturnType<RuntimeStore["readExecution"]> {
     this.reads.push(id);
     return super.readExecution(id);
+  }
+
+  override transact<T>(scope: ExecutionId, work: (tx: RuntimeTransaction) => Promise<T>): Promise<T> {
+    return super.transact(scope, (tx) =>
+      work({
+        ...tx,
+        peerRequestLinks: {
+          ...tx.peerRequestLinks,
+          get: (messageId) => {
+            this.peerLinkReads += 1;
+            return tx.peerRequestLinks.get(messageId);
+          },
+        },
+      }),
+    );
   }
 }
 
@@ -94,6 +110,38 @@ describe("messaging authority", () => {
       "the denied send never read the (real) destination Execution",
     );
     assert.equal(store.reads.includes("exe_ghost"), false, "and never read the guessed one either");
+  });
+
+  test("reply policy denial occurs before request-link existence is consulted", async () => {
+    const store = new LookupCountingStore();
+    const { harness, definitions } = createTestHarness({
+      store,
+      authorizer: createAllowListAuthorizer({ grants: [], message: { destinations: [] } }),
+    });
+    const ref = await definitions.save(
+      scriptedAgentDefinition({
+        id: "denied-reply-probe",
+        program: [
+          {
+            do: "propose_effect",
+            effect: {
+              kind: "send_message",
+              to: "exe_guessed_requester",
+              inReplyToMessageId: "msg_guessed_request",
+              body: {},
+            },
+            await: true,
+          },
+          { do: "complete" },
+        ],
+      }),
+    );
+    const handle = await harness.createExecution({ definition: ref });
+    store.peerLinkReads = 0;
+    await harness.runUntilIdle();
+    const progress = readScriptedProgress((await harness.inspect(handle.executionId))!.control.progress);
+    assert.equal((progress.observations[0] as { code: string }).code, "message_not_authorized");
+    assert.equal(store.peerLinkReads, 0, "denied reply disclosed nothing about the guessed request link");
   });
 
   test("an authorized send to a terminal destination is an explicit rejection", async () => {

@@ -43,7 +43,7 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   spawn budget, current-authority attenuation, spawn vs call, and child
   terminal-result correlation through PendingOperation/Event. Not merged.
 
-015-slice-e1-interleaving-peer-interaction.md
+016-slice-e1-interleaving-peer-interaction.md
   the second Slice E checkpoint: controlled Event interleaving between
   serialized Activations with a serializable opt-in and the minimal
   stale-continuation (ControllerResumption invalidation) rule; SendMessage made
@@ -86,7 +86,7 @@ MCP operation proof                      accepted
 Slice E composition
   E.0   child Execution foundation       accepted (013), not merged
   E.0.1 review retrofit                  accepted (013 §14a), not merged
-  E.1   interleaving + peer interaction  current checkpoint (015), not merged
+  E.1   interleaving + peer interaction  E.1.1 review retrofit (016), not merged
   E.2   user interaction + surfaces      next
 
 cross-cutting v1 validation

@@ -16,10 +16,9 @@
  * `forceConsequential: true` to promote handling beyond that baseline, never to relax it. There is
  * no way to write a rule that downgrades a descriptor-declared consequential operation.
  *
- * Effect kinds other than `UseCapability` are denied here too, though the Harness refuses them
- * before policy is ever consulted - which kind of Effect the runtime can perform is a kernel fact,
- * not a policy one. The branch stays because an authorizer is a public component that application
- * code may call directly, and it should not answer "allow" for something nothing can do.
+ * Operational `SpawnExecution` and `SendMessage` proposals have their own explicit rules below.
+ * Other non-capability Effect kinds are denied because their owning runtime slices have not made
+ * them dispatchable; an authorizer is public and must not answer "allow" for unsupported work.
  */
 
 import type { AuthorizationDecision, EffectAuthorizationRequest } from "../effects/authorization.ts";
@@ -113,22 +112,21 @@ export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): 
 
       if (isSendMessageProposal(request.proposal)) {
         const rule = options.message ?? false;
-        const isReply = request.proposal.inReplyToMessageId !== undefined;
-        // A reply is still an outbound send. Its actual destination is resolved by the runtime from
-        // the request link, so a `{ destinations }` list cannot check it here - but a deny-by-default
-        // policy still refuses it, which is the property "a responder without messaging authority
-        // cannot reply" depends on.
+        // Replies name the concrete requester as `to`, so destination-scoped policy constrains them
+        // before the runtime resolves the request link. Link resolution later verifies that `to`
+        // matches runtime truth; policy authorization can never redirect the reply.
         const allowed =
           rule === true ||
           (typeof rule === "object" &&
-            (isReply || (request.proposal.to !== undefined && rule.destinations.includes(request.proposal.to))));
+            request.proposal.to !== undefined &&
+            rule.destinations.includes(request.proposal.to));
         if (!allowed) {
           return {
             decision: "deny",
             code: "message_not_authorized",
             message:
               `execution ${request.executionId} is not authorized to send messages` +
-              (isReply ? " (including replies)" : ` to ${request.proposal.to}`) +
+              ` to ${request.proposal.to}` +
               " under this policy",
           };
         }

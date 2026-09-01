@@ -260,7 +260,7 @@ export class EffectProcessor {
     const correlationId = proposal.requestKey ?? effectId;
     const requestedAt = nowIso(this.deps.clock);
 
-    const collision = await this.deps.store.transact(executionId, async (tx) => {
+    const initial = await this.deps.store.transact(executionId, async (tx) => {
       await this.journal(tx, {
         effectId,
         executionId,
@@ -278,13 +278,22 @@ export class EffectProcessor {
           proposal: proposal as unknown as JsonValue,
         },
       });
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, requestedAt)) {
+        return "cancelled" as const;
+      }
       // A request key names one outstanding operation. Reusing a live one would make two results
       // indistinguishable to the controller waiting on it.
       const live = await tx.pendingOperations.listByExecution(executionId);
-      return live.some((operation) => operation.status === "pending" && operation.correlationId === correlationId);
+      return live.some((operation) => operation.status === "pending" && operation.correlationId === correlationId)
+        ? "collision" as const
+        : "clear" as const;
     });
 
-    if (collision) {
+    if (initial === "cancelled") {
+      return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    }
+
+    if (initial === "collision") {
       return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
         code: "duplicate_request_key",
         message: `request key "${correlationId}" already names an unresolved pending operation for this Execution`,
@@ -417,6 +426,35 @@ export class EffectProcessor {
     return raw as AuthorizationDecision;
   }
 
+  /**
+   * The cancellation check that participates in every dispatch-intent transaction.
+   *
+   * A check outside that transaction is only an optimization: cancellation could commit between
+   * the check and `dispatch_started`. This helper is therefore called again inside the atomic
+   * capability, child-creation, and peer-delivery commits (and before refusal/replay Events).
+   */
+  private async abandonIfCancellationPending(
+    tx: RuntimeTransaction,
+    input: ProcessEffectsInput,
+    proposal: EffectProposal,
+    effectId: EffectId,
+    at: string,
+  ): Promise<boolean> {
+    const request = await tx.cancellationRequests.get(input.context.executionId);
+    if (request === undefined || request.state !== "pending") return false;
+    await this.journal(tx, {
+      effectId,
+      executionId: input.context.executionId,
+      effectKind: proposal.kind,
+      phase: "abandoned",
+      activationId: input.activationId,
+      pendingOperationId: null,
+      at,
+      detail: { reason: "execution cancellation committed before dispatch" },
+    });
+    return true;
+  }
+
   // -- spawn dispatch ------------------------------------------------------
 
   /**
@@ -492,6 +530,7 @@ export class EffectProcessor {
 
     type SpawnCommit =
       | { readonly kind: "refused"; readonly code: string; readonly message: string }
+      | { readonly kind: "abandoned" }
       | {
           readonly kind: "created";
           readonly childExecutionId: ExecutionId;
@@ -502,6 +541,9 @@ export class EffectProcessor {
 
     const attemptSpawn = async (at: string): Promise<SpawnCommit> =>
       this.deps.store.transact(parentId, async (tx): Promise<SpawnCommit> => {
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at)) {
+        return { kind: "abandoned" };
+      }
       // Structural budget, read fresh and checked before anything is written. A descendant cannot
       // enlarge it, and a lineage with no budget cannot spawn at all.
       const budget = await tx.lineageSpawnBudgets.get(parent.rootExecutionId);
@@ -740,6 +782,10 @@ export class EffectProcessor {
       });
     }
 
+    if (outcome.kind === "abandoned") {
+      return { effectId, effectKind: "spawn_execution", correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    }
+
     // The child record is durable; make it runnable. Post-commit, exactly like an Effect result
     // that woke a waiting Execution.
     await this.deps.wake(outcome.childExecutionId);
@@ -788,7 +834,7 @@ export class EffectProcessor {
   ): Promise<EffectDispatchRecord> {
     const senderId = input.context.executionId;
     const isReply = proposal.inReplyToMessageId !== undefined;
-    const awaited = proposal.awaitReply === true;
+    const awaited = !isReply && proposal.awaitReply === true;
 
     const decision = await this.decide(input, proposal, effectId, requestedAt);
     if (decision.decision === "deny") {
@@ -802,6 +848,7 @@ export class EffectProcessor {
 
     type MessageCommit =
       | { readonly kind: "refused"; readonly code: string; readonly message: string }
+      | { readonly kind: "abandoned" }
       | {
           readonly kind: "sent";
           readonly pendingOperationId: PendingOperationId;
@@ -812,6 +859,9 @@ export class EffectProcessor {
 
     const commit = await this.deps.store.transact(senderId, async (tx): Promise<MessageCommit> => {
       const now = nowIso(this.deps.clock);
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, now)) {
+        return { kind: "abandoned" };
+      }
       const messageId = this.deps.ids.next(ID_PREFIXES.message);
 
       let recipientId: ExecutionId;
@@ -822,6 +872,9 @@ export class EffectProcessor {
         const link = await tx.peerRequestLinks.get(proposal.inReplyToMessageId!);
         if (!link) {
           return { kind: "refused", code: "reply_no_such_request", message: `no peer request ${proposal.inReplyToMessageId}` };
+        }
+        if (link.state === "abandoned") {
+          return { kind: "refused", code: "reply_request_abandoned", message: `peer request ${link.messageId} was abandoned` };
         }
         if (link.state !== "open") {
           return { kind: "refused", code: "reply_already_settled", message: `peer request ${link.messageId} was already answered` };
@@ -834,7 +887,14 @@ export class EffectProcessor {
           };
         }
         replyLink = link;
-        recipientId = link.requesterExecutionId;
+        if (link.requesterExecutionId !== proposal.to) {
+          return {
+            kind: "refused",
+            code: "reply_destination_mismatch",
+            message: `reply destination ${proposal.to} does not match requester ${link.requesterExecutionId}`,
+          };
+        }
+        recipientId = proposal.to as ExecutionId;
         envelopeCorrelation = link.requestCorrelationId;
       } else {
         recipientId = proposal.to as ExecutionId;
@@ -1005,6 +1065,10 @@ export class EffectProcessor {
       });
     }
 
+    if (commit.kind === "abandoned") {
+      return { effectId, effectKind: "send_message", correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    }
+
     // Scheduling is post-commit, exactly as for a capability result or a spawned child.
     if (commit.recipientWoke) await this.deps.wake(commit.recipientId);
 
@@ -1076,7 +1140,8 @@ export class EffectProcessor {
 
     // One transaction: the grant, the pending operation, and the intent to dispatch commit together
     // and commit *before* the call. If this throws, nothing exists and nothing was attempted.
-    const operation = await this.deps.store.transact(executionId, async (tx) => {
+    const operation = await this.deps.store.transact(executionId, async (tx): Promise<PendingOperation | null> => {
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, dispatchedAt)) return null;
       await this.journal(tx, {
         effectId,
         executionId,
@@ -1121,6 +1186,10 @@ export class EffectProcessor {
       });
       return dispatched;
     });
+
+    if (operation === null) {
+      return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    }
 
     const request: AuthorizedCapabilityRequest = {
       executionId,
@@ -1267,8 +1336,9 @@ export class EffectProcessor {
 
       const request = await this.requestFacts(tx, operation);
       const context = await tx.executions.get(operation.executionId);
-      if (!context || isTerminalLifecycle(context.lifecycle)) {
-        const abandoned = markAbandoned(operation, settledAt);
+      const cancelRequest = await tx.cancellationRequests.get(operation.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle) || cancelRequest?.state === "pending") {
+        const abandoned = markAbandoned(operation, settledAt, outcome.status);
         await tx.pendingOperations.update(abandoned);
         await this.journal(tx, {
           effectId,
@@ -1278,7 +1348,14 @@ export class EffectProcessor {
           activationId: null,
           pendingOperationId,
           at: settledAt,
-          detail: { reason: context ? `execution ${context.lifecycle}` : "execution missing" },
+          detail: {
+            reason: !context
+              ? "execution missing"
+              : cancelRequest?.state === "pending"
+                ? "execution cancellation pending"
+                : `execution ${context.lifecycle}`,
+            outcome: outcome as unknown as JsonValue,
+          },
         });
         return {
           done: true,
@@ -1344,7 +1421,8 @@ export class EffectProcessor {
     const phase: EffectJournalPhase = reason.phase ?? "rejected";
     const executionId = input.context.executionId;
 
-    await this.deps.store.transact(executionId, async (tx) => {
+    const abandoned = await this.deps.store.transact(executionId, async (tx): Promise<boolean> => {
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at)) return true;
       await this.journal(tx, {
         effectId,
         executionId,
@@ -1372,9 +1450,17 @@ export class EffectProcessor {
           await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
         },
       });
+      return false;
     });
 
-    return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase, settledInline: true };
+    return {
+      effectId,
+      effectKind: proposal.kind,
+      correlationId,
+      pendingOperationId: null,
+      phase: abandoned ? "abandoned" : phase,
+      settledInline: !abandoned,
+    };
   }
 
   /**
@@ -1396,7 +1482,8 @@ export class EffectProcessor {
     const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
     const executionId = input.context.executionId;
 
-    await this.deps.store.transact(executionId, async (tx) => {
+    const abandoned = await this.deps.store.transact(executionId, async (tx): Promise<boolean> => {
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at)) return true;
       await this.journal(tx, {
         effectId,
         executionId,
@@ -1436,7 +1523,12 @@ export class EffectProcessor {
           await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
         },
       });
+      return false;
     });
+
+    if (abandoned) {
+      return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    }
 
     return {
       effectId,

@@ -110,6 +110,10 @@ describe("child cancellation - parent settlement", () => {
 
 describe("child cancellation - RUNNING child reaches a safe boundary", () => {
   test("a RUNNING child records a pending request, keeps running its Activation, then becomes CANCELLED", async () => {
+    let entered!: () => void;
+    const controllerEntered = new Promise<void>((resolve) => {
+      entered = resolve;
+    });
     let release: (() => void) | null = null;
     const gate = new Promise<void>((r) => {
       release = r;
@@ -119,7 +123,10 @@ describe("child cancellation - RUNNING child reaches a safe boundary", () => {
       kind: "agent",
       async activate(): Promise<ActivationOutcome> {
         calls += 1;
-        if (calls === 1) await gate;
+        if (calls === 1) {
+          entered();
+          await gate;
+        }
         return { control: { kind: "agent", progress: { calls } }, next: { status: "continue" } } as ActivationOutcome;
       },
     };
@@ -138,7 +145,7 @@ describe("child cancellation - RUNNING child reaches a safe boundary", () => {
     const handle = await harness.createExecution({ definition: ref });
 
     const running = harness.runOnce();
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await controllerEntered;
     assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "RUNNING");
 
     const receipt = await harness.cancelExecution({ executionId: handle.executionId, reason: "halt" });

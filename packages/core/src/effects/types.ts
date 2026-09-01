@@ -5,10 +5,8 @@
  * and it is not a claim that anything happened. A controller returns proposals as plain data; the
  * Harness assigns identity, authorizes, journals, dispatches, and eventually delivers an Event.
  *
- * The union is closed at the five accepted v0.4 kinds. Four of them are discriminants only in this
- * slice: they validate, they are journaled, and they are answered with an explicit
- * "not implemented in this slice" observation. They are deliberately *not* silent no-ops, because a
- * controller that asks to send a message and hears nothing back has been lied to.
+ * The union is closed at the five accepted v0.4 kinds. The dispatchable subset is explicit; an
+ * accepted but unimplemented kind is answered with a refusal rather than becoming a silent no-op.
  *
  * What is not an Effect: a function call, a parse, a local rerank over an already-exposed corpus, a
  * model inference that returns to the controller inside the same Activation, or a Stage computation.
@@ -141,7 +139,7 @@ export interface SpawnExecutionProposal extends ProposalBase {
  *        -> the sender's PendingOperation stays pending; a runtime-minted PeerRequestLink correlates
  *           it; the exact original PendingOperation settles only when the intended peer replies
  *
- * reply  inReplyToMessageId set
+ * reply  to + inReplyToMessageId set, awaitReply absent/false
  *        -> an outbound send that also settles the asker's original `ask` PendingOperation. It must
  *           pass the responder's own current messaging policy, and it can settle only the exact
  *           request it names, only from the Execution that request expected.
@@ -154,9 +152,9 @@ export interface SpawnExecutionProposal extends ProposalBase {
 export interface SendMessageProposal extends ProposalBase {
   readonly kind: "send_message";
   /**
-   * The destination Execution id, for a fresh `send` / `ask`. Existence is checked only *after*
-   * policy authorizes the send. Absent for a `reply`, whose destination the runtime resolves from
-   * the peer request link so a sender cannot redirect a reply.
+   * The concrete destination Execution id. A reply names the original requester here as well as
+   * naming the request link; policy can therefore authorize the actual outbound target before the
+   * runtime resolves the link. The runtime later verifies the two agree and never redirects.
    */
   readonly to?: string;
   readonly body: JsonValue;
@@ -314,15 +312,16 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
       if (hasReply && (typeof inReplyTo !== "string" || inReplyTo.length === 0)) {
         issues.push(issue(`${path}.inReplyToMessageId`, "expected a non-empty message id when present"));
       }
-      if (hasTo === hasReply) {
-        // `send` / `ask` name a destination; `reply` names a request. Exactly one, never both, never
-        // neither - a reply must not be able to redirect itself to an arbitrary Execution.
-        issues.push(issue(path, "expected exactly one of `to` (send/ask) or `inReplyToMessageId` (reply)"));
+      if (!hasTo) {
+        issues.push(issue(`${path}.to`, "expected a concrete destination for send, ask, or reply"));
       }
       issues.push(...jsonIssues(candidate["body"], `${path}.body`).map((i) => issue(i.path, i.message)));
       const awaitReply = candidate["awaitReply"];
       if (awaitReply !== undefined && typeof awaitReply !== "boolean") {
         issues.push(issue(`${path}.awaitReply`, "expected a boolean when present"));
+      }
+      if (hasReply && awaitReply === true) {
+        issues.push(issue(`${path}.awaitReply`, "a reply answers one existing ask and cannot itself await another reply"));
       }
       break;
     }
@@ -385,31 +384,30 @@ export function ask(input: SendMessageInput): SendMessageProposal {
 }
 
 export interface ReplyMessageInput {
+  /** The original requester, taken from the runtime-owned incoming `peer.message`. */
+  readonly to: string;
   /** The runtime-minted message id of the peer request being answered. */
   readonly inReplyToMessageId: string;
   readonly body?: JsonValue;
   readonly requestKey?: string;
   readonly authorizationEvidence?: AuthorizationEvidence;
-  /** `true` to make this reply itself an `ask`. */
-  readonly awaitReply?: boolean;
 }
 
 /**
  * `reply`: an outbound send that also settles the asker's original `ask`.
  *
- * Resolves to the same `SendMessage` Effect - it carries `inReplyToMessageId` instead of `to`. It
- * passes the responder's current messaging policy, and the runtime settles the asker's exact
- * PendingOperation only if `inReplyToMessageId` names an open request this Execution was the
- * expected responder for.
+ * Resolves to the same `SendMessage` Effect. Policy authorizes the concrete `to` before the runtime
+ * resolves `inReplyToMessageId`; the runtime then requires that link to name the same requester and
+ * this Execution as responder. A reply answers one ask and never opens another one.
  */
 export function reply(input: ReplyMessageInput): SendMessageProposal {
   return {
     kind: "send_message",
+    to: input.to,
     body: input.body ?? null,
     inReplyToMessageId: input.inReplyToMessageId,
     ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
     ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
-    ...(input.awaitReply === true ? { awaitReply: true } : {}),
   };
 }
 
