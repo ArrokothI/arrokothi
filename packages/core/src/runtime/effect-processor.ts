@@ -24,9 +24,10 @@
  * `UseCapability` proposal is checked against the Execution's *current* effective operation
  * authority - the runtime-owned ceiling written when the Execution was created. That check lives
  * here rather than in a controller because this is the only place a dispatch can happen. A buggy or
- * hostile Active View resolver can therefore expose an operation it should not, and a permissive
- * authorizer can then be asked about it, and the operation still does not run. An Active View is a
- * narrowing of the ceiling; it is never a substitute for it, and neither layer replaces the other:
+ * hostile Active View resolver can therefore expose an operation it should not, and the operation
+ * still does not run - and a permissive authorizer is never even asked about it, because the ceiling
+ * check refuses before policy is consulted. An Active View is a narrowing of the ceiling; it is
+ * never a substitute for it, and neither layer replaces the other:
  *
  * ```text
  * effective authority   the hard runtime ceiling, read fresh at dispatch

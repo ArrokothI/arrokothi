@@ -27,6 +27,11 @@ For the current v0.4 Agent work, use the following documents together:
 010-slice-d0-implementation-decisions.md
   what Slice D.0 became in code, plus the D.0.1 review retrofit that closed the
   effective-authority dispatch defect and added the four replaceable seams
+
+011-mcp-synchronous-operation-proof.md
+  the narrow synchronous MCP Tool import/export proof: package/dependency
+  boundary, local identity, schema subset, result semantics, export boundary,
+  and the seam feedback it produced
 ```
 
 `009` is intentionally a **review/amendment document**, not a replacement Slice-D coding plan. If Slice D or a D.0 retrofit is already in progress, finish the coherent implementation first, then review the landed result against `009` and apply only concrete additive seams or local retrofits justified by the implementation.
@@ -40,9 +45,16 @@ Slice D.0 implementation                 done
         ↓
 post-D 009 review / D.0.1 retrofit       done
         ↓
-Slice D accepted                         pending architecture review
+Slice D accepted                         done
         ↓
-behavioural Agent baseline               first cases landed (tests/evals/agent/)
+behavioural Agent baseline               landed (tests/evals/agent/)
         ↓
-narrow synchronous MCP operation proof   next
+narrow synchronous MCP operation proof   done, recorded in 011
+        ↓
+Slice E composition                      next
 ```
+
+The MCP proof required no change to `packages/core` beyond one corrected comment, which is the
+result `007` DEC-I20 was asking for. Its deferred second stage — exported Agent/Workflow service
+operations, external Task handles, `input_required`, change notifications — stays after Slice E and
+Slice G.

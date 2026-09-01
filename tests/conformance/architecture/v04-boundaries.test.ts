@@ -225,6 +225,13 @@ describe("v0.4 architecture boundaries", () => {
       // The retrieval conformance cases must exercise a real implementation of the capability and
       // local-resource ports, and proving the extraction is part of what they assert.
       "@agent-sdk/retrieval-local",
+      // The MCP conformance cases must exercise a real protocol adapter against a real MCP
+      // client/server pair. "the server received zero calls" is only evidence when the server is
+      // genuine, so the SDK is imported here deliberately - and nowhere else outside the adapter,
+      // which `architecture/mcp-boundaries.test.ts` asserts repo-wide.
+      "@agent-sdk/integration-mcp",
+      "@modelcontextprotocol/client",
+      "@modelcontextprotocol/server",
     ]);
     const violations: string[] = [];
 

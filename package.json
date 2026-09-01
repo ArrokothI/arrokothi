@@ -8,6 +8,7 @@
     "packages/core",
     "packages/models/gemini",
     "packages/retrieval/local",
+    "packages/interoperability/mcp",
     "packages/agents/strands",
     "packages/storage/sqlite",
     "apps/studio",
@@ -21,7 +22,7 @@
     "node": ">=22.9.0"
   },
   "scripts": {
-    "test": "node --test --experimental-sqlite --experimental-strip-types packages/core/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/storage/sqlite/tests/*.test.ts tests/conformance/*/*.test.ts",
+    "test": "node --test --experimental-sqlite --experimental-strip-types packages/core/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/storage/sqlite/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts tests/conformance/*/*.test.ts",
     "test:watch": "node --test --watch --experimental-strip-types packages/core/tests/*.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "studio": "node --experimental-strip-types --experimental-sqlite apps/studio/src/server.ts",
@@ -33,13 +34,15 @@
     "test:benchmark-subjects": "node --test --experimental-strip-types examples/benchmark/p01/*.test.ts examples/benchmark/p02/*.test.ts",
     "canary:gemini": "node --env-file-if-exists=.env --experimental-strip-types scripts/gemini-provider-canary.ts",
     "canary:workflow": "node --env-file-if-exists=.env --experimental-strip-types scripts/workflow-scenario-canary.ts",
+    "canary:mcp:gemini": "node --env-file-if-exists=.env --experimental-strip-types scripts/mcp-gemini-canary.ts",
     "test:core": "node --test --experimental-strip-types packages/core/tests/*.test.ts",
     "test:retrieval-local": "node --test --experimental-strip-types packages/retrieval/local/tests/*.test.ts",
     "test:strands": "node --test --experimental-strip-types packages/agents/strands/tests/*.test.ts",
     "test:storage-sqlite": "node --test --experimental-sqlite --experimental-strip-types packages/storage/sqlite/tests/*.test.ts",
+    "test:mcp": "node --test --experimental-strip-types packages/interoperability/mcp/tests/*.test.ts tests/conformance/mcp/*.test.ts",
     "test:conformance": "node --test --experimental-strip-types tests/conformance/*/*.test.ts",
     "test:evals": "node --test --experimental-strip-types tests/evals/*/*.eval.test.ts",
-    "test:packages": "node --test --experimental-sqlite --experimental-strip-types packages/core/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/storage/sqlite/tests/*.test.ts"
+    "test:packages": "node --test --experimental-sqlite --experimental-strip-types packages/core/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/storage/sqlite/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",
