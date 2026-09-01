@@ -8,6 +8,20 @@
 
 This file records questions that are deliberately **not frozen** into the current architecture.
 
+It now tracks two different kinds of future work:
+
+```text
+architecture questions
+  unresolved semantic/runtime/API choices that may eventually change
+  canonical contracts after implementation evidence
+
+engineering hypotheses
+  replaceable strategies for making Agents/Workflows more effective,
+  efficient, legible, and reliable without changing kernel semantics
+```
+
+Do not promote an engineering technique into canonical architecture merely because it improves one model family, benchmark, or application.
+
 ---
 
 ## 1. Runtime and concurrency
@@ -570,3 +584,513 @@ control-plane IDs are not bearer authorization
 > **Add runtime machinery only when it makes real applications easier to express, operate, secure, or reason about.**
 
 > **Prefer semantic evidence over architectural uniformity.**
+
+---
+
+## 10. Agent effectiveness and engineering experiments
+
+The canonical architecture primarily answers:
+
+```text
+What is an Agent/Workflow/Execution?
+Who owns semantic progression?
+How does work cross the runtime boundary?
+What is authorized?
+How is state retained and observed?
+How can the system wait, resume, recover, compose, and remain contained?
+```
+
+A separate engineering question is:
+
+> **Given those safe and coherent semantics, how should an Agent be scaffolded so it performs useful work well?**
+
+These concerns should normally remain replaceable strategies evaluated against representative workloads.
+
+### 10.1 Behavioral Agent evals
+
+Begin behavioral evaluation with the first reference Agent rather than waiting for architecture stabilization.
+
+Keep the distinction:
+
+```text
+conformance tests
+  prove semantic/runtime/security invariants
+
+behavioral Agent evals
+  measure whether a concrete Agent + model + strategy succeeds at tasks
+```
+
+A useful eval model distinguishes:
+
+```text
+Task
+Trial
+Trajectory / transcript
+Environment outcome
+Grader
+Agent configuration
+Model/deployment
+```
+
+Questions to test:
+
+```text
+How often does the Agent actually accomplish the task?
+Does it select the right operation?
+Are arguments semantically correct?
+Does it recover from operation failure or authority denial?
+How many unnecessary operations/model calls occur?
+What are token, latency, and cost distributions?
+Does success remain stable across repeated stochastic trials?
+Does the environment confirm success independently of the Agent's claim?
+```
+
+Do not make the behavioral eval harness part of Execution semantics merely because it observes the Agent closely.
+
+### 10.2 Agent-computer interface (ACI) and operation design
+
+The model-facing interface is broader than the raw backend API.
+
+Evaluate:
+
+```text
+operation naming and namespace
+semantic operation granularity
+operation overlap/confusability
+description length and structure
+when-to-use / when-not-to-use guidance
+input-schema design and mistake-proofing
+enums vs free-form strings
+few-shot operation-call examples
+output schema usefulness
+result verbosity / pagination / truncation
+error categories plus model-actionable explanation
+stable logical references in results
+concise vs detailed result modes
+```
+
+The portable Operation descriptor should contain durable semantic facts. Model-specific ACI wording, examples, result shaping, and ranking can remain projection/strategy concerns unless evidence shows a more durable contract is needed.
+
+### 10.3 Model-facing observation/result projection
+
+Keep the semantic result separate from the representation placed back into the model context.
+
+Experiments should compare:
+
+```text
+raw structured result
+vs concise semantic result
+vs summarized result
+vs references + lazy follow-up reads
+
+full error payload
+vs normalized category + actionable explanation
+
+large result in one turn
+vs pagination / bounded excerpts
+```
+
+The same semantic Event/result should be usable under multiple projection strategies without modifying the executor, authority decision, or Event meaning.
+
+### 10.4 Context strategy and context budgeting
+
+The canonical rule remains:
+
+```text
+memory / retained information != invocation context
+```
+
+Evaluate policies such as:
+
+```text
+full recent history
+sliding window
+summary/compaction
+retrieval over older history
+structured Working Notes
+Artifact references/excerpts
+fresh-context handoff
+importance/recency selection
+model-specific token budgeting
+operation-result compaction
+context caching
+```
+
+Measure both task quality and context efficiency. Larger context is not automatically better context.
+
+### 10.5 Long-horizon progress protocols
+
+Long-running work may need explicit externalized continuity rather than assuming one model context persists forever.
+
+Experiments may use:
+
+```text
+progress/state files
+feature/task ledgers
+Working Notes
+Artifacts
+git history/checkpoints
+structured next-step records
+initializer passes
+fresh-context workers
+periodic compaction
+restart/reconstruction prompts
+```
+
+Questions:
+
+```text
+What minimum state lets a fresh context resume correctly?
+Which state should be Structured Memory, Working Notes, Artifact, or ordinary application state?
+When is continuous context superior to fresh-context handoff?
+How does model capability change the optimal scaffolding?
+```
+
+Do not create a new Execution kind or Effect merely to encode one long-horizon coding pattern.
+
+### 10.6 Verification and backpressure
+
+For tasks with external ground truth, test explicit feedback mechanisms:
+
+```text
+tests
+compiler/type checker
+linter/static analysis
+browser/UI inspection
+simulator
+query/result validation
+policy checker
+independent evaluator
+human review
+```
+
+Questions:
+
+```text
+Which feedback should be mandatory before completion?
+Which feedback can be requested opportunistically by an Agent?
+When should generation and evaluation use separate Agents/Workflows?
+How do we prevent self-evaluation from becoming unsupported self-approval?
+```
+
+Prefer environment-grounded outcome checks when available.
+
+### 10.7 Planner / generator / evaluator compositions
+
+Test whether explicit role separation improves specific workloads:
+
+```text
+planner → generator → evaluator
+orchestrator → parallel workers → synthesis
+generator → verifier → revision loop
+```
+
+These should normally be expressed through existing Agent/Workflow/child composition semantics.
+
+Do not add `PlannerExecution`, `EvaluatorExecution`, or similar kernel kinds unless a genuinely new independent runtime identity requirement emerges.
+
+### 10.8 Subagent strategy
+
+Existing `SpawnExecution`/`call` semantics can support many multi-Agent strategies. Evaluate:
+
+```text
+when delegation improves quality or latency
+how much context to delegate
+how to describe child responsibilities
+parallel vs sequential children
+specialized vs homogeneous children
+result aggregation/synthesis
+child token and structural budgets
+failure/cancellation strategy
+```
+
+Separate the effectiveness question "should I spawn a child?" from the runtime question "is this spawn authorized, bounded, and correctly supervised?"
+
+### 10.9 Large-catalog operation discovery
+
+Continue the progressive-discovery work in §2.3 with behavioral measurements.
+
+Compare:
+
+```text
+static explicit Active View
+BM25/lexical ranking
+embedding retrieval
+hybrid ranking
+provider-native tool search
+model-visible discover/search operation
+search → describe → invoke
+lazy schema hydration
+cached view expansion/contraction
+```
+
+Metrics should include:
+
+```text
+task success
+tool recall
+wrong-tool rate
+selection latency
+extra model turns
+input tokens
+schema hydration cost
+```
+
+Do not make an LLM selector mandatory without evidence that it improves the full task-level tradeoff.
+
+### 10.10 Programmatic/code-mediated operation use
+
+For operation-heavy tasks, evaluate whether the model should sometimes write bounded code that performs several ordinary API/portable Operation calls rather than invoking every operation as a separate model turn.
+
+Potential benefits to measure:
+
+```text
+fewer model turns
+less intermediate context pollution
+better loops/filtering/aggregation
+more natural manipulation of large structured results
+```
+
+Potential risks to measure:
+
+```text
+larger execution/containment surface
+loss of per-step model oversight
+error handling complexity
+authority mediation bypass if designed incorrectly
+```
+
+Any code-mediated path must preserve the relevant authority/security boundary; ordinary trusted Workflow/function code may call ordinary APIs directly where the application intentionally owns that authority, while untrusted/model-generated code requires an appropriate mediated/isolated design.
+
+### 10.11 Prompt and model-specific Agent strategies
+
+Evaluate model-specific choices without leaking them into semantic Definitions unnecessarily:
+
+```text
+system instruction variants
+reasoning/effort settings
+operation-call examples
+recovery instructions
+planning instructions
+context packing
+result verbosity
+stop/completion guidance
+```
+
+The same Agent/Workflow semantic Definition should remain portable where possible, with deployment/reference strategy selecting model-specific behavior.
+
+### 10.12 Harness/scaffold simplification as models improve
+
+External literature often calls the whole model scaffold an "agent harness"; Arrokoth's canonical `Harness` is narrower and should not absorb every scaffold strategy.
+
+Actively test whether previously useful scaffolding can be removed when newer models improve.
+
+Examples:
+
+```text
+mandatory planning passes
+forced context resets
+extra evaluator turns
+verbose tool guidance
+manual decomposition rules
+special-case retry loops
+```
+
+Optimization includes deleting machinery that no longer earns its complexity.
+
+---
+
+## 11. Evaluation-grade model invocation observability
+
+Behavioral optimization requires inspecting what the model actually saw and did. Preserve a non-semantic trace/observer seam capable of reconstructing or referencing, according to deployment/privacy policy:
+
+```text
+Execution / Activation / controller revision
+resolved model/deployment
+information-context selection identity/digest
+operation projection identity and bindings
+model request metadata
+semantic model output / operation calls
+usage / latency / finish reason
+normalized provider diagnostics/failure
+resulting controller decision
+causation/correlation identifiers
+```
+
+Keep:
+
+```text
+model invocation trace != Event
+trace record != durable memory
+trace identifier != authority credential
+```
+
+Raw prompts/provider payloads do not need mandatory production persistence. Evaluation/debug deployments should nevertheless be able to capture enough information to compare ACI/context/AgentExecutor strategies and inspect failure trajectories.
+
+Open questions:
+
+```text
+portable trace schema vs OpenTelemetry-only projection
+privacy/redaction defaults
+prompt/result sampling
+content-addressed large payload storage
+how much rendered context must be retained for reproducibility
+model/provider/version fingerprinting
+linkage from outcome grader back to invocation trajectory
+```
+
+---
+
+## 12. Evidence loop for Agent engineering
+
+Use a repeated experimental loop:
+
+```text
+hypothesis
+  ↓
+representative tasks
+  ↓
+multiple trials
+  ↓
+trajectory + environment outcome
+  ↓
+metrics / grader / human inspection
+  ↓
+change one strategy or interface
+  ↓
+repeat
+```
+
+Prefer promoting outcomes into one of these categories:
+
+```text
+application pattern
+reference strategy
+optional adapter/provider feature
+recommended descriptor guidance
+conformance invariant (only if truly semantic)
+canonical architecture change (rare; requires strong evidence)
+```
+
+A successful experiment should **not** default to creating a new kernel primitive.
+
+The long-term goal is:
+
+> **Stable semantics underneath; aggressively replaceable Agent engineering above; evidence connecting the two.**
+
+---
+
+## 13. Pre-v1 terminology and model-facing vocabulary review
+
+The current canonical documents freeze **semantic distinctions**, not a claim that every English/API term is already optimal for v1.
+
+Names matter for two different audiences:
+
+```text
+human developers/readers
+  must form the intended mental model quickly and distinguish neighboring concepts
+
+models/Agents
+  may receive selected names/descriptions through prompts, schemas, diagnostics,
+  operation projections, or generated documentation
+```
+
+A term can therefore be semantically correct yet still be a poor public or model-facing name.
+
+Before the v1 public API/documentation freeze, perform an explicit terminology review across at least:
+
+```text
+Execution
+Activation
+Harness
+Agent
+Workflow
+Stage
+Event
+Effect
+PendingOperation
+ControllerResumption
+Operation
+Capability
+Resource
+Active/Exposed View
+Model Invocation Projection
+Memory / Structured Memory / Derived Semantic Memory / Working Notes / Artifact
+Skill
+spawn / call / send / ask
+```
+
+Questions to evaluate for each term:
+
+```text
+Does the name accurately imply the canonical semantic boundary?
+Does common software/AI usage give the same term a materially different meaning?
+Is it easy to distinguish from neighboring Arrokoth concepts?
+Can a new developer predict its role before reading several pages of qualification?
+Does it produce misleading expectations in generated docs, prompts, or model reasoning?
+Is a more explicit name worth the additional verbosity?
+Would a rename reduce or increase ambiguity in MCP/A2A/API mappings?
+What migration cost would the rename create in public APIs, persisted records, examples, and docs?
+```
+
+Do not optimize terminology by popularity alone. For example, external literature may use `agent harness` for a much broader scaffold than Arrokoth's current `Harness`; replacing the name with `Runtime` may or may not improve things because `Runtime` also has several established meanings.
+
+### 13.1 Separate four naming layers
+
+Do not assume one word must serve every layer:
+
+```text
+canonical concept name
+  the architecture term used to state invariants
+
+public API/type name
+  the programmer-facing representation
+
+model-facing ACI vocabulary
+  names/descriptions selected for model comprehension and action choice
+
+protocol/UI projection
+  MCP/A2A/HTTP/Studio/product terminology
+```
+
+These may intentionally differ when translation is explicit and stable.
+
+For example, keeping an internal/runtime concept named `Effect` does not imply that a model should see a tool called `UseCapability` or `SendMessage`. The model-facing ACI should normally expose domain-meaningful operations, and those operations may compile to Effects internally.
+
+Likewise, protocol terms such as MCP `Tool`, A2A `Task`, or another ecosystem's `Session` should not rename stronger Arrokoth concepts merely to avoid adapters having vocabulary mappings.
+
+### 13.2 Review method
+
+Use evidence instead of a one-pass global search-and-replace:
+
+```text
+1. build a glossary of current terms and one-sentence boundaries
+2. identify terms with external semantic collisions or repeated reader confusion
+3. generate a small candidate set for each problematic term
+4. test candidate terminology in architecture excerpts and public API examples
+5. test model-facing candidates on representative selection/reasoning tasks where relevant
+6. compare comprehension errors, wrong-operation choices, ambiguity, and verbosity
+7. decide concept name, API name, and model-facing vocabulary separately when useful
+8. perform any accepted repo-wide rename before v1 compatibility commitments
+```
+
+Useful evidence may include:
+
+```text
+maintainer/new-contributor comprehension reviews
+LLM explanation/selection tests using otherwise identical context
+API ergonomics examples
+searchability and collision with industry/framework terminology
+protocol mapping clarity
+migration scope generated from code/docs search
+```
+
+### 13.3 Timing
+
+Do not interrupt v0.4 merely to rename coherent concepts.
+
+Target the broad review after enough of the architecture has been exercised together to expose real confusion, but before v1 API stabilization—ideally during the v0.8 integration / v0.9 stabilization period.
+
+If a term is discovered earlier to be actively causing implementation mistakes or forcing the wrong semantic ownership, fix it earlier. Otherwise prefer collecting evidence and making coordinated terminology changes once, rather than repeatedly renaming the architecture as external vocabulary evolves.
+
+> **Semantic clarity comes first; terminology should then make that clarity obvious to both humans and models.**
