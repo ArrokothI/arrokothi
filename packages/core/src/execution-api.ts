@@ -19,7 +19,6 @@ export type { DefinitionId, DefinitionVersion, ExecutionDefinitionRef } from "./
 export { definitionId, formatDefinitionRef, isDefinitionId, isSameDefinitionRef } from "./definitions/ids.ts";
 export type {
   AgentDefinition,
-  AgentSpec,
   DefinitionBase,
   DefinitionKind,
   ExecutionDefinition,
@@ -43,6 +42,81 @@ export {
   serializeDefinition,
   validateDefinition,
 } from "./definitions/validation.ts";
+
+// -- agent semantics ---------------------------------------------------------
+export type {
+  AgentCompletionMode,
+  AgentLimits,
+  AgentSpec,
+  AgentSpecInput,
+} from "./agent/spec.ts";
+export { AGENT_COMPLETION_MODES, DEFAULT_AGENT_LIMITS, agentCompletionMode, agentLimits } from "./agent/spec.ts";
+export type { AgentSpecIssue, AgentSpecIssueCode, AgentSpecValidation } from "./agent/validation.ts";
+export { validateAgentSpec } from "./agent/validation.ts";
+export type { AgentInformationContext } from "./agent/information-context.ts";
+export type { AgentObservationOutcome, AgentOperationObservation } from "./agent/observations.ts";
+export { AGENT_OBSERVATION_OUTCOMES, isSuccessfulAgentObservation, renderAgentObservation } from "./agent/observations.ts";
+/**
+ * Agent control state is exported as *readable* shapes only.
+ *
+ * There is no way to write a step, a pending call, or an invocation snapshot from outside the
+ * controller that owns it. An application inspects what an Agent is doing; it does not reach in and
+ * change what the model was shown.
+ */
+export type {
+  AgentControlState,
+  AgentInformationSnapshot,
+  AgentInvocationState,
+  AgentPendingCall,
+} from "./agent/control-state.ts";
+export { AGENT_CONTROL_STATE_VERSION, readAgentControlState, unsettledAgentCalls } from "./agent/control-state.ts";
+export { agentCallCorrelationId, agentModelResumptionKey } from "./agent/resumption-keys.ts";
+
+// -- operation identity, authority, exposure, and projection -----------------
+export type { OperationRef, OperationRefInput } from "./operations/refs.ts";
+export {
+  compareOperationRefs,
+  formatOperationRef,
+  isOperationRef,
+  isSameOperationRef,
+  operationRef,
+} from "./operations/refs.ts";
+/**
+ * Effective operation authority is exported as *readable* shapes only.
+ *
+ * There is no constructor here that an application can use to hand an Execution a ceiling behind
+ * the runtime's back: a grant is supplied when the Execution is created, and the Harness writes the
+ * record. `authorizesOperation` reads one; nothing here widens one.
+ */
+export type {
+  EffectiveOperationAuthority,
+  OperationAuthorityGrant,
+  OperationAuthorityRef,
+} from "./operations/authority.ts";
+export { authorizesOperation, operationAuthorityGrantIssues } from "./operations/authority.ts";
+export type { ExposureIssue, OperationExposureRequest } from "./operations/exposure.ts";
+export { EMPTY_EXPOSURE_REQUEST, exposureRequestIssues } from "./operations/exposure.ts";
+export type {
+  ActiveOperationEntry,
+  ActiveOperationView,
+  OmittedExposure,
+  OmittedExposureReason,
+} from "./operations/active-view.ts";
+export { activeOperationRefs, findActiveOperation } from "./operations/active-view.ts";
+export type {
+  CreateProjectionInput,
+  ModelOperationBinding,
+  ModelOperationProjection,
+  ProjectionIssue,
+  ProjectionResolution,
+  ProjectionResult,
+} from "./operations/projection.ts";
+export {
+  createModelOperationProjection,
+  modelCapabilitySpecs,
+  modelOperationAlias,
+  resolveProjectedAlias,
+} from "./operations/projection.ts";
 
 // -- workflow topology -------------------------------------------------------
 export type {
@@ -223,9 +297,19 @@ export { EFFECT_JOURNAL_PHASES, effectRequestsIn, isTerminalEffectPhase, latestP
 // -- runtime -----------------------------------------------------------------
 export { ControllerRegistry, UnknownControllerKindError } from "./runtime/controller-registry.ts";
 export type { ActivationRecord, ActivationResultKind } from "./runtime/activation.ts";
-export { Harness, HarnessRunawayError, UnknownDefinitionError } from "./runtime/harness.ts";
+export { Harness, HarnessRunawayError, InvalidOperationAuthorityError, UnknownDefinitionError } from "./runtime/harness.ts";
 export { createWorkflowController } from "./controllers/workflow/controller.ts";
 export type { WorkflowControllerOptions } from "./controllers/workflow/controller.ts";
+export { createAgentController } from "./controllers/agent/controller.ts";
+export type { AgentControllerOptions } from "./controllers/agent/controller.ts";
+export { compileAgentInformation } from "./controllers/agent/information.ts";
+export type { AgentInformationInput } from "./controllers/agent/information.ts";
+export type {
+  AgentModelAccess,
+  AgentModelInvocation,
+  AgentOperationProposalRecord,
+  AgentTrace,
+} from "./controllers/agent/model-access.ts";
 export type {
   ModelInvocationPurpose,
   WorkflowModelAccess,
@@ -245,3 +329,11 @@ export type { EffectDispatchRecord, SettleEffectInput, SettleEffectReceipt } fro
 // -- shared value domain -----------------------------------------------------
 export type { JsonObject, JsonPrimitive, JsonValue } from "./util/json.ts";
 export type { FieldSpec, ObjectSchema, ValueSchema } from "./schema/value-schema.ts";
+/**
+ * Projection of the portable schema language into JSON Schema.
+ *
+ * Published because every adapter that puts an operation in front of a model or a protocol needs
+ * it, and each writing its own would be the first step toward a second schema ontology. Projection
+ * is presentation: it grants nothing and narrows nothing.
+ */
+export { toJsonSchema } from "./schema/value-schema.ts";

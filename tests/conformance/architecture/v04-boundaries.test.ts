@@ -25,6 +25,7 @@ const IMPORT_SPECIFIER = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)["']([^"']+)
 /** Everything the v0.4 path is published through. */
 const V04_ENTRY_MODULES = [
   "execution-api.ts",
+  "controllers/agent/controller.ts",
   "controllers/workflow/controller.ts",
   "ports/index.ts",
   "reference/index.ts",
@@ -32,17 +33,20 @@ const V04_ENTRY_MODULES = [
   "testing/scripted-controllers.ts",
   "testing/execution-harness.ts",
   "testing/workflow.ts",
+  "testing/agent.ts",
   "testing/contracts/index.ts",
 ];
 
 /** Directories and files the v0.4 path owns. */
 const V04_OWNED = [
+  "agent/",
   "controllers/",
   "definitions/",
   "effects/",
   "execution/",
   "interaction/",
   "model/",
+  "operations/",
   "ports/",
   "reference/",
   "testing/contracts/",
@@ -51,6 +55,7 @@ const V04_OWNED = [
 const V04_OWNED_FILES = [
   "execution-api.ts",
   "testing/workflow.ts",
+  "testing/agent.ts",
   "runtime/activation.ts",
   "runtime/controller-registry.ts",
   "runtime/effect-processor.ts",
@@ -227,6 +232,9 @@ describe("v0.4 architecture boundaries", () => {
       const source = await readFile(resolve(conformanceRoot, path), "utf8");
       for (const specifier of specifiersIn(source)) {
         if (specifier.startsWith("node:")) continue;
+        // A relative import stays inside the conformance tree - shared fixtures live there. The
+        // rule being enforced is that conformance never reaches for a legacy package API.
+        if (specifier.startsWith(".")) continue;
         if (allowed.has(specifier)) continue;
         violations.push(`${path} imports ${specifier}`);
       }

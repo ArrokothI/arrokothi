@@ -15,6 +15,14 @@ export { createAllowListAuthorizer } from "./allow-list-authorizer.ts";
 export type { AllowListAuthorizerOptions, CapabilityGrantRule } from "./allow-list-authorizer.ts";
 export { createCapabilityCatalog } from "./capability-catalog.ts";
 export type { CapabilityOperationDescriptorInput } from "./capability-catalog.ts";
+export {
+  createRuntimeOperationAuthoritySource,
+  createStaticOperationAuthoritySource,
+} from "./operation-authority.ts";
+export { createActiveOperationViewResolver } from "./active-operation-view-resolver.ts";
+export type { ActiveOperationViewResolverOptions } from "./active-operation-view-resolver.ts";
+export { createReferenceAgentExecutor } from "./agent-executor.ts";
+export type { ReferenceAgentExecutorOptions } from "./agent-executor.ts";
 export { createNoInlineWaitBudget, createTimeoutInlineBudget } from "./inline-wait.ts";
 export { createDeferredCapabilityExecutor, createScriptedCapabilityExecutor } from "./scripted-capability-executor.ts";
 export type {

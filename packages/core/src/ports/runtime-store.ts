@@ -20,6 +20,11 @@
  *
  *   a resumption settled while the Execution it belongs to still reads as WAITING on it
  *
+ * Slice D adds effective operation authority on the same terms, with its own combination that must
+ * never be observable:
+ *
+ *   an Execution created without the authority record its exposure will be derived from
+ *
  * Slice F adds memory and Slice I the durable outbox as further facets of this same transaction,
  * not as new stores.
  */
@@ -33,6 +38,7 @@ import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
+import type { EffectiveOperationAuthority } from "../operations/authority.ts";
 
 export interface ExecutionRecordFacet {
   get(executionId: ExecutionId): Promise<ExecutionContext | undefined>;
@@ -129,6 +135,23 @@ export interface ControllerResumptionFacet {
   findByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined>;
 }
 
+/**
+ * Effective operation authority.
+ *
+ * A facet of the same transaction because the record and the Execution it belongs to must appear
+ * together or not at all: an Execution whose context committed without its ceiling would be an
+ * Execution whose exposure silently reads as "nothing authorized", and one whose ceiling committed
+ * without its context would be a permission attached to nothing.
+ *
+ * There is no `delete` and no `widen`. Narrowing for child delegation belongs to the composition
+ * slice and will arrive as an update that bumps the record's version; nothing in v0.4 rewrites one.
+ */
+export interface OperationAuthorityFacet {
+  insert(authority: EffectiveOperationAuthority): Promise<void>;
+  /** The ceiling for one Execution, or `undefined` when none was configured. */
+  get(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined>;
+}
+
 export interface RuntimeTransaction {
   readonly executions: ExecutionRecordFacet;
   readonly mailboxes: MailboxFacet;
@@ -137,6 +160,7 @@ export interface RuntimeTransaction {
   readonly pendingOperations: PendingOperationFacet;
   readonly effectJournal: EffectJournalFacet;
   readonly controllerResumptions: ControllerResumptionFacet;
+  readonly operationAuthorities: OperationAuthorityFacet;
 }
 
 export interface RuntimeStore {
@@ -163,6 +187,14 @@ export interface RuntimeStore {
    * provider call or is handed the stored one. A durable store should index it rather than scan.
    */
   findControllerResumptionByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined>;
+  /**
+   * One Execution's effective operation authority.
+   *
+   * On the read surface because exposure resolution consults it outside any transaction, through a
+   * narrow read-only port. Reading it is not holding it: what comes back is a copy of runtime-owned
+   * data with no way to write one back.
+   */
+  readOperationAuthority(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined>;
 }
 
 export class UnknownControllerResumptionError extends Error {

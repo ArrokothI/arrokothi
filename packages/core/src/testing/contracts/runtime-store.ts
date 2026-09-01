@@ -15,6 +15,10 @@
  * must never be observable: a resumption settled while the Execution it belongs to still reads as
  * WAITING on it. Lookup by the controller's stable key is contract rather than convenience - it is
  * what stops a resumed Activation dispatching a second provider call.
+ *
+ * Slice D adds effective operation authority, with the combination that must never be observable
+ * being an Execution that exists without the ceiling its exposure will be derived from. The
+ * fail-closed reading of a missing record is contract too: absent means nothing is authorized.
  */
 
 import { createExecutionContext, transitionContext } from "../../execution/context.ts";
@@ -25,6 +29,7 @@ import { createPendingOperation, markDispatched, markSettled } from "../../effec
 import type { PendingOperation } from "../../effects/pending.ts";
 import type { ControllerResumptionId } from "../../execution/ids.ts";
 import { createControllerResumption, settleControllerResumption } from "../../execution/resumption.ts";
+import { createEffectiveOperationAuthority } from "../../operations/authority.ts";
 import type { EventEnvelope, EventId } from "../../interaction/event-envelope.ts";
 import type { RuntimeStore } from "../../ports/runtime-store.ts";
 import type { ContractCase } from "./expect.ts";
@@ -378,6 +383,75 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
           (await store.readExecution(EXECUTION))?.revision,
           1,
           "settling a resumption does not itself rewrite the Execution record",
+        );
+      },
+    },
+    {
+      name: "effective operation authority commits with the Execution it belongs to",
+      async run() {
+        const store = factory();
+
+        assertEqual(
+          await store.readOperationAuthority(EXECUTION),
+          undefined,
+          "an Execution with no configured ceiling has no record, which reads as nothing authorized",
+        );
+
+        const authority = createEffectiveOperationAuthority({
+          authorityId: "oau_1",
+          executionId: EXECUTION,
+          grant: { operations: [{ capability: "mail", operation: "send" }, { capability: "docs", operation: "search" }] },
+          grantedAt: "2026-01-01T00:00:00.000Z",
+        });
+
+        // The ceiling and the Execution appear together, or neither does. An Execution committed
+        // without its ceiling would silently expose nothing; a ceiling without its Execution would
+        // be a permission attached to nobody.
+        await assertRejects(
+          () =>
+            store.transact(EXECUTION, async (tx) => {
+              await tx.operationAuthorities.insert(authority);
+              await tx.executions.insert(context());
+              throw new RollbackProbe();
+            }),
+          "RollbackProbe",
+          "a rolled-back creation leaves neither behind",
+        );
+        assertEqual(await store.readOperationAuthority(EXECUTION), undefined, "no ceiling was written");
+        assertEqual(await store.readExecution(EXECUTION), undefined, "and no Execution either");
+
+        await store.transact(EXECUTION, async (tx) => {
+          await tx.operationAuthorities.insert(authority);
+          await tx.executions.insert(context());
+        });
+
+        const stored = await store.readOperationAuthority(EXECUTION);
+        assertEqual(stored?.authorityId, "oau_1", "the record is readable once its transaction commits");
+        assertEqual(stored?.version, 1, "a root grant is version 1; narrowing for a child bumps it");
+        assertEqual(stored?.source, "root_grant", "and records the origin of that ceiling");
+        assertDeepEqual(
+          stored?.operations,
+          [{ capability: "docs", operation: "search" }, { capability: "mail", operation: "send" }],
+          "operations are deduplicated and ordered, so two equal grants produce equal records",
+        );
+
+        // Inside a transaction it reads the same way, and it is not confused with anything else.
+        await store.transact(EXECUTION, async (tx) => {
+          assertEqual((await tx.operationAuthorities.get(EXECUTION))?.authorityId, "oau_1", "readable inside a transaction too");
+          assertEqual(
+            await tx.operationAuthorities.get("exe_other" as ExecutionId),
+            undefined,
+            "and scoped to one Execution",
+          );
+        });
+        assertEqual((await store.listEffectJournal(EXECUTION)).length, 0, "storing a ceiling journals no Effect");
+        assertEqual((await store.listPendingOperations(EXECUTION)).length, 0, "and creates no pending operation");
+
+        // One ceiling per Execution: a second insert is a bug, not a silent replacement.
+        await assertRejects(
+          () => store.transact(EXECUTION, async (tx) => tx.operationAuthorities.insert(authority)),
+          "Error",
+          "authority is written once at creation, never quietly overwritten",
         );
       },
     },

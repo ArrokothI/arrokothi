@@ -1367,6 +1367,10 @@ blocking the reference Agent semantics.
 > **Superseded by the post-canonical-rewrite audit (2026-08-31).** Slice D.0 is no longer the next
 > task. The next task is **Slice C.1 — controller-local asynchronous resumption**, described
 > immediately below. Slice D.0 (§18.2) follows it unchanged.
+>
+> **Both are now implemented (2026-09-01).** C.1 landed at commit `14d74ab`; D.0 landed on top of it.
+> The next task is the narrow synchronous MCP operation proof described under "Interoperability
+> proof 1", or Slice E — not anything in §18.
 
 ### 18.1 Slice C.1 — controller-local asynchronous resumption
 
@@ -1483,6 +1487,11 @@ indistinguishable from the fast path — with no Event, no PendingOperation, and
 the record.
 
 ### 18.2 Slice D.0 — Agent operation exposure and projection skeleton
+
+> **Implemented (2026-09-01).** The task below is done; the shapes it deliberately left unfrozen are
+> recorded in [`009-slice-d0-implementation-decisions.md`](009-slice-d0-implementation-decisions.md).
+> The repository passes 540 tests, 8 benchmark-subject tests, and typecheck. The section is retained
+> as the task specification it was, not as outstanding work.
 
 Implement this as one reviewable change **after** §18.1, before the open-ended loop is allowed to
 dispatch anything. Its model invocation uses the §18.1 primitive.

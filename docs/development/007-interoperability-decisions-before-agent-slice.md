@@ -968,6 +968,11 @@ These are later vertical slices. Slice D should leave clean seams for them.
 
 ## Review checkpoint after Slice D
 
+> **Slice D.0 landed 2026-09-01.** The implemented shapes for every item below are recorded in
+> [`009-slice-d0-implementation-decisions.md`](009-slice-d0-implementation-decisions.md). DEC-I02
+> through DEC-I20 were followed as accepted; DEC-I19's cautions about the experimental checkpoint
+> boundary proved to be the right call, and the bridge's remaining limitations are listed there.
+
 After Slice D lands, review specifically:
 
 ```text

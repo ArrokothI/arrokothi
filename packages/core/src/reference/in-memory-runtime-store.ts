@@ -19,6 +19,7 @@ import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
+import type { EffectiveOperationAuthority } from "../operations/authority.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
 import type {
   MailboxAppendResult,
@@ -48,6 +49,7 @@ interface RuntimeState {
   pendingOperations: Map<string, PendingOperation>;
   effectJournal: Map<string, EffectJournalEntry[]>;
   controllerResumptions: Map<string, ControllerResumption>;
+  operationAuthorities: Map<string, EffectiveOperationAuthority>;
 }
 
 function emptyState(): RuntimeState {
@@ -59,6 +61,7 @@ function emptyState(): RuntimeState {
     pendingOperations: new Map(),
     effectJournal: new Map(),
     controllerResumptions: new Map(),
+    operationAuthorities: new Map(),
   };
 }
 
@@ -203,6 +206,19 @@ function makeTransaction(state: RuntimeState): RuntimeTransaction {
       },
     },
 
+    operationAuthorities: {
+      async insert(authority) {
+        if (state.operationAuthorities.has(authority.executionId)) {
+          throw new Error(`execution ${authority.executionId} already has an effective operation authority`);
+        }
+        state.operationAuthorities.set(authority.executionId, structuredClone(authority));
+      },
+      async get(executionId) {
+        const stored = state.operationAuthorities.get(executionId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+    },
+
     effectJournal: {
       async append(draft) {
         const list = state.effectJournal.get(draft.executionId) ?? [];
@@ -293,6 +309,11 @@ export class InMemoryRuntimeStore implements RuntimeStore {
       (resumption) => resumption.executionId === executionId && resumption.key === key,
     );
     return match ? structuredClone(match) : undefined;
+  }
+
+  async readOperationAuthority(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined> {
+    const stored = this.state.operationAuthorities.get(executionId);
+    return stored ? structuredClone(stored) : undefined;
   }
 
   /** Journal entries for one Effect, across Executions. Diagnostics and conformance assertions. */

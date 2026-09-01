@@ -17,7 +17,6 @@ import type { ExecutionDefinitionRef } from "./ids.ts";
 import { isDefinitionId, isDefinitionVersion } from "./ids.ts";
 import type {
   AgentDefinition,
-  AgentSpec,
   DefinitionKind,
   ExecutionDefinition,
   TerminalResultSchema,
@@ -26,6 +25,8 @@ import type {
 import { isDefinitionKind } from "./types.ts";
 import type { WorkflowSpecInput } from "../workflow/spec.ts";
 import { validateWorkflowSpec } from "../workflow/validation.ts";
+import type { AgentSpecInput } from "../agent/spec.ts";
+import { validateAgentSpec } from "../agent/validation.ts";
 
 export interface DefinitionIssue {
   readonly path: string;
@@ -125,6 +126,18 @@ export function validateDefinition(input: unknown): DefinitionValidation {
     }
   }
 
+  // An Agent spec is checked at the same three points and for the same reason. It also refuses
+  // fields it does not know, which is what keeps a catalog, an authority grant, an Active View, a
+  // provider tool schema, or an executor reference from riding along inside a definition.
+  if (candidate["kind"] === "agent" && spec !== null && typeof spec === "object" && !Array.isArray(spec)) {
+    const agent = validateAgentSpec(spec);
+    if (!agent.ok) {
+      for (const problem of agent.issues) {
+        issues.push({ path: problem.path, code: "invalid_spec", message: `${problem.code}: ${problem.message}` });
+      }
+    }
+  }
+
   // Everything the definition carries must survive a round trip, including fields this version of
   // the kernel does not know about yet.
   for (const issue of jsonIssues(candidate, "")) {
@@ -184,7 +197,14 @@ function build(kind: DefinitionKind, input: DefineExecutionInput<unknown>): Exec
   return assertValidDefinition(draft);
 }
 
-export function defineAgent(input: DefineExecutionInput<AgentSpec>): AgentDefinition {
+/**
+ * Authors an Agent definition.
+ *
+ * Takes the plain authoring shape and validates it into a spec, in the same way `defineWorkflow`
+ * validates topology: every rule in `agent/validation.ts` runs here, so an Agent that cannot be run
+ * never becomes a definition at all.
+ */
+export function defineAgent(input: DefineExecutionInput<AgentSpecInput>): AgentDefinition {
   return build("agent", input) as AgentDefinition;
 }
 

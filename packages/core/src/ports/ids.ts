@@ -18,4 +18,6 @@ export const ID_PREFIXES = {
   claim: "clm",
   /** One piece of controller-local asynchronous work. Never an Effect and never an Event. */
   resumption: "res",
+  /** One Execution's effective operation authority record. An address, never a bearer token. */
+  operationAuthority: "oau",
 } as const;

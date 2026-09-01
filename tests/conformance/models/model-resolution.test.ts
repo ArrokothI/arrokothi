@@ -110,7 +110,10 @@ describe("logical model resolution", () => {
     };
     const definition = defineAgent({
       id: "portable-model-definition",
-      spec: { model: { logicalRef: model.logicalRef, requirements: { ...model.requirements } } },
+      spec: {
+        model: { logicalRef: model.logicalRef, requirements: { ...model.requirements } },
+        instructions: "Answer with the portable data only.",
+      },
     });
     const serialized = serializeDefinition(definition);
     assert.deepEqual(Object.keys(model).sort(), ["logicalRef", "requirements"]);

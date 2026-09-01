@@ -13,6 +13,7 @@
  * that rule.
  */
 
+import type { AgentSpec } from "../agent/spec.ts";
 import type { ValueSchema } from "../schema/value-schema.ts";
 import type { JsonObject } from "../util/json.ts";
 import type { WorkflowSpec } from "../workflow/spec.ts";
@@ -52,11 +53,17 @@ export interface DefinitionBase {
 }
 
 /**
- * The Agent body remains deliberately open: serializable data that the kernel stores, pins, and
- * hands to the controller registered for this kind without interpreting it. Slice D narrows it to
- * the canonical Agent spec; freezing it now would guess at that slice.
+ * The Agent body is no longer open.
+ *
+ * Slice D replaced the generic Slice-A placeholder with a real spec (`agent/spec.ts`). An Agent
+ * definition now declares a logical model, its instructions, the operations it would like exposed,
+ * its bounds, and what a response means - and `validateDefinition` rejects anything that is not one,
+ * so an unrunnable Agent is unpublishable rather than discovered several Activations in.
+ *
+ * The exposure request inside it is a *request*. It is intersected with runtime-owned authority;
+ * writing an operation into a definition neither grants it nor makes it appear.
  */
-export type AgentSpec = JsonObject;
+export type { AgentSpec };
 
 /**
  * The Workflow body is no longer open.

@@ -10,14 +10,22 @@
  *   control                                 owned by the controller, opaque to the kernel
  *   terminalResult / failure                written only by a validated Activation outcome
  *
- * Slots that later slices own (authority, active view, memory, notes, resources, pending, policy)
- * are present as explicit null/empty references rather than absent or improvised. They mark where
- * those concerns live without pretending Slice A has answered them.
+ * Slots that later slices own (memory, notes, resources, pending, policy) are present as explicit
+ * null/empty references rather than absent or improvised. They mark where those concerns live
+ * without pretending an earlier slice has answered them. `authority` is no longer one of those: it
+ * is a typed reference to the Execution's runtime-owned effective operation authority.
+ *
+ * There is deliberately no Active View slot. An Active Operation View is a deterministic derivation
+ * from authority plus catalog plus an authored exposure request, so persisting one would store a
+ * cache rather than a fact. What genuinely has to survive an Activation is the *projection snapshot*
+ * one model invocation was shown, and that lives in Agent control state where the invocation it
+ * belongs to lives.
  */
 
 import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { DefinitionKind } from "../definitions/types.ts";
 import type { WakeCondition } from "../interaction/event-envelope.ts";
+import type { OperationAuthorityRef } from "../operations/authority.ts";
 import type { JsonObject } from "../util/json.ts";
 import type { ControllerResumptionId, ExecutionId } from "./ids.ts";
 import type { LifecycleState } from "./lifecycle.ts";
@@ -82,10 +90,15 @@ export interface MailboxRef {
  * controller could use to widen what it is allowed to do.
  */
 export interface DeferredSlots {
-  /** Slice C/E: effective authority envelope. */
-  readonly authority: string | null;
-  /** Slice C/D: the subset of authority currently exposed to a model. */
-  readonly activeView: string | null;
+  /**
+   * The Execution's effective operation authority, as a typed reference.
+   *
+   * Slice D replaced the Slice-A opaque string with a real one. It is still only an address:
+   * the record lives in runtime-owned state, the Harness writes it at creation from
+   * application/deployment grants, and nothing a controller can reach dereferences it. `null`
+   * means no ceiling is configured, which reads as "nothing is authorized", never as "everything".
+   */
+  readonly authority: OperationAuthorityRef | null;
   /** Slice F: delegated memory view. */
   readonly memoryView: string | null;
   /** Slice F: Working Note frame/view. */
@@ -100,7 +113,6 @@ export interface DeferredSlots {
 
 export const EMPTY_SLOTS: DeferredSlots = Object.freeze({
   authority: null,
-  activeView: null,
   memoryView: null,
   workingNotes: null,
   policy: null,
@@ -156,6 +168,14 @@ export interface CreateExecutionContextInput {
   readonly rootExecutionId: ExecutionId;
   readonly mailboxId: string;
   readonly createdAt: string;
+  /**
+   * The Execution's effective operation authority, when the runtime wrote one.
+   *
+   * Supplied by the Harness after it has stored the record, never by a definition and never by a
+   * controller. Omitted means no ceiling was configured, and an Execution with no ceiling exposes
+   * nothing.
+   */
+  readonly authority?: OperationAuthorityRef;
 }
 
 export function createExecutionContext(input: CreateExecutionContextInput): ExecutionContext {
@@ -169,7 +189,7 @@ export function createExecutionContext(input: CreateExecutionContextInput): Exec
     control: initialControllerProgress(input.kind),
     waitingFor: null,
     mailbox: { mailboxId: input.mailboxId },
-    slots: EMPTY_SLOTS,
+    slots: input.authority ? { ...EMPTY_SLOTS, authority: input.authority } : EMPTY_SLOTS,
     terminalResult: null,
     failure: null,
     createdAt: input.createdAt,

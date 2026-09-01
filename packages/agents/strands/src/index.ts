@@ -1,3 +1,25 @@
+/**
+ * ArrokothI integrations for the Strands Agents SDK.
+ *
+ * Two surfaces live here, and they are not the same generation of the architecture.
+ *
+ * `createStrandsAgentExecutor` is the v0.4 bridge: it satisfies the ArrokothI `AgentExecutor`
+ * contract, resolves its model through an ArrokothI `ModelProvider`, and pauses the framework
+ * before any native tool execution so that every operation still crosses the Harness. See
+ * [`agent-executor.ts`](agent-executor.ts).
+ *
+ * `StrandsLoopEngine` is the pre-v0.4 `AgentLoopEngine`, retained while its consumers - the
+ * benchmark subjects, the examples, and Studio - are still on the legacy Session path. It routes
+ * capability requests through the old gateway callback and constructs a first-party Google model
+ * when no model is supplied; neither is acceptable under the v0.4 boundary, which is why it is
+ * being replaced rather than extended. It is deleted once those consumers migrate.
+ */
+
+export { createStrandsAgentExecutor } from "./agent-executor.ts";
+export type { StrandsAgentExecutorOptions } from "./agent-executor.ts";
+export { ArrokothStrandsModel } from "./model.ts";
+export type { ArrokothModelOptions } from "./model.ts";
+
 import type {
   AgentLoopCapabilityRequest,
   AgentLoopCapabilityResult,

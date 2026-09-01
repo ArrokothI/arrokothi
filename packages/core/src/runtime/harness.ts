@@ -48,6 +48,8 @@ import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ActivationId, ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
 import { activationId as toActivationId, executionId as toExecutionId } from "../execution/ids.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
+import type { EffectiveOperationAuthority, OperationAuthorityGrant } from "../operations/authority.ts";
+import { createEffectiveOperationAuthority, operationAuthorityGrantIssues } from "../operations/authority.ts";
 import type { LifecycleState, LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
 import type { ExecutionFailure, TerminalResultEnvelope } from "../execution/terminal-result.ts";
@@ -139,6 +141,15 @@ export interface CreateExecutionInput {
    * pretends to provide them.
    */
   readonly ownerExecutionId?: ExecutionId;
+  /**
+   * The root operation grant application/deployment policy supplies for this Execution.
+   *
+   * The Harness turns it into a runtime-owned effective-authority record and hands out only a
+   * reference to it. Omitting it means no ceiling is configured, and an Execution with no ceiling
+   * can expose nothing - "nobody granted anything" and "everything is granted" must never look the
+   * same. A grant is not delegation: attenuating one for a child belongs to the composition slice.
+   */
+  readonly operationAuthority?: OperationAuthorityGrant;
 }
 
 export interface ExecutionHandle {
@@ -180,6 +191,13 @@ export class UnknownDefinitionError extends Error {
   constructor(ref: ExecutionDefinitionRef) {
     super(`no stored definition for ${ref.id}@${ref.version}`);
     this.name = "UnknownDefinitionError";
+  }
+}
+
+export class InvalidOperationAuthorityError extends Error {
+  constructor(detail: string) {
+    super(`invalid operation authority grant: ${detail}`);
+    this.name = "InvalidOperationAuthorityError";
   }
 }
 
@@ -253,6 +271,22 @@ export class Harness {
       rootExecutionId = owner.rootExecutionId;
     }
 
+    // The ceiling is computed before anything is written, so a malformed grant refuses creation
+    // rather than producing an Execution whose authority nobody can account for.
+    let authority: EffectiveOperationAuthority | null = null;
+    if (input.operationAuthority !== undefined) {
+      const issues = operationAuthorityGrantIssues(input.operationAuthority);
+      if (issues.length > 0) {
+        throw new InvalidOperationAuthorityError(issues.map((issue) => `${issue.path}: ${issue.message}`).join("; "));
+      }
+      authority = createEffectiveOperationAuthority({
+        authorityId: this.options.ids.next(ID_PREFIXES.operationAuthority),
+        executionId: id,
+        grant: input.operationAuthority,
+        grantedAt: createdAt,
+      });
+    }
+
     const created = createExecutionContext({
       executionId: id,
       kind: definition.kind,
@@ -261,9 +295,13 @@ export class Harness {
       rootExecutionId,
       mailboxId,
       createdAt,
+      ...(authority ? { authority: { authorityId: authority.authorityId } } : {}),
     });
 
     await this.options.store.transact(id, async (tx) => {
+      // One transaction: an Execution whose context committed without its ceiling would read as
+      // having no authority at all, and a ceiling without its Execution would permit nothing.
+      if (authority) await tx.operationAuthorities.insert(authority);
       await tx.executions.insert(created);
       const ready = transitionContext(created, "READY", createdAt);
       await tx.executions.update(ready, created.revision);
@@ -403,6 +441,19 @@ export class Harness {
 
   async controllerResumption(resumptionId: ControllerResumptionId): Promise<ControllerResumption | undefined> {
     return this.options.store.readControllerResumption(resumptionId);
+  }
+
+  // -- effective operation authority -----------------------------------------
+
+  /**
+   * One Execution's effective operation authority.
+   *
+   * Read-only, and read-only in a stronger sense than the other inspectors: there is no method
+   * beside it that widens, replaces, or revokes one. Exposure resolution reads this through a
+   * narrow port; a controller reads it through nothing.
+   */
+  async effectiveOperationAuthorityOf(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined> {
+    return this.options.store.readOperationAuthority(executionId);
   }
 
   /** Pending operations belonging to one Execution. Read-only; runtime state is never handed out. */

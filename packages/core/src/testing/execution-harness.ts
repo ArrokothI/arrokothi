@@ -36,6 +36,14 @@ export interface TestHarnessBundle {
 export interface TestHarnessOptions {
   /** Replaces the default scripted Agent/Workflow pair when a test needs its own controllers. */
   readonly controllers?: readonly ExecutionController[];
+  /**
+   * Reuses a store the caller already built.
+   *
+   * Needed when something wired *into a controller* must read runtime-owned state through a narrow
+   * port - Agent exposure resolution reads the effective-authority record this way - and therefore
+   * has to exist before the Harness does.
+   */
+  readonly store?: InMemoryRuntimeStore;
   readonly activationBudget?: HarnessOptions["activationBudget"];
   readonly maxActivationsPerRun?: number;
   /**
@@ -53,7 +61,7 @@ export interface TestHarnessOptions {
 
 export function createTestHarness(options: TestHarnessOptions = {}): TestHarnessBundle {
   const definitions = new InMemoryDefinitionStore();
-  const store = new InMemoryRuntimeStore();
+  const store = options.store ?? new InMemoryRuntimeStore();
   const scheduler = new FifoScheduler();
   const controllers = new ControllerRegistry(
     options.controllers ?? [createScriptedAgentController(), createScriptedWorkflowController()],

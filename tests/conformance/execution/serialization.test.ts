@@ -102,7 +102,6 @@ describe("serialization", () => {
     const context = await harness.inspect(handle.executionId);
     assert.deepEqual(context?.slots, {
       authority: null,
-      activeView: null,
       memoryView: null,
       workingNotes: null,
       policy: null,

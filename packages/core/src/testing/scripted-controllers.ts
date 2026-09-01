@@ -6,9 +6,12 @@
  * wake dependency, propose terminal results, fail, and - deliberately - misreport, so conformance
  * can show the Harness refusing them.
  *
- * The script lives in the definition's `spec`, which means it is ordinary serializable authored
- * data. That is not a test convenience: it is the same constraint every real Agent or Workflow spec
- * will be under, and it keeps these controllers from becoming a back door for runtime objects.
+ * The script lives in the definition itself, which means it is ordinary serializable authored data.
+ * That is not a test convenience: it is the same constraint every real Agent or Workflow spec is
+ * under, and it keeps these controllers from becoming a back door for runtime objects. Since Slice D
+ * an Agent `spec` is a real, validated Agent spec, so a scripted Agent carries its program in the
+ * definition's `metadata` and pins a minimal valid spec beside it - the definition stays publishable
+ * while the scripted controller keeps driving the substrate.
  *
  * One Activation executes one step. The step cursor lives in controller progress, so "the same
  * Execution resumed where it left off" is observable rather than assumed.
@@ -20,6 +23,7 @@
  * whether the Effect takes a microsecond or an hour.
  */
 
+import type { AgentSpecInput } from "../agent/spec.ts";
 import type { AgentDefinition, WorkflowDefinition, TerminalResultSchema } from "../definitions/types.ts";
 import { defineAgent, defineWorkflow } from "../definitions/validation.ts";
 import type { DefinitionKind } from "../definitions/types.ts";
@@ -119,18 +123,22 @@ function readProgress(value: JsonObject): ScriptedProgress {
 /**
  * Finds the script.
  *
- * An Agent spec carries it directly. A Workflow spec is real Stage topology since Slice C, so a
- * scripted Workflow wraps its program in the `config` of a single Function Stage - the definition
- * stays a valid, publishable Workflow while the scripted controller keeps driving it. These
- * controllers exercise the *substrate* (Events, progress, Effects, completion), not Stage
- * semantics; `controllers/workflow` owns those.
+ * A scripted Agent carries it in the definition's `metadata`, because an Agent `spec` is now a real
+ * validated Agent spec with no room for one. A Workflow spec is real Stage topology since Slice C,
+ * so a scripted Workflow wraps its program in the `config` of a single Function Stage. Either way
+ * the definition stays valid and publishable while the scripted controller drives it. These
+ * controllers exercise the *substrate* (Events, progress, Effects, completion), not Agent or Stage
+ * semantics; `controllers/agent` and `controllers/workflow` own those.
  */
-function readProgram(spec: unknown): readonly ScriptedControllerStep[] {
+function readProgram(definition: { readonly spec?: unknown; readonly metadata?: unknown }): readonly ScriptedControllerStep[] {
+  const metadata = definition.metadata;
+  if (metadata !== null && typeof metadata === "object") {
+    const program = (metadata as Record<string, unknown>)["program"];
+    if (Array.isArray(program)) return program as unknown as readonly ScriptedControllerStep[];
+  }
+  const spec = definition.spec;
   if (spec === null || typeof spec !== "object") return [];
-  const described = spec as Record<string, unknown>;
-  const direct = described["program"];
-  if (Array.isArray(direct)) return direct as unknown as readonly ScriptedControllerStep[];
-  const stages = described["stages"];
+  const stages = (spec as Record<string, unknown>)["stages"];
   if (Array.isArray(stages)) {
     const first = stages[0] as { config?: { program?: unknown } } | undefined;
     const program = first?.config?.program;
@@ -173,7 +181,7 @@ class ScriptedController implements ExecutionController {
       }
     }
 
-    const program = readProgram(input.definition.spec);
+    const program = readProgram(input.definition);
     const step = program[progress.step];
 
     if (step === undefined) {
@@ -373,13 +381,28 @@ function spec(program: readonly ScriptedControllerStep[]): JsonObject {
   return { program: program as unknown as JsonValue } as JsonObject;
 }
 
+/**
+ * The minimal valid Agent spec a scripted definition pins.
+ *
+ * It names a logical model and instructions because every Agent definition must; the scripted
+ * controller never resolves either. Nothing here exposes an operation, which is the fail-closed
+ * default and keeps a substrate fixture from accidentally asserting anything about exposure.
+ */
+function scriptedAgentSpec(): AgentSpecInput {
+  return {
+    model: { logicalRef: "scripted", requirements: { text: true } },
+    instructions: "Scripted substrate fixture; this Agent's progression comes from its program.",
+  };
+}
+
 export function scriptedAgentDefinition(input: ScriptedDefinitionInput): AgentDefinition {
   return defineAgent({
     id: input.id,
     ...(input.version !== undefined ? { version: input.version } : {}),
     ...(input.name !== undefined ? { name: input.name } : {}),
     ...(input.terminalResult !== undefined ? { terminalResult: input.terminalResult } : {}),
-    spec: spec(input.program),
+    metadata: spec(input.program),
+    spec: scriptedAgentSpec(),
   });
 }
 

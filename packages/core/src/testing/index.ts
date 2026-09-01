@@ -22,6 +22,18 @@ export type {
   ScriptedWorkGate,
 } from "./scripted-controllers.ts";
 export { createWorkflowTestHarness, modelAccess, recordingWorkflowTrace } from "./workflow.ts";
+export {
+  agentModelAccess,
+  createAgentTestHarness,
+  recordingAgentTrace,
+  referenceAgentExecutor,
+} from "./agent.ts";
+export type {
+  AgentTestHarnessBundle,
+  AgentTestHarnessOptions,
+  CreateTestAgentInput,
+  RecordingAgentTrace,
+} from "./agent.ts";
 export type {
   RecordingWorkflowTrace,
   WorkflowTestHarnessBundle,
