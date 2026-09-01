@@ -442,10 +442,15 @@ interleaving-cost budget was placed in the runtime's correctness contract.
 
 | command | count | result |
 |---|---|---|
-| `npm test` | 737 | pass (was 691 at E.0, 705 at E.0.1; +16 baseline pre-E.1 → +32 in E.1) |
+| `npm test` | 737 | pass (698 on this branch pre-E.1 → +39) |
 | `npm run typecheck` | — | clean |
 | `npm run test:evals` | 12 | pass |
 | `npm run test:benchmark-subjects` | 8 | pass |
+
+New E.1 conformance cases: `controlled-interleaving` 9, `interleaving-cost` 2, `send-message` 8,
+`messaging-authority` 4, `peer-liveness` 2, `child-cancellation` 6 = 31, plus the
+`composition-boundaries` E.1 section (7) and the RuntimeStore contract additions (2 case
+definitions, run once per reference store).
 
 New conformance files:
 
