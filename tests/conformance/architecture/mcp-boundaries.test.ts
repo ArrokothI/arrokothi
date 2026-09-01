@@ -222,8 +222,19 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
     const eventKinds = [...declared.slice(0, declared.indexOf("];")).matchAll(/"([a-z_.]+)"/g)].map((match) => match[1]!);
     assert.deepEqual(
       [...eventKinds].sort(),
-      ["capability.completed", "capability.failed", "capability.unknown", "effect.denied", "effect.rejected", "external.input"],
-      "the Event vocabulary is unchanged by this slice",
+      [
+        "capability.completed",
+        "capability.failed",
+        "capability.unknown",
+        // Slice E.0 added the child-composition kinds; the MCP slice added nothing.
+        "child.completed",
+        "child.failed",
+        "child.spawned",
+        "effect.denied",
+        "effect.rejected",
+        "external.input",
+      ],
+      "the Event vocabulary carries only kernel kinds - no MCP arm",
     );
     for (const source of [events, effects]) {
       for (const forbidden of ["mcp", "Mcp", "MCP", "tools/call", "tools/list", "structuredContent"]) {

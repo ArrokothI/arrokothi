@@ -29,6 +29,8 @@ import { createPendingOperation, markDispatched, markSettled } from "../../effec
 import type { PendingOperation } from "../../effects/pending.ts";
 import type { ControllerResumptionId } from "../../execution/ids.ts";
 import { createControllerResumption, settleControllerResumption } from "../../execution/resumption.ts";
+import { createChildExecutionLink, markChildLinkSettled } from "../../execution/child-link.ts";
+import { consumeSpawnCredit, createLineageSpawnBudget } from "../../execution/structural-budget.ts";
 import { createEffectiveOperationAuthority } from "../../operations/authority.ts";
 import type { EventEnvelope, EventId } from "../../interaction/event-envelope.ts";
 import type { RuntimeStore } from "../../ports/runtime-store.ts";
@@ -453,6 +455,69 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
           "Error",
           "authority is written once at creation, never quietly overwritten",
         );
+      },
+    },
+    {
+      name: "the lineage spawn budget is compare-and-set and cannot be over-spent concurrently",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        const budget = createLineageSpawnBudget({ rootExecutionId: EXECUTION, capacity: 1, grantedAt: "2026-01-01T00:00:00.000Z" });
+        await store.transact(EXECUTION, async (tx) => tx.lineageSpawnBudgets.insert(budget));
+        assertEqual((await store.readLineageSpawnBudget(EXECUTION))?.capacity, 1, "the capacity is stored");
+        assertEqual((await store.readLineageSpawnBudget(EXECUTION))?.consumed, 0, "nothing consumed yet");
+
+        // Two writers both read revision 1 and both compute a spend; only the first commit succeeds.
+        const beforeEither = (await store.readLineageSpawnBudget(EXECUTION))!;
+        await store.transact(EXECUTION, async (tx) =>
+          tx.lineageSpawnBudgets.update(consumeSpawnCredit(beforeEither), beforeEither.revision),
+        );
+        await assertRejects(
+          () =>
+            store.transact(EXECUTION, async (tx) =>
+              tx.lineageSpawnBudgets.update(consumeSpawnCredit(beforeEither), beforeEither.revision),
+            ),
+          "SpawnBudgetConcurrencyError",
+          "a writer that read the pre-spend revision cannot also spend the credit",
+        );
+        assertEqual((await store.readLineageSpawnBudget(EXECUTION))?.consumed, 1, "consumed never exceeds capacity");
+      },
+    },
+    {
+      name: "a child execution link records the wait-for edge and settles once",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        const link = createChildExecutionLink({
+          childExecutionId: "exe_child" as ExecutionId,
+          parentExecutionId: EXECUTION,
+          rootExecutionId: EXECUTION,
+          definition: { id: "child" as never, version: 1, integrity: "abc" },
+          effectId: "eff_spawn" as EffectId,
+          spawnedByActivationId: "act_1" as ActivationId,
+          pendingOperationId: "pop_1" as PendingOperationId,
+          resultCorrelationId: "job-1",
+          createdAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.childExecutionLinks.insert(link));
+
+        const stored = await store.readChildExecutionLink("exe_child" as ExecutionId);
+        assertEqual(stored?.parentExecutionId, EXECUTION, "the link names its parent");
+        assertEqual(stored?.pendingOperationId, "pop_1", "a call records its terminal-result dependency");
+        assertEqual(stored?.state, "active", "a fresh link is active");
+
+        const byParent = await store.listChildExecutionLinks(EXECUTION);
+        assertEqual(byParent.length, 1, "the link is listable by parent");
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.childExecutionLinks.get("exe_child" as ExecutionId);
+          await tx.childExecutionLinks.update(markChildLinkSettled(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        const settled = await store.readChildExecutionLink("exe_child" as ExecutionId);
+        assertEqual(settled?.state, "settled", "delivery marks the link settled");
+        assertEqual(settled?.settledAt, "2026-01-01T00:00:03.000Z", "with the time it settled");
       },
     },
     {

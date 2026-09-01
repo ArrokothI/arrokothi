@@ -14,6 +14,9 @@
  *   capability.unknown     nobody can say whether it happened
  *   effect.denied          policy refused the request; nothing was dispatched
  *   effect.rejected        the request was never valid or dispatchable; nothing was dispatched
+ *   child.spawned          a `SpawnExecution` created an independent child; here is its identity
+ *   child.completed        a child this Execution called reached COMPLETED; here is its terminal result
+ *   child.failed           a child this Execution called reached FAILED; here is why
  *   external.input         an observation delivered from outside the kernel
  *
  * The three capability outcomes are separate kinds rather than a status field so that a controller
@@ -21,6 +24,14 @@
  * "unknown" was meant. `effect.denied` and `effect.rejected` are likewise distinct: one is policy
  * saying no, the other is the request never having been answerable. Conflating them would make a
  * misconfiguration look like a security decision.
+ *
+ * The child kinds arrive with Slice E, exactly as this file's original note said they would ("Kinds
+ * for later slices - child completion, peer messages, user input, timers - are deliberately absent.
+ * They arrive with the Effects that produce them."). `child.spawned` is the immediate result of a
+ * `SpawnExecution` Effect; `child.completed` / `child.failed` settle a `call`'s dependency on the
+ * child's terminal result. They are distinct kinds so that "the child was created" can never be
+ * read where "the child finished" was meant - the `spawn` vs `call` distinction depends on it.
+ * Peer messages, user input, timers, and child *cancellation* remain absent until E.1.
  *
  * Nothing here records *how fast* an Effect completed. A body field like "was this inline?" would
  * make the fast and slow paths semantically distinguishable, which is precisely the property the
@@ -33,6 +44,7 @@
 import type { CapabilityError } from "../effects/outcome.ts";
 import type { CapabilityId, EffectId, OperationId, PendingOperationId } from "../effects/ids.ts";
 import type { EffectKind } from "../effects/types.ts";
+import type { ExecutionId } from "../execution/ids.ts";
 import type { JsonValue } from "../util/json.ts";
 
 export type EventKind =
@@ -41,6 +53,9 @@ export type EventKind =
   | "capability.unknown"
   | "effect.denied"
   | "effect.rejected"
+  | "child.spawned"
+  | "child.completed"
+  | "child.failed"
   | "external.input";
 
 export const EVENT_KINDS: readonly EventKind[] = [
@@ -49,6 +64,9 @@ export const EVENT_KINDS: readonly EventKind[] = [
   "capability.unknown",
   "effect.denied",
   "effect.rejected",
+  "child.spawned",
+  "child.completed",
+  "child.failed",
   "external.input",
 ];
 
@@ -59,7 +77,18 @@ export const EFFECT_RESULT_EVENT_KINDS: readonly EventKind[] = [
   "capability.unknown",
   "effect.denied",
   "effect.rejected",
+  "child.spawned",
+  "child.completed",
+  "child.failed",
 ];
+
+/**
+ * The terminal-result Events a `call` waits on.
+ *
+ * `child.spawned` is deliberately not here: it acknowledges creation, not completion, and a `call`
+ * depends on the latter.
+ */
+export const CHILD_RESULT_EVENT_KINDS: readonly EventKind[] = ["child.completed", "child.failed"];
 
 export function isEventKind(value: unknown): value is EventKind {
   return typeof value === "string" && (EVENT_KINDS as readonly string[]).includes(value);
@@ -108,6 +137,39 @@ export interface EffectRejectedBody extends EffectResultFields {
   readonly message: string;
 }
 
+/** Facts about the spawned child that every child-result Event carries. */
+interface ChildResultFields extends EffectResultFields {
+  readonly pendingOperationId: PendingOperationId;
+  readonly childExecutionId: ExecutionId;
+  readonly rootExecutionId: ExecutionId;
+  readonly definitionId: string;
+  readonly definitionVersion: number;
+}
+
+export interface ChildSpawnedBody extends ChildResultFields {
+  /** The operations the child actually received, after attenuation against the parent's ceiling. */
+  readonly grantedOperations: readonly { readonly capability: string; readonly operation: string }[];
+}
+
+export interface ChildCompletedBody extends ChildResultFields {
+  /**
+   * The child's validated terminal result.
+   *
+   * `schemaId` is `null` when the child's Definition declared no terminal-result schema; `value` is
+   * then `null` too. This is the child's terminal result, not a response or a message.
+   */
+  readonly terminalResult: {
+    readonly schemaId: string | null;
+    readonly schemaVersion: number | null;
+    readonly value: JsonValue;
+    readonly valueDigest: string;
+  };
+}
+
+export interface ChildFailedBody extends ChildResultFields {
+  readonly failure: { readonly code: string; readonly message: string };
+}
+
 /**
  * An observation from outside the kernel: application input, a user turn, a system signal.
  *
@@ -125,6 +187,9 @@ export interface EventBodies {
   readonly "capability.unknown": CapabilityUnknownBody;
   readonly "effect.denied": EffectDeniedBody;
   readonly "effect.rejected": EffectRejectedBody;
+  readonly "child.spawned": ChildSpawnedBody;
+  readonly "child.completed": ChildCompletedBody;
+  readonly "child.failed": ChildFailedBody;
   readonly "external.input": ExternalInputBody;
 }
 
@@ -167,6 +232,27 @@ export function eventBodyIssues(kind: EventKind, body: unknown): readonly EventB
   if (kind === "effect.denied" || kind === "effect.rejected") {
     requireString(value["code"], "body.code", issues);
     if (typeof value["message"] !== "string") issues.push({ path: "body.message", message: "expected a string" });
+    return issues;
+  }
+
+  if (kind === "child.spawned" || kind === "child.completed" || kind === "child.failed") {
+    requireString(value["pendingOperationId"], "body.pendingOperationId", issues);
+    requireString(value["childExecutionId"], "body.childExecutionId", issues);
+    requireString(value["rootExecutionId"], "body.rootExecutionId", issues);
+    requireString(value["definitionId"], "body.definitionId", issues);
+    if (typeof value["definitionVersion"] !== "number") {
+      issues.push({ path: "body.definitionVersion", message: "expected a number" });
+    }
+    if (kind === "child.spawned" && !Array.isArray(value["grantedOperations"])) {
+      issues.push({ path: "body.grantedOperations", message: "expected an array of operation refs" });
+    }
+    if (kind === "child.completed") {
+      const terminal = value["terminalResult"];
+      if (terminal === null || typeof terminal !== "object" || Array.isArray(terminal) || !("value" in terminal)) {
+        issues.push({ path: "body.terminalResult", message: "expected a terminal result envelope" });
+      }
+    }
+    if (kind === "child.failed") requireError(value["failure"], "body.failure", issues);
     return issues;
   }
 

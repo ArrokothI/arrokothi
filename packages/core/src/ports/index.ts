@@ -16,12 +16,15 @@ export type { DefinitionStore } from "./definition-store.ts";
 export { DefinitionIntegrityError, DefinitionVersionConflictError } from "./definition-store.ts";
 
 export type {
+  ChildExecutionLinkFacet,
   ControllerResumptionFacet,
   EffectJournalFacet,
   EmissionFacet,
   ExecutionRecordFacet,
+  LineageSpawnBudgetFacet,
   MailboxAppendResult,
   MailboxFacet,
+  OperationAuthorityFacet,
   PendingOperationFacet,
   RuntimeStore,
   RuntimeTransaction,
@@ -30,6 +33,7 @@ export type {
 export {
   ExecutionAlreadyExistsError,
   RuntimeConcurrencyError,
+  SpawnBudgetConcurrencyError,
   UnknownControllerResumptionError,
   UnknownExecutionError,
   UnknownPendingOperationError,

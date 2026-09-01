@@ -61,6 +61,9 @@ class BreakableStore implements RuntimeStore {
   findControllerResumptionByKey: RuntimeStore["findControllerResumptionByKey"] = (id, key) =>
     this.inner.findControllerResumptionByKey(id, key);
   readOperationAuthority: RuntimeStore["readOperationAuthority"] = (id) => this.inner.readOperationAuthority(id);
+  readLineageSpawnBudget: RuntimeStore["readLineageSpawnBudget"] = (id) => this.inner.readLineageSpawnBudget(id);
+  readChildExecutionLink: RuntimeStore["readChildExecutionLink"] = (id) => this.inner.readChildExecutionLink(id);
+  listChildExecutionLinks: RuntimeStore["listChildExecutionLinks"] = (id) => this.inner.listChildExecutionLinks(id);
 
   private wrap(tx: RuntimeTransaction): RuntimeTransaction {
     const guard = (facet: string, detail: string): void => {

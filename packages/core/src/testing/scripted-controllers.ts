@@ -29,11 +29,12 @@ import { defineAgent, defineWorkflow } from "../definitions/validation.ts";
 import type { DefinitionKind } from "../definitions/types.ts";
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
 import type { EffectProposal } from "../effects/types.ts";
-import { useCapability } from "../effects/types.ts";
+import { callExecution, spawnExecution, useCapability } from "../effects/types.ts";
+import type { OperationRefInput } from "../operations/refs.ts";
 import { eventSatisfiesWake } from "../interaction/event-envelope.ts";
 import type { WakeCondition } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
-import { EFFECT_RESULT_EVENT_KINDS, isEffectResultEventKind } from "../interaction/events.ts";
+import { CHILD_RESULT_EVENT_KINDS, EFFECT_RESULT_EVENT_KINDS, isEffectResultEventKind } from "../interaction/events.ts";
 import type { ActivationInput, ActivationOutcome, ExecutionController } from "../ports/controller.ts";
 import type { ControllerResumptionScope } from "../ports/controller-resumption.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
@@ -68,6 +69,23 @@ export type ScriptedControllerStep =
     }
   /** Propose an Effect kind this slice does not dispatch, to prove it is refused rather than dropped. */
   | { readonly do: "propose_effect"; readonly effect: EffectProposal; readonly await?: boolean }
+  /**
+   * Propose a `SpawnExecution` (`spawn` or `call`).
+   *
+   * `spawn` proposes and, unless `await` is false, waits for `child.spawned` on the request key.
+   * `call` proposes and waits for the correlated `child.completed` / `child.failed`. Either way the
+   * child is a full independent Execution; `call` only adds the terminal-result dependency.
+   */
+  | {
+      readonly do: "spawn" | "call";
+      readonly definitionId: string;
+      readonly definitionVersion: number;
+      readonly childInput?: JsonValue;
+      readonly requestedOperations?: readonly OperationRefInput[];
+      readonly requestKey?: string;
+      /** `spawn` only: report `continue` instead of waiting for `child.spawned`. */
+      readonly await?: boolean;
+    }
   /**
    * Run controller-local asynchronous work under this Activation's inline budget.
    *
@@ -275,6 +293,40 @@ class ScriptedController implements ExecutionController {
           [],
           [proposal],
         );
+      }
+
+      case "spawn":
+      case "call": {
+        progress.step += 1;
+        const requestKey = step.requestKey ?? `${step.do}:${step.definitionId}:${progress.step}`;
+        const build = step.do === "call" ? callExecution : spawnExecution;
+        const proposal = build({
+          definitionId: step.definitionId,
+          definitionVersion: step.definitionVersion,
+          ...(step.childInput !== undefined ? { input: step.childInput } : {}),
+          ...(step.requestedOperations !== undefined ? { requestedOperations: step.requestedOperations } : {}),
+          requestKey,
+        });
+        if (step.do === "spawn" && step.await === false) {
+          return this.outcome(progress, { status: "continue" }, [], [proposal]);
+        }
+        progress.awaiting = true;
+        // Wait on the correlation across every answer: the child result, and also a refusal - a
+        // controller that only woke for success would sleep forever on a denied or budget-exhausted
+        // spawn.
+        const wake: WakeCondition =
+          step.do === "call"
+            ? {
+                eventKinds: [...CHILD_RESULT_EVENT_KINDS, "effect.denied", "effect.rejected"],
+                correlationId: requestKey,
+                description: `terminal result of ${step.definitionId}`,
+              }
+            : {
+                eventKinds: ["child.spawned", "effect.denied", "effect.rejected"],
+                correlationId: requestKey,
+                description: `${step.definitionId} spawned`,
+              };
+        return this.outcome(progress, { status: "await_event", wake }, [], [proposal]);
       }
 
       case "local_work": {

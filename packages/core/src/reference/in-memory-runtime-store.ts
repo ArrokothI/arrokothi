@@ -14,11 +14,13 @@
 import type { EffectId, PendingOperationId } from "../effects/ids.ts";
 import type { EffectJournalEntry } from "../effects/journal.ts";
 import type { PendingOperation } from "../effects/pending.ts";
+import type { ChildExecutionLink } from "../execution/child-link.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
+import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
 import type { EffectiveOperationAuthority } from "../operations/authority.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
 import type {
@@ -29,6 +31,7 @@ import type {
 import {
   ExecutionAlreadyExistsError,
   RuntimeConcurrencyError,
+  SpawnBudgetConcurrencyError,
   UnknownControllerResumptionError,
   UnknownPendingOperationError,
 } from "../ports/runtime-store.ts";
@@ -50,6 +53,8 @@ interface RuntimeState {
   effectJournal: Map<string, EffectJournalEntry[]>;
   controllerResumptions: Map<string, ControllerResumption>;
   operationAuthorities: Map<string, EffectiveOperationAuthority>;
+  lineageSpawnBudgets: Map<string, LineageSpawnBudget>;
+  childExecutionLinks: Map<string, ChildExecutionLink>;
 }
 
 function emptyState(): RuntimeState {
@@ -62,6 +67,8 @@ function emptyState(): RuntimeState {
     effectJournal: new Map(),
     controllerResumptions: new Map(),
     operationAuthorities: new Map(),
+    lineageSpawnBudgets: new Map(),
+    childExecutionLinks: new Map(),
   };
 }
 
@@ -219,6 +226,51 @@ function makeTransaction(state: RuntimeState): RuntimeTransaction {
       },
     },
 
+    lineageSpawnBudgets: {
+      async insert(budget) {
+        if (state.lineageSpawnBudgets.has(budget.rootExecutionId)) {
+          throw new Error(`lineage ${budget.rootExecutionId} already has a structural spawn budget`);
+        }
+        state.lineageSpawnBudgets.set(budget.rootExecutionId, structuredClone(budget));
+      },
+      async get(rootExecutionId) {
+        const stored = state.lineageSpawnBudgets.get(rootExecutionId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+      async update(budget, expectedRevision) {
+        const stored = state.lineageSpawnBudgets.get(budget.rootExecutionId);
+        if (!stored) throw new SpawnBudgetConcurrencyError(budget.rootExecutionId, expectedRevision, 0);
+        if (stored.revision !== expectedRevision) {
+          throw new SpawnBudgetConcurrencyError(budget.rootExecutionId, expectedRevision, stored.revision);
+        }
+        state.lineageSpawnBudgets.set(budget.rootExecutionId, structuredClone(budget));
+      },
+    },
+
+    childExecutionLinks: {
+      async insert(link) {
+        if (state.childExecutionLinks.has(link.childExecutionId)) {
+          throw new Error(`child execution ${link.childExecutionId} already has a link`);
+        }
+        state.childExecutionLinks.set(link.childExecutionId, structuredClone(link));
+      },
+      async get(childExecutionId) {
+        const stored = state.childExecutionLinks.get(childExecutionId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+      async update(link) {
+        if (!state.childExecutionLinks.has(link.childExecutionId)) {
+          throw new Error(`unknown child execution link ${link.childExecutionId}`);
+        }
+        state.childExecutionLinks.set(link.childExecutionId, structuredClone(link));
+      },
+      async listByParent(parentExecutionId) {
+        return structuredClone(
+          [...state.childExecutionLinks.values()].filter((link) => link.parentExecutionId === parentExecutionId),
+        );
+      },
+    },
+
     effectJournal: {
       async append(draft) {
         const list = state.effectJournal.get(draft.executionId) ?? [];
@@ -314,6 +366,22 @@ export class InMemoryRuntimeStore implements RuntimeStore {
   async readOperationAuthority(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined> {
     const stored = this.state.operationAuthorities.get(executionId);
     return stored ? structuredClone(stored) : undefined;
+  }
+
+  async readLineageSpawnBudget(rootExecutionId: ExecutionId): Promise<LineageSpawnBudget | undefined> {
+    const stored = this.state.lineageSpawnBudgets.get(rootExecutionId);
+    return stored ? structuredClone(stored) : undefined;
+  }
+
+  async readChildExecutionLink(childExecutionId: ExecutionId): Promise<ChildExecutionLink | undefined> {
+    const stored = this.state.childExecutionLinks.get(childExecutionId);
+    return stored ? structuredClone(stored) : undefined;
+  }
+
+  async listChildExecutionLinks(parentExecutionId: ExecutionId): Promise<readonly ChildExecutionLink[]> {
+    return structuredClone(
+      [...this.state.childExecutionLinks.values()].filter((link) => link.parentExecutionId === parentExecutionId),
+    );
   }
 
   /** Journal entries for one Effect, across Executions. Diagnostics and conformance assertions. */

@@ -36,6 +36,12 @@ For the current v0.4 Agent work, use the following documents together:
 012-mcp-post-proof-semantic-corrections.md
   the independent post-proof correction for outcome certainty, JSON-valued
   structured results, and JSON Schema additionalProperties semantic fidelity
+
+013-slice-e0-child-execution-foundation.md
+  the first Slice E checkpoint: SpawnExecution made operational through the
+  Effect gateway - recursive child identity/lineage, lineage-scoped structural
+  spawn budget, current-authority attenuation, spawn vs call, and child
+  terminal-result correlation through PendingOperation/Event. Not merged.
 ```
 
 `009` is intentionally a **review/amendment document**, not a replacement Slice-D coding plan. If Slice D or a D.0 retrofit is already in progress, finish the coherent implementation first, then review the landed result against `009` and apply only concrete additive seams or local retrofits justified by the implementation.
@@ -59,7 +65,10 @@ MCP-1.1 post-proof semantic correction   done, recorded in 012
         ↓
 MCP operation proof                      accepted
         ↓
-Slice E composition                      next
+Slice E composition
+  E.0 child Execution foundation         current checkpoint (013), not merged
+  E.1 safe interleaving + messaging      next
+  E.2 user interaction + surfaces        later
 ```
 
 The original MCP proof required no semantic core API change. MCP-1.1 later corrected the existing

@@ -36,6 +36,8 @@
 
 import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { ExecutionDefinition } from "../definitions/types.ts";
+import type { ChildExecutionLink } from "../execution/child-link.ts";
+import { markChildLinkSettled } from "../execution/child-link.ts";
 import type { ExecutionContext, ExecutionWait } from "../execution/context.ts";
 import {
   controllerResumptionWait,
@@ -48,6 +50,8 @@ import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ActivationId, ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
 import { activationId as toActivationId, executionId as toExecutionId } from "../execution/ids.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
+import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
+import { createLineageSpawnBudget, spawnBudgetCapacityIssues } from "../execution/structural-budget.ts";
 import type { EffectiveOperationAuthority, OperationAuthorityGrant } from "../operations/authority.ts";
 import { createEffectiveOperationAuthority, operationAuthorityGrantIssues } from "../operations/authority.ts";
 import type { LifecycleState, LifecycleTransitionRecord } from "../execution/lifecycle.ts";
@@ -57,6 +61,8 @@ import { validateTerminalResult } from "../execution/terminal-result.ts";
 import type { EffectId, PendingOperationId } from "../effects/ids.ts";
 import type { EffectJournalEntry } from "../effects/journal.ts";
 import type { PendingOperation } from "../effects/pending.ts";
+import { markAbandoned, markSettled } from "../effects/pending.ts";
+import { hashValue } from "../util/hash.ts";
 import type { SecurityProfile } from "../effects/capability.ts";
 import type { DeliveredEvent, EventEnvelope, EventId, WakeCondition } from "../interaction/event-envelope.ts";
 import { eventSatisfiesWake } from "../interaction/event-envelope.ts";
@@ -134,13 +140,24 @@ export interface CreateExecutionInput {
   /** A pinned definition ref. The Execution runs against these exact bytes for its whole life. */
   readonly definition: ExecutionDefinitionRef;
   /**
-   * Creates an owned Execution under an existing one.
+   * Creates an owned Execution under an existing one, through trusted application wiring.
    *
-   * This assigns ownership and root identity only. Real `spawn`/`call` semantics - delegated
-   * authority, memory visibility, child-completion Events - belong to Slice E; nothing here
-   * pretends to provide them.
+   * This assigns ownership and root identity only. It is deliberately *not* the autonomous
+   * `spawn`/`call` path: it does not attenuate authority, does not spend a structural spawn credit,
+   * and registers no child-completion dependency. An Execution creating a child *itself* proposes a
+   * `SpawnExecution` Effect, which the gateway mediates; this parameter is for a programmer
+   * constructing an initial ownership tree by hand.
    */
   readonly ownerExecutionId?: ExecutionId;
+  /**
+   * The finite structural spawn budget this Execution's whole lineage shares.
+   *
+   * Only meaningful when creating a root Execution: it fixes how many autonomous descendants the
+   * lineage may ever create through `SpawnExecution`. Omitted means the lineage has no budget, and
+   * an Execution with no budget can spawn nothing - "nobody granted spawn capacity" is not
+   * "unlimited spawn capacity". A descendant cannot enlarge it.
+   */
+  readonly structuralSpawnBudget?: number;
   /**
    * The root operation grant application/deployment policy supplies for this Execution.
    *
@@ -201,6 +218,13 @@ export class InvalidOperationAuthorityError extends Error {
   }
 }
 
+export class InvalidStructuralSpawnBudgetError extends Error {
+  constructor(detail: string) {
+    super(`invalid structural spawn budget: ${detail}`);
+    this.name = "InvalidStructuralSpawnBudgetError";
+  }
+}
+
 export class HarnessRunawayError extends Error {
   constructor(limit: number) {
     super(`runUntilIdle exceeded ${limit} activations; a controller is not settling`);
@@ -235,6 +259,10 @@ export class Harness {
       store: options.store,
       clock: options.clock,
       ids: options.ids,
+      definitions: options.definitions,
+      // A child whose Definition kind has no registered controller is refused before any runtime
+      // state exists for it, exactly as `createExecution` fails before inserting an Execution record.
+      hasController: (kind) => options.controllers.has(kind),
       // Fail closed. An unconfigured Harness denies every Effect rather than permitting them.
       authorizer: options.authorizer ?? denyAllEffects,
       // Fail conservative. An unconfigured catalog classifies nothing, and nothing classified
@@ -287,6 +315,20 @@ export class Harness {
       });
     }
 
+    // A lineage structural spawn budget is fixed at the root. A descendant does not start a new
+    // lineage and cannot be handed a separate budget here.
+    let spawnBudget: LineageSpawnBudget | null = null;
+    if (input.structuralSpawnBudget !== undefined) {
+      if (input.ownerExecutionId !== undefined) {
+        throw new InvalidStructuralSpawnBudgetError("a structural spawn budget belongs to a lineage and may only be set on a root Execution");
+      }
+      const issues = spawnBudgetCapacityIssues(input.structuralSpawnBudget);
+      if (issues.length > 0) {
+        throw new InvalidStructuralSpawnBudgetError(issues.map((issue) => `${issue.path}: ${issue.message}`).join("; "));
+      }
+      spawnBudget = createLineageSpawnBudget({ rootExecutionId: id, capacity: input.structuralSpawnBudget, grantedAt: createdAt });
+    }
+
     const created = createExecutionContext({
       executionId: id,
       kind: definition.kind,
@@ -302,6 +344,7 @@ export class Harness {
       // One transaction: an Execution whose context committed without its ceiling would read as
       // having no authority at all, and a ceiling without its Execution would permit nothing.
       if (authority) await tx.operationAuthorities.insert(authority);
+      if (spawnBudget) await tx.lineageSpawnBudgets.insert(spawnBudget);
       await tx.executions.insert(created);
       const ready = transitionContext(created, "READY", createdAt);
       await tx.executions.update(ready, created.revision);
@@ -775,10 +818,16 @@ export class Harness {
       await tx.executions.update(updated, running.revision);
       await this.record(tx, executionId, "RUNNING", to, finishedAt, activationId, `activation ${result}`);
 
-      return { emissionIds, to, result, rejection, requeue };
+      return { emissionIds, to, result, rejection, requeue, terminalResult, failure };
     });
 
     setRequeue(applied.requeue);
+
+    // A child reaching a terminal state settles the exact dependency its `call` parent registered,
+    // through the ordinary PendingOperation/Event path. Post-commit, like every other wake.
+    if (applied.to === "COMPLETED" || applied.to === "FAILED") {
+      await this.settleOwnerOnChildTerminal(running, applied.to, applied.terminalResult, applied.failure, finishedAt);
+    }
 
     // Only now, with the WAITING record durable, does anything start following the promise. A
     // continuation attached earlier could have settled - and tried to wake an Execution that was
@@ -843,6 +892,15 @@ export class Harness {
       await this.record(tx, running.executionId, "RUNNING", "FAILED", finishedAt, activationId, failure.code);
     });
 
+    // A child the Harness itself refused to trust still terminated; a `call` parent must be told.
+    await this.settleOwnerOnChildTerminal(
+      running,
+      "FAILED",
+      null,
+      { ...failure, failedByActivationId: activationId, failedAt: finishedAt },
+      finishedAt,
+    );
+
     return {
       activationId,
       executionId: running.executionId,
@@ -857,5 +915,155 @@ export class Harness {
       result: "failed",
       rejection: `${failure.code}: ${failure.message}`,
     };
+  }
+
+  /**
+   * Settles a `call` parent's dependency when the child it called reaches a terminal state.
+   *
+   * ```text
+   * child COMPLETED / FAILED
+   *        ↓ ChildExecutionLink names the parent PendingOperation
+   *   one transaction:
+   *     journal completed / failed on the parent's Effect
+   *     markSettled the PendingOperation
+   *     markChildLinkSettled the link          <- duplicate delivery is refused here and by the
+   *     route child.completed / child.failed       PendingOperation status check
+   *        ↓
+   *   parent WAITING -> READY, if it was waiting on this
+   * ```
+   *
+   * A plain `spawn` recorded `pendingOperationId: null`, so nothing settles - it observed
+   * `child.spawned` and nothing else, and the parent's own lifecycle is untouched by the child's.
+   * A child created through trusted `createExecution` wiring has no link and is likewise ignored.
+   *
+   * This is *not* a `ControllerResumption`: the child's terminal result is runtime-mediated
+   * semantic work, and it settles through a PendingOperation and a correlated Event. There is a
+   * crash window between the child's terminal commit and this settlement; recovering it is Slice I's
+   * durable-outbox work, exactly as for an inline Effect result that woke a waiting Execution.
+   */
+  private async settleOwnerOnChildTerminal(
+    child: ExecutionContext,
+    terminal: "COMPLETED" | "FAILED",
+    terminalResult: TerminalResultEnvelope | null,
+    failure: ExecutionFailure | null,
+    at: string,
+  ): Promise<void> {
+    if (child.ownerExecutionId === null) return;
+    const link = await this.options.store.readChildExecutionLink(child.executionId);
+    if (!link || link.pendingOperationId === null || link.state === "settled") return;
+
+    const parentId = link.parentExecutionId;
+    const eventId = this.options.ids.next(ID_PREFIXES.event) as EventId;
+
+    const woke = await this.options.store.transact(parentId, async (tx): Promise<ExecutionId | null> => {
+      const currentLink = await tx.childExecutionLinks.get(child.executionId);
+      if (!currentLink || currentLink.state === "settled" || currentLink.pendingOperationId === null) return null;
+      const pending = await tx.pendingOperations.get(currentLink.pendingOperationId);
+      if (!pending || pending.status !== "pending") return null;
+
+      const parent = await tx.executions.get(parentId);
+      if (!parent) return null;
+
+      if (isTerminalLifecycle(parent.lifecycle)) {
+        // The parent cannot observe anything. Record honestly; deliver nothing.
+        await tx.pendingOperations.update(markAbandoned(pending, at));
+        await tx.childExecutionLinks.update(markChildLinkSettled(currentLink, at));
+        await tx.effectJournal.append({
+          effectId: currentLink.effectId,
+          executionId: parentId,
+          effectKind: "spawn_execution",
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: pending.pendingOperationId,
+          at,
+          detail: { reason: `parent ${parent.lifecycle}`, childExecutionId: child.executionId },
+        });
+        return null;
+      }
+
+      await tx.effectJournal.append({
+        effectId: currentLink.effectId,
+        executionId: parentId,
+        effectKind: "spawn_execution",
+        phase: terminal === "COMPLETED" ? "completed" : "failed",
+        activationId: null,
+        pendingOperationId: pending.pendingOperationId,
+        at,
+        detail: { childExecutionId: child.executionId, resultEventId: eventId },
+      });
+      await tx.pendingOperations.update(
+        markSettled(pending, terminal === "COMPLETED" ? "success" : "failure", eventId, at),
+      );
+      await tx.childExecutionLinks.update(markChildLinkSettled(currentLink, at));
+
+      const shared = {
+        effectId: currentLink.effectId,
+        effectKind: "spawn_execution" as const,
+        pendingOperationId: pending.pendingOperationId,
+        childExecutionId: child.executionId,
+        rootExecutionId: currentLink.rootExecutionId,
+        definitionId: currentLink.definition.id,
+        definitionVersion: currentLink.definition.version,
+      };
+      const envelope: EventEnvelope =
+        terminal === "COMPLETED"
+          ? {
+              eventId,
+              destination: { executionId: parentId },
+              kind: "child.completed",
+              body: {
+                ...shared,
+                terminalResult: {
+                  schemaId: terminalResult?.schema?.schemaId ?? null,
+                  schemaVersion: terminalResult?.schema?.schemaVersion ?? null,
+                  value: terminalResult?.value ?? null,
+                  valueDigest: terminalResult?.valueDigest ?? hashValue(null),
+                },
+              },
+              correlationId: currentLink.resultCorrelationId,
+              causationId: currentLink.effectId,
+              occurredAt: at,
+            }
+          : {
+              eventId,
+              destination: { executionId: parentId },
+              kind: "child.failed",
+              body: {
+                ...shared,
+                failure: { code: failure?.code ?? "child_failed", message: failure?.message ?? "" },
+              },
+              correlationId: currentLink.resultCorrelationId,
+              causationId: currentLink.effectId,
+              occurredAt: at,
+            };
+
+      const routed = await routeEvent({
+        tx,
+        envelope,
+        deliveredAt: at,
+        recordTransition: async (id, from, to, when, why) => {
+          await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+      return routed.status === "delivered" && routed.wokeExecution ? parentId : null;
+    });
+
+    if (woke) await this.options.scheduler.enqueue(woke);
+  }
+
+  // -- child composition (read-only diagnostics) ----------------------------
+
+  /** One lineage's structural spawn budget: capacity, consumed, remaining. */
+  async lineageSpawnBudgetOf(rootExecutionId: ExecutionId): Promise<LineageSpawnBudget | undefined> {
+    return this.options.store.readLineageSpawnBudget(rootExecutionId);
+  }
+
+  /** Every child one Execution spawned, and whether each `call` dependency has settled. */
+  async childExecutionLinksOf(parentExecutionId: ExecutionId): Promise<readonly ChildExecutionLink[]> {
+    return this.options.store.listChildExecutionLinks(parentExecutionId);
+  }
+
+  async childExecutionLink(childExecutionId: ExecutionId): Promise<ChildExecutionLink | undefined> {
+    return this.options.store.readChildExecutionLink(childExecutionId);
   }
 }

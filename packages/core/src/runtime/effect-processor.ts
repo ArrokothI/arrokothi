@@ -69,14 +69,23 @@ import { EFFECT_ID_PREFIXES } from "../effects/ids.ts";
 import type { EffectJournalPhase } from "../effects/journal.ts";
 import type { PendingOperation } from "../effects/pending.ts";
 import { createPendingOperation, markAbandoned, markDispatched, markSettled } from "../effects/pending.ts";
-import type { EffectKind, EffectProposal, UseCapabilityProposal } from "../effects/types.ts";
+import type { EffectKind, EffectProposal, SpawnExecutionProposal, UseCapabilityProposal } from "../effects/types.ts";
 import { DISPATCHABLE_EFFECT_KINDS } from "../effects/types.ts";
+import type { DefinitionId } from "../definitions/ids.ts";
+import { isDefinitionId } from "../definitions/ids.ts";
+import type { DefinitionKind } from "../definitions/types.ts";
+import { definitionRef } from "../definitions/validation.ts";
+import { createChildExecutionLink } from "../execution/child-link.ts";
 import type { ExecutionContext } from "../execution/context.ts";
+import { createExecutionContext, transitionContext } from "../execution/context.ts";
 import type { ActivationId, ExecutionId } from "../execution/ids.ts";
+import { executionId as toExecutionId } from "../execution/ids.ts";
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
+import { canConsumeSpawnCredit, consumeSpawnCredit } from "../execution/structural-budget.ts";
 import type { EventEnvelope, EventId } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
-import { authorizesOperation } from "../operations/authority.ts";
+import { attenuateChildOperations, authorizesOperation, createDelegatedOperationAuthority } from "../operations/authority.ts";
+import type { DefinitionStore } from "../ports/definition-store.ts";
 import type { Clock } from "../ports/clock.ts";
 import { nowIso } from "../ports/clock.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
@@ -91,6 +100,15 @@ import type { RuntimeStore, RuntimeTransaction } from "../ports/runtime-store.ts
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import type { EventRoutingResult } from "./event-router.ts";
 import { routeEvent } from "./event-router.ts";
+
+/**
+ * How long a `call`'s pending dependency on a child terminal result may remain unresolved.
+ *
+ * Deliberately long: a parent may legitimately wait a long time for a child, and E.0 does not
+ * implement child cancellation or a configurable deadline. Deadline/cancellation policy for child
+ * dependencies is E.1.
+ */
+const CHILD_RESULT_DEADLINE_MS = 365 * 24 * 60 * 60 * 1000;
 
 /** The request facts a result Event needs, recovered from the journal at settlement time. */
 interface RequestFacts {
@@ -144,6 +162,10 @@ export interface EffectProcessorDeps {
   readonly clock: Clock;
   readonly ids: IdGenerator;
   readonly authorizer: EffectAuthorizer;
+  /** Resolves the Definition a `SpawnExecution` names. Read-only; a child pins whatever resolves. */
+  readonly definitions: DefinitionStore;
+  /** Whether a controller is registered for a kind, so a child with no controller is refused early. */
+  readonly hasController: (kind: DefinitionKind) => boolean;
   /**
    * Where a capability operation's baseline consequentiality is declared.
    *
@@ -268,6 +290,10 @@ export class EffectProcessor {
       });
     }
 
+    if (proposal.kind === "spawn_execution") {
+      return this.dispatchSpawn(input, proposal, effectId, correlationId, requestedAt);
+    }
+
     // The ceiling, before policy. An operation outside the Execution's CURRENT effective authority
     // never reaches the authorizer at all, so a permissive policy cannot be handed a question that
     // an Active View bug invented.
@@ -375,6 +401,300 @@ export class EffectProcessor {
       };
     }
     return raw as AuthorizationDecision;
+  }
+
+  // -- spawn dispatch ------------------------------------------------------
+
+  /**
+   * Turns a `SpawnExecution` proposal into a real, independently managed child - or refuses, and
+   * creates nothing.
+   *
+   * The order is fixed, and every refusal happens before any write:
+   *
+   * ```text
+   * resolve the Definition           missing / no controller -> effect.rejected
+   * policy decision                  deny                    -> effect.denied
+   * one transaction:
+   *   structural spawn budget        exhausted / absent      -> effect.rejected, nothing written
+   *   attenuate authority            requested ∩ parent CURRENT effective
+   *   spend one lineage credit
+   *   insert the child's delegated authority record
+   *   insert the child context, CREATED -> READY
+   *   deliver spawn input to the child (if any)
+   *   register the parent PendingOperation and the child link
+   *   spawn:  settle now, deliver child.spawned
+   *   call:   leave the dependency pending for the terminal result
+   * ```
+   *
+   * The child is a full Execution: its own id, mailbox, lifecycle, controller state, effective
+   * authority, and place in the lineage. It is never an in-process call between controllers, and
+   * `call` does not make it a different kind of Execution - it only adds the pending dependency.
+   */
+  private async dispatchSpawn(
+    input: ProcessEffectsInput,
+    proposal: SpawnExecutionProposal,
+    effectId: EffectId,
+    correlationId: string,
+    requestedAt: string,
+  ): Promise<EffectDispatchRecord> {
+    const parent = input.context;
+    const parentId = parent.executionId;
+
+    const definition = isDefinitionId(proposal.definitionId)
+      ? await this.deps.definitions.getVersion(proposal.definitionId as DefinitionId, proposal.definitionVersion)
+      : undefined;
+    if (!definition) {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: "spawn_definition_not_found",
+        message: `no stored definition ${proposal.definitionId}@${proposal.definitionVersion}; a malformed child reference creates no runtime state`,
+      });
+    }
+    if (!this.deps.hasController(definition.kind)) {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: "spawn_definition_kind_unsupported",
+        message: `no controller is registered for definition kind "${definition.kind}"`,
+      });
+    }
+    const childDefinitionRef = definitionRef(definition);
+
+    const decision = await this.decide(input, proposal, effectId, requestedAt);
+    if (decision.decision === "deny") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
+        code: decision.code,
+        message: decision.message,
+        phase: "denied",
+      });
+    }
+    const grantId = decision.grantId;
+
+    const at = nowIso(this.deps.clock);
+
+    type SpawnCommit =
+      | { readonly kind: "refused"; readonly code: string; readonly message: string }
+      | {
+          readonly kind: "created";
+          readonly childExecutionId: ExecutionId;
+          readonly rootExecutionId: ExecutionId;
+          readonly pendingOperationId: PendingOperationId;
+          readonly awaited: boolean;
+        };
+
+    const outcome = await this.deps.store.transact(parentId, async (tx): Promise<SpawnCommit> => {
+      // Structural budget, read fresh and checked before anything is written. A descendant cannot
+      // enlarge it, and a lineage with no budget cannot spawn at all.
+      const budget = await tx.lineageSpawnBudgets.get(parent.rootExecutionId);
+      if (!budget) {
+        return {
+          kind: "refused",
+          code: "no_structural_spawn_budget",
+          message:
+            `lineage ${parent.rootExecutionId} was created without a structural spawn budget; ` +
+            "autonomous child creation is refused (an absent budget is not an unlimited one)",
+        };
+      }
+      if (!canConsumeSpawnCredit(budget)) {
+        return {
+          kind: "refused",
+          code: "structural_spawn_budget_exhausted",
+          message:
+            `lineage ${parent.rootExecutionId} has spent all ${budget.capacity} of its structural spawn ` +
+            "credits; recursion is legal but finite, and a descendant cannot mint more",
+        };
+      }
+
+      // Attenuation against the parent's CURRENT effective authority, read here inside the same
+      // transaction. A request prepared while an operation was still possible yields nothing once
+      // the parent's ceiling has been narrowed.
+      const parentAuthority = (await tx.operationAuthorities.get(parentId)) ?? null;
+      const granted = attenuateChildOperations(parentAuthority, proposal.requestedOperations ?? []);
+
+      const childId = toExecutionId(this.deps.ids.next(ID_PREFIXES.execution));
+      const childMailboxId = this.deps.ids.next(ID_PREFIXES.mailbox);
+      const childAuthorityId = this.deps.ids.next(ID_PREFIXES.operationAuthority);
+      const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+      const awaited = proposal.awaitTerminalResult === true;
+
+      await tx.lineageSpawnBudgets.update(consumeSpawnCredit(budget), budget.revision);
+
+      await tx.operationAuthorities.insert(
+        createDelegatedOperationAuthority({
+          authorityId: childAuthorityId,
+          executionId: childId,
+          operations: granted,
+          ...(parentAuthority
+            ? { delegatedFrom: { authorityId: parentAuthority.authorityId, executionId: parentId } }
+            : {}),
+          grantedAt: at,
+        }),
+      );
+
+      const childContext = createExecutionContext({
+        executionId: childId,
+        kind: definition.kind,
+        definition: childDefinitionRef,
+        ownerExecutionId: parentId,
+        rootExecutionId: parent.rootExecutionId,
+        mailboxId: childMailboxId,
+        createdAt: at,
+        authority: { authorityId: childAuthorityId },
+      });
+      await tx.executions.insert(childContext);
+      const readyChild = transitionContext(childContext, "READY", at);
+      await tx.executions.update(readyChild, childContext.revision);
+      await tx.transitions.append({
+        executionId: childId,
+        from: "CREATED",
+        to: "READY",
+        at,
+        activationId: null,
+        reason: `spawned by ${effectId}`,
+      });
+
+      if (proposal.input !== undefined) {
+        await routeEvent({
+          tx,
+          envelope: {
+            eventId: this.deps.ids.next(ID_PREFIXES.event) as EventId,
+            destination: { executionId: childId },
+            kind: "external.input",
+            body: { label: "spawn", payload: proposal.input },
+            correlationId: null,
+            causationId: effectId,
+            occurredAt: at,
+          },
+          deliveredAt: at,
+          recordTransition: async (id, from, to, when, why) => {
+            await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+          },
+        });
+      }
+
+      const pending = markDispatched(
+        createPendingOperation({
+          pendingOperationId,
+          executionId: parentId,
+          effectId,
+          effectKind: "spawn_execution",
+          correlationId,
+          causationId: input.activationId,
+          idempotencyKey: `spawn:${effectId}` as IdempotencyKey,
+          createdAt: at,
+          deadline: new Date(new Date(at).getTime() + CHILD_RESULT_DEADLINE_MS).toISOString(),
+        }),
+        at,
+      );
+      await tx.pendingOperations.insert(pending);
+
+      const grantedDetail = granted.map((ref) => `${ref.capability}/${ref.operation}`);
+      await this.journal(tx, {
+        effectId,
+        executionId: parentId,
+        effectKind: "spawn_execution",
+        phase: "authorized",
+        activationId: input.activationId,
+        pendingOperationId,
+        at,
+        detail: {
+          grantId,
+          definitionId: proposal.definitionId,
+          definitionVersion: proposal.definitionVersion,
+          childExecutionId: childId,
+          rootExecutionId: parent.rootExecutionId,
+          requestedOperations: (proposal.requestedOperations ?? []).map((ref) => `${ref.capability}/${ref.operation}`),
+          grantedOperations: grantedDetail,
+          mode: awaited ? "call" : "spawn",
+        },
+      });
+      await this.journal(tx, {
+        effectId,
+        executionId: parentId,
+        effectKind: "spawn_execution",
+        phase: "dispatch_started",
+        activationId: input.activationId,
+        pendingOperationId,
+        at,
+        detail: { childExecutionId: childId },
+      });
+
+      await tx.childExecutionLinks.insert(
+        createChildExecutionLink({
+          childExecutionId: childId,
+          parentExecutionId: parentId,
+          rootExecutionId: parent.rootExecutionId,
+          definition: childDefinitionRef,
+          effectId,
+          spawnedByActivationId: input.activationId,
+          pendingOperationId: awaited ? pendingOperationId : null,
+          resultCorrelationId: correlationId,
+          createdAt: at,
+        }),
+      );
+
+      if (!awaited) {
+        // spawn: the parent's dependency is "the child exists", and it does. Settle now with the
+        // creation acknowledgement - a distinct Event kind from the terminal result it never waits
+        // for.
+        const spawnedEventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+        await this.journal(tx, {
+          effectId,
+          executionId: parentId,
+          effectKind: "spawn_execution",
+          phase: "completed",
+          activationId: input.activationId,
+          pendingOperationId,
+          at,
+          detail: { childExecutionId: childId, resultEventId: spawnedEventId },
+        });
+        await tx.pendingOperations.update(markSettled(pending, "success", spawnedEventId, at));
+        await routeEvent({
+          tx,
+          envelope: {
+            eventId: spawnedEventId,
+            destination: { executionId: parentId },
+            kind: "child.spawned",
+            body: {
+              effectId,
+              effectKind: "spawn_execution",
+              pendingOperationId,
+              childExecutionId: childId,
+              rootExecutionId: parent.rootExecutionId,
+              definitionId: proposal.definitionId,
+              definitionVersion: proposal.definitionVersion,
+              grantedOperations: granted.map((ref) => ({ capability: ref.capability, operation: ref.operation })),
+            },
+            correlationId,
+            causationId: effectId,
+            occurredAt: at,
+          },
+          deliveredAt: at,
+          recordTransition: async (id, from, to, when, why) => {
+            await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+          },
+        });
+      }
+
+      return { kind: "created", childExecutionId: childId, rootExecutionId: parent.rootExecutionId, pendingOperationId, awaited };
+    });
+
+    if (outcome.kind === "refused") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: outcome.code,
+        message: outcome.message,
+      });
+    }
+
+    // The child record is durable; make it runnable. Post-commit, exactly like an Effect result
+    // that woke a waiting Execution.
+    await this.deps.wake(outcome.childExecutionId);
+
+    return {
+      effectId,
+      effectKind: "spawn_execution",
+      correlationId,
+      pendingOperationId: outcome.pendingOperationId,
+      phase: outcome.awaited ? "dispatch_started" : "completed",
+      settledInline: !outcome.awaited,
+    };
   }
 
   // -- capability dispatch ---------------------------------------------------

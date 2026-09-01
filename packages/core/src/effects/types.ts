@@ -16,6 +16,8 @@
  */
 
 import type { EventId } from "../interaction/event-envelope.ts";
+import type { OperationRef, OperationRefInput } from "../operations/refs.ts";
+import { isOperationRef, operationRef } from "../operations/refs.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import { isJsonObject, jsonIssues } from "../util/json.ts";
 import type { EffectIdempotencyScope } from "./fingerprint.ts";
@@ -39,7 +41,7 @@ export const EFFECT_KINDS: readonly EffectKind[] = [
 ];
 
 /** The kinds this slice actually dispatches. Everything else is answered, never silently dropped. */
-export const DISPATCHABLE_EFFECT_KINDS: readonly EffectKind[] = ["use_capability"];
+export const DISPATCHABLE_EFFECT_KINDS: readonly EffectKind[] = ["use_capability", "spawn_execution"];
 
 export function isEffectKind(value: unknown): value is EffectKind {
   return typeof value === "string" && (EFFECT_KINDS as readonly string[]).includes(value);
@@ -96,7 +98,27 @@ export interface SpawnExecutionProposal extends ProposalBase {
   readonly kind: "spawn_execution";
   readonly definitionId: string;
   readonly definitionVersion: number;
+  /** Delivered to the child as an `external.input` Event labelled `"spawn"` once it is READY. */
   readonly input?: JsonValue;
+  /**
+   * Operations the child is requested to receive.
+   *
+   * The child's effective operation authority is `requestedOperations ∩ the spawning Execution's
+   * CURRENT effective operation authority` - an attenuation, never a grant. An **absent** request
+   * means the child receives no operation authority; it is never read as "inherit everything". A
+   * child Definition that declares operations does not change this: a Definition requirement is not
+   * a grant.
+   */
+  readonly requestedOperations?: readonly OperationRef[];
+  /**
+   * `call` semantics.
+   *
+   * When `true`, the spawning Execution registers a `PendingOperation` on the child's terminal
+   * result and is woken by a correlated `child.completed` / `child.failed` Event. When `false` or
+   * absent (`spawn`), the child is created and runs independently and the parent observes only
+   * `child.spawned`. Either way the child is the same independently managed Execution.
+   */
+  readonly awaitTerminalResult?: boolean;
 }
 
 export interface SendMessageProposal extends ProposalBase {
@@ -223,6 +245,18 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
       if (typeof candidate["definitionVersion"] !== "number" || !Number.isInteger(candidate["definitionVersion"])) {
         issues.push(issue(`${path}.definitionVersion`, "expected an integer definition version"));
       }
+      const requestedOperations = candidate["requestedOperations"];
+      if (requestedOperations !== undefined) {
+        if (!Array.isArray(requestedOperations) || !requestedOperations.every(isOperationRef)) {
+          // Fail closed: an ambiguous authority request is refused as malformed data rather than
+          // silently treated as "no operations" or "all operations".
+          issues.push(issue(`${path}.requestedOperations`, "expected an array of { capability, operation } refs"));
+        }
+      }
+      const awaitTerminalResult = candidate["awaitTerminalResult"];
+      if (awaitTerminalResult !== undefined && typeof awaitTerminalResult !== "boolean") {
+        issues.push(issue(`${path}.awaitTerminalResult`, "expected a boolean when present"));
+      }
       break;
     }
     case "send_message": {
@@ -246,6 +280,56 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
 
 export function isUseCapabilityProposal(proposal: EffectProposal): proposal is UseCapabilityProposal {
   return proposal.kind === "use_capability";
+}
+
+export function isSpawnExecutionProposal(proposal: EffectProposal): proposal is SpawnExecutionProposal {
+  return proposal.kind === "spawn_execution";
+}
+
+export interface SpawnExecutionInput {
+  readonly definitionId: string;
+  readonly definitionVersion: number;
+  readonly input?: JsonValue;
+  readonly requestedOperations?: readonly OperationRefInput[];
+  readonly requestKey?: string;
+  readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+function spawnProposal(input: SpawnExecutionInput, awaitTerminalResult: boolean): SpawnExecutionProposal {
+  return {
+    kind: "spawn_execution",
+    definitionId: input.definitionId,
+    definitionVersion: input.definitionVersion,
+    ...(input.input !== undefined ? { input: input.input } : {}),
+    ...(input.requestedOperations !== undefined
+      ? { requestedOperations: input.requestedOperations.map((ref) => operationRef(ref.capability, ref.operation)) }
+      : {}),
+    ...(awaitTerminalResult ? { awaitTerminalResult: true } : {}),
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+  };
+}
+
+/**
+ * `spawn`: create an independent child Execution and do not wait for its terminal result.
+ *
+ * A request, like every proposal: the Harness resolves the Definition, attenuates authority against
+ * this Execution's current ceiling, spends one lineage structural-budget credit, and creates the
+ * child - or refuses, and nothing is created.
+ */
+export function spawnExecution(input: SpawnExecutionInput): SpawnExecutionProposal {
+  return spawnProposal(input, false);
+}
+
+/**
+ * `call`: `spawn` plus a required dependency on the child's terminal result.
+ *
+ * The child is the same independently managed Execution a `spawn` would create; the only difference
+ * is that the spawning Execution registers a `PendingOperation` and is woken by the correlated
+ * `child.completed` / `child.failed` Event. It is not another kind of Execution.
+ */
+export function callExecution(input: SpawnExecutionInput): SpawnExecutionProposal {
+  return spawnProposal(input, true);
 }
 
 export interface UseCapabilityInput {

@@ -119,7 +119,7 @@ export type {
   OperationAuthorityGrant,
   OperationAuthorityRef,
 } from "./operations/authority.ts";
-export { authorizesOperation, operationAuthorityGrantIssues } from "./operations/authority.ts";
+export { attenuateChildOperations, authorizesOperation, operationAuthorityGrantIssues } from "./operations/authority.ts";
 export type { ExposureIssue, OperationExposureRequest } from "./operations/exposure.ts";
 export { EMPTY_EXPOSURE_REQUEST, exposureRequestIssues } from "./operations/exposure.ts";
 export type {
@@ -236,6 +236,27 @@ export type {
   TerminalResultRejection,
 } from "./execution/terminal-result.ts";
 
+// -- child Execution composition (Slice E.0) --------------------------------
+/**
+ * Child-Execution composition surface.
+ *
+ * `spawnExecution` / `callExecution` build `SpawnExecution` proposals; a controller *proposes* one
+ * and the Harness mediates creation - resolving the Definition, attenuating authority against this
+ * Execution's current ceiling, spending one lineage structural-spawn credit, and creating the
+ * independently managed child, or refusing and creating nothing. The link and budget records are
+ * runtime-owned and exported as *readable* shapes only.
+ */
+export type { SpawnExecutionInput } from "./effects/types.ts";
+export { callExecution, isSpawnExecutionProposal, spawnExecution } from "./effects/types.ts";
+export type { ChildExecutionLink, ChildLinkState } from "./execution/child-link.ts";
+export { isAwaitingChildResult } from "./execution/child-link.ts";
+export type { LineageSpawnBudget } from "./execution/structural-budget.ts";
+export {
+  canConsumeSpawnCredit,
+  spawnBudgetCapacityIssues,
+  spawnBudgetRemaining,
+} from "./execution/structural-budget.ts";
+
 // -- events ------------------------------------------------------------------
 export type {
   DeliveredEvent,
@@ -249,6 +270,9 @@ export type {
   CapabilityCompletedBody,
   CapabilityFailedBody,
   CapabilityUnknownBody,
+  ChildCompletedBody,
+  ChildFailedBody,
+  ChildSpawnedBody,
   EffectDeniedBody,
   EffectRejectedBody,
   EventBodies,
@@ -256,6 +280,7 @@ export type {
   ExternalInputBody,
 } from "./interaction/events.ts";
 export {
+  CHILD_RESULT_EVENT_KINDS,
   EFFECT_RESULT_EVENT_KINDS,
   EVENT_KINDS,
   isEffectResultEventKind,
@@ -323,7 +348,13 @@ export { EFFECT_JOURNAL_PHASES, effectRequestsIn, isTerminalEffectPhase, latestP
 // -- runtime -----------------------------------------------------------------
 export { ControllerRegistry, UnknownControllerKindError } from "./runtime/controller-registry.ts";
 export type { ActivationRecord, ActivationResultKind } from "./runtime/activation.ts";
-export { Harness, HarnessRunawayError, InvalidOperationAuthorityError, UnknownDefinitionError } from "./runtime/harness.ts";
+export {
+  Harness,
+  HarnessRunawayError,
+  InvalidOperationAuthorityError,
+  InvalidStructuralSpawnBudgetError,
+  UnknownDefinitionError,
+} from "./runtime/harness.ts";
 export { createWorkflowController } from "./controllers/workflow/controller.ts";
 export type { WorkflowControllerOptions } from "./controllers/workflow/controller.ts";
 export { createAgentController } from "./controllers/agent/controller.ts";

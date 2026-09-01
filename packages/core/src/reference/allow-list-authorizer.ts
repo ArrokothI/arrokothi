@@ -27,7 +27,7 @@ import type { ResourceAccessMode, ResourceBindingRef } from "../effects/capabili
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
 import { resourceBindingId } from "../effects/ids.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
-import { isUseCapabilityProposal } from "../effects/types.ts";
+import { isSpawnExecutionProposal, isUseCapabilityProposal } from "../effects/types.ts";
 
 export interface CapabilityGrantRule {
   /** Plain strings: this is application configuration, so the factory brands and validates. */
@@ -49,10 +49,21 @@ export interface CapabilityGrantRule {
   readonly maxDeadlineMs?: number;
 }
 
+/**
+ * Whether this policy permits `SpawnExecution`.
+ *
+ * `true` allows any child Definition; a `{ definitions }` list allows only those definition ids.
+ * Omitted (the default) denies every spawn - "requested requirement is not a grant" applies to
+ * child creation exactly as it does to capabilities.
+ */
+export type SpawnGrantRule = boolean | { readonly definitions: readonly string[] };
+
 export interface AllowListAuthorizerOptions {
   readonly grants: readonly CapabilityGrantRule[];
   /** Restricts the whole allow-list to named Executions. Omitted means every Execution. */
   readonly executions?: readonly string[];
+  /** Whether `SpawnExecution` is permitted, and for which child Definitions. Default: denied. */
+  readonly spawn?: SpawnGrantRule;
 }
 
 export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): EffectAuthorizer {
@@ -66,6 +77,24 @@ export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): 
           code: "execution_not_authorized",
           message: `execution ${request.executionId} holds no capability authority under this policy`,
         };
+      }
+
+      if (isSpawnExecutionProposal(request.proposal)) {
+        const rule = options.spawn ?? false;
+        const allowed =
+          rule === true ||
+          (typeof rule === "object" && rule.definitions.includes(request.proposal.definitionId));
+        if (!allowed) {
+          return {
+            decision: "deny",
+            code: "spawn_not_authorized",
+            message:
+              `execution ${request.executionId} is not authorized to spawn ` +
+              `${request.proposal.definitionId}@${request.proposal.definitionVersion} under this policy`,
+          };
+        }
+        issued += 1;
+        return { decision: "allow", grantId: `grant_${issued}` };
       }
 
       if (!isUseCapabilityProposal(request.proposal)) {

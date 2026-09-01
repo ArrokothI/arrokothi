@@ -33,11 +33,13 @@ import type { EffectJournalDraft, EffectJournalEntry } from "../effects/journal.
 import type { EffectId, IdempotencyKey, PendingOperationId } from "../effects/ids.ts";
 import type { PendingOperation } from "../effects/pending.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
+import type { ChildExecutionLink } from "../execution/child-link.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
+import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
 import type { EffectiveOperationAuthority } from "../operations/authority.ts";
 
 export interface ExecutionRecordFacet {
@@ -152,6 +154,37 @@ export interface OperationAuthorityFacet {
   get(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined>;
 }
 
+/**
+ * Lineage-scoped structural spawn budget.
+ *
+ * Keyed by the root Execution, because the whole ownership tree shares one finite pool. A facet of
+ * the same transaction as everything else so that "one credit spent" and "one child created" commit
+ * together or not at all - a spawn that created a child without spending a credit would let a
+ * lineage exceed its budget, and a spend without a child would leak capacity. `update` is
+ * compare-and-set on the record's revision so two concurrent spawns cannot both spend the last
+ * credit. There is no `widen` and no per-Execution variant: capacity is set once, at the root.
+ */
+export interface LineageSpawnBudgetFacet {
+  insert(budget: LineageSpawnBudget): Promise<void>;
+  get(rootExecutionId: ExecutionId): Promise<LineageSpawnBudget | undefined>;
+  update(budget: LineageSpawnBudget, expectedRevision: number): Promise<void>;
+}
+
+/**
+ * Child-Execution links.
+ *
+ * The edge from a spawning Execution to a child it created, plus the pending dependency (if any)
+ * that a `call` registered on the child's terminal result. A facet of the same transaction because
+ * the child, its authority, the spent budget credit, the parent's pending operation, and this link
+ * are one atomic creation: a partially created child is exactly what §24 forbids.
+ */
+export interface ChildExecutionLinkFacet {
+  insert(link: ChildExecutionLink): Promise<void>;
+  get(childExecutionId: ExecutionId): Promise<ChildExecutionLink | undefined>;
+  update(link: ChildExecutionLink): Promise<void>;
+  listByParent(parentExecutionId: ExecutionId): Promise<readonly ChildExecutionLink[]>;
+}
+
 export interface RuntimeTransaction {
   readonly executions: ExecutionRecordFacet;
   readonly mailboxes: MailboxFacet;
@@ -161,6 +194,8 @@ export interface RuntimeTransaction {
   readonly effectJournal: EffectJournalFacet;
   readonly controllerResumptions: ControllerResumptionFacet;
   readonly operationAuthorities: OperationAuthorityFacet;
+  readonly lineageSpawnBudgets: LineageSpawnBudgetFacet;
+  readonly childExecutionLinks: ChildExecutionLinkFacet;
 }
 
 export interface RuntimeStore {
@@ -195,6 +230,12 @@ export interface RuntimeStore {
    * data with no way to write one back.
    */
   readOperationAuthority(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined>;
+  /** One lineage's structural spawn budget. Read-only diagnostics; the gateway owns spending. */
+  readLineageSpawnBudget(rootExecutionId: ExecutionId): Promise<LineageSpawnBudget | undefined>;
+  /** The link for one child Execution, or `undefined` when it was not spawned through the gateway. */
+  readChildExecutionLink(childExecutionId: ExecutionId): Promise<ChildExecutionLink | undefined>;
+  /** Every child one Execution spawned. Read-only lineage/wait-for diagnostics. */
+  listChildExecutionLinks(parentExecutionId: ExecutionId): Promise<readonly ChildExecutionLink[]>;
 }
 
 export class UnknownControllerResumptionError extends Error {
@@ -233,5 +274,15 @@ export class UnknownExecutionError extends Error {
   constructor(executionId: string) {
     super(`unknown execution ${executionId}`);
     this.name = "UnknownExecutionError";
+  }
+}
+
+export class SpawnBudgetConcurrencyError extends Error {
+  constructor(rootExecutionId: string, expectedRevision: number, actualRevision: number) {
+    super(
+      `lineage spawn budget for ${rootExecutionId} changed underneath this writer ` +
+        `(expected revision ${expectedRevision}, found ${actualRevision})`,
+    );
+    this.name = "SpawnBudgetConcurrencyError";
   }
 }
