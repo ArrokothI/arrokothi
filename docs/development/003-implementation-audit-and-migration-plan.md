@@ -14,6 +14,15 @@
 > document has been refined against the canonical interoperability model and the implemented code.
 > The amendment does not reopen accepted A-C semantics and does not authorize Slice D implementation.
 
+> **Post-canonical-rewrite conformance amendment (2026-08-31):** a focused audit of the implemented
+> A-C path against the rewritten canonical documents found **one** blocking conformance defect, with
+> three code surfaces. Controller-local asynchronous work has no runtime seam: `ControllerNext`
+> cannot express controller-local suspension, `ExecutionContext.waitingFor` can only express an
+> Event dependency, and `WorkflowController` therefore awaits `provider.generate` inside its
+> Activation. Everything else in A-C remains conformant or is a later-slice gap with an adequate
+> seam. Section 18 now recommends that retrofit, not Slice D.0. See
+> [`008-v0.4-to-v1.0-development-roadmap.md`](008-v0.4-to-v1.0-development-roadmap.md) §2.5 and §12.
+
 This document records what exists, what is semantically fit for v0.4, and how to migrate. It does not authorize coding, preserve a legacy API, or freeze illustrative APIs from the authority documents.
 
 ## 1. Executive assessment
@@ -1355,8 +1364,107 @@ blocking the reference Agent semantics.
 
 ## 18. Recommended next implementation task
 
-Implement **Slice D.0 — Agent operation exposure and projection skeleton** as one reviewable change
-before the open-ended loop is allowed to dispatch anything.
+> **Superseded by the post-canonical-rewrite audit (2026-08-31).** Slice D.0 is no longer the next
+> task. The next task is **Slice C.1 — controller-local asynchronous resumption**, described
+> immediately below. Slice D.0 (§18.2) follows it unchanged.
+
+### 18.1 Slice C.1 — controller-local asynchronous resumption
+
+One reviewable change, in `packages/core`, that gives the runtime a controller-local suspension seam
+and moves Workflow model invocation onto it. It implements no Agent semantics and no MCP.
+
+**Why it is first.** The Agent controller's central loop is *model call → interpret → act*. With no
+controller-local suspension in the substrate, the reference Agent would be written with
+`await provider.generate` inside its Activation and would inherit the defect in the exact place v0.4
+exists to prove correct. Building D first means rewriting D's loop immediately afterwards.
+
+**The three surfaces of the defect.**
+
+```text
+ports/controller.ts
+  ControllerNext = continue | await_event | complete | fail
+  no way to report "suspended on controller-local work"
+
+execution/context.ts + interaction/event-envelope.ts
+  waitingFor: WakeCondition | null      Event-kind + correlationId only
+  runtime/event-router.ts is the only WAITING -> READY path, and it requires a mailbox append
+  so a controller that wanted to yield could only do so by inventing an Event
+
+controllers/workflow/model-access.ts  ->  llm-stage.ts, adapters.ts
+  await provider.generate(...) inside the Activation
+  runLLMStage loops over up to maxModelPhases provider round trips in one Activation
+  the scheduler claim is held for the whole provider latency
+```
+
+**Scope.**
+
+1. Add `ControllerResumption` as its own record type and its own `RuntimeTransaction` facet. It is
+   not a `PendingOperation`: it has no `effectId`, no `effectKind`, no idempotency key, no
+   `unknown` outcome, and no `resultEventId`. Record the `ExecutionContext.revision` the suspending
+   Activation read — a field with no policy attached in v0.4, so v0.5's stale-continuation rule has
+   something to check without a record migration.
+2. Widen `ExecutionContext.waitingFor` from `WakeCondition | null` to a dependency union covering an
+   Event condition or a controller-local resumption. This is the one non-additive type change; the
+   rest is additive.
+3. Add one `ControllerNext` status for controller-local suspension, and one `ActivationInput` field
+   through which a controller registers async work and receives settled outcomes. The controller
+   supplies an opaque thunk; the Harness owns the race, the tracking, the record, and the wake, and
+   never interprets the result.
+4. Settle resumptions through a processor that mirrors `EffectProcessor`'s mechanism — the same
+   `InlineWaitBudget.race`, the same follow-the-promise `track`/`drain`, the same commit-then-wake
+   ordering — while sharing none of its semantics. Settlement writes the record and transitions
+   `WAITING -> READY` in one transaction, with **no mailbox append, no Event, and no Effect-journal
+   entry**. There must be no public settlement ingress for a resumption; a caller who could settle
+   one could fabricate a model result.
+5. Move `runLLMStage` and the LLM Adapter path in `runAdapterChain` onto the primitive, keyed by
+   coordinates that already exist in control state (stage id, visit, phase / adapter index) so the
+   key is stable across Activations. `invokeStageModel` itself stays as written — it becomes the
+   thunk body. Its file header, which currently asserts that model inference "returns to the
+   controller inside the same Activation", must be corrected.
+6. Restrict interleaving deliberately: an Execution suspended on a resumption waits on that
+   resumption and nothing else, so no Event can produce a second Activation while the continuation
+   is outstanding. This is what makes v0.4 free of stale-continuation risk, and it must be an
+   asserted property rather than an accident of the current controller.
+
+**Out of scope.** `ModelProvider` and `ModelResolver` are unchanged. The scheduler is unchanged.
+Workflow topology, barriers, transitions, Stage semantics, Adapter effect-freeness, and
+`LocalResource` are unchanged. No unified `Suspension` abstraction (see
+[`../future-plan.md`](../future-plan.md) §1.1). No durable resumption recovery. No stale-merge
+machinery. No Agent, no memory, no child composition, no MCP.
+
+**Sharpest risk.** An input-Adapter suspension occurs *during* a Stage transition, when the next
+Stage's control state is only half installed. `runAdapterChain` is called from both `enterStage` and
+`step`; the resumable form must commit a control state that either Activation can re-enter without
+re-running an Adapter that already ran.
+
+**Tests first.**
+
+- Fast/slow equivalence for a Workflow LLM Stage: same definition, same digest, same resolved
+  provider/model, same messages, same Stage result, same transition, same terminal result. Only the
+  Activation count and whether `WAITING` was entered may differ.
+- The same for an LLM Adapter, in both input and output position.
+- A slow model completion appends nothing to the mailbox: the Execution's Event list is byte-identical
+  to the fast run's, and its Effect journal is unchanged.
+- A resumption creates no `PendingOperation` and consults no `EffectAuthorizer`.
+- An Execution suspended on a resumption is not woken by an arriving `external.input`; the Event is
+  queued and the Execution stays `WAITING` until the resumption settles.
+- A provider that rejects settles the resumption as failed and produces a Stage failure, not an
+  Execution-level `capability.failed` Event.
+- Two Executions, one suspended on a slow model call, the other runnable: the second is activated
+  while the first is `WAITING`. This is the property the current code cannot satisfy.
+- Architecture: controller modules still reach no `RuntimeStore`, `Scheduler`, `EffectAuthorizer`,
+  `CapabilityExecutor`, `settleEffect`, or `ports/inline-wait.ts`.
+- The full 441-test suite, the 8 benchmark-subject tests, and typecheck stay green.
+
+**Done when** a Workflow LLM Stage whose provider takes arbitrarily long yields its Activation,
+lets another Execution run, resumes the same Stage at the same phase, and produces a result
+indistinguishable from the fast path — with no Event, no PendingOperation, and no Effect anywhere in
+the record.
+
+### 18.2 Slice D.0 — Agent operation exposure and projection skeleton
+
+Implement this as one reviewable change **after** §18.1, before the open-ended loop is allowed to
+dispatch anything. Its model invocation uses the §18.1 primitive.
 
 The task should:
 

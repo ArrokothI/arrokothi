@@ -838,6 +838,16 @@ fashion drive kernel ordering or forcing all protocol features into one slice.
 
 **Decision: Accepted after post-Slice-C implementation audit.**
 
+> **Partly superseded (2026-08-31).** The conclusion below is correct *about interoperability* and
+> still stands: nothing in the portable/protocol layer requires an A-C source change. But the
+> sentence "Slices A-C need no source retrofit" is now read out of context, because the canonical
+> rewrite made `ControllerResumption` current runtime semantics **after** this note was written. One
+> A-C retrofit is required, for a reason unrelated to interoperability: Workflow model invocation
+> occupies its Activation. See
+> [`008-v0.4-to-v1.0-development-roadmap.md`](008-v0.4-to-v1.0-development-roadmap.md) §2.5.1 and
+> [`003-implementation-audit-and-migration-plan.md`](003-implementation-audit-and-migration-plan.md)
+> §18.1. The four preserved boundaries listed below are unaffected and remain accepted.
+
 The closed Effect union remains:
 
 ```text
