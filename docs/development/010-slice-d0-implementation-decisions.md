@@ -536,3 +536,17 @@ Everything in §13 remains not implemented. The retrofit added no MCP, no Slice 
 messaging, no human input, no second action family, and no model-visible wrapper for any other
 Effect. It also did not add a mutable-authority API: the narrowing conformance case models a changed
 ceiling at the store port precisely so that one is not invented before delegation needs it.
+
+---
+
+## 15. What came next
+
+Slice D was accepted after this retrofit, and the behavioural baseline in §14.6 landed with it. The
+next slice was the narrow synchronous MCP operation proof, recorded in
+[`011-mcp-synchronous-operation-proof.md`](011-mcp-synchronous-operation-proof.md).
+
+That proof is worth reading back against §5 and §14.4 in particular. Importing a real MCP Tool
+needed no second descriptor ontology and no second action target kind: `CapabilityOperationDescriptor`
+absorbed a protocol operation source unchanged, and `capability_operation` remained the only target
+kind minted. §13's "MCP in any form" line is superseded only by that one narrow proof, which lives
+entirely outside `packages/core`.

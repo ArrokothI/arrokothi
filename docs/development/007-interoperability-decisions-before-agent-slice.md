@@ -816,11 +816,16 @@ Add two deliberately narrow vertical proofs:
 > baseline, then this proof. Adding a second operation source before the authority and projection
 > seams were settled would have doubled the cost of the one defect that review actually found.
 
+> **First proof landed 2026-09-01.** Implemented in `packages/interoperability/mcp` against official
+> MCP TypeScript SDK v2; the record is
+> [`011-mcp-synchronous-operation-proof.md`](011-mcp-synchronous-operation-proof.md). The remaining
+> stages below are unchanged and still sequenced after E/G and I.
+
 ```text
 after D acceptance:
-  import one synchronous MCP Tool into the portable capability-operation surface
-  run it through authority -> Active View -> model projection -> UseCapability
-  export one native portable capability operation as an MCP Tool
+  import one synchronous MCP Tool into the portable capability-operation surface   [done]
+  run it through authority -> Active View -> model projection -> UseCapability     [done]
+  export one native portable capability operation as an MCP Tool                   [done]
 
 after E/G:
   export a declared Agent/Workflow service operation
@@ -954,9 +959,14 @@ action/projection philosophy without forcing every Effect to masquerade as an MC
 
 Do **not** pull the following into Slice D merely because the architecture now names them:
 
+> **Status after the MCP-1 proof (2026-09-01).** The first two lines are now implemented, narrowly
+> and outside core, by `@agent-sdk/integration-mcp`: a synchronous Tool importer and a single-
+> operation Tool exporter. Everything else on this list remains deferred. See
+> [`011-mcp-synchronous-operation-proof.md`](011-mcp-synchronous-operation-proof.md) §12.
+
 ```text
-MCP client adapter
-MCP server adapter
+MCP client adapter                 [narrow synchronous form implemented]
+MCP server adapter                 [narrow single-operation export implemented]
 MCP Tasks integration
 MCP subscriptions/notifications
 MCP Prompt import/export
@@ -1007,3 +1017,9 @@ It is:
 
 If yes, Slice D is aligned. If not, fix the ownership boundary before implementing concrete MCP
 integration.
+
+> **Answered 2026-09-01: yes.** The MCP-1 proof imported a real Tool as the existing
+> `CapabilityOperationDescriptor` and exported a native operation as a Tool while changing
+> `packages/core` by one comment. A behavioural parity case shows the Agent layer cannot distinguish
+> a native-backed operation from an MCP-backed one. Evidence and the seam feedback are in
+> [`011-mcp-synchronous-operation-proof.md`](011-mcp-synchronous-operation-proof.md) §13.

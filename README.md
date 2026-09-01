@@ -22,17 +22,18 @@ The default tests and examples are offline. Copy [`.env.example`](.env.example) 
 
 ## Architecture documentation
 
-Start with [`docs/README.md`](docs/README.md). The recommended reading order is:
+Start with [`docs/README.md`](docs/README.md), which owns the document map and the ownership rules. The recommended reading order is:
 
 1. [`docs/mental-model.md`](docs/mental-model.md) — canonical conceptual model.
-2. [`docs/composition.md`](docs/composition.md) — composition semantics: local computation vs child Executions, Workflow Stages, Effects, completion boundaries, retrieval, and Adapters.
-3. [`docs/runtime-architecture.md`](docs/runtime-architecture.md) — Harness, lifecycle, memory visibility, messaging, pending work, confirmation, and durability.
-4. [`docs/interoperability.md`](docs/interoperability.md) — portable service-interface semantics and protocol mappings, with MCP as a first-class interoperability target.
-5. [`docs/security-guarantees.md`](docs/security-guarantees.md) — kernel and deployment security guarantees.
-6. [`docs/implementation-guide.md`](docs/implementation-guide.md) — implementation mapping, conformance scenarios, and coding-plan guidance.
-7. [`docs/future-plan.md`](docs/future-plan.md) — open questions and future experiments.
+2. [`docs/execution-runtime.md`](docs/execution-runtime.md) — Execution, Harness, lifecycle, Events/Effects, waiting/resumption, scheduling, cancellation, and durability.
+3. [`docs/composition.md`](docs/composition.md) — Agent/Workflow composition: local computation vs child Executions, Stages, parallel branches, spawn/call/send/ask, Adapters, and Skills.
+4. [`docs/authority.md`](docs/authority.md) — authority, delegation, Catalog → Effective Authority → Active View → Model Projection, confirmation, and evidence.
+5. [`docs/memory.md`](docs/memory.md) — memory forms and scopes, provenance, promotion, retrieval, and context compilation.
+6. [`docs/interoperability.md`](docs/interoperability.md) — portable service-interface semantics and protocol mappings, with MCP as a first-class interoperability target.
+7. [`docs/security-guarantees.md`](docs/security-guarantees.md) — kernel and deployment security guarantees.
+8. [`docs/future-plan.md`](docs/future-plan.md) — open questions and future experiments.
 
-Files under [`docs/legacy/`](docs/legacy/) are historical design material and are not canonical.
+Implementation plans, slice decisions, and reviews live under [`docs/development/`](docs/development/); they record work in progress and never override the canonical documents. [`docs/architecture-research-dossier.md`](docs/architecture-research-dossier.md) is retained research evidence and is explicitly not canonical.
 
 ## Mental model
 
@@ -197,6 +198,7 @@ npm run example:benchmark:p01 -- --check
 npm run example:benchmark:p02 -- --check
 npm run canary:gemini            # optional live provider check
 npm run canary:workflow          # optional live v0.4 Workflow scenario
+npm run canary:mcp:gemini        # optional live Agent -> MCP Tool check
 npm run studio
 ```
 
@@ -209,11 +211,11 @@ packages/core/                kernel contracts/runtime and reference mechanisms
 packages/agents/strands/      primary Strands Agent executor adapter
 packages/models/gemini/       Gemini model-provider adapter
 packages/retrieval/local/     local retrieval implementations behind the kernel's ports
+packages/interoperability/mcp/  MCP protocol adapter; the only home of MCP SDK/wire types
 packages/storage/sqlite/      SQLite persistence adapter
 apps/studio/                  local development/inspection surface
 examples/                     focused usage examples
-docs/                         active architecture, implementation guidance, roadmap
-docs/legacy/                  historical design documents
+docs/                         canonical architecture plus development plans and reviews
 scripts/                      repository tooling/manual diagnostics
 ```
 
