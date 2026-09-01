@@ -1,6 +1,6 @@
 # ArrokothI Architecture Documents
 
-This directory contains the canonical architecture for ArrokothI plus implementation working documents and one retained research dossier.
+This directory contains the canonical architecture for ArrokothI plus implementation working documents, one cross-repository product-vision document, and one retained research dossier.
 
 The canonical documents intentionally have **non-overlapping ownership**:
 
@@ -25,10 +25,11 @@ Supporting material:
 
 | Path | Role |
 |---|---|
+| [`product-vision.md`](product-vision.md) | cross-repository ArrokothI product direction: heterogeneous Agent application composition, Studio/Cloud direction, ecosystem/adoption/business posture; **not canonical kernel architecture** |
 | [`development/`](development/) | current implementation plans, audits, slice decisions, reviews, migration notes |
 | [`architecture-research-dossier.md`](architecture-research-dossier.md) | retained non-canonical research/source dossier; useful evidence and external-system survey |
 
-The research dossier is intentionally **not** canonical even when it contains useful reasoning. When it conflicts with a canonical document, the canonical document wins.
+The product vision may guide future repositories and product surfaces, but it does not own kernel semantics. The research dossier is intentionally **not** canonical even when it contains useful reasoning. When either conflicts with a canonical document, the canonical document wins.
 
 ---
 
@@ -39,6 +40,14 @@ The research dossier is intentionally **not** canonical even when it contains us
 ```text
 README → mental-model
 ```
+
+### Want the broader product direction across Core / Studio / Cloud / integrations?
+
+```text
+product-vision
+```
+
+Then return to the canonical concept owner before changing kernel semantics.
 
 ### Building/composing Agents and Workflows?
 
@@ -148,6 +157,9 @@ security-guarantees.md
 future-plan.md
   owns only unresolved/future questions
 
+product-vision.md
+  product direction across repositories/surfaces; does not own kernel semantics
+
 development/
   owns implementation work-in-progress, not architecture truth
 
@@ -172,6 +184,10 @@ Does an MCP Tool grant permission?
 Does a sandbox define Execution?
   → execution-runtime.md says no
   → security-guarantees.md owns containment guarantees
+
+Should Studio eventually live in a separate repository?
+  → product-vision.md may state the product direction
+  → no kernel semantic follows from that repository choice
 ```
 
 ---
@@ -411,4 +427,4 @@ Before changing architecture or implementing a slice:
 6. Test the smallest vertical slice that proves the semantic boundary.
 7. Put unresolved questions in [`future-plan.md`](future-plan.md), not into canonical APIs accidentally.
 
-The retained [`architecture-research-dossier.md`](architecture-research-dossier.md) can be consulted for external references and the reasoning behind several recent distinctions, but it is intentionally broader and less authoritative than the canonical documents.
+The cross-repository [`product-vision.md`](product-vision.md) can guide product/repository decisions but cannot override the concept owners above. The retained [`architecture-research-dossier.md`](architecture-research-dossier.md) can be consulted for external references and the reasoning behind several recent distinctions, but it is intentionally broader and less authoritative than the canonical documents.
