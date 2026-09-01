@@ -977,3 +977,120 @@ A successful experiment should **not** default to creating a new kernel primitiv
 The long-term goal is:
 
 > **Stable semantics underneath; aggressively replaceable Agent engineering above; evidence connecting the two.**
+
+---
+
+## 13. Pre-v1 terminology and model-facing vocabulary review
+
+The current canonical documents freeze **semantic distinctions**, not a claim that every English/API term is already optimal for v1.
+
+Names matter for two different audiences:
+
+```text
+human developers/readers
+  must form the intended mental model quickly and distinguish neighboring concepts
+
+models/Agents
+  may receive selected names/descriptions through prompts, schemas, diagnostics,
+  operation projections, or generated documentation
+```
+
+A term can therefore be semantically correct yet still be a poor public or model-facing name.
+
+Before the v1 public API/documentation freeze, perform an explicit terminology review across at least:
+
+```text
+Execution
+Activation
+Harness
+Agent
+Workflow
+Stage
+Event
+Effect
+PendingOperation
+ControllerResumption
+Operation
+Capability
+Resource
+Active/Exposed View
+Model Invocation Projection
+Memory / Structured Memory / Derived Semantic Memory / Working Notes / Artifact
+Skill
+spawn / call / send / ask
+```
+
+Questions to evaluate for each term:
+
+```text
+Does the name accurately imply the canonical semantic boundary?
+Does common software/AI usage give the same term a materially different meaning?
+Is it easy to distinguish from neighboring Arrokoth concepts?
+Can a new developer predict its role before reading several pages of qualification?
+Does it produce misleading expectations in generated docs, prompts, or model reasoning?
+Is a more explicit name worth the additional verbosity?
+Would a rename reduce or increase ambiguity in MCP/A2A/API mappings?
+What migration cost would the rename create in public APIs, persisted records, examples, and docs?
+```
+
+Do not optimize terminology by popularity alone. For example, external literature may use `agent harness` for a much broader scaffold than Arrokoth's current `Harness`; replacing the name with `Runtime` may or may not improve things because `Runtime` also has several established meanings.
+
+### 13.1 Separate four naming layers
+
+Do not assume one word must serve every layer:
+
+```text
+canonical concept name
+  the architecture term used to state invariants
+
+public API/type name
+  the programmer-facing representation
+
+model-facing ACI vocabulary
+  names/descriptions selected for model comprehension and action choice
+
+protocol/UI projection
+  MCP/A2A/HTTP/Studio/product terminology
+```
+
+These may intentionally differ when translation is explicit and stable.
+
+For example, keeping an internal/runtime concept named `Effect` does not imply that a model should see a tool called `UseCapability` or `SendMessage`. The model-facing ACI should normally expose domain-meaningful operations, and those operations may compile to Effects internally.
+
+Likewise, protocol terms such as MCP `Tool`, A2A `Task`, or another ecosystem's `Session` should not rename stronger Arrokoth concepts merely to avoid adapters having vocabulary mappings.
+
+### 13.2 Review method
+
+Use evidence instead of a one-pass global search-and-replace:
+
+```text
+1. build a glossary of current terms and one-sentence boundaries
+2. identify terms with external semantic collisions or repeated reader confusion
+3. generate a small candidate set for each problematic term
+4. test candidate terminology in architecture excerpts and public API examples
+5. test model-facing candidates on representative selection/reasoning tasks where relevant
+6. compare comprehension errors, wrong-operation choices, ambiguity, and verbosity
+7. decide concept name, API name, and model-facing vocabulary separately when useful
+8. perform any accepted repo-wide rename before v1 compatibility commitments
+```
+
+Useful evidence may include:
+
+```text
+maintainer/new-contributor comprehension reviews
+LLM explanation/selection tests using otherwise identical context
+API ergonomics examples
+searchability and collision with industry/framework terminology
+protocol mapping clarity
+migration scope generated from code/docs search
+```
+
+### 13.3 Timing
+
+Do not interrupt v0.4 merely to rename coherent concepts.
+
+Target the broad review after enough of the architecture has been exercised together to expose real confusion, but before v1 API stabilization—ideally during the v0.8 integration / v0.9 stabilization period.
+
+If a term is discovered earlier to be actively causing implementation mistakes or forcing the wrong semantic ownership, fix it earlier. Otherwise prefer collecting evidence and making coordinated terminology changes once, rather than repeatedly renaming the architecture as external vocabulary evolves.
+
+> **Semantic clarity comes first; terminology should then make that clarity obvious to both humans and models.**
