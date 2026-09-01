@@ -9,8 +9,10 @@
 > [`007` DEC-I20](007-interoperability-decisions-before-agent-slice.md) and
 > [`008` §3](008-v0.4-to-v1.0-development-roadmap.md).
 >
-> **No canonical document changed.** The implementation revealed no contradiction and no missing
-> semantic requirement; every rule this slice needed was already written down.
+> **No canonical document changed.** A subsequent independent audit found three implementation
+> mismatches with already-canonical semantics: outcome certainty, JSON-valued structured results,
+> and JSON Schema `additionalProperties` defaults. MCP-1.1 corrects them and records the evidence in
+> [`012`](012-mcp-post-proof-semantic-corrections.md).
 
 ---
 
@@ -32,8 +34,11 @@ EXPORT
 Nothing else. MCP Resources, Prompts, Tasks, elicitation, subscriptions, notifications, sampling,
 OAuth, HTTP hosting, and stdio process management are all absent — see §12.
 
-The purpose is architectural feedback about the portable-operation seam, and the feedback is
-recorded in §13: the seam held, and the slice required **zero** changes to `packages/core`.
+The purpose is architectural feedback about the portable-operation seam. The original proof needed
+no semantic core API change, but MCP-1.1 later corrected the general `toJsonSchema` projection in
+core so its output preserves the existing `ObjectSchema` acceptance set. That correction changed no
+core vocabulary or default; §13 and [`012`](012-mcp-post-proof-semantic-corrections.md) record the
+distinction.
 
 ---
 
@@ -224,19 +229,22 @@ required naming an undeclared property
 The check enumerates **leftover** keywords rather than matching a denylist, so a keyword nobody
 anticipated — a future JSON Schema addition, a vendor extension — refuses by default.
 
-### Two deliberate asymmetries
+### Default normalization and one representational asymmetry
 
 **`additionalProperties`.** JSON Schema defaults permissive; Arrokoth defaults strict. An absent
-`additionalProperties` becomes Arrokoth's strict default. That can only *reject* arguments a server
-would have accepted — a narrowing, never a weakening — and it is what makes the round trip exact.
+JSON Schema keyword therefore imports as explicit Arrokoth `additionalProperties: true`. Explicit
+JSON Schema `true` and `false` retain those values. In the other direction, `toJsonSchema` always
+emits the Arrokoth value: default/explicit false becomes `false`, and true becomes `true`, at every
+nested object. The source and projection can differ syntactically while accepting exactly the same
+values.
 
 **`string_array`.** `toJsonSchema` projects `{kind:"string_array"}` and `{kind:"array", items:
 {kind:"string"}}` to the identical JSON Schema document, so the reverse direction cannot distinguish
 them. The translator always produces the `array` form. The two validate values identically, so the
 claim made and tested is the one that matters at a wire boundary:
 
-> `toJsonSchema(objectSchemaFromJsonSchema(document)) === document`, exactly, for the supported
-> subset.
+> Import and re-projection preserve the acceptance set for the supported subset. Syntactic equality
+> is not the definition of semantic fidelity.
 
 ### Export direction
 
@@ -265,11 +273,14 @@ CapabilityOutcome
 
 | Protocol observation | Outcome | Why |
 |---|---|---|
-| result, no `isError`, `structuredContent` present | `success`, observation = that object (cloned) | the server answered |
+| result, no `isError`, `structuredContent !== undefined` | `success`, observation = any JSON object/array/string/number/boolean/null (validated and cloned) | MCP 2026 permits every JSON top-level kind |
 | result, no `isError`, text content only | `success`, observation = `{ text }` | the server answered |
-| result with `isError: true` | `failure` (`mcp_tool_error`) | the peer **stated** the execution errored; not an ambiguity |
-| any non-text content block (`image`, `audio`, `resource`, `resource_link`) | `failure` (`mcp_unsupported_result_content`) | refused explicitly, never silently discarded — even when `structuredContent` is also present |
-| empty result | `failure` (`mcp_empty_result`) | no invented success |
+| empty successful result | `success`, observation = `null` | absence of a display payload is not failure |
+| result with `isError: true` — consequential | `unknown` (`mcp_tool_error`) | Tool execution errored, but MCP does not establish rollback of prior side effects |
+| result with `isError: true` — non-consequential | `failure` (`mcp_tool_error`), no automatic retry advice | no externally meaningful effect can be duplicated under the local classification |
+| non-text content block — consequential | `unknown` (`mcp_unsupported_result_content`) | the remote call returned after it may have acted, but this adapter cannot represent its observation |
+| non-text content block — non-consequential | `failure` (`mcp_unsupported_result_content`) | refused explicitly, never silently discarded |
+| non-JSON `structuredContent` — consequential/non-consequential | `unknown` / `failure` (`mcp_invalid_structured_content`) | invalid SDK-owned data never escapes as an Event |
 | JSON-RPC `-32700 / -32600 / -32601 / -32602` | `failure` (`mcp_request_rejected`), `retryable: false` | the server parsed and refused the request before any handler ran |
 | `-32603`, transport error, timeout, abort — **consequential** | `unknown` (`mcp_outcome_unknown`) | the remote side may have acted before the answer was lost |
 | `-32603`, transport error, timeout, abort — **non-consequential** | `failure` (`mcp_call_failed`), `retryable: true` | there is no external effect to have happened |
@@ -328,16 +339,16 @@ and was received.
 
 ## 9. Tests
 
-### Adapter package — `packages/interoperability/mcp/tests/` (43 cases)
+### Adapter package — `packages/interoperability/mcp/tests/` (48 cases)
 
 | File | What it proves |
 |---|---|
-| `schema-translation.test.ts` (13) | the supported subset round-trips through `toJsonSchema` exactly; every unsupported construct is refused with a code, never weakened |
+| `schema-translation.test.ts` (14) | the supported subset preserves its acceptance set, including omitted/true/false and nested `additionalProperties`; every unsupported construct is refused |
 | `import-identity.test.ts` (12) | the server cannot choose the capability namespace or the operation id; invalid names are refused rather than normalized; annotations are advisory and consequentiality defaults conservatively; the executor routes only what was imported |
-| `result-mapping.test.ts` (10) | success/failure/unknown mapping, including the consequential-vs-not split on an ambiguous throw |
-| `mcp-protocol.test.ts` (8) | the adapter against a real `Client`/`McpServer` pair over `InMemoryTransport.createLinkedPair()`: discovery, a real `tools/call`, explicit export, allowlist, and an exact export→import round trip |
+| `result-mapping.test.ts` (12) | all JSON top-level result kinds, safe cloning, empty success, non-JSON refusal, and consequential-vs-non-consequential certainty |
+| `mcp-protocol.test.ts` (10) | legacy compatibility plus real negotiated 2026-07-28 HTTP exchanges for structured results and strict/permissive schema enforcement |
 
-### Conformance — `tests/conformance/mcp/` (17 cases) and `tests/conformance/architecture/` (10 more)
+### Conformance — `tests/conformance/mcp/` (20 cases) and `tests/conformance/architecture/` (10 more)
 
 `imported-operation-agent-path.test.ts` is the mandatory end-to-end proof and asserts every layer:
 
@@ -375,6 +386,12 @@ None of these is special-cased in the adapter; they fall out of the existing nar
 
 `exported-operation.test.ts` — the export proof and its negatives (unexported operations invisible
 and uninvocable, no raw Effects published, no fabricated Execution or grant).
+
+`imported-operation-outcome-certainty.test.ts` — a real consequential Tool increments a side-effect
+counter and then returns `isError: true`; the server and executor are each reached once, the journal
+ends `unknown_outcome`, the pending operation and Agent observation say `unknown`, and no `failed`
+phase is written. Corresponding non-consequential and unrepresentable-rich-result cases prove the
+other two arms.
 
 `architecture/mcp-boundaries.test.ts` — the dependency-direction and vocabulary assertions in §2, §5.
 
@@ -425,9 +442,9 @@ about the kernel or the adapter changes to make it green, and no substitute mode
 
 ---
 
-## 11. Substrate changes made for this slice
+## 11. Substrate changes made for this slice and MCP-1.1
 
-Two, both editorial, neither semantic:
+The original MCP-1 proof made two substrate edits, both editorial and neither semantic:
 
 1. `runtime/effect-processor.ts` — the module comment said a permissive authorizer "can then be
    asked about" an operation a buggy Active View widened outside effective authority. The
@@ -443,7 +460,12 @@ import allowlist (`@agent-sdk/integration-mcp`, `@modelcontextprotocol/client`,
 entry: "the server received zero calls" is only evidence when the server is genuine. The repo-wide
 sweep in `mcp-boundaries.test.ts` keeps that from widening silently.
 
-No other file under `packages/core` changed.
+MCP-1.1 subsequently changed `packages/core/src/schema/value-schema.ts` so every projected object
+emits its actual `additionalProperties` value, including nested strict objects. This is a correction
+to a general projection of the existing contract, not a new MCP surface. The live Gemini canary
+then proved that Gemini's function-declaration dialect rejects the keyword itself. The Gemini adapter
+therefore omits it only from provider-facing function schemas; descriptors, MCP export, and Harness
+validation retain the exact strict/permissive contract.
 
 ---
 
@@ -485,19 +507,19 @@ was:
 > Can the Agent kernel consume a portable operation view and produce typed Effects without knowing
 > whether the same operation came from native code, MCP, HTTP, or another future protocol?
 
-**Yes, and the evidence is the size of the diff.** `packages/core` changed by one comment. The
-adapter needed no new core export, no new descriptor field, no new Effect arm, no new Event arm, and
-no new authority concept. The behavioural parity case shows the two backings are deep-equal at every
-observable Agent-layer point.
+**Yes.** The adapter needed no new core export, descriptor field, Effect arm, Event arm, or authority
+concept. MCP-1.1's one core implementation correction is the provider-neutral JSON Schema
+projection of an already-existing default, not protocol vocabulary. The behavioural parity case
+shows the two backings remain deep-equal at every observable Agent-layer point.
 
 Three specific things the seam got right, worth recording because each was a place the design could
 have leaked:
 
 - **`CapabilityExecutor`'s subtraction.** The port hands an executor logical names and validated data
   and nothing else, so an MCP client fits behind it without the kernel learning what a transport is.
-- **Consequentiality living on the descriptor rather than the proposal or the decision.** It gave the
-  adapter a correct place to refuse a remote server's retry-semantics claim, and gave the executor a
-  correct source for the `failure`/`unknown` split.
+- **Consequentiality surviving on the authorized request.** The seam already gave the executor the
+  correct locally owned fact. The first adapter implementation applied it to thrown calls but not
+  to `isError` or unrepresentable completed results; MCP-1.1 corrected that local normalization bug.
 - **The four exposure layers being genuinely subtractive.** Every negative case in §9 is the *same*
   narrowing a native operation gets; not one needed a protocol-aware branch.
 
@@ -516,6 +538,8 @@ taken on.
 Slice D accepted                            done
 behavioural Agent baseline                  landed (tests/evals/agent/)
 narrow synchronous MCP operation proof       done  <- this document
+MCP-1.1 semantic-fidelity correction          done  <- 012
+MCP operation proof                           accepted
         v
 Slice E composition                         next
   spawn / call / child Execution

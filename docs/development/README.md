@@ -32,6 +32,10 @@ For the current v0.4 Agent work, use the following documents together:
   the narrow synchronous MCP Tool import/export proof: package/dependency
   boundary, local identity, schema subset, result semantics, export boundary,
   and the seam feedback it produced
+
+012-mcp-post-proof-semantic-corrections.md
+  the independent post-proof correction for outcome certainty, JSON-valued
+  structured results, and JSON Schema additionalProperties semantic fidelity
 ```
 
 `009` is intentionally a **review/amendment document**, not a replacement Slice-D coding plan. If Slice D or a D.0 retrofit is already in progress, finish the coherent implementation first, then review the landed result against `009` and apply only concrete additive seams or local retrofits justified by the implementation.
@@ -51,10 +55,15 @@ behavioural Agent baseline               landed (tests/evals/agent/)
         ↓
 narrow synchronous MCP operation proof   done, recorded in 011
         ↓
+MCP-1.1 post-proof semantic correction   done, recorded in 012
+        ↓
+MCP operation proof                      accepted
+        ↓
 Slice E composition                      next
 ```
 
-The MCP proof required no change to `packages/core` beyond one corrected comment, which is the
-result `007` DEC-I20 was asking for. Its deferred second stage — exported Agent/Workflow service
-operations, external Task handles, `input_required`, change notifications — stays after Slice E and
-Slice G.
+The original MCP proof required no semantic core API change. MCP-1.1 later corrected the existing
+provider-neutral `ObjectSchema -> JSON Schema` projection so it preserves the same acceptance set;
+it added no MCP vocabulary or dependency to core. The deferred second stage — exported
+Agent/Workflow service operations, external Task handles, `input_required`, change notifications —
+stays after Slice E and Slice G.

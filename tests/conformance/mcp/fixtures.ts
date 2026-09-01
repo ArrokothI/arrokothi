@@ -35,6 +35,7 @@ export const LOOKUP_INPUT_SCHEMA = {
   type: "object" as const,
   properties: { key: { type: "string" as const, description: "which record to look up" } },
   required: ["key"],
+  additionalProperties: false,
 };
 
 export interface RegisteredCall {

@@ -15,19 +15,21 @@
  *
  * ```text
  * result, no isError            -> success        the server answered, and said it worked
- * result, isError: true         -> failure        the server itself reported an execution error
+ * result, isError: true         -> unknown        when the operation is consequential
+ *                               -> failure        when it is not
  * JSON-RPC -32600/-32601/-32602/-32700
  *                               -> failure        rejected before any handler ran
  * -32603, transport, timeout    -> unknown        when the operation is consequential
  *                               -> failure        when it is not
- * unsupported result content    -> failure        nothing was established, and nothing is discarded
+ * unrepresentable result        -> unknown        when the operation is consequential
+ *                               -> failure        when it is not
  * ```
  *
- * The consequentiality split on the ambiguous arm is the honest one. For a consequential operation
- * the remote side may well have acted before the connection broke, so claiming definite failure
- * would be a lie the controller could act on. For a non-consequential operation there is no external
- * effect to have happened, so "it did not produce a result" is both true and useful. The relevant
- * flag arrives on the authorized request, where policy put it - the adapter does not decide it.
+ * `isError` says the Tool ended in a Tool execution error. MCP deliberately uses it for input
+ * validation, API, and business-logic errors; it does not say a consequential side effect rolled
+ * back. Likewise, a completed call whose observation this adapter cannot represent may already have
+ * changed the world. The relevant consequentiality flag arrives on the authorized request, where
+ * policy put it - the adapter does not decide it.
  *
  * The supported *success* shape is deliberately narrow for this first proof: `structuredContent`, or
  * text content. An image, audio, embedded-resource, or resource-link block is refused explicitly
@@ -44,6 +46,89 @@ const PRE_DISPATCH_JSONRPC_CODES = new Set([-32700, -32600, -32601, -32602]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+type JsonCloneResult =
+  | { readonly ok: true; readonly value: JsonValue }
+  | { readonly ok: false; readonly path: string; readonly reason: string };
+
+/**
+ * Clones the SDK-owned value while proving that every reachable value is actual JSON data.
+ *
+ * This stays local because core's JSON validator is intentionally not a public adapter convenience
+ * API. A class instance, cycle, sparse array, `undefined`, non-finite number, function, symbol, or
+ * bigint is refused instead of being silently dropped or escaping into an Event.
+ */
+function cloneJsonValue(value: unknown, path = "structuredContent", ancestors = new Set<object>()): JsonCloneResult {
+  if (value === null || typeof value === "string" || typeof value === "boolean") {
+    return { ok: true, value };
+  }
+  if (typeof value === "number") {
+    return Number.isFinite(value)
+      ? { ok: true, value }
+      : { ok: false, path, reason: `expected a finite JSON number, received ${String(value)}` };
+  }
+  if (typeof value !== "object") {
+    return { ok: false, path, reason: `expected JSON data, received ${typeof value}` };
+  }
+  if (ancestors.has(value)) return { ok: false, path, reason: "value contains a cycle" };
+  ancestors.add(value);
+
+  if (Array.isArray(value)) {
+    const cloned: JsonValue[] = [];
+    for (let index = 0; index < value.length; index++) {
+      if (!Object.prototype.hasOwnProperty.call(value, index)) {
+        ancestors.delete(value);
+        return { ok: false, path: `${path}[${index}]`, reason: "sparse arrays are not JSON values" };
+      }
+      const child = cloneJsonValue(value[index], `${path}[${index}]`, ancestors);
+      if (!child.ok) {
+        ancestors.delete(value);
+        return child;
+      }
+      cloned.push(child.value);
+    }
+    ancestors.delete(value);
+    return { ok: true, value: cloned };
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    ancestors.delete(value);
+    return {
+      ok: false,
+      path,
+      reason: `expected a plain JSON object, received ${prototype?.constructor?.name ?? "object"} instance`,
+    };
+  }
+  if (Object.getOwnPropertySymbols(value).length > 0) {
+    ancestors.delete(value);
+    return { ok: false, path, reason: "symbol-keyed properties are not JSON data" };
+  }
+
+  const cloned: { [key: string]: JsonValue } = {};
+  for (const key of Object.keys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor || !("value" in descriptor)) {
+      ancestors.delete(value);
+      return { ok: false, path: `${path}.${key}`, reason: "accessor properties are not JSON data" };
+    }
+    const child = cloneJsonValue(descriptor.value, `${path}.${key}`, ancestors);
+    if (!child.ok) {
+      ancestors.delete(value);
+      return child;
+    }
+    // Define rather than assign so a valid JSON key such as `__proto__` stays an own data property
+    // instead of invoking Object.prototype's legacy setter and mutating the clone's prototype.
+    Object.defineProperty(cloned, key, {
+      value: child.value,
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
+  }
+  ancestors.delete(value);
+  return { ok: true, value: cloned };
 }
 
 /** The text of every text block, joined. Used for both the success and the `isError` arms. */
@@ -72,6 +157,18 @@ export interface NormalizeResultInput {
   readonly result: CallToolResult;
   /** For the message only. Identity is already fixed; this just makes a failure readable. */
   readonly tool: string;
+  /** The authorized operation's locally owned consequentiality classification. */
+  readonly consequential: boolean;
+}
+
+function unrepresentableOutcome(
+  consequential: boolean,
+  code: string,
+  message: string,
+): CapabilityOutcome {
+  return consequential
+    ? { status: "unknown", error: { code, message } }
+    : { status: "failure", error: { code, message } };
 }
 
 /**
@@ -85,55 +182,43 @@ export function normalizeCallToolResult(input: NormalizeResultInput): Capability
   const content = Array.isArray(result["content"]) ? (result["content"] as unknown[]) : [];
 
   if (result["isError"] === true) {
-    // The peer answered and said the execution errored. That is a statement, not an ambiguity, so
-    // `failure` is justified: this is not a lost response.
     const message = textOf(content);
-    return {
-      status: "failure",
-      error: {
-        code: "mcp_tool_error",
-        message: message.length > 0 ? message : `the MCP server reported an execution error for tool "${input.tool}"`,
-      },
+    const error = {
+      code: "mcp_tool_error",
+      message: message.length > 0 ? message : `the MCP server reported an execution error for tool "${input.tool}"`,
     };
+    // MCP confirms an execution error, not rollback. Re-executing a consequential Tool could
+    // duplicate a side effect that happened before the Tool produced this error result.
+    return input.consequential ? { status: "unknown", error } : { status: "failure", error };
   }
 
   const unsupported = unsupportedBlockKinds(content);
   if (unsupported.length > 0) {
-    return {
-      status: "failure",
-      error: {
-        code: "mcp_unsupported_result_content",
-        message:
-          `tool "${input.tool}" returned content block kind(s) ${unsupported.join(", ")}; this proof supports ` +
-          "structuredContent and text only, and refuses rather than discards the rest",
-      },
-    };
+    return unrepresentableOutcome(
+      input.consequential,
+      "mcp_unsupported_result_content",
+      `tool "${input.tool}" returned after remote execution with content block kind(s) ${unsupported.join(", ")}; ` +
+        "this adapter version cannot safely represent that observation and refuses rather than discards it",
+    );
   }
 
   const structured = result["structuredContent"];
   if (structured !== undefined) {
-    if (!isRecord(structured)) {
-      return {
-        status: "failure",
-        error: {
-          code: "mcp_unsupported_result_content",
-          message: `tool "${input.tool}" returned a structuredContent that is not a JSON object`,
-        },
-      };
+    const cloned = cloneJsonValue(structured);
+    if (!cloned.ok) {
+      return unrepresentableOutcome(
+        input.consequential,
+        "mcp_invalid_structured_content",
+        `tool "${input.tool}" returned after remote execution, but its ${cloned.path} cannot be safely ` +
+          `represented as Arrokoth JSON: ${cloned.reason}`,
+      );
     }
-    // Cloned so no SDK-owned object reference reaches an observation, and validated as JSON by the
-    // Harness immediately afterwards.
-    return { status: "success", observation: structuredClone(structured) as JsonValue };
+    return { status: "success", observation: cloned.value };
   }
 
   if (content.length === 0) {
-    return {
-      status: "failure",
-      error: {
-        code: "mcp_empty_result",
-        message: `tool "${input.tool}" returned neither structuredContent nor any content block`,
-      },
-    };
+    // The call completed successfully; absence of display payload is not evidence of failure.
+    return { status: "success", observation: null };
   }
 
   return { status: "success", observation: { text: textOf(content) } };

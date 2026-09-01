@@ -92,6 +92,7 @@ server.registerTool(
       type: "object",
       properties: { key: { type: "string", description: "the record key to look up" } },
       required: ["key"],
+      additionalProperties: false,
     }),
   },
   async (args) => {
@@ -159,6 +160,7 @@ const definition = defineAgent({
 let failure: string | null = null;
 let lifecycle = "MISSING";
 let answer = "";
+let executionFailure: { code: string; message: string } | null = null;
 
 try {
   const ref = await bundle.definitions.save(definition);
@@ -176,6 +178,9 @@ try {
     await bundle.harness.drainEffects();
     const context = await bundle.harness.inspect(agent.executionId);
     lifecycle = context?.lifecycle ?? "MISSING";
+    executionFailure = context?.failure
+      ? { code: context.failure.code, message: sanitize(context.failure.message) }
+      : null;
     if (!context || lifecycle === "COMPLETED" || lifecycle === "FAILED") break;
     if (activations.length === 0) break;
   }
@@ -206,6 +211,7 @@ try {
     status: passed ? "passed" : "failed",
     envVarsUsed: ["GEMINI_API_KEY", "GEMINI_MODEL"],
     lifecycle,
+    executionFailure,
     checks,
     mcpToolCalls: invoked,
     modelCalls: bundle.trace.modelInvocations.length,

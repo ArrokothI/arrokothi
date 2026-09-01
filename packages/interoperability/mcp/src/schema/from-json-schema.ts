@@ -1,5 +1,5 @@
 /**
- * MCP JSON Schema -> Arrokoth `ObjectSchema`, for the subset that survives the trip unchanged.
+ * MCP JSON Schema -> Arrokoth `ObjectSchema`, for the subset whose acceptance set can be preserved.
  *
  * This is deliberately not a JSON Schema implementation. Arrokoth's value-schema language is small
  * on purpose (see `schema/value-schema.ts` in core), and the canonical interoperability document
@@ -8,7 +8,7 @@
  * everything else with a reason.
  *
  * ```text
- * representable   -> translated, and `toJsonSchema` of the result is byte-identical input
+ * representable   -> translated, and `toJsonSchema` of the result is semantically equivalent
  * annotation      -> ignored, because it constrains no value
  * anything else   -> refused with a structured issue; never approximated, never widened
  * ```
@@ -18,10 +18,10 @@
  * validated when it was not. An operation whose schema cannot be represented is simply not imported,
  * so it never reaches a catalog, an Active View, a projection, or a dispatch.
  *
- * One asymmetry is worth naming. JSON Schema's default for `additionalProperties` is permissive;
- * Arrokoth's is strict. An absent `additionalProperties` therefore becomes Arrokoth's strict
- * default, which can only *reject* arguments a server would have accepted - a narrowing, never a
- * weakening - and it is exactly what makes the round trip through `toJsonSchema` exact.
+ * One default mismatch must be normalized explicitly. JSON Schema's default for
+ * `additionalProperties` is permissive; Arrokoth's is strict. An absent JSON Schema keyword
+ * therefore becomes `additionalProperties: true` in Arrokoth. Re-projecting it writes the keyword
+ * explicitly, which is syntactically different and semantically identical.
  *
  * Nothing here reads authority, identity, credentials, or a transport. It is a pure function over
  * two data shapes.
@@ -351,7 +351,9 @@ function translateObjectNode(node: Record<string, unknown>, path: string, issues
   // Only the boolean form. A schema-valued `additionalProperties` constrains the unknown keys it
   // admits, and `ObjectSchema` has no field that could hold that constraint.
   const rawAdditional = node["additionalProperties"];
-  let additionalProperties = false;
+  // JSON Schema omission means `true`; ObjectSchema omission means `false`. Store the source
+  // semantics explicitly so importing never narrows the server's published acceptance set.
+  let additionalProperties = true;
   if (rawAdditional !== undefined) {
     if (typeof rawAdditional !== "boolean") {
       issues.push(
@@ -381,7 +383,7 @@ function translateObjectNode(node: Record<string, unknown>, path: string, issues
   }
 
   if (issues.length > before) return null;
-  return { kind: "object", fields, ...(additionalProperties ? { additionalProperties: true } : {}) };
+  return { kind: "object", fields, additionalProperties };
 }
 
 /**

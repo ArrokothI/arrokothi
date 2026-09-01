@@ -1,10 +1,9 @@
 /**
  * The schema boundary: what the current value-schema vocabulary can hold, and what it refuses.
  *
- * Two claims are worth proving separately. First, the supported subset survives the trip unchanged -
- * asserted as a *JSON Schema* round trip, because that is the artefact both directions put on the
- * wire: translating a published schema and projecting the result back through the existing
- * `toJsonSchema` must reproduce the original document exactly.
+ * Two claims are worth proving separately. First, the supported subset survives with the same
+ * acceptance set. The projected document may make a JSON Schema default explicit, so syntactic
+ * byte identity is neither expected nor sufficient.
  *
  * Second, and more important, everything else is refused rather than weakened. A translator that
  * turned `oneOf` into an unvalidated value would publish a contract Arrokoth does not enforce, and
@@ -13,6 +12,7 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
+import { validateObject } from "@agent-sdk/core";
 import type { ObjectSchema } from "@agent-sdk/core/ports";
 import { toJsonSchema } from "@agent-sdk/core/execution";
 import { objectSchemaFromJsonSchema } from "@agent-sdk/integration-mcp";
@@ -30,8 +30,8 @@ function refusedWith(schema: unknown): readonly { code: McpSchemaIssueCode; keyw
   return (result as { ok: false; issues: readonly { code: McpSchemaIssueCode; keyword?: string; path: string }[] }).issues;
 }
 
-describe("MCP JSON Schema translates losslessly or not at all", () => {
-  test("the supported subset round-trips through toJsonSchema exactly", () => {
+describe("MCP JSON Schema translates with semantic fidelity or not at all", () => {
+  test("the supported subset round-trips with the same acceptance set", () => {
     const published = {
       type: "object",
       properties: {
@@ -56,8 +56,18 @@ describe("MCP JSON Schema translates losslessly or not at all", () => {
       required: ["query", "mode"],
     };
 
-    const projected = toJsonSchema(translated(published));
-    assert.deepEqual(projected, published, "the wire document survives the trip unchanged");
+    const imported = translated(published);
+    const projected = toJsonSchema(imported);
+    assert.deepEqual(projected, {
+      ...published,
+      properties: {
+        ...published.properties,
+        filter: { ...published.properties.filter, additionalProperties: true },
+      },
+      additionalProperties: true,
+    });
+    assert.equal(validateObject(imported, { query: "docs", mode: "fast", extra: 1 }).ok, true);
+    assert.equal(validateObject(imported, { query: "docs", mode: "fast", filter: { since: "today", extra: 1 } }).ok, true);
   });
 
   test("required, descriptions, and nesting land where Arrokoth keeps them", () => {
@@ -76,15 +86,46 @@ describe("MCP JSON Schema translates losslessly or not at all", () => {
     assert.deepEqual(schema.fields["nested"]!.schema, {
       kind: "object",
       fields: { inner: { schema: { kind: "boolean" } } },
+      additionalProperties: true,
     });
   });
 
-  test("an absent additionalProperties becomes the strict Arrokoth default, which only narrows", () => {
-    // JSON Schema's default is permissive and Arrokoth's is strict. Choosing the strict reading can
-    // reject an argument the server would have accepted; it can never admit one it would not.
-    assert.equal(translated({ type: "object", properties: {} }).additionalProperties, undefined);
-    assert.equal(translated({ type: "object", properties: {}, additionalProperties: false }).additionalProperties, undefined);
-    assert.equal(translated({ type: "object", properties: {}, additionalProperties: true }).additionalProperties, true);
+  test("additionalProperties omission, true, and false retain their JSON Schema acceptance sets", () => {
+    const omitted = translated({ type: "object", properties: { known: { type: "string" } } });
+    const permissive = translated({
+      type: "object",
+      properties: { known: { type: "string" } },
+      additionalProperties: true,
+    });
+    const strict = translated({
+      type: "object",
+      properties: { known: { type: "string" } },
+      additionalProperties: false,
+    });
+
+    assert.equal(omitted.additionalProperties, true);
+    assert.equal(permissive.additionalProperties, true);
+    assert.equal(strict.additionalProperties, false);
+    assert.equal(validateObject(omitted, { known: "yes", unknown: 1 }).ok, true, "JSON Schema omission is permissive");
+    assert.equal(validateObject(permissive, { known: "yes", unknown: 1 }).ok, true);
+    assert.equal(validateObject(strict, { known: "yes", unknown: 1 }).ok, false);
+    assert.equal((toJsonSchema(strict) as { additionalProperties?: boolean }).additionalProperties, false);
+  });
+
+  test("nested object defaults are normalized independently", () => {
+    const schema = translated({
+      type: "object",
+      properties: {
+        open: { type: "object", properties: { known: { type: "string" } } },
+        closed: { type: "object", properties: { known: { type: "string" } }, additionalProperties: false },
+      },
+      additionalProperties: false,
+    });
+
+    assert.equal(validateObject(schema, { open: { known: "yes", extra: 1 }, closed: { known: "yes" } }).ok, true);
+    assert.equal(validateObject(schema, { open: {}, closed: { extra: 1 } }).ok, false);
+    assert.equal((schema.fields["open"]!.schema as ObjectSchema).additionalProperties, true);
+    assert.equal((schema.fields["closed"]!.schema as ObjectSchema).additionalProperties, false);
   });
 
   test("composition keywords are refused, never flattened", () => {

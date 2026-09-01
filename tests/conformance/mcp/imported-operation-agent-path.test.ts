@@ -247,6 +247,7 @@ describe("an imported MCP Tool travels the ordinary Agent path", () => {
       assert.deepEqual(descriptor.input, {
         kind: "object",
         fields: { key: { schema: { kind: "string" }, required: true, description: LOOKUP_INPUT_SCHEMA.properties.key.description } },
+        additionalProperties: false,
       });
     } finally {
       await pair.close();
