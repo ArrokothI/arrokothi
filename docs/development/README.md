@@ -10,7 +10,7 @@ Canonical architectural semantics remain in the main documents under [docs/](../
 
 ## Current planning/review sequence
 
-For the current v0.4 Agent work, use the following documents together:
+For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the following documents together:
 
 ```text
 008-v0.4-to-v1.0-development-roadmap.md
@@ -42,9 +42,18 @@ For the current v0.4 Agent work, use the following documents together:
   Effect gateway - recursive child identity/lineage, lineage-scoped structural
   spawn budget, current-authority attenuation, spawn vs call, and child
   terminal-result correlation through PendingOperation/Event. Not merged.
+
+014-v1-efficiency-and-developer-ergonomics-validation.md
+  cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
+  becoming mandatory physical/developer overhead; define kernel/end-to-end/
+  scale/durability/feature-delta benchmarks; use v0.4 as a baseline checkpoint,
+  v0.8 for integrated validation, v0.9 for simplification/budgets, and v1.0 for
+  measured efficiency and public-API maturity gates
 ```
 
 `009` is intentionally a **review/amendment document**, not a replacement Slice-D coding plan. If Slice D or a D.0 retrofit is already in progress, finish the coherent implementation first, then review the landed result against `009` and apply only concrete additive seams or local retrofits justified by the implementation.
+
+`014` is similarly **cross-cutting engineering guidance**, not a new implementation slice and not a canonical performance contract. Individual slices should use it to identify accidental always-on cost, but should not interrupt coherent semantic work merely to optimize an unmeasured path. It deliberately keeps backend choices, cache strategies, context techniques, and numeric performance budgets evidence-driven until the relevant workloads exist.
 
 Two documents share the number `009` in spirit only: `009-agent-effectiveness-seams-before-slice-d-review.md` is the review guidance written *before* the post-D audit, and the Slice-D.0 implementation record was renumbered to `010` so the sequence reads in the order the work actually happened.
 
@@ -69,6 +78,10 @@ Slice E composition
   E.0 child Execution foundation         current checkpoint (013), not merged
   E.1 safe interleaving + messaging      next
   E.2 user interaction + surfaces        later
+
+cross-cutting v1 validation
+  efficiency / optional runtime cost /
+  developer ergonomics                   tracked in 014 from v0.4 baseline onward
 ```
 
 The original MCP proof required no semantic core API change. MCP-1.1 later corrected the existing
