@@ -124,10 +124,6 @@ function describedOrThrow(catalog: CapabilityCatalog, ref: OperationRef): Capabi
   return descriptor;
 }
 
-function isJsonObject(value: unknown): value is JsonObject {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-
 /**
  * Registers each named operation on an `McpServer` as an MCP Tool.
  *
@@ -169,7 +165,9 @@ export function exportCapabilityOperationsAsMcpTools(
           const text = JSON.stringify(produced);
           return {
             content: [{ type: "text" as const, text: text ?? "null" }],
-            ...(isJsonObject(produced) ? { structuredContent: produced as Record<string, unknown> } : {}),
+            // MCP 2026 permits every JSON top-level kind here. The handler already returns the
+            // Arrokoth JsonValue domain, so preserve it instead of forcing arrays/scalars to text.
+            structuredContent: produced,
           };
         } catch (error) {
           // The handler's failure is reported as a tool execution error rather than a protocol

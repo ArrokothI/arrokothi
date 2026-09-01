@@ -14,9 +14,9 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { Client } from "@modelcontextprotocol/client";
-import { fromJsonSchema, InMemoryTransport, McpServer } from "@modelcontextprotocol/server";
-import type { AuthorizedCapabilityRequest, CapabilityExecutionEnvironment } from "@agent-sdk/core/ports";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
+import { createMcpHandler, fromJsonSchema, InMemoryTransport, McpServer } from "@modelcontextprotocol/server";
+import type { AuthorizedCapabilityRequest, CapabilityExecutionEnvironment, JsonValue } from "@agent-sdk/core/ports";
 import { toJsonSchema } from "@agent-sdk/core/execution";
 import { createCapabilityCatalog } from "@agent-sdk/core/reference";
 import { exportCapabilityOperationsAsMcpTools, importMcpTools, McpExportError } from "@agent-sdk/integration-mcp";
@@ -75,10 +75,39 @@ async function connectedPair(register: (server: McpServer) => void): Promise<{
   };
 }
 
+/** A real 2026-07-28 exchange through the SDK's fetch-native modern HTTP entry. */
+async function modernPair(register: (server: McpServer) => void): Promise<{
+  readonly client: Client;
+  close(): Promise<void>;
+}> {
+  const handler = createMcpHandler(() => {
+    const server = new McpServer({ name: "arrokoth-modern-test-server", version: "0.0.1" });
+    register(server);
+    return server;
+  }, { legacy: "reject", responseMode: "json" });
+  const transport = new StreamableHTTPClientTransport(new URL("https://mcp.test/mcp"), {
+    fetch: async (url, init) => handler.fetch(new Request(url, init)),
+  });
+  const client = new Client(
+    { name: "arrokoth-modern-test-client", version: "0.0.1" },
+    { versionNegotiation: { mode: { pin: "2026-07-28" } } },
+  );
+  await client.connect(transport);
+  assert.equal(client.getProtocolEra(), "modern", "the proof must exercise the 2026 protocol era");
+  return {
+    client,
+    async close() {
+      await client.close();
+      await handler.close();
+    },
+  };
+}
+
 const LOOKUP_INPUT = {
   type: "object" as const,
   properties: { key: { type: "string" as const, description: "the key to look up" } },
   required: ["key"],
+  additionalProperties: false,
 };
 
 describe("import: a real MCP Tool becomes an ordinary descriptor and executes over the protocol", () => {
@@ -137,7 +166,7 @@ describe("import: a real MCP Tool becomes an ordinary descriptor and executes ov
     }
   });
 
-  test("a server-reported tool error becomes an ordinary failure observation", async () => {
+  test("a server-reported tool error follows the authorized consequentiality", async () => {
     const pair = await connectedPair((server) => {
       server.registerTool(
         "lookup_code",
@@ -149,7 +178,12 @@ describe("import: a real MCP Tool becomes an ordinary descriptor and executes ov
     try {
       const snapshot = await importMcpTools({ capability: "external.lookup", client: pair.client });
       const outcome = await snapshot.executor.execute(
-        authorized({ capability: "external.lookup", operation: "lookup_code", input: { key: "missing" } }),
+        authorized({
+          capability: "external.lookup",
+          operation: "lookup_code",
+          input: { key: "missing" },
+          consequential: false,
+        }),
         ENVIRONMENT,
       );
       assert.equal(outcome.status, "failure");
@@ -296,6 +330,102 @@ describe("export: one explicitly named operation becomes one MCP Tool", () => {
         }),
       McpExportError,
     );
+  });
+});
+
+describe("export: real 2026-07-28 structured results and schema enforcement", () => {
+  test("object, array, string, number, boolean, and null survive a modern protocol exchange", async () => {
+    const values = {
+      object: { ok: true },
+      array: ["one", 2, false, null],
+      string: "hello",
+      number: 0,
+      boolean: false,
+      null: null,
+    } satisfies Record<string, JsonValue>;
+    const catalog = createCapabilityCatalog([{
+      capability: "fixture",
+      operation: "produce",
+      consequential: false,
+      description: "Return the requested JSON top-level kind.",
+      input: {
+        kind: "object",
+        fields: { kind: { required: true, schema: { kind: "enum", choices: Object.keys(values) } } },
+      },
+    }]);
+    const pair = await modernPair((server) => {
+      exportCapabilityOperationsAsMcpTools(server, {
+        catalog,
+        exports: [{
+          ref: { capability: "fixture", operation: "produce" },
+          handler: (input) => values[(input as { kind: keyof typeof values }).kind],
+        }],
+      });
+    });
+
+    try {
+      for (const [kind, expected] of Object.entries(values)) {
+        const called = await pair.client.callTool({ name: "produce", arguments: { kind } });
+        assert.deepEqual((called as { structuredContent?: unknown }).structuredContent, expected, kind);
+      }
+    } finally {
+      await pair.close();
+    }
+  });
+
+  test("strict descriptors reject unknown arguments while permissive descriptors accept them", async () => {
+    const catalog = createCapabilityCatalog([
+      {
+        capability: "fixture",
+        operation: "strict",
+        consequential: false,
+        description: "Accept only the declared argument.",
+        input: { kind: "object", fields: { known: { required: true, schema: { kind: "string" } } } },
+      },
+      {
+        capability: "fixture",
+        operation: "open",
+        consequential: false,
+        description: "Accept declared and additional arguments.",
+        input: {
+          kind: "object",
+          fields: { known: { required: true, schema: { kind: "string" } } },
+          additionalProperties: true,
+        },
+      },
+    ]);
+    const seen: { tool: string; input: unknown }[] = [];
+    const pair = await modernPair((server) => {
+      exportCapabilityOperationsAsMcpTools(server, {
+        catalog,
+        exports: [
+          {
+            ref: { capability: "fixture", operation: "strict" },
+            handler: (input) => {
+              seen.push({ tool: "strict", input });
+              return null;
+            },
+          },
+          {
+            ref: { capability: "fixture", operation: "open" },
+            handler: (input) => {
+              seen.push({ tool: "open", input });
+              return null;
+            },
+          },
+        ],
+      });
+    });
+
+    try {
+      const rejected = await pair.client.callTool({ name: "strict", arguments: { known: "yes", unknown: 1 } });
+      assert.equal((rejected as { isError?: boolean }).isError, true, "the strict schema rejects before the handler");
+      const accepted = await pair.client.callTool({ name: "open", arguments: { known: "yes", unknown: 1 } });
+      assert.equal((accepted as { structuredContent?: unknown }).structuredContent, null);
+      assert.deepEqual(seen, [{ tool: "open", input: { known: "yes", unknown: 1 } }]);
+    } finally {
+      await pair.close();
+    }
   });
 });
 

@@ -17,50 +17,96 @@ import { normalizeCallToolError, normalizeCallToolResult } from "@agent-sdk/inte
 const result = (value: unknown): CallToolResult => value as CallToolResult;
 
 describe("a settled MCP result becomes an ordinary CapabilityOutcome", () => {
-  test("structuredContent becomes the observation, cloned rather than referenced", () => {
-    const structured = { key: "alpha", code: "ZULU-7" };
-    const outcome = normalizeCallToolResult({
-      tool: "lookup_code",
-      result: result({ content: [{ type: "text", text: "{}" }], structuredContent: structured }),
-    });
-    assert.deepEqual(outcome, { status: "success", observation: { key: "alpha", code: "ZULU-7" } });
-    assert.notEqual(
-      (outcome as { observation: unknown }).observation,
-      structured,
-      "no SDK-owned object reference reaches an observation",
-    );
+  test("every JSON top-level kind in structuredContent becomes the observation", () => {
+    const cases = [
+      { label: "object", value: { key: "alpha", code: "ZULU-7" } },
+      { label: "array", value: ["alpha", 7, false, null] },
+      { label: "string", value: "hello" },
+      { label: "number", value: 0 },
+      { label: "boolean", value: false },
+      { label: "null", value: null },
+    ] as const;
+
+    for (const fixture of cases) {
+      const outcome = normalizeCallToolResult({
+        tool: "lookup_code",
+        consequential: true,
+        result: result({ content: [{ type: "text", text: JSON.stringify(fixture.value) }], structuredContent: fixture.value }),
+      });
+      assert.deepEqual(outcome, { status: "success", observation: fixture.value }, fixture.label);
+      if (fixture.value !== null && typeof fixture.value === "object") {
+        assert.notEqual(
+          (outcome as { observation: unknown }).observation,
+          fixture.value,
+          `${fixture.label}: no SDK-owned reference reaches an observation`,
+        );
+      }
+    }
   });
 
   test("text-only content becomes a plain JSON observation", () => {
     const outcome = normalizeCallToolResult({
       tool: "lookup_code",
+      consequential: false,
       result: result({ content: [{ type: "text", text: "first" }, { type: "text", text: "second" }] }),
     });
     assert.deepEqual(outcome, { status: "success", observation: { text: "first\nsecond" } });
   });
 
-  test("a tool that reported an execution error is a failure, because the server said so", () => {
-    // Not an ambiguity: the peer answered and stated the execution errored, so `failure` - "it
-    // definitely did not take effect" - is the interpretation the protocol result justifies.
+  test("JSON property names are cloned without mutating the observation prototype", () => {
+    const structured = JSON.parse('{"__proto__":{"polluted":true},"constructor":"data"}') as Record<string, unknown>;
     const outcome = normalizeCallToolResult({
-      tool: "charge_card",
-      result: result({ content: [{ type: "text", text: "card declined" }], isError: true }),
+      tool: "lookup_code",
+      consequential: false,
+      result: result({ content: [], structuredContent: structured }),
     });
-    assert.equal(outcome.status, "failure");
-    assert.equal((outcome as { error: { code: string; message: string } }).error.code, "mcp_tool_error");
-    assert.match((outcome as { error: { message: string } }).error.message, /card declined/);
+    assert.equal(outcome.status, "success");
+    const observation = (outcome as { observation: Record<string, unknown> }).observation;
+    assert.equal(Object.getPrototypeOf(observation), Object.prototype);
+    assert.equal(Object.prototype.hasOwnProperty.call(observation, "__proto__"), true);
+    assert.deepEqual(observation["__proto__"], { polluted: true });
+    assert.equal(({} as { polluted?: boolean }).polluted, undefined);
   });
 
-  test("an unsupported content block is refused explicitly, never silently discarded", () => {
+  test("isError is unknown for consequential work and failure for non-consequential work", () => {
+    const consequential = normalizeCallToolResult({
+      tool: "charge_card",
+      consequential: true,
+      result: result({ content: [{ type: "text", text: "card declined" }], isError: true }),
+    });
+    assert.equal(consequential.status, "unknown", "isError does not establish rollback");
+    assert.equal((consequential as { error: { code: string } }).error.code, "mcp_tool_error");
+    assert.match((consequential as { error: { message: string } }).error.message, /card declined/);
+
+    const nonConsequential = normalizeCallToolResult({
+      tool: "lookup_code",
+      consequential: false,
+      result: result({ content: [{ type: "text", text: "index rejected query" }], isError: true }),
+    });
+    assert.equal(nonConsequential.status, "failure");
+    assert.equal((nonConsequential as { retryable?: boolean }).retryable, undefined, "isError alone is not retry advice");
+  });
+
+  test("unsupported rich content is refused without overstating consequential certainty", () => {
     for (const block of [
       { type: "image", data: "…", mimeType: "image/png" },
       { type: "audio", data: "…", mimeType: "audio/wav" },
       { type: "resource_link", uri: "file:///x" },
       { type: "resource", resource: { uri: "file:///x", text: "…" } },
     ]) {
-      const outcome = normalizeCallToolResult({ tool: "lookup_code", result: result({ content: [block] }) });
-      assert.equal(outcome.status, "failure");
-      assert.equal((outcome as { error: { code: string } }).error.code, "mcp_unsupported_result_content");
+      const consequential = normalizeCallToolResult({
+        tool: "render",
+        consequential: true,
+        result: result({ content: [block] }),
+      });
+      const nonConsequential = normalizeCallToolResult({
+        tool: "lookup_code",
+        consequential: false,
+        result: result({ content: [block] }),
+      });
+      assert.equal(consequential.status, "unknown");
+      assert.equal(nonConsequential.status, "failure");
+      assert.equal((consequential as { error: { code: string } }).error.code, "mcp_unsupported_result_content");
     }
   });
 
@@ -69,15 +115,37 @@ describe("a settled MCP result becomes an ordinary CapabilityOutcome", () => {
     // dropped on the floor.
     const outcome = normalizeCallToolResult({
       tool: "render_chart",
+      consequential: true,
       result: result({ content: [{ type: "image", data: "…", mimeType: "image/png" }], structuredContent: { ok: true } }),
     });
-    assert.equal(outcome.status, "failure");
+    assert.equal(outcome.status, "unknown");
     assert.equal((outcome as { error: { code: string } }).error.code, "mcp_unsupported_result_content");
   });
 
-  test("an empty result is a failure rather than an invented success", () => {
-    const outcome = normalizeCallToolResult({ tool: "lookup_code", result: result({ content: [] }) });
-    assert.equal((outcome as { error: { code: string } }).error.code, "mcp_empty_result");
+  test("non-JSON structuredContent is refused with the consequentiality split", () => {
+    const invalid = { when: new Date("2026-09-01T00:00:00.000Z") };
+    const consequential = normalizeCallToolResult({
+      tool: "write_record",
+      consequential: true,
+      result: result({ content: [], structuredContent: invalid }),
+    });
+    const nonConsequential = normalizeCallToolResult({
+      tool: "read_record",
+      consequential: false,
+      result: result({ content: [], structuredContent: invalid }),
+    });
+    assert.equal(consequential.status, "unknown");
+    assert.equal(nonConsequential.status, "failure");
+    assert.equal((consequential as { error: { code: string } }).error.code, "mcp_invalid_structured_content");
+  });
+
+  test("an empty successful result is a successful null observation", () => {
+    const outcome = normalizeCallToolResult({
+      tool: "lookup_code",
+      consequential: false,
+      result: result({ content: [] }),
+    });
+    assert.deepEqual(outcome, { status: "success", observation: null });
   });
 });
 

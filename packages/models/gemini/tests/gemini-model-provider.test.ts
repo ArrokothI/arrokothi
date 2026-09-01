@@ -86,13 +86,37 @@ describe("GeminiModelProvider projection and errors", () => {
       capabilities: [{
         name: "lookup",
         description: "Read one value.",
-        input: { kind: "object", fields: { key: { required: true, schema: { kind: "string" } } } },
+        input: {
+          kind: "object",
+          fields: {
+            key: { required: true, schema: { kind: "string" } },
+            strictNested: { schema: { kind: "object", fields: {} } },
+            openNested: { schema: { kind: "object", fields: {}, additionalProperties: true } },
+          },
+        },
       }],
     });
 
     const serialized = JSON.stringify(captured?.["tools"]);
     assert.match(serialized, /functionDeclarations/);
     assert.doesNotMatch(serialized, /executor|effect|authority|credential/i);
+    const tools = captured?.["tools"] as [{
+      functionDeclarations: [{
+        parameters: {
+          additionalProperties?: boolean;
+          properties: Record<string, { additionalProperties?: boolean }>;
+        };
+      }];
+    }];
+    const parameters = tools[0].functionDeclarations[0].parameters;
+    assert.equal(parameters.additionalProperties, undefined, "Gemini function declarations reject this keyword");
+    assert.equal(parameters.properties["strictNested"]!.additionalProperties, undefined);
+    assert.equal(parameters.properties["openNested"]!.additionalProperties, undefined);
+    assert.equal(
+      JSON.stringify(parameters).includes("additionalProperties"),
+      false,
+      "only the constrained provider projection omits it; Harness validation still uses ObjectSchema",
+    );
   });
 
   test("normalizes authentication, rate-limit, transport, and rejection failures", async () => {

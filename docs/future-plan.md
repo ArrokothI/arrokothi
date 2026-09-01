@@ -358,6 +358,18 @@ Evaluate when JSON Schema 2020-12 becomes the concrete portable service-schema c
 
 Provider-facing schemas may remain constrained projections.
 
+The MCP-1.1 post-proof audit added concrete evidence for that future work:
+
+```text
+input schemas need acceptance-set fidelity across differing defaults
+portable output schemas need to describe every JSON top-level result kind
+rich protocol results need portable Artifact/Resource representation rather than block leakage
+```
+
+The current narrow MCP adapter continues to refuse unrepresentable constraints and rich blocks. The
+evidence supports the owning portable-schema/resource slice; it does not pull full JSON Schema,
+output-schema redesign, or protocol content types into core early.
+
 ### 4.5 Optional client/projection protocols
 
 Watch/build only when product surfaces require them:

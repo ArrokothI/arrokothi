@@ -48,6 +48,7 @@ const INPUT_JSON_SCHEMA = {
   type: "object" as const,
   properties: { key: { type: "string" as const, description: "which record to look up" } },
   required: ["key"],
+  additionalProperties: false,
 };
 
 const TITLE = "Look up a record";
@@ -64,6 +65,7 @@ const NATIVE_CATALOG: CapabilityCatalog = createCapabilityCatalog([
     input: {
       kind: "object",
       fields: { key: { required: true, schema: { kind: "string" }, description: "which record to look up" } },
+      additionalProperties: false,
     },
   },
 ]);

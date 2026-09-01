@@ -177,7 +177,11 @@ class McpCapabilityExecutor implements CapabilityExecutor {
 
     try {
       const result = await this.client.callTool({ name: tool, arguments: { ...request.input } });
-      return normalizeCallToolResult({ result, tool });
+      return normalizeCallToolResult({
+        result,
+        tool,
+        consequential: request.authorization.consequential,
+      });
     } catch (error) {
       // Consequentiality comes from the authorization decision, which is the only place that owns
       // it. The adapter reads it; it never asserts it.

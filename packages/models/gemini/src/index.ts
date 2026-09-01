@@ -91,7 +91,7 @@ function toGeminiTools(tools: ModelToolSpec[]): unknown {
       functionDeclarations: tools.map((t) => ({
         name: t.name,
         description: t.description,
-        parameters: toJsonSchema(t.input),
+        parameters: projectGeminiFunctionSchema(t.input),
       })),
     },
   ];
@@ -411,7 +411,7 @@ export class GeminiModelProvider implements PortableModelProvider {
         functionDeclarations: request.capabilities.map((capability) => ({
           name: capability.name,
           description: capability.description,
-          parameters: projectGeminiSchema(capability.input),
+          parameters: projectGeminiFunctionSchema(capability.input),
         })),
       }];
     }
@@ -506,7 +506,16 @@ export function projectGeminiStructuredOutput(schema: ObjectSchema): GeminiStruc
   };
 }
 
-function projectGeminiSchema(schema: ValueSchema): Record<string, unknown> {
+/**
+ * Gemini's function-declaration dialect rejects `additionalProperties` (confirmed by the live MCP
+ * canary with HTTP 400 INVALID_ARGUMENT). Omit that keyword only on this provider-facing surface;
+ * the descriptor and Harness validation retain the exact strict/permissive ObjectSchema contract.
+ */
+function projectGeminiFunctionSchema(schema: ValueSchema): Record<string, unknown> {
+  return projectGeminiSchema(schema, false);
+}
+
+function projectGeminiSchema(schema: ValueSchema, includeAdditionalProperties = true): Record<string, unknown> {
   if (schema.kind === "any") {
     return {
       type: "string",
@@ -514,7 +523,10 @@ function projectGeminiSchema(schema: ValueSchema): Record<string, unknown> {
     };
   }
   if (schema.kind === "array") {
-    const out: Record<string, unknown> = { type: "array", items: projectGeminiSchema(schema.items) };
+    const out: Record<string, unknown> = {
+      type: "array",
+      items: projectGeminiSchema(schema.items, includeAdditionalProperties),
+    };
     if (schema.maxItems !== undefined) out["maxItems"] = schema.maxItems;
     return out;
   }
@@ -522,7 +534,7 @@ function projectGeminiSchema(schema: ValueSchema): Record<string, unknown> {
     const properties: Record<string, unknown> = {};
     const required: string[] = [];
     for (const [name, field] of Object.entries(schema.fields)) {
-      const child = projectGeminiSchema(field.schema);
+      const child = projectGeminiSchema(field.schema, includeAdditionalProperties);
       if (field.description) child["description"] = field.description;
       properties[name] = child;
       if (field.required) required.push(name);
@@ -531,7 +543,9 @@ function projectGeminiSchema(schema: ValueSchema): Record<string, unknown> {
       type: "object",
       properties,
       ...(required.length ? { required } : {}),
-      ...(schema.additionalProperties ? { additionalProperties: true } : {}),
+      ...(includeAdditionalProperties
+        ? { additionalProperties: schema.additionalProperties === true }
+        : {}),
     };
   }
   return toGeminiResponseJsonSchema(toJsonSchema(schema)) as Record<string, unknown>;
