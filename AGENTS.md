@@ -13,7 +13,7 @@ document and defines precedence.
 - Conceptual overview and strongest invariants: `docs/mental-model.md`
 - Concept owners: `docs/execution-runtime.md`, `docs/composition.md`, `docs/authority.md`,
   `docs/memory.md`, `docs/interoperability.md`, `docs/security-guarantees.md`
-- Open/post-v0.4 questions only: `docs/future-plan.md`
+- Unresolved/future questions only: `docs/future-plan.md`
 - `docs/development/` holds implementation plans, slice decisions, audits, and reviews. These are
   engineering working documents, **not** architecture truth. Start from `docs/development/README.md`
   for the current slice sequence.
@@ -23,52 +23,58 @@ When documents disagree, resolve by concept ownership in `docs/README.md`, not b
 length. If normative docs, implementation, and tests genuinely conflict, report the ambiguity
 instead of silently picking one as a new permanent rule. When an authorized architecture change
 leaves a question unresolved, record it in the relevant `docs/development/` note or
-`docs/future-plan.md`. Note: the reading list in the root `README.md` contains two stale filenames —
-trust `docs/README.md`.
+`docs/future-plan.md`.
+
+This file provides repository orientation and durable workflow; shared `SKILL.md` files provide
+reusable procedures. Neither is an independent source of architectural truth. An explicit current
+task may authorize evaluating or changing the contract owned by a canonical document.
 
 ## Architectural boundaries to protect
 
-The full invariant list is `docs/mental-model.md` §10 and "Stable distinctions to protect" in
-`docs/README.md`. Do not weaken, silently reinterpret, or route around them. The most load-bearing:
+The full current invariant list is in `docs/mental-model.md` and "Stable distinctions to protect"
+in `docs/README.md`. For ordinary implementation, do not weaken, silently reinterpret, or route
+around these constraints as a side effect. The most load-bearing are:
 
 - Definition ≠ Execution; Workflow ≠ Agent; Stage ≠ Execution. Composition alone (a function call,
   LLM call, Adapter, or Stage) does not create an Execution boundary — independent runtime identity does.
 - Event ≠ Effect. Controllers *propose* Effects; the Harness authorizes and coordinates; executors
   and the environment establish reality.
-- authority ≠ exposure. Catalog → Effective Authority → Active View → Model Invocation Projection;
-  each layer only narrows. Discovery or model exposure never grants permission.
+- authority ≠ exposure. Discovery, model projection, and protocol exposure never grant permission.
 - Execution identity ≠ application principal identity.
-- memory ≠ context; Structured Memory ≠ Derived Semantic Memory; ownership ≠ communication.
-- Kernel semantics are protocol-independent. Effect ≠ protocol operation; Event ≠ protocol
-  notification; Execution ≠ external task/handle; protocol exposure ≠ authority grant.
+- memory ≠ context; inferred memory ≠ explicitly asserted structured state; ownership ≠ communication.
+- Kernel semantics remain distinct from provider and protocol mappings.
+
+When a task explicitly asks to evaluate or change one of these distinctions, treat the current
+canonical contract as the starting state rather than an immutable veto. Understand it first,
+evaluate the consequences explicitly, and synchronize every accepted change as described below.
 
 ## Provider neutrality
 
 Kernel semantics must stay neutral across model providers, retrieval frameworks, storage engines,
 policy backends, tool transports, and wire protocols. Provider-specific behavior belongs in the
-adapter/boundary package (`packages/models/*`, `packages/agents/*`, `packages/storage/*`,
-`packages/retrieval/*`), normalized to the core contract at that boundary. MCP, A2A, and Agent
-Skills are first-class **compatibility targets and design references**, not owners of kernel
-semantics. Do not promote one provider's or protocol's native concept into core semantics without
-an explicit architectural decision recorded in `docs/`.
+adapter or boundary package that implements the current Arrokoth-owned contract. External
+protocols and frameworks may be compatibility targets and design references, but they do not own
+kernel semantics. Do not promote a provider's or protocol's native concept into core semantics
+without an explicit architectural decision recorded in `docs/`.
 
 Intended dependency direction: applications/presets → implementation/adapter packages →
-`@agent-sdk/core`. At the model boundary specifically, resolution/invocation contracts cannot reach
-the Harness, RuntimeStore, Effect processor, or CapabilityExecutor
-(`docs/development/006-provider-foundation-decisions.md`).
+core-owned contracts. Discover the current restrictions of each boundary from its canonical owner,
+current contracts, and conformance tests before modifying it.
 
 ## Before an architectural or semantic change
 
 1. Find the canonical concept owner in `docs/README.md`.
-2. Read that doc plus relevant `docs/development/` history.
+2. Read that document first, then relevant `docs/development/` history.
 3. Inspect the affected implementation under `packages/` and its conformance tests under
    `tests/conformance/` (and `packages/*/tests/`).
 4. State the existing invariant before editing it.
 5. Separate genuine semantic/API changes from implementation-only, naming, or backend changes.
-6. Check cross-provider and interoperability implications.
-7. When semantics genuinely change, update the owning normative doc and the conformance tests in
-   the same change — keep code, docs, and tests synchronized.
-8. Put unresolved questions in `docs/future-plan.md`, not accidentally into a canonical API.
+6. For an explicitly authorized semantic change, evaluate cross-provider, interoperability,
+   security, migration, and compatibility consequences.
+7. When semantics genuinely change, update the owning normative doc and relevant code/conformance
+   tests in the same change — keep code, docs, and tests synchronized.
+8. Update affected agent configuration only if the accepted change made it materially inaccurate;
+   put unresolved questions in `docs/future-plan.md`, not accidentally into a canonical API.
 
 ## Commands
 
