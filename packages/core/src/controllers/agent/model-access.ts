@@ -32,7 +32,13 @@
 
 import type { ControllerResumptionId } from "../../execution/ids.ts";
 import type { LogicalModelRequest, ResolvedModel } from "../../model/types.ts";
-import type { AgentExecutor, AgentExecutorOutcome, AgentExecutorRequest } from "../../ports/agent-executor.ts";
+import type { ModelActionTarget } from "../../operations/action-target.ts";
+import type {
+  AgentExecutor,
+  AgentExecutorOutcome,
+  AgentExecutorRequest,
+  AgentModelInvocationMetadata,
+} from "../../ports/agent-executor.ts";
 import type { ControllerResumptionScope } from "../../ports/controller-resumption.ts";
 import type { ModelResolver } from "../../ports/model-resolver.ts";
 import type { JsonObject } from "../../util/json.ts";
@@ -50,33 +56,87 @@ export interface AgentModelAccess {
   readonly policy?: JsonObject;
 }
 
-/**
- * One Agent model step, as a trace record.
- *
- * Ephemeral observation, deliberately not persisted alongside Agent progress. Which deployment
- * answered a step is a legitimate thing to see; it is not part of the Agent's semantic progress,
- * and raw provider payloads are not part of anything.
- */
-export interface AgentModelInvocation {
-  readonly step: number;
-  readonly logicalRef: string;
-  readonly provider: string;
-  readonly model: string;
-  readonly projectionId: string;
-  readonly viewId: string;
-  readonly exposedOperations: number;
-  readonly outcome: AgentExecutorOutcome["kind"];
+/** What the controller decided after reading one semantic outcome. */
+export type AgentControllerDecision =
+  | "respond"
+  | "call_operations"
+  | "continue"
+  | "complete"
+  | "fail";
+
+/** One binding as a trace record: which name meant what, without the schema it was shown with. */
+export interface AgentProjectedBindingRecord {
+  readonly bindingId: string;
+  readonly alias: string;
+  readonly target: ModelActionTarget;
 }
 
 export interface AgentOperationProposalRecord {
   readonly step: number;
   readonly correlationId: string;
+  readonly bindingId: string;
   readonly alias: string;
-  readonly capability: string;
-  readonly operation: string;
+  readonly target: ModelActionTarget;
 }
 
-/** Optional local observation sink. Holding one grants nothing and persists nothing. */
+/**
+ * One Agent model step, as a trace record.
+ *
+ * Ephemeral observation, deliberately not persisted alongside Agent progress and deliberately not an
+ * Event. Recording it changes nothing: no mailbox append, no journal entry, no lifecycle transition,
+ * no authority. Turning a model result into an Event so that it could be observed would have made
+ * observability a semantic feature, which is exactly the mistake this seam exists to avoid.
+ *
+ * What it carries is what an evaluation or debug deployment needs to reconstruct the invocation
+ * boundary without retaining raw prompts or whole provider payloads:
+ *
+ * ```text
+ * which Execution, which Activation, which step
+ * which logical model, and which deployment answered it
+ * which information selection it saw          (a digest, not the prompt)
+ * which projection it was shown, and what the bindings meant
+ * what the model produced, semantically
+ * what the controller then decided, and what it proposed
+ * provider usage, finish reason, diagnostics, latency
+ * ```
+ *
+ * `reentered` says whether this step's answer came back through a ControllerResumption rather than
+ * inside the Activation that issued it. The two paths report identical semantics; the flag is how a
+ * run can prove that rather than assume it.
+ */
+export interface AgentModelInvocation {
+  readonly executionId: string;
+  /** The Activation that interpreted this invocation. A stable link to the runtime's own record. */
+  readonly activationId: string;
+  /** 1-based Agent step. The controller's own revision coordinate for this progression. */
+  readonly step: number;
+  /** True when a previous Activation issued this call and this one was handed the stored outcome. */
+  readonly reentered: boolean;
+  readonly logicalRef: string;
+  readonly provider: string;
+  readonly model: string;
+  /** Serializable, non-secret deployment diagnostics, when resolution reported any. */
+  readonly deployment?: JsonObject;
+  /** Content-derived identity of the compiled information this call saw. Not the prompt. */
+  readonly informationSelectionId: string;
+  readonly projectionId: string;
+  readonly viewId: string;
+  readonly exposedOperations: number;
+  readonly bindings: readonly AgentProjectedBindingRecord[];
+  readonly outcome: AgentExecutorOutcome["kind"];
+  readonly decision: AgentControllerDecision;
+  /** The Effect proposals this step produced, with the correlations their results will carry. */
+  readonly proposals: readonly AgentOperationProposalRecord[];
+  /** Provider evidence. Absent when the executor reported none; never invented. */
+  readonly metadata?: AgentModelInvocationMetadata;
+}
+
+/**
+ * Optional local observation sink.
+ *
+ * Holding one grants nothing, persists nothing, and decides nothing. A deployment that samples,
+ * redacts, or simply does not install one loses evidence and loses no semantics.
+ */
 export interface AgentTrace {
   modelInvoked?(record: AgentModelInvocation): void;
   operationProposed?(record: AgentOperationProposalRecord): void;
@@ -86,6 +146,8 @@ export interface AgentTrace {
 export interface AgentStepInvocation {
   readonly resolved: ResolvedModel;
   readonly outcome: AgentExecutorOutcome;
+  /** Non-semantic provider evidence carried alongside the outcome. Plain JSON on both paths. */
+  readonly metadata?: AgentModelInvocationMetadata;
 }
 
 /**
@@ -140,10 +202,15 @@ export async function runAgentStep(input: RunAgentStepInput): Promise<AgentStepA
       requirements: input.model.requirements,
       ...(input.access.policy ? { policy: input.access.policy } : {}),
     });
-    const outcome = await input.executor.step({ ...input.request, model: resolved });
+    const result = await input.executor.step({ ...input.request, model: resolved });
     // Crosses the runtime's JSON boundary on both paths, so an outcome that could not be persisted
-    // fails identically whether it settled inside this Activation or an hour later.
-    return { resolved, outcome };
+    // fails identically whether it settled inside this Activation or an hour later. The metadata
+    // travels the same way, which is what makes a slow invocation report the facts a fast one did.
+    return {
+      resolved,
+      outcome: result.outcome,
+      ...(result.metadata !== undefined ? { metadata: result.metadata } : {}),
+    };
   });
 
   switch (attempt.status) {

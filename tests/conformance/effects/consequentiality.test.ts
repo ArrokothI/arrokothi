@@ -20,6 +20,21 @@ import type { AuthorizationDecision, EffectAuthorizationRequest } from "@agent-s
 import { createAllowListAuthorizer, createCapabilityCatalog, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = {
+  operations: [
+    { capability: "weather.get", operation: "current" },
+    { capability: "world.move", operation: "move" },
+    { capability: "custom.unclassified", operation: "run" },
+  ],
+};
+
 const attempts = (capability: string, operation: string) =>
   scriptedAgentDefinition({
     id: `tries-${capability}-${operation}`,
@@ -46,7 +61,7 @@ describe("consequentiality belongs to the capability operation", () => {
       capabilities: lossyExecutor(),
     });
     const ref = await definitions.save(attempts("world.move", "move"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const progress = readScriptedProgress((await harness.inspect(handle.executionId))!.control.progress);
@@ -65,7 +80,7 @@ describe("consequentiality belongs to the capability operation", () => {
       capabilities: lossyExecutor(),
     });
     const ref = await definitions.save(attempts("weather.get", "current"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const progress = readScriptedProgress((await harness.inspect(handle.executionId))!.control.progress);
@@ -94,7 +109,7 @@ describe("consequentiality belongs to the capability operation", () => {
       capabilities: lossyExecutor(),
     });
     const ref = await definitions.save(attempts("world.move", "move"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const progress = readScriptedProgress((await harness.inspect(handle.executionId))!.control.progress);
@@ -111,7 +126,7 @@ describe("consequentiality belongs to the capability operation", () => {
       capabilities: lossyExecutor(),
     });
     const promotedRef = await promoted.definitions.save(attempts("weather.get", "current"));
-    const promotedHandle = await promoted.harness.createExecution({ definition: promotedRef });
+    const promotedHandle = await promoted.harness.createExecution({ definition: promotedRef, operationAuthority: AUTHORITY });
     await promoted.harness.runUntilIdle();
     const promotedProgress = readScriptedProgress(
       (await promoted.harness.inspect(promotedHandle.executionId))!.control.progress,
@@ -132,7 +147,7 @@ describe("consequentiality belongs to the capability operation", () => {
       capabilities: lossyExecutor(),
     });
     const consequentialRef = await alreadyConsequential.definitions.save(attempts("world.move", "move"));
-    const consequentialHandle = await alreadyConsequential.harness.createExecution({ definition: consequentialRef });
+    const consequentialHandle = await alreadyConsequential.harness.createExecution({ definition: consequentialRef, operationAuthority: AUTHORITY });
     await alreadyConsequential.harness.runUntilIdle();
     const consequentialProgress = readScriptedProgress(
       (await alreadyConsequential.harness.inspect(consequentialHandle.executionId))!.control.progress,
@@ -147,7 +162,7 @@ describe("consequentiality belongs to the capability operation", () => {
       capabilities: lossyExecutor(),
     });
     const ref = await definitions.save(attempts("custom.unclassified", "run"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const progress = readScriptedProgress((await harness.inspect(handle.executionId))!.control.progress);
@@ -166,7 +181,7 @@ describe("consequentiality belongs to the capability operation", () => {
       capabilities: lossyExecutor(),
     });
     const ref = await definitions.save(attempts("world.move", "move"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const progress = readScriptedProgress((await harness.inspect(handle.executionId))!.control.progress);
@@ -206,7 +221,7 @@ describe("consequentiality belongs to the capability operation", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.ok(captured, "the authorizer ran");

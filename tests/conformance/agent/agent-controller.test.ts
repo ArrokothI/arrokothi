@@ -78,7 +78,9 @@ async function runSearchAgent(rig: Rig, id: string) {
 }
 
 function stateOf(progress: { readonly progress: Record<string, unknown> }): AgentControlState {
-  return readAgentControlState(progress.progress as never)!;
+  const read = readAgentControlState(progress.progress as never);
+  assert.equal(read.status, "read", "this build understands the progress it wrote");
+  return (read as { readonly state: AgentControlState }).state;
 }
 
 describe("the Agent controller proposes Effects and never performs them", () => {

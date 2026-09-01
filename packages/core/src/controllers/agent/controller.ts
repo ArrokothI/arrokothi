@@ -77,17 +77,21 @@ import type {
   AgentPendingCall,
 } from "../../agent/control-state.ts";
 import {
+  AGENT_CONTROL_STATE_VERSION,
   initialAgentControlState,
   readAgentControlState,
   settleAgentCall,
   toAgentControllerProgress,
   unsettledAgentCalls,
 } from "../../agent/control-state.ts";
+import type { AgentModelObservation, AgentObservationProjector } from "../../agent/observation-projection.ts";
+import { projectAgentObservations, referenceAgentObservationProjector } from "../../agent/observation-projection.ts";
 import type { AgentObservationOutcome, AgentOperationObservation } from "../../agent/observations.ts";
-import { renderAgentObservation } from "../../agent/observations.ts";
 import type { AgentSpec } from "../../agent/spec.ts";
 import { agentCompletionMode, agentLimits } from "../../agent/spec.ts";
+import { agentInformationSelectionId } from "../../agent/information-context.ts";
 import { validateAgentSpec } from "../../agent/validation.ts";
+import type { ModelActionTarget } from "../../operations/action-target.ts";
 import { createModelOperationProjection, modelCapabilitySpecs, resolveProjectedAlias } from "../../operations/projection.ts";
 import { EMPTY_EXPOSURE_REQUEST } from "../../operations/exposure.ts";
 import type { ActiveOperationViewResolver } from "../../ports/active-operation-view.ts";
@@ -97,8 +101,15 @@ import { agentExecutorOutcomeIssues } from "../../ports/agent-executor.ts";
 import type { ActivationInput, ActivationOutcome, ExecutionController } from "../../ports/controller.ts";
 import type { ControllerResumptionScope } from "../../ports/controller-resumption.ts";
 import type { JsonObject, JsonValue } from "../../util/json.ts";
-import { compileAgentInformation } from "./information.ts";
-import type { AgentModelAccess, AgentTrace } from "./model-access.ts";
+import type { AgentInformationCompiler } from "./information.ts";
+import { referenceAgentInformationCompiler } from "./information.ts";
+import type {
+  AgentControllerDecision,
+  AgentModelAccess,
+  AgentOperationProposalRecord,
+  AgentStepInvocation,
+  AgentTrace,
+} from "./model-access.ts";
 import { runAgentStep } from "./model-access.ts";
 
 export interface AgentControllerOptions {
@@ -108,6 +119,22 @@ export interface AgentControllerOptions {
   readonly models?: AgentModelAccess;
   /** Where one bounded semantic step happens. Absent means no model step can run. */
   readonly executor?: AgentExecutor;
+  /**
+   * How a settled operation result is shown to the model.
+   *
+   * A replaceable strategy. Swapping it changes what the model reads and nothing else - not the
+   * Event, not the Effect, not the authorization, not the capability implementation. Absent means
+   * the reference projector, which reports faithfully and shapes nothing.
+   */
+  readonly observations?: AgentObservationProjector;
+  /**
+   * How information is selected for one model call.
+   *
+   * The other replaceable strategy, and the independent one: an information compiler chooses what
+   * the model reads and has no way to change what it may do. Absent means the reference compiler -
+   * instructions plus a bounded window of recent messages.
+   */
+  readonly information?: AgentInformationCompiler;
   /**
    * Application task scope: authored group labels to narrow to now.
    *
@@ -132,6 +159,21 @@ type StepOutcome =
   | { readonly kind: "continue"; readonly state: AgentControlState; readonly emissions: readonly EmissionProposal[] }
   | { readonly kind: "complete"; readonly state: AgentControlState; readonly terminal: JsonValue | undefined; readonly hasTerminal: boolean; readonly emissions: readonly EmissionProposal[] }
   | { readonly kind: "fail"; readonly state: AgentControlState; readonly failure: Failure; readonly emissions: readonly EmissionProposal[] };
+
+/**
+ * How a step outcome reads as a controller decision, for the trace. Observation only.
+ *
+ * `suspend` is present because the map is total over the outcome union, not because it is reachable:
+ * a suspended step returns before its answer exists, and there is nothing to record yet.
+ */
+const DECISION_OF: Record<StepOutcome["kind"], AgentControllerDecision> = {
+  awaitEffects: "call_operations",
+  suspend: "continue",
+  awaitInput: "respond",
+  continue: "continue",
+  complete: "complete",
+  fail: "fail",
+};
 
 /** The projection identity for one step. Derived from persisted coordinates, never minted. */
 function agentProjectionId(step: number): string {
@@ -174,6 +216,8 @@ class AgentController implements ExecutionController {
   private readonly executor: AgentExecutor | undefined;
   private readonly taskScope: readonly string[] | undefined;
   private readonly trace: AgentTrace | undefined;
+  private readonly observations: AgentObservationProjector;
+  private readonly information: AgentInformationCompiler;
 
   constructor(options: AgentControllerOptions) {
     this.views = options.views ?? noActiveOperationView;
@@ -181,6 +225,8 @@ class AgentController implements ExecutionController {
     this.executor = options.executor;
     this.taskScope = options.taskScope;
     this.trace = options.trace;
+    this.observations = options.observations ?? referenceAgentObservationProjector;
+    this.information = options.information ?? referenceAgentInformationCompiler;
   }
 
   async activate(input: ActivationInput, resumptions: ControllerResumptionScope): Promise<ActivationOutcome> {
@@ -195,7 +241,18 @@ class AgentController implements ExecutionController {
     }
     const spec = validation.spec;
 
-    let state = readAgentControlState(input.execution.control.progress) ?? initialAgentControlState();
+    const stored = readAgentControlState(input.execution.control.progress);
+    if (stored.status === "unsupported") {
+      // A shape this build cannot interpret. Refused rather than coerced: reading old progress as
+      // new progress would resolve a stored alias against a target that is not in it.
+      return this.failed(input.execution.control.progress, {
+        code: "agent_control_state_version_unsupported",
+        message:
+          `this Agent's persisted progress is version ${stored.version}, and this build writes ` +
+          `version ${AGENT_CONTROL_STATE_VERSION}; interpreting it either way would be a guess`,
+      });
+    }
+    let state = stored.status === "read" ? stored.state : initialAgentControlState();
     state = this.collect(state, input.events);
 
     if (!state.started) {
@@ -220,18 +277,21 @@ class AgentController implements ExecutionController {
       };
     }
 
-    // Every requested operation has an answer. Fold them into the information branch, and carry the
-    // structured form to the executor for whichever of the two it uses.
-    let observations: readonly AgentOperationObservation[] = [];
+    // Every requested operation has an answer. Project the semantic observations once, with this
+    // controller's strategy, and use that one projection for both consumers: the transcript the
+    // information branch compiles from, and the observations the executor is handed. Two renderings
+    // of one result would be two answers to "what was the model told".
+    let observations: readonly AgentModelObservation[] = [];
     if (state.pending.length > 0) {
-      observations = state.pending.map((call) => this.observationOf(call));
+      const semantic = state.pending.map((call) => this.observationOf(call));
+      observations = projectAgentObservations(this.observations, semantic, { step: state.step + 1 });
       const messages: ModelMessage[] = [...state.messages];
-      for (const [index, call] of state.pending.entries()) {
+      for (const projected of observations) {
         messages.push({
           role: "capability",
-          content: renderAgentObservation(observations[index]!),
-          capability: call.alias,
-          ...(call.callId ? { capabilityCallId: call.callId } : {}),
+          content: projected.content,
+          capability: projected.alias,
+          ...(projected.callId ? { capabilityCallId: projected.callId } : {}),
         });
       }
       state = { ...state, messages, pending: [] };
@@ -278,8 +338,7 @@ class AgentController implements ExecutionController {
     return {
       callId: call.callId,
       alias: call.alias,
-      capability: call.capability,
-      operation: call.operation,
+      target: call.target,
       outcome: call.outcome ?? "failed",
       ...(call.observation !== null ? { observation: call.observation } : {}),
       ...(call.error !== null ? { error: call.error } : {}),
@@ -308,7 +367,7 @@ class AgentController implements ExecutionController {
     spec: AgentSpec,
     state: AgentControlState,
     input: ActivationInput,
-    observations: readonly AgentOperationObservation[],
+    observations: readonly AgentModelObservation[],
     resumptions: ControllerResumptionScope,
   ): Promise<StepOutcome> {
     const limits = agentLimits(spec);
@@ -318,6 +377,9 @@ class AgentController implements ExecutionController {
     // any of that again would interpret this model's answer against a world it never saw.
     let invocation: AgentInvocationState | null =
       state.invocation !== null && state.invocation.step === state.step + 1 ? state.invocation : null;
+    // Whether a previous Activation issued this call. Reported to the trace so a run can prove the
+    // two paths are equivalent rather than assume it; nothing semantic reads it.
+    const reentered = invocation !== null;
 
     if (!invocation) {
       if (state.step >= limits.maxModelCalls) {
@@ -352,7 +414,7 @@ class AgentController implements ExecutionController {
       }
       invocation = {
         step,
-        information: compileAgentInformation({
+        information: this.information.compile({
           instructions: spec.instructions,
           messages: state.messages,
           maxMessages: limits.maxContextMessages,
@@ -400,16 +462,79 @@ class AgentController implements ExecutionController {
       return { kind: "suspend", state: { ...state, invocation }, resumptionId: attempt.resumptionId };
     }
 
-    return this.interpret(spec, state, invocation, attempt.invocation.outcome, attempt.invocation.resolved, input);
+    return this.interpret(spec, state, invocation, attempt.invocation, input, reentered);
   }
 
-  /** Turns one semantic outcome into Agent progress and, where the model selected work, proposals. */
+  /**
+   * Turns one semantic outcome into Agent progress and, where the model selected work, proposals.
+   *
+   * The trace is emitted *after* the decision is known, so one record carries the whole invocation
+   * boundary: what the model saw, what it produced, what the controller then decided, and what it
+   * proposed. Emitting it earlier would have meant recording a question with no answer.
+   */
   private interpret(
     spec: AgentSpec,
     state: AgentControlState,
     invocation: AgentInvocationState,
+    step: AgentStepInvocation,
+    input: ActivationInput,
+    reentered: boolean,
+  ): StepOutcome {
+    const result = this.interpretOutcome(spec, state, invocation, step.outcome, input);
+    this.record(invocation, step, input, reentered, result);
+    return result;
+  }
+
+  /** The trace record for one invocation. Observation only: no Event, no journal, no state. */
+  private record(
+    invocation: AgentInvocationState,
+    step: AgentStepInvocation,
+    input: ActivationInput,
+    reentered: boolean,
+    result: StepOutcome,
+  ): void {
+    if (!this.trace?.modelInvoked) return;
+    const proposals = result.kind === "awaitEffects" ? this.proposalRecords(invocation.step, result.state.pending) : [];
+    this.trace.modelInvoked({
+      executionId: input.execution.executionId,
+      activationId: input.activation.activationId,
+      step: invocation.step,
+      reentered,
+      logicalRef: step.resolved.logicalRef,
+      provider: step.resolved.provider,
+      model: step.resolved.model,
+      ...(step.resolved.deploymentMetadata !== undefined ? { deployment: step.resolved.deploymentMetadata } : {}),
+      informationSelectionId: agentInformationSelectionId(invocation.information),
+      projectionId: invocation.projection.projectionId,
+      viewId: invocation.projection.viewId,
+      exposedOperations: invocation.projection.bindings.length,
+      bindings: invocation.projection.bindings.map((binding) => ({
+        bindingId: binding.bindingId,
+        alias: binding.alias,
+        target: binding.target,
+      })),
+      outcome: step.outcome.kind,
+      decision: DECISION_OF[result.kind],
+      proposals,
+      ...(step.metadata !== undefined ? { metadata: step.metadata } : {}),
+    });
+  }
+
+  private proposalRecords(step: number, pending: readonly AgentPendingCall[]): readonly AgentOperationProposalRecord[] {
+    return pending.map((call) => ({
+      step,
+      correlationId: call.correlationId,
+      bindingId: call.bindingId,
+      alias: call.alias,
+      target: call.target,
+    }));
+  }
+
+  private interpretOutcome(
+    spec: AgentSpec,
+    state: AgentControlState,
+    invocation: AgentInvocationState,
     outcome: AgentExecutorOutcome,
-    resolved: { readonly logicalRef: string; readonly provider: string; readonly model: string },
     input: ActivationInput,
   ): StepOutcome {
     const issues = agentExecutorOutcomeIssues(outcome);
@@ -424,17 +549,6 @@ class AgentController implements ExecutionController {
         },
       };
     }
-
-    this.trace?.modelInvoked?.({
-      step: invocation.step,
-      logicalRef: resolved.logicalRef,
-      provider: resolved.provider,
-      model: resolved.model,
-      projectionId: invocation.projection.projectionId,
-      viewId: invocation.projection.viewId,
-      exposedOperations: invocation.projection.bindings.length,
-      outcome: outcome.kind,
-    });
 
     const continuation = (outcome as { readonly continuation?: JsonValue }).continuation ?? null;
     const advanced: AgentControlState = { ...state, step: invocation.step, invocation: null, continuation };
@@ -512,13 +626,30 @@ class AgentController implements ExecutionController {
             };
           }
           const binding = resolution.binding;
+          // The binding's target decides which Effect this becomes. v0.4 mints one target kind, so
+          // the switch has one arm and a default that refuses; the point is that the *shape* of the
+          // decision is already the one a second action family would extend, rather than the
+          // assumption that every model-visible action is a capability operation.
+          const target: ModelActionTarget = binding.target;
+          if (target.kind !== "capability_operation") {
+            return {
+              kind: "fail",
+              state: { ...advanced, messages },
+              emissions: [],
+              failure: {
+                code: "agent_action_target_not_supported",
+                message:
+                  `binding ${binding.bindingId} names target kind ` +
+                  `"${(target as { readonly kind: string }).kind}", which this build does not resolve to an Effect`,
+              },
+            };
+          }
           const correlationId = agentCallCorrelationId(invocation.step, index + 1);
           pending.push({
             correlationId,
             bindingId: binding.bindingId,
             alias: binding.alias,
-            capability: binding.capability,
-            operation: binding.operation,
+            target,
             callId: call.callId,
             settled: false,
             outcome: null,
@@ -527,8 +658,8 @@ class AgentController implements ExecutionController {
           });
           proposals.push(
             useCapability({
-              capability: binding.capability,
-              operation: binding.operation,
+              capability: target.capability,
+              operation: target.operation,
               input: call.input,
               requestKey: correlationId,
             }),
@@ -536,9 +667,9 @@ class AgentController implements ExecutionController {
           this.trace?.operationProposed?.({
             step: invocation.step,
             correlationId,
+            bindingId: binding.bindingId,
             alias: binding.alias,
-            capability: binding.capability,
-            operation: binding.operation,
+            target,
           });
         }
 

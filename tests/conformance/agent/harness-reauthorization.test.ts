@@ -15,7 +15,7 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { effectRequestsIn } from "@agent-sdk/core/execution";
+import { effectRequestsIn, formatModelActionTarget } from "@agent-sdk/core/execution";
 import type { EffectAuthorizer } from "@agent-sdk/core/ports";
 import {
   createAllowListAuthorizer,
@@ -74,7 +74,7 @@ describe("the Harness authorizes the concrete Effect, whatever the Agent layers 
     const { bundle, agent, capabilities } = await runSelectingAgent(deny, "denied");
 
     // The Agent layers did their job: the operation was exposed and proposed.
-    assert.deepEqual(bundle.trace.proposals.map((record) => `${record.capability}:${record.operation}`), ["mail:send"]);
+    assert.deepEqual(bundle.trace.proposals.map((record) => formatModelActionTarget(record.target)), ["mail/send"]);
     const requested = effectRequestsIn(await bundle.harness.effectJournalOf(agent.executionId));
     assert.equal(requested.length, 1, "the controller proposed it");
 

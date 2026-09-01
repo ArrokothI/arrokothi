@@ -54,8 +54,21 @@ export { AGENT_COMPLETION_MODES, DEFAULT_AGENT_LIMITS, agentCompletionMode, agen
 export type { AgentSpecIssue, AgentSpecIssueCode, AgentSpecValidation } from "./agent/validation.ts";
 export { validateAgentSpec } from "./agent/validation.ts";
 export type { AgentInformationContext } from "./agent/information-context.ts";
+export { agentInformationSelectionId } from "./agent/information-context.ts";
 export type { AgentObservationOutcome, AgentOperationObservation } from "./agent/observations.ts";
-export { AGENT_OBSERVATION_OUTCOMES, isSuccessfulAgentObservation, renderAgentObservation } from "./agent/observations.ts";
+export { AGENT_OBSERVATION_OUTCOMES, isSuccessfulAgentObservation } from "./agent/observations.ts";
+/**
+ * How a settled operation result is shown to a model.
+ *
+ * A replaceable strategy, exported so a deployment can supply its own. The semantic observation is
+ * unchanged by whichever one is installed.
+ */
+export type {
+  AgentModelObservation,
+  AgentObservationProjectionContext,
+  AgentObservationProjector,
+} from "./agent/observation-projection.ts";
+export { projectAgentObservations, referenceAgentObservationProjector } from "./agent/observation-projection.ts";
 /**
  * Agent control state is exported as *readable* shapes only.
  *
@@ -65,6 +78,7 @@ export { AGENT_OBSERVATION_OUTCOMES, isSuccessfulAgentObservation, renderAgentOb
  */
 export type {
   AgentControlState,
+  AgentControlStateRead,
   AgentInformationSnapshot,
   AgentInvocationState,
   AgentPendingCall,
@@ -73,6 +87,18 @@ export { AGENT_CONTROL_STATE_VERSION, readAgentControlState, unsettledAgentCalls
 export { agentCallCorrelationId, agentModelResumptionKey } from "./agent/resumption-keys.ts";
 
 // -- operation identity, authority, exposure, and projection -----------------
+export type {
+  CapabilityOperationTarget,
+  ModelActionTarget,
+  ModelActionTargetKind,
+} from "./operations/action-target.ts";
+export {
+  MODEL_ACTION_TARGET_KINDS,
+  capabilityOperationTarget,
+  formatModelActionTarget,
+  isModelActionTarget,
+  operationRefOfTarget,
+} from "./operations/action-target.ts";
 export type { OperationRef, OperationRefInput } from "./operations/refs.ts";
 export {
   compareOperationRefs,
@@ -302,12 +328,14 @@ export { createWorkflowController } from "./controllers/workflow/controller.ts";
 export type { WorkflowControllerOptions } from "./controllers/workflow/controller.ts";
 export { createAgentController } from "./controllers/agent/controller.ts";
 export type { AgentControllerOptions } from "./controllers/agent/controller.ts";
-export { compileAgentInformation } from "./controllers/agent/information.ts";
-export type { AgentInformationInput } from "./controllers/agent/information.ts";
+export { compileAgentInformation, referenceAgentInformationCompiler } from "./controllers/agent/information.ts";
+export type { AgentInformationCompiler, AgentInformationInput } from "./controllers/agent/information.ts";
 export type {
+  AgentControllerDecision,
   AgentModelAccess,
   AgentModelInvocation,
   AgentOperationProposalRecord,
+  AgentProjectedBindingRecord,
   AgentTrace,
 } from "./controllers/agent/model-access.ts";
 export type {

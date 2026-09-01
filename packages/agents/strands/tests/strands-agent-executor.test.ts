@@ -33,7 +33,7 @@ import {
   ScriptedModelProvider,
   StaticModelResolver,
 } from "@agent-sdk/core/reference";
-import { defineAgent, effectRequestsIn } from "@agent-sdk/core/execution";
+import { defineAgent, effectRequestsIn, referenceAgentObservationProjector } from "@agent-sdk/core/execution";
 import { createAllowListAuthorizer, createCapabilityCatalog, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
 import type { RecordingCapabilityExecutor } from "@agent-sdk/core/reference";
 import { agentModelAccess, createAgentTestHarness } from "@agent-sdk/core/testing";
@@ -54,16 +54,14 @@ const PROJECTION: ModelOperationProjection = {
     {
       bindingId: "ag/step1/projection/b1",
       alias: "docs_search",
-      capability: "docs",
-      operation: "search",
+      target: { kind: "capability_operation", capability: "docs", operation: "search" },
       description: "Search the corpus.",
       input: SEARCH_INPUT,
     },
     {
       bindingId: "ag/step1/projection/b2",
       alias: "mail_send",
-      capability: "mail",
-      operation: "send",
+      target: { kind: "capability_operation", capability: "mail", operation: "send" },
       description: "Send mail.",
       input: { kind: "object", fields: { to: { required: true, schema: { kind: "string" } } } },
     },
@@ -106,7 +104,7 @@ describe("the Strands AgentExecutor satisfies the same semantic contract", () =>
       steps: [{ output: { capabilityCalls: [{ id: "tool-1", capability: "docs_search", input: { query: "kernels" } }] } }],
     });
     const executor = createStrandsAgentExecutor({ providers: new ModelProviderRegistry([provider]) });
-    const outcome = await executor.step(requestFor(await resolvedModel()));
+    const { outcome: outcome } = await executor.step(requestFor(await resolvedModel()));
 
     assert.equal(outcome.kind, "call_operations");
     assert.ok(outcome.kind === "call_operations");
@@ -129,7 +127,7 @@ describe("the Strands AgentExecutor satisfies the same semantic contract", () =>
       steps: [{ output: { capabilityCalls: [{ id: "tool-1", capability: "docs_search", input: { query: "q" } }] } }],
     });
     const executor = createStrandsAgentExecutor({ providers: new ModelProviderRegistry([provider]) });
-    const outcome = await executor.step(requestFor(await resolvedModel()));
+    const { outcome: outcome } = await executor.step(requestFor(await resolvedModel()));
     assert.ok(outcome.kind === "call_operations");
 
     const continuation = outcome.continuation;
@@ -156,24 +154,25 @@ describe("the Strands AgentExecutor satisfies the same semantic contract", () =>
     const executor = createStrandsAgentExecutor({ providers: new ModelProviderRegistry([provider]) });
     const model = await resolvedModel();
 
-    const first = await executor.step(requestFor(model));
+    const { outcome: first } = await executor.step(requestFor(model));
     assert.ok(first.kind === "call_operations");
 
     // The controller's job happens here: the Harness authorized and executed the operation, and the
     // observation comes back correlated by the exact tool-use id the framework emitted.
-    const second = await executor.step(
+    const { outcome: second } = await executor.step(
       requestFor(model, {
         step: 2,
         continuation: first.continuation ?? null,
+        // Already projected: the controller ran its observation strategy over the settled result
+        // before the executor was handed anything. The bridge shapes nothing itself.
         observations: [
-          {
+          referenceAgentObservationProjector.project({
             callId: "tool-1",
             alias: "docs_search",
-            capability: "docs",
-            operation: "search",
+            target: { kind: "capability_operation", capability: "docs", operation: "search" },
             outcome: "completed",
             observation: { hits: 3 },
-          },
+          }),
         ],
       }),
     );
@@ -202,22 +201,21 @@ describe("the Strands AgentExecutor satisfies the same semantic contract", () =>
     });
     const executor = createStrandsAgentExecutor({ providers: new ModelProviderRegistry([provider]) });
     const model = await resolvedModel();
-    const first = await executor.step(requestFor(model));
+    const { outcome: first } = await executor.step(requestFor(model));
     assert.ok(first.kind === "call_operations");
 
-    const second = await executor.step(
+    const { outcome: second } = await executor.step(
       requestFor(model, {
         step: 2,
         continuation: first.continuation ?? null,
         observations: [
-          {
+          referenceAgentObservationProjector.project({
             callId: "tool-1",
             alias: "mail_send",
-            capability: "mail",
-            operation: "send",
+            target: { kind: "capability_operation", capability: "mail", operation: "send" },
             outcome: "denied",
             error: { code: "recipient_not_permitted", message: "not allowed" },
-          },
+          }),
         ],
       }),
     );
@@ -242,7 +240,7 @@ describe("the Strands AgentExecutor satisfies the same semantic contract", () =>
       ],
     });
     const executor = createStrandsAgentExecutor({ providers: new ModelProviderRegistry([provider]) });
-    const outcome = await executor.step(requestFor(await resolvedModel()));
+    const { outcome: outcome } = await executor.step(requestFor(await resolvedModel()));
 
     assert.ok(outcome.kind === "call_operations");
     assert.deepEqual(
@@ -261,7 +259,7 @@ describe("the Strands AgentExecutor satisfies the same semantic contract", () =>
       providers: new ModelProviderRegistry([provider]),
       cancelSignal: controller.signal,
     });
-    const outcome = await executor.step(requestFor(await resolvedModel()));
+    const { outcome: outcome } = await executor.step(requestFor(await resolvedModel()));
     assert.equal(outcome.kind, "fail");
     assert.ok(outcome.kind === "fail");
     assert.match(outcome.code, /cancelled|failed/);
@@ -304,6 +302,56 @@ describe("the Strands AgentExecutor satisfies the same semantic contract", () =>
     const executorSource = await readFile(resolve(HERE, "../src/agent-executor.ts"), "utf8");
     const fromExecution = /import\s*\{([^}]*)\}\s*from\s*"@agent-sdk\/core\/execution"/.exec(executorSource);
     assert.deepEqual(fromExecution?.[1]?.split(",").map((name) => name.trim()), ["toJsonSchema"]);
+  });
+
+  test("the bridge forwards the projected observation and shapes no semantics of its own", async () => {
+    /**
+     * The observation strategy belongs to the Agent, not to the framework adapter.
+     *
+     * Before the D.0.1 retrofit this file decided for itself how a success, a denial, and an unknown
+     * outcome read to a model - a second, invisible answer to a question the controller's projector
+     * owns. Now it forwards `observation.value` and converts it to the framework's own value type,
+     * which is provider adaptation rather than semantic shaping.
+     */
+    const source = await readFile(resolve(HERE, "../src/agent-executor.ts"), "utf8");
+    const code = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+    for (const shaping of ["outcome === \"completed\"", "observation.observation", "observation.error"]) {
+      assert.equal(code.includes(shaping), false, `the bridge re-derives ${shaping}; that is the projector's job`);
+    }
+    assert.ok(code.includes("observation.value"), "it forwards what the strategy decided");
+
+    // Behaviourally: a projector that renders a success as a single line reaches the model as one.
+    const provider = new ScriptedModelProvider({
+      id: "test",
+      steps: [
+        { output: { capabilityCalls: [{ id: "tool-1", capability: "docs_search", input: { query: "kernels" } }] } },
+        { output: { text: "Noted." } },
+      ],
+    });
+    const executor = createStrandsAgentExecutor({ providers: new ModelProviderRegistry([provider]) });
+    const model = await resolvedModel();
+    const { outcome: first } = await executor.step(requestFor(model));
+    assert.ok(first.kind === "call_operations");
+
+    await executor.step(
+      requestFor(model, {
+        step: 2,
+        continuation: first.continuation ?? null,
+        observations: [
+          {
+            callId: "tool-1",
+            alias: "docs_search",
+            outcome: "completed",
+            content: "3 hits",
+            value: "3 hits",
+          },
+        ],
+      }),
+    );
+
+    const observed = provider.requests[1]!.messages.filter((message) => message.role === "capability");
+    assert.equal(observed.length, 1);
+    assert.match(observed[0]!.content, /3 hits/, "the strategy's rendering is what the model read");
   });
 
   test("the model bridge builds its specs from the projection, not from the framework registry", async () => {

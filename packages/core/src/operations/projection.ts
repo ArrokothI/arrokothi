@@ -34,17 +34,27 @@
 
 import type { ModelCapabilitySpec } from "../model/types.ts";
 import type { ObjectSchema } from "../schema/value-schema.ts";
+import type { ModelActionTarget } from "./action-target.ts";
+import { capabilityOperationTarget, formatModelActionTarget } from "./action-target.ts";
 import type { ActiveOperationEntry, ActiveOperationView } from "./active-view.ts";
 import type { OperationRef } from "./refs.ts";
 
-/** One model-facing name and the operation identity it stands for, for one invocation. */
+/**
+ * One model-facing name and what it stands for, for one invocation.
+ *
+ * The target is a discriminated record rather than a bare `capability`/`operation` pair, and that is
+ * the only reason this type is not simply an `ActiveOperationEntry`. A binding is written into a
+ * persisted invocation snapshot, so the shape chosen here is the shape a stored projection has; a
+ * flat pair would have persisted the claim that every model-visible action *is* a capability
+ * operation, which canonical interoperability does not say. v0.4 mints exactly one target kind.
+ */
 export interface ModelOperationBinding {
   /** Stable within the projection. Deterministic, derived from the projection id and position. */
   readonly bindingId: string;
   /** Model-facing vocabulary. Never treated as an identifier anything is looked up by. */
   readonly alias: string;
-  readonly capability: string;
-  readonly operation: string;
+  /** What this name resolves to. Identity, never permission. */
+  readonly target: ModelActionTarget;
   readonly description: string;
   readonly input: ObjectSchema;
 }
@@ -108,7 +118,7 @@ export function createModelOperationProjection(input: CreateProjectionInput): Pr
       issues.push({
         path: `bindings[${index}]`,
         message:
-          `model-facing name "${alias}" would mean both ${existing.capability}/${existing.operation} and ` +
+          `model-facing name "${alias}" would mean both ${formatModelActionTarget(existing.target)} and ` +
           `${entry.capability}/${entry.operation}; a projection with an ambiguous name cannot resolve a response`,
       });
       return;
@@ -116,8 +126,7 @@ export function createModelOperationProjection(input: CreateProjectionInput): Pr
     const binding: ModelOperationBinding = {
       bindingId: `${input.projectionId}/b${index + 1}`,
       alias,
-      capability: entry.capability,
-      operation: entry.operation,
+      target: capabilityOperationTarget(entry),
       description: entry.description,
       input: entry.input,
     };

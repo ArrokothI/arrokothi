@@ -30,6 +30,15 @@ import { microtaskInlineWaitBudget } from "@agent-sdk/core/ports";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 import type { JsonValue } from "@agent-sdk/core/execution";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = { operations: [{ capability: "knowledge.query", operation: "search" }] };
+
 /** The one scenario, authored once so neither run can quietly differ from the other. */
 const scenario = () =>
   scriptedAgentDefinition({
@@ -115,7 +124,7 @@ async function runFast(): Promise<{ semantics: Semantics; operations: Operations
     }),
   });
   const ref = await definitions.save(scenario());
-  const handle = await harness.createExecution({ definition: ref });
+  const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
   const records = await harness.runUntilIdle();
   return {
     semantics: await semanticsOf(harness, handle.executionId as never),
@@ -128,7 +137,7 @@ async function runDeferred(): Promise<{ semantics: Semantics; operations: Operat
   const executor = createDeferredCapabilityExecutor();
   const { harness, definitions } = createTestHarness({ authorizer: policy(), capabilities: executor });
   const ref = await definitions.save(scenario());
-  const handle = await harness.createExecution({ definition: ref });
+  const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
 
   const first = await harness.runUntilIdle();
   assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "WAITING", "the slow run really did wait");
@@ -161,7 +170,7 @@ async function runBudgetStarved(): Promise<{ semantics: Semantics; operations: O
     inlineWait: createNoInlineWaitBudget(),
   });
   const ref = await definitions.save(scenario());
-  const handle = await harness.createExecution({ definition: ref });
+  const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
 
   const first = await harness.runUntilIdle();
   await harness.drainEffects();

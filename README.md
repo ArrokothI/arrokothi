@@ -14,6 +14,10 @@ npm test
 npm run typecheck
 ```
 
+`npm test` is the semantic conformance suite. `npm run test:evals` is the separate behavioural
+baseline for the reference Agent, which grades what an Agent configuration accomplished rather than
+whether the runtime preserved its boundaries; the two answer different questions and stay separate.
+
 The default tests and examples are offline. Copy [`.env.example`](.env.example) to `.env` only for optional live provider examples.
 
 ## Architecture documentation

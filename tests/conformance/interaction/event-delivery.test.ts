@@ -18,6 +18,15 @@ import type { ActivationOutcome, ExecutionController } from "@agent-sdk/core/por
 import { createAllowListAuthorizer, createDeferredCapabilityExecutor } from "@agent-sdk/core/reference";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = { operations: [{ capability: "knowledge.query", operation: "search" }] };
+
 function deferred(): { readonly promise: Promise<void>; readonly resolve: () => void } {
   let resolve!: () => void;
   const promise = new Promise<void>((r) => {
@@ -36,7 +45,7 @@ describe("event delivery semantics", () => {
   test("a delivery receipt says the Event was accepted, not that a controller observed it", async () => {
     const { harness, definitions, store } = createTestHarness();
     const ref = await definitions.save(waiter());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const receipt = await harness.deliverExternalInput({
@@ -80,7 +89,7 @@ describe("event delivery semantics", () => {
 
     const { harness, definitions } = createTestHarness({ controllers: [unsatisfied] });
     const ref = await definitions.save(waiter());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "WAITING");
 
@@ -127,7 +136,7 @@ describe("event delivery semantics", () => {
 
     const { harness, definitions } = createTestHarness({ controllers: [slow] });
     const ref = await definitions.save(waiter());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
 
     const running = harness.runOnce();
     await entered.promise;
@@ -159,7 +168,7 @@ describe("event delivery semantics", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
 
     // Activation 1 proposes without awaiting. The result is still outstanding.
     await harness.runOnce();
@@ -187,7 +196,7 @@ describe("event delivery semantics", () => {
     };
     const { harness, definitions } = createTestHarness({ controllers: [inventor] });
     const ref = await definitions.save(waiter());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -198,7 +207,7 @@ describe("event delivery semantics", () => {
   test("a malformed envelope is refused rather than routed", async () => {
     const { harness, definitions, store } = createTestHarness();
     const ref = await definitions.save(waiter());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     const context = await harness.inspect(handle.executionId);
 
@@ -230,7 +239,7 @@ describe("event delivery semantics", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     const context = await harness.inspect(handle.executionId);
 

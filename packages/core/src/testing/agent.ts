@@ -19,12 +19,14 @@
  */
 
 import { createAgentController } from "../controllers/agent/controller.ts";
+import type { AgentInformationCompiler } from "../controllers/agent/information.ts";
 import type {
   AgentModelAccess,
   AgentModelInvocation,
   AgentOperationProposalRecord,
   AgentTrace,
 } from "../controllers/agent/model-access.ts";
+import type { AgentObservationProjector } from "../agent/observation-projection.ts";
 import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { ExecutionId } from "../execution/ids.ts";
 import type { OperationRef } from "../operations/refs.ts";
@@ -50,6 +52,8 @@ export interface RecordingAgentTrace extends AgentTrace {
   deployments(): readonly string[];
   /** The projection identity each step was shown, which is the usual snapshot assertion. */
   projections(): readonly string[];
+  /** The information-selection identity each step saw, for reproducibility assertions. */
+  informationSelections(): readonly string[];
 }
 
 export function recordingAgentTrace(): RecordingAgentTrace {
@@ -69,6 +73,9 @@ export function recordingAgentTrace(): RecordingAgentTrace {
     },
     projections() {
       return modelInvocations.map((invocation) => invocation.projectionId);
+    },
+    informationSelections() {
+      return modelInvocations.map((invocation) => invocation.informationSelectionId);
     },
   };
 }
@@ -91,6 +98,17 @@ export interface AgentTestHarnessOptions extends Omit<TestHarnessOptions, "contr
   readonly views?: ActiveOperationViewResolver;
   readonly models?: AgentModelAccess;
   readonly executor?: AgentExecutor;
+  /** Replaces the reference observation projector, for tests that compare rendering strategies. */
+  readonly observations?: AgentObservationProjector;
+  /** Replaces the reference information compiler, for tests that compare selection strategies. */
+  readonly information?: AgentInformationCompiler;
+  /**
+   * Reuses a store the caller already built.
+   *
+   * The exposure resolver and the Effect gateway must read the same runtime-owned authority, so a
+   * case that models a ceiling changing underneath a projection needs to own that store.
+   */
+  readonly store?: InMemoryRuntimeStore;
   readonly taskScope?: readonly string[];
   readonly trace?: AgentTrace;
 }
@@ -121,7 +139,7 @@ export interface AgentTestHarnessBundle extends TestHarnessBundle {
 export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): AgentTestHarnessBundle {
   const trace = (options.trace as RecordingAgentTrace | undefined) ?? recordingAgentTrace();
   const catalog = options.catalog ?? options.capabilityCatalog ?? emptyCapabilityCatalog;
-  const store = new InMemoryRuntimeStore();
+  const store = options.store ?? new InMemoryRuntimeStore();
 
   const views =
     options.views ??
@@ -134,6 +152,8 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
     views,
     ...(options.models !== undefined ? { models: options.models } : {}),
     ...(options.executor !== undefined ? { executor: options.executor } : {}),
+    ...(options.observations !== undefined ? { observations: options.observations } : {}),
+    ...(options.information !== undefined ? { information: options.information } : {}),
     ...(options.taskScope !== undefined ? { taskScope: options.taskScope } : {}),
     trace,
   });

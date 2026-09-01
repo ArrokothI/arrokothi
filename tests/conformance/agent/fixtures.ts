@@ -18,6 +18,8 @@ import type {
   AgentExecutor,
   AgentExecutorOutcome,
   AgentExecutorRequest,
+  AgentExecutorStepResult,
+  AgentModelInvocationMetadata,
   CapabilityCatalog,
 } from "@agent-sdk/core/ports";
 import { createCapabilityCatalog, portableModelFeatures, StaticModelResolver } from "@agent-sdk/core/reference";
@@ -115,18 +117,26 @@ export interface ScriptedAgentExecutor extends AgentExecutor {
  *
  * It exists so a case can put an exact semantic outcome in front of the controller - including one
  * a real provider could not produce, such as a name the projection never exposed - and observe what
- * the controller does with it.
+ * the controller does with it. Optional per-step metadata lets a case put provider evidence in front
+ * of the trace without a provider.
  */
-export function scriptedAgentExecutor(outcomes: readonly AgentExecutorOutcome[]): ScriptedAgentExecutor {
+export function scriptedAgentExecutor(
+  outcomes: readonly AgentExecutorOutcome[],
+  metadata: readonly (AgentModelInvocationMetadata | undefined)[] = [],
+): ScriptedAgentExecutor {
   const requests: AgentExecutorRequest[] = [];
   let cursor = 0;
   return {
     requests,
-    step(request: AgentExecutorRequest): AgentExecutorOutcome {
+    step(request: AgentExecutorRequest): AgentExecutorStepResult {
       requests.push(request);
       const outcome = outcomes[cursor];
+      const evidence = metadata[cursor];
       cursor += 1;
-      return outcome ?? { kind: "fail", code: "script_exhausted", message: `no scripted outcome ${cursor}` };
+      return {
+        outcome: outcome ?? { kind: "fail", code: "script_exhausted", message: `no scripted outcome ${cursor}` },
+        ...(evidence !== undefined ? { metadata: evidence } : {}),
+      };
     },
   };
 }

@@ -78,10 +78,12 @@ export type {
   AgentExecutorLimits,
   AgentExecutorOutcome,
   AgentExecutorRequest,
+  AgentExecutorStepResult,
   AgentInformationContext,
+  AgentModelInvocationMetadata,
   ModelOperationCall,
 } from "./agent-executor.ts";
-export { agentExecutorOutcomeIssues } from "./agent-executor.ts";
+export { agentExecutorOutcomeIssues, agentExecutorStepResultIssues } from "./agent-executor.ts";
 
 /**
  * The data contracts those ports are written in.
@@ -104,7 +106,17 @@ export type {
   OmittedExposureReason,
 } from "../operations/active-view.ts";
 export type { ModelOperationBinding, ModelOperationProjection } from "../operations/projection.ts";
+export type {
+  CapabilityOperationTarget,
+  ModelActionTarget,
+  ModelActionTargetKind,
+} from "../operations/action-target.ts";
 export type { AgentObservationOutcome, AgentOperationObservation } from "../agent/observations.ts";
+export type {
+  AgentModelObservation,
+  AgentObservationProjectionContext,
+  AgentObservationProjector,
+} from "../agent/observation-projection.ts";
 
 export type { InlineWaitBudget, InlineWaitResult } from "./inline-wait.ts";
 export { microtaskInlineWaitBudget } from "./inline-wait.ts";

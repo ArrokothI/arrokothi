@@ -22,6 +22,17 @@ function specifiersIn(source: string): string[] {
   return [...source.matchAll(IMPORT_SPECIFIER)].map((match) => match[1]!);
 }
 
+/**
+ * A module with its comments removed.
+ *
+ * These files explain their boundaries in prose - "no Harness, no store, no dispatcher" - so a
+ * name-grep over the raw text would fail on the sentence that documents the rule it is checking.
+ * What must not contain the name is the code.
+ */
+function codeOf(source: string): string {
+  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+}
+
 async function walk(entries: readonly string[]): Promise<Set<string>> {
   const files = new Set<string>();
   const queue = [...entries];
@@ -128,6 +139,8 @@ describe("Agent architecture boundaries", () => {
   });
 
   test("the information branch does not depend on authority, exposure, or projection", async () => {
+    // Holds for the port and the reference strategy alike: an information compiler selects
+    // information, and has no route to what the Agent is permitted or shown as available.
     const files = await walk(["controllers/agent/information.ts"]);
     const forbidden = [
       "operations/active-view.ts",
@@ -143,6 +156,51 @@ describe("Agent architecture boundaries", () => {
       [...files].filter((path) => forbidden.includes(path)),
       [],
       "an information compiler selects information; it does not choose operations or read authority",
+    );
+  });
+
+  test("an observation projector reaches no authority, dispatch, or runtime state", async () => {
+    // A projector decides how a result reads to a model. Rendering is not permission, is not
+    // durable memory, and cannot cause anything to happen - so the import graph must contain no
+    // route to any of it, and the module must not name a provider or framework type either.
+    const files = await walk(["agent/observation-projection.ts"]);
+    const forbidden = [
+      ...OPERATIONAL_MACHINERY,
+      "operations/authority.ts",
+      "operations/active-view.ts",
+      "operations/projection.ts",
+      "ports/effective-operation-authority.ts",
+      "ports/active-operation-view.ts",
+      "ports/capability-catalog.ts",
+      "ports/model-provider.ts",
+      "effects/types.ts",
+      "execution/context.ts",
+    ];
+    assert.deepEqual(
+      [...files].filter((path) => forbidden.includes(path)),
+      [],
+      "an observation projector is handed data and returns data",
+    );
+
+    const code = codeOf(await readFile(resolve(CORE_SRC, "agent/observation-projection.ts"), "utf8"));
+    for (const name of ["Harness", "RuntimeStore", "EffectProposal", "CapabilityExecutor", "EffectAuthorizer", "useCapability"]) {
+      assert.equal(code.includes(name), false, `an observation projector must not name ${name}`);
+    }
+  });
+
+  test("the model action target is identity only, and v0.4 mints exactly one kind", async () => {
+    const code = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
+    const declared = [...code.matchAll(/readonly kind: "(\w+)"/g)].map((match) => match[1]!);
+    assert.deepEqual([...new Set(declared)], ["capability_operation"], "one target kind, and it is discriminated");
+    for (const forbidden of ["grant", "authorize", "Harness", "Executor", "credential", "token"]) {
+      assert.equal(code.includes(forbidden), false, `an action target must not carry "${forbidden}"`);
+    }
+
+    // And the binding that persists it reaches nothing that could act on it.
+    const files = await walk(["operations/action-target.ts"]);
+    assert.deepEqual(
+      [...files].filter((path) => OPERATIONAL_MACHINERY.includes(path)),
+      [],
     );
   });
 
@@ -193,6 +251,7 @@ describe("Agent architecture boundaries", () => {
       "operations/authority.ts",
       "operations/active-view.ts",
       "operations/projection.ts",
+      "operations/action-target.ts",
     ]) {
       const source = await readFile(resolve(CORE_SRC, path), "utf8");
       assert.equal(/^export (?:declare )?class /m.test(source), false, `${path} declares a class`);
@@ -212,9 +271,45 @@ describe("Agent architecture boundaries", () => {
     }
   });
 
+  test("only the runtime Effect gateway may read effective authority at dispatch", async () => {
+    // Enforcing the ceiling is operational, so it belongs exactly where dispatch happens - and
+    // nowhere a controller can reach. The gateway reads the runtime-owned store facet directly
+    // rather than through a second authority source, so the ceiling that governs a dispatch and the
+    // one an Active View was cut from cannot become two different answers.
+    const gateway = await readFile(resolve(CORE_SRC, "runtime/effect-processor.ts"), "utf8");
+    assert.ok(gateway.includes("authorizesOperation"), "the gateway checks the ceiling itself");
+    assert.ok(gateway.includes("readOperationAuthority"), "from the runtime-owned facet");
+    assert.equal(
+      gateway.includes("EffectiveOperationAuthoritySource"),
+      false,
+      "and not through the read-only exposure port, which is the resolver's window",
+    );
+
+    // No controller gained that ability alongside it. A controller's graph does reach the
+    // authority *record* - an Execution context holds a typed ref to one - so the assertion is
+    // about the two things that read a ceiling: the read-only source port, and the reading itself.
+    for (const entry of ["controllers/agent/controller.ts", "controllers/workflow/controller.ts"]) {
+      const files = await walk([entry]);
+      assert.equal(
+        files.has("ports/effective-operation-authority.ts"),
+        false,
+        `${entry} must not hold the effective-authority read port`,
+      );
+    }
+    for (const path of await filesUnder(["controllers/"])) {
+      const code = codeOf(await readFile(resolve(CORE_SRC, path), "utf8"));
+      for (const reader of ["authorizesOperation", "readOperationAuthority", "effectiveOperationAuthority"]) {
+        assert.equal(code.includes(reader), false, `${path} reads a ceiling; only the Effect gateway may`);
+      }
+    }
+  });
+
   test("the Agent path adds no external dependency to core", async () => {
     const files = await walk([
       "controllers/agent/controller.ts",
+      "controllers/agent/information.ts",
+      "agent/observation-projection.ts",
+      "operations/action-target.ts",
       "reference/active-operation-view-resolver.ts",
       "reference/agent-executor.ts",
       "reference/operation-authority.ts",

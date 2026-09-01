@@ -45,6 +45,17 @@ import {
   createLocalRetrievalExecutor,
 } from "@agent-sdk/retrieval-local";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = {
+  operations: [{ capability: LOCAL_RETRIEVAL_CAPABILITY, operation: LOCAL_RETRIEVAL_OPERATIONS.search }],
+};
+
 const PET_POLICY = {
   id: "pet-policies",
   title: "Pet policies",
@@ -133,7 +144,7 @@ describe("local and live retrieval", () => {
         },
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -164,7 +175,7 @@ describe("local and live retrieval", () => {
         },
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -209,7 +220,7 @@ describe("local and live retrieval", () => {
         },
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -256,7 +267,7 @@ describe("local and live retrieval", () => {
         },
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -297,7 +308,7 @@ describe("local and live retrieval", () => {
         },
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "WAITING");
 

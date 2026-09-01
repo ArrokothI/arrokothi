@@ -128,16 +128,16 @@ describe("a model invocation projection is an immutable binding snapshot", () =>
     const fromFirst = resolveProjectedAlias(first.projection, answer);
     assert.ok(fromFirst.resolved);
     assert.deepEqual(
-      { capability: fromFirst.binding.capability, operation: fromFirst.binding.operation },
-      { capability: "docs.search", operation: "v2" },
+      fromFirst.binding.target,
+      { kind: "capability_operation", capability: "docs.search", operation: "v2" },
       "an answer to invocation 1 keeps meaning what invocation 1 was shown",
     );
 
     const fromSecond = resolveProjectedAlias(second.projection, answer);
     assert.ok(fromSecond.resolved);
     assert.deepEqual(
-      { capability: fromSecond.binding.capability, operation: fromSecond.binding.operation },
-      { capability: "docs", operation: "search.v2" },
+      fromSecond.binding.target,
+      { kind: "capability_operation", capability: "docs", operation: "search.v2" },
       "and the later snapshot means what it means, without rewriting the earlier one",
     );
 
@@ -168,8 +168,13 @@ describe("a model invocation projection is an immutable binding snapshot", () =>
     );
     assert.deepEqual(
       Object.keys(projection.bindings[0]!).sort(),
-      ["alias", "bindingId", "capability", "description", "input", "operation"],
-      "a binding maps a name to an identity, and carries nothing that could perform it",
+      ["alias", "bindingId", "description", "input", "target"],
+      "a binding maps a name to a typed target, and carries nothing that could perform it",
+    );
+    assert.deepEqual(
+      projection.bindings[0]!.target,
+      { kind: "capability_operation", capability: "docs", operation: "search" },
+      "v0.4 mints exactly one target kind, and it is discriminated rather than implied",
     );
   });
 

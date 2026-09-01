@@ -28,6 +28,15 @@ import type { EffectId, EventId, IdempotencyKey, PendingOperationId } from "@age
 import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = { operations: [{ capability: "knowledge.query", operation: "search" }, { capability: "mail.send", operation: "send" }, { capability: "world.move", operation: "move" }] };
+
 const worldPolicy = () => createAllowListAuthorizer({ grants: [{ capability: "world.move", operations: ["move"] }] });
 
 describe("duplicate recognition compares the actual request, not just its key", () => {
@@ -58,7 +67,7 @@ describe("duplicate recognition compares the actual request, not just its key", 
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 2, "identical payloads are two real moves, not one deduplicated one");
@@ -97,7 +106,7 @@ describe("duplicate recognition compares the actual request, not just its key", 
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 1, "opting in to per_input recognises the second as the same operation");
@@ -151,7 +160,7 @@ describe("duplicate recognition compares the actual request, not just its key", 
         ],
       }),
     );
-    await harness.createExecution({ definition: ref });
+    await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(
@@ -189,7 +198,7 @@ describe("duplicate recognition compares the actual request, not just its key", 
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
 
     const realProposal = useCapability({
       capability: "mail.send",

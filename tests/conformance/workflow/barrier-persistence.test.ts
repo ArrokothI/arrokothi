@@ -30,6 +30,15 @@ import {
 } from "@agent-sdk/core/reference";
 import { createWorkflowTestHarness } from "@agent-sdk/core/testing";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = { operations: [{ capability: "knowledge.retrieval", operation: "search" }] };
+
 function gather(context: StageExecutionContext): FunctionStageOutcome {
   if (context.progress["requested"] !== true) {
     return {
@@ -63,7 +72,7 @@ describe("Workflow barrier persistence", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(workflow);
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const progress = (await harness.inspect(handle.executionId))!.control.progress;
@@ -96,7 +105,7 @@ describe("Workflow barrier persistence", () => {
       capabilities: executor,
     });
     const ref = await first.definitions.save(workflow);
-    const handle = await first.harness.createExecution({ definition: ref });
+    const handle = await first.harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await first.harness.runUntilIdle();
     assert.equal((await first.harness.inspect(handle.executionId))?.lifecycle, "WAITING");
 

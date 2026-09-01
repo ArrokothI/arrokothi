@@ -5,6 +5,8 @@
  *
  *   proposal            controller data, already structurally validated
  *        ↓ journal      requested
+ *   authority ceiling   is this operation inside the Execution's CURRENT effective authority?
+ *        ↓ journal      denied, and no policy is consulted, when it is not
  *   authorization       kernel-owned decision; deny is the default with no policy present
  *        ↓ journal      authorized | denied
  *   pending operation   created and committed
@@ -17,6 +19,21 @@
  *
  * **Requesting is not permission.** There is exactly one call site for `executor.execute`, and it
  * is downstream of an `allow` decision. A denied Effect produces an observation and no dispatch.
+ *
+ * **Exposure is not permission either.** Before policy is consulted at all, the operation named by a
+ * `UseCapability` proposal is checked against the Execution's *current* effective operation
+ * authority - the runtime-owned ceiling written when the Execution was created. That check lives
+ * here rather than in a controller because this is the only place a dispatch can happen. A buggy or
+ * hostile Active View resolver can therefore expose an operation it should not, and a permissive
+ * authorizer can then be asked about it, and the operation still does not run. An Active View is a
+ * narrowing of the ceiling; it is never a substitute for it, and neither layer replaces the other:
+ *
+ * ```text
+ * effective authority   the hard runtime ceiling, read fresh at dispatch
+ * EffectAuthorizer      the concrete policy decision inside that ceiling
+ * ```
+ *
+ * A stale or wrong view can cost an operation an unnecessary denial. It can never make one execute.
  *
  * **Dispatched is not completed.** `dispatch_started` is committed before the call, so a crash in
  * that window leaves evidence that something may have happened. Nothing in this slice automatically
@@ -58,6 +75,7 @@ import type { ActivationId, ExecutionId } from "../execution/ids.ts";
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
 import type { EventEnvelope, EventId } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
+import { authorizesOperation } from "../operations/authority.ts";
 import type { Clock } from "../ports/clock.ts";
 import { nowIso } from "../ports/clock.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
@@ -249,6 +267,18 @@ export class EffectProcessor {
       });
     }
 
+    // The ceiling, before policy. An operation outside the Execution's CURRENT effective authority
+    // never reaches the authorizer at all, so a permissive policy cannot be handed a question that
+    // an Active View bug invented.
+    const ceiling = await this.withinEffectiveAuthority(executionId, proposal as UseCapabilityProposal);
+    if (ceiling !== null) {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
+        code: ceiling.code,
+        message: ceiling.message,
+        phase: "denied",
+      });
+    }
+
     const decision = await this.decide(input, proposal, effectId, requestedAt);
     if (decision.decision === "deny") {
       return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
@@ -266,6 +296,46 @@ export class EffectProcessor {
     }
 
     return this.dispatchCapability(input, proposal as UseCapabilityProposal, effectId, correlationId, decision);
+  }
+
+  /**
+   * The runtime-owned ceiling, read fresh from the store this Harness writes it into.
+   *
+   * Returns `null` when the operation is inside the ceiling, and a refusal reason otherwise. Two
+   * distinct reasons, because they are two distinct mistakes: an Execution created without a grant
+   * has no ceiling at all, and an Execution whose ceiling does not contain this operation was never
+   * permitted it. Neither reads as "unrestricted" - an Execution with no configured authority can
+   * dispatch nothing, exactly as an unconfigured authorizer permits nothing.
+   *
+   * There is deliberately no second source here and no cache. `readOperationAuthority` is the same
+   * runtime-owned facet the read-only exposure port reads, so the ceiling that governs a dispatch
+   * and the ceiling an Active View was cut from cannot drift into two different answers. A grant
+   * narrowed after a projection was built is therefore *seen* by this check, which is what makes an
+   * old projection a record of what the model was shown rather than a credential to dispatch with.
+   */
+  private async withinEffectiveAuthority(
+    executionId: ExecutionId,
+    proposal: UseCapabilityProposal,
+  ): Promise<{ readonly code: string; readonly message: string } | null> {
+    const authority = (await this.deps.store.readOperationAuthority(executionId)) ?? null;
+    if (!authority) {
+      return {
+        code: "no_effective_operation_authority",
+        message:
+          `execution ${executionId} has no effective operation authority, so it cannot use ` +
+          `${proposal.capability}/${proposal.operation}; nobody granting anything is not everybody granting everything`,
+      };
+    }
+    if (!authorizesOperation(authority, { capability: proposal.capability, operation: proposal.operation })) {
+      return {
+        code: "operation_outside_effective_authority",
+        message:
+          `${proposal.capability}/${proposal.operation} is not in the current effective operation authority ` +
+          `${authority.authorityId} (version ${authority.version}) for execution ${executionId}; ` +
+          "being exposed, projected, or selected is never permission",
+      };
+    }
+    return null;
   }
 
   private async decide(

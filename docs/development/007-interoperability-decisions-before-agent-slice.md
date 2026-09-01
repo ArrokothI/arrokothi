@@ -809,8 +809,15 @@ I durability
 
 Add two deliberately narrow vertical proofs:
 
+> **Sequencing amended (2026-09-01).** "After D" means after Slice D is *accepted*, not immediately
+> after the D.0 implementation landed. The post-D review against
+> [`009-agent-effectiveness-seams-before-slice-d-review.md`](009-agent-effectiveness-seams-before-slice-d-review.md)
+> and the D.0.1 retrofit it produced come first, then acceptance, then the behavioural Agent
+> baseline, then this proof. Adding a second operation source before the authority and projection
+> seams were settled would have doubled the cost of the one defect that review actually found.
+
 ```text
-after D:
+after D acceptance:
   import one synchronous MCP Tool into the portable capability-operation surface
   run it through authority -> Active View -> model projection -> UseCapability
   export one native portable capability operation as an MCP Tool
@@ -968,10 +975,15 @@ These are later vertical slices. Slice D should leave clean seams for them.
 
 ## Review checkpoint after Slice D
 
-> **Slice D.0 landed 2026-09-01.** The implemented shapes for every item below are recorded in
-> [`009-slice-d0-implementation-decisions.md`](009-slice-d0-implementation-decisions.md). DEC-I02
-> through DEC-I20 were followed as accepted; DEC-I19's cautions about the experimental checkpoint
-> boundary proved to be the right call, and the bridge's remaining limitations are listed there.
+> **Slice D.0 landed 2026-09-01, and was reviewed the same day.** The implemented shapes for every
+> item below are recorded in
+> [`010-slice-d0-implementation-decisions.md`](010-slice-d0-implementation-decisions.md), together
+> with the D.0.1 retrofit that review produced: effective operation authority is now a dispatch
+> ceiling in the Effect gateway rather than only an exposure filter, and four replaceable seams
+> (observation projection, invocation trace, typed action target, information compiler) were added.
+> DEC-I02 through DEC-I20 were followed as accepted; DEC-I19's cautions about the experimental
+> checkpoint boundary proved to be the right call, and the bridge's remaining limitations are listed
+> there.
 
 After Slice D lands, review specifically:
 

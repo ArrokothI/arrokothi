@@ -35,6 +35,15 @@ import {
 import { createWorkflowTestHarness } from "@agent-sdk/core/testing";
 
 /**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = { operations: [{ capability: "knowledge.retrieval", operation: "search" }] };
+
+/**
  * One Function Stage that requires the operations its config names, then reports what settled.
  *
  * The two halves of the barrier contract in one implementation: it *returns* requests upward and it
@@ -122,7 +131,7 @@ describe("Stage completion barrier", () => {
       }),
     });
     const ref = await definitions.save(oneRequestWorkflow("fast"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     const records = await harness.runUntilIdle();
 
     const semantics = await semanticsOf(harness, handle.executionId);
@@ -141,7 +150,7 @@ describe("Stage completion barrier", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(oneRequestWorkflow("fast"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     const first = await harness.runUntilIdle();
 
     // The barrier is genuinely unresolved: the Workflow is WAITING, still inside the requesting
@@ -182,7 +191,7 @@ describe("Stage completion barrier", () => {
       inlineWait: createNoInlineWaitBudget(),
     });
     const ref = await definitions.save(oneRequestWorkflow("fast"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     await harness.drainEffects();
     await harness.runUntilIdle();
@@ -222,7 +231,7 @@ describe("Stage completion barrier", () => {
         },
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     assert.equal(executor.outstanding.length, 3, "all three were dispatched");
 
@@ -269,7 +278,7 @@ describe("Stage completion barrier", () => {
       capabilities: createScriptedCapabilityExecutor({ fallback: () => ({ status: "success", observation: "should never run" }) }),
     });
     const ref = await definitions.save(oneRequestWorkflow("denied"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const semantics = await semanticsOf(harness, handle.executionId);
@@ -289,7 +298,7 @@ describe("Stage completion barrier", () => {
         capabilities: createScriptedCapabilityExecutor({ handlers: { "knowledge.retrieval:search": () => outcome } }),
       });
       const ref = await definitions.save(oneRequestWorkflow(`outcome-${label}`));
-      const handle = await harness.createExecution({ definition: ref });
+      const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
       await harness.runUntilIdle();
 
       const semantics = await semanticsOf(harness, handle.executionId);
@@ -306,7 +315,7 @@ describe("Stage completion barrier", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(oneRequestWorkflow("duplicate"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const call = executor.outstanding[0]!;
@@ -382,7 +391,7 @@ describe("Stage completion barrier", () => {
         },
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const firstCall = executor.outstanding[0]!;
