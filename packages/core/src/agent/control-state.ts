@@ -36,11 +36,23 @@
  */
 
 import type { ModelMessage } from "../model/types.ts";
+import type { ModelActionTarget } from "../operations/action-target.ts";
 import type { ModelOperationProjection } from "../operations/projection.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
-import type { AgentObservationOutcome, AgentOperationObservation } from "./observations.ts";
+import type { AgentModelObservation } from "./observation-projection.ts";
+import type { AgentObservationOutcome } from "./observations.ts";
 
-export const AGENT_CONTROL_STATE_VERSION = 1;
+/**
+ * Version 2.
+ *
+ * Version 1 persisted a projection binding and a pending call as a flat `capability`/`operation`
+ * pair, and persisted observations as the semantic record rather than as what the model was shown.
+ * Both are now typed: a binding names a `ModelActionTarget`, and an invocation snapshot records the
+ * projected observations. Old progress is *refused* rather than reinterpreted - see
+ * [`readAgentControlState`](#readAgentControlState) - because a shape that could be read either way
+ * would silently resolve a stored alias against a guess.
+ */
+export const AGENT_CONTROL_STATE_VERSION = 2;
 
 /**
  * The compiled information one invocation was given. Frozen at dispatch, replayed on resume.
@@ -67,8 +79,14 @@ export interface AgentInvocationState {
   readonly information: AgentInformationSnapshot;
   readonly projection: ModelOperationProjection;
   readonly continuation: JsonValue | null;
-  /** The settled results this invocation was given. Frozen with the rest of what it was shown. */
-  readonly observations: readonly AgentOperationObservation[];
+  /**
+   * The settled results this invocation was given, as the model was shown them.
+   *
+   * The projected form rather than the semantic one, deliberately: what must survive a resumption is
+   * what the call actually saw, and a later change of observation strategy must not retroactively
+   * change that.
+   */
+  readonly observations: readonly AgentModelObservation[];
   /**
    * How long the message history was when this invocation was issued.
    *
@@ -85,8 +103,8 @@ export interface AgentPendingCall {
   /** Which projection binding produced this call. Integrity data; it authorizes nothing. */
   readonly bindingId: string;
   readonly alias: string;
-  readonly capability: string;
-  readonly operation: string;
+  /** What the binding resolved to. Typed for the same reason the binding is. */
+  readonly target: ModelActionTarget;
   /** The provider's own id for the call it emitted, when it supplied one. */
   readonly callId: string | null;
   readonly settled: boolean;
@@ -138,23 +156,44 @@ export function isAgentControlState(value: unknown): value is AgentControlState 
 }
 
 /**
+ * What reading persisted progress can produce.
+ *
+ * Three answers rather than two. "Nothing is stored yet" and "something is stored that this build
+ * cannot interpret" are different situations with different correct responses, and collapsing them
+ * into `null` would restart an Agent that was mid-progression as though it had never begun.
+ */
+export type AgentControlStateRead =
+  /** A freshly created Execution: no progress has been written. */
+  | { readonly status: "absent" }
+  | { readonly status: "read"; readonly state: AgentControlState }
+  /** Written by a different version of this shape. Refused, never guessed at. */
+  | { readonly status: "unsupported"; readonly version: number };
+
+/**
  * Reads persisted progress back, tolerating the empty progress a freshly created Execution has.
  *
- * `null` means "this Agent has not started", which the controller must be able to distinguish from
- * "it is between steps" without inventing a status field.
+ * A version this build does not know is reported rather than coerced. Pre-v1 the repository carries
+ * no migration, and that is a deliberate simplicity rather than an oversight: reading a v1 record
+ * as a v2 one would resolve a stored alias against a target that is not there, which is worse than
+ * refusing to run.
  */
-export function readAgentControlState(progress: JsonObject): AgentControlState | null {
-  if (!isAgentControlState(progress)) return null;
+export function readAgentControlState(progress: JsonObject): AgentControlStateRead {
+  if (!isAgentControlState(progress)) return { status: "absent" };
   const state = progress as unknown as AgentControlState;
+  const version = typeof state.version === "number" ? state.version : 1;
+  if (version !== AGENT_CONTROL_STATE_VERSION) return { status: "unsupported", version };
   return {
-    version: state.version ?? AGENT_CONTROL_STATE_VERSION,
-    step: state.step,
-    started: state.started,
-    messages: state.messages ?? [],
-    invocation: state.invocation ?? null,
-    continuation: state.continuation ?? null,
-    pending: state.pending ?? [],
-    responses: state.responses ?? 0,
+    status: "read",
+    state: {
+      version,
+      step: state.step,
+      started: state.started,
+      messages: state.messages ?? [],
+      invocation: state.invocation ?? null,
+      continuation: state.continuation ?? null,
+      pending: state.pending ?? [],
+      responses: state.responses ?? 0,
+    },
   };
 }
 

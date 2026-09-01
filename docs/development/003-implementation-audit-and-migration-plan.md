@@ -1488,10 +1488,25 @@ the record.
 
 ### 18.2 Slice D.0 — Agent operation exposure and projection skeleton
 
-> **Implemented (2026-09-01).** The task below is done; the shapes it deliberately left unfrozen are
-> recorded in [`009-slice-d0-implementation-decisions.md`](009-slice-d0-implementation-decisions.md).
-> The repository passes 540 tests, 8 benchmark-subject tests, and typecheck. The section is retained
-> as the task specification it was, not as outstanding work.
+> **Implemented (2026-09-01), then retrofitted the same day.** The task below is done; the shapes it
+> deliberately left unfrozen are recorded in
+> [`010-slice-d0-implementation-decisions.md`](010-slice-d0-implementation-decisions.md), along with
+> the D.0.1 review retrofit that followed it. The section is retained as the task specification it
+> was, not as outstanding work.
+>
+> The next task is **not** the MCP proof. The sequence is:
+>
+> ```text
+> Slice D.0 implementation                done
+>         ↓
+> post-D 009 review / D.0.1 retrofit      done
+>         ↓
+> Slice D accepted                        pending architecture review
+>         ↓
+> behavioural Agent baseline              first cases landed, tests/evals/agent/
+>         ↓
+> narrow synchronous MCP operation proof  next
+> ```
 
 Implement this as one reviewable change **after** §18.1, before the open-ended loop is allowed to
 dispatch anything. Its model invocation uses the §18.1 primitive.

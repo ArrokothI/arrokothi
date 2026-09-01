@@ -17,6 +17,15 @@ import type { ActivationInput, ActivationOutcome, ExecutionController } from "@a
 import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = { operations: [{ capability: "knowledge.query", operation: "search" }] };
+
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 const searcher = () =>
@@ -68,7 +77,7 @@ describe("the Effect gateway", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(searcher());
-    await harness.createExecution({ definition: ref });
+    await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runOnce();
 
     const input = captured as unknown as ActivationInput;
@@ -102,7 +111,7 @@ describe("the Effect gateway", () => {
     const executor = searchExecutor();
     const { harness, definitions } = createTestHarness({ capabilities: executor });
     const ref = await definitions.save(searcher());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 0, "an unconfigured Harness is not a permissive one");
@@ -118,7 +127,7 @@ describe("the Effect gateway", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(searcher());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 0, "denial happens before dispatch, not after it");
@@ -142,7 +151,7 @@ describe("the Effect gateway", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(searcher());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 0);
@@ -182,7 +191,7 @@ describe("the Effect gateway", () => {
         ],
       }),
     );
-    const overreaching = await harness.createExecution({ definition: forbidden });
+    const overreaching = await harness.createExecution({ definition: forbidden, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     assert.equal(executor.callCount, 0, "an unbound resource is refused before dispatch");
     const denial = readScriptedProgress((await harness.inspect(overreaching.executionId))!.control.progress);
@@ -203,7 +212,7 @@ describe("the Effect gateway", () => {
         ],
       }),
     );
-    await harness.createExecution({ definition: allowed });
+    await harness.createExecution({ definition: allowed, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 1);
@@ -232,7 +241,7 @@ describe("the Effect gateway", () => {
       },
     });
     const ref = await definitions.save(searcher());
-    await harness.createExecution({ definition: ref });
+    await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.deepEqual(
@@ -245,7 +254,7 @@ describe("the Effect gateway", () => {
   test("a successful Effect delivers a correlated observation the controller can read", async () => {
     const { harness, definitions } = createTestHarness({ authorizer: allowSearch(), capabilities: searchExecutor() });
     const ref = await definitions.save(searcher());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -278,7 +287,7 @@ describe("the Effect gateway", () => {
   test("the request itself is persisted, not just a fingerprint of it", async () => {
     const { harness, definitions } = createTestHarness({ authorizer: allowSearch(), capabilities: searchExecutor() });
     const ref = await definitions.save(searcher());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const journal = await harness.effectJournalOf(handle.executionId);
@@ -325,7 +334,7 @@ describe("the Effect gateway", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 0);
@@ -350,7 +359,7 @@ describe("the Effect gateway", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     const records = await harness.runUntilIdle();
 
     const afterProposal = records[0]!;
@@ -385,7 +394,7 @@ describe("the Effect gateway", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(searcher());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 0, "nothing was dispatched");

@@ -23,6 +23,20 @@ import {
 } from "@agent-sdk/core/reference";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = {
+  operations: [
+    { capability: "knowledge.query", operation: "search" },
+    { capability: "mail.send", operation: "send" },
+  ],
+};
+
 const consequential = () => createAllowListAuthorizer({ grants: [{ capability: "mail.send", operations: ["send"] }] });
 
 const readOnly = () => createAllowListAuthorizer({ grants: [{ capability: "knowledge.query", operations: ["search"] }] });
@@ -61,7 +75,7 @@ describe("failure semantics", () => {
       }),
     });
     const definiteRef = await definite.definitions.save(tries("mail.send", "send", "complete"));
-    const definiteHandle = await definite.harness.createExecution({ definition: definiteRef });
+    const definiteHandle = await definite.harness.createExecution({ definition: definiteRef, operationAuthority: AUTHORITY });
     await definite.harness.runUntilIdle();
 
     const definiteProgress = readScriptedProgress((await definite.harness.inspect(definiteHandle.executionId))!.control.progress);
@@ -84,7 +98,7 @@ describe("failure semantics", () => {
       }),
     });
     const ambiguousRef = await ambiguous.definitions.save(tries("mail.send", "send", "complete"));
-    const ambiguousHandle = await ambiguous.harness.createExecution({ definition: ambiguousRef });
+    const ambiguousHandle = await ambiguous.harness.createExecution({ definition: ambiguousRef, operationAuthority: AUTHORITY });
     await ambiguous.harness.runUntilIdle();
 
     const ambiguousProgress = readScriptedProgress(
@@ -116,7 +130,7 @@ describe("failure semantics", () => {
       }),
     });
     const ref = await definitions.save(tries("mail.send", "send", "complete"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -134,7 +148,7 @@ describe("failure semantics", () => {
       }),
     });
     const ref = await definitions.save(tries("mail.send", "send", "fail"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     const records = await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -165,7 +179,7 @@ describe("failure semantics", () => {
       }),
     });
     const consequentialRef = await consequentialRun.definitions.save(tries("mail.send", "send", "complete"));
-    const consequentialHandle = await consequentialRun.harness.createExecution({ definition: consequentialRef });
+    const consequentialHandle = await consequentialRun.harness.createExecution({ definition: consequentialRef, operationAuthority: AUTHORITY });
     await consequentialRun.harness.runUntilIdle();
 
     const thrown = readScriptedProgress(
@@ -189,7 +203,7 @@ describe("failure semantics", () => {
       }),
     });
     const readRef = await readRun.definitions.save(tries("knowledge.query", "search", "complete"));
-    const readHandle = await readRun.harness.createExecution({ definition: readRef });
+    const readHandle = await readRun.harness.createExecution({ definition: readRef, operationAuthority: AUTHORITY });
     await readRun.harness.runUntilIdle();
 
     const readProgress = readScriptedProgress((await readRun.harness.inspect(readHandle.executionId))!.control.progress);
@@ -228,7 +242,7 @@ describe("failure semantics", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 1, "'we do not know whether it happened' is not a licence to do it again");
@@ -274,7 +288,7 @@ describe("failure semantics", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 2, "a transient failure that can never be retried is worse than the failure");
@@ -295,7 +309,7 @@ describe("failure semantics", () => {
       },
     });
     const ref = await definitions.save(tries("knowledge.query", "search", "complete"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const progress = readScriptedProgress((await harness.inspect(handle.executionId))!.control.progress);
@@ -313,7 +327,7 @@ describe("failure semantics", () => {
       capabilities: createScriptedCapabilityExecutor({ handlers: { "other.thing": () => ({ status: "success", observation: null }) } }),
     });
     const ref = await definitions.save(tries("knowledge.query", "search", "complete"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const progress = readScriptedProgress((await harness.inspect(handle.executionId))!.control.progress);
@@ -337,7 +351,7 @@ describe("failure semantics", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(tries("mail.send", "send", "complete"));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 0, "a policy that cannot answer has not said yes");

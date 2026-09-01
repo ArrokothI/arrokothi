@@ -33,6 +33,15 @@ import {
   scriptedAgentDefinition,
 } from "@agent-sdk/core/testing";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = { operations: [{ capability: "knowledge.query", operation: "search" }, { capability: "mail.send", operation: "send" }] };
+
 const policy = () =>
   createAllowListAuthorizer({ grants: [{ capability: "mail.send", operations: ["send"] }] });
 
@@ -71,7 +80,7 @@ describe("pending operations", () => {
       defaultEffectDeadlineMs: 30_000,
     });
     const ref = await definitions.save(sender());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -119,7 +128,7 @@ describe("pending operations", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(sender(60_000));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const [operation] = await harness.pendingOperationsOf(handle.executionId);
@@ -147,7 +156,7 @@ describe("pending operations", () => {
     });
 
     const ref = await definitions.save(sender());
-    const handle = await first.createExecution({ definition: ref });
+    const handle = await first.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await first.runUntilIdle();
     assert.equal((await first.inspect(handle.executionId))?.lifecycle, "WAITING");
 
@@ -212,7 +221,7 @@ describe("pending operations", () => {
     const executor = createDeferredCapabilityExecutor();
     const { harness, definitions } = createTestHarness({ authorizer: policy(), capabilities: executor });
     const ref = await definitions.save(sender());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const [operation] = await harness.pendingOperationsOf(handle.executionId);
@@ -239,7 +248,7 @@ describe("pending operations", () => {
     const executor = createDeferredCapabilityExecutor();
     const { harness, definitions } = createTestHarness({ authorizer: policy(), capabilities: executor });
     const ref = await definitions.save(sender());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const [operation] = await harness.pendingOperationsOf(handle.executionId);
@@ -267,8 +276,8 @@ describe("pending operations", () => {
     const executor = createDeferredCapabilityExecutor();
     const { harness, definitions } = createTestHarness({ authorizer: policy(), capabilities: executor });
     const ref = await definitions.save(sender());
-    const alice = await harness.createExecution({ definition: ref });
-    const bob = await harness.createExecution({ definition: ref });
+    const alice = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
+    const bob = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     // Both are waiting, both on the correlation "send-1". Only identity distinguishes them.
@@ -300,7 +309,7 @@ describe("pending operations", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "FAILED");
 
@@ -350,7 +359,7 @@ describe("pending operations", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 1, "the same logical operation ran once");
@@ -382,7 +391,7 @@ describe("pending operations", () => {
         ],
       }),
     );
-    await harness.createExecution({ definition: ref });
+    await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 2, "duplicate suppression is opt-in, not an accidental cache");
@@ -401,7 +410,7 @@ describe("pending operations", () => {
         ],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 1, "the second request never reached an executor");

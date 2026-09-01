@@ -17,6 +17,15 @@ import { EVENT_KINDS, EFFECT_RESULT_EVENT_KINDS, isEventKind } from "@agent-sdk/
 import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = { operations: [{ capability: "knowledge.query", operation: "search" }] };
+
 const busy = () =>
   scriptedAgentDefinition({
     id: "busy",
@@ -76,7 +85,7 @@ describe("the Event vocabulary", () => {
   test("audit and journal records never appear as mailbox Events", async () => {
     const { harness, definitions, store } = wired();
     const ref = await definitions.save(busy());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -109,7 +118,7 @@ describe("the Event vocabulary", () => {
         program: [{ do: "await", eventKinds: ["external.input"], correlationId: "never" }, { do: "complete" }],
       }),
     );
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "WAITING");
 
@@ -139,7 +148,7 @@ describe("the Event vocabulary", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(busy());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     // What the executor was handed contains logical names and validated data, and no route back.

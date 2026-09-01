@@ -1,6 +1,6 @@
 # Slice D.0 Implementation Decisions — Agent Operation Exposure and Projection
 
-> **Status: implemented v0.4 reference-Agent baseline.**
+> **Status: implemented v0.4 reference-Agent baseline, plus the D.0.1 review retrofit (§14).**
 >
 > This note records the concrete shapes chosen while implementing Slice D.0, described in
 > [`003-implementation-audit-and-migration-plan.md`](003-implementation-audit-and-migration-plan.md)
@@ -10,8 +10,14 @@
 > architecture documents remain authoritative — nothing here promotes an implementation choice into
 > an architectural claim.
 >
-> **Baseline:** Slice C.1 at commit `14d74ab`. `npm test` 540, `npm run test:benchmark-subjects` 8,
-> `npm run typecheck` clean.
+> **Baseline:** Slice C.1 at commit `14d74ab`. D.0 landed at `npm test` 540,
+> `npm run test:benchmark-subjects` 8, `npm run typecheck` clean. After the D.0.1 retrofit recorded
+> in §14: `npm test` 567, `npm run test:evals` 11, `npm run test:benchmark-subjects` 8, typecheck
+> clean.
+>
+> **Sections 1-13 describe D.0 as it was implemented. §14 records what the post-D review against
+> [`009-agent-effectiveness-seams-before-slice-d-review.md`](009-agent-effectiveness-seams-before-slice-d-review.md)
+> changed.** Where the two disagree, §14 is current.
 
 ## 1. What the slice implements
 
@@ -332,3 +338,201 @@ stale-continuation or interleaving policy; parallel Workflow branches; durable r
 unified `Suspension` record; sandbox or environment architecture; a full principal/tenant policy
 model; Cedar/OpenFGA; large-catalog BM25/embedding/LLM selection; general service export; A2A;
 Skills; and any new Event kind.
+
+---
+
+## 14. D.0.1 — the post-D review retrofit
+
+The review in
+[`009-agent-effectiveness-seams-before-slice-d-review.md`](009-agent-effectiveness-seams-before-slice-d-review.md)
+was applied to the landed D.0 implementation. It produced one blocking correction and four additive
+seams. Nothing in the Slice-D architecture above was reversed: the layering, the controller/Harness
+division, `ControllerResumption`, and the Strands interrupt-before-execution bridge are unchanged.
+
+### 14.1 The defect: effective authority did not bind dispatch
+
+D.0 made `EffectiveOperationAuthority` constrain the **Active Operation View**, and made the
+`EffectAuthorizer` decide the concrete request. Read together, those two facts left a gap:
+
+```text
+a buggy or custom ActiveOperationViewResolver exposes an operation
+        ↓ outside the stored ceiling
+the projection carries it, the model selects it, the controller proposes it
+        ↓
+a permissive EffectAuthorizer allows it
+        ↓
+it dispatches
+```
+
+Nothing in D.0 stopped that, which contradicts what §3 of this document says the ceiling *is*.
+Exposure was narrowing authority without authority binding execution.
+
+`EffectProcessor` now checks the operation against the Execution's **current** effective authority
+before it consults policy at all:
+
+```text
+UseCapability proposal
+        ↓ journal      requested
+current EffectiveOperationAuthority, read fresh from the runtime-owned store facet
+  operation absent, or no record at all  ->  denied, and policy is never asked
+        ↓
+EffectAuthorizer on the concrete payload
+  deny  ->  denied
+        ↓
+ordinary dispatch
+```
+
+Decisions worth recording:
+
+- **The check is in the gateway, not in a controller.** Enforcement belongs where dispatch happens.
+  The architecture suite now asserts the inverse as well: no module under `controllers/` names
+  `authorizesOperation`, `readOperationAuthority`, or `effectiveOperationAuthority`, and no
+  controller's import graph reaches the read-only authority port.
+- **One source, not two.** The gateway reads `RuntimeStore.readOperationAuthority` - the same
+  runtime-owned facet the exposure resolver reads through
+  `EffectiveOperationAuthoritySource` - rather than being handed a second authority object. The
+  ceiling that governs a dispatch and the ceiling an Active View was cut from cannot drift apart.
+- **The ceiling is checked before policy.** Ordering matters as much as outcome: policy that is
+  *asked* about an operation outside the ceiling is policy that could accidentally allow it.
+- **Fail closed, with two distinct codes.** `no_effective_operation_authority` and
+  `operation_outside_effective_authority` are different mistakes and read differently in the journal.
+  There is no compatibility fallback that trusts the authorizer alone when no record exists.
+- **Fixtures were updated, not the rule.** Every conformance case and the workflow canary that
+  legitimately dispatches a capability now creates its root Execution with an explicit
+  `operationAuthority` grant. That is a real improvement in those tests: they now say what the
+  Execution was permitted, rather than relying on policy to imply it. No Workflow semantics,
+  topology, or `ControllerResumption` behaviour changed.
+
+`tests/conformance/agent/authority-ceiling.test.ts` is the inverse of the existing reauthorization
+test and proves the four cases that matter: a buggy resolver plus a permissive authorizer dispatches
+nothing; the authorizer is never consulted for an out-of-ceiling operation; an Execution with no
+ceiling can dispatch nothing; and a ceiling narrowed *while a model call is suspended* denies the
+dispatch the old projection would otherwise have carried. That last case models the narrowing at the
+store port rather than inventing a mutable-authority API, because v0.4 has none and delegation is
+Slice E.
+
+### 14.2 Model-facing observation projection
+
+`agent/observation-projection.ts`. D.0 shaped operation results in two independent places -
+`renderAgentObservation` in core and `observationValue` in the Strands bridge - which is two answers
+to one question.
+
+```text
+Event / settled result  ->  AgentOperationObservation  ->  AgentModelObservation  ->  executor
+                            semantic                      replaceable strategy
+```
+
+```ts
+interface AgentObservationProjector {
+  project(observation: AgentOperationObservation, context?: AgentObservationProjectionContext): AgentModelObservation;
+}
+```
+
+- `AgentModelObservation` carries **two** rendered forms - `content` for the transcript and `value`
+  for a framework resuming a paused tool call - because there are two honest consumers and one
+  strategy must decide both. Everything else on it (`callId`, `alias`, `outcome`) is correlation.
+- `renderAgentObservation` was **removed**. The controller projects once per step and uses that one
+  projection for the transcript *and* for `AgentExecutorRequest.observations`, whose type changed
+  from the semantic record to the projected one. The Strands bridge now forwards
+  `observation.value`; converting it to `InterruptResponseContent` is framework adaptation, and the
+  test greps to prove the bridge no longer re-derives outcome shape itself.
+- The persisted `AgentInvocationState.observations` stores the **projected** form, deliberately: what
+  must survive a resumption is what the call actually saw, and a later strategy change must not
+  retroactively rewrite it.
+- The reference projector preserves D.0 behaviour and implements none of redaction, truncation,
+  pagination, summarisation, stable references, or concise/detailed modes. Those are what the seam
+  exists to make replaceable; shipping one as the default would make it policy.
+
+### 14.3 Evaluation-grade model invocation trace
+
+The `AgentTrace` seam was kept and extended rather than replaced, and no model-result Event kind was
+added.
+
+`AgentExecutor.step` now returns `AgentExecutorStepResult`:
+
+```ts
+{ outcome: AgentExecutorOutcome; metadata?: AgentModelInvocationMetadata }
+```
+
+Split rather than flattened, so a controller structurally cannot branch on a finish reason. The
+reference executor was discarding `response.metadata` and `response.diagnostics` entirely; it now
+reports provider, concrete model, usage, finish reason, normalized diagnostics, and a latency
+measured around the provider call. The Strands bridge reports what the framework truthfully has -
+accumulated usage, stop reason, latency - and invents no `diagnostics` field it cannot fill.
+
+`AgentModelInvocation` grew from eight fields to the whole invocation boundary: `executionId`,
+`activationId`, `step`, `reentered`, logical and resolved model identity, deployment metadata,
+`informationSelectionId`, `projectionId`/`viewId`/`bindings`, the semantic `outcome`, the resulting
+controller `decision`, the `proposals` with their correlations, and `metadata`. The record is now
+emitted **after** the decision is known, so one record answers "what did it see, what did it say,
+what did we then do".
+
+- **`informationSelectionId`** is a content digest of the compiled context (`ic_…`), added so a trace
+  can name what a call saw without the prompt being retained. It is correlation, not authority, and
+  nothing looks a context up by one.
+- **`reentered`** distinguishes a fast completion from one that crossed a `ControllerResumption`. The
+  metadata travels as plain JSON through the resumption, so both paths report the same facts - which
+  the conformance suite asserts on both paths.
+- Tracing remains inert: the trace test asserts no Effect kind, no journal entry, no mailbox append,
+  and no leakage of `usage`, `finishReason`, `latencyMs`, or diagnostics into control state.
+
+### 14.4 Typed model action binding target
+
+`operations/action-target.ts`. `ModelOperationBinding` no longer embeds `capability`/`operation`
+directly:
+
+```ts
+type ModelActionTarget = { kind: "capability_operation"; capability: string; operation: string };
+
+interface ModelOperationBinding { bindingId; alias; target: ModelActionTarget; description; input }
+```
+
+- **Exactly one target kind exists**, and the controller switches on `kind` with an explicit refusal
+  for anything else. No `WriteMemory`, `SpawnExecution`, `SendMessage`, `RequestUserInput`, or local
+  action was implemented, and no universal action registry was created. The change is migration
+  safety: a projection is persisted inside an invocation snapshot, so the flat pair would have stored
+  the claim that every model-visible action *is* a capability operation.
+- `AgentPendingCall` and `AgentOperationObservation` carry the same target rather than duplicating
+  the pair.
+- **`AGENT_CONTROL_STATE_VERSION` is 2**, and `readAgentControlState` returns
+  `absent | read | unsupported` instead of `AgentControlState | null`. A version this build does not
+  know is *refused* - the controller fails with `agent_control_state_version_unsupported` - because
+  "no progress yet" and "progress this build cannot interpret" are different situations, and reading
+  a v1 record as v2 would resolve a stored alias against a target that is not there. Pre-v1 carries
+  no migration, deliberately.
+
+### 14.5 Strategy-neutral information compiler
+
+`AgentInformationCompiler` in `controllers/agent/information.ts`, with
+`referenceAgentInformationCompiler` (instructions plus a bounded recent-message window) as the
+default. The controller held a direct import of the one fixed compiler; it now holds the port.
+
+No Structured Memory, Derived Semantic Memory retrieval, Working Notes, artifact retrieval,
+summarisation, compaction, fresh-context handoff, or model-specific packing was implemented. The
+architecture suite still walks the compiler's import graph and asserts it reaches no authority,
+exposure, or projection module, and the conformance case proves the property that matters: two
+compilers over the same Agent state produce different contexts while the operation projection stays
+structurally identical and the provider is shown byte-identical operation specs.
+
+### 14.6 Behavioural eval baseline
+
+`tests/evals/agent/`, run by `npm run test:evals`, kept strictly separate from
+`tests/conformance/`. A small trial abstraction (`runTrial`/`runTrials`/`measure`) plus ten
+deterministic cases over scripted models and in-memory worlds: correct selection, correct arguments,
+no unnecessary call, success, failure recovery, denial recovery, unknown outcome not claimed as
+success, an unexposed operation never selected, model-call budget exhaustion, and a confident claim
+graded against an unchanged world.
+
+Every case is graded on **environment state**, not on the Agent's text. Metrics recorded per trial:
+task success, operation-selection correctness, argument correctness, unnecessary calls, model-call
+count, operation-call count, bounded-progression failure, tokens, and latency. `runTrials` takes a
+trial count so a stochastic provider drops in later; a deterministic script runs one trial and says
+so. No dashboard, no telemetry service, no benchmark-specific kernel primitive, no planner/evaluator
+type, and no LLM judge.
+
+### 14.7 What D.0.1 deliberately did not do
+
+Everything in §13 remains not implemented. The retrofit added no MCP, no Slice E, no memory, no
+messaging, no human input, no second action family, and no model-visible wrapper for any other
+Effect. It also did not add a mutable-authority API: the narrowing conformance case models a changed
+ceiling at the store port precisely so that one is not invented before delegation needs it.

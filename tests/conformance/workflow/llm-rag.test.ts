@@ -40,6 +40,17 @@ import {
   createLocalRetrievalExecutor,
 } from "@agent-sdk/retrieval-local";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = {
+  operations: [{ capability: LOCAL_RETRIEVAL_CAPABILITY, operation: LOCAL_RETRIEVAL_OPERATIONS.search }],
+};
+
 const PET_POLICY = {
   id: "pet-policies",
   title: "Pet policies",
@@ -117,7 +128,7 @@ describe("LLM Stage to live RAG", () => {
       capabilities: createLocalRetrievalExecutor({ documents: [PET_POLICY] }),
     });
     const ref = await definitions.save(defineWorkflow({ id: "bounded-rag", spec: ragWorkflow }));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     const records = await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -152,7 +163,7 @@ describe("LLM Stage to live RAG", () => {
       capabilities: executor,
     });
     const ref = await definitions.save(defineWorkflow({ id: "bounded-rag", spec: ragWorkflow }));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     // The Workflow really waited: the Stage had not transitioned and the model had not continued.
@@ -203,7 +214,7 @@ describe("LLM Stage to live RAG", () => {
       capabilities: createLocalRetrievalExecutor({ documents: [PET_POLICY] }),
     });
     const ref = await definitions.save(defineWorkflow({ id: "bounded-rag", spec: ragWorkflow }));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
@@ -231,7 +242,7 @@ describe("LLM Stage to live RAG", () => {
       capabilities: createLocalRetrievalExecutor({ documents: [PET_POLICY] }),
     });
     const ref = await definitions.save(defineWorkflow({ id: "bounded-rag", spec: ragWorkflow }));
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);

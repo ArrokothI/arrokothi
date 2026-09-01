@@ -34,13 +34,14 @@
 import { toJsonSchema } from "@agent-sdk/core/execution";
 import type {
   AgentExecutor,
-  AgentExecutorOutcome,
   AgentExecutorRequest,
+  AgentExecutorStepResult,
+  AgentModelInvocationMetadata,
   ModelOperationCall,
   ModelProviderLookup,
 } from "@agent-sdk/core/ports";
 import { Agent, BeforeToolCallEvent, FunctionTool, InterruptResponseContent } from "@strands-agents/sdk";
-import type { JSONValue, MessageData, Snapshot } from "@strands-agents/sdk";
+import type { AgentResult, JSONValue, MessageData, Snapshot } from "@strands-agents/sdk";
 import { ArrokothStrandsModel } from "./model.ts";
 
 /** One interrupt name for the whole bridge, so an interrupt id is reconstructible from a tool-use id. */
@@ -96,30 +97,48 @@ function invocationPrompt(request: AgentExecutorRequest): string {
   return latest?.content ?? "Continue.";
 }
 
-/** What the Harness established, in the shape a tool callback may hand back to the model. */
+/**
+ * What the Harness established, in the shape this framework hands back to a paused tool call.
+ *
+ * The *semantic* shaping already happened: the controller ran its observation projector over the
+ * settled result, and `observation.value` is what that strategy decided the model should read. All
+ * this does is present it as the framework's own value type. That distinction is the whole point of
+ * the seam - a bridge that decided for itself how a denial or an unknown outcome reads would be a
+ * second, invisible answer to a question the Agent strategy is supposed to own.
+ */
 function observationValue(request: AgentExecutorRequest, toolUseId: string): JSONValue | undefined {
   const observation = request.observations.find((candidate) => candidate.callId === toolUseId);
-  if (!observation) return undefined;
-  if (observation.outcome === "completed") return (observation.observation ?? null) as JSONValue;
+  return observation ? (observation.value as JSONValue) : undefined;
+}
+
+/**
+ * Token usage the framework accumulated, if it reported any.
+ *
+ * Returns nothing rather than zeros when the framework has no metrics: an absent measurement and a
+ * measurement of zero are different facts, and only one of them is true here.
+ */
+function usageOf(result: AgentResult): AgentModelInvocationMetadata["usage"] | undefined {
+  const usage = result.metrics?.accumulatedData?.usage;
+  if (!usage) return undefined;
   return {
-    error: {
-      outcome: observation.outcome,
-      code: observation.error?.code ?? observation.outcome,
-      message: observation.error?.message ?? observation.outcome,
-    },
-  } as JSONValue;
+    inputTokens: usage.inputTokens,
+    outputTokens: usage.outputTokens,
+    totalTokens: usage.totalTokens,
+  };
 }
 
 export function createStrandsAgentExecutor(options: StrandsAgentExecutorOptions): AgentExecutor {
   return {
-    async step(request: AgentExecutorRequest): Promise<AgentExecutorOutcome> {
+    async step(request: AgentExecutorRequest): Promise<AgentExecutorStepResult> {
       if (request.capabilities.length > 0 && !request.model.portableFeatures.capabilityCalls) {
         return {
-          kind: "fail",
-          code: "model_cannot_receive_operations",
-          message:
-            `logical model "${request.model.logicalRef}" resolved to ${request.model.provider}/${request.model.model}, ` +
-            `which cannot receive operation calls`,
+          outcome: {
+            kind: "fail",
+            code: "model_cannot_receive_operations",
+            message:
+              `logical model "${request.model.logicalRef}" resolved to ${request.model.provider}/${request.model.model}, ` +
+              `which cannot receive operation calls`,
+          },
         };
       }
 
@@ -192,6 +211,9 @@ export function createStrandsAgentExecutor(options: StrandsAgentExecutorOptions)
       });
 
       const continuation = readContinuation(request.continuation);
+      // Measured around the framework invocation, which is the closest honest boundary this bridge
+      // has: Strands owns the provider round trips inside it.
+      const startedAt = Date.now();
       let result;
       try {
         if (continuation) {
@@ -212,12 +234,26 @@ export function createStrandsAgentExecutor(options: StrandsAgentExecutorOptions)
           });
         }
       } catch (error) {
-        return {
-          kind: "fail",
+        const failure = {
           code: "strands_invocation_failed",
           message: error instanceof Error ? error.message : String(error),
         };
+        return {
+          outcome: { kind: "fail", ...failure },
+          metadata: { latencyMs: Date.now() - startedAt, failure },
+        };
       }
+
+      // Whatever the framework truthfully reported, and nothing else. Strands surfaces aggregate
+      // usage and a stop reason; it does not surface the provider's own diagnostics through this
+      // path, so no `diagnostics` field is invented to fill the shape.
+      const metadata: AgentModelInvocationMetadata = {
+        provider: request.model.provider,
+        model: request.model.model,
+        ...(usageOf(result) !== undefined ? { usage: usageOf(result)! } : {}),
+        ...(typeof result.stopReason === "string" ? { finishReason: result.stopReason } : {}),
+        latencyMs: Date.now() - startedAt,
+      };
 
       if (result.stopReason === "interrupt") {
         // Paused before any native execution. The snapshot is plain JSON and travels back through
@@ -229,24 +265,44 @@ export function createStrandsAgentExecutor(options: StrandsAgentExecutorOptions)
           input: (call.input ?? {}) as never,
         }));
         if (calls.length === 0) {
-          return { kind: "fail", code: "strands_interrupt_without_call", message: "the framework paused with no captured tool use" };
+          return {
+            outcome: {
+              kind: "fail",
+              code: "strands_interrupt_without_call",
+              message: "the framework paused with no captured tool use",
+            },
+            metadata,
+          };
         }
         const carried: StrandsContinuation = {
           snapshot,
           pending: captured.map((call) => ({ interruptId: call.interruptId, toolUseId: call.toolUseId, alias: call.alias })),
         };
-        return { kind: "call_operations", calls, continuation: JSON.parse(JSON.stringify(carried)) };
+        return {
+          outcome: { kind: "call_operations", calls, continuation: JSON.parse(JSON.stringify(carried)) },
+          metadata,
+        };
       }
 
       if (result.stopReason === "cancelled") {
-        return { kind: "fail", code: "strands_cancelled", message: "the agent invocation was cancelled" };
+        return {
+          outcome: { kind: "fail", code: "strands_cancelled", message: "the agent invocation was cancelled" },
+          metadata,
+        };
       }
 
       const text = result.toString().trim();
       if (text.length === 0) {
-        return { kind: "fail", code: "strands_empty_output", message: `the agent stopped with reason "${result.stopReason}" and no text` };
+        return {
+          outcome: {
+            kind: "fail",
+            code: "strands_empty_output",
+            message: `the agent stopped with reason "${result.stopReason}" and no text`,
+          },
+          metadata,
+        };
       }
-      return { kind: "respond", text };
+      return { outcome: { kind: "respond", text }, metadata };
     },
   };
 }

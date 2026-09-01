@@ -23,6 +23,26 @@ For the current v0.4 Agent work, use the following documents together:
 009-agent-effectiveness-seams-before-slice-d-review.md
   post-implementation review guidance for preserving ACI/context/eval seams
   without turning model-specific engineering techniques into kernel semantics
+
+010-slice-d0-implementation-decisions.md
+  what Slice D.0 became in code, plus the D.0.1 review retrofit that closed the
+  effective-authority dispatch defect and added the four replaceable seams
 ```
 
 `009` is intentionally a **review/amendment document**, not a replacement Slice-D coding plan. If Slice D or a D.0 retrofit is already in progress, finish the coherent implementation first, then review the landed result against `009` and apply only concrete additive seams or local retrofits justified by the implementation.
+
+Two documents share the number `009` in spirit only: `009-agent-effectiveness-seams-before-slice-d-review.md` is the review guidance written *before* the post-D audit, and the Slice-D.0 implementation record was renumbered to `010` so the sequence reads in the order the work actually happened.
+
+## Where the work stands
+
+```text
+Slice D.0 implementation                 done
+        ↓
+post-D 009 review / D.0.1 retrofit       done
+        ↓
+Slice D accepted                         pending architecture review
+        ↓
+behavioural Agent baseline               first cases landed (tests/evals/agent/)
+        ↓
+narrow synchronous MCP operation proof   next
+```

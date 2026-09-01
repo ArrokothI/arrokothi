@@ -168,7 +168,14 @@ const harness = new Harness({
 const started = Date.now();
 try {
   const ref = await definitions.save(defineWorkflow({ id: "pet-policy-answer", spec }));
-  const handle = await harness.createExecution({ definition: ref });
+  const handle = await harness.createExecution({
+    definition: ref,
+    // The runtime-owned ceiling. Policy decides the concrete request; this decides whether the
+    // operation is inside what this Execution may use at all, and it is re-read at dispatch.
+    operationAuthority: {
+      operations: [{ capability: LOCAL_RETRIEVAL_CAPABILITY, operation: LOCAL_RETRIEVAL_OPERATIONS.search }],
+    },
+  });
   await harness.deliverExternalInput({ destination: handle.executionId, label: "question", payload: "Can I keep a dog at Harbor View?" });
   const records = await harness.runUntilIdle();
 

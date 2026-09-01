@@ -26,10 +26,10 @@
  * kernel stores and hands back, never a live object.
  */
 
-import type { ModelCapabilitySpec, ModelRequirements, ResolvedModel } from "../model/types.ts";
+import type { ModelCapabilitySpec, ModelRequirements, ModelUsage, ResolvedModel } from "../model/types.ts";
 import type { ModelOperationProjection } from "../operations/projection.ts";
 import type { AgentInformationContext } from "../agent/information-context.ts";
-import type { AgentOperationObservation } from "../agent/observations.ts";
+import type { AgentModelObservation } from "../agent/observation-projection.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 
 export type { AgentInformationContext };
@@ -47,8 +47,14 @@ export interface AgentExecutorRequest {
   readonly projection: ModelOperationProjection;
   /** The provider-facing derivation of that snapshot: names, descriptions, input schemas. */
   readonly capabilities: readonly ModelCapabilitySpec[];
-  /** Results of the operations the previous step requested, correlated by the ids it emitted. */
-  readonly observations: readonly AgentOperationObservation[];
+  /**
+   * Results of the operations the previous step requested, already projected for a model.
+   *
+   * The semantic observations were shaped by the controller's observation projector before they got
+   * here, so an executor renders nothing itself: it forwards what the strategy decided the model
+   * should read. Correlated by the call ids the previous step emitted.
+   */
+  readonly observations: readonly AgentModelObservation[];
   /** 1-based Agent step. Persisted controller progress, never a runtime identity. */
   readonly step: number;
   readonly limits: AgentExecutorLimits;
@@ -81,6 +87,48 @@ export type AgentExecutorOutcome =
   | { readonly kind: "stop"; readonly text?: string; readonly continuation?: JsonValue }
   /** This step cannot produce a semantic answer. Distinct from one operation failing. */
   | { readonly kind: "fail"; readonly code: string; readonly message: string };
+
+/**
+ * Non-semantic facts about one provider round trip.
+ *
+ * Everything here is evidence, not meaning. Controller behaviour depends on the semantic outcome and
+ * on nothing in this record: it grants no authority, becomes no Effect, produces no Event, and is
+ * never folded into the transcript. It exists because usage, finish reason, and normalized provider
+ * diagnostics are exactly what an evaluation or debug deployment needs and exactly what the first
+ * implementation threw away before any observer could see it.
+ *
+ * Plain JSON, because it crosses the same resumption boundary the outcome does - so a slow
+ * invocation reports the same facts a fast one did. Every field is optional and every field is
+ * *truthful*: a provider that reports no usage produces no usage here. Nothing is invented to
+ * satisfy a type.
+ */
+export interface AgentModelInvocationMetadata {
+  /** Provider-reported provider id, which may differ from the one resolution named. */
+  readonly provider?: string;
+  /** Provider-reported concrete model/version, often more specific than the requested id. */
+  readonly model?: string;
+  readonly usage?: ModelUsage;
+  readonly finishReason?: string;
+  /** Provider-specific debug data, normalized to JSON. Not an Agent observation. */
+  readonly diagnostics?: JsonObject;
+  /** Wall-clock around the provider call, when the executor can measure it cleanly. */
+  readonly latencyMs?: number;
+  /** How a provider rejection was normalized, for a step that failed before producing output. */
+  readonly failure?: { readonly code: string; readonly message: string };
+}
+
+/**
+ * What one executor step returns.
+ *
+ * Split deliberately. `outcome` is the semantic answer and the only thing the controller acts on;
+ * `metadata` is evidence an observer may record and nothing may decide on. Returning them as one
+ * flat object would have made it possible - eventually inevitable - for a controller to branch on a
+ * finish reason.
+ */
+export interface AgentExecutorStepResult {
+  readonly outcome: AgentExecutorOutcome;
+  readonly metadata?: AgentModelInvocationMetadata;
+}
 
 export interface AgentExecutorIssue {
   readonly path: string;
@@ -147,6 +195,20 @@ export function agentExecutorOutcomeIssues(outcome: unknown, path = "outcome"): 
   }
 }
 
+/** Structural validation of a whole step result, before the controller acts on any of it. */
+export function agentExecutorStepResultIssues(result: unknown, path = "result"): readonly AgentExecutorIssue[] {
+  if (result === null || typeof result !== "object" || Array.isArray(result)) {
+    return [{ path, message: "expected an executor step result object" }];
+  }
+  const candidate = result as Record<string, unknown>;
+  const issues = [...agentExecutorOutcomeIssues(candidate["outcome"], `${path}.outcome`)];
+  const metadata = candidate["metadata"];
+  if (metadata !== undefined && (metadata === null || typeof metadata !== "object" || Array.isArray(metadata))) {
+    issues.push({ path: `${path}.metadata`, message: "expected invocation metadata or nothing" });
+  }
+  return issues;
+}
+
 export interface AgentExecutor {
   /**
    * Runs one bounded semantic step.
@@ -155,5 +217,5 @@ export interface AgentExecutor {
    * and the Harness's budget, and an executor that ran until it felt finished would have taken
    * both.
    */
-  step(request: AgentExecutorRequest): Promise<AgentExecutorOutcome> | AgentExecutorOutcome;
+  step(request: AgentExecutorRequest): Promise<AgentExecutorStepResult> | AgentExecutorStepResult;
 }

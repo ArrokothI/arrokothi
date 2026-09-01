@@ -61,7 +61,9 @@ function slowRig(options: { readonly views?: ActiveOperationViewResolver } = {})
 }
 
 function stateOf(progress: Record<string, unknown>): AgentControlState {
-  return readAgentControlState(progress as never)!;
+  const read = readAgentControlState(progress as never);
+  assert.equal(read.status, "read", "this build understands the progress it wrote");
+  return (read as { readonly state: AgentControlState }).state;
 }
 
 describe("a slow Agent model step suspends without becoming an Event", () => {

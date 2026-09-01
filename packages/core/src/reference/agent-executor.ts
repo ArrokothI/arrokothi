@@ -22,8 +22,14 @@
  */
 
 import { ModelInvocationError } from "../model/errors.ts";
-import type { ModelMessage, ModelProviderRequest } from "../model/types.ts";
-import type { AgentExecutor, AgentExecutorOutcome, AgentExecutorRequest, ModelOperationCall } from "../ports/agent-executor.ts";
+import type { ModelMessage, ModelProviderRequest, ModelProviderResponse } from "../model/types.ts";
+import type {
+  AgentExecutor,
+  AgentExecutorRequest,
+  AgentExecutorStepResult,
+  AgentModelInvocationMetadata,
+  ModelOperationCall,
+} from "../ports/agent-executor.ts";
 import type { ModelProviderLookup } from "../ports/model-provider.ts";
 
 export interface ReferenceAgentExecutorOptions {
@@ -36,19 +42,40 @@ function messagesFor(request: AgentExecutorRequest): readonly ModelMessage[] {
   return request.information.messages;
 }
 
+/**
+ * What the provider reported about the call, kept truthfully.
+ *
+ * Only what was actually there: a provider that returns no usage produces no `usage` field, rather
+ * than zeros that would read as "it used nothing". None of this is semantic - the controller never
+ * sees it as an outcome - but discarding it here is what would make an evaluation deployment unable
+ * to reconstruct the invocation at all, since nothing downstream ever sees the provider response.
+ */
+function metadataOf(response: ModelProviderResponse, latencyMs: number): AgentModelInvocationMetadata {
+  return {
+    provider: response.metadata.provider,
+    model: response.metadata.model,
+    ...(response.metadata.usage !== undefined ? { usage: response.metadata.usage } : {}),
+    ...(response.metadata.finishReason !== undefined ? { finishReason: response.metadata.finishReason } : {}),
+    ...(response.diagnostics?.provider !== undefined ? { diagnostics: response.diagnostics.provider } : {}),
+    latencyMs,
+  };
+}
+
 export function createReferenceAgentExecutor(options: ReferenceAgentExecutorOptions): AgentExecutor {
   return {
-    async step(request: AgentExecutorRequest): Promise<AgentExecutorOutcome> {
+    async step(request: AgentExecutorRequest): Promise<AgentExecutorStepResult> {
       // Refused explicitly rather than by quietly sending no operations. An Agent whose exposed
       // operations vanished because the deployment model cannot receive them would look like a
       // model that simply chose not to use any.
       if (request.capabilities.length > 0 && !request.model.portableFeatures.capabilityCalls) {
         return {
-          kind: "fail",
-          code: "model_cannot_receive_operations",
-          message:
-            `logical model "${request.model.logicalRef}" resolved to ${request.model.provider}/${request.model.model}, ` +
-            `which cannot receive operation calls, but this step exposes ${request.capabilities.length}`,
+          outcome: {
+            kind: "fail",
+            code: "model_cannot_receive_operations",
+            message:
+              `logical model "${request.model.logicalRef}" resolved to ${request.model.provider}/${request.model.model}, ` +
+              `which cannot receive operation calls, but this step exposes ${request.capabilities.length}`,
+          },
         };
       }
 
@@ -62,18 +89,25 @@ export function createReferenceAgentExecutor(options: ReferenceAgentExecutorOpti
         purpose: options.purpose ?? `agent:step${request.step}`,
       };
 
+      // Measured around the provider call and nowhere wider, so it means one round trip rather
+      // than "how long the Activation took".
+      const startedAt = Date.now();
       let response;
       try {
         response = await provider.generate(providerRequest);
       } catch (error) {
         // A provider rejection is a step failure, not a runtime one, and it reads identically
         // whether the call settled inside its Activation or an hour later.
-        return {
-          kind: "fail",
+        const failure = {
           code: error instanceof ModelInvocationError ? `model_${error.code}` : "model_invocation_failed",
           message: error instanceof Error ? error.message : String(error),
         };
+        return {
+          outcome: { kind: "fail", ...failure },
+          metadata: { latencyMs: Date.now() - startedAt, failure },
+        };
       }
+      const metadata = metadataOf(response, Date.now() - startedAt);
 
       const returned = response.output.capabilityCalls ?? [];
       const text = typeof response.output.text === "string" ? response.output.text : "";
@@ -81,10 +115,13 @@ export function createReferenceAgentExecutor(options: ReferenceAgentExecutorOpti
       if (returned.length > 0) {
         if (returned.length > request.limits.maxOperationCallsPerStep) {
           return {
-            kind: "fail",
-            code: "agent_operation_fanout_exceeded",
-            message:
-              `this step requested ${returned.length} operations; at most ${request.limits.maxOperationCallsPerStep} are permitted`,
+            outcome: {
+              kind: "fail",
+              code: "agent_operation_fanout_exceeded",
+              message:
+                `this step requested ${returned.length} operations; at most ${request.limits.maxOperationCallsPerStep} are permitted`,
+            },
+            metadata,
           };
         }
         const calls: ModelOperationCall[] = returned.map((call) => ({
@@ -94,15 +131,18 @@ export function createReferenceAgentExecutor(options: ReferenceAgentExecutorOpti
           alias: call.capability,
           input: call.input,
         }));
-        return { kind: "call_operations", calls, ...(text.length > 0 ? { text } : {}) };
+        return { outcome: { kind: "call_operations", calls, ...(text.length > 0 ? { text } : {}) }, metadata };
       }
 
-      if (text.length > 0) return { kind: "respond", text };
+      if (text.length > 0) return { outcome: { kind: "respond", text }, metadata };
 
       return {
-        kind: "fail",
-        code: "agent_empty_model_output",
-        message: "the model returned neither text nor an operation selection",
+        outcome: {
+          kind: "fail",
+          code: "agent_empty_model_output",
+          message: "the model returned neither text nor an operation selection",
+        },
+        metadata,
       };
     },
   };

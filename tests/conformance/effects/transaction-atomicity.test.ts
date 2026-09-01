@@ -30,6 +30,15 @@ import {
 } from "@agent-sdk/core/reference";
 import { createScriptedAgentController, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
+/**
+ * What this Execution is permitted to use at all.
+ *
+ * The runtime-owned ceiling, supplied when the Execution is created. It is checked again at dispatch
+ * from current state, so an Execution created without one can reach no capability implementation
+ * whatever a controller proposes and whatever policy would have said.
+ */
+const AUTHORITY = { operations: [{ capability: "mail.send", operation: "send" }] };
+
 /** A store that lets a test break exactly one write and leave every other guarantee intact. */
 class BreakableStore implements RuntimeStore {
   readonly inner = new InMemoryRuntimeStore();
@@ -130,7 +139,7 @@ describe("Effect gateway transaction atomicity", () => {
     store.break = (facet, detail) => (facet === "journal.append" && detail === "dispatch_started" ? "store unavailable" : null);
 
     const ref = await definitions.save(sender());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 0, "the intent to act could not be recorded, so nothing was attempted");
@@ -153,7 +162,7 @@ describe("Effect gateway transaction atomicity", () => {
     store.break = (facet) => (facet === "pending.insert" ? "store unavailable" : null);
 
     const ref = await definitions.save(sender());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 0);
@@ -169,7 +178,7 @@ describe("Effect gateway transaction atomicity", () => {
     store.break = (facet, detail) => (facet === "mailbox.append" && detail === "capability.completed" ? "mailbox unavailable" : null);
 
     const ref = await definitions.save(sender());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     assert.equal(executor.callCount, 1, "the operation really did run");
@@ -194,7 +203,7 @@ describe("Effect gateway transaction atomicity", () => {
     store.break = (facet, detail) => (facet === "mailbox.append" && detail === "capability.completed" ? "mailbox unavailable" : null);
 
     const ref = await definitions.save(sender());
-    const handle = await harness.createExecution({ definition: ref });
+    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
     assert.equal(executor.callCount, 1);
 
@@ -217,7 +226,7 @@ describe("Effect gateway transaction atomicity", () => {
         ],
       }),
     );
-    const retry = await harness.createExecution({ definition: retryRef });
+    const retry = await harness.createExecution({ definition: retryRef, operationAuthority: AUTHORITY });
     await harness.runUntilIdle();
 
     // A different Execution, so a different duplicate-suppression scope: this one is allowed to run.

@@ -14,6 +14,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { agentExecutorOutcomeIssues } from "@agent-sdk/core/ports";
+import { formatModelActionTarget } from "@agent-sdk/core/execution";
 import type { AgentExecutorRequest } from "@agent-sdk/core/ports";
 import {
   createAllowListAuthorizer,
@@ -98,7 +99,7 @@ describe("an AgentExecutor reports selections and cannot perform them", () => {
     // The executor alone, with no Harness anywhere near it.
     const executor = referenceAgentExecutor([provider]);
     const resolved = await testModelResolver().resolve({ logicalRef: "primary", requirements: { text: true } });
-    const outcome = await executor.step({
+    const { outcome, metadata } = await executor.step({
       model: resolved,
       requirements: { text: true, capabilityCalls: "required" },
       information: { system: "s", messages: [{ role: "user", content: "go" }] },
@@ -110,8 +111,7 @@ describe("an AgentExecutor reports selections and cannot perform them", () => {
           {
             bindingId: "ag/step1/projection/b1",
             alias: "docs_search",
-            capability: "docs",
-            operation: "search",
+            target: { kind: "capability_operation", capability: "docs", operation: "search" },
             description: "Search.",
             input: { kind: "object", fields: { query: { required: true, schema: { kind: "string" } } } },
           },
@@ -135,6 +135,12 @@ describe("an AgentExecutor reports selections and cannot perform them", () => {
       "the executor reports the name it was given; resolving it to an identity is the controller's job",
     );
     assert.equal(capabilities.callCount, 0, "and the capability implementation was never invoked");
+
+    // The provider's own report travels beside the outcome rather than being discarded. It is
+    // evidence: nothing in the semantic answer above depends on any of it.
+    assert.equal(metadata?.provider, "test");
+    assert.ok(typeof metadata?.latencyMs === "number", "measured at the invocation boundary");
+    assert.deepEqual(JSON.parse(JSON.stringify(metadata)), metadata, "and it is plain JSON");
   });
 
   test("swapping the deployment behind a logical model changes nothing semantic", async () => {
@@ -169,7 +175,7 @@ describe("an AgentExecutor reports selections and cannot perform them", () => {
       }
       return {
         journal: (await bundle.harness.effectJournalOf(agent.executionId)).map((entry) => entry.phase),
-        proposals: bundle.trace.proposals.map((record) => `${record.capability}:${record.operation}`),
+        proposals: bundle.trace.proposals.map((record) => formatModelActionTarget(record.target)),
         deployments: bundle.trace.deployments(),
       };
     };

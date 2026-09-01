@@ -10,6 +10,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { agentCallCorrelationId, effectRequestsIn, readAgentControlState } from "@agent-sdk/core/execution";
+import type { AgentControlState } from "@agent-sdk/core/execution";
 import {
   createActiveOperationViewResolver,
   createAllowListAuthorizer,
@@ -134,7 +135,9 @@ describe("untrusted content influences requests, never authority or exposure", (
       "each step's request carries its own correlation",
     );
 
-    const state = readAgentControlState((await bundle.harness.inspect(agent.executionId))!.control.progress)!;
+    const read = readAgentControlState((await bundle.harness.inspect(agent.executionId))!.control.progress);
+    assert.equal(read.status, "read");
+    const state = (read as { readonly state: AgentControlState }).state;
     const observed = state.messages.filter((message) => message.role === "capability").map((message) => message.content);
     assert.deepEqual(
       observed.map((content) => JSON.parse(content)),
@@ -175,7 +178,9 @@ describe("untrusted content influences requests, never authority or exposure", (
     assert.equal(receipt.status, "already_settled", "a second result answers nothing");
     await bundle.harness.runUntilIdle();
 
-    const state = readAgentControlState((await bundle.harness.inspect(agent.executionId))!.control.progress)!;
+    const read = readAgentControlState((await bundle.harness.inspect(agent.executionId))!.control.progress);
+    assert.equal(read.status, "read");
+    const state = (read as { readonly state: AgentControlState }).state;
     const observed = state.messages.filter((message) => message.role === "capability");
     assert.equal(observed.length, 1, "the Agent observed the authoritative outcome once");
     assert.match(observed[0]!.content, /"hits":\s*1/, "and it is the first one, not the later claim");
