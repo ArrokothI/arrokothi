@@ -61,20 +61,50 @@ export function initialControllerProgress(kind: DefinitionKind): ControllerProgr
  * ControllerResumptionWait   only that resumption settling makes it READY
  * ```
  *
- * For v0.4 the second arm suspends *exclusively*: Events still reach the mailbox, but none of them
- * produces an intervening Activation while the continuation is outstanding. That restriction is
- * what makes v0.4 free of stale-continuation risk without any stale-continuation machinery.
+ * ## Controlled interleaving (Slice E.1)
+ *
+ * `interleave` is the minimum serializable opt-in for controlled Event interleaving. It is a second,
+ * *separate* wake condition: a controller that knows some Events it can safely process while its
+ * primary dependency remains unresolved declares them here.
+ *
+ * ```text
+ * no interleave condition   -> exactly the v0.4 behaviour: only the primary dependency wakes
+ * primary condition matches -> ordinary dependency wake
+ * interleave matches        -> this Execution becomes READY for another Activation, without the
+ *                              primary dependency being satisfied; on the `controller_resumption`
+ *                              arm, the still-live resumption is atomically invalidated first
+ * unmatched Event           -> mailbox only; no wake
+ * ```
+ *
+ * It is plain declarative runtime data, exactly like `wake`: no predicate, no callback, no function.
+ * Interleaving *eligibility* is not mandatory immediate execution - the runtime stays free to be
+ * conservative about scheduling, and repeated matching Events do not each force a fresh expensive
+ * re-invocation (see [`../runtime/event-router.ts`](../runtime/event-router.ts) and
+ * [`../../../../docs/development/015-slice-e1-interleaving-peer-interaction.md`](../../../../docs/development/015-slice-e1-interleaving-peer-interaction.md)).
+ *
+ * Absent `interleave`, the `controller_resumption` arm still suspends *exclusively*, exactly as in
+ * v0.4: Events reach the mailbox but none produces an intervening Activation while the continuation
+ * is outstanding.
  */
 export type ExecutionWait =
-  | { readonly kind: "event"; readonly wake: WakeCondition }
-  | { readonly kind: "controller_resumption"; readonly resumptionId: ControllerResumptionId };
+  | { readonly kind: "event"; readonly wake: WakeCondition; readonly interleave?: WakeCondition }
+  | {
+      readonly kind: "controller_resumption";
+      readonly resumptionId: ControllerResumptionId;
+      readonly interleave?: WakeCondition;
+    };
 
-export function eventWait(wake: WakeCondition): ExecutionWait {
-  return { kind: "event", wake };
+export function eventWait(wake: WakeCondition, interleave?: WakeCondition): ExecutionWait {
+  return interleave ? { kind: "event", wake, interleave } : { kind: "event", wake };
 }
 
-export function controllerResumptionWait(resumptionId: ControllerResumptionId): ExecutionWait {
-  return { kind: "controller_resumption", resumptionId };
+export function controllerResumptionWait(
+  resumptionId: ControllerResumptionId,
+  interleave?: WakeCondition,
+): ExecutionWait {
+  return interleave
+    ? { kind: "controller_resumption", resumptionId, interleave }
+    : { kind: "controller_resumption", resumptionId };
 }
 
 /** Where this Execution's addressed Events accumulate. */

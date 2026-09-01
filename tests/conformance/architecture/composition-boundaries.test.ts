@@ -163,3 +163,86 @@ describe("Slice E.0 composition boundaries", () => {
     assert.equal(source.includes("spawn_execution"), false);
   });
 });
+
+describe("Slice E.1 interleaving / peer / cancellation boundaries", () => {
+  test("the Effect vocabulary gained no sixth kind for messaging or cancellation", async () => {
+    const source = await readFile(resolve(CORE_SRC, "effects/types.ts"), "utf8");
+    const declared = source.slice(source.indexOf("export type EffectKind"));
+    const kinds = [...declared.slice(0, declared.indexOf(";")).matchAll(/"([a-z_]+)"/g)].map((m) => m[1]!);
+    assert.deepEqual(
+      [...kinds].sort(),
+      ["request_user_input", "send_message", "spawn_execution", "use_capability", "write_memory"],
+      "send/ask/reply are all SendMessage; cancellation is not an Effect at all",
+    );
+  });
+
+  test("no controller module reaches messaging, peer-link, or cancellation runtime machinery", async () => {
+    const files = (await coreSourceFiles()).filter((path) => path.startsWith("controllers/"));
+    const forbidden = [
+      "createPeerRequestLink",
+      "markPeerRequestLinkSettled",
+      "peerRequestLinks",
+      "createCancellationRequest",
+      "cancellationRequests",
+      "cancelExecution",
+      "invalidateControllerResumption",
+      "routeEvent",
+      "settleOwnerOnChildTerminal",
+    ];
+    for (const path of files) {
+      const source = await readFile(resolve(CORE_SRC, path), "utf8");
+      for (const name of forbidden) {
+        assert.equal(source.includes(name), false, `${path} mentions ${name}; a controller proposes, it does not route or cancel`);
+      }
+    }
+  });
+
+  test("the controller boundary cannot reach the message gateway or the cancellation entry point", async () => {
+    const { files } = await walkGraph(["ports/controller.ts"]);
+    const forbidden = [
+      "execution/peer-request-link.ts",
+      "execution/cancellation-request.ts",
+      "execution/wait-for.ts",
+      "runtime/effect-processor.ts",
+      "runtime/harness.ts",
+    ];
+    assert.deepEqual([...files].filter((path) => forbidden.includes(path)), []);
+  });
+
+  test("SendMessage is dispatched only from the Effect gateway; peer.message is routed only through routeEvent", async () => {
+    const dispatchers: string[] = [];
+    const routers: string[] = [];
+    for (const path of await coreSourceFiles()) {
+      if (path.startsWith("reference/") || path.startsWith("testing/")) continue;
+      const source = await readFile(resolve(CORE_SRC, path), "utf8");
+      if (/dispatchSendMessage\s*\(/.test(source)) dispatchers.push(path);
+      if (/kind:\s*"peer\.message"/.test(source)) routers.push(path);
+    }
+    assert.deepEqual(dispatchers.sort(), ["runtime/effect-processor.ts"], "one mediated place a peer message is admitted");
+    assert.deepEqual(routers.sort(), ["runtime/effect-processor.ts"], "and it is minted only there, always via routeEvent");
+  });
+
+  test("the peer message source identity is runtime-owned, never a controller field", async () => {
+    const events = await readFile(resolve(CORE_SRC, "interaction/events.ts"), "utf8");
+    assert.match(events, /fromExecutionId[\s\S]{0,200}runtime-owned/, "PeerMessageBody documents fromExecutionId as runtime-owned");
+    const gateway = await readFile(resolve(CORE_SRC, "runtime/effect-processor.ts"), "utf8");
+    assert.match(gateway, /fromExecutionId:\s*\n?\s*\/\/ Runtime-owned|fromExecutionId: senderId/, "the gateway sets it from the sending Execution's id");
+  });
+
+  test("ControllerResumption invalidation is runtime state, and never becomes an Event", async () => {
+    const events = await readFile(resolve(CORE_SRC, "interaction/events.ts"), "utf8");
+    assert.equal(events.includes("controller_resumption.invalidated"), false, "no Event kind for invalidation");
+    const { bare } = await walkGraph(["execution/resumption.ts"]);
+    assert.deepEqual([...bare].sort(), [], "the resumption record still imports nothing");
+    const resumption = await readFile(resolve(CORE_SRC, "execution/resumption.ts"), "utf8");
+    // `invalidatedByEventId` names an Event for provenance, but the record carries no Event
+    // machinery: no envelope import, no mailbox facet, no routing.
+    for (const specifier of specifiersIn(resumption)) {
+      assert.equal(
+        /event-envelope|events\.ts|runtime-store|event-router/.test(specifier),
+        false,
+        `resumption.ts must not import ${specifier}`,
+      );
+    }
+  });
+});

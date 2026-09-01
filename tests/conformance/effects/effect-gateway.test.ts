@@ -327,9 +327,10 @@ describe("the Effect gateway", () => {
     });
     const ref = await definitions.save(
       scriptedAgentDefinition({
-        id: "wants-to-message",
+        id: "wants-to-write-memory",
         program: [
-          { do: "propose_effect", effect: { kind: "send_message", to: "exe_peer", body: { text: "hi" } } },
+          // `write_memory` is accepted v0.4 vocabulary that no slice yet dispatches (Slice F owns it).
+          { do: "propose_effect", effect: { kind: "write_memory", key: "note", value: { text: "hi" } } },
           { do: "complete" },
         ],
       }),
@@ -344,7 +345,7 @@ describe("the Effect gateway", () => {
 
     const journal = await harness.effectJournalOf(handle.executionId);
     assert.deepEqual(journal.map((entry) => entry.phase), ["requested", "rejected"]);
-    assert.equal(journal[0]!.effectKind, "send_message", "the request is recorded as what it was");
+    assert.equal(journal[0]!.effectKind, "write_memory", "the request is recorded as what it was");
   });
 
   test("proposing an Effect does not by itself mean WAITING", async () => {

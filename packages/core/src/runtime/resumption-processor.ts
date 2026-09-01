@@ -61,6 +61,7 @@ import { isTerminalLifecycle } from "../execution/lifecycle.ts";
 import type { ControllerResumption, ControllerResumptionOutcome } from "../execution/resumption.ts";
 import {
   createControllerResumption,
+  isResumptionTerminal,
   normalizeResumptionError,
   normalizeResumptionValue,
   outcomeOfResumption,
@@ -226,8 +227,11 @@ export class ControllerResumptionProcessor {
         if (!stored || stored.executionId !== executionId) {
           return { status: "invalid", detail: `${resumptionId} was not registered by this Activation` };
         }
-        if (stored.state === "settled") {
-          return { status: "invalid", detail: `${resumptionId} has already settled` };
+        if (isResumptionTerminal(stored)) {
+          return {
+            status: "invalid",
+            detail: `${resumptionId} is already ${stored.state}; re-derive the key to start fresh work`,
+          };
         }
         return { status: "recovered" };
       },
@@ -316,7 +320,10 @@ export class ControllerResumptionProcessor {
         // Re-read inside the transaction: the check and the write must see the same record, so a
         // duplicate continuation cannot settle the same dependency twice.
         const stored = await tx.controllerResumptions.get(resumptionId);
-        if (!stored || stored.state === "settled") return null;
+        // `pending` is the only state a late promise result may act on. A `settled` record is
+        // already done; an `invalidated` one was overtaken by an interleave Event and its result is
+        // obsolete - it must not settle, must not wake, and must not become an Event.
+        if (!stored || stored.state !== "pending") return null;
 
         await tx.controllerResumptions.update(settleControllerResumption(stored, outcome, settledAt));
 

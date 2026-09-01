@@ -20,4 +20,6 @@ export const ID_PREFIXES = {
   resumption: "res",
   /** One Execution's effective operation authority record. An address, never a bearer token. */
   operationAuthority: "oau",
+  /** One peer message. The identity a reply names; integrity data, never a capability. */
+  message: "msg",
 } as const;

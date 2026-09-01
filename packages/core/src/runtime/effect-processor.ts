@@ -69,7 +69,13 @@ import { EFFECT_ID_PREFIXES } from "../effects/ids.ts";
 import type { EffectJournalPhase } from "../effects/journal.ts";
 import type { PendingOperation } from "../effects/pending.ts";
 import { createPendingOperation, markAbandoned, markDispatched, markSettled } from "../effects/pending.ts";
-import type { EffectKind, EffectProposal, SpawnExecutionProposal, UseCapabilityProposal } from "../effects/types.ts";
+import type {
+  EffectKind,
+  EffectProposal,
+  SendMessageProposal,
+  SpawnExecutionProposal,
+  UseCapabilityProposal,
+} from "../effects/types.ts";
 import { DISPATCHABLE_EFFECT_KINDS } from "../effects/types.ts";
 import type { DefinitionId } from "../definitions/ids.ts";
 import { isDefinitionId } from "../definitions/ids.ts";
@@ -81,6 +87,7 @@ import { createExecutionContext, transitionContext } from "../execution/context.
 import type { ActivationId, ExecutionId } from "../execution/ids.ts";
 import { executionId as toExecutionId } from "../execution/ids.ts";
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
+import { createPeerRequestLink, markPeerRequestLinkSettled } from "../execution/peer-request-link.ts";
 import { canConsumeSpawnCredit, consumeSpawnCredit } from "../execution/structural-budget.ts";
 import type { EventEnvelope, EventId } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
@@ -295,6 +302,10 @@ export class EffectProcessor {
 
     if (proposal.kind === "spawn_execution") {
       return this.dispatchSpawn(input, proposal, effectId, correlationId, requestedAt);
+    }
+
+    if (proposal.kind === "send_message") {
+      return this.dispatchSendMessage(input, proposal, effectId, correlationId, requestedAt);
     }
 
     // The ceiling, before policy. An operation outside the Execution's CURRENT effective authority
@@ -740,6 +751,270 @@ export class EffectProcessor {
       pendingOperationId: outcome.pendingOperationId,
       phase: outcome.awaited ? "dispatch_started" : "completed",
       settledInline: !outcome.awaited,
+    };
+  }
+
+  // -- peer messaging ------------------------------------------------------
+
+  /**
+   * Turns a `SendMessage` proposal (`send` / `ask` / `reply`) into a delivered `peer.message` - or
+   * refuses, and delivers nothing.
+   *
+   * ```text
+   * policy decision                       deny                       -> effect.denied
+   * (reply) resolve the open PeerRequestLink   missing / settled / not the addressee
+   *                                                                  -> effect.rejected
+   * resolve the destination Execution     missing / terminal         -> effect.rejected
+   * one transaction:
+   *   sender PendingOperation + journal
+   *   route peer.message to the recipient (fromExecutionId is runtime-owned)
+   *   reply: settle the asker's exact original PendingOperation, close the link
+   *   ask:   leave the sender PendingOperation pending, insert the PeerRequestLink
+   *   send/reply: settle the sender PendingOperation now, deliver message.sent
+   * ```
+   *
+   * Policy runs *before* the destination is ever looked up. A denied sender must not be able to tell
+   * an existing destination from a nonexistent one - through the refusal class or a pre-policy
+   * runtime lookup - exactly as with the E.0.1 spawn hardening. A message/correlation id is not a
+   * credential: a `reply` is authorized as the responder's *own* outbound send, and it settles a
+   * request only if the runtime holds an open link naming this Execution as the expected responder.
+   */
+  private async dispatchSendMessage(
+    input: ProcessEffectsInput,
+    proposal: SendMessageProposal,
+    effectId: EffectId,
+    correlationId: string,
+    requestedAt: string,
+  ): Promise<EffectDispatchRecord> {
+    const senderId = input.context.executionId;
+    const isReply = proposal.inReplyToMessageId !== undefined;
+    const awaited = proposal.awaitReply === true;
+
+    const decision = await this.decide(input, proposal, effectId, requestedAt);
+    if (decision.decision === "deny") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
+        code: decision.code,
+        message: decision.message,
+        phase: "denied",
+      });
+    }
+    const grantId = decision.grantId;
+
+    type MessageCommit =
+      | { readonly kind: "refused"; readonly code: string; readonly message: string }
+      | {
+          readonly kind: "sent";
+          readonly pendingOperationId: PendingOperationId;
+          readonly recipientId: ExecutionId;
+          readonly recipientWoke: boolean;
+          readonly settledNow: boolean;
+        };
+
+    const commit = await this.deps.store.transact(senderId, async (tx): Promise<MessageCommit> => {
+      const now = nowIso(this.deps.clock);
+      const messageId = this.deps.ids.next(ID_PREFIXES.message);
+
+      let recipientId: ExecutionId;
+      let replyLink: Awaited<ReturnType<typeof tx.peerRequestLinks.get>> = undefined;
+      let envelopeCorrelation: string | null = null;
+
+      if (isReply) {
+        const link = await tx.peerRequestLinks.get(proposal.inReplyToMessageId!);
+        if (!link) {
+          return { kind: "refused", code: "reply_no_such_request", message: `no peer request ${proposal.inReplyToMessageId}` };
+        }
+        if (link.state !== "open") {
+          return { kind: "refused", code: "reply_already_settled", message: `peer request ${link.messageId} was already answered` };
+        }
+        if (link.responderExecutionId !== senderId) {
+          return {
+            kind: "refused",
+            code: "reply_not_addressee",
+            message: `execution ${senderId} is not the peer that request ${link.messageId} expected a reply from`,
+          };
+        }
+        replyLink = link;
+        recipientId = link.requesterExecutionId;
+        envelopeCorrelation = link.requestCorrelationId;
+      } else {
+        recipientId = proposal.to as ExecutionId;
+      }
+
+      const recipient = await tx.executions.get(recipientId);
+      if (!recipient) {
+        return { kind: "refused", code: "message_destination_not_found", message: `no execution ${recipientId}` };
+      }
+      if (isTerminalLifecycle(recipient.lifecycle)) {
+        return {
+          kind: "refused",
+          code: "message_destination_terminal",
+          message: `execution ${recipientId} is ${recipient.lifecycle} and cannot receive a message`,
+        };
+      }
+
+      const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+      const mode = isReply ? "reply" : awaited ? "ask" : "send";
+
+      await this.journal(tx, {
+        effectId,
+        executionId: senderId,
+        effectKind: "send_message",
+        phase: "authorized",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: {
+          grantId,
+          to: recipientId,
+          messageId,
+          mode,
+          ...(isReply ? { inReplyToMessageId: replyLink!.messageId } : {}),
+        },
+      });
+
+      const pending = markDispatched(
+        createPendingOperation({
+          pendingOperationId,
+          executionId: senderId,
+          effectId,
+          effectKind: "send_message",
+          correlationId,
+          causationId: input.activationId,
+          idempotencyKey: `send:${effectId}` as IdempotencyKey,
+          createdAt: now,
+          // A peer may take arbitrarily long to reply; an `ask` legitimately waits indefinitely.
+          deadline: null,
+        }),
+        now,
+      );
+      await tx.pendingOperations.insert(pending);
+      await this.journal(tx, {
+        effectId,
+        executionId: senderId,
+        effectKind: "send_message",
+        phase: "dispatch_started",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { messageId, to: recipientId },
+      });
+
+      const peerEventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+      const peerRouted = await routeEvent({
+        tx,
+        envelope: {
+          eventId: peerEventId,
+          destination: { executionId: recipientId },
+          kind: "peer.message",
+          body: {
+            messageId,
+            // Runtime-owned. Never a controller-provided `from` field.
+            fromExecutionId: senderId,
+            body: proposal.body,
+            expectsReply: awaited,
+            inReplyToMessageId: isReply ? replyLink!.messageId : null,
+          },
+          // A reply carries the asker's original correlation so its exact PendingOperation settles;
+          // a fresh send/ask is an unsolicited observation and carries none.
+          correlationId: envelopeCorrelation,
+          causationId: effectId,
+          occurredAt: now,
+        },
+        deliveredAt: now,
+        recordTransition: async (id, from, to, when, why) => {
+          await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+      const recipientWoke = peerRouted.status === "delivered" && peerRouted.wokeExecution;
+
+      if (isReply) {
+        // Settle the asker's exact original `ask` PendingOperation. Only this link's requester, only
+        // its recorded PendingOperation, and only while it is still pending.
+        const askerPending = await tx.pendingOperations.get(replyLink!.requestPendingOperationId);
+        if (askerPending && askerPending.status === "pending") {
+          await tx.pendingOperations.update(markSettled(askerPending, "success", peerEventId, now));
+          await this.journal(tx, {
+            effectId: replyLink!.requestEffectId,
+            executionId: replyLink!.requesterExecutionId,
+            effectKind: "send_message",
+            phase: "completed",
+            activationId: null,
+            pendingOperationId: askerPending.pendingOperationId,
+            at: now,
+            detail: { messageId, replyEventId: peerEventId, viaEffectId: effectId },
+          });
+        }
+        await tx.peerRequestLinks.update(markPeerRequestLinkSettled(replyLink!, now));
+      }
+
+      let settledNow: boolean;
+      if (awaited && !isReply) {
+        // ask: the sender stays owed a reply. Record the correlation link; no message.sent.
+        await tx.peerRequestLinks.insert(
+          createPeerRequestLink({
+            messageId,
+            requesterExecutionId: senderId,
+            responderExecutionId: recipientId,
+            requestEffectId: effectId,
+            requestPendingOperationId: pendingOperationId,
+            requestCorrelationId: correlationId,
+            createdAt: now,
+          }),
+        );
+        settledNow = false;
+      } else {
+        // send, or reply: "admitted for the destination" is the whole dependency, and it is met.
+        const ackEventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+        await this.journal(tx, {
+          effectId,
+          executionId: senderId,
+          effectKind: "send_message",
+          phase: "completed",
+          activationId: input.activationId,
+          pendingOperationId,
+          at: now,
+          detail: { messageId, resultEventId: ackEventId },
+        });
+        await tx.pendingOperations.update(markSettled(pending, "success", ackEventId, now));
+        await routeEvent({
+          tx,
+          envelope: {
+            eventId: ackEventId,
+            destination: { executionId: senderId },
+            kind: "message.sent",
+            body: { effectId, effectKind: "send_message", pendingOperationId, messageId, to: recipientId },
+            correlationId,
+            causationId: effectId,
+            occurredAt: now,
+          },
+          deliveredAt: now,
+          recordTransition: async (id, from, to, when, why) => {
+            await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+          },
+        });
+        settledNow = true;
+      }
+
+      return { kind: "sent", pendingOperationId, recipientId, recipientWoke, settledNow };
+    });
+
+    if (commit.kind === "refused") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: commit.code,
+        message: commit.message,
+      });
+    }
+
+    // Scheduling is post-commit, exactly as for a capability result or a spawned child.
+    if (commit.recipientWoke) await this.deps.wake(commit.recipientId);
+
+    return {
+      effectId,
+      effectKind: "send_message",
+      correlationId,
+      pendingOperationId: commit.pendingOperationId,
+      phase: commit.settledNow ? "completed" : "dispatch_started",
+      settledInline: commit.settledNow,
     };
   }
 

@@ -257,6 +257,20 @@ export {
   spawnBudgetRemaining,
 } from "./execution/structural-budget.ts";
 
+// -- peer interaction and cancellation (Slice E.1) -------------------------
+/**
+ * `send` / `ask` / `reply` all build the same `SendMessage` proposal; a controller *proposes* one
+ * and the Harness mediates delivery, correlation, and authorization. The peer request link and
+ * cancellation request records are runtime-owned and exported as *readable* shapes only.
+ */
+export type { ReplyMessageInput, SendMessageInput } from "./effects/types.ts";
+export { ask, isSendMessageProposal, reply, send } from "./effects/types.ts";
+export type { PeerRequestLink, PeerRequestLinkState } from "./execution/peer-request-link.ts";
+export { isOpenPeerRequest } from "./execution/peer-request-link.ts";
+export type { CancellationRequest, CancellationRequestState } from "./execution/cancellation-request.ts";
+export type { WaitForEdge, WaitForEdgeKind } from "./execution/wait-for.ts";
+export { WAIT_FOR_EDGE_KINDS } from "./execution/wait-for.ts";
+
 // -- events ------------------------------------------------------------------
 export type {
   DeliveredEvent,
@@ -270,6 +284,7 @@ export type {
   CapabilityCompletedBody,
   CapabilityFailedBody,
   CapabilityUnknownBody,
+  ChildCancelledBody,
   ChildCompletedBody,
   ChildFailedBody,
   ChildSpawnedBody,
@@ -278,6 +293,8 @@ export type {
   EventBodies,
   EventKind,
   ExternalInputBody,
+  MessageSentBody,
+  PeerMessageBody,
 } from "./interaction/events.ts";
 export {
   CHILD_RESULT_EVENT_KINDS,
@@ -377,6 +394,8 @@ export type {
   WorkflowTrace,
 } from "./controllers/workflow/model-access.ts";
 export type {
+  CancelExecutionInput,
+  CancelExecutionReceipt,
   CreateExecutionInput,
   DeliverExternalInputInput,
   EventDeliveryReceipt,

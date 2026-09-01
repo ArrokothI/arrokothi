@@ -33,10 +33,12 @@ import type { EffectJournalDraft, EffectJournalEntry } from "../effects/journal.
 import type { EffectId, IdempotencyKey, PendingOperationId } from "../effects/ids.ts";
 import type { PendingOperation } from "../effects/pending.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
+import type { CancellationRequest } from "../execution/cancellation-request.ts";
 import type { ChildExecutionLink } from "../execution/child-link.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
+import type { PeerRequestLink } from "../execution/peer-request-link.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
@@ -126,6 +128,12 @@ export interface EffectJournalFacet {
  * `findByKey` is what makes a slow call dispatch once. A later Activation reconstructing the same
  * controller-local key finds the settled record and reads its outcome instead of starting the work
  * again.
+ *
+ * Since E.1 a key may accumulate historical `invalidated` records (an interleave Event overtook the
+ * work) alongside a fresh one. `findByKey` must return the *reusable* record - a `pending` or
+ * `settled` one - and never an `invalidated` one, so a re-derived key after invalidation starts
+ * fresh work rather than recovering an obsolete result. A durable store should index this rather
+ * than scan.
  */
 export interface ControllerResumptionFacet {
   insert(resumption: ControllerResumption): Promise<void>;
@@ -133,7 +141,7 @@ export interface ControllerResumptionFacet {
   /** Replaces the record wholesale. Resumptions have no independent revision counter. */
   update(resumption: ControllerResumption): Promise<void>;
   listByExecution(executionId: ExecutionId): Promise<readonly ControllerResumption[]>;
-  /** The record for one Execution's stable controller-local key, if it has one. */
+  /** The reusable (`pending` | `settled`) record for one Execution's stable key; never `invalidated`. */
   findByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined>;
 }
 
@@ -187,6 +195,35 @@ export interface ChildExecutionLinkFacet {
   listByParent(parentExecutionId: ExecutionId): Promise<readonly ChildExecutionLink[]>;
 }
 
+/**
+ * Peer request links (Slice E.1).
+ *
+ * The runtime-owned correlation between an `ask` and the reply that settles it. A facet of the same
+ * transaction because "the message reached the recipient", "the requester's PendingOperation is
+ * pending", and "this link exists" are one atomic admission - an `ask` to a terminal or nonexistent
+ * peer must leave no half-created link.
+ */
+export interface PeerRequestLinkFacet {
+  insert(link: PeerRequestLink): Promise<void>;
+  get(messageId: string): Promise<PeerRequestLink | undefined>;
+  update(link: PeerRequestLink): Promise<void>;
+  listByRequester(requesterExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]>;
+  listByResponder(responderExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]>;
+}
+
+/**
+ * Cancellation requests (Slice E.1).
+ *
+ * A narrow record that a RUNNING Execution should reach a safe boundary and become CANCELLED. Its
+ * own facet - not a field of the ExecutionContext - so recording one does not touch the context
+ * revision an in-flight Activation will compare-and-set against.
+ */
+export interface CancellationRequestFacet {
+  insert(request: CancellationRequest): Promise<void>;
+  get(executionId: ExecutionId): Promise<CancellationRequest | undefined>;
+  update(request: CancellationRequest): Promise<void>;
+}
+
 export interface RuntimeTransaction {
   readonly executions: ExecutionRecordFacet;
   readonly mailboxes: MailboxFacet;
@@ -198,6 +235,8 @@ export interface RuntimeTransaction {
   readonly operationAuthorities: OperationAuthorityFacet;
   readonly lineageSpawnBudgets: LineageSpawnBudgetFacet;
   readonly childExecutionLinks: ChildExecutionLinkFacet;
+  readonly peerRequestLinks: PeerRequestLinkFacet;
+  readonly cancellationRequests: CancellationRequestFacet;
 }
 
 export interface RuntimeStore {
@@ -217,11 +256,14 @@ export interface RuntimeStore {
   listControllerResumptions(executionId: ExecutionId): Promise<readonly ControllerResumption[]>;
   readControllerResumption(resumptionId: ControllerResumptionId): Promise<ControllerResumption | undefined>;
   /**
-   * One Execution's record for a controller-local key.
+   * One Execution's *reusable* record for a controller-local key (`pending` | `settled`, never
+   * `invalidated`).
    *
    * On the read surface as well as the transaction facet because the runtime consults it on every
    * `run(key, ...)` - it is the lookup that decides whether a resumed Activation dispatches a second
-   * provider call or is handed the stored one. A durable store should index it rather than scan.
+   * provider call or is handed the stored one. After an interleave Event invalidated the prior work
+   * it returns `undefined`, so the resumed Activation starts fresh. A durable store should index it
+   * rather than scan.
    */
   findControllerResumptionByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined>;
   /**
@@ -238,6 +280,14 @@ export interface RuntimeStore {
   readChildExecutionLink(childExecutionId: ExecutionId): Promise<ChildExecutionLink | undefined>;
   /** Every child one Execution spawned. Read-only lineage/wait-for diagnostics. */
   listChildExecutionLinks(parentExecutionId: ExecutionId): Promise<readonly ChildExecutionLink[]>;
+  /** One peer request link by its message id. Read-only diagnostics. */
+  readPeerRequestLink(messageId: string): Promise<PeerRequestLink | undefined>;
+  /** Every `ask` one Execution sent. Read-only wait-for diagnostics (asker -> expected responder). */
+  listPeerRequestLinksByRequester(requesterExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]>;
+  /** Every `ask` one Execution is the expected responder for. Read-only diagnostics. */
+  listPeerRequestLinksByResponder(responderExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]>;
+  /** One Execution's pending cancellation request, if the runtime recorded one. Read-only. */
+  readCancellationRequest(executionId: ExecutionId): Promise<CancellationRequest | undefined>;
 }
 
 export class UnknownControllerResumptionError extends Error {

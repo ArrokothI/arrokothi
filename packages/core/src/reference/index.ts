@@ -12,7 +12,12 @@ export { InMemoryDefinitionStore } from "./in-memory-definition-store.ts";
 export { InMemoryRuntimeStore } from "./in-memory-runtime-store.ts";
 export { FifoScheduler } from "./fifo-scheduler.ts";
 export { createAllowListAuthorizer } from "./allow-list-authorizer.ts";
-export type { AllowListAuthorizerOptions, CapabilityGrantRule, SpawnGrantRule } from "./allow-list-authorizer.ts";
+export type {
+  AllowListAuthorizerOptions,
+  CapabilityGrantRule,
+  MessageGrantRule,
+  SpawnGrantRule,
+} from "./allow-list-authorizer.ts";
 export { createCapabilityCatalog } from "./capability-catalog.ts";
 export type { CapabilityOperationDescriptorInput } from "./capability-catalog.ts";
 export {

@@ -55,6 +55,12 @@ class CountingRuntimeStore implements RuntimeStore {
   readLineageSpawnBudget: RuntimeStore["readLineageSpawnBudget"] = (id) => this.inner.readLineageSpawnBudget(id);
   readChildExecutionLink: RuntimeStore["readChildExecutionLink"] = (id) => this.inner.readChildExecutionLink(id);
   listChildExecutionLinks: RuntimeStore["listChildExecutionLinks"] = (id) => this.inner.listChildExecutionLinks(id);
+  readPeerRequestLink: RuntimeStore["readPeerRequestLink"] = (id) => this.inner.readPeerRequestLink(id);
+  listPeerRequestLinksByRequester: RuntimeStore["listPeerRequestLinksByRequester"] = (id) =>
+    this.inner.listPeerRequestLinksByRequester(id);
+  listPeerRequestLinksByResponder: RuntimeStore["listPeerRequestLinksByResponder"] = (id) =>
+    this.inner.listPeerRequestLinksByResponder(id);
+  readCancellationRequest: RuntimeStore["readCancellationRequest"] = (id) => this.inner.readCancellationRequest(id);
 
   private wrap(tx: RuntimeTransaction): RuntimeTransaction {
     return {

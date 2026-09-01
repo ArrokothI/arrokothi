@@ -54,16 +54,20 @@ describe("the Event vocabulary", () => {
         "capability.failed",
         "capability.unknown",
         // Slice E.0: the `SpawnExecution` Effect owns these three, and they arrive with it.
+        "child.cancelled",
         "child.completed",
         "child.failed",
         "child.spawned",
         "effect.denied",
         "effect.rejected",
         "external.input",
+        // Slice E.1: the `SendMessage` runtime owns these, and child cancellation adds `child.cancelled`.
+        "message.sent",
+        "peer.message",
       ],
       "kinds for Effects that later slices own arrive with those Effects, not before them",
     );
-    for (const kind of ["tool.called", "memory.written", "message.received", "timer.fired", "child.cancelled"]) {
+    for (const kind of ["tool.called", "memory.written", "message.received", "timer.fired", "user.input"]) {
       assert.equal(isEventKind(kind), false, `${kind} is not yet kernel vocabulary`);
     }
     assert.ok(

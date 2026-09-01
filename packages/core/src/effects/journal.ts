@@ -37,6 +37,8 @@ export type EffectJournalPhase =
   | "dispatch_started"
   | "completed"
   | "failed"
+  /** Slice E.1: a `call` child reached `CANCELLED`. Distinct from `failed`. */
+  | "cancelled"
   | "unknown_outcome"
   | "replayed"
   | "abandoned";
@@ -49,6 +51,7 @@ export const EFFECT_JOURNAL_PHASES: readonly EffectJournalPhase[] = [
   "dispatch_started",
   "completed",
   "failed",
+  "cancelled",
   "unknown_outcome",
   "replayed",
   "abandoned",
@@ -60,6 +63,7 @@ export const TERMINAL_EFFECT_PHASES: readonly EffectJournalPhase[] = [
   "rejected",
   "completed",
   "failed",
+  "cancelled",
   "unknown_outcome",
   "replayed",
   "abandoned",

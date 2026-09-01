@@ -29,7 +29,7 @@ import { defineAgent, defineWorkflow } from "../definitions/validation.ts";
 import type { DefinitionKind } from "../definitions/types.ts";
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
 import type { EffectProposal } from "../effects/types.ts";
-import { callExecution, spawnExecution, useCapability } from "../effects/types.ts";
+import { ask, callExecution, reply, send, spawnExecution, useCapability } from "../effects/types.ts";
 import type { OperationRefInput } from "../operations/refs.ts";
 import { eventSatisfiesWake } from "../interaction/event-envelope.ts";
 import type { WakeCondition } from "../interaction/event-envelope.ts";
@@ -47,8 +47,20 @@ export type ScriptedControllerStep =
   | { readonly do: "continue" }
   /** Write into controller progress, so progress carried across Activations is checkable. */
   | { readonly do: "remember"; readonly key: string; readonly value: JsonValue }
-  /** Report a wake dependency. The Harness, not this step, decides whether that means WAITING. */
-  | { readonly do: "await"; readonly eventKinds?: readonly EventKind[]; readonly correlationId?: string; readonly note?: string }
+  /**
+   * Report a wake dependency. The Harness, not this step, decides whether that means WAITING.
+   *
+   * `interleave` (Slice E.1) declares a second, separate wake condition. An Event matching it makes
+   * the Execution READY without the primary dependency being satisfied; the step does not advance,
+   * so the resumed Activation re-reports the same dependency.
+   */
+  | {
+      readonly do: "await";
+      readonly eventKinds?: readonly EventKind[];
+      readonly correlationId?: string;
+      readonly note?: string;
+      readonly interleave?: { readonly eventKinds?: readonly EventKind[]; readonly correlationId?: string };
+    }
   /**
    * Propose a capability Effect, then report that its result is still needed.
    *
@@ -87,6 +99,54 @@ export type ScriptedControllerStep =
       readonly await?: boolean;
     }
   /**
+   * Propose a `send` (fire-and-forget peer message).
+   *
+   * Unless `await` is false, waits for the `message.sent` acknowledgement on the request key.
+   */
+  | {
+      readonly do: "send";
+      readonly to: string;
+      readonly body?: JsonValue;
+      readonly requestKey?: string;
+      readonly await?: boolean;
+    }
+  /**
+   * Propose an `ask` and wait for the correlated reply `peer.message`.
+   *
+   * `interleave` opts into processing other peer messages while the reply is outstanding.
+   */
+  | {
+      readonly do: "ask";
+      readonly to: string;
+      readonly body?: JsonValue;
+      readonly requestKey?: string;
+      readonly interleave?: { readonly eventKinds?: readonly EventKind[]; readonly correlationId?: string };
+    }
+  /**
+   * Propose a `reply` to a peer request this Execution received.
+   *
+   * `toMessageId` names the request; omitted, it replies to the most recent `peer.message` this
+   * Execution saw that had `expectsReply: true`.
+   */
+  | {
+      readonly do: "reply";
+      readonly body?: JsonValue;
+      readonly toMessageId?: string;
+      readonly requestKey?: string;
+      readonly await?: boolean;
+    }
+  /**
+   * Propose an `ask` addressed to the sender of the most recent `peer.message` this Execution saw.
+   *
+   * A convenience so a peer program does not need the other Execution's id baked in as authored data.
+   */
+  | {
+      readonly do: "ask_sender";
+      readonly body?: JsonValue;
+      readonly requestKey?: string;
+      readonly interleave?: { readonly eventKinds?: readonly EventKind[]; readonly correlationId?: string };
+    }
+  /**
    * Run controller-local asynchronous work under this Activation's inline budget.
    *
    * The substrate counterpart of a model call: opaque local work the runtime races, tracks, and -
@@ -105,6 +165,14 @@ export type ScriptedControllerStep =
       readonly unserializable?: boolean;
       /** Register the work but never report the matching dependency, so it is abandoned. */
       readonly abandon?: boolean;
+      /**
+       * Opt into controlled interleaving (Slice E.1) while suspended on this work.
+       *
+       * An Event matching this condition invalidates the still-pending resumption and makes the
+       * Execution READY. The step does not advance; the resumed Activation re-runs `run(key)`, finds
+       * no reusable record, and starts fresh work.
+       */
+      readonly interleave?: { readonly eventKinds?: readonly EventKind[]; readonly correlationId?: string };
     }
   /** Record the kinds and correlations of the Events this Activation consumed. */
   | { readonly do: "observe"; readonly note?: string }
@@ -113,6 +181,14 @@ export type ScriptedControllerStep =
   | { readonly do: "fail"; readonly code: string; readonly message: string }
   /** Return an outcome the Harness must reject. */
   | { readonly do: "misreport"; readonly as: "wrong_kind" | "lifecycle_status" | "unserializable_progress" | "unknown_resumption" };
+
+export interface ScriptedPeerMessage extends JsonObject {
+  messageId: string;
+  fromExecutionId: string;
+  body: JsonValue;
+  expectsReply: boolean;
+  inReplyToMessageId: string | null;
+}
 
 export interface ScriptedProgress extends JsonObject {
   step: number;
@@ -123,10 +199,20 @@ export interface ScriptedProgress extends JsonObject {
   seenKinds: string[];
   /** Bodies of the Effect-result Events consumed, so a test can assert what was observed. */
   observations: JsonValue[];
+  /** Every `peer.message` this Execution has consumed, in order. */
+  peerMessages: ScriptedPeerMessage[];
   notes: JsonObject;
 }
 
-const EMPTY: ScriptedProgress = { step: 0, awaiting: false, seenEvents: [], seenKinds: [], observations: [], notes: {} };
+const EMPTY: ScriptedProgress = {
+  step: 0,
+  awaiting: false,
+  seenEvents: [],
+  seenKinds: [],
+  observations: [],
+  peerMessages: [],
+  notes: {},
+};
 
 function readProgress(value: JsonObject): ScriptedProgress {
   const step = typeof value["step"] === "number" ? (value["step"] as number) : 0;
@@ -134,8 +220,11 @@ function readProgress(value: JsonObject): ScriptedProgress {
   const seenEvents = Array.isArray(value["seenEvents"]) ? ([...(value["seenEvents"] as JsonValue[])] as string[]) : [];
   const seenKinds = Array.isArray(value["seenKinds"]) ? ([...(value["seenKinds"] as JsonValue[])] as string[]) : [];
   const observations = Array.isArray(value["observations"]) ? [...(value["observations"] as JsonValue[])] : [];
+  const peerMessages = Array.isArray(value["peerMessages"])
+    ? ([...(value["peerMessages"] as JsonValue[])] as ScriptedPeerMessage[])
+    : [];
   const notes = (value["notes"] ?? {}) as JsonObject;
-  return { step, awaiting, seenEvents, seenKinds, observations, notes: { ...notes } };
+  return { step, awaiting, seenEvents, seenKinds, observations, peerMessages, notes: { ...notes } };
 }
 
 /**
@@ -176,6 +265,17 @@ function readProgram(definition: { readonly spec?: unknown; readonly metadata?: 
  */
 export type ScriptedWorkGate = (key: string) => Promise<void> | void;
 
+/** Builds an interleave `WakeCondition` from a step's optional `interleave` field. */
+function interleaveWake(
+  interleave: { readonly eventKinds?: readonly EventKind[]; readonly correlationId?: string } | undefined,
+): WakeCondition | undefined {
+  if (interleave === undefined) return undefined;
+  return {
+    eventKinds: interleave.eventKinds ? [...interleave.eventKinds] : [],
+    correlationId: interleave.correlationId ?? null,
+  };
+}
+
 export interface ScriptedControllerOptions {
   readonly gate?: ScriptedWorkGate;
 }
@@ -195,6 +295,17 @@ class ScriptedController implements ExecutionController {
       progress.seenEvents.push(event.eventId);
       progress.seenKinds.push(event.kind);
       if (isEffectResultEventKind(event.kind)) {
+        progress.observations.push(event.body as unknown as JsonValue);
+      }
+      if (event.kind === "peer.message") {
+        const body = event.body as unknown as ScriptedPeerMessage;
+        progress.peerMessages.push({
+          messageId: body.messageId,
+          fromExecutionId: body.fromExecutionId,
+          body: body.body,
+          expectsReply: body.expectsReply,
+          inReplyToMessageId: body.inReplyToMessageId,
+        });
         progress.observations.push(event.body as unknown as JsonValue);
       }
     }
@@ -234,16 +345,24 @@ class ScriptedController implements ExecutionController {
           correlationId: step.correlationId ?? null,
           ...(step.note !== undefined ? { description: step.note } : {}),
         };
+        const interleave = interleaveWake(step.interleave);
         // An Event already delivered into this Activation is an answer, not something still owed.
         // Reporting a dependency that the controller can already satisfy would make the Harness
-        // derive WAITING for work that is actually runnable.
-        if (input.events.some((event) => eventSatisfiesWake(event, wake))) {
+        // derive WAITING for work that is actually runnable. An interleave Event counts too.
+        if (
+          input.events.some(
+            (event) => eventSatisfiesWake(event, wake) || (interleave !== undefined && eventSatisfiesWake(event, interleave)),
+          )
+        ) {
           progress.awaiting = false;
           progress.step += 1;
           return this.outcome(progress, { status: "continue" });
         }
         progress.awaiting = true;
-        return this.outcome(progress, { status: "await_event", wake });
+        return this.outcome(
+          progress,
+          interleave !== undefined ? { status: "await_event", wake, interleave } : { status: "await_event", wake },
+        );
       }
 
       case "use_capability": {
@@ -329,6 +448,89 @@ class ScriptedController implements ExecutionController {
         return this.outcome(progress, { status: "await_event", wake }, [], [proposal]);
       }
 
+      case "send": {
+        progress.step += 1;
+        const requestKey = step.requestKey ?? `send:${progress.step}`;
+        const proposal = send({ to: step.to, ...(step.body !== undefined ? { body: step.body } : {}), requestKey });
+        if (step.await === false) {
+          return this.outcome(progress, { status: "continue" }, [], [proposal]);
+        }
+        progress.awaiting = true;
+        return this.outcome(
+          progress,
+          {
+            status: "await_event",
+            wake: { eventKinds: ["message.sent", "effect.denied", "effect.rejected"], correlationId: requestKey, description: `sent to ${step.to}` },
+          },
+          [],
+          [proposal],
+        );
+      }
+
+      case "ask":
+      case "ask_sender": {
+        progress.step += 1;
+        const requestKey = step.requestKey ?? `ask:${progress.step}`;
+        const to =
+          step.do === "ask"
+            ? step.to
+            : [...progress.peerMessages].reverse()[0]?.fromExecutionId;
+        if (to === undefined) {
+          return this.outcome(progress, {
+            status: "fail",
+            failure: { code: "no_peer_to_ask", message: "ask_sender ran with no peer message to reply to" },
+          });
+        }
+        const proposal = ask({ to, ...(step.body !== undefined ? { body: step.body } : {}), requestKey });
+        const interleave = interleaveWake(step.interleave);
+        progress.awaiting = true;
+        const wake: WakeCondition = {
+          eventKinds: ["peer.message", "effect.denied", "effect.rejected"],
+          correlationId: requestKey,
+          description: `reply from ${to}`,
+        };
+        return this.outcome(
+          progress,
+          interleave !== undefined ? { status: "await_event", wake, interleave } : { status: "await_event", wake },
+          [],
+          [proposal],
+        );
+      }
+
+      case "reply": {
+        progress.step += 1;
+        const target =
+          step.toMessageId ??
+          [...progress.peerMessages].reverse().find((message) => message.expectsReply)?.messageId;
+        if (target === undefined) {
+          return this.outcome(progress, {
+            status: "fail",
+            failure: { code: "no_peer_request_to_reply_to", message: "reply step ran with no pending peer request" },
+          });
+        }
+        const requestKey = step.requestKey ?? `reply:${progress.step}`;
+        const proposal = reply({
+          inReplyToMessageId: target,
+          ...(step.body !== undefined ? { body: step.body } : {}),
+          requestKey,
+          ...(step.await === true ? { awaitReply: true } : {}),
+        });
+        if (step.await !== true) {
+          // A plain reply settles as soon as it is admitted; do not block on it.
+          return this.outcome(progress, { status: "continue" }, [], [proposal]);
+        }
+        progress.awaiting = true;
+        return this.outcome(
+          progress,
+          {
+            status: "await_event",
+            wake: { eventKinds: ["peer.message", "effect.denied", "effect.rejected"], correlationId: requestKey },
+          },
+          [],
+          [proposal],
+        );
+      }
+
       case "local_work": {
         const attempt = await resumptions.run(step.key, async () => {
           await this.gate?.(step.key);
@@ -348,8 +550,15 @@ class ScriptedController implements ExecutionController {
             return this.outcome(progress, { status: "continue" });
           }
           // Deliberately does not advance the cursor: the resumed Activation re-runs this step,
-          // derives the same key, and is handed the stored outcome instead of working again.
-          return this.outcome(progress, { status: "await_resumption", resumptionId: attempt.resumptionId });
+          // derives the same key, and is handed the stored outcome instead of working again - or,
+          // after an interleave Event invalidated it, starts fresh work.
+          const interleave = interleaveWake(step.interleave);
+          return this.outcome(
+            progress,
+            interleave !== undefined
+              ? { status: "await_resumption", resumptionId: attempt.resumptionId, interleave }
+              : { status: "await_resumption", resumptionId: attempt.resumptionId },
+          );
         }
 
         progress.step += 1;

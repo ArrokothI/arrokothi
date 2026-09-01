@@ -14,10 +14,12 @@
 import type { EffectId, PendingOperationId } from "../effects/ids.ts";
 import type { EffectJournalEntry } from "../effects/journal.ts";
 import type { PendingOperation } from "../effects/pending.ts";
+import type { CancellationRequest } from "../execution/cancellation-request.ts";
 import type { ChildExecutionLink } from "../execution/child-link.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
+import type { PeerRequestLink } from "../execution/peer-request-link.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
@@ -55,6 +57,8 @@ interface RuntimeState {
   operationAuthorities: Map<string, EffectiveOperationAuthority>;
   lineageSpawnBudgets: Map<string, LineageSpawnBudget>;
   childExecutionLinks: Map<string, ChildExecutionLink>;
+  peerRequestLinks: Map<string, PeerRequestLink>;
+  cancellationRequests: Map<string, CancellationRequest>;
 }
 
 function emptyState(): RuntimeState {
@@ -69,6 +73,8 @@ function emptyState(): RuntimeState {
     operationAuthorities: new Map(),
     lineageSpawnBudgets: new Map(),
     childExecutionLinks: new Map(),
+    peerRequestLinks: new Map(),
+    cancellationRequests: new Map(),
   };
 }
 
@@ -78,6 +84,30 @@ function mailbox(state: RuntimeState, mailboxId: string): MailboxState {
   const created: MailboxState = { events: [], seen: new Set(), consumed: 0, nextSequence: 1 };
   state.mailboxes.set(mailboxId, created);
   return created;
+}
+
+/**
+ * The *reusable* resumption record for one Execution's stable controller-local key.
+ *
+ * E.1 may leave historical `invalidated` records for a key alongside a fresh one, so a plain
+ * first-match lookup is not enough: an obsolete record must never be handed back as the reusable
+ * result. `invalidated` records are skipped entirely; among what remains a `pending` record wins
+ * (the recovery-as-suspension case), otherwise the most recently created `settled` one.
+ */
+function reusableResumptionByKey(
+  state: RuntimeState,
+  executionId: string,
+  key: string,
+): ControllerResumption | undefined {
+  const matches = [...state.controllerResumptions.values()].filter(
+    (resumption) =>
+      resumption.executionId === executionId && resumption.key === key && resumption.state !== "invalidated",
+  );
+  if (matches.length === 0) return undefined;
+  return (
+    matches.find((resumption) => resumption.state === "pending") ??
+    [...matches].sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0))[0]
+  );
 }
 
 function makeTransaction(state: RuntimeState): RuntimeTransaction {
@@ -206,10 +236,7 @@ function makeTransaction(state: RuntimeState): RuntimeTransaction {
         );
       },
       async findByKey(executionId, key) {
-        const match = [...state.controllerResumptions.values()].find(
-          (resumption) => resumption.executionId === executionId && resumption.key === key,
-        );
-        return match ? structuredClone(match) : undefined;
+        return structuredClone(reusableResumptionByKey(state, executionId, key));
       },
     },
 
@@ -268,6 +295,54 @@ function makeTransaction(state: RuntimeState): RuntimeTransaction {
         return structuredClone(
           [...state.childExecutionLinks.values()].filter((link) => link.parentExecutionId === parentExecutionId),
         );
+      },
+    },
+
+    peerRequestLinks: {
+      async insert(link) {
+        if (state.peerRequestLinks.has(link.messageId)) {
+          throw new Error(`peer request ${link.messageId} already has a link`);
+        }
+        state.peerRequestLinks.set(link.messageId, structuredClone(link));
+      },
+      async get(messageId) {
+        const stored = state.peerRequestLinks.get(messageId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+      async update(link) {
+        if (!state.peerRequestLinks.has(link.messageId)) {
+          throw new Error(`unknown peer request link ${link.messageId}`);
+        }
+        state.peerRequestLinks.set(link.messageId, structuredClone(link));
+      },
+      async listByRequester(requesterExecutionId) {
+        return structuredClone(
+          [...state.peerRequestLinks.values()].filter((link) => link.requesterExecutionId === requesterExecutionId),
+        );
+      },
+      async listByResponder(responderExecutionId) {
+        return structuredClone(
+          [...state.peerRequestLinks.values()].filter((link) => link.responderExecutionId === responderExecutionId),
+        );
+      },
+    },
+
+    cancellationRequests: {
+      async insert(request) {
+        if (state.cancellationRequests.has(request.executionId)) {
+          throw new Error(`execution ${request.executionId} already has a cancellation request`);
+        }
+        state.cancellationRequests.set(request.executionId, structuredClone(request));
+      },
+      async get(executionId) {
+        const stored = state.cancellationRequests.get(executionId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+      async update(request) {
+        if (!state.cancellationRequests.has(request.executionId)) {
+          throw new Error(`unknown cancellation request for ${request.executionId}`);
+        }
+        state.cancellationRequests.set(request.executionId, structuredClone(request));
       },
     },
 
@@ -357,10 +432,7 @@ export class InMemoryRuntimeStore implements RuntimeStore {
   }
 
   async findControllerResumptionByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined> {
-    const match = [...this.state.controllerResumptions.values()].find(
-      (resumption) => resumption.executionId === executionId && resumption.key === key,
-    );
-    return match ? structuredClone(match) : undefined;
+    return structuredClone(reusableResumptionByKey(this.state, executionId, key));
   }
 
   async readOperationAuthority(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined> {
@@ -382,6 +454,28 @@ export class InMemoryRuntimeStore implements RuntimeStore {
     return structuredClone(
       [...this.state.childExecutionLinks.values()].filter((link) => link.parentExecutionId === parentExecutionId),
     );
+  }
+
+  async readPeerRequestLink(messageId: string): Promise<PeerRequestLink | undefined> {
+    const stored = this.state.peerRequestLinks.get(messageId);
+    return stored ? structuredClone(stored) : undefined;
+  }
+
+  async listPeerRequestLinksByRequester(requesterExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]> {
+    return structuredClone(
+      [...this.state.peerRequestLinks.values()].filter((link) => link.requesterExecutionId === requesterExecutionId),
+    );
+  }
+
+  async listPeerRequestLinksByResponder(responderExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]> {
+    return structuredClone(
+      [...this.state.peerRequestLinks.values()].filter((link) => link.responderExecutionId === responderExecutionId),
+    );
+  }
+
+  async readCancellationRequest(executionId: ExecutionId): Promise<CancellationRequest | undefined> {
+    const stored = this.state.cancellationRequests.get(executionId);
+    return stored ? structuredClone(stored) : undefined;
   }
 
   /** Journal entries for one Effect, across Executions. Diagnostics and conformance assertions. */

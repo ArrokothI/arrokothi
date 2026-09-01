@@ -35,8 +35,14 @@ export type PendingOperationStatus =
 
 export type PendingDispatchState = "not_dispatched" | "dispatched";
 
-/** What the outside world established, once it did. `null` while nothing is known. */
-export type PendingOutcomeState = "success" | "failure" | "unknown" | null;
+/**
+ * What the outside world established, once it did. `null` while nothing is known.
+ *
+ * `cancelled` (Slice E.1) is distinct from `failure` on purpose: a `call` parent whose child reached
+ * `CANCELLED` settles as `cancelled`, and the runtime must never relabel that as failure merely
+ * because the union once lacked the word.
+ */
+export type PendingOutcomeState = "success" | "failure" | "unknown" | "cancelled" | null;
 
 export interface PendingOperation {
   readonly pendingOperationId: PendingOperationId;

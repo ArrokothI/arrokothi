@@ -43,6 +43,15 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   spawn budget, current-authority attenuation, spawn vs call, and child
   terminal-result correlation through PendingOperation/Event. Not merged.
 
+015-slice-e1-interleaving-peer-interaction.md
+  the second Slice E checkpoint: controlled Event interleaving between
+  serialized Activations with a serializable opt-in and the minimal
+  stale-continuation (ControllerResumption invalidation) rule; SendMessage made
+  operational as send / ask / reply with a runtime-owned PeerRequestLink;
+  observable cross-Execution wait-for diagnostics; and the basic child
+  cancellation hook (child.cancelled, PendingOperation outcome "cancelled",
+  trusted Harness.cancelExecution). No canonical-doc change. Not merged.
+
 014-v1-efficiency-and-developer-ergonomics-validation.md
   cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
   becoming mandatory physical/developer overhead; define kernel/end-to-end/
@@ -75,9 +84,10 @@ MCP-1.1 post-proof semantic correction   done, recorded in 012
 MCP operation proof                      accepted
         ↓
 Slice E composition
-  E.0 child Execution foundation         current checkpoint (013), not merged
-  E.1 safe interleaving + messaging      next
-  E.2 user interaction + surfaces        later
+  E.0   child Execution foundation       accepted (013), not merged
+  E.0.1 review retrofit                  accepted (013 §14a), not merged
+  E.1   interleaving + peer interaction  current checkpoint (015), not merged
+  E.2   user interaction + surfaces      next
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

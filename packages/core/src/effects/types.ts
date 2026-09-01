@@ -40,8 +40,12 @@ export const EFFECT_KINDS: readonly EffectKind[] = [
   "request_user_input",
 ];
 
-/** The kinds this slice actually dispatches. Everything else is answered, never silently dropped. */
-export const DISPATCHABLE_EFFECT_KINDS: readonly EffectKind[] = ["use_capability", "spawn_execution"];
+/** The kinds the runtime actually dispatches. Everything else is answered, never silently dropped. */
+export const DISPATCHABLE_EFFECT_KINDS: readonly EffectKind[] = [
+  "use_capability",
+  "spawn_execution",
+  "send_message",
+];
 
 export function isEffectKind(value: unknown): value is EffectKind {
   return typeof value === "string" && (EFFECT_KINDS as readonly string[]).includes(value);
@@ -121,10 +125,50 @@ export interface SpawnExecutionProposal extends ProposalBase {
   readonly awaitTerminalResult?: boolean;
 }
 
+/**
+ * Communicate with an already-existing peer Execution.
+ *
+ * `send`, `ask`, and `reply` are the *same* Effect kind - there is no `AskMessage` or `ReplyMessage`.
+ * They differ only in the completion dependency they create:
+ *
+ * ```text
+ * send   awaitReply absent/false, inReplyToMessageId absent
+ *        -> the sender's Effect settles as soon as the runtime admits the message; a `message.sent`
+ *           acknowledgement Event tells the sender it was persisted for the destination (not that
+ *           the recipient processed it)
+ *
+ * ask    awaitReply: true
+ *        -> the sender's PendingOperation stays pending; a runtime-minted PeerRequestLink correlates
+ *           it; the exact original PendingOperation settles only when the intended peer replies
+ *
+ * reply  inReplyToMessageId set
+ *        -> an outbound send that also settles the asker's original `ask` PendingOperation. It must
+ *           pass the responder's own current messaging policy, and it can settle only the exact
+ *           request it names, only from the Execution that request expected.
+ * ```
+ *
+ * The sender never names its own identity: `peer.message` carries a runtime-owned `fromExecutionId`.
+ * A message/correlation id is integrity data, never a capability - holding one does not authorize a
+ * reply or let a third Execution settle someone else's `ask`.
+ */
 export interface SendMessageProposal extends ProposalBase {
   readonly kind: "send_message";
-  readonly to: string;
+  /**
+   * The destination Execution id, for a fresh `send` / `ask`. Existence is checked only *after*
+   * policy authorizes the send. Absent for a `reply`, whose destination the runtime resolves from
+   * the peer request link so a sender cannot redirect a reply.
+   */
+  readonly to?: string;
   readonly body: JsonValue;
+  /** `ask`: keep the sender's PendingOperation pending until the intended peer replies. */
+  readonly awaitReply?: boolean;
+  /**
+   * `reply`: the runtime-minted message id of the peer request this message answers.
+   *
+   * The runtime checks that a matching open `PeerRequestLink` exists and that this Execution is the
+   * peer it expected a reply from. A guessed id settles nothing.
+   */
+  readonly inReplyToMessageId?: string;
 }
 
 export interface RequestUserInputProposal extends ProposalBase {
@@ -260,10 +304,26 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
       break;
     }
     case "send_message": {
-      if (typeof candidate["to"] !== "string" || candidate["to"].length === 0) {
+      const to = candidate["to"];
+      const inReplyTo = candidate["inReplyToMessageId"];
+      const hasTo = to !== undefined;
+      const hasReply = inReplyTo !== undefined;
+      if (hasTo && (typeof to !== "string" || to.length === 0)) {
         issues.push(issue(`${path}.to`, "expected a destination"));
       }
+      if (hasReply && (typeof inReplyTo !== "string" || inReplyTo.length === 0)) {
+        issues.push(issue(`${path}.inReplyToMessageId`, "expected a non-empty message id when present"));
+      }
+      if (hasTo === hasReply) {
+        // `send` / `ask` name a destination; `reply` names a request. Exactly one, never both, never
+        // neither - a reply must not be able to redirect itself to an arbitrary Execution.
+        issues.push(issue(path, "expected exactly one of `to` (send/ask) or `inReplyToMessageId` (reply)"));
+      }
       issues.push(...jsonIssues(candidate["body"], `${path}.body`).map((i) => issue(i.path, i.message)));
+      const awaitReply = candidate["awaitReply"];
+      if (awaitReply !== undefined && typeof awaitReply !== "boolean") {
+        issues.push(issue(`${path}.awaitReply`, "expected a boolean when present"));
+      }
       break;
     }
     case "request_user_input": {
@@ -284,6 +344,73 @@ export function isUseCapabilityProposal(proposal: EffectProposal): proposal is U
 
 export function isSpawnExecutionProposal(proposal: EffectProposal): proposal is SpawnExecutionProposal {
   return proposal.kind === "spawn_execution";
+}
+
+export function isSendMessageProposal(proposal: EffectProposal): proposal is SendMessageProposal {
+  return proposal.kind === "send_message";
+}
+
+export interface SendMessageInput {
+  readonly to: string;
+  readonly body?: JsonValue;
+  readonly requestKey?: string;
+  readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+/**
+ * `send`: deliver a message to a peer and do not wait for a reply.
+ *
+ * The sender's Effect settles as soon as the runtime admits the message for the destination; a
+ * `message.sent` Event carries the acknowledgement. "sent" means persisted for that destination,
+ * never that the recipient processed it.
+ */
+export function send(input: SendMessageInput): SendMessageProposal {
+  return {
+    kind: "send_message",
+    to: input.to,
+    body: input.body ?? null,
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+  };
+}
+
+/**
+ * `ask`: deliver a message and keep the sender's PendingOperation pending until the peer replies.
+ *
+ * Not a child call: the destination Execution need not terminate. The exact original PendingOperation
+ * settles when - and only when - the intended peer replies to this exact request.
+ */
+export function ask(input: SendMessageInput): SendMessageProposal {
+  return { ...send(input), awaitReply: true };
+}
+
+export interface ReplyMessageInput {
+  /** The runtime-minted message id of the peer request being answered. */
+  readonly inReplyToMessageId: string;
+  readonly body?: JsonValue;
+  readonly requestKey?: string;
+  readonly authorizationEvidence?: AuthorizationEvidence;
+  /** `true` to make this reply itself an `ask`. */
+  readonly awaitReply?: boolean;
+}
+
+/**
+ * `reply`: an outbound send that also settles the asker's original `ask`.
+ *
+ * Resolves to the same `SendMessage` Effect - it carries `inReplyToMessageId` instead of `to`. It
+ * passes the responder's current messaging policy, and the runtime settles the asker's exact
+ * PendingOperation only if `inReplyToMessageId` names an open request this Execution was the
+ * expected responder for.
+ */
+export function reply(input: ReplyMessageInput): SendMessageProposal {
+  return {
+    kind: "send_message",
+    body: input.body ?? null,
+    inReplyToMessageId: input.inReplyToMessageId,
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+    ...(input.awaitReply === true ? { awaitReply: true } : {}),
+  };
 }
 
 export interface SpawnExecutionInput {

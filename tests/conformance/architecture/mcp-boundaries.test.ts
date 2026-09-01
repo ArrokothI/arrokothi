@@ -226,13 +226,17 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
         "capability.completed",
         "capability.failed",
         "capability.unknown",
-        // Slice E.0 added the child-composition kinds; the MCP slice added nothing.
+        // Slice E.0 added the child-composition kinds and E.1 added child.cancelled + the peer
+        // messaging kinds; the MCP slice added nothing.
+        "child.cancelled",
         "child.completed",
         "child.failed",
         "child.spawned",
         "effect.denied",
         "effect.rejected",
         "external.input",
+        "message.sent",
+        "peer.message",
       ],
       "the Event vocabulary carries only kernel kinds - no MCP arm",
     );

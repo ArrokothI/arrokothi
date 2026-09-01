@@ -16,6 +16,7 @@ export type { DefinitionStore } from "./definition-store.ts";
 export { DefinitionIntegrityError, DefinitionVersionConflictError } from "./definition-store.ts";
 
 export type {
+  CancellationRequestFacet,
   ChildExecutionLinkFacet,
   ControllerResumptionFacet,
   EffectJournalFacet,
@@ -25,6 +26,7 @@ export type {
   MailboxAppendResult,
   MailboxFacet,
   OperationAuthorityFacet,
+  PeerRequestLinkFacet,
   PendingOperationFacet,
   RuntimeStore,
   RuntimeTransaction,

@@ -29,7 +29,9 @@ import { createPendingOperation, markDispatched, markSettled } from "../../effec
 import type { PendingOperation } from "../../effects/pending.ts";
 import type { ControllerResumptionId } from "../../execution/ids.ts";
 import { createControllerResumption, settleControllerResumption } from "../../execution/resumption.ts";
+import { createCancellationRequest, markCancellationApplied } from "../../execution/cancellation-request.ts";
 import { createChildExecutionLink, markChildLinkSettled } from "../../execution/child-link.ts";
+import { createPeerRequestLink, markPeerRequestLinkSettled } from "../../execution/peer-request-link.ts";
 import { consumeSpawnCredit, createLineageSpawnBudget } from "../../execution/structural-budget.ts";
 import { createEffectiveOperationAuthority } from "../../operations/authority.ts";
 import type { EventEnvelope, EventId } from "../../interaction/event-envelope.ts";
@@ -518,6 +520,67 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
         const settled = await store.readChildExecutionLink("exe_child" as ExecutionId);
         assertEqual(settled?.state, "settled", "delivery marks the link settled");
         assertEqual(settled?.settledAt, "2026-01-01T00:00:03.000Z", "with the time it settled");
+      },
+    },
+    {
+      name: "a peer request link correlates an ask and settles once (Slice E.1)",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        const link = createPeerRequestLink({
+          messageId: "msg_1",
+          requesterExecutionId: EXECUTION,
+          responderExecutionId: "exe_peer" as ExecutionId,
+          requestEffectId: "eff_ask" as EffectId,
+          requestPendingOperationId: "pop_ask" as PendingOperationId,
+          requestCorrelationId: "AB",
+          createdAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.peerRequestLinks.insert(link));
+
+        assertEqual((await store.readPeerRequestLink("msg_1"))?.state, "open", "a fresh link is open");
+        assertEqual((await store.listPeerRequestLinksByRequester(EXECUTION)).length, 1, "listable by requester");
+        assertEqual(
+          (await store.listPeerRequestLinksByResponder("exe_peer" as ExecutionId)).length,
+          1,
+          "and by responder",
+        );
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.peerRequestLinks.get("msg_1");
+          await tx.peerRequestLinks.update(markPeerRequestLinkSettled(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        assertEqual((await store.readPeerRequestLink("msg_1"))?.state, "settled", "a reply closes the link");
+        assertEqual((await store.listEffectJournal(EXECUTION)).length, 0, "a peer link journals no Effect");
+      },
+    },
+    {
+      name: "a cancellation request is a single per-Execution record, applied once (Slice E.1)",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        assertEqual(await store.readCancellationRequest(EXECUTION), undefined, "none by default");
+        const request = createCancellationRequest({
+          executionId: EXECUTION,
+          reason: "halt",
+          requestedAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.cancellationRequests.insert(request));
+        assertEqual((await store.readCancellationRequest(EXECUTION))?.state, "pending", "recorded as pending");
+
+        await assertRejects(
+          () => store.transact(EXECUTION, async (tx) => tx.cancellationRequests.insert(request)),
+          "Error",
+          "one cancellation request per Execution, never a silent second",
+        );
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.cancellationRequests.get(EXECUTION);
+          await tx.cancellationRequests.update(markCancellationApplied(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        assertEqual((await store.readCancellationRequest(EXECUTION))?.state, "applied", "moves to applied once");
       },
     },
     {

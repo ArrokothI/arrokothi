@@ -27,7 +27,7 @@ import type { ResourceAccessMode, ResourceBindingRef } from "../effects/capabili
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
 import { resourceBindingId } from "../effects/ids.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
-import { isSpawnExecutionProposal, isUseCapabilityProposal } from "../effects/types.ts";
+import { isSendMessageProposal, isSpawnExecutionProposal, isUseCapabilityProposal } from "../effects/types.ts";
 
 export interface CapabilityGrantRule {
   /** Plain strings: this is application configuration, so the factory brands and validates. */
@@ -58,12 +58,26 @@ export interface CapabilityGrantRule {
  */
 export type SpawnGrantRule = boolean | { readonly definitions: readonly string[] };
 
+/**
+ * Whether this policy permits `SendMessage` (`send` / `ask` / `reply`).
+ *
+ * `true` allows a message to any destination; a `{ destinations }` list allows only those Execution
+ * ids. Omitted (the default) denies every send - "knowing a peer's ExecutionId is not permission to
+ * message it". A `reply` is an outbound send and is checked here exactly like a fresh `send`: holding
+ * request/correlation metadata does not bypass this rule. Peer destinations are deliberately *not*
+ * modelled as capability operations - they are not operations - so this first peer-messaging runtime
+ * treats the policy boundary itself as the effective decision for peer sends.
+ */
+export type MessageGrantRule = boolean | { readonly destinations: readonly string[] };
+
 export interface AllowListAuthorizerOptions {
   readonly grants: readonly CapabilityGrantRule[];
   /** Restricts the whole allow-list to named Executions. Omitted means every Execution. */
   readonly executions?: readonly string[];
   /** Whether `SpawnExecution` is permitted, and for which child Definitions. Default: denied. */
   readonly spawn?: SpawnGrantRule;
+  /** Whether `SendMessage` is permitted, and to which destinations. Default: denied. */
+  readonly message?: MessageGrantRule;
 }
 
 export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): EffectAuthorizer {
@@ -91,6 +105,31 @@ export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): 
             message:
               `execution ${request.executionId} is not authorized to spawn ` +
               `${request.proposal.definitionId}@${request.proposal.definitionVersion} under this policy`,
+          };
+        }
+        issued += 1;
+        return { decision: "allow", grantId: `grant_${issued}` };
+      }
+
+      if (isSendMessageProposal(request.proposal)) {
+        const rule = options.message ?? false;
+        const isReply = request.proposal.inReplyToMessageId !== undefined;
+        // A reply is still an outbound send. Its actual destination is resolved by the runtime from
+        // the request link, so a `{ destinations }` list cannot check it here - but a deny-by-default
+        // policy still refuses it, which is the property "a responder without messaging authority
+        // cannot reply" depends on.
+        const allowed =
+          rule === true ||
+          (typeof rule === "object" &&
+            (isReply || (request.proposal.to !== undefined && rule.destinations.includes(request.proposal.to))));
+        if (!allowed) {
+          return {
+            decision: "deny",
+            code: "message_not_authorized",
+            message:
+              `execution ${request.executionId} is not authorized to send messages` +
+              (isReply ? " (including replies)" : ` to ${request.proposal.to}`) +
+              " under this policy",
           };
         }
         issued += 1;

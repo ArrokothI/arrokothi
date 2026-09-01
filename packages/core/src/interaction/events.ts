@@ -17,6 +17,9 @@
  *   child.spawned          a `SpawnExecution` created an independent child; here is its identity
  *   child.completed        a child this Execution called reached COMPLETED; here is its terminal result
  *   child.failed           a child this Execution called reached FAILED; here is why
+ *   child.cancelled        a child this Execution called reached CANCELLED; distinct from failure
+ *   message.sent           a `SendMessage` was admitted/persisted for its destination (not processed)
+ *   peer.message           another Execution sent this one a message (fresh, or a correlated reply)
  *   external.input         an observation delivered from outside the kernel
  *
  * The three capability outcomes are separate kinds rather than a status field so that a controller
@@ -28,10 +31,16 @@
  * The child kinds arrive with Slice E, exactly as this file's original note said they would ("Kinds
  * for later slices - child completion, peer messages, user input, timers - are deliberately absent.
  * They arrive with the Effects that produce them."). `child.spawned` is the immediate result of a
- * `SpawnExecution` Effect; `child.completed` / `child.failed` settle a `call`'s dependency on the
- * child's terminal result. They are distinct kinds so that "the child was created" can never be
- * read where "the child finished" was meant - the `spawn` vs `call` distinction depends on it.
- * Peer messages, user input, timers, and child *cancellation* remain absent until E.1.
+ * `SpawnExecution` Effect; `child.completed` / `child.failed` / `child.cancelled` settle a `call`'s
+ * dependency on the child's terminal outcome, and are distinct kinds so that "created", "finished",
+ * and "cancelled" can never be read for one another - `spawn` vs `call` and `failed` vs `cancelled`
+ * both depend on it.
+ *
+ * `message.sent` and `peer.message` arrive with Slice E.1's `SendMessage` runtime. `message.sent`
+ * answers the *sender's* Effect - the runtime admitted the message for that destination. `peer.message`
+ * is the *recipient's* observation; a reply to an `ask` is also a `peer.message`, carrying the
+ * asker's original correlation so its exact PendingOperation settles. User input and timers remain
+ * absent until E.2.
  *
  * Nothing here records *how fast* an Effect completed. A body field like "was this inline?" would
  * make the fast and slow paths semantically distinguishable, which is precisely the property the
@@ -56,6 +65,9 @@ export type EventKind =
   | "child.spawned"
   | "child.completed"
   | "child.failed"
+  | "child.cancelled"
+  | "message.sent"
+  | "peer.message"
   | "external.input";
 
 export const EVENT_KINDS: readonly EventKind[] = [
@@ -67,10 +79,20 @@ export const EVENT_KINDS: readonly EventKind[] = [
   "child.spawned",
   "child.completed",
   "child.failed",
+  "child.cancelled",
+  "message.sent",
+  "peer.message",
   "external.input",
 ];
 
-/** Every Event that resolves an Effect. Useful for waiting on "whatever happened to my request". */
+/**
+ * Every Event that resolves an Effect. Useful for waiting on "whatever happened to my request".
+ *
+ * `message.sent` is here: it answers a `SendMessage`. `peer.message` is *not* - it is primarily an
+ * observation delivered to a different Execution than the one that proposed the Effect; its
+ * reply-to-an-`ask` role is correlation-specific and a controller waits on that correlation
+ * explicitly.
+ */
 export const EFFECT_RESULT_EVENT_KINDS: readonly EventKind[] = [
   "capability.completed",
   "capability.failed",
@@ -80,15 +102,22 @@ export const EFFECT_RESULT_EVENT_KINDS: readonly EventKind[] = [
   "child.spawned",
   "child.completed",
   "child.failed",
+  "child.cancelled",
+  "message.sent",
 ];
 
 /**
- * The terminal-result Events a `call` waits on.
+ * The terminal-outcome Events a `call` waits on.
  *
- * `child.spawned` is deliberately not here: it acknowledges creation, not completion, and a `call`
- * depends on the latter.
+ * `child.spawned` is deliberately not here: it acknowledges creation, not termination. `child.cancelled`
+ * is here - cancellation is a terminal outcome and a `call` parent must be woken by it, or it would
+ * wait forever for a `child.completed` / `child.failed` that can never come.
  */
-export const CHILD_RESULT_EVENT_KINDS: readonly EventKind[] = ["child.completed", "child.failed"];
+export const CHILD_RESULT_EVENT_KINDS: readonly EventKind[] = [
+  "child.completed",
+  "child.failed",
+  "child.cancelled",
+];
 
 export function isEventKind(value: unknown): value is EventKind {
   return typeof value === "string" && (EVENT_KINDS as readonly string[]).includes(value);
@@ -170,6 +199,42 @@ export interface ChildFailedBody extends ChildResultFields {
   readonly failure: { readonly code: string; readonly message: string };
 }
 
+export interface ChildCancelledBody extends ChildResultFields {
+  /** Why the child was cancelled, as supplied to the trusted cancellation entry point. */
+  readonly reason: string | null;
+}
+
+/**
+ * The sender's acknowledgement that a `SendMessage` was admitted.
+ *
+ * "sent" means the runtime persisted the message for the destination, not that the recipient
+ * processed it. `messageId` is the runtime-minted identity a reply must name.
+ */
+export interface MessageSentBody extends EffectResultFields {
+  readonly pendingOperationId: PendingOperationId;
+  readonly messageId: string;
+  /** The destination this message was admitted for. */
+  readonly to: ExecutionId;
+}
+
+/**
+ * A message from another Execution: a fresh `send` / `ask`, or a correlated reply.
+ *
+ * `fromExecutionId` is runtime-owned - it is taken from the sending Execution's runtime context, not
+ * from any field a controller supplied. A reply carries the original ask's correlation on the
+ * envelope so the asker's exact PendingOperation settles; `inReplyToMessageId` lets the recipient
+ * tell a reply from a fresh request.
+ */
+export interface PeerMessageBody {
+  readonly messageId: string;
+  readonly fromExecutionId: ExecutionId;
+  readonly body: JsonValue;
+  /** Whether the sender is waiting for a reply to this exact message (an `ask`). */
+  readonly expectsReply: boolean;
+  /** The message id this one replies to, or `null` for a fresh request. */
+  readonly inReplyToMessageId: string | null;
+}
+
 /**
  * An observation from outside the kernel: application input, a user turn, a system signal.
  *
@@ -190,6 +255,9 @@ export interface EventBodies {
   readonly "child.spawned": ChildSpawnedBody;
   readonly "child.completed": ChildCompletedBody;
   readonly "child.failed": ChildFailedBody;
+  readonly "child.cancelled": ChildCancelledBody;
+  readonly "message.sent": MessageSentBody;
+  readonly "peer.message": PeerMessageBody;
   readonly "external.input": ExternalInputBody;
 }
 
@@ -226,6 +294,19 @@ export function eventBodyIssues(kind: EventKind, body: unknown): readonly EventB
     return issues;
   }
 
+  if (kind === "peer.message") {
+    requireString(value["messageId"], "body.messageId", issues);
+    requireString(value["fromExecutionId"], "body.fromExecutionId", issues);
+    if (!("body" in value)) issues.push({ path: "body.body", message: "expected a message body" });
+    if (typeof value["expectsReply"] !== "boolean") {
+      issues.push({ path: "body.expectsReply", message: "expected a boolean" });
+    }
+    if (value["inReplyToMessageId"] !== null && typeof value["inReplyToMessageId"] !== "string") {
+      issues.push({ path: "body.inReplyToMessageId", message: "expected a message id or null" });
+    }
+    return issues;
+  }
+
   requireString(value["effectId"], "body.effectId", issues);
   requireString(value["effectKind"], "body.effectKind", issues);
 
@@ -235,7 +316,19 @@ export function eventBodyIssues(kind: EventKind, body: unknown): readonly EventB
     return issues;
   }
 
-  if (kind === "child.spawned" || kind === "child.completed" || kind === "child.failed") {
+  if (kind === "message.sent") {
+    requireString(value["pendingOperationId"], "body.pendingOperationId", issues);
+    requireString(value["messageId"], "body.messageId", issues);
+    requireString(value["to"], "body.to", issues);
+    return issues;
+  }
+
+  if (
+    kind === "child.spawned" ||
+    kind === "child.completed" ||
+    kind === "child.failed" ||
+    kind === "child.cancelled"
+  ) {
     requireString(value["pendingOperationId"], "body.pendingOperationId", issues);
     requireString(value["childExecutionId"], "body.childExecutionId", issues);
     requireString(value["rootExecutionId"], "body.rootExecutionId", issues);
@@ -253,6 +346,9 @@ export function eventBodyIssues(kind: EventKind, body: unknown): readonly EventB
       }
     }
     if (kind === "child.failed") requireError(value["failure"], "body.failure", issues);
+    if (kind === "child.cancelled" && value["reason"] !== null && typeof value["reason"] !== "string") {
+      issues.push({ path: "body.reason", message: "expected a string reason or null" });
+    }
     return issues;
   }
 
