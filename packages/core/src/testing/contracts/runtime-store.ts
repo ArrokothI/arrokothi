@@ -10,6 +10,11 @@
  * was dispatched" without "there is a pending operation to settle", or "the result Event is in the
  * mailbox" without "the operation is no longer pending", would let an Execution be woken by an
  * observation the runtime does not believe in.
+ *
+ * Slice C.1 adds the controller-resumption facet on the same terms, with its own combination that
+ * must never be observable: a resumption settled while the Execution it belongs to still reads as
+ * WAITING on it. Lookup by the controller's stable key is contract rather than convenience - it is
+ * what stops a resumed Activation dispatching a second provider call.
  */
 
 import { createExecutionContext, transitionContext } from "../../execution/context.ts";
@@ -18,6 +23,8 @@ import type { ActivationId, ExecutionId } from "../../execution/ids.ts";
 import type { EffectId, IdempotencyKey, PendingOperationId } from "../../effects/ids.ts";
 import { createPendingOperation, markDispatched, markSettled } from "../../effects/pending.ts";
 import type { PendingOperation } from "../../effects/pending.ts";
+import type { ControllerResumptionId } from "../../execution/ids.ts";
+import { createControllerResumption, settleControllerResumption } from "../../execution/resumption.ts";
 import type { EventEnvelope, EventId } from "../../interaction/event-envelope.ts";
 import type { RuntimeStore } from "../../ports/runtime-store.ts";
 import type { ContractCase } from "./expect.ts";
@@ -25,6 +32,14 @@ import { assertDeepEqual, assertEqual, assertRejects, assertTrue } from "./expec
 
 const EXECUTION = "exe_contract" as ExecutionId;
 const MAILBOX = "mbx_contract";
+
+/** Thrown to force a rollback, with a name a contract case can recognise. */
+class RollbackProbe extends Error {
+  constructor() {
+    super("deliberate rollback");
+    this.name = "RollbackProbe";
+  }
+}
 
 function context(): ExecutionContext {
   return createExecutionContext({
@@ -284,6 +299,86 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
           const byEffect = await tx.effectJournal.listByEffect("eff_1" as EffectId);
           assertEqual(byEffect.length, 4, "one Effect's whole history is retrievable");
         });
+      },
+    },
+    {
+      name: "controller resumptions settle in the same transaction as the wake they cause",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        const resumption = createControllerResumption({
+          resumptionId: "res_1" as ControllerResumptionId,
+          executionId: EXECUTION,
+          key: "wf/draft#1/model/phase1",
+          activationId: "act_1" as ActivationId,
+          observedRevision: 3,
+          createdAt: "2026-01-01T00:00:02.000Z",
+        });
+
+        await store.transact(EXECUTION, async (tx) => {
+          await tx.controllerResumptions.insert(resumption);
+        });
+
+        assertEqual(
+          (await store.readControllerResumption("res_1" as ControllerResumptionId))?.state,
+          "pending",
+          "an unresolved resumption reads as pending",
+        );
+        assertEqual((await store.listControllerResumptions(EXECUTION)).length, 1, "and it belongs to this Execution");
+
+        // The key is how a resumed Activation recovers a result instead of starting the work again.
+        await store.transact(EXECUTION, async (tx) => {
+          const found = await tx.controllerResumptions.findByKey(EXECUTION, "wf/draft#1/model/phase1");
+          assertEqual(found?.resumptionId, "res_1", "the controller's stable key finds its record");
+          const absent = await tx.controllerResumptions.findByKey(EXECUTION, "wf/draft#2/model/phase1");
+          assertEqual(absent, undefined, "and a key nothing was stored under finds nothing");
+        });
+
+        // Settlement and the lifecycle change commit together, or neither does.
+        await assertRejects(
+          () =>
+            store.transact(EXECUTION, async (tx) => {
+              const stored = await tx.controllerResumptions.get("res_1" as ControllerResumptionId);
+              await tx.controllerResumptions.update(
+                settleControllerResumption(stored!, { status: "settled", value: { text: "answer" } }, "2026-01-01T00:00:03.000Z"),
+              );
+              throw new RollbackProbe();
+            }),
+          "RollbackProbe",
+          "a settlement whose transaction fails leaves the resumption pending",
+        );
+        assertEqual(
+          (await store.readControllerResumption("res_1" as ControllerResumptionId))?.state,
+          "pending",
+          "a rolled-back settlement leaves nothing settled",
+        );
+
+        await store.transact(EXECUTION, async (tx) => {
+          const stored = await tx.controllerResumptions.get("res_1" as ControllerResumptionId);
+          await tx.controllerResumptions.update(
+            settleControllerResumption(stored!, { status: "settled", value: { text: "answer" } }, "2026-01-01T00:00:04.000Z"),
+          );
+        });
+
+        const settled = await store.readControllerResumption("res_1" as ControllerResumptionId);
+        assertEqual(settled?.state, "settled", "and settled once its transaction commits");
+        assertDeepEqual(settled?.value, { text: "answer" }, "the stored outcome is plain data");
+        assertEqual(settled?.settledAt, "2026-01-01T00:00:04.000Z", "with the time it settled");
+        await store.transact(EXECUTION, async (tx) => {
+          assertEqual((await tx.mailboxes.peek(MAILBOX)).length, 0, "settling one appends no Event");
+          assertEqual(
+            await tx.pendingOperations.get("pop_1" as PendingOperationId),
+            undefined,
+            "and creates no pending operation",
+          );
+        });
+        assertEqual((await store.listEffectJournal(EXECUTION)).length, 0, "and journals nothing as an Effect");
+        assertEqual(
+          (await store.readExecution(EXECUTION))?.revision,
+          1,
+          "settling a resumption does not itself rewrite the Execution record",
+        );
       },
     },
     {

@@ -13,7 +13,7 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { EffectId, PendingOperationId } from "@agent-sdk/core/execution";
+import type { EffectId, ExecutionContext, PendingOperationId, WakeCondition } from "@agent-sdk/core/execution";
 import { isExpired, isUnresolved, isUnresolvedDispatch } from "@agent-sdk/core/execution";
 import { ControllerRegistry, Harness } from "@agent-sdk/core/execution";
 import {
@@ -54,6 +54,11 @@ const sender = (deadlineMs?: number) =>
       { do: "complete" },
     ],
   });
+
+/** The Event arm of a wait dependency, or null when the Execution is waiting on something else. */
+function eventWakeOf(context: ExecutionContext | undefined): WakeCondition | null {
+  return context?.waitingFor?.kind === "event" ? context.waitingFor.wake : null;
+}
 
 describe("pending operations", () => {
   test("the Activation's inline wait budget is not the Effect's deadline", async () => {
@@ -267,8 +272,8 @@ describe("pending operations", () => {
     await harness.runUntilIdle();
 
     // Both are waiting, both on the correlation "send-1". Only identity distinguishes them.
-    assert.equal((await harness.inspect(alice.executionId))?.waitingFor?.correlationId, "send-1");
-    assert.equal((await harness.inspect(bob.executionId))?.waitingFor?.correlationId, "send-1");
+    assert.equal(eventWakeOf(await harness.inspect(alice.executionId))?.correlationId, "send-1");
+    assert.equal(eventWakeOf(await harness.inspect(bob.executionId))?.correlationId, "send-1");
 
     const [alicesOperation] = await harness.pendingOperationsOf(alice.executionId);
     const receipt = await harness.settleEffect({

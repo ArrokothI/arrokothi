@@ -16,6 +16,7 @@ export type { DefinitionStore } from "./definition-store.ts";
 export { DefinitionIntegrityError, DefinitionVersionConflictError } from "./definition-store.ts";
 
 export type {
+  ControllerResumptionFacet,
   EffectJournalFacet,
   EmissionFacet,
   ExecutionRecordFacet,
@@ -29,6 +30,7 @@ export type {
 export {
   ExecutionAlreadyExistsError,
   RuntimeConcurrencyError,
+  UnknownControllerResumptionError,
   UnknownExecutionError,
   UnknownPendingOperationError,
 } from "./runtime-store.ts";
@@ -95,6 +97,13 @@ export type {
   ControllerNext,
   ExecutionController,
 } from "./controller.ts";
+
+export type {
+  ControllerResumptionAttempt,
+  ControllerResumptionScope,
+  ControllerResumptionWork,
+} from "./controller-resumption.ts";
+export type { ControllerResumptionFailure } from "../execution/resumption.ts";
 
 // -- model resolution and provider invocation -------------------------------
 export type { ModelResolver } from "./model-resolver.ts";

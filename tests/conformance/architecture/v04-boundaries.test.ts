@@ -56,6 +56,7 @@ const V04_OWNED_FILES = [
   "runtime/effect-processor.ts",
   "runtime/event-router.ts",
   "runtime/harness.ts",
+  "runtime/resumption-processor.ts",
   "testing/scripted-controllers.ts",
   "testing/execution-harness.ts",
 ];

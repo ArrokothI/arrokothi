@@ -1406,10 +1406,31 @@ controllers/workflow/model-access.ts  ->  llm-stage.ts, adapters.ts
 2. Widen `ExecutionContext.waitingFor` from `WakeCondition | null` to a dependency union covering an
    Event condition or a controller-local resumption. This is the one non-additive type change; the
    rest is additive.
-3. Add one `ControllerNext` status for controller-local suspension, and one `ActivationInput` field
-   through which a controller registers async work and receives settled outcomes. The controller
-   supplies an opaque thunk; the Harness owns the race, the tracking, the record, and the wake, and
-   never interprets the result.
+3. Add one `ControllerNext` status for controller-local suspension, and a **separate transient
+   controller-local resumption port** through which a controller registers async work and receives
+   settled outcomes. The controller supplies an opaque thunk and a stable key; the Harness owns the
+   race, the tracking, the record, and the wake, and never interprets the result.
+
+   This must **not** be an `ActivationInput` field. `ActivationInput` is frozen pure data containing
+   exactly `activation`, `definition`, `events`, `execution` and no functions at any depth, and the
+   controller-boundary suite asserts that structurally. A value that can start work is not pure
+   data, so a field would have traded a checkable invariant for one uniform parameter.
+
+   Implemented instead as a second argument to the controller activation boundary:
+
+   ```ts
+   activate(
+     input: ActivationInput,
+     resumptions: ControllerResumptionScope,
+   ): Promise<ActivationOutcome> | ActivationOutcome
+   ```
+
+   The scope is bound to one Execution and one Activation and exposes exactly one method,
+   `run(key, thunk) -> settled | failed | suspended`. It is the only live capability a controller
+   receives, and it carries no `RuntimeStore`, `Scheduler`, `Harness`, lifecycle setter, mailbox
+   mutation, Effect requester/processor, `EffectAuthorizer`, `CapabilityExecutor`, settlement entry
+   point, authority mutator, or `InlineWaitBudget`. Controllers with no slow local work ignore the
+   parameter. It is deliberately not a general controller "runtime context".
 4. Settle resumptions through a processor that mirrors `EffectProcessor`'s mechanism — the same
    `InlineWaitBudget.race`, the same follow-the-promise `track`/`drain`, the same commit-then-wake
    ordering — while sharing none of its semantics. Settlement writes the record and transitions

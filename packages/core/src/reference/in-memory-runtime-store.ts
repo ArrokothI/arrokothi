@@ -16,7 +16,8 @@ import type { EffectJournalEntry } from "../effects/journal.ts";
 import type { PendingOperation } from "../effects/pending.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
-import type { ExecutionId } from "../execution/ids.ts";
+import type { ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
+import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
 import type {
@@ -24,7 +25,12 @@ import type {
   RuntimeStore,
   RuntimeTransaction,
 } from "../ports/runtime-store.ts";
-import { ExecutionAlreadyExistsError, RuntimeConcurrencyError, UnknownPendingOperationError } from "../ports/runtime-store.ts";
+import {
+  ExecutionAlreadyExistsError,
+  RuntimeConcurrencyError,
+  UnknownControllerResumptionError,
+  UnknownPendingOperationError,
+} from "../ports/runtime-store.ts";
 
 interface MailboxState {
   events: DeliveredEvent[];
@@ -41,6 +47,7 @@ interface RuntimeState {
   transitions: Map<string, LifecycleTransitionRecord[]>;
   pendingOperations: Map<string, PendingOperation>;
   effectJournal: Map<string, EffectJournalEntry[]>;
+  controllerResumptions: Map<string, ControllerResumption>;
 }
 
 function emptyState(): RuntimeState {
@@ -51,6 +58,7 @@ function emptyState(): RuntimeState {
     transitions: new Map(),
     pendingOperations: new Map(),
     effectJournal: new Map(),
+    controllerResumptions: new Map(),
   };
 }
 
@@ -165,6 +173,36 @@ function makeTransaction(state: RuntimeState): RuntimeTransaction {
       },
     },
 
+    controllerResumptions: {
+      async insert(resumption) {
+        if (state.controllerResumptions.has(resumption.resumptionId)) {
+          throw new Error(`controller resumption ${resumption.resumptionId} already exists`);
+        }
+        state.controllerResumptions.set(resumption.resumptionId, structuredClone(resumption));
+      },
+      async get(resumptionId) {
+        const stored = state.controllerResumptions.get(resumptionId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+      async update(resumption) {
+        if (!state.controllerResumptions.has(resumption.resumptionId)) {
+          throw new UnknownControllerResumptionError(resumption.resumptionId);
+        }
+        state.controllerResumptions.set(resumption.resumptionId, structuredClone(resumption));
+      },
+      async listByExecution(executionId) {
+        return structuredClone(
+          [...state.controllerResumptions.values()].filter((resumption) => resumption.executionId === executionId),
+        );
+      },
+      async findByKey(executionId, key) {
+        const match = [...state.controllerResumptions.values()].find(
+          (resumption) => resumption.executionId === executionId && resumption.key === key,
+        );
+        return match ? structuredClone(match) : undefined;
+      },
+    },
+
     effectJournal: {
       async append(draft) {
         const list = state.effectJournal.get(draft.executionId) ?? [];
@@ -237,6 +275,24 @@ export class InMemoryRuntimeStore implements RuntimeStore {
 
   async listEffectJournal(executionId: ExecutionId): Promise<readonly EffectJournalEntry[]> {
     return structuredClone(this.state.effectJournal.get(executionId) ?? []);
+  }
+
+  async listControllerResumptions(executionId: ExecutionId): Promise<readonly ControllerResumption[]> {
+    return structuredClone(
+      [...this.state.controllerResumptions.values()].filter((resumption) => resumption.executionId === executionId),
+    );
+  }
+
+  async readControllerResumption(resumptionId: ControllerResumptionId): Promise<ControllerResumption | undefined> {
+    const stored = this.state.controllerResumptions.get(resumptionId);
+    return stored ? structuredClone(stored) : undefined;
+  }
+
+  async findControllerResumptionByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined> {
+    const match = [...this.state.controllerResumptions.values()].find(
+      (resumption) => resumption.executionId === executionId && resumption.key === key,
+    );
+    return match ? structuredClone(match) : undefined;
   }
 
   /** Journal entries for one Effect, across Executions. Diagnostics and conformance assertions. */

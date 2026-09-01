@@ -45,6 +45,25 @@
  * Both paths run through the identical code here, because the controller never learns which one
  * happened: it proposes, it reports what it still needs, and it re-checks its barrier on every wake.
  * There is no Stage mailbox and no second event-history system.
+ *
+ * ## The other kind of waiting
+ *
+ * A slow *model* call is not that. It crosses no runtime boundary, produces no Event, and is
+ * authorized by nobody - it is local computation that happens to take a long time. So it takes the
+ * controller-local resumption path instead:
+ *
+ * ```text
+ * Stage or Adapter starts a model call
+ *     -> settles inside the Activation's inline budget?  keep going
+ *     -> or not: persist the boundary position, report `await_resumption`
+ *          Harness derives WAITING on that resumption; no Event, no Effect, no PendingOperation
+ *     -> the provider answers -> READY -> a later Activation reconstructs the same call
+ *          and is handed the stored result
+ * ```
+ *
+ * The persisted position is what makes the second Activation cheap and correct. It records that the
+ * Stage body already ran, which Adapter to run next, and which transition the body chose, so
+ * resuming re-runs exactly the work that did not finish and nothing else.
  */
 
 import type { DefinitionKind } from "../../definitions/types.ts";
@@ -53,7 +72,9 @@ import type { EffectProposal } from "../../effects/types.ts";
 import { useCapability } from "../../effects/types.ts";
 import type { DeliveredEvent, WakeCondition } from "../../interaction/event-envelope.ts";
 import { EFFECT_RESULT_EVENT_KINDS, isEffectResultEventKind } from "../../interaction/events.ts";
+import type { ControllerResumptionId } from "../../execution/ids.ts";
 import type { ActivationInput, ActivationOutcome, ExecutionController } from "../../ports/controller.ts";
+import type { ControllerResumptionScope } from "../../ports/controller-resumption.ts";
 import type { AdapterRegistry } from "../../ports/adapter.ts";
 import { emptyAdapterRegistry } from "../../ports/adapter.ts";
 import type { LocalResourceEnvironment, LocalResourceView } from "../../ports/local-resource.ts";
@@ -61,7 +82,7 @@ import { emptyLocalResourceEnvironment } from "../../ports/local-resource.ts";
 import type { FunctionStageOutcome, FunctionStageRegistry, StageExecutionContext } from "../../ports/stage.ts";
 import { emptyFunctionStageRegistry, functionStageOutcomeIssues } from "../../ports/stage.ts";
 import type { JsonObject, JsonValue } from "../../util/json.ts";
-import type { BarrierEntry, WorkflowControlState } from "../../workflow/control-state.ts";
+import type { BarrierEntry, WorkflowBoundaryState, WorkflowControlState } from "../../workflow/control-state.ts";
 import {
   initialWorkflowControlState,
   observationsOf,
@@ -76,6 +97,7 @@ import type { StageDefinition, StageId, TransitionTarget, WorkflowSpec } from ".
 import type { StageResult } from "../../workflow/stage-result.ts";
 import { validateWorkflowSpec } from "../../workflow/validation.ts";
 import { runAdapterChain } from "./adapters.ts";
+import type { LLMStageOutcome } from "./llm-stage.ts";
 import { runLLMStage } from "./llm-stage.ts";
 import type { WorkflowModelAccess, WorkflowTrace } from "./model-access.ts";
 import { resolveTransition } from "./transitions.ts";
@@ -104,6 +126,8 @@ interface Failure {
 
 type StepOutcome =
   | { readonly kind: "awaitEffects"; readonly state: WorkflowControlState; readonly proposals: readonly EffectProposal[]; readonly emissions: readonly EmissionProposal[] }
+  /** A model call outlived this Activation. The state carries enough to re-enter where it stopped. */
+  | { readonly kind: "suspend"; readonly state: WorkflowControlState; readonly resumptionId: ControllerResumptionId; readonly emissions: readonly EmissionProposal[] }
   | { readonly kind: "continue"; readonly state: WorkflowControlState; readonly emissions: readonly EmissionProposal[] }
   | { readonly kind: "complete"; readonly state: WorkflowControlState; readonly terminal: JsonValue | undefined; readonly hasTerminal: boolean; readonly emissions: readonly EmissionProposal[] }
   | { readonly kind: "fail"; readonly state: WorkflowControlState; readonly failure: Failure; readonly emissions: readonly EmissionProposal[] };
@@ -170,7 +194,7 @@ class WorkflowController implements ExecutionController {
     this.maxTransitions = options.maxTransitions ?? DEFAULT_MAX_TRANSITIONS;
   }
 
-  async activate(input: ActivationInput): Promise<ActivationOutcome> {
+  async activate(input: ActivationInput, resumptions: ControllerResumptionScope): Promise<ActivationOutcome> {
     const validation = validateWorkflowSpec(input.definition.spec);
     if (!validation.ok) {
       // Topology is validated at authoring, at deserialization, and at store time. Reaching here
@@ -189,7 +213,7 @@ class WorkflowController implements ExecutionController {
     } else {
       // First Activation: install the entry Stage, which runs its input Adapters. An Adapter that
       // rejects here resolves through the same predefined policy as one anywhere else.
-      const entered = await this.enterStage(spec, spec.entryStage, startInput(input.events), 1, 0);
+      const entered = await this.enterStage(spec, spec.entryStage, startInput(input.events), 1, 0, resumptions);
       if (entered.kind !== "continue") return this.finish(entered);
       state = entered.state;
     }
@@ -202,7 +226,7 @@ class WorkflowController implements ExecutionController {
       };
     }
 
-    const step = await this.step(spec, state, input);
+    const step = await this.step(spec, state, input, resumptions);
     return this.finish(step);
   }
 
@@ -250,7 +274,12 @@ class WorkflowController implements ExecutionController {
 
   // -- one Stage step --------------------------------------------------------
 
-  private async step(spec: WorkflowSpec, state: WorkflowControlState, input: ActivationInput): Promise<StepOutcome> {
+  private async step(
+    spec: WorkflowSpec,
+    state: WorkflowControlState,
+    input: ActivationInput,
+    resumptions: ControllerResumptionScope,
+  ): Promise<StepOutcome> {
     const stage = spec.stages.find((candidate) => candidate.id === state.currentStage);
     if (!stage) {
       return {
@@ -264,9 +293,43 @@ class WorkflowController implements ExecutionController {
       };
     }
 
+    // Re-entry, before anything else. A boundary position means a previous Activation stopped part
+    // way through this Stage's Adapters, and the work in front of that position has already been
+    // done - the predecessor transition for an input boundary, the whole Stage body for an output
+    // one. Running the ordinary path would redo it.
+    const boundary = state.boundary;
+    if (boundary !== null) {
+      const resumed: WorkflowControlState = { ...state, boundary: null };
+      return boundary.position === "input"
+        ? this.runInputAdapters(spec, stage, resumed, boundary.adapterIndex, boundary.value, resumptions)
+        : this.finishStage(
+            spec,
+            stage,
+            resumed,
+            boundary.value,
+            boundary.transitionLabel,
+            // The body's emissions were persisted by the Activation that ran it. Re-proposing them
+            // here would deliver the same nonterminal output twice.
+            [],
+            boundary.adapterIndex,
+            resumptions,
+          );
+    }
+
     const view = this.viewFor(stage);
-    const body = await this.runBody(stage, state, view, input);
+    const body = await this.runBody(stage, state, view, input, resumptions);
     if (body.kind === "fail") return { kind: "fail", state, emissions: [], failure: body.failure };
+
+    if (body.outcome.status === "suspended") {
+      // The Stage body itself is mid-model-call. Its own progress is what re-entry needs; there is
+      // no boundary position, because no Adapter is running.
+      return {
+        kind: "suspend",
+        state: { ...state, stageProgress: body.outcome.progress },
+        resumptionId: body.outcome.resumptionId,
+        emissions: [],
+      };
+    }
 
     const emissions = body.outcome.status === "failed" ? [] : (body.outcome.emissions ?? []);
     const progress = body.outcome.status === "failed" ? state.stageProgress : (body.outcome.progress ?? state.stageProgress);
@@ -313,37 +376,71 @@ class WorkflowController implements ExecutionController {
     }
 
     // The body is done. Output Adapters settle before any transition is resolved.
+    return this.finishStage(spec, stage, advanced, body.outcome.result, body.outcome.transition ?? null, emissions, 0, resumptions);
+  }
+
+  /**
+   * Everything after a Stage body completes: output Adapters, then the transition.
+   *
+   * Entered twice for one Stage visit when an output Adapter suspends - once from the Activation
+   * that ran the body, once from the Activation that resumes - so it takes the body's result and
+   * chosen label as arguments rather than reading them from a body it might not have run.
+   */
+  private async finishStage(
+    spec: WorkflowSpec,
+    stage: StageDefinition,
+    state: WorkflowControlState,
+    result: StageResult,
+    label: string | null,
+    emissions: readonly EmissionProposal[],
+    startIndex: number,
+    resumptions: ControllerResumptionScope,
+  ): Promise<StepOutcome> {
     const adapted = await runAdapterChain({
       stageId: stage.id,
       visit: state.visit,
       position: "output",
       declarations: stage.outputAdapters ?? [],
-      value: body.outcome.result,
-      resources: view,
+      value: result,
+      resources: this.viewFor(stage),
       adapters: this.adapters,
       models: this.models,
       trace: this.trace,
+      resumptions,
+      startIndex,
     });
 
+    if (adapted.status === "suspended") {
+      // Everything the resuming Activation must not redo, written down: the body's result is
+      // already folded into the chain's current value, its transition choice is recorded, and the
+      // Adapters before this index have run. Emissions produced by the body travel with this
+      // outcome and are persisted now, so re-entry has nothing to duplicate.
+      const boundary: WorkflowBoundaryState = {
+        position: "output",
+        adapterIndex: adapted.index,
+        value: adapted.value,
+        transitionLabel: label,
+      };
+      return { kind: "suspend", state: { ...state, boundary }, resumptionId: adapted.resumptionId, emissions };
+    }
     if (adapted.status === "failed") {
-      return { kind: "fail", state: advanced, emissions, failure: { code: adapted.code, message: adapted.message } };
+      return { kind: "fail", state, emissions, failure: { code: adapted.code, message: adapted.message } };
     }
     if (adapted.status === "rejected") {
-      return this.applyRejection(spec, stage, advanced, adapted.reason, "output", emissions);
+      return this.applyRejection(spec, stage, state, adapted.reason, "output", emissions, resumptions);
     }
 
-    const label = body.outcome.transition ?? null;
     const resolution = resolveTransition(stage.id as string, stage.transitions, label);
     if (!resolution.ok) {
       return {
         kind: "fail",
-        state: { ...advanced, provisionalResult: adapted.value },
+        state: { ...state, provisionalResult: adapted.value },
         emissions,
         failure: { code: resolution.code, message: resolution.message },
       };
     }
 
-    return this.applyTransition(spec, stage, advanced, resolution.target, adapted.value, label, emissions);
+    return this.applyTransition(spec, stage, state, resolution.target, adapted.value, label, emissions, resumptions);
   }
 
   /** Runs the Stage body for its kind. Agent and Workflow Stages are explicitly unsupported here. */
@@ -352,7 +449,8 @@ class WorkflowController implements ExecutionController {
     state: WorkflowControlState,
     view: LocalResourceView,
     input: ActivationInput,
-  ): Promise<{ readonly kind: "ok"; readonly outcome: FunctionStageOutcome } | { readonly kind: "fail"; readonly failure: Failure }> {
+    resumptions: ControllerResumptionScope,
+  ): Promise<{ readonly kind: "ok"; readonly outcome: LLMStageOutcome } | { readonly kind: "fail"; readonly failure: Failure }> {
     const context: StageExecutionContext = {
       stage,
       stageId: stage.id,
@@ -396,7 +494,7 @@ class WorkflowController implements ExecutionController {
           return { kind: "ok", outcome };
         }
         case "llm":
-          return { kind: "ok", outcome: await runLLMStage(stage, context, this.models, this.trace) };
+          return { kind: "ok", outcome: await runLLMStage(stage, context, this.models, this.trace, resumptions) };
         case "agent":
         case "workflow":
           // Definition-valid, runtime unsupported. Slice E owns child composition, so this reports
@@ -437,6 +535,7 @@ class WorkflowController implements ExecutionController {
     result: StageResult,
     label: string | null,
     emissions: readonly EmissionProposal[],
+    resumptions: ControllerResumptionScope,
   ): Promise<StepOutcome> {
     const transitions = state.transitions + 1;
     if (transitions > this.maxTransitions) {
@@ -468,7 +567,9 @@ class WorkflowController implements ExecutionController {
     }
 
     this.trace?.stageTransitioned?.({ from: from.id, visit: state.visit, label, to: target.stage });
-    const entered = await this.enterStage(spec, target.stage, result, state.visit + 1, transitions);
+    const entered = await this.enterStage(spec, target.stage, result, state.visit + 1, transitions, resumptions);
+    // The predecessor's emissions travel with whatever entering produced, including a suspension:
+    // they are persisted by this Activation, and the one that resumes proposes none of its own.
     return { ...entered, emissions };
   }
 
@@ -485,6 +586,7 @@ class WorkflowController implements ExecutionController {
     incoming: StageResult,
     visit: number,
     transitions: number,
+    resumptions: ControllerResumptionScope,
   ): Promise<StepOutcome> {
     const stage = spec.stages.find((candidate) => candidate.id === stageId);
     const base = initialWorkflowControlState(stageId, incoming);
@@ -501,26 +603,57 @@ class WorkflowController implements ExecutionController {
       };
     }
 
+    return this.runInputAdapters(spec, stage, state, 0, incoming, resumptions);
+  }
+
+  /**
+   * Runs a target Stage's input Adapters from a position, and installs the adapted input.
+   *
+   * The sharp case in this slice. An input Adapter suspends *during* a transition, when the target
+   * Stage is only half entered - so the state committed before yielding is already the target
+   * Stage's own state, with its new visit, its transition count, and the partially adapted value.
+   * The Activation that resumes re-enters here and neither re-runs the predecessor Stage, nor
+   * re-resolves the transition, nor re-runs an input Adapter that already produced a value.
+   */
+  private async runInputAdapters(
+    spec: WorkflowSpec,
+    stage: StageDefinition,
+    state: WorkflowControlState,
+    startIndex: number,
+    value: StageResult,
+    resumptions: ControllerResumptionScope,
+  ): Promise<StepOutcome> {
     const adapted = await runAdapterChain({
       stageId: stage.id,
-      visit,
+      visit: state.visit,
       position: "input",
       declarations: stage.inputAdapters ?? [],
-      value: incoming,
+      value,
       resources: this.viewFor(stage),
       adapters: this.adapters,
       models: this.models,
       trace: this.trace,
+      resumptions,
+      startIndex,
     });
 
+    if (adapted.status === "suspended") {
+      const boundary: WorkflowBoundaryState = {
+        position: "input",
+        adapterIndex: adapted.index,
+        value: adapted.value,
+        transitionLabel: null,
+      };
+      return { kind: "suspend", state: { ...state, boundary }, resumptionId: adapted.resumptionId, emissions: [] };
+    }
     if (adapted.status === "failed") {
       return { kind: "fail", state, emissions: [], failure: { code: adapted.code, message: adapted.message } };
     }
     if (adapted.status === "rejected") {
-      return this.applyRejection(spec, stage, state, adapted.reason, "input", []);
+      return this.applyRejection(spec, stage, state, adapted.reason, "input", [], resumptions);
     }
 
-    return { kind: "continue", state: { ...state, stageInput: adapted.value }, emissions: [] };
+    return { kind: "continue", state: { ...state, stageInput: adapted.value, boundary: null }, emissions: [] };
   }
 
   /**
@@ -538,6 +671,7 @@ class WorkflowController implements ExecutionController {
     reason: string,
     position: "input" | "output",
     emissions: readonly EmissionProposal[],
+    resumptions: ControllerResumptionScope,
   ): Promise<StepOutcome> {
     if (!stage.onAdapterReject) {
       return {
@@ -550,7 +684,7 @@ class WorkflowController implements ExecutionController {
         },
       };
     }
-    return this.applyTransition(spec, stage, state, stage.onAdapterReject, reason, null, emissions);
+    return this.applyTransition(spec, stage, state, stage.onAdapterReject, reason, null, emissions, resumptions);
   }
 
   // -- helpers ---------------------------------------------------------------
@@ -578,6 +712,11 @@ class WorkflowController implements ExecutionController {
           effects: step.proposals,
           next: { status: "await_event", wake: this.wakeFor(step.state, unsettledEntries(step.state)) },
         };
+      case "suspend":
+        // A dependency report, not a lifecycle instruction. The Harness checks that this Activation
+        // registered the work, commits the progress and the resumption record together, and derives
+        // WAITING itself - the same division of labour as `await_event`.
+        return { control, ...emissions, next: { status: "await_resumption", resumptionId: step.resumptionId } };
       case "continue":
         return { control, ...emissions, next: { status: "continue" } };
       case "complete":

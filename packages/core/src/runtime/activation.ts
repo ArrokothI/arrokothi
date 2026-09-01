@@ -9,6 +9,11 @@
  * until checked here: the Harness must never persist a mistagged progress record, a non-JSON
  * value, or a malformed wake condition, and it must never be able to read a lifecycle state out of
  * a controller's reply, because there is no field for one.
+ *
+ * `await_resumption` is checked the same way and no more trustingly. This module confirms only that
+ * the reported identifier is well formed; whether it names work this Execution is actually waiting
+ * on is a runtime fact the Harness establishes separately, because a controller asserting it would
+ * be a controller choosing what the runtime believes.
  */
 
 import type { DefinitionKind, ExecutionDefinition } from "../definitions/types.ts";
@@ -18,6 +23,7 @@ import type { ControllerProgress, ExecutionView } from "../execution/context.ts"
 import type { EmissionProposal } from "../execution/emission.ts";
 import { emissionBodyIssues } from "../execution/emission.ts";
 import type { ActivationId, ExecutionId } from "../execution/ids.ts";
+import { isControllerResumptionId } from "../execution/ids.ts";
 import type { LifecycleState } from "../execution/lifecycle.ts";
 import type { EffectDispatchRecord } from "./effect-processor.ts";
 import type { DeliveredEvent } from "../interaction/event-envelope.ts";
@@ -53,6 +59,7 @@ export type OutcomeRejectionCode =
   | "invalid_effect"
   | "invalid_next"
   | "invalid_wake"
+  | "invalid_resumption"
   | "invalid_result"
   | "invalid_failure";
 
@@ -83,6 +90,13 @@ function validateNext(next: unknown): OutcomeRejection | null {
       const issues = wakeConditionIssues(wake as never);
       if (issues.length > 0) {
         return { code: "invalid_wake", message: issues.map((i) => `${i.path}: ${i.message}`).join("; ") };
+      }
+      return null;
+    }
+    case "await_resumption": {
+      const resumptionId = (next as { resumptionId?: unknown }).resumptionId;
+      if (!isControllerResumptionId(resumptionId)) {
+        return { code: "invalid_resumption", message: "await_resumption requires a controller resumption id" };
       }
       return null;
     }
@@ -187,6 +201,15 @@ export function validateActivationOutcome(outcome: unknown, kind: DefinitionKind
       return reject(
         "invalid_effect",
         `an Activation reporting "${String(status)}" cannot also propose Effects; their results could never be observed`,
+      );
+    }
+    // v0.4 suspends exclusively on a controller-local resumption: while one is outstanding no Event
+    // produces an Activation. An Effect proposed alongside it would leave its result Event sitting
+    // in the mailbox with nothing waiting on it, which is a lost wake dressed up as a feature.
+    if (effects.length > 0 && status === "await_resumption") {
+      return reject(
+        "invalid_effect",
+        "an Activation suspending on controller-local work cannot also propose Effects; nothing would be waiting on their results",
       );
     }
     const keys = (effects as readonly EffectProposal[])

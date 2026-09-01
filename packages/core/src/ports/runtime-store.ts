@@ -15,8 +15,13 @@
  *   a result Event delivered while the operation still reads as unresolved
  *   an Execution woken by an Event that rolled back
  *
- * Independently transactional micro-stores cannot express any of that. Slice F adds memory and
- * Slice I the durable outbox as further facets of this same transaction, not as new stores.
+ * Independently transactional micro-stores cannot express any of that. Slice C.1 adds controller
+ * resumptions for the same reason, with its own combination that must never be observable:
+ *
+ *   a resumption settled while the Execution it belongs to still reads as WAITING on it
+ *
+ * Slice F adds memory and Slice I the durable outbox as further facets of this same transaction,
+ * not as new stores.
  */
 
 import type { EffectJournalDraft, EffectJournalEntry } from "../effects/journal.ts";
@@ -25,7 +30,8 @@ import type { PendingOperation } from "../effects/pending.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
-import type { ExecutionId } from "../execution/ids.ts";
+import type { ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
+import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 
 export interface ExecutionRecordFacet {
@@ -99,6 +105,30 @@ export interface EffectJournalFacet {
   listByEffect(effectId: EffectId): Promise<readonly EffectJournalEntry[]>;
 }
 
+/**
+ * Controller-local resumptions.
+ *
+ * A facet of the same transaction as everything else, because settling one and transitioning the
+ * Execution from WAITING to READY must commit together or not at all - the same reason pending
+ * operations and mailboxes share a transaction. It is a *separate* facet from
+ * `pendingOperations` because the records mean different things: nothing here is correlated to an
+ * Event, journaled as an Effect, deduplicated by an idempotency key, or ever reported as an
+ * unknown outcome.
+ *
+ * `findByKey` is what makes a slow call dispatch once. A later Activation reconstructing the same
+ * controller-local key finds the settled record and reads its outcome instead of starting the work
+ * again.
+ */
+export interface ControllerResumptionFacet {
+  insert(resumption: ControllerResumption): Promise<void>;
+  get(resumptionId: ControllerResumptionId): Promise<ControllerResumption | undefined>;
+  /** Replaces the record wholesale. Resumptions have no independent revision counter. */
+  update(resumption: ControllerResumption): Promise<void>;
+  listByExecution(executionId: ExecutionId): Promise<readonly ControllerResumption[]>;
+  /** The record for one Execution's stable controller-local key, if it has one. */
+  findByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined>;
+}
+
 export interface RuntimeTransaction {
   readonly executions: ExecutionRecordFacet;
   readonly mailboxes: MailboxFacet;
@@ -106,6 +136,7 @@ export interface RuntimeTransaction {
   readonly transitions: TransitionAuditFacet;
   readonly pendingOperations: PendingOperationFacet;
   readonly effectJournal: EffectJournalFacet;
+  readonly controllerResumptions: ControllerResumptionFacet;
 }
 
 export interface RuntimeStore {
@@ -122,6 +153,23 @@ export interface RuntimeStore {
   listPendingOperations(executionId: ExecutionId): Promise<readonly PendingOperation[]>;
   readPendingOperation(pendingOperationId: PendingOperationId): Promise<PendingOperation | undefined>;
   listEffectJournal(executionId: ExecutionId): Promise<readonly EffectJournalEntry[]>;
+  listControllerResumptions(executionId: ExecutionId): Promise<readonly ControllerResumption[]>;
+  readControllerResumption(resumptionId: ControllerResumptionId): Promise<ControllerResumption | undefined>;
+  /**
+   * One Execution's record for a controller-local key.
+   *
+   * On the read surface as well as the transaction facet because the runtime consults it on every
+   * `run(key, ...)` - it is the lookup that decides whether a resumed Activation dispatches a second
+   * provider call or is handed the stored one. A durable store should index it rather than scan.
+   */
+  findControllerResumptionByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined>;
+}
+
+export class UnknownControllerResumptionError extends Error {
+  constructor(resumptionId: string) {
+    super(`unknown controller resumption ${resumptionId}`);
+    this.name = "UnknownControllerResumptionError";
+  }
 }
 
 export class UnknownPendingOperationError extends Error {

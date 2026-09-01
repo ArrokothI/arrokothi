@@ -14,7 +14,13 @@ export {
   scriptedWorkflowDefinition,
   INITIAL_SCRIPTED_PROGRESS,
 } from "./scripted-controllers.ts";
-export type { ScriptedControllerStep, ScriptedDefinitionInput, ScriptedProgress } from "./scripted-controllers.ts";
+export type {
+  ScriptedControllerOptions,
+  ScriptedControllerStep,
+  ScriptedDefinitionInput,
+  ScriptedProgress,
+  ScriptedWorkGate,
+} from "./scripted-controllers.ts";
 export { createWorkflowTestHarness, modelAccess, recordingWorkflowTrace } from "./workflow.ts";
 export type {
   RecordingWorkflowTrace,

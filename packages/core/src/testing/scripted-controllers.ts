@@ -31,6 +31,7 @@ import type { WakeCondition } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
 import { EFFECT_RESULT_EVENT_KINDS, isEffectResultEventKind } from "../interaction/events.ts";
 import type { ActivationInput, ActivationOutcome, ExecutionController } from "../ports/controller.ts";
+import type { ControllerResumptionScope } from "../ports/controller-resumption.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 
@@ -63,13 +64,33 @@ export type ScriptedControllerStep =
     }
   /** Propose an Effect kind this slice does not dispatch, to prove it is refused rather than dropped. */
   | { readonly do: "propose_effect"; readonly effect: EffectProposal; readonly await?: boolean }
+  /**
+   * Run controller-local asynchronous work under this Activation's inline budget.
+   *
+   * The substrate counterpart of a model call: opaque local work the runtime races, tracks, and -
+   * if it outlives the Activation - resumes. The step deliberately does not advance when the work
+   * suspends, so the Activation that resumes re-runs it and recovers the stored outcome by key,
+   * exactly as a real controller reconstructing a model call would.
+   */
+  | {
+      readonly do: "local_work";
+      readonly key: string;
+      /** What the work produces. */
+      readonly produces?: JsonValue;
+      /** Throw instead, to exercise normalized failure. */
+      readonly throws?: string;
+      /** Produce something unpersistable, to prove the JSON boundary is not path-dependent. */
+      readonly unserializable?: boolean;
+      /** Register the work but never report the matching dependency, so it is abandoned. */
+      readonly abandon?: boolean;
+    }
   /** Record the kinds and correlations of the Events this Activation consumed. */
   | { readonly do: "observe"; readonly note?: string }
   /** Propose semantic completion. The Harness validates the value against the pinned schema. */
   | { readonly do: "complete"; readonly result?: JsonValue }
   | { readonly do: "fail"; readonly code: string; readonly message: string }
   /** Return an outcome the Harness must reject. */
-  | { readonly do: "misreport"; readonly as: "wrong_kind" | "lifecycle_status" | "unserializable_progress" };
+  | { readonly do: "misreport"; readonly as: "wrong_kind" | "lifecycle_status" | "unserializable_progress" | "unknown_resumption" };
 
 export interface ScriptedProgress extends JsonObject {
   step: number;
@@ -118,14 +139,31 @@ function readProgram(spec: unknown): readonly ScriptedControllerStep[] {
   return [];
 }
 
+/**
+ * A hold placed on `local_work`, so a test can keep controller-local work genuinely outstanding.
+ *
+ * Without one, work registered by a script resolves immediately and the runtime settles it on the
+ * next microtask - correct behaviour, and exactly what proves no wake is lost, but useless for
+ * showing that an Execution *stays* suspended while work is in flight. The gate is a controller
+ * construction argument rather than script data for the obvious reason: a promise is not
+ * serializable, and a definition that could carry one would not be a definition.
+ */
+export type ScriptedWorkGate = (key: string) => Promise<void> | void;
+
+export interface ScriptedControllerOptions {
+  readonly gate?: ScriptedWorkGate;
+}
+
 class ScriptedController implements ExecutionController {
   readonly kind: DefinitionKind;
+  private readonly gate: ScriptedWorkGate | undefined;
 
-  constructor(kind: DefinitionKind) {
+  constructor(kind: DefinitionKind, options: ScriptedControllerOptions = {}) {
     this.kind = kind;
+    this.gate = options.gate;
   }
 
-  activate(input: ActivationInput): ActivationOutcome {
+  async activate(input: ActivationInput, resumptions: ControllerResumptionScope): Promise<ActivationOutcome> {
     const progress = readProgress(input.execution.control.progress);
     for (const event of input.events) {
       progress.seenEvents.push(event.eventId);
@@ -231,6 +269,37 @@ class ScriptedController implements ExecutionController {
         );
       }
 
+      case "local_work": {
+        const attempt = await resumptions.run(step.key, async () => {
+          await this.gate?.(step.key);
+          if (step.throws !== undefined) throw new Error(step.throws);
+          // A closure is the cheapest thing that cannot be persisted, and it must fail identically
+          // whether it settled inline or an hour later.
+          if (step.unserializable === true) return { callback: () => undefined };
+          return step.produces ?? null;
+        });
+
+        if (attempt.status === "suspended") {
+          if (step.abandon === true) {
+            // Registered, then not waited on. Nothing durable exists, nothing follows the promise,
+            // and this Execution can never be woken by it.
+            progress.step += 1;
+            progress.notes[step.key] = "abandoned";
+            return this.outcome(progress, { status: "continue" });
+          }
+          // Deliberately does not advance the cursor: the resumed Activation re-runs this step,
+          // derives the same key, and is handed the stored outcome instead of working again.
+          return this.outcome(progress, { status: "await_resumption", resumptionId: attempt.resumptionId });
+        }
+
+        progress.step += 1;
+        progress.notes[step.key] =
+          attempt.status === "settled"
+            ? { settled: attempt.value }
+            : { failed: attempt.failure.code, message: attempt.failure.message };
+        return this.outcome(progress, { status: "continue" });
+      }
+
       case "observe": {
         progress.step += 1;
         if (step.note !== undefined) progress.notes["observed"] = step.note;
@@ -260,6 +329,14 @@ class ScriptedController implements ExecutionController {
           // A controller must not be able to name an operational state at all.
           return { control: { kind: this.kind, progress }, next: { status: "WAITING" } } as unknown as ActivationOutcome;
         }
+        if (step.as === "unknown_resumption") {
+          // A dependency on work this Activation never registered. The Harness must refuse it
+          // rather than park the Execution on something nothing is following.
+          return {
+            control: { kind: this.kind, progress },
+            next: { status: "await_resumption", resumptionId: "res_never_registered" },
+          } as unknown as ActivationOutcome;
+        }
         const poisoned = { ...progress, callback: () => undefined } as unknown as JsonObject;
         return { control: { kind: this.kind, progress: poisoned }, next: { status: "continue" } } as ActivationOutcome;
       }
@@ -276,12 +353,12 @@ class ScriptedController implements ExecutionController {
   }
 }
 
-export function createScriptedAgentController(): ExecutionController {
-  return new ScriptedController("agent");
+export function createScriptedAgentController(options: ScriptedControllerOptions = {}): ExecutionController {
+  return new ScriptedController("agent", options);
 }
 
-export function createScriptedWorkflowController(): ExecutionController {
-  return new ScriptedController("workflow");
+export function createScriptedWorkflowController(options: ScriptedControllerOptions = {}): ExecutionController {
+  return new ScriptedController("workflow", options);
 }
 
 export interface ScriptedDefinitionInput {

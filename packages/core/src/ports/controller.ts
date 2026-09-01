@@ -24,6 +24,17 @@
  * Proposing an Effect also does not imply `WAITING`. The controller separately reports whether it
  * has runnable local work, and the Harness decides whether the Effect settled inline, whether work
  * remains pending, and therefore whether this Execution is READY or WAITING.
+ *
+ * Slice C.1 adds one argument and one outcome status, and nothing else. `activate` receives a
+ * second parameter - a `ControllerResumptionScope` - through which slow *controller-local* work
+ * such as a model-provider call can be started and, if it outlives the Activation's inline budget,
+ * yielded on. It is a separate argument rather than an `ActivationInput` field precisely because
+ * `ActivationInput` is frozen pure data with no functions in it, and that invariant is worth more
+ * than the convenience of one uniform parameter. The scope carries no store, no scheduler, no
+ * Harness, no lifecycle setter, no Effect machinery, and no settlement path; see
+ * [`controller-resumption.ts`](controller-resumption.ts).
+ *
+ * A controller with no slow local work ignores the second parameter entirely.
  */
 
 import type { ExecutionDefinition, DefinitionKind } from "../definitions/types.ts";
@@ -31,7 +42,8 @@ import type { EffectProposal } from "../effects/types.ts";
 import type { DeliveredEvent, WakeCondition } from "../interaction/event-envelope.ts";
 import type { ControllerProgress, ExecutionView } from "../execution/context.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
-import type { ActivationId } from "../execution/ids.ts";
+import type { ActivationId, ControllerResumptionId } from "../execution/ids.ts";
+import type { ControllerResumptionScope } from "./controller-resumption.ts";
 import type { TerminalResultProposal } from "../execution/terminal-result.ts";
 import type { JsonValue } from "../util/json.ts";
 
@@ -70,6 +82,14 @@ export type ControllerNext =
   | { readonly status: "continue" }
   /** No runnable local work; this Execution depends on an Event matching `wake`. */
   | { readonly status: "await_event"; readonly wake: WakeCondition }
+  /**
+   * No runnable local work; this Execution depends on controller-local work that has not settled.
+   *
+   * A dependency report, not a lifecycle instruction - the same as `await_event`. The Harness
+   * checks that the identifier names an unresolved registration created for *this* Execution
+   * during *this* Activation, and derives `WAITING` itself.
+   */
+  | { readonly status: "await_resumption"; readonly resumptionId: ControllerResumptionId }
   /** Semantic completion. The Harness validates the result before anything becomes COMPLETED. */
   | { readonly status: "complete"; readonly result?: TerminalResultProposal }
   /** Semantic failure. Distinct from one failed operation, which is only an observation. */
@@ -98,5 +118,15 @@ export interface ActivationOutcome {
  */
 export interface ExecutionController {
   readonly kind: DefinitionKind;
-  activate(input: ActivationInput): Promise<ActivationOutcome> | ActivationOutcome;
+  /**
+   * @param input       frozen pure data: the read-only view, the pinned definition, the delivered
+   *                    Events, and Activation metadata.
+   * @param resumptions the only live capability a controller receives, and only for starting and
+   *                    recovering controller-local asynchronous work. Controllers with no slow
+   *                    local work ignore it.
+   */
+  activate(
+    input: ActivationInput,
+    resumptions: ControllerResumptionScope,
+  ): Promise<ActivationOutcome> | ActivationOutcome;
 }

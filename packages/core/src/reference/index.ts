@@ -34,6 +34,8 @@ export { StaticModelResolver, portableModelFeatures } from "./static-model-resol
 export type { StaticModelMapping } from "./static-model-resolver.ts";
 export { ModelProviderRegistry } from "./model-provider-registry.ts";
 export { ScriptedModelProvider } from "./scripted-model-provider.ts";
+export { createDeferredModelProvider } from "./deferred-model-provider.ts";
+export type { DeferredModelCall, DeferredModelProvider } from "./deferred-model-provider.ts";
 export type {
   ScriptedModelProviderOptions,
   ScriptedModelStep,

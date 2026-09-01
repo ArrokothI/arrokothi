@@ -19,7 +19,7 @@ import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { DefinitionKind } from "../definitions/types.ts";
 import type { WakeCondition } from "../interaction/event-envelope.ts";
 import type { JsonObject } from "../util/json.ts";
-import type { ExecutionId } from "./ids.ts";
+import type { ControllerResumptionId, ExecutionId } from "./ids.ts";
 import type { LifecycleState } from "./lifecycle.ts";
 import { assertTransition } from "./lifecycle.ts";
 import type { ExecutionFailure, TerminalResultEnvelope } from "./terminal-result.ts";
@@ -37,6 +37,36 @@ export type ControllerProgress =
 
 export function initialControllerProgress(kind: DefinitionKind): ControllerProgress {
   return { kind, progress: {} } as ControllerProgress;
+}
+
+/**
+ * What a WAITING Execution is waiting for.
+ *
+ * An explicit tagged union rather than two nullable fields or a structural guess. The two arms are
+ * genuinely different dependencies with different settlement paths - an Event arriving in the
+ * mailbox, and a controller-local resumption settling - and the runtime must never satisfy one by
+ * mistaking it for the other. Structural discrimination would work today and break the first time
+ * either shape gained a field.
+ *
+ * ```text
+ * EventWait                  a matching processable Event makes this Execution READY
+ * ControllerResumptionWait   only that resumption settling makes it READY
+ * ```
+ *
+ * For v0.4 the second arm suspends *exclusively*: Events still reach the mailbox, but none of them
+ * produces an intervening Activation while the continuation is outstanding. That restriction is
+ * what makes v0.4 free of stale-continuation risk without any stale-continuation machinery.
+ */
+export type ExecutionWait =
+  | { readonly kind: "event"; readonly wake: WakeCondition }
+  | { readonly kind: "controller_resumption"; readonly resumptionId: ControllerResumptionId };
+
+export function eventWait(wake: WakeCondition): ExecutionWait {
+  return { kind: "event", wake };
+}
+
+export function controllerResumptionWait(resumptionId: ControllerResumptionId): ExecutionWait {
+  return { kind: "controller_resumption", resumptionId };
 }
 
 /** Where this Execution's addressed Events accumulate. */
@@ -88,8 +118,8 @@ export interface ExecutionContext {
   readonly rootExecutionId: ExecutionId;
   readonly lifecycle: LifecycleState;
   readonly control: ControllerProgress;
-  /** Non-null only while WAITING: what must arrive before this Execution is runnable again. */
-  readonly waitingFor: WakeCondition | null;
+  /** Non-null only while WAITING: what must settle before this Execution is runnable again. */
+  readonly waitingFor: ExecutionWait | null;
   readonly mailbox: MailboxRef;
   readonly slots: DeferredSlots;
   readonly terminalResult: TerminalResultEnvelope | null;
@@ -165,7 +195,7 @@ export function toExecutionView(context: ExecutionContext): ExecutionView {
 /** Fields a lifecycle change may carry along with it. All of them are Harness-owned. */
 export interface ContextTransitionPatch {
   readonly control?: ControllerProgress;
-  readonly waitingFor?: WakeCondition | null;
+  readonly waitingFor?: ExecutionWait | null;
   readonly terminalResult?: TerminalResultEnvelope | null;
   readonly failure?: ExecutionFailure | null;
 }

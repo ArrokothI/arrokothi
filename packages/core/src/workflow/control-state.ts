@@ -29,6 +29,26 @@
  * carrying the correlation the controller chose, whether it has settled, and - once it has - what
  * it observed. A Stage transitions only when every entry is settled. The `kind` field reserves the
  * semantic slot for required child calls without implementing them; Slice C never writes `"child"`.
+ *
+ * ## The Stage boundary
+ *
+ * `boundary` exists because an Adapter may now suspend on slow controller-local work, and the
+ * Activation that resumes must not redo what the previous one finished. Restarting the chain at
+ * index zero would re-run Adapters that already ran; re-entering through the Stage body would run
+ * a body that already completed and duplicate its emissions; re-entering through the transition
+ * would re-resolve a transition that was already resolved.
+ *
+ * ```text
+ * output boundary   the body is done: its result and chosen transition are already recorded here,
+ *                   and the resuming Activation skips the body entirely
+ * input boundary    the predecessor transition is done: the target Stage, its new visit, and the
+ *                   partially adapted value are already installed, and the resuming Activation
+ *                   neither re-runs the predecessor nor re-resolves the transition
+ * ```
+ *
+ * Both are re-enterable serializable positions, not continuations. Nothing in here is a closure, a
+ * promise, or a resumption handle: the Activation that resumes reconstructs the model call from
+ * these coordinates and recovers the settled result by key.
  */
 
 import type { JsonObject, JsonValue } from "../util/json.ts";
@@ -36,7 +56,13 @@ import type { StageId } from "./spec.ts";
 import type { StageObservation, StageObservationOutcome } from "./observations.ts";
 import type { StageResult } from "./stage-result.ts";
 
-export const WORKFLOW_CONTROL_STATE_VERSION = 1;
+/**
+ * Version 2 adds the re-enterable Stage boundary.
+ *
+ * Bumped rather than back-fitted: a pre-v1 shape that could not express "the body already ran"
+ * would have to be simulated by re-running it, which is precisely the defect this slice removes.
+ */
+export const WORKFLOW_CONTROL_STATE_VERSION = 2;
 
 /** What a barrier entry is waiting for. `child` is reserved for Slice E and never produced here. */
 export type BarrierEntryKind = "effect" | "child";
@@ -53,6 +79,26 @@ export interface BarrierEntry {
   readonly outcome: StageObservationOutcome | null;
   readonly observation: JsonValue | null;
   readonly error: { readonly code: string; readonly message: string } | null;
+}
+
+/**
+ * Where inside a Stage boundary an Activation stopped, when it suspended on controller-local work.
+ *
+ * `null` in the ordinary case: a Workflow that is between Stages, or running a Stage body, has no
+ * boundary position to remember.
+ */
+export interface WorkflowBoundaryState {
+  readonly position: "input" | "output";
+  /** The Adapter to run next. Everything before it already ran and must not run again. */
+  readonly adapterIndex: number;
+  /** The value as transformed by the Adapters that already ran. */
+  readonly value: StageResult;
+  /**
+   * Output boundaries only: the transition label the completed Stage body chose.
+   *
+   * Recorded here because the body will not run again to choose it a second time.
+   */
+  readonly transitionLabel: string | null;
 }
 
 export interface WorkflowControlState {
@@ -76,6 +122,8 @@ export interface WorkflowControlState {
   readonly provisionalResult: StageResult | null;
   /** How many Stage transitions this Workflow has resolved. Useful for traces and loop bounds. */
   readonly transitions: number;
+  /** Where inside a Stage boundary this Workflow suspended, if it did. */
+  readonly boundary: WorkflowBoundaryState | null;
 }
 
 export function initialWorkflowControlState(entryStage: StageId, stageInput: StageResult): WorkflowControlState {
@@ -88,6 +136,7 @@ export function initialWorkflowControlState(entryStage: StageId, stageInput: Sta
     barrier: [],
     provisionalResult: null,
     transitions: 0,
+    boundary: null,
   };
 }
 
@@ -140,6 +189,7 @@ export function readWorkflowControlState(progress: JsonObject): WorkflowControlS
     barrier: state.barrier ?? [],
     provisionalResult: state.provisionalResult ?? null,
     transitions: state.transitions ?? 0,
+    boundary: state.boundary ?? null,
   };
 }
 

@@ -82,12 +82,20 @@ export { MAX_MODEL_PHASES, validateWorkflowSpec } from "./workflow/validation.ts
  * controller that owns it. An application inspects what a Workflow is doing; it does not reach in
  * and change where the Workflow thinks it is.
  */
-export type { BarrierEntry, BarrierEntryKind, WorkflowControlState } from "./workflow/control-state.ts";
-export { readWorkflowControlState, stageCorrelationId } from "./workflow/control-state.ts";
+export type { BarrierEntry, BarrierEntryKind, WorkflowBoundaryState, WorkflowControlState } from "./workflow/control-state.ts";
+export { readWorkflowControlState, stageCorrelationId, WORKFLOW_CONTROL_STATE_VERSION } from "./workflow/control-state.ts";
+export { stageAdapterResumptionKey, stageModelResumptionKey } from "./workflow/resumption-keys.ts";
 
 // -- execution identity and lifecycle ----------------------------------------
-export type { ActivationId, ExecutionId } from "./execution/ids.ts";
-export { activationId, executionId, isActivationId, isExecutionId } from "./execution/ids.ts";
+export type { ActivationId, ControllerResumptionId, ExecutionId } from "./execution/ids.ts";
+export {
+  activationId,
+  controllerResumptionId,
+  executionId,
+  isActivationId,
+  isControllerResumptionId,
+  isExecutionId,
+} from "./execution/ids.ts";
 export type { LifecycleState, LifecycleTransitionRecord } from "./execution/lifecycle.ts";
 export {
   allowedTransitionsFrom,
@@ -98,7 +106,28 @@ export {
   LifecycleTransitionError,
   TERMINAL_LIFECYCLE_STATES,
 } from "./execution/lifecycle.ts";
-export type { ControllerProgress, DeferredSlots, ExecutionContext, ExecutionView, MailboxRef } from "./execution/context.ts";
+export type {
+  ControllerProgress,
+  DeferredSlots,
+  ExecutionContext,
+  ExecutionView,
+  ExecutionWait,
+  MailboxRef,
+} from "./execution/context.ts";
+/**
+ * Controller-local resumptions are exported as *readable* shapes only.
+ *
+ * There is no settlement function here and there never will be: a caller who could settle one
+ * could hand a controller a model result no model produced. Applications inspect what an Execution
+ * is waiting on; only the runtime that started the work can report what it produced.
+ */
+export type {
+  ControllerResumption,
+  ControllerResumptionFailure,
+  ControllerResumptionOutcome,
+  ControllerResumptionState,
+} from "./execution/resumption.ts";
+export { isUnsettled, outcomeOfResumption } from "./execution/resumption.ts";
 export type { EmissionBody, EmissionProposal, ExecutionEmission } from "./execution/emission.ts";
 export type {
   ExecutionFailure,

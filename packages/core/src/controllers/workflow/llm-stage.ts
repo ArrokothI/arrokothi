@@ -34,16 +34,19 @@
  * unexpected string resolves to nothing rather than to whatever capability shares it.
  */
 
+import type { ControllerResumptionId } from "../../execution/ids.ts";
 import type { ModelCapabilitySpec, ModelMessage, ModelStructuredOutputRequest } from "../../model/types.ts";
+import type { ControllerResumptionScope } from "../../ports/controller-resumption.ts";
 import type { FunctionStageOutcome, StageExecutionContext } from "../../ports/stage.ts";
 import type { ObjectSchema } from "../../schema/value-schema.ts";
 import type { JsonObject, JsonValue } from "../../util/json.ts";
 import type { LLMStageDefinition, ModelCallableDeclaration } from "../../workflow/spec.ts";
 import { transitionLabels } from "../../workflow/spec.ts";
+import { stageModelResumptionKey } from "../../workflow/resumption-keys.ts";
 import type { StageCapabilityRequest } from "../../workflow/observations.ts";
 import { describeStageResult } from "../../workflow/stage-result.ts";
 import type { WorkflowModelAccess, WorkflowTrace } from "./model-access.ts";
-import { invokeStageModel } from "./model-access.ts";
+import { invokeStageModelResumable } from "./model-access.ts";
 
 /**
  * The most capability calls one phase may produce.
@@ -53,6 +56,22 @@ import { invokeStageModel } from "./model-access.ts";
  * just as unwelcome inside a Stage that claims to be bounded.
  */
 export const MAX_CAPABILITY_CALLS_PER_PHASE = 8;
+
+/**
+ * What one LLM Stage step produced.
+ *
+ * A superset of `FunctionStageOutcome` by exactly one arm. `suspended` stays out of the Function
+ * Stage port on purpose: a Function Stage is handed no resumption scope, so it has no way to
+ * produce this and no business declaring it.
+ */
+export type LLMStageOutcome =
+  | FunctionStageOutcome
+  | {
+      readonly status: "suspended";
+      readonly resumptionId: ControllerResumptionId;
+      /** Progress up to and including the phase that started, so re-entry rebuilds the same call. */
+      readonly progress: JsonObject;
+    };
 
 interface PendingCall {
   readonly key: string;
@@ -128,16 +147,23 @@ function observationContent(value: JsonValue | undefined, error: { code: string;
 /**
  * Runs one LLM Stage step.
  *
- * "Step" means: everything this Stage can do locally until it either finishes or needs a required
- * Effect. Several model phases may happen inside one Activation, because model inference is local
- * computation and does not cross the Harness. Only a required Effect ends the step.
+ * "Step" means: everything this Stage can do locally until it finishes, needs a required Effect, or
+ * runs out of inline budget waiting for a model. Several model phases may still happen inside one
+ * Activation - model inference is local computation and does not cross the Harness - but "local"
+ * has never meant "must finish here", so a slow phase yields instead of holding the scheduler.
+ *
+ * Re-entry is by reconstruction, not by continuation. A resumed Activation reads the same persisted
+ * phase and messages, builds the same request, derives the same resumption key, and is handed the
+ * stored provider response. Nothing about the Stage's semantics can tell which Activation the
+ * inference was started in.
  */
 export async function runLLMStage(
   stage: LLMStageDefinition,
   context: StageExecutionContext,
   models: WorkflowModelAccess | undefined,
   trace: WorkflowTrace | undefined,
-): Promise<FunctionStageOutcome> {
+  resumptions: ControllerResumptionScope,
+): Promise<LLMStageOutcome> {
   const maxPhases = stage.maxModelPhases ?? 1;
   const labels = transitionLabels(stage.transitions);
   const branching = labels.length > 0;
@@ -188,13 +214,27 @@ export async function runLLMStage(
         ? { schema: transitionSchema(labels), name: "stage_outcome", description: `Result and predefined transition for stage "${stage.id}".` }
         : undefined;
 
-    const { resolved, response } = await invokeStageModel(models, stage.model, {
-      system: stage.system,
-      messages: progress.messages,
-      ...(exposed.length ? { capabilities: exposed } : {}),
-      ...(structured ? { structuredOutput: structured } : {}),
-      purpose: `stage:${stage.id}`,
-    });
+    const attempt = await invokeStageModelResumable(
+      resumptions,
+      // Derived from persisted coordinates only, so the Activation that resumes rebuilds this exact
+      // key and recovers the stored response rather than asking the provider a second time.
+      stageModelResumptionKey(stage.id, context.visit, progress.phase + 1),
+      models,
+      stage.model,
+      {
+        system: stage.system,
+        messages: progress.messages,
+        ...(exposed.length ? { capabilities: exposed } : {}),
+        ...(structured ? { structuredOutput: structured } : {}),
+        purpose: `stage:${stage.id}`,
+      },
+    );
+    if (attempt.status === "suspended") {
+      // Persist the phase that started and the messages it was built from. Nothing about the
+      // response is known yet, so nothing about it is written.
+      return { status: "suspended", resumptionId: attempt.resumptionId, progress: writeProgress(progress) };
+    }
+    const { resolved, response } = attempt.invocation;
 
     const calls = response.output.capabilityCalls ?? [];
     trace?.modelInvoked?.({

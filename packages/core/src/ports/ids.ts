@@ -16,4 +16,6 @@ export const ID_PREFIXES = {
   event: "evt",
   emission: "emi",
   claim: "clm",
+  /** One piece of controller-local asynchronous work. Never an Effect and never an Event. */
+  resumption: "res",
 } as const;

@@ -12,6 +12,14 @@
 
 export type ExecutionId = string & { readonly __brand: "ExecutionId" };
 export type ActivationId = string & { readonly __brand: "ActivationId" };
+/**
+ * Names one piece of controller-local asynchronous work.
+ *
+ * A third lifetime, shorter than either of the above: it belongs to one continuation, not to the
+ * Execution and not to the Activation that started it. Knowing one grants nothing - there is no
+ * public settlement path it could be handed to.
+ */
+export type ControllerResumptionId = string & { readonly __brand: "ControllerResumptionId" };
 
 const ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 
@@ -30,5 +38,14 @@ export function isActivationId(value: unknown): value is ActivationId {
 
 export function activationId(value: string): ActivationId {
   if (!isActivationId(value)) throw new TypeError(`invalid activation id ${JSON.stringify(value)}`);
+  return value;
+}
+
+export function isControllerResumptionId(value: unknown): value is ControllerResumptionId {
+  return typeof value === "string" && ID_PATTERN.test(value);
+}
+
+export function controllerResumptionId(value: string): ControllerResumptionId {
+  if (!isControllerResumptionId(value)) throw new TypeError(`invalid controller resumption id ${JSON.stringify(value)}`);
   return value;
 }

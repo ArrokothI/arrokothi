@@ -24,15 +24,30 @@
  * inline is already in the mailbox when the Harness checks whether the reported wake dependency is
  * genuinely unmet, so the Execution stays runnable; a result that does not arrive in time leaves a
  * pending operation, the Execution waits, and the identical Event wakes it later.
+ *
+ * Slow *controller-local* work - a model-provider call - follows the same fast/slow principle
+ * through an entirely separate path. The Harness hands each Activation a `ControllerResumptionScope`
+ * (see [`resumption-processor.ts`](resumption-processor.ts)); work that settles inside the inline
+ * budget simply returns to the controller, and work that does not leaves a `ControllerResumption`,
+ * the Execution waits on *that record* rather than on an Event, and the settling promise makes it
+ * READY again. No Event, no Effect, no PendingOperation, and no mailbox append is involved, because
+ * a model result is not an observation delivered through the runtime boundary.
  */
 
 import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { ExecutionDefinition } from "../definitions/types.ts";
-import type { ExecutionContext } from "../execution/context.ts";
-import { createExecutionContext, toExecutionView, transitionContext } from "../execution/context.ts";
+import type { ExecutionContext, ExecutionWait } from "../execution/context.ts";
+import {
+  controllerResumptionWait,
+  createExecutionContext,
+  eventWait,
+  toExecutionView,
+  transitionContext,
+} from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
-import type { ActivationId, ExecutionId } from "../execution/ids.ts";
+import type { ActivationId, ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
 import { activationId as toActivationId, executionId as toExecutionId } from "../execution/ids.ts";
+import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleState, LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
 import type { ExecutionFailure, TerminalResultEnvelope } from "../execution/terminal-result.ts";
@@ -66,6 +81,8 @@ import type { ControllerRegistry } from "./controller-registry.ts";
 import type { EffectDispatchRecord, SettleEffectInput, SettleEffectReceipt } from "./effect-processor.ts";
 import { EffectProcessor } from "./effect-processor.ts";
 import { routeEvent } from "./event-router.ts";
+import type { ActivationResumptions, ResumptionDependency } from "./resumption-processor.ts";
+import { ControllerResumptionProcessor } from "./resumption-processor.ts";
 
 /** Thirty seconds. Long enough that an inline wait budget is obviously a different concept. */
 const DEFAULT_EFFECT_DEADLINE_MS = 30_000;
@@ -177,10 +194,25 @@ export class Harness {
   private readonly options: HarnessOptions;
   private readonly maxActivationsPerRun: number;
   private readonly effects: EffectProcessor;
+  private readonly resumptions: ControllerResumptionProcessor;
 
   constructor(options: HarnessOptions) {
     this.options = options;
     this.maxActivationsPerRun = options.maxActivationsPerRun ?? 1000;
+    this.resumptions = new ControllerResumptionProcessor({
+      store: options.store,
+      clock: options.clock,
+      ids: options.ids,
+      // The same budget the Effect gateway uses. It decides only how long *this Activation* stays
+      // occupied - never how long the underlying model call may take.
+      inlineWait: options.inlineWait ?? microtaskInlineWaitBudget(),
+      wake: async (executionId) => {
+        await options.scheduler.enqueue(executionId);
+      },
+      recordTransition: async (tx, executionId, from, to, at, reason) => {
+        await this.record(tx, executionId, from, to, at, null, reason);
+      },
+    });
     this.effects = new EffectProcessor({
       store: options.store,
       clock: options.clock,
@@ -348,6 +380,31 @@ export class Harness {
     await this.effects.drain();
   }
 
+  // -- controller-local resumptions -------------------------------------------
+
+  /**
+   * Resolves once every controller-local continuation in flight has settled.
+   *
+   * The deterministic counterpart to `drainEffects`, and deliberately a separate method: these are
+   * different kinds of work with different settlement paths, and a conformance run that could not
+   * advance one without the other could not prove they stay separate.
+   *
+   * Note what is absent beside it. There is no public way to *settle* a resumption. A caller who
+   * could would be able to hand a controller a model result that no model produced.
+   */
+  async drainResumptions(): Promise<void> {
+    await this.resumptions.drain();
+  }
+
+  /** Controller-local resumptions belonging to one Execution. Read-only diagnostics. */
+  async controllerResumptionsOf(executionId: ExecutionId): Promise<readonly ControllerResumption[]> {
+    return this.options.store.listControllerResumptions(executionId);
+  }
+
+  async controllerResumption(resumptionId: ControllerResumptionId): Promise<ControllerResumption | undefined> {
+    return this.options.store.readControllerResumption(resumptionId);
+  }
+
   /** Pending operations belonging to one Execution. Read-only; runtime state is never handed out. */
   async pendingOperationsOf(executionId: ExecutionId): Promise<readonly PendingOperation[]> {
     return this.options.store.listPendingOperations(executionId);
@@ -474,6 +531,10 @@ export class Harness {
     }
 
     const controller = this.options.controllers.resolve(definition.kind);
+    // Bound to this Execution and this Activation, and holding nothing else. Created before the
+    // controller runs, but creating it commits to nothing: a registration becomes a durable record
+    // only if the controller reports the matching dependency and the Harness accepts the outcome.
+    const resumptions = this.resumptions.beginActivation(running, activationId);
     const budget = this.options.activationBudget;
     const input = buildActivationInput({
       execution: toExecutionView(running),
@@ -492,7 +553,7 @@ export class Harness {
 
     let raw: unknown;
     try {
-      raw = await controller.activate(input);
+      raw = await controller.activate(input, resumptions.scope);
     } catch (error) {
       return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
         code: "controller_error",
@@ -508,7 +569,16 @@ export class Harness {
       });
     }
 
-    return this.applyOutcome(running, definition, validated.outcome, activationId, startedAt, deliveredEventIds, setRequeue);
+    return this.applyOutcome(
+      running,
+      definition,
+      validated.outcome,
+      activationId,
+      startedAt,
+      deliveredEventIds,
+      setRequeue,
+      resumptions,
+    );
   }
 
   private async applyOutcome(
@@ -519,6 +589,7 @@ export class Harness {
     startedAt: string,
     deliveredEventIds: readonly string[],
     setRequeue: (value: boolean) => void,
+    resumptions: ActivationResumptions,
   ): Promise<ActivationRecord> {
     const executionId = running.executionId;
     const next: ControllerNext = outcome.next;
@@ -548,6 +619,29 @@ export class Harness {
 
     const finishedAt = nowIso(this.options.clock);
 
+    // A controller reports a dependency; it does not get to name one that does not exist. Resolved
+    // before the transaction opens, because an illegal id must fail the Activation rather than roll
+    // back a half-written one.
+    let dependency: ResumptionDependency | null = null;
+    if (next.status === "await_resumption") {
+      try {
+        dependency = await resumptions.resolve(next.resumptionId, finishedAt);
+      } catch (error) {
+        // The runtime could not establish whether this dependency is real. Failing is the only
+        // honest answer: parking an Execution on an unverified id is how a wake goes missing.
+        return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
+          code: "resumption_dependency_unresolvable",
+          message: error instanceof Error ? error.message : String(error),
+        });
+      }
+      if (dependency.status === "invalid") {
+        return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
+          code: "invalid_controller_outcome:invalid_resumption",
+          message: `controller resumption ${dependency.detail}`,
+        });
+      }
+    }
+
     const applied = await this.options.store.transact(executionId, async (tx) => {
       const emissionIds = await this.persistEmissions(tx, running, activationId, outcome, finishedAt);
 
@@ -556,7 +650,7 @@ export class Harness {
       let to: LifecycleState;
       let terminalResult: TerminalResultEnvelope | null = null;
       let failure: ExecutionFailure | null = null;
-      let waitingFor: WakeCondition | null = null;
+      let waitingFor: ExecutionWait | null = null;
       let result: ActivationResultKind;
       let rejection: string | null = null;
       let requeue = false;
@@ -574,9 +668,18 @@ export class Harness {
           requeue = true;
         } else {
           to = "WAITING";
-          waitingFor = next.wake;
+          waitingFor = eventWait(next.wake);
           result = "waiting";
         }
+      } else if (next.status === "await_resumption") {
+        // One transaction: the controller's progress, the pending resumption record, and WAITING.
+        // Splitting these would leave either a record nothing waits on or an Execution waiting on a
+        // record that does not exist. A recovered dependency already has its record and needs only
+        // the wait.
+        if (dependency!.status === "new") await tx.controllerResumptions.insert(dependency!.record);
+        to = "WAITING";
+        waitingFor = controllerResumptionWait(next.resumptionId);
+        result = "waiting";
       } else if (next.status === "complete") {
         const validation = validateTerminalResult(definition.terminalResult, next.result, {
           activationId,
@@ -625,6 +728,12 @@ export class Harness {
     });
 
     setRequeue(applied.requeue);
+
+    // Only now, with the WAITING record durable, does anything start following the promise. A
+    // continuation attached earlier could have settled - and tried to wake an Execution that was
+    // still RUNNING - before the record it settles existed. Everything else this Activation
+    // registered is abandoned by never being attached, and can no longer wake anything.
+    if (next.status === "await_resumption") resumptions.attach(next.resumptionId);
 
     return {
       activationId,

@@ -15,6 +15,12 @@
  * or a poll. And the wake decision is made against `context.waitingFor`, the dependency the Harness
  * recorded when it derived WAITING - not against anything the arriving Event claims about itself.
  *
+ * Since Slice C.1 that dependency is a tagged union, and only its Event arm is routable here. An
+ * Execution waiting on a controller-local resumption still *accepts* Events - the mailbox is not
+ * closed, and an arriving `external.input` is queued for the Activation that follows - but no Event
+ * makes it READY. Only that resumption settling does. This file therefore reads the tag rather than
+ * inferring the dependency's kind from its shape.
+ *
  * `routeEvent` runs inside a caller-provided transaction so that "the operation settled" and "the
  * Execution observed it" commit together or not at all. Scheduling happens after the commit: the
  * caller enqueues when the returned decision says the Execution woke.
@@ -88,8 +94,8 @@ export async function routeEvent(input: RouteEventInput): Promise<EventRoutingRe
   const appended = await tx.mailboxes.append(context.mailbox.mailboxId, envelope, deliveredAt);
   if (!appended.accepted) return { status: "duplicate", eventId: envelope.eventId };
 
-  const wake = context.waitingFor;
-  if (context.lifecycle === "WAITING" && wake !== null && eventSatisfiesWake(envelope, wake)) {
+  const wait = context.waitingFor;
+  if (context.lifecycle === "WAITING" && wait !== null && wait.kind === "event" && eventSatisfiesWake(envelope, wait.wake)) {
     const ready = transitionContext(context, "READY", deliveredAt);
     await tx.executions.update(ready, context.revision);
     await input.recordTransition(destination, "WAITING", "READY", deliveredAt, `event ${envelope.eventId}`);

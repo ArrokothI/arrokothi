@@ -47,6 +47,10 @@ class BreakableStore implements RuntimeStore {
   listPendingOperations: RuntimeStore["listPendingOperations"] = (id) => this.inner.listPendingOperations(id);
   readPendingOperation: RuntimeStore["readPendingOperation"] = (id) => this.inner.readPendingOperation(id);
   listEffectJournal: RuntimeStore["listEffectJournal"] = (id) => this.inner.listEffectJournal(id);
+  listControllerResumptions: RuntimeStore["listControllerResumptions"] = (id) => this.inner.listControllerResumptions(id);
+  readControllerResumption: RuntimeStore["readControllerResumption"] = (id) => this.inner.readControllerResumption(id);
+  findControllerResumptionByKey: RuntimeStore["findControllerResumptionByKey"] = (id, key) =>
+    this.inner.findControllerResumptionByKey(id, key);
 
   private wrap(tx: RuntimeTransaction): RuntimeTransaction {
     const guard = (facet: string, detail: string): void => {

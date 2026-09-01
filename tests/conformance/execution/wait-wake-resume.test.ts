@@ -47,9 +47,11 @@ describe("wait, wake, and resume", () => {
 
     const context = await harness.inspect(handle.executionId);
     assert.equal(context?.lifecycle, "WAITING");
-    assert.deepEqual(context?.waitingFor?.eventKinds, ["external.input"]);
-    assert.equal(context?.waitingFor?.correlationId, "answer-1");
-    assert.equal(context?.waitingFor?.description, "needs the user's answer");
+    assert.equal(context?.waitingFor?.kind, "event", "the dependency says which kind of wait this is");
+    const wake = context?.waitingFor?.kind === "event" ? context.waitingFor.wake : null;
+    assert.deepEqual(wake?.eventKinds, ["external.input"]);
+    assert.equal(wake?.correlationId, "answer-1");
+    assert.equal(wake?.description, "needs the user's answer");
     assert.equal(context?.terminalResult, null, "waiting is not completing");
   });
 

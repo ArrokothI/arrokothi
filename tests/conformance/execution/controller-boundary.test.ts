@@ -4,6 +4,12 @@
  * Semantic control and operational control are different. This file checks the boundary two ways:
  * by the shape of what a controller receives (no store, no scheduler, no lifecycle setter, nothing
  * mutable), and by what happens when a controller reports something the Harness must refuse.
+ *
+ * Slice C.1 added a second `activate` parameter, and the shape check is deliberately split rather
+ * than relaxed. `ActivationInput` is still frozen pure data with no functions anywhere in it - that
+ * is the invariant a resumption field would have destroyed, and it is why the scope is a separate
+ * argument. The scope itself is then checked on its own terms: exactly one method, and no route
+ * from it to a store, a scheduler, a lifecycle, the Effect gateway, or a settlement path.
  */
 
 import { test, describe } from "node:test";
@@ -11,7 +17,12 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { ActivationInput, ActivationOutcome, ExecutionController } from "@agent-sdk/core/ports";
+import type {
+  ActivationInput,
+  ActivationOutcome,
+  ControllerResumptionScope,
+  ExecutionController,
+} from "@agent-sdk/core/ports";
 import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -32,9 +43,11 @@ function findFunctions(value: unknown, path: string, found: string[], seen = new
 class CapturingController implements ExecutionController {
   readonly kind = "agent" as const;
   captured: ActivationInput | null = null;
+  capturedScope: ControllerResumptionScope | null = null;
 
-  activate(input: ActivationInput): ActivationOutcome {
+  activate(input: ActivationInput, resumptions: ControllerResumptionScope): ActivationOutcome {
     this.captured = input;
+    this.capturedScope = resumptions;
     return { control: { kind: "agent", progress: { seen: true } }, next: { status: "complete" } };
   }
 }
@@ -68,10 +81,105 @@ describe("controller ownership boundary", () => {
     assert.equal(Object.prototype.hasOwnProperty.call(input!.execution, "slots"), false, "nor authority or memory refs");
   });
 
+  test("the resumption scope exposes one capability and no route to anything operational", async () => {
+    const controller = new CapturingController();
+    const { harness, definitions } = createTestHarness({ controllers: [controller] });
+    const ref = await definitions.save(scriptedAgentDefinition({ id: "scoped", program: [{ do: "complete" }] }));
+    await harness.createExecution({ definition: ref });
+    await harness.runUntilIdle();
+
+    const scope = controller.capturedScope;
+    assert.ok(scope, "the controller received a resumption scope");
+
+    // One method, and it is the only one. Everything a controller must not be able to do is absent
+    // by there being nothing to call, not by a runtime check it could be refactored past.
+    const names = new Set<string>();
+    for (let object: object | null = scope; object && object !== Object.prototype; object = Object.getPrototypeOf(object)) {
+      for (const name of Object.getOwnPropertyNames(object)) names.add(name);
+    }
+    names.delete("constructor");
+    assert.deepEqual([...names].sort(), ["run"], "starting local work is the whole of what a scope can do");
+    assert.equal(typeof scope!.run, "function");
+
+    for (const forbidden of [
+      "store",
+      "runtimeStore",
+      "transact",
+      "scheduler",
+      "enqueue",
+      "claim",
+      "harness",
+      "transition",
+      "lifecycle",
+      "mailbox",
+      "append",
+      "effects",
+      "propose",
+      "authorize",
+      "authorizer",
+      "capabilities",
+      "execute",
+      "settle",
+      "settleEffect",
+      "settleResumption",
+      "authority",
+      "inlineWait",
+      "budget",
+      "drain",
+    ]) {
+      assert.equal(
+        Object.prototype.hasOwnProperty.call(scope as object, forbidden) || forbidden in (scope as object),
+        false,
+        `a resumption scope must expose no "${forbidden}"`,
+      );
+    }
+
+    // And the input it accompanies is still exactly what it was: pure, frozen, function-free.
+    assert.deepEqual(Object.keys(controller.captured!).sort(), ["activation", "definition", "events", "execution"]);
+    const functions: string[] = [];
+    findFunctions(controller.captured, "input", functions);
+    assert.deepEqual(functions, [], "the scope is a separate argument precisely so this stays true");
+  });
+
+  test("the resumption scope is bound to one Execution and cannot be aimed elsewhere", async () => {
+    const seen: { executionId: string; scope: ControllerResumptionScope }[] = [];
+    const controller: ExecutionController = {
+      kind: "agent",
+      activate(input, resumptions) {
+        seen.push({ executionId: input.execution.executionId, scope: resumptions });
+        return { control: { kind: "agent", progress: {} }, next: { status: "complete" } };
+      },
+    };
+    const { harness, definitions } = createTestHarness({ controllers: [controller] });
+    const ref = await definitions.save(scriptedAgentDefinition({ id: "bound", program: [{ do: "complete" }] }));
+    await harness.createExecution({ definition: ref });
+    await harness.createExecution({ definition: ref });
+    await harness.runUntilIdle();
+
+    assert.equal(seen.length, 2);
+    assert.notEqual(seen[0]!.executionId, seen[1]!.executionId);
+    assert.notEqual(seen[0]!.scope, seen[1]!.scope, "each Activation gets its own scope, not a shared runtime handle");
+    // `run` takes a key and a thunk and nothing else - there is no parameter naming an Execution,
+    // so a controller cannot start work on somebody else's behalf.
+    assert.equal(seen[0]!.scope.run.length, 2);
+  });
+
   test("the controller port declares no store, scheduler, or lifecycle dependency", async () => {
-    const source = await readFile(resolve(REPO_ROOT, "packages/core/src/ports/controller.ts"), "utf8");
-    for (const forbidden of ["runtime-store.ts", "scheduler.ts", "definition-store.ts", "harness.ts", "LifecycleState"]) {
-      assert.ok(!source.includes(forbidden), `the controller contract must not reference ${forbidden}`);
+    for (const path of ["packages/core/src/ports/controller.ts", "packages/core/src/ports/controller-resumption.ts"]) {
+      const source = await readFile(resolve(REPO_ROOT, path), "utf8");
+      for (const forbidden of [
+        "runtime-store.ts",
+        "scheduler.ts",
+        "definition-store.ts",
+        "harness.ts",
+        "inline-wait.ts",
+        "effect-authorizer.ts",
+        "capability-executor.ts",
+        "LifecycleState",
+        "settleEffect",
+      ]) {
+        assert.ok(!source.includes(forbidden), `${path} must not reference ${forbidden}`);
+      }
     }
   });
 
