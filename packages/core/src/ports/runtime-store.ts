@@ -145,8 +145,10 @@ export interface ControllerResumptionFacet {
  * Execution whose exposure silently reads as "nothing authorized", and one whose ceiling committed
  * without its context would be a permission attached to nothing.
  *
- * There is no `delete` and no `widen`. Narrowing for child delegation belongs to the composition
- * slice and will arrive as an update that bumps the record's version; nothing in v0.4 rewrites one.
+ * There is no `delete`, no `widen`, and no `update`. Child delegation - implemented in E.0 - does
+ * not narrow or otherwise rewrite the parent's record: it inserts a *fresh* delegated authority
+ * record for the child, `version: 1`, computed from `requestedOperations ∩ the parent's current
+ * effective authority` at spawn time. The parent's own record is untouched by delegating from it.
  */
 export interface OperationAuthorityFacet {
   insert(authority: EffectiveOperationAuthority): Promise<void>;

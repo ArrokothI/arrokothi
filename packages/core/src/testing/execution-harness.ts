@@ -11,6 +11,7 @@ import { ControllerRegistry } from "../runtime/controller-registry.ts";
 import { Harness } from "../runtime/harness.ts";
 import type { HarnessOptions } from "../runtime/harness.ts";
 import type { Clock } from "../ports/clock.ts";
+import type { DefinitionStore } from "../ports/definition-store.ts";
 import type { IdGenerator } from "../ports/ids.ts";
 import type { ExecutionController } from "../ports/controller.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
@@ -25,7 +26,7 @@ import { createScriptedAgentController, createScriptedWorkflowController } from 
 
 export interface TestHarnessBundle {
   readonly harness: Harness;
-  readonly definitions: InMemoryDefinitionStore;
+  readonly definitions: DefinitionStore;
   readonly store: InMemoryRuntimeStore;
   readonly scheduler: FifoScheduler;
   readonly controllers: ControllerRegistry;
@@ -44,6 +45,11 @@ export interface TestHarnessOptions {
    * has to exist before the Harness does.
    */
   readonly store?: InMemoryRuntimeStore;
+  /**
+   * Reuses a DefinitionStore the caller already built - e.g. a counting/instrumented wrapper over
+   * `InMemoryDefinitionStore`, so a test can assert the store was or was not queried.
+   */
+  readonly definitions?: DefinitionStore;
   readonly activationBudget?: HarnessOptions["activationBudget"];
   readonly maxActivationsPerRun?: number;
   /**
@@ -60,7 +66,7 @@ export interface TestHarnessOptions {
 }
 
 export function createTestHarness(options: TestHarnessOptions = {}): TestHarnessBundle {
-  const definitions = new InMemoryDefinitionStore();
+  const definitions = options.definitions ?? new InMemoryDefinitionStore();
   const store = options.store ?? new InMemoryRuntimeStore();
   const scheduler = new FifoScheduler();
   const controllers = new ControllerRegistry(

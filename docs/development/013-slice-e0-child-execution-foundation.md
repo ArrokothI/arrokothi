@@ -306,7 +306,7 @@ still passes; `docs/development/012`'s outcome/schema work is untouched.
 | `npm run test:evals` | 12 | pass |
 | `npm run test:benchmark-subjects` | 8 | pass |
 
-New: `tests/conformance/composition/` (7 files, 34 cases) —
+New: `tests/conformance/composition/` (8 files, 34 cases) —
 `child-lineage`, `structural-budget`, `authority-attenuation`, `spawn-vs-call`,
 `terminal-result-correlation`, `recursive-composition`, `runtime-independence`, `failure-atomicity`;
 `tests/conformance/architecture/composition-boundaries.test.ts` (8 cases); 2 added RuntimeStore
@@ -314,21 +314,35 @@ contract cases. Updated: `interaction/event-vocabulary.test.ts` and
 `architecture/mcp-boundaries.test.ts` (the Event-kind lists now include the child kinds);
 `effects/transaction-atomicity.test.ts` (`BreakableStore` gained the 3 new read methods).
 
+E.0.1 (post-review retrofit, §14a below) added `child-call-deadline.test.ts`,
+`spawn-authorization-ordering.test.ts`, and `spawn-budget-contention.test.ts` to
+`tests/conformance/composition/`, plus targeted cases in `tests/conformance/effects/pending-operations.test.ts`
+and the no-child-cost regression - see §14a for the current totals.
+
 ---
 
 ## 12. Deferred to E.1
 
 - lifting v0.4 exclusive `ControllerResumption` suspension + the minimal stale-continuation rule
 - `SendMessage` / `send` / `ask`, peer request/reply routing
-- `RequestUserInput` and user-input continuation
 - general Event interleaving during a suspended continuation
-- child cancellation (`child.cancelled` Event kind, cancellation propagation), and the
-  deadline/cancellation policy for the long-lived child-result `PendingOperation`
+- child cancellation (`child.cancelled` Event kind, cancellation propagation) and the deadline/
+  cancellation policy an application may configure for the child-result `PendingOperation` (E.0.1
+  made the absence of a deadline honest - `deadline: null` - rather than inventing one; E.1 still
+  owns whatever configurable deadline/cancellation policy is added on top of that)
 - wait-cycle progression / deadlock-candidate diagnostics beyond storing the child dependency
 - broad detached/background `spawn` semantics and late-observation context insertion
+- **E.1 acceptance requirement, once child cancellation is operational:** a parent `call` waiting on
+  a child whose child reaches `CANCELLED` must settle the exact parent `PendingOperation` the `call`
+  registered, deliver one correlated `child.cancelled` Event/observation, and leave the parent
+  dependency not stuck. Cancellation is a terminal lifecycle outcome; the mechanism/policy that
+  produces it is E.1's, not E.0's or E.0.1's - this requirement only pins what must happen to the
+  *parent's* wait once it does. Cascading cancellation, supervision, restart, and sibling policy
+  remain out of scope for this requirement.
 
 ## 13. Deferred to E.2
 
+- `RequestUserInput` and user-input continuation, and a mechanical confirmation baseline
 - Agent Stage / Workflow Stage authoring surfaces (`controllers/workflow` still returns
   `stage_kind_unsupported`)
 - wiring `call` into every Agent/Workflow authoring surface (E.0 exposes it through the
@@ -346,6 +360,53 @@ the structural budget is root/lineage-finite with a small counter, no runtime re
 permitted with no cycle rejection; refused/failed creation leaves no partial child; the child Event
 kinds are implementations of already-canonical semantics, not a casual vocabulary broadening; and no
 controller mutates runtime authority/budget/store state.
+
+---
+
+## 14a. Post-review E.0.1
+
+A focused independent-review retrofit on `slice-e-composition`, before E.1. Same accepted E.0 shape;
+three concrete review findings fixed, no canonical-doc change.
+
+**Nullable/no-deadline representation.** `PendingOperation.deadline` (and
+`CreatePendingOperationInput.deadline`) is `string | null`: `null` means no configured operation
+deadline, a real timestamp means the actual deadline. `isExpired` returns `false` for a `null`
+deadline. A child `call`'s `PendingOperation` is created with `deadline: null` - E.0 had instead
+fabricated a one-year deadline (`CHILD_RESULT_DEADLINE_MS`), which is a semantic fiction canonical
+runtime explicitly rejects (`docs/execution-runtime.md` §16: an Execution may intentionally wait
+indefinitely, and Arrokoth does not require every `PendingOperation` to have a short timeout).
+`CHILD_RESULT_DEADLINE_MS` is removed and not replaced by another sentinel. Ordinary capability
+Effects are unaffected: `deadlineFor` still always computes a real deadline string, so a capability
+`PendingOperation`'s deadline and `isExpired` behaviour are unchanged.
+
+**Structural-budget contention.** `dispatchSpawn`'s creation transaction is retried, bounded
+(`MAX_SPAWN_BUDGET_CONTENTION_ATTEMPTS = 3`), on `SpawnBudgetConcurrencyError` from the lineage
+budget's compare-and-set. A losing attempt commits nothing - `RuntimeStore.transact` discards the
+whole draft when its callback throws - so every retry re-reads the budget from fresh committed
+state; the retry can never overspend, never duplicate an already-committed child, and never observe
+its own partial write. If a retry finds capacity remains, it creates exactly one child normally. If
+a retry finds the budget now exhausted, it returns the ordinary `structural_spawn_budget_exhausted`
+refusal - the same Event path an exhausted budget always used, not a new outcome. If bounded retry
+itself runs out, the gateway returns an explicit `effect.rejected` (`spawn_budget_contention`)
+instead of throwing - infrastructure contention is a runtime refusal, never a controller/Activation
+failure. Previously, a `SpawnBudgetConcurrencyError` was not caught at all: it propagated out of
+`processActivationEffects` and was treated as `effect_processing_failed`, failing the parent
+Activation merely because it lost a budget race - exactly the outcome canonical runtime forbids
+(operation failure ≠ automatic Execution failure). `spawn-budget-contention.test.ts` proves this
+against a real thrown `SpawnBudgetConcurrencyError` under genuinely concurrent Activations (two
+workers claiming and running two Executions via `Promise.all`, not a sequential `runUntilIdle`
+walk), because the reference store's serialized `transact` queue cannot produce this race on its
+own from the ordinary dispatch path.
+
+**Spawn authorization before Definition resolution.** `dispatchSpawn` now decides policy
+authorization before resolving the child Definition, not after. The authorizer already receives the
+proposal's `definitionId`/`definitionVersion` and does not need the resolved Definition to decide,
+so a policy-denied caller no longer causes a `DefinitionStore` read at all - it cannot learn, from
+`spawn_definition_not_found` vs. a plain policy denial, whether a guessed child Definition exists.
+Both an existing and a nonexistent child Definition now deny identically
+(`spawn_not_authorized`), and the budget is still checked only after authorization, unchanged from
+E.0. `spawn-authorization-ordering.test.ts` proves the identical denial and the zero
+`DefinitionStore` reads with a counting wrapper.
 
 ---
 

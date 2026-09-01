@@ -6,7 +6,7 @@
  * constructs a child runtime record directly, and there is no second spawn path.
  */
 
-import type { EffectAuthorizer } from "@agent-sdk/core/ports";
+import type { DefinitionStore, EffectAuthorizer, RuntimeStore } from "@agent-sdk/core/ports";
 import { createAllowListAuthorizer, InMemoryRuntimeStore } from "@agent-sdk/core/reference";
 import { createTestHarness } from "@agent-sdk/core/testing";
 import type { ScriptedControllerStep } from "@agent-sdk/core/testing";
@@ -30,9 +30,25 @@ export interface Rig {
   readonly store: InMemoryRuntimeStore;
 }
 
-export function rig(authorizer: EffectAuthorizer = permissive()): Rig {
-  const store = new InMemoryRuntimeStore();
-  const { harness, definitions } = createTestHarness({ store, authorizer });
+export interface RigOptions {
+  readonly authorizer?: EffectAuthorizer;
+  /** Swap in an instrumented DefinitionStore - e.g. a counting wrapper - when a test needs one. */
+  readonly definitions?: DefinitionStore;
+  /** Reuse a store the caller already built, e.g. one wrapped for fault injection. */
+  readonly store?: InMemoryRuntimeStore;
+}
+
+export function rig(authorizer?: EffectAuthorizer): Rig;
+export function rig(options: RigOptions): Rig;
+export function rig(authorizerOrOptions: EffectAuthorizer | RigOptions = permissive()): Rig {
+  const options: RigOptions =
+    "authorize" in authorizerOrOptions ? { authorizer: authorizerOrOptions } : authorizerOrOptions;
+  const store = options.store ?? new InMemoryRuntimeStore();
+  const { harness, definitions } = createTestHarness({
+    store,
+    authorizer: options.authorizer ?? permissive(),
+    ...(options.definitions !== undefined ? { definitions: options.definitions } : {}),
+  });
   return { harness, definitions, store };
 }
 
@@ -46,6 +62,6 @@ export function resultAgent(id: string, value: string, version = 1) {
 }
 
 /** Count the Executions the store currently holds. */
-export async function executionCount(store: InMemoryRuntimeStore): Promise<number> {
+export async function executionCount(store: RuntimeStore): Promise<number> {
   return (await store.listExecutions()).length;
 }

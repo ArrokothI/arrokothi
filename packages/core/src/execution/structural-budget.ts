@@ -17,9 +17,11 @@
  * the Effect gateway. Nothing a controller or a child Definition can reach writes either field -
  * there is no widen, no reset, and no per-child knob a Definition could inflate.
  *
- * This is not authority. A spawn inside budget may still be denied by policy, and a spawn with
- * budget exhausted is refused before policy is consulted. Budget answers "how much autonomous work
- * may this lineage create", never "is this action permitted".
+ * This is not authority. A spawn inside budget may still be denied by policy - and policy is
+ * consulted first: the gateway checks authorization before it ever reads this budget, so a caller
+ * with no spawn authority never learns whether the lineage has capacity left, only that it was
+ * denied. Budget answers "how much autonomous work may this lineage create", never "is this action
+ * permitted".
  *
  * Depth limits, active-descendant limits, per-subtree subdivision, and parallel-creation limits are
  * all legitimate future refinements of the same idea; E.0 implements the one counter the mandatory

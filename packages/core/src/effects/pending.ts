@@ -4,8 +4,8 @@
  * Generic on purpose. Nothing here mentions capabilities, because `SpawnExecution`, `SendMessage`,
  * `RequestUserInput`, and a timer all need the same runtime record: whose operation it is, what it
  * was, how its result will be correlated, whether it has been dispatched, whether it has settled,
- * and by when it must. Building a capability-shaped waiting mechanism now would guarantee four more
- * bespoke ones later.
+ * and - if anything decided one - by when it must. Building a capability-shaped waiting mechanism
+ * now would guarantee four more bespoke ones later.
  *
  * It is runtime state, not controller state. A controller learns that an operation settled by
  * receiving an Event; it never receives a handle to the record, because a mutable pending operation
@@ -54,13 +54,20 @@ export interface PendingOperation {
   readonly createdAt: string;
   readonly dispatchedAt: string | null;
   /**
-   * When the operation itself stops being allowed to remain unresolved.
+   * When the operation itself stops being allowed to remain unresolved, or `null` when no
+   * application/runtime deadline was configured for it.
    *
    * Set once, from the Effect request. An Activation that yields because its inline wait budget
    * expired does not touch this: the operation is still valid, still pending, and still has until
-   * this instant to produce a result.
+   * this instant to produce a result - if it has one at all.
+   *
+   * `null` is not a missing feature. A long-lived Execution may intentionally wait indefinitely for
+   * a dependency (`docs/execution-runtime.md` §16), and a `null` deadline is the honest
+   * representation of that: nothing has decided when this operation stops being allowed to remain
+   * unresolved. It is never a stand-in far-future timestamp - a sentinel that merely looks unlikely
+   * to be reached is not the same claim as "no deadline was configured".
    */
-  readonly deadline: string;
+  readonly deadline: string | null;
   readonly settledAt: string | null;
   /** Result linkage: the Event that delivered the outcome to the Execution. */
   readonly resultEventId: EventId | null;
@@ -75,7 +82,8 @@ export interface CreatePendingOperationInput {
   readonly causationId: string | null;
   readonly idempotencyKey: IdempotencyKey;
   readonly createdAt: string;
-  readonly deadline: string;
+  /** `null` means this operation has no configured deadline and may remain unresolved indefinitely. */
+  readonly deadline: string | null;
 }
 
 export function createPendingOperation(input: CreatePendingOperationInput): PendingOperation {
@@ -131,6 +139,7 @@ export function isUnresolvedDispatch(operation: PendingOperation): boolean {
   return operation.status === "pending" && operation.dispatch === "dispatched";
 }
 
+/** A `null` deadline never expires: nothing has decided when this operation stops being valid. */
 export function isExpired(operation: PendingOperation, now: string): boolean {
-  return operation.status === "pending" && operation.deadline <= now;
+  return operation.status === "pending" && operation.deadline !== null && operation.deadline <= now;
 }

@@ -97,18 +97,21 @@ import type { IdGenerator } from "../ports/ids.ts";
 import { ID_PREFIXES } from "../ports/ids.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import type { RuntimeStore, RuntimeTransaction } from "../ports/runtime-store.ts";
+import { SpawnBudgetConcurrencyError } from "../ports/runtime-store.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import type { EventRoutingResult } from "./event-router.ts";
 import { routeEvent } from "./event-router.ts";
 
 /**
- * How long a `call`'s pending dependency on a child terminal result may remain unresolved.
+ * How many times a `SpawnExecution` re-evaluates the structural spawn budget from fresh runtime
+ * state after losing a compare-and-set race on it.
  *
- * Deliberately long: a parent may legitimately wait a long time for a child, and E.0 does not
- * implement child cancellation or a configurable deadline. Deadline/cancellation policy for child
- * dependencies is E.1.
+ * A losing attempt commits nothing - `store.transact` discards the whole draft when the callback
+ * throws - so retrying is always safe: there is no partial child, no spent credit, and no
+ * already-committed spawn to duplicate. Bounded so that persistent contention becomes an explicit
+ * refusal instead of an unbounded retry loop or a reason to fail the parent Activation.
  */
-const CHILD_RESULT_DEADLINE_MS = 365 * 24 * 60 * 60 * 1000;
+const MAX_SPAWN_BUDGET_CONTENTION_ATTEMPTS = 3;
 
 /** The request facts a result Event needs, recovered from the journal at settlement time. */
 interface RequestFacts {
@@ -412,9 +415,9 @@ export class EffectProcessor {
    * The order is fixed, and every refusal happens before any write:
    *
    * ```text
-   * resolve the Definition           missing / no controller -> effect.rejected
    * policy decision                  deny                    -> effect.denied
-   * one transaction:
+   * resolve the Definition           missing / no controller -> effect.rejected
+   * one transaction, retried on structural-budget contention:
    *   structural spawn budget        exhausted / absent      -> effect.rejected, nothing written
    *   attenuate authority            requested ∩ parent CURRENT effective
    *   spend one lineage credit
@@ -425,6 +428,12 @@ export class EffectProcessor {
    *   spawn:  settle now, deliver child.spawned
    *   call:   leave the dependency pending for the terminal result
    * ```
+   *
+   * Policy runs *before* the Definition is resolved. The authorizer already receives the requested
+   * `definitionId`/`definitionVersion` on the proposal, so resolving the actual stored Definition
+   * first would let a caller with no spawn authority learn, from the shape of the refusal alone,
+   * whether a guessed child Definition exists - an information-disclosure channel a denied caller
+   * must not get. A policy `deny` therefore never touches the DefinitionStore.
    *
    * The child is a full Execution: its own id, mailbox, lifecycle, controller state, effective
    * authority, and place in the lineage. It is never an in-process call between controllers, and
@@ -439,6 +448,19 @@ export class EffectProcessor {
   ): Promise<EffectDispatchRecord> {
     const parent = input.context;
     const parentId = parent.executionId;
+
+    // Structural validation of the proposal already happened in `processOne` before this method was
+    // ever called. Authorization comes next, and comes before Definition resolution - see the
+    // docstring above.
+    const decision = await this.decide(input, proposal, effectId, requestedAt);
+    if (decision.decision === "deny") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
+        code: decision.code,
+        message: decision.message,
+        phase: "denied",
+      });
+    }
+    const grantId = decision.grantId;
 
     const definition = isDefinitionId(proposal.definitionId)
       ? await this.deps.definitions.getVersion(proposal.definitionId as DefinitionId, proposal.definitionVersion)
@@ -457,18 +479,6 @@ export class EffectProcessor {
     }
     const childDefinitionRef = definitionRef(definition);
 
-    const decision = await this.decide(input, proposal, effectId, requestedAt);
-    if (decision.decision === "deny") {
-      return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
-        code: decision.code,
-        message: decision.message,
-        phase: "denied",
-      });
-    }
-    const grantId = decision.grantId;
-
-    const at = nowIso(this.deps.clock);
-
     type SpawnCommit =
       | { readonly kind: "refused"; readonly code: string; readonly message: string }
       | {
@@ -479,7 +489,8 @@ export class EffectProcessor {
           readonly awaited: boolean;
         };
 
-    const outcome = await this.deps.store.transact(parentId, async (tx): Promise<SpawnCommit> => {
+    const attemptSpawn = async (at: string): Promise<SpawnCommit> =>
+      this.deps.store.transact(parentId, async (tx): Promise<SpawnCommit> => {
       // Structural budget, read fresh and checked before anything is written. A descendant cannot
       // enlarge it, and a lineage with no budget cannot spawn at all.
       const budget = await tx.lineageSpawnBudgets.get(parent.rootExecutionId);
@@ -579,7 +590,11 @@ export class EffectProcessor {
           causationId: input.activationId,
           idempotencyKey: `spawn:${effectId}` as IdempotencyKey,
           createdAt: at,
-          deadline: new Date(new Date(at).getTime() + CHILD_RESULT_DEADLINE_MS).toISOString(),
+          // No configured deadline, not a far-future sentinel: a parent may legitimately wait
+          // indefinitely for a child's terminal result (docs/execution-runtime.md §16), and E.0
+          // implements no child-result deadline/cancellation policy - that is E.1 work. A fabricated
+          // "long enough" timestamp would misrepresent an unconfigured deadline as a configured one.
+          deadline: null,
         }),
         at,
       );
@@ -675,6 +690,37 @@ export class EffectProcessor {
 
       return { kind: "created", childExecutionId: childId, rootExecutionId: parent.rootExecutionId, pendingOperationId, awaited };
     });
+
+    // Bounded retry on a genuine budget CAS conflict. A loss here means another Execution's spawn
+    // committed the same lineage credit first; it never means this transaction wrote anything -
+    // `store.transact` discards the whole draft when the callback throws, so re-evaluating from
+    // fresh state cannot overspend, cannot duplicate a child, and cannot leave a partial record. A
+    // caller that merely lost the race is not a controller/Activation failure.
+    let outcome: SpawnCommit | null = null;
+    let lastConflict: SpawnBudgetConcurrencyError | null = null;
+    for (let attempt = 1; attempt <= MAX_SPAWN_BUDGET_CONTENTION_ATTEMPTS; attempt += 1) {
+      try {
+        outcome = await attemptSpawn(nowIso(this.deps.clock));
+        break;
+      } catch (error) {
+        if (!(error instanceof SpawnBudgetConcurrencyError)) throw error;
+        lastConflict = error;
+      }
+    }
+
+    if (outcome === null) {
+      // Contention persisted past the retry limit. This is infrastructure contention, not a
+      // controller semantic decision, so it is answered the same way every other spawn refusal is:
+      // an explicit Event, no Activation failure, no child, no credit spent.
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: "spawn_budget_contention",
+        message:
+          `the structural spawn budget for lineage ${parent.rootExecutionId} kept changing underneath ` +
+          `${MAX_SPAWN_BUDGET_CONTENTION_ATTEMPTS} attempts to spend a credit` +
+          (lastConflict ? ` (${lastConflict.message})` : "") +
+          "; retry the spawn",
+      });
+    }
 
     if (outcome.kind === "refused") {
       return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
