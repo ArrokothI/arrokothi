@@ -105,7 +105,6 @@ export type {
   ModelActionTarget,
   StructuredMemoryWriteTarget,
   ModelActionTargetKind,
-  WorkingNotesSetTarget,
 } from "./operations/action-target.ts";
 export {
   MODEL_ACTION_TARGET_KINDS,
@@ -114,8 +113,47 @@ export {
   isModelActionTarget,
   operationRefOfTarget,
   structuredMemoryWriteTarget,
-  workingNotesSetTarget,
 } from "./operations/action-target.ts";
+/**
+ * Controller-local model controls: a *separate category* from the authority-governed model actions
+ * above. They carry no authority, are never members of an Active View / Effective Authority, and
+ * mutate only the controller's own state. See [`../../docs/authority.md`](../../docs/authority.md).
+ */
+export type {
+  LocalModelControlBinding,
+  LocalModelControlEntry,
+  LocalModelControlProjection,
+  LocalModelControlResolution,
+  LocalModelControlView,
+  ModelLocalControlKind,
+  ModelLocalControlTarget,
+} from "./operations/local-model-control.ts";
+export {
+  MODEL_LOCAL_CONTROL_KINDS,
+  MODEL_WORKING_NOTES_SET_ALIAS,
+  WORKING_NOTES_SET_INPUT,
+  createLocalModelControlProjection,
+  createLocalModelControlView,
+  emptyLocalModelControlProjection,
+  emptyLocalModelControlView,
+  formatModelLocalControlTarget,
+  isModelLocalControlTarget,
+  resolveLocalControlAlias,
+  workingNotesSetTarget,
+} from "./operations/local-model-control.ts";
+export type {
+  InvocationInterfaceIssue,
+  ModelCallableBinding,
+  ModelCallableOrigin,
+  ModelInvocationInterface,
+  ModelInvocationInterfaceResult,
+  ModelInvocationResolution,
+} from "./operations/model-invocation-interface.ts";
+export {
+  createModelInvocationInterface,
+  modelInvocationCallableSpecs,
+  resolveModelInvocationAlias,
+} from "./operations/model-invocation-interface.ts";
 export type { OperationRef, OperationRefInput } from "./operations/refs.ts";
 export {
   compareOperationRefs,
@@ -155,7 +193,6 @@ export type {
   ProjectionResult,
 } from "./operations/projection.ts";
 export {
-  MODEL_WORKING_NOTES_SET_ALIAS,
   createModelActionProjection,
   modelActionSpecs,
   modelOperationAlias,
@@ -167,7 +204,6 @@ export type {
   ActiveModelActionView,
   CapabilityOperationActionEntry,
   StructuredMemoryWriteActionEntry,
-  WorkingNotesSetActionEntry,
 } from "./operations/model-action-view.ts";
 export { createActiveModelActionView, targetOfActiveModelAction } from "./operations/model-action-view.ts";
 
@@ -298,18 +334,11 @@ export {
   setWorkingNote,
   validateWorkingNoteUpdate,
   workingNoteContent,
+  workingNoteEntryIssue,
   workingNotesBudgetIssue,
   workingNotesFrameBytes,
   workingNotesFrameIssues,
 } from "./execution/working-notes.ts";
-export type {
-  ActiveWorkingNotesActionEntry,
-  ActiveWorkingNotesActionView,
-} from "./execution/working-notes-action-view.ts";
-export {
-  createActiveWorkingNotesActionView,
-  emptyActiveWorkingNotesActionView,
-} from "./execution/working-notes-action-view.ts";
 /**
  * Controller-local resumptions are exported as *readable* shapes only.
  *

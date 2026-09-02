@@ -122,6 +122,25 @@ This projection is invocation-specific and may be narrower than the Active View 
 
 > **Visibility to a model never grants authority.**
 
+### Controller-local model controls are outside this chain
+
+A model invocation may also be offered **controller-local model controls**: model-facing callables that change only the controller's own state and cannot, by themselves, cross an Execution or runtime boundary. The reference Agent's `working_notes_set` (updating its own Working Notes scratch frame; see [`memory.md`](memory.md)) is the first.
+
+Because selecting such a control produces no concrete Effect for the Harness to re-authorize, it is **not an exercise of Execution authority**. It is therefore not a member of Effective Authority or an Active View, and the `Projection ⊆ Active View ⊆ Effective Authority ⊆ Catalog` chain above does not apply to it. A local control must instead be:
+
+```text
+explicitly typed              a distinct target kind, never a capability/operation or memory-write action
+explicitly enabled            authored per Execution, never inferred from authority or from state
+invocation-snapshotted        its exact projection is frozen for interpreting that invocation's response
+unable to create Effect authority
+unable to cross an Execution/runtime boundary by itself
+unable to masquerade as an authority-governed action
+```
+
+If a provider represents both an authorized operation and a local control as the same tool/function-call syntax, that shared wire syntax does not collapse the kernel distinction: the two are assembled into one provider-visible namespace only after each keeps its own provenance, and a returned name still resolves against the exact snapshot — authority-governed projection or local-control projection — it came from.
+
+Anything that *can* cross a boundary (a capability, a Structured Memory write, spawning, messaging, resource access) remains a full authority-governed model action and stays inside the subset chain.
+
 ---
 
 ## 4. Final authorization happens on the concrete Effect
@@ -441,6 +460,7 @@ authority               ≠ exposure
 Catalog                 ≠ Effective Authority
 Effective Authority     ≠ Active View
 Active View             ≠ Model Invocation Projection
+authority-governed model action ≠ controller-local model control
 discovery               ≠ authority grant
 projection binding id   ≠ credential
 requested requirement   ≠ granted authority
@@ -459,6 +479,8 @@ And these positive rules summarize the model:
 > **Application principals/on-behalf-of facts are policy inputs separate from Execution identity.**
 
 > **Exposure is a deterministic narrowing of authority for usability, not a permission mechanism.**
+
+> **A controller-local model control that cannot cross an Execution/runtime boundary is not an exercise of Execution authority, and is not a member of Effective Authority or an Active View.**
 
 > **Model responses resolve against the exact projection snapshot they observed.**
 

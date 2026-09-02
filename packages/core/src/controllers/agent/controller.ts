@@ -22,32 +22,42 @@
  * evaluator, no capability dispatcher, no settlement path, and no lifecycle setter - and the
  * architecture suite walks the import graph and greps these modules to keep it that way.
  *
- * ## The four layers, in the order this file walks them
+ * ## Two categories of model callable, one provider namespace
  *
  * ```text
- * capability catalog/authority/request + memory write-exposure authority/request/declarations
- *   + authored local Working Notes enablement
- *        ↓ deterministic
- * ActiveOperationView + ActiveStructuredMemoryWriteView + ActiveWorkingNotesActionView
- *        ↓ deterministic composition
- * ActiveModelActionView
- *        ↓ immutable, one per invocation
- * ModelActionProjection            → provider callable specs → the model
- *        ↓ the model answers with a name
- * resolved through THAT projection    → typed UseCapability / WriteMemory proposal, OR a local
- *                                       Working Notes update that never leaves this controller
- *        ↓
- * Harness authorizes the concrete Effect, from current authority (local note updates skip this:
- * there is no concrete Effect, because nothing crossed a runtime boundary)
+ * AUTHORITY-GOVERNED MODEL ACTIONS          CONTROLLER-LOCAL MODEL CONTROLS
+ *
+ * capability catalog/authority/request       authored local enablement
+ *   + memory write-exposure auth/decls         (spec.workingNotes.write)
+ *        ↓ deterministic                          ↓ deterministic
+ * ActiveOperationView                          LocalModelControlView
+ *   + ActiveStructuredMemoryWriteView              (no authority, no Active View)
+ *        ↓                                         ↓
+ * ActiveModelActionView                        LocalModelControlProjection
+ *        ↓                                         ↓
+ * ModelActionProjection  ─────────┐   ┌──────────────┘
+ *   (Projection ⊆ Active View     │   │
+ *    ⊆ Effective Authority        ▼   ▼
+ *    ⊆ Catalog)             ModelInvocationInterface  → one provider callable namespace → the model
+ *                                     ↓ the model answers with a name
+ *              resolved through the persisted interface, keeping each binding's provenance
+ *                     ↓                                    ↓
+ *   typed UseCapability / WriteMemory proposal      local Working Notes frame update
+ *                     ↓                                    (no Effect, no Event, no PendingOperation)
+ *   Harness authorizes the concrete Effect from current authority
  * ```
+ *
+ * The two families are assembled into one list the provider sees, but the kernel never collapses
+ * them: a `working_notes_set` control cannot masquerade as an authority-governed action, is never a
+ * member of an Active View or Effective Authority, and mutating the controller's own frame is not an
+ * exercise of Execution authority - there is no concrete Effect for the Harness to re-authorize. See
+ * [`../../../../docs/authority.md`](../../../../docs/authority.md).
  *
  * None of the middle layers is a permission. A capability or Structured Memory action can be
  * authorized, exposed, projected, selected, proposed - and still denied at dispatch, because
  * authority may have changed or because the concrete payload is not allowed. That denial arrives as
  * an ordinary Effect-result Event, and this controller reports it to the model like any other
- * observation. A `working_notes_set` action still originates in the Active View, but it mutates only
- * this controller's own persisted scratch frame: it settles locally, with the ordinary controller
- * progress commit, and produces no Effect, Event, or PendingOperation.
+ * observation.
  *
  * ## The two kinds of waiting
  *
@@ -107,12 +117,22 @@ import {
 import { agentInformationSelectionId } from "../../agent/information-context.ts";
 import { validateAgentSpec } from "../../agent/validation.ts";
 import type { ModelActionTarget } from "../../operations/action-target.ts";
+import type { ModelLocalControlTarget } from "../../operations/local-model-control.ts";
+import {
+  createLocalModelControlProjection,
+  createLocalModelControlView,
+} from "../../operations/local-model-control.ts";
 import { emptyActiveStructuredMemoryWriteView } from "../../execution/structured-memory-write-view.ts";
-import { createActiveWorkingNotesActionView } from "../../execution/working-notes-action-view.ts";
 import type { WorkingNotesFrame } from "../../execution/working-notes.ts";
 import { setWorkingNote, validateWorkingNoteUpdate, workingNotesBudgetIssue } from "../../execution/working-notes.ts";
 import { createActiveModelActionView } from "../../operations/model-action-view.ts";
-import { createModelActionProjection, modelActionSpecs, resolveProjectedAlias } from "../../operations/projection.ts";
+import { createModelActionProjection } from "../../operations/projection.ts";
+import {
+  createModelInvocationInterface,
+  modelInvocationCallableSpecs,
+  resolveModelInvocationAlias,
+} from "../../operations/model-invocation-interface.ts";
+import type { ModelInvocationInterface } from "../../operations/model-invocation-interface.ts";
 import { EMPTY_EXPOSURE_REQUEST } from "../../operations/exposure.ts";
 import type { ActiveOperationViewResolver } from "../../ports/active-operation-view.ts";
 import { noActiveOperationView } from "../../ports/active-operation-view.ts";
@@ -221,9 +241,14 @@ const DECISION_OF: Record<StepOutcome["kind"], AgentControllerDecision> = {
   fail: "fail",
 };
 
-/** The projection identity for one step. Derived from persisted coordinates, never minted. */
+/** The authority-governed action projection identity for one step. Derived, never minted. */
 function agentProjectionId(step: number): string {
   return `ag/step${step}/projection`;
+}
+
+/** The controller-local model-control projection identity for one step. Derived, never minted. */
+function agentLocalControlProjectionId(step: number): string {
+  return `ag/step${step}/local-controls`;
 }
 
 /** Text delivered from outside the kernel, which is how an Agent progression is started or continued. */
@@ -310,6 +335,14 @@ class AgentController implements ExecutionController {
         message:
           `this Agent's persisted progress is version ${stored.version}, and this build writes ` +
           `version ${AGENT_CONTROL_STATE_VERSION}; interpreting it either way would be a guess`,
+      });
+    }
+    if (stored.status === "invalid") {
+      // The right version, but an invariant is violated (a missing or malformed Working Notes
+      // frame). Fail deterministically rather than restart corrupted progress or normalise it.
+      return this.failed(input.execution.control.progress, {
+        code: "agent_control_state_invalid",
+        message: `this Agent's persisted progress cannot be interpreted: ${stored.reason}`,
       });
     }
     let state = stored.status === "read" ? stored.state : initialAgentControlState();
@@ -478,15 +511,7 @@ class AgentController implements ExecutionController {
             keys: memoryWrite.keys,
           })
         : emptyActiveStructuredMemoryWriteView();
-      // The local Working Notes action needs no resolver, store read, or policy call: an update
-      // mutates only this controller's own scratch frame, so authored enablement is the whole
-      // input. With no `workingNotes.write`, this is the shared empty constant.
-      const workingNotesActions = createActiveWorkingNotesActionView(agentWorkingNotesWrite(spec));
-      const actionView = createActiveModelActionView({
-        operations: operationView,
-        structuredMemoryWrites,
-        workingNotes: workingNotesActions,
-      });
+      const actionView = createActiveModelActionView({ operations: operationView, structuredMemoryWrites });
       const projected = createModelActionProjection({
         projectionId: agentProjectionId(step),
         view: actionView,
@@ -502,6 +527,14 @@ class AgentController implements ExecutionController {
           },
         };
       }
+      // Controller-local model controls are a *separate* category from the authority-governed action
+      // view above. They need no resolver, store read, Active View, or policy call: a
+      // `working_notes_set` update mutates only this controller's own scratch frame, so authored
+      // enablement (`spec.workingNotes.write`) is the whole input. With none, this is the empty view.
+      const localControls = createLocalModelControlProjection({
+        projectionId: agentLocalControlProjectionId(step),
+        view: createLocalModelControlView({ workingNotesSet: agentWorkingNotesWrite(spec) }),
+      });
       // The read snapshot is resolved here, for this one new invocation, and only if the Agent
       // authored a request. The request is a request: it names keys, the resolver intersects them
       // with read authority, and an unauthorized key never causes the bound view to be read. The
@@ -527,11 +560,33 @@ class AgentController implements ExecutionController {
           workingNotes,
         }),
         projection: projected.projection,
+        localControls,
         continuation: state.continuation,
         observations: [...observations],
         messageCount: state.messages.length,
       };
     }
+
+    // Assemble the one provider callable namespace from both persisted snapshots, and check that no
+    // alias is claimed across the two families. On a new invocation this catches the collision
+    // before the model is called; on re-entry it re-derives the same interface from the two
+    // snapshots without rebuilding either or re-evaluating authored controls.
+    const assembled = createModelInvocationInterface({
+      actions: invocation.projection,
+      localControls: invocation.localControls,
+    });
+    if (!assembled.ok) {
+      return {
+        kind: "fail",
+        state: { ...state, invocation: null },
+        emissions: [],
+        failure: {
+          code: "agent_invocation_interface_ambiguous",
+          message: assembled.issues.map((issue) => `${issue.path}: ${issue.message}`).join("; "),
+        },
+      };
+    }
+    const invocationInterface = assembled.interface;
 
     let attempt;
     try {
@@ -547,7 +602,8 @@ class AgentController implements ExecutionController {
           requirements: spec.model.requirements,
           information: invocation.information,
           projection: invocation.projection,
-          capabilities: modelActionSpecs(invocation.projection),
+          localControls: invocation.localControls,
+          capabilities: modelInvocationCallableSpecs(invocationInterface),
           observations: invocation.observations,
           step: invocation.step,
           limits: { maxOperationCallsPerStep: limits.maxOperationCallsPerStep },
@@ -569,7 +625,7 @@ class AgentController implements ExecutionController {
       return { kind: "suspend", state: { ...state, invocation }, resumptionId: attempt.resumptionId };
     }
 
-    return this.interpret(spec, state, invocation, attempt.invocation, input, reentered);
+    return this.interpret(spec, state, invocation, invocationInterface, attempt.invocation, input, reentered);
   }
 
   /**
@@ -583,11 +639,12 @@ class AgentController implements ExecutionController {
     spec: AgentSpec,
     state: AgentControlState,
     invocation: AgentInvocationState,
+    invocationInterface: ModelInvocationInterface,
     step: AgentStepInvocation,
     input: ActivationInput,
     reentered: boolean,
   ): StepOutcome {
-    const result = this.interpretOutcome(spec, state, invocation, step.outcome, input);
+    const result = this.interpretOutcome(spec, state, invocation, invocationInterface, step.outcome, input);
     this.record(invocation, step, input, reentered, result);
     return result;
   }
@@ -601,12 +658,10 @@ class AgentController implements ExecutionController {
     result: StepOutcome,
   ): void {
     if (!this.trace?.modelInvoked) return;
-    // `continue` covers a turn whose only selected actions were local Working Notes updates: they
-    // settled without an Effect, but the model still selected them, so the trace records them.
+    // Only authority-governed actions become Effect proposals. A local Working Notes update settles
+    // in-controller with no Effect, so it is not a `proposal` - `proposalRecords` filters it out.
     const proposals =
-      result.kind === "awaitEffects" || result.kind === "continue"
-        ? this.proposalRecords(invocation.step, result.state.pending)
-        : [];
+      result.kind === "awaitEffects" ? this.proposalRecords(invocation.step, result.state.pending) : [];
     this.trace.modelInvoked({
       executionId: input.execution.executionId,
       activationId: input.activation.activationId,
@@ -633,19 +688,27 @@ class AgentController implements ExecutionController {
   }
 
   private proposalRecords(step: number, pending: readonly AgentPendingCall[]): readonly AgentActionProposalRecord[] {
-    return pending.map((call) => ({
-      step,
-      correlationId: call.correlationId,
-      bindingId: call.bindingId,
-      alias: call.alias,
-      target: call.target,
-    }));
+    const records: AgentActionProposalRecord[] = [];
+    for (const call of pending) {
+      const target = call.target;
+      // A local control produced no proposal; the trace's `proposals` list is Effect proposals only.
+      if (target.kind === "working_notes_set") continue;
+      records.push({
+        step,
+        correlationId: call.correlationId,
+        bindingId: call.bindingId,
+        alias: call.alias,
+        target,
+      });
+    }
+    return records;
   }
 
   private interpretOutcome(
     spec: AgentSpec,
     state: AgentControlState,
     invocation: AgentInvocationState,
+    invocationInterface: ModelInvocationInterface,
     outcome: AgentExecutorOutcome,
     input: ActivationInput,
   ): StepOutcome {
@@ -729,10 +792,11 @@ class AgentController implements ExecutionController {
         // discarded - `advanced.workingNotes` is what gets persisted, unchanged.
         let workingNotes: WorkingNotesFrame = advanced.workingNotes;
         for (const [index, call] of outcome.calls.entries()) {
-          // Resolved against the snapshot this model call was shown, and against nothing else. A
-          // name that is not in it resolves to nothing - never to whatever the current view or the
-          // catalog happens to call by the same string.
-          const resolution = resolveProjectedAlias(invocation.projection, call.alias);
+          // Resolved against the exact callable namespace this model call was shown, and against
+          // nothing else. A name not in it resolves to nothing - never to whatever the current view
+          // or catalog happens to call by the same string. Each resolution keeps its provenance:
+          // authority-governed action, or controller-local model control.
+          const resolution = resolveModelInvocationAlias(invocationInterface, call.alias);
           if (!resolution.resolved) {
             return {
               kind: "fail",
@@ -741,68 +805,69 @@ class AgentController implements ExecutionController {
               failure: {
                 code: "agent_action_not_projected",
                 message:
-                  `the model returned "${call.alias}", which projection ${invocation.projection.projectionId} ` +
+                  `the model returned "${call.alias}", which this invocation's callable namespace ` +
                   `did not expose; a returned name is vocabulary, never an identity to look up`,
               },
             };
           }
-          const binding = resolution.binding;
-          // The binding owns identity. Provider input supplies arguments only; in particular, the
-          // Structured Memory arm accepts exactly `{ value }`, so a model cannot substitute a key.
-          const target: ModelActionTarget = binding.target;
           const correlationId = agentCallCorrelationId(invocation.step, index + 1);
 
-          if (target.kind === "working_notes_set") {
-            // A LOCAL action. It mutates only this controller's own scratch frame: no Effect, no
-            // Event, no PendingOperation, no Harness dispatch, no confirmation. The pending entry is
+          if (resolution.origin === "local_control") {
+            // A CONTROLLER-LOCAL model control. It mutates only this controller's own scratch frame:
+            // no Effect, no Event, no PendingOperation, no Harness dispatch, no confirmation, and it
+            // was never a member of an Active View or Effective Authority. The pending entry is
             // recorded already settled, so the Agent never waits on a runtime result for it.
-            const update = validateWorkingNoteUpdate(call.input);
-            if (!update.ok) {
-              return {
-                kind: "fail",
-                state: { ...advanced, messages },
-                emissions: [],
-                failure: {
-                  code: "agent_working_notes_update_invalid",
-                  message: `the model input for ${binding.alias} is not a valid { key, content } update: ${update.issues.join("; ")}`,
-                },
-              };
+            const binding = resolution.binding;
+            // Only `working_notes_set` exists today; the switch keeps this total as controls grow.
+            switch (binding.target.kind) {
+              case "working_notes_set": {
+                const update = validateWorkingNoteUpdate(call.input);
+                if (!update.ok) {
+                  return {
+                    kind: "fail",
+                    state: { ...advanced, messages },
+                    emissions: [],
+                    failure: {
+                      code: "agent_working_notes_update_invalid",
+                      message: `the model input for ${binding.alias} is not a valid { key, content } update: ${update.issues.join("; ")}`,
+                    },
+                  };
+                }
+                const candidate = setWorkingNote(workingNotes, update.key, update.content);
+                const budget = workingNotesBudgetIssue(candidate, {
+                  maxEntries: limits.maxWorkingNoteEntries,
+                  maxBytes: limits.maxWorkingNotesBytes,
+                });
+                if (budget) {
+                  return {
+                    kind: "fail",
+                    state: { ...advanced, messages },
+                    emissions: [],
+                    failure: { code: "agent_working_notes_budget_exhausted", message: budget.message },
+                  };
+                }
+                workingNotes = candidate;
+                pending.push({
+                  correlationId,
+                  bindingId: binding.bindingId,
+                  alias: binding.alias,
+                  target: binding.target,
+                  callId: call.callId,
+                  settled: true,
+                  outcome: "completed",
+                  observation: { key: update.key, updated: true },
+                  error: null,
+                });
+                break;
+              }
             }
-            const candidate = setWorkingNote(workingNotes, update.key, update.content);
-            const budget = workingNotesBudgetIssue(candidate, {
-              maxEntries: limits.maxWorkingNoteEntries,
-              maxBytes: limits.maxWorkingNotesBytes,
-            });
-            if (budget) {
-              return {
-                kind: "fail",
-                state: { ...advanced, messages },
-                emissions: [],
-                failure: { code: "agent_working_notes_budget_exhausted", message: budget.message },
-              };
-            }
-            workingNotes = candidate;
-            pending.push({
-              correlationId,
-              bindingId: binding.bindingId,
-              alias: binding.alias,
-              target,
-              callId: call.callId,
-              settled: true,
-              outcome: "completed",
-              observation: { key: update.key, updated: true },
-              error: null,
-            });
-            this.trace?.actionProposed?.({
-              step: invocation.step,
-              correlationId,
-              bindingId: binding.bindingId,
-              alias: binding.alias,
-              target,
-            });
             continue;
           }
 
+          // An AUTHORITY-GOVERNED model action. The binding owns identity; provider input supplies
+          // arguments only; in particular the Structured Memory arm accepts exactly `{ value }`.
+          const binding = resolution.binding;
+          const target: ModelActionTarget = binding.target;
           let proposal: EffectProposal;
           switch (target.kind) {
             case "capability_operation":

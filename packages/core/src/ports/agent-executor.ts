@@ -1,9 +1,10 @@
 /**
  * The AgentExecutor boundary: semantic outcomes in, nothing operational out.
  *
- * An executor turns compiled information plus one immutable action projection into a semantic
- * decision. It is where a provider call, or a whole third-party agent framework, is allowed to
- * live. It is not where anything happens to the world.
+ * An executor turns compiled information plus one immutable callable namespace (assembled from an
+ * authority-governed action projection and a controller-local model-control projection) into a
+ * semantic decision. It is where a provider call, or a whole third-party agent framework, is
+ * allowed to live. It is not where anything happens to the world.
  *
  * Read the request shape as a list of what an executor is *not* handed:
  *
@@ -14,11 +15,12 @@
  * no protocol or HTTP client
  * ```
  *
- * The consequence is the one that matters. When a model selects an action, the executor can only
+ * The consequence is the one that matters. When a model selects a callable, the executor can only
  * *report* that selection; it cannot carry it out. The Agent controller resolves the reported name
- * against the same projection snapshot, proposes an ordinary typed Effect, and the Harness decides
- * everything after that. A framework with a native tool loop therefore cannot become an alternate
- * gateway - there is nothing in this contract for such a loop to call.
+ * against the same persisted snapshots, and then either proposes an ordinary typed Effect (an
+ * authority-governed action, which the Harness authorizes) or applies a controller-local model
+ * control to its own state (no Effect at all). A framework with a native tool loop therefore cannot
+ * become an alternate gateway - there is nothing in this contract for such a loop to call.
  *
  * Everything crossing this boundary is plain JSON, in both directions. That is what lets one
  * invocation outlive its Activation: the outcome is stored and replayed, and an executor that
@@ -27,6 +29,7 @@
  */
 
 import type { ModelCapabilitySpec, ModelRequirements, ModelUsage, ResolvedModel } from "../model/types.ts";
+import type { LocalModelControlProjection } from "../operations/local-model-control.ts";
 import type { ModelActionProjection } from "../operations/projection.ts";
 import type { AgentInformationContext } from "../agent/information-context.ts";
 import type { AgentModelObservation } from "../agent/observation-projection.ts";
@@ -43,9 +46,25 @@ export interface AgentExecutorRequest {
   readonly model: ResolvedModel;
   readonly requirements: ModelRequirements;
   readonly information: AgentInformationContext;
-  /** The immutable snapshot this call is being shown. The controller resolves the answer with it. */
+  /**
+   * The immutable authority-governed model-action snapshot this call is being shown.
+   *
+   * Provenance for an executor that wants it; the controller resolves the answer against the
+   * combined callable namespace, not this field alone.
+   */
   readonly projection: ModelActionProjection;
-  /** The provider-facing derivation of that snapshot: names, descriptions, input schemas. */
+  /**
+   * The immutable controller-local model-control snapshot this call is being shown.
+   *
+   * A separate category from `projection` - it carries no authority. Present so an executor that
+   * inspects provenance can distinguish a local control (`working_notes_set`) from an
+   * authority-governed action; both still appear in `capabilities` as one flat namespace.
+   */
+  readonly localControls: LocalModelControlProjection;
+  /**
+   * The one provider-facing callable namespace: names, descriptions, input schemas, assembled from
+   * both snapshots above. Provenance is not sent to the provider; the controller keeps it.
+   */
   readonly capabilities: readonly ModelCapabilitySpec[];
   /**
    * Results of the actions the previous step requested, already projected for a model.

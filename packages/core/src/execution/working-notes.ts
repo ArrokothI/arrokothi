@@ -73,13 +73,29 @@ function compareKeys(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
+/** The runtime invariants every `WorkingNoteEntry` must hold. Not just a TypeScript shape. */
+export function workingNoteEntryIssue(key: unknown, content: unknown): string | null {
+  if (typeof key !== "string" || key.trim().length === 0) {
+    return "a Working Note key must be a non-empty string";
+  }
+  const contentIssues = jsonIssues(content, "content");
+  if (contentIssues.length > 0) {
+    return `Working Note content must be a JSON value (${contentIssues[0]!.message})`;
+  }
+  return null;
+}
+
 /**
- * Pure upsert of one entry, re-sorted by key, with the content structurally cloned.
+ * Invariant-preserving upsert of one entry, re-sorted by key, content structurally cloned.
  *
- * Always succeeds and never mutates its input - boundedness is a separate check
+ * The public runtime boundary, not just a static type: an empty/blank key or non-JSON content
+ * **throws** rather than producing a frame that violates `WorkingNotesFrame` invariants. Never
+ * mutates its input. Boundedness is a separate check
  * ([`workingNotesBudgetIssue`](#workingNotesBudgetIssue)) so a rejected candidate is just discarded.
  */
 export function setWorkingNote(frame: WorkingNotesFrame, key: string, content: JsonValue): WorkingNotesFrame {
+  const issue = workingNoteEntryIssue(key, content);
+  if (issue !== null) throw new TypeError(issue);
   const kept = frame.entries.filter((entry) => entry.key !== key);
   const entries = [...kept, { key, content: cloneJson(content) }].sort((a, b) => compareKeys(a.key, b.key));
   return { entries };

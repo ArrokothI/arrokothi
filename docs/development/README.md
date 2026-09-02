@@ -97,14 +97,19 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   No canonical-doc change. Merged to main (PR #11); part of the merged `main` F.2a baseline.
 
 021-slice-f2a-working-notes-local-scratch.md
-  the current F.2a checkpoint, on the long-lived branch `slice-f-memory-completion`: a
-  controller-owned Working Notes frame in AgentControlState; authored AgentSpec.workingNotes
-  { read?: true, write?: true } enablement; a `working_notes_set` model action as a typed third
-  ActiveModelActionView arm that settles locally with the ordinary controller progress commit -
-  no Effect, Event, or PendingOperation; bounded by two new AgentLimits budgets; the read snapshot
-  rendered into model information; AGENT_CONTROL_STATE_VERSION 2 -> 3 (fail-closed); the reserved
-  DeferredSlots.workingNotes placeholder removed. No canonical-doc change. Not merged; awaiting
-  review. F.2b / F.3 / final Slice F integration continue on the same branch.
+  the current F.2a checkpoint, on the long-lived branch `slice-f-memory-completion`, after an
+  independent architecture-review correction (021 §0): a controller-owned Working Notes frame in
+  AgentControlState; authored AgentSpec.workingNotes { read?: true, write?: true } enablement; the
+  read snapshot rendered into model information; two new AgentLimits budgets. The model-directed
+  `working_notes_set` is a controller-LOCAL model control - a category *distinct* from
+  authority-governed model actions: it is NOT a ModelActionTarget and NOT an Active View member
+  (LocalModelControlProjection), merged with the F.1.1 ModelActionProjection into one provider
+  callable namespace at ModelInvocationInterface (which refuses cross-family alias collisions),
+  and settles locally with no Effect/Event/PendingOperation. Both snapshots persist on
+  AgentInvocationState. AGENT_CONTROL_STATE_VERSION 2 -> 3, and a v3 record with a missing/malformed
+  Working Notes frame is refused (`invalid`), not defaulted. DeferredSlots.workingNotes removed.
+  One minimal canonical clarification to authority.md §3/§14 (controller-local model controls).
+  Not merged; awaiting re-review. F.2b / F.3 / final Slice F integration continue on the same branch.
 
 014-v1-efficiency-and-developer-ergonomics-validation.md
   cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
@@ -162,13 +167,14 @@ Slice F memory
   F.1.1         model-directed WriteMemory         accepted, merged (020, PR #11)
                 exposure via authorized memory
                 view + heterogeneous action view
-  F.2a          Working Notes local scratch:       current checkpoint (021);
+  F.2a          Working Notes local scratch:       current checkpoint (021), review-corrected;
                 controller-owned frame in          on branch slice-f-memory-completion,
-                AgentControlState, authored         not merged, awaiting review
-                read/write enablement, local
-                working_notes_set action with no
-                Effect/Event, bounded persistence,
-                control-state version 2 -> 3
+                AgentControlState, authored         not merged, awaiting re-review.
+                read/write enablement, local        working_notes_set is a controller-local
+                working_notes_set control with no   model CONTROL (not a model action /
+                Effect/Event, bounded persistence,  Active View member); one minimal
+                control-state version 2 -> 3 +      authority.md §3/§14 clarification
+                fail-closed frame validation
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

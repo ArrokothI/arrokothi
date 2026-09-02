@@ -225,14 +225,15 @@ describe("Agent architecture boundaries", () => {
     }
   });
 
-  test("model action targets are identity only, with capability, Structured Memory, and Working Notes arms", async () => {
+  test("model action targets are identity only, with the two authority-governed arms", async () => {
     const code = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
     const declared = [...code.matchAll(/readonly kind: "(\w+)"/g)].map((match) => match[1]!);
     assert.deepEqual(
       [...new Set(declared)],
-      ["capability_operation", "structured_memory_write", "working_notes_set"],
-      "the heterogeneous target is explicit and discriminated",
+      ["capability_operation", "structured_memory_write"],
+      "the authority-governed target vocabulary; working_notes_set is a separate local-control category",
     );
+    assert.equal(code.includes("working_notes_set"), false, "a local control is never a ModelActionTarget");
     for (const forbidden of ["grant", "authorize", "Harness", "Executor", "credential", "token"]) {
       assert.equal(code.includes(forbidden), false, `an action target must not carry "${forbidden}"`);
     }
@@ -268,22 +269,69 @@ describe("Agent architecture boundaries", () => {
     );
   });
 
-  test("Working Notes are plain controller-owned state - the frame helper reaches nothing operational", async () => {
-    // The frame module and the local action-view module are leaves. They import no package and no
-    // runtime builtin, and their graphs reach no Harness, store, authorizer, or Effect machinery.
-    for (const entry of ["execution/working-notes.ts", "execution/working-notes-action-view.ts"]) {
+  test("Working Notes state and the local-control view/projection reach nothing operational", async () => {
+    // No runtime, no policy, no authority *implementation*, no Effect machinery in any of these graphs.
+    const AUTHORITY_AND_RUNTIME = [
+      ...OPERATIONAL_MACHINERY,
+      "operations/authority.ts",
+      "reference/active-operation-view-resolver.ts",
+      "reference/operation-authority.ts",
+      "reference/structured-memory-write-view-resolver.ts",
+      "reference/structured-memory-read-view-resolver.ts",
+      "ports/effective-operation-authority.ts",
+      "ports/active-operation-view.ts",
+      "ports/active-structured-memory-write-view.ts",
+    ];
+    // The two leaves reach nothing beyond `util/*` and their own type modules.
+    for (const entry of ["execution/working-notes.ts", "operations/local-model-control.ts"]) {
       const files = await walk([entry]);
-      assert.deepEqual([...files].filter((path) => OPERATIONAL_MACHINERY.includes(path)), [], `${entry} reaches nothing operational`);
+      assert.deepEqual(
+        [...files].filter((path) => [...AUTHORITY_AND_RUNTIME, "operations/active-view.ts"].includes(path)),
+        [],
+        `${entry} graph reaches no runtime, authority, Active View, or Effect machinery`,
+      );
       for (const path of files) {
-        const source = await readFile(resolve(CORE_SRC, path), "utf8");
-        for (const specifier of specifiersIn(source)) {
+        for (const specifier of specifiersIn(await readFile(resolve(CORE_SRC, path), "utf8"))) {
           assert.ok(specifier.startsWith("."), `${entry} graph imports only relative modules (${specifier})`);
         }
       }
+    }
+    // The invocation-interface composer may name the two projection *types* it merges, but reaches
+    // no authority implementation, resolver, runtime, or Effect machinery.
+    const ifaceFiles = await walk(["operations/model-invocation-interface.ts"]);
+    assert.deepEqual(
+      [...ifaceFiles].filter((path) => AUTHORITY_AND_RUNTIME.includes(path)),
+      [],
+      "the callable-namespace composer only rearranges two projections it is handed",
+    );
+    for (const entry of [
+      "execution/working-notes.ts",
+      "operations/local-model-control.ts",
+      "operations/model-invocation-interface.ts",
+    ]) {
       const code = codeOf(await readFile(resolve(CORE_SRC, entry), "utf8"));
-      for (const forbidden of ["Harness", "RuntimeStore", "EffectAuthorizer", "EffectProposal", "CapabilityExecutor", "writeMemory", "useCapability", "Effect"]) {
+      for (const forbidden of ["RuntimeStore", "Harness", "EffectAuthorizer", "EffectProposal", "CapabilityExecutor"]) {
         assert.equal(code.includes(forbidden), false, `${entry} must not name ${forbidden}`);
       }
+    }
+  });
+
+  test("working_notes_set is a local control, not a member of any authority-governed view", async () => {
+    // Not a ModelActionTarget.
+    const actionTarget = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
+    assert.equal(actionTarget.includes("working_notes_set"), false);
+    // Not in the Active Model Action View.
+    const actionView = codeOf(await readFile(resolve(CORE_SRC, "operations/model-action-view.ts"), "utf8"));
+    assert.equal(actionView.includes("working_notes_set"), false);
+    assert.equal(actionView.includes("localControl"), false, "the Active View knows nothing about local controls");
+    // The ModelActionProjection is cut only from the Active Model Action View.
+    const projection = codeOf(await readFile(resolve(CORE_SRC, "operations/projection.ts"), "utf8"));
+    assert.equal(projection.includes("working_notes_set"), false);
+    assert.equal(projection.includes("LocalModelControl"), false);
+    // The local-control module does not depend on the authority-governed projection or view.
+    const localFiles = await walk(["operations/local-model-control.ts"]);
+    for (const forbidden of ["operations/projection.ts", "operations/model-action-view.ts", "operations/active-view.ts"]) {
+      assert.equal(localFiles.has(forbidden), false, `local-model-control must not reach ${forbidden}`);
     }
   });
 
@@ -301,18 +349,26 @@ describe("Agent architecture boundaries", () => {
   test("the Agent controller owns the local Working Notes update; the Workflow controller does not", async () => {
     const agent = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8"));
     assert.ok(agent.includes("setWorkingNote") && agent.includes("validateWorkingNoteUpdate"), "the Agent applies the update locally");
-    assert.ok(agent.includes("createActiveWorkingNotesActionView"));
+    assert.ok(
+      agent.includes("createLocalModelControlView") && agent.includes("createLocalModelControlProjection"),
+      "and builds the local-control snapshot from authored enablement",
+    );
 
     const workflow = codeOf(await readFile(resolve(CORE_SRC, "controllers/workflow/controller.ts"), "utf8"));
-    for (const forbidden of ["workingNotes", "WorkingNote", "working_notes", "createActiveWorkingNotesActionView"]) {
-      assert.equal(workflow.includes(forbidden), false, `the Workflow controller is untouched as a Working Notes consumer (${forbidden})`);
+    for (const forbidden of ["workingNotes", "WorkingNote", "working_notes", "LocalModelControl", "ModelInvocationInterface"]) {
+      assert.equal(workflow.includes(forbidden), false, `the Workflow controller is untouched as a local-control / Working Notes consumer (${forbidden})`);
     }
   });
 
   test("the information compiler may read a Working Notes frame but cannot mutate it or choose actions", async () => {
     const files = await walk(["controllers/agent/information.ts"]);
-    // Same forbidden set as the Structured Memory read case: no route to exposure or projection.
-    for (const forbidden of ["operations/model-action-view.ts", "operations/projection.ts", "operations/active-view.ts", "execution/working-notes-action-view.ts"]) {
+    for (const forbidden of [
+      "operations/model-action-view.ts",
+      "operations/projection.ts",
+      "operations/active-view.ts",
+      "operations/local-model-control.ts",
+      "operations/model-invocation-interface.ts",
+    ]) {
       assert.equal(files.has(forbidden), false, `the information compiler must not reach ${forbidden}`);
     }
     const code = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/information.ts"), "utf8"));

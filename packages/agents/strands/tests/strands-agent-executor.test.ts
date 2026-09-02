@@ -83,6 +83,7 @@ function requestFor(
     requirements: { text: true, capabilityCalls: "required" },
     information: { system: "Search before answering.", messages: [{ role: "user", content: "find kernels" }] },
     projection: PROJECTION,
+    localControls: { projectionId: "ag/step1/local-controls", viewId: "lmcv_empty", bindings: [] },
     capabilities: PROJECTION.bindings.map((binding: ModelActionBinding) => ({
       name: binding.alias,
       description: binding.description,

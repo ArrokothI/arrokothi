@@ -42,58 +42,24 @@ export function modelStructuredMemoryWriteAlias(key: string): string {
   return `memory_write_${key}`.replace(/[^A-Za-z0-9_]/g, "_");
 }
 
-/** The single stable provider-safe alias for the local Working Notes update action. */
-export const MODEL_WORKING_NOTES_SET_ALIAS = "working_notes_set";
-
-/**
- * Model-facing input schema for `working_notes_set`.
- *
- * `content` is `{ kind: "any" }` because a note may hold any JSON value. The kernel accepts exactly
- * that at controller validation (`jsonIssues`); the existing `ValueSchema -> JSON Schema` projection
- * of `any` is a lossy subset (it omits nested objects and null), a pre-existing limitation of the
- * schema layer that broad JSON Schema work - deferred - would address. F.2a does not widen it here.
- */
-const WORKING_NOTES_SET_INPUT: ObjectSchema = {
-  kind: "object",
-  fields: {
-    key: {
-      required: true,
-      schema: { kind: "string", minLength: 1 },
-      description: "Your own local label for this note.",
-    },
-    content: {
-      required: true,
-      schema: { kind: "any" },
-      description: "Any JSON value; stored verbatim as local scratch.",
-    },
-  },
-  additionalProperties: false,
-};
-
 function aliasOf(entry: ActiveModelActionEntry): string {
-  switch (entry.kind) {
-    case "capability_operation":
-      return modelOperationAlias(entry);
-    case "structured_memory_write":
-      return modelStructuredMemoryWriteAlias(entry.key);
-    case "working_notes_set":
-      return MODEL_WORKING_NOTES_SET_ALIAS;
-  }
+  return entry.kind === "capability_operation"
+    ? modelOperationAlias(entry)
+    : modelStructuredMemoryWriteAlias(entry.key);
 }
 
 function inputOf(entry: ActiveModelActionEntry): ObjectSchema {
-  switch (entry.kind) {
-    case "capability_operation":
-      return entry.input;
-    case "structured_memory_write":
-      return {
-        kind: "object",
-        fields: { value: { required: true, schema: entry.valueSchema } },
-        additionalProperties: false,
-      };
-    case "working_notes_set":
-      return WORKING_NOTES_SET_INPUT;
-  }
+  if (entry.kind === "capability_operation") return entry.input;
+  return {
+    kind: "object",
+    fields: {
+      value: {
+        required: true,
+        schema: entry.valueSchema,
+      },
+    },
+    additionalProperties: false,
+  };
 }
 
 export interface ProjectionIssue {

@@ -10,17 +10,18 @@
  * ## The invariant this file exists to hold
  *
  * A model invocation may outlive its Activation. When it does, the Activation that resumes must
- * interpret the answer with **the same projection and the same information the invocation was
- * given**, not with whatever the current Active View would produce now. So both are written down
- * before yielding:
+ * interpret the answer with **the same projection, the same local-control snapshot, and the same
+ * information the invocation was given**, not with whatever the current Active View or authored spec
+ * would produce now. So all of them are written down before yielding:
  *
  * ```text
- * invocation = { step, information, projection, continuation }
+ * invocation = { step, information, projection, localControls, continuation }
  * ```
  *
  * The resuming Activation rebuilds the request from that record, derives the same resumption key,
- * and is handed the stored result. It does not re-resolve the view, does not rebuild the
- * projection, and does not re-dispatch the provider call.
+ * and is handed the stored result. It does not re-resolve the view, does not rebuild either
+ * projection, does not re-evaluate authored local controls, and does not re-dispatch the provider
+ * call.
  *
  * Events that arrive while the invocation is outstanding are queued by the runtime's exclusive
  * suspension and delivered to the Activation that resumes. They are folded into `messages` for a
@@ -36,9 +37,10 @@
  */
 
 import type { WorkingNotesFrame } from "../execution/working-notes.ts";
-import { emptyWorkingNotesFrame } from "../execution/working-notes.ts";
+import { emptyWorkingNotesFrame, workingNotesFrameIssues } from "../execution/working-notes.ts";
 import type { ModelMessage } from "../model/types.ts";
 import type { ModelActionTarget } from "../operations/action-target.ts";
+import type { ModelLocalControlTarget, LocalModelControlProjection } from "../operations/local-model-control.ts";
 import type { ModelActionProjection } from "../operations/projection.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import type { AgentModelObservation } from "./observation-projection.ts";
@@ -52,13 +54,12 @@ import type { AgentObservationOutcome } from "./observations.ts";
  * Version 2 typed both: a binding names a `ModelActionTarget`, and an invocation snapshot records
  * the projected observations.
  *
- * Version 3 (Slice F.2a) adds `workingNotes`: the Agent controller's local scratch frame, now part
- * of its persisted semantic progression. A version-2 record would read as though it had *no* frame;
- * defaulting that to an empty frame is in fact semantically safe (absence of notes and an empty
- * frame are the same thing, and no stored alias resolves against it). The version is bumped and the
- * older record *refused* anyway - see [`readAgentControlState`](#readAgentControlState) - to keep
- * the persisted-shape contract honest and the refusal path uniform, exactly as the 1 -> 2 bump did.
- * Pre-v1 the repository carries no migration.
+ * Version 3 (Slice F.2a) adds `workingNotes` (the Agent controller's local scratch frame) to the
+ * top level and `invocation.localControls` (the exact controller-local model-control snapshot) to
+ * an in-flight invocation. Both are part of persisted semantic progression. Version 2 is *refused*
+ * - see [`readAgentControlState`](#readAgentControlState) - and a version-3 record whose
+ * `workingNotes` frame is missing or malformed is refused too: the runtime never restarts corrupted
+ * progress or normalises it silently. Pre-v1 the repository carries no migration.
  */
 export const AGENT_CONTROL_STATE_VERSION = 3;
 
@@ -85,7 +86,17 @@ export interface AgentInvocationState {
   /** 1-based step this invocation belongs to. Part of the resumption key and the correlations. */
   readonly step: number;
   readonly information: AgentInformationSnapshot;
+  /** The authority-governed model-action snapshot this invocation was shown (F.1.1). */
   readonly projection: ModelActionProjection;
+  /**
+   * The controller-local model-control snapshot this invocation was shown (F.2a).
+   *
+   * A separate category from `projection`: it carries no authority and is derived from authored
+   * local enablement, not an Active View. Persisted for the same reason `projection` is - a returned
+   * `working_notes_set` alias resolves through *this* exact snapshot on re-entry, and neither
+   * snapshot is rebuilt.
+   */
+  readonly localControls: LocalModelControlProjection;
   readonly continuation: JsonValue | null;
   /**
    * The settled results this invocation was given, as the model was shown them.
@@ -111,8 +122,13 @@ export interface AgentPendingCall {
   /** Which projection binding produced this call. Integrity data; it authorizes nothing. */
   readonly bindingId: string;
   readonly alias: string;
-  /** What the binding resolved to. Typed for the same reason the binding is. */
-  readonly target: ModelActionTarget;
+  /**
+   * What the binding resolved to. Typed for the same reason the binding is.
+   *
+   * A `ModelLocalControlTarget` (`working_notes_set`) here always belongs to an already-settled
+   * entry - a local control never has an outstanding runtime result.
+   */
+  readonly target: ModelActionTarget | ModelLocalControlTarget;
   /** The provider's own id for the call it emitted, when it supplied one. */
   readonly callId: string | null;
   readonly settled: boolean;
@@ -183,21 +199,41 @@ export type AgentControlStateRead =
   | { readonly status: "absent" }
   | { readonly status: "read"; readonly state: AgentControlState }
   /** Written by a different version of this shape. Refused, never guessed at. */
-  | { readonly status: "unsupported"; readonly version: number };
+  | { readonly status: "unsupported"; readonly version: number }
+  /**
+   * The right version, but its content violates an invariant this build requires (today: a missing
+   * or malformed `workingNotes` frame). Refused - the controller fails the Execution deterministically
+   * rather than restarting corrupted progress or normalising it into something the model never wrote.
+   */
+  | { readonly status: "invalid"; readonly reason: string };
 
 /**
  * Reads persisted progress back, tolerating the empty progress a freshly created Execution has.
  *
  * A version this build does not know is reported rather than coerced. Pre-v1 the repository carries
- * no migration, and that is a deliberate simplicity rather than an oversight: reading a v1 record
- * as a v2 one would resolve a stored alias against a target that is not there, which is worse than
+ * no migration, and that is a deliberate simplicity rather than an oversight: reading an older
+ * record would resolve a stored alias against a target that is not there, which is worse than
  * refusing to run.
+ *
+ * A version-3 record must also carry a valid `workingNotes` frame. It is not defaulted: "no frame
+ * persisted" is a corrupt v3 record, not the same as a fresh Execution's empty frame, and silently
+ * substituting one would hide the corruption.
  */
 export function readAgentControlState(progress: JsonObject): AgentControlStateRead {
   if (!isAgentControlState(progress)) return { status: "absent" };
   const state = progress as unknown as AgentControlState;
   const version = typeof state.version === "number" ? state.version : 1;
   if (version !== AGENT_CONTROL_STATE_VERSION) return { status: "unsupported", version };
+
+  const frame = (state as { workingNotes?: unknown }).workingNotes;
+  if (frame === undefined || frame === null) {
+    return { status: "invalid", reason: "version 3 Agent progress is missing its workingNotes frame" };
+  }
+  const frameIssues = workingNotesFrameIssues(frame);
+  if (frameIssues.length > 0) {
+    return { status: "invalid", reason: `persisted Working Notes frame is malformed: ${frameIssues.join("; ")}` };
+  }
+
   return {
     status: "read",
     state: {
@@ -209,7 +245,7 @@ export function readAgentControlState(progress: JsonObject): AgentControlStateRe
       continuation: state.continuation ?? null,
       pending: state.pending ?? [],
       responses: state.responses ?? 0,
-      workingNotes: state.workingNotes ?? emptyWorkingNotesFrame(),
+      workingNotes: frame as WorkingNotesFrame,
     },
   };
 }

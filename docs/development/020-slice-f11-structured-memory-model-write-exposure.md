@@ -144,6 +144,14 @@ interface ActiveModelActionView {
 The combined view is deterministically ordered and its id is derived from both source ids and all
 canonical entries. It is a visibility snapshot, not permission.
 
+> **F.2a note:** this `ActiveModelActionView` is and remains the **authority-governed** model-action
+> view - `Projection ⊆ Active View ⊆ Effective Authority ⊆ Catalog`. Slice F.2a
+> ([`021`](021-slice-f2a-working-notes-local-scratch.md)) deliberately did **not** add a third arm
+> to it: the controller-local `working_notes_set` control is a separate category
+> (`LocalModelControlProjection`), merged with this view into one provider callable namespace only
+> at `ModelInvocationInterface`, where each binding keeps its provenance. The two source arms and
+> the `amav_` view id here are unchanged by F.2a.
+
 ## 6. Projection generalization and integrity
 
 `ModelActionProjection` is cut only from an `ActiveModelActionView`:

@@ -16,6 +16,7 @@
  */
 
 import type { ModelActionTarget } from "../operations/action-target.ts";
+import type { ModelLocalControlTarget } from "../operations/local-model-control.ts";
 import type { JsonValue } from "../util/json.ts";
 
 export type AgentObservationOutcome =
@@ -52,8 +53,11 @@ export interface AgentActionObservation {
   readonly callId: string | null;
   /** The model-facing name the action was shown under, for this invocation. */
   readonly alias: string;
-  /** What that name resolved to. The same typed target the binding carried. */
-  readonly target: ModelActionTarget;
+  /**
+   * What that name resolved to. The same typed target the binding carried - an authority-governed
+   * `ModelActionTarget`, or a controller-local `ModelLocalControlTarget` (`working_notes_set`).
+   */
+  readonly target: ModelActionTarget | ModelLocalControlTarget;
   readonly outcome: AgentObservationOutcome;
   readonly observation?: JsonValue;
   readonly error?: { readonly code: string; readonly message: string };
