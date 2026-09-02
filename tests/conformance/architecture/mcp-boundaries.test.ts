@@ -232,12 +232,14 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
         "child.completed",
         "child.failed",
         "child.spawned",
+        // Slice E.2 added confirmation.declined for mechanical confirmation and user.input for the
+        // RequestUserInput runtime; the MCP slice added nothing.
+        "confirmation.declined",
         "effect.denied",
         "effect.rejected",
         "external.input",
         "message.sent",
         "peer.message",
-        // Slice E.2 added user.input for the RequestUserInput runtime; the MCP slice added nothing.
         "user.input",
       ],
       "the Event vocabulary carries only kernel kinds - no MCP arm",

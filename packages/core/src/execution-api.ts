@@ -285,6 +285,16 @@ export type { UserInputRequest, UserInputRequestState } from "./execution/user-i
 export { isOpenUserInputRequest } from "./execution/user-input-request.ts";
 export type { SubmitUserInputInput, SubmitUserInputReceipt } from "./runtime/effect-processor.ts";
 
+export type {
+  ConfirmationPolicy,
+  ConfirmationPolicyRequest,
+  ConfirmationRequirement,
+} from "./ports/confirmation-policy.ts";
+export { confirmationNotRequired } from "./ports/confirmation-policy.ts";
+export type { ConfirmationRequest, ConfirmationRequestState } from "./execution/confirmation-request.ts";
+export { isPendingConfirmation, proposalDigest } from "./execution/confirmation-request.ts";
+export type { ResolveConfirmationInput, ResolveConfirmationReceipt } from "./runtime/effect-processor.ts";
+
 // -- events ------------------------------------------------------------------
 export type {
   DeliveredEvent,
@@ -302,6 +312,7 @@ export type {
   ChildCompletedBody,
   ChildFailedBody,
   ChildSpawnedBody,
+  ConfirmationDeclinedBody,
   EffectDeniedBody,
   EffectRejectedBody,
   EventBodies,

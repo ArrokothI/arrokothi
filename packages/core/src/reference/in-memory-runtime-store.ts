@@ -15,6 +15,7 @@ import type { EffectId, PendingOperationId } from "../effects/ids.ts";
 import type { EffectJournalEntry } from "../effects/journal.ts";
 import type { PendingOperation } from "../effects/pending.ts";
 import type { CancellationRequest } from "../execution/cancellation-request.ts";
+import type { ConfirmationRequest } from "../execution/confirmation-request.ts";
 import type { ChildExecutionLink } from "../execution/child-link.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
@@ -61,6 +62,7 @@ interface RuntimeState {
   peerRequestLinks: Map<string, PeerRequestLink>;
   cancellationRequests: Map<string, CancellationRequest>;
   userInputRequests: Map<string, UserInputRequest>;
+  confirmationRequests: Map<string, ConfirmationRequest>;
 }
 
 function emptyState(): RuntimeState {
@@ -78,6 +80,7 @@ function emptyState(): RuntimeState {
     peerRequestLinks: new Map(),
     cancellationRequests: new Map(),
     userInputRequests: new Map(),
+    confirmationRequests: new Map(),
   };
 }
 
@@ -373,6 +376,30 @@ function makeTransaction(state: RuntimeState): RuntimeTransaction {
       },
     },
 
+    confirmationRequests: {
+      async insert(request) {
+        if (state.confirmationRequests.has(request.confirmationId)) {
+          throw new Error(`confirmation request ${request.confirmationId} already exists`);
+        }
+        state.confirmationRequests.set(request.confirmationId, structuredClone(request));
+      },
+      async get(confirmationId) {
+        const stored = state.confirmationRequests.get(confirmationId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+      async update(request) {
+        if (!state.confirmationRequests.has(request.confirmationId)) {
+          throw new Error(`unknown confirmation request ${request.confirmationId}`);
+        }
+        state.confirmationRequests.set(request.confirmationId, structuredClone(request));
+      },
+      async listByExecution(executionId) {
+        return structuredClone(
+          [...state.confirmationRequests.values()].filter((request) => request.executionId === executionId),
+        );
+      },
+    },
+
     effectJournal: {
       async append(draft) {
         const list = state.effectJournal.get(draft.executionId) ?? [];
@@ -518,6 +545,21 @@ export class InMemoryRuntimeStore implements RuntimeStore {
 
   async listOpenUserInputRequests(): Promise<readonly UserInputRequest[]> {
     return structuredClone([...this.state.userInputRequests.values()].filter((request) => request.state === "open"));
+  }
+
+  async readConfirmationRequest(confirmationId: string): Promise<ConfirmationRequest | undefined> {
+    const stored = this.state.confirmationRequests.get(confirmationId);
+    return stored ? structuredClone(stored) : undefined;
+  }
+
+  async listConfirmationRequests(executionId: ExecutionId): Promise<readonly ConfirmationRequest[]> {
+    return structuredClone(
+      [...this.state.confirmationRequests.values()].filter((request) => request.executionId === executionId),
+    );
+  }
+
+  async listPendingConfirmations(): Promise<readonly ConfirmationRequest[]> {
+    return structuredClone([...this.state.confirmationRequests.values()].filter((request) => request.state === "pending"));
   }
 
   /** Journal entries for one Effect, across Executions. Diagnostics and conformance assertions. */

@@ -33,6 +33,7 @@ import { createCancellationRequest, markCancellationApplied } from "../../execut
 import { createChildExecutionLink, markChildLinkSettled } from "../../execution/child-link.ts";
 import { createPeerRequestLink, markPeerRequestLinkSettled } from "../../execution/peer-request-link.ts";
 import { createUserInputRequest, markUserInputResponded } from "../../execution/user-input-request.ts";
+import { createConfirmationRequest, markConfirmationApproved } from "../../execution/confirmation-request.ts";
 import { consumeSpawnCredit, createLineageSpawnBudget } from "../../execution/structural-budget.ts";
 import { createEffectiveOperationAuthority } from "../../operations/authority.ts";
 import type { EventEnvelope, EventId } from "../../interaction/event-envelope.ts";
@@ -620,6 +621,49 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
         });
         assertEqual((await store.readUserInputRequest("uir_1"))?.state, "responded", "a response marks it responded");
         assertEqual((await store.listOpenUserInputRequests()).length, 0, "and it leaves the open set");
+      },
+    },
+    {
+      name: "a confirmation request binds one exact proposal + digest, resolved once (Slice E.2)",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        assertEqual((await store.listPendingConfirmations()).length, 0, "none pending by default");
+        const request = createConfirmationRequest({
+          confirmationId: "cnf_1",
+          executionId: EXECUTION,
+          effectId: "eff_trade" as EffectId,
+          effectKind: "use_capability",
+          pendingOperationId: "pop_trade" as PendingOperationId,
+          correlationId: "t1",
+          proposal: {
+            kind: "use_capability",
+            capability: "world.trade" as never,
+            operation: "execute" as never,
+            input: { asset: "BTC", qty: 1 },
+          },
+          reason: "a live trade",
+          createdAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.confirmationRequests.insert(request));
+
+        const stored = await store.readConfirmationRequest("cnf_1");
+        assertEqual(stored?.state, "pending", "a fresh request is pending");
+        assertTrue(
+          typeof stored?.proposalDigest === "string" && stored.proposalDigest.length > 0,
+          "it carries a canonical digest of the exact proposal",
+        );
+        assertEqual((await store.listConfirmationRequests(EXECUTION)).length, 1, "listable by execution");
+        assertEqual((await store.listPendingConfirmations()).length, 1, "and discoverable while pending");
+        assertEqual((await store.listEffectJournal(EXECUTION)).length, 0, "the record itself journals no Effect");
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.confirmationRequests.get("cnf_1");
+          await tx.confirmationRequests.update(markConfirmationApproved(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        assertEqual((await store.readConfirmationRequest("cnf_1"))?.state, "approved", "a decision resolves it once");
+        assertEqual((await store.listPendingConfirmations()).length, 0, "and it leaves the pending set");
       },
     },
     {

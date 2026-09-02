@@ -38,6 +38,8 @@ import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { ExecutionDefinition } from "../definitions/types.ts";
 import type { CancellationRequest } from "../execution/cancellation-request.ts";
 import { createCancellationRequest, markCancellationApplied } from "../execution/cancellation-request.ts";
+import type { ConfirmationRequest } from "../execution/confirmation-request.ts";
+import { markConfirmationAbandoned } from "../execution/confirmation-request.ts";
 import type { ChildExecutionLink } from "../execution/child-link.ts";
 import { markChildLinkAbandoned, markChildLinkSettled } from "../execution/child-link.ts";
 import type { PeerRequestLink } from "../execution/peer-request-link.ts";
@@ -79,6 +81,8 @@ import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
 import { denyAllEffects } from "../ports/effect-authorizer.ts";
+import type { ConfirmationPolicy } from "../ports/confirmation-policy.ts";
+import { confirmationNotRequired } from "../ports/confirmation-policy.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import { microtaskInlineWaitBudget } from "../ports/inline-wait.ts";
 import type { Clock } from "../ports/clock.ts";
@@ -96,6 +100,8 @@ import { buildActivationInput, validateActivationOutcome } from "./activation.ts
 import type { ControllerRegistry } from "./controller-registry.ts";
 import type {
   EffectDispatchRecord,
+  ResolveConfirmationInput,
+  ResolveConfirmationReceipt,
   SettleEffectInput,
   SettleEffectReceipt,
   SubmitUserInputInput,
@@ -128,6 +134,14 @@ export interface HarnessOptions {
    * allowed it" must never look the same.
    */
   readonly authorizer?: EffectAuthorizer;
+  /**
+   * The exact-payload mechanical-confirmation gate.
+   *
+   * Omitting it means no Effect requires confirmation - the correct baseline, not a stub. Unlike the
+   * authorizer's fail-closed default, this default is permissive because confirmation is an optional
+   * *extra* gate that runs strictly after authorization.
+   */
+  readonly confirmationPolicy?: ConfirmationPolicy;
   /**
    * Where capability-operation consequentiality is declared.
    *
@@ -293,6 +307,9 @@ export class Harness {
       hasController: (kind) => options.controllers.has(kind),
       // Fail closed. An unconfigured Harness denies every Effect rather than permitting them.
       authorizer: options.authorizer ?? denyAllEffects,
+      // Permissive default: confirmation is an optional extra gate, so an unconfigured workload pays
+      // only one branch per dispatchable Effect.
+      confirmationPolicy: options.confirmationPolicy ?? confirmationNotRequired,
       // Fail conservative. An unconfigured catalog classifies nothing, and nothing classified
       // means every capability operation is treated as consequential.
       catalog: options.capabilityCatalog ?? emptyCapabilityCatalog,
@@ -504,6 +521,34 @@ export class Harness {
   /** Every currently-open user-input request, so an application/UI can discover pending questions. */
   async openUserInputRequests(): Promise<readonly UserInputRequest[]> {
     return this.options.store.listOpenUserInputRequests();
+  }
+
+  /**
+   * Resolves one pending exact-payload mechanical confirmation with a trusted `approve` / `decline`.
+   *
+   * A trusted runtime entry point at the same level as `settleEffect` / `submitUserInput`. The
+   * `confirmationId` grants nothing, the decision is never free prose, and approval never widens or
+   * replaces authority: an approved dispatch re-checks the *current* authority ceiling on the stored
+   * exact payload before it runs, so an old approval cannot override a revocation that happened while
+   * it waited. A duplicate approval cannot dispatch twice; an approve/decline race linearizes to one
+   * decision.
+   */
+  async resolveConfirmation(input: ResolveConfirmationInput): Promise<ResolveConfirmationReceipt> {
+    return this.effects.resolveConfirmation(input);
+  }
+
+  /** Every confirmation request one Execution's Effects triggered. Read-only diagnostics. */
+  async confirmationRequestsOf(executionId: ExecutionId): Promise<readonly ConfirmationRequest[]> {
+    return this.options.store.listConfirmationRequests(executionId);
+  }
+
+  async confirmationRequest(confirmationId: string): Promise<ConfirmationRequest | undefined> {
+    return this.options.store.readConfirmationRequest(confirmationId);
+  }
+
+  /** Every currently-pending confirmation, so an application/UI can discover what needs a decision. */
+  async pendingConfirmations(): Promise<readonly ConfirmationRequest[]> {
+    return this.options.store.listPendingConfirmations();
   }
 
   /**
@@ -1030,16 +1075,45 @@ export class Harness {
     at: string,
     reason: string,
   ): Promise<void> {
-    // Keep the no-feature terminal path cheap: if no live cross-Execution or user-input operation
-    // exists, do not touch any feature-specific facet. The pending-operation facet is the shared
-    // dependency index.
-    const pendingDependencies = (await tx.pendingOperations.listByExecution(executionId)).filter(
-      (operation) =>
-        operation.status === "pending" &&
-        (operation.effectKind === "send_message" ||
-          operation.effectKind === "spawn_execution" ||
-          operation.effectKind === "request_user_input"),
+    // Keep the no-feature terminal path cheap: if no live cross-Execution, user-input, or gated
+    // operation exists, do not touch any feature-specific facet. The pending-operation facet is the
+    // shared dependency index; a gated confirmation is the only persisted `not_dispatched` operation.
+    const allPending = (await tx.pendingOperations.listByExecution(executionId)).filter(
+      (operation) => operation.status === "pending",
     );
+    const pendingDependencies = allPending.filter(
+      (operation) =>
+        operation.effectKind === "send_message" ||
+        operation.effectKind === "spawn_execution" ||
+        operation.effectKind === "request_user_input",
+    );
+    const gatedOperations = allPending.filter((operation) => operation.dispatch === "not_dispatched");
+
+    if (gatedOperations.length > 0) {
+      // A confirmation still pending when its Execution terminalizes can never be dispatched: the
+      // Effect PendingOperation and the ConfirmationRequest are both abandoned, and a late
+      // approve/decline does nothing (both resolve paths re-check the requester's lifecycle).
+      const gatedById = new Map(gatedOperations.map((operation) => [operation.pendingOperationId, operation]));
+      for (const confirmation of await tx.confirmationRequests.listByExecution(executionId)) {
+        if (confirmation.state !== "pending") continue;
+        const pending = gatedById.get(confirmation.pendingOperationId);
+        if (pending !== undefined) {
+          await tx.pendingOperations.update(markAbandoned(pending, at));
+          await tx.effectJournal.append({
+            effectId: confirmation.effectId,
+            executionId,
+            effectKind: confirmation.effectKind,
+            phase: "abandoned",
+            activationId: null,
+            pendingOperationId: pending.pendingOperationId,
+            at,
+            detail: { reason, confirmationId: confirmation.confirmationId },
+          });
+        }
+        await tx.confirmationRequests.update(markConfirmationAbandoned(confirmation, at));
+      }
+    }
+
     if (pendingDependencies.length === 0) return;
     const pendingById = new Map(pendingDependencies.map((operation) => [operation.pendingOperationId, operation]));
 

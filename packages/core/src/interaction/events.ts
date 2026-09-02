@@ -21,6 +21,7 @@
  *   message.sent           a `SendMessage` was admitted/persisted for its destination (not processed)
  *   peer.message           another Execution sent this one a message (fresh, or a correlated reply)
  *   user.input             a trusted response to a `RequestUserInput` Effect; runtime-established
+ *   confirmation.declined  a human declined an exact-payload mechanical confirmation; nothing ran
  *   external.input         an observation delivered from outside the kernel
  *
  * The three capability outcomes are separate kinds rather than a status field so that a controller
@@ -42,12 +43,14 @@
  * is the *recipient's* observation; a reply to an `ask` is also a `peer.message`, carrying the
  * asker's original correlation so its exact PendingOperation settles.
  *
- * `user.input` arrives with Slice E.2's `RequestUserInput` runtime. It is a *runtime-established*
- * correlated result: it settles one exact pending `RequestUserInput` Effect and carries enough
- * runtime truth to identify the request, the PendingOperation, and the validated value. It is
- * deliberately distinct from `external.input`, which is an application observation and is externally
- * mintable through the generic delivery path - a `user.input` is not deliverable that way. Timers
- * remain absent.
+ * `user.input` and `confirmation.declined` arrive with Slice E.2. `user.input` is a
+ * *runtime-established* correlated result: it settles one exact pending `RequestUserInput` Effect and
+ * carries enough runtime truth to identify the request, the PendingOperation, and the validated
+ * value. It is deliberately distinct from `external.input`, which is an application observation and
+ * is externally mintable through the generic delivery path - a `user.input` is not deliverable that
+ * way. `confirmation.declined` settles one gated Effect's dependency when a human declines its
+ * exact-payload confirmation - distinct from `effect.denied` (policy said no) and from a capability
+ * failure (nothing dispatched at all). Timers remain absent.
  *
  * Nothing here records *how fast* an Effect completed. A body field like "was this inline?" would
  * make the fast and slow paths semantically distinguishable, which is precisely the property the
@@ -76,6 +79,7 @@ export type EventKind =
   | "message.sent"
   | "peer.message"
   | "user.input"
+  | "confirmation.declined"
   | "external.input";
 
 export const EVENT_KINDS: readonly EventKind[] = [
@@ -91,6 +95,7 @@ export const EVENT_KINDS: readonly EventKind[] = [
   "message.sent",
   "peer.message",
   "user.input",
+  "confirmation.declined",
   "external.input",
 ];
 
@@ -114,6 +119,7 @@ export const EFFECT_RESULT_EVENT_KINDS: readonly EventKind[] = [
   "child.cancelled",
   "message.sent",
   "user.input",
+  "confirmation.declined",
 ];
 
 /**
@@ -262,6 +268,21 @@ export interface UserInputBody extends EffectResultFields {
 }
 
 /**
+ * A human declined an exact-payload mechanical confirmation.
+ *
+ * Runtime-established. It settles the gated Effect's dependency and is deliberately distinct from
+ * `effect.denied` (policy refused) and from a capability failure (nothing was dispatched at all).
+ * The controller decides what to do next; approval itself is never a controller Event.
+ */
+export interface ConfirmationDeclinedBody extends EffectResultFields {
+  readonly pendingOperationId: PendingOperationId;
+  /** The runtime-owned `ConfirmationRequest` this answers. */
+  readonly confirmationId: string;
+  /** The canonical digest of the exact payload that was declined. */
+  readonly proposalDigest: string;
+}
+
+/**
  * An observation from outside the kernel: application input, a user turn, a system signal.
  *
  * `label` is application vocabulary, not kernel vocabulary. It lets an application distinguish its
@@ -285,6 +306,7 @@ export interface EventBodies {
   readonly "message.sent": MessageSentBody;
   readonly "peer.message": PeerMessageBody;
   readonly "user.input": UserInputBody;
+  readonly "confirmation.declined": ConfirmationDeclinedBody;
   readonly "external.input": ExternalInputBody;
 }
 
@@ -354,6 +376,13 @@ export function eventBodyIssues(kind: EventKind, body: unknown): readonly EventB
     requireString(value["pendingOperationId"], "body.pendingOperationId", issues);
     requireString(value["requestId"], "body.requestId", issues);
     if (!("value" in value)) issues.push({ path: "body.value", message: "expected a response value" });
+    return issues;
+  }
+
+  if (kind === "confirmation.declined") {
+    requireString(value["pendingOperationId"], "body.pendingOperationId", issues);
+    requireString(value["confirmationId"], "body.confirmationId", issues);
+    requireString(value["proposalDigest"], "body.proposalDigest", issues);
     return issues;
   }
 

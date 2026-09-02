@@ -58,14 +58,17 @@ describe("the Event vocabulary", () => {
         "child.completed",
         "child.failed",
         "child.spawned",
+        // Slice E.2: mechanical confirmation owns `confirmation.declined` (a human declining an exact
+        // payload, distinct from `effect.denied`).
+        "confirmation.declined",
         "effect.denied",
         "effect.rejected",
         "external.input",
         // Slice E.1: the `SendMessage` runtime owns these, and child cancellation adds `child.cancelled`.
         "message.sent",
         "peer.message",
-        // Slice E.2: the `RequestUserInput` runtime owns this - a trusted, runtime-established
-        // response, distinct from the externally-mintable `external.input`.
+        // Slice E.2: `RequestUserInput` owns `user.input` - a trusted, runtime-established response,
+        // distinct from the externally-mintable `external.input`.
         "user.input",
       ],
       "kinds for Effects that later slices own arrive with those Effects, not before them",

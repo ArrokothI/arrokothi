@@ -18,6 +18,11 @@ export type {
   MessageGrantRule,
   SpawnGrantRule,
 } from "./allow-list-authorizer.ts";
+export { createCapabilityConfirmationPolicy } from "./confirmation-policy.ts";
+export type {
+  CapabilityConfirmationPolicyOptions,
+  CapabilityConfirmationRule,
+} from "./confirmation-policy.ts";
 export { createCapabilityCatalog } from "./capability-catalog.ts";
 export type { CapabilityOperationDescriptorInput } from "./capability-catalog.ts";
 export {

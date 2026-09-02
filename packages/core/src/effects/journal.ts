@@ -3,16 +3,18 @@
  *
  * Its whole job is to keep apart the states that a naive implementation collapses:
  *
- *   requested          a controller asked
- *   authorized         policy allowed it
- *   denied             policy refused it
- *   rejected           the request was never valid or dispatchable at all
- *   dispatch_started   the runtime is about to do something it cannot take back
- *   completed          the world said it worked
- *   failed             the world said it definitely did not
- *   unknown_outcome    the world did not say
- *   replayed           a duplicate request was answered from the prior authoritative outcome
- *   abandoned          the Execution went terminal before the result could be delivered
+ *   requested             a controller asked
+ *   authorized            policy allowed it
+ *   denied                policy refused it
+ *   rejected              the request was never valid or dispatchable at all
+ *   confirmation_pending  authorized, but an exact-payload confirmation gates dispatch (Slice E.2)
+ *   declined              a human declined the exact-payload confirmation; nothing dispatched
+ *   dispatch_started      the runtime is about to do something it cannot take back
+ *   completed             the world said it worked
+ *   failed                the world said it definitely did not
+ *   unknown_outcome       the world did not say
+ *   replayed              a duplicate request was answered from the prior authoritative outcome
+ *   abandoned             the Execution went terminal before the result could be delivered
  *
  * `requested != authorized != dispatched != completed` is the entire point. In particular
  * `dispatch_started` is committed *before* a consequential call, so a crash in the window leaves
@@ -34,6 +36,10 @@ export type EffectJournalPhase =
   | "authorized"
   | "denied"
   | "rejected"
+  /** Slice E.2: authorized, but an exact-payload mechanical confirmation gates dispatch. */
+  | "confirmation_pending"
+  /** Slice E.2: a human declined the exact-payload confirmation. Distinct from `denied`. */
+  | "declined"
   | "dispatch_started"
   | "completed"
   | "failed"
@@ -48,6 +54,8 @@ export const EFFECT_JOURNAL_PHASES: readonly EffectJournalPhase[] = [
   "authorized",
   "denied",
   "rejected",
+  "confirmation_pending",
+  "declined",
   "dispatch_started",
   "completed",
   "failed",
@@ -61,6 +69,7 @@ export const EFFECT_JOURNAL_PHASES: readonly EffectJournalPhase[] = [
 export const TERMINAL_EFFECT_PHASES: readonly EffectJournalPhase[] = [
   "denied",
   "rejected",
+  "declined",
   "completed",
   "failed",
   "cancelled",

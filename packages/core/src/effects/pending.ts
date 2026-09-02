@@ -41,8 +41,21 @@ export type PendingDispatchState = "not_dispatched" | "dispatched";
  * `cancelled` (Slice E.1) is distinct from `failure` on purpose: a `call` parent whose child reached
  * `CANCELLED` settles as `cancelled`, and the runtime must never relabel that as failure merely
  * because the union once lacked the word.
+ *
+ * `declined` and `denied` (Slice E.2) are each distinct from `failure` and `cancelled`. `declined`
+ * is a human declining an exact-payload mechanical confirmation. `denied` is the confirmation's
+ * current-authority re-check refusing an approved payload whose authority was revoked while it
+ * waited. In both cases the Effect never dispatched, and the runtime must not relabel the outcome as
+ * a capability failure.
  */
-export type PendingOutcomeState = "success" | "failure" | "unknown" | "cancelled" | null;
+export type PendingOutcomeState =
+  | "success"
+  | "failure"
+  | "unknown"
+  | "cancelled"
+  | "declined"
+  | "denied"
+  | null;
 
 export interface PendingOperation {
   readonly pendingOperationId: PendingOperationId;

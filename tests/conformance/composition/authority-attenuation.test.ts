@@ -162,6 +162,9 @@ describe("child authority attenuation", () => {
       readUserInputRequest: RuntimeStore["readUserInputRequest"] = (id) => this.inner.readUserInputRequest(id);
       listUserInputRequests: RuntimeStore["listUserInputRequests"] = (id) => this.inner.listUserInputRequests(id);
       listOpenUserInputRequests: RuntimeStore["listOpenUserInputRequests"] = () => this.inner.listOpenUserInputRequests();
+      readConfirmationRequest: RuntimeStore["readConfirmationRequest"] = (id) => this.inner.readConfirmationRequest(id);
+      listConfirmationRequests: RuntimeStore["listConfirmationRequests"] = (id) => this.inner.listConfirmationRequests(id);
+      listPendingConfirmations: RuntimeStore["listPendingConfirmations"] = () => this.inner.listPendingConfirmations();
     }
 
     const store = new NarrowingStore();

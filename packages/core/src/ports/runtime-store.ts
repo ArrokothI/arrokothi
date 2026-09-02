@@ -34,6 +34,7 @@ import type { EffectId, IdempotencyKey, PendingOperationId } from "../effects/id
 import type { PendingOperation } from "../effects/pending.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
 import type { CancellationRequest } from "../execution/cancellation-request.ts";
+import type { ConfirmationRequest } from "../execution/confirmation-request.ts";
 import type { ChildExecutionLink } from "../execution/child-link.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
@@ -241,6 +242,22 @@ export interface UserInputRequestFacet {
   listByExecution(executionId: ExecutionId): Promise<readonly UserInputRequest[]>;
 }
 
+/**
+ * Confirmation requests (Slice E.2).
+ *
+ * The runtime-owned record of one pending exact-payload mechanical confirmation. A facet of the same
+ * transaction because "the exact proposal is stored", "the Effect PendingOperation exists", and the
+ * journal entries are one atomic gate - and because resolving one (mark approved/declined, commit
+ * dispatch intent or settle the decline) must commit together or not at all. This is what makes an
+ * approve/decline race linearize to one winner and a duplicate approval unable to dispatch twice.
+ */
+export interface ConfirmationRequestFacet {
+  insert(request: ConfirmationRequest): Promise<void>;
+  get(confirmationId: string): Promise<ConfirmationRequest | undefined>;
+  update(request: ConfirmationRequest): Promise<void>;
+  listByExecution(executionId: ExecutionId): Promise<readonly ConfirmationRequest[]>;
+}
+
 export interface RuntimeTransaction {
   readonly executions: ExecutionRecordFacet;
   readonly mailboxes: MailboxFacet;
@@ -255,6 +272,7 @@ export interface RuntimeTransaction {
   readonly peerRequestLinks: PeerRequestLinkFacet;
   readonly cancellationRequests: CancellationRequestFacet;
   readonly userInputRequests: UserInputRequestFacet;
+  readonly confirmationRequests: ConfirmationRequestFacet;
 }
 
 export interface RuntimeStore {
@@ -312,6 +330,12 @@ export interface RuntimeStore {
   listUserInputRequests(executionId: ExecutionId): Promise<readonly UserInputRequest[]>;
   /** Every currently-open user-input request, for an application/UI to discover. Read-only. */
   listOpenUserInputRequests(): Promise<readonly UserInputRequest[]>;
+  /** One confirmation request by its runtime-minted id. Read-only; a controller never receives one. */
+  readConfirmationRequest(confirmationId: string): Promise<ConfirmationRequest | undefined>;
+  /** Every confirmation request one Execution's Effects triggered. Read-only diagnostics. */
+  listConfirmationRequests(executionId: ExecutionId): Promise<readonly ConfirmationRequest[]>;
+  /** Every currently-pending confirmation, for an application/UI to discover. Read-only. */
+  listPendingConfirmations(): Promise<readonly ConfirmationRequest[]>;
 }
 
 export class UnknownControllerResumptionError extends Error {

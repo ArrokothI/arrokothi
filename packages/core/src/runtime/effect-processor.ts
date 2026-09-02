@@ -88,6 +88,14 @@ import { createExecutionContext, transitionContext } from "../execution/context.
 import type { ActivationId, ExecutionId } from "../execution/ids.ts";
 import { executionId as toExecutionId } from "../execution/ids.ts";
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
+import type { ConfirmationRequest, ConfirmationRequestState } from "../execution/confirmation-request.ts";
+import {
+  createConfirmationRequest,
+  markConfirmationAbandoned,
+  markConfirmationApproved,
+  markConfirmationDeclined,
+  proposalDigest,
+} from "../execution/confirmation-request.ts";
 import { createPeerRequestLink, markPeerRequestLinkSettled } from "../execution/peer-request-link.ts";
 import { canConsumeSpawnCredit, consumeSpawnCredit } from "../execution/structural-budget.ts";
 import { createUserInputRequest, markUserInputAbandoned, markUserInputResponded } from "../execution/user-input-request.ts";
@@ -102,6 +110,8 @@ import { nowIso } from "../ports/clock.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
 import { UnknownCapabilityError } from "../ports/capability-executor.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
+import type { ConfirmationPolicy, ConfirmationRequirement } from "../ports/confirmation-policy.ts";
+import { confirmationNotRequired, confirmationRequirementIssues } from "../ports/confirmation-policy.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
 import type { IdGenerator } from "../ports/ids.ts";
@@ -199,11 +209,58 @@ export type SubmitUserInputReceipt =
       readonly issues?: readonly { readonly path: string; readonly message: string }[];
     };
 
+export interface ResolveConfirmationInput {
+  /** The runtime-minted `ConfirmationRequest` id. Correlation/integrity data, never an authority. */
+  readonly confirmationId: string;
+  /** A trusted decision. Never free prose - natural-language-to-decision resolution is above this. */
+  readonly decision: "approve" | "decline";
+}
+
+export type ResolveConfirmationReceipt =
+  /** Approved, the current authority still permits it, and the stored exact payload was dispatched. */
+  | {
+      readonly status: "dispatched";
+      readonly confirmationId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly phase: EffectJournalPhase;
+      readonly settledInline: boolean;
+    }
+  /** Approved, but the current authority now denies it. Nothing dispatched; an ordinary denial. */
+  | {
+      readonly status: "denied";
+      readonly confirmationId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly code: string;
+      readonly message: string;
+    }
+  /** Declined. Nothing dispatched; the dependency settled and one `confirmation.declined` Event routed. */
+  | {
+      readonly status: "declined";
+      readonly confirmationId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly eventId: EventId;
+      readonly wokeExecution: boolean;
+    }
+  /** An approve/decline race: another decision already resolved this confirmation. */
+  | { readonly status: "already_resolved"; readonly confirmationId: string; readonly state: ConfirmationRequestState }
+  /** The requesting Execution terminalized first; nothing dispatched. */
+  | { readonly status: "abandoned"; readonly confirmationId: string }
+  | { readonly status: "unknown_confirmation"; readonly confirmationId: string };
+
 export interface EffectProcessorDeps {
   readonly store: RuntimeStore;
   readonly clock: Clock;
   readonly ids: IdGenerator;
   readonly authorizer: EffectAuthorizer;
+  /**
+   * The exact-payload mechanical-confirmation gate, evaluated strictly after an `allow` and strictly
+   * before dispatch. Defaults to `confirmationNotRequired`, so an unconfigured workload pays only
+   * one branch per dispatchable Effect.
+   */
+  readonly confirmationPolicy: ConfirmationPolicy;
   /** Resolves the Definition a `SpawnExecution` names. Read-only; a child pins whatever resolves. */
   readonly definitions: DefinitionStore;
   /** Whether a controller is registered for a kind, so a child with no controller is refused early. */
@@ -534,7 +591,490 @@ export class EffectProcessor {
       });
     }
 
+    // The confirmation gate, strictly after `allow` and strictly before dispatch. If it fires, the
+    // exact payload is persisted and nothing runs until a trusted approve.
+    const gated = await this.gateOrNull(input, proposal, effectId, correlationId, requestedAt, decision.grantId);
+    if (gated) return gated;
+
     return this.dispatchCapability(input, proposal as UseCapabilityProposal, effectId, correlationId, decision);
+  }
+
+  // -- mechanical confirmation gate --------------------------------------
+
+  /**
+   * Consults the confirmation policy for one authorized Effect, and gates it when required.
+   *
+   * Returns `null` to proceed to ordinary dispatch, or an `EffectDispatchRecord` when the Effect is
+   * now waiting for an exact-payload confirmation. A policy that throws or answers malformedly fails
+   * *conservative* - the Effect is gated rather than dispatched unreviewed - mirroring the
+   * authorizer failing closed toward deny.
+   */
+  private async gateOrNull(
+    input: ProcessEffectsInput,
+    proposal: EffectProposal,
+    effectId: EffectId,
+    correlationId: string,
+    requestedAt: string,
+    grantId: string,
+  ): Promise<EffectDispatchRecord | null> {
+    let requirement: unknown;
+    try {
+      requirement = await this.deps.confirmationPolicy.requires({
+        executionId: input.context.executionId,
+        ownerExecutionId: input.context.ownerExecutionId,
+        rootExecutionId: input.context.rootExecutionId,
+        definition: input.definition,
+        activationId: input.activationId,
+        effectId,
+        effectKind: proposal.kind,
+        proposal,
+        grantId,
+        requestedAt,
+      });
+    } catch (error) {
+      requirement = {
+        required: true,
+        reason: `confirmation policy error: ${error instanceof Error ? error.message : String(error)}`,
+      };
+    }
+    const issues = confirmationRequirementIssues(requirement);
+    const resolved: ConfirmationRequirement =
+      issues.length > 0
+        ? { required: true, reason: `invalid confirmation requirement: ${issues.map((i) => `${i.path}: ${i.message}`).join("; ")}` }
+        : (requirement as ConfirmationRequirement);
+    if (!resolved.required) return null;
+    return this.gateForConfirmation(input, proposal, effectId, correlationId, resolved.reason ?? null);
+  }
+
+  /**
+   * Persists the exact payload, an Effect PendingOperation (not yet dispatched), and a
+   * ConfirmationRequest - one transaction, so the gate is atomic.
+   */
+  private async gateForConfirmation(
+    input: ProcessEffectsInput,
+    proposal: EffectProposal,
+    effectId: EffectId,
+    correlationId: string,
+    reason: string | null,
+  ): Promise<EffectDispatchRecord> {
+    const executionId = input.context.executionId;
+    const digest = proposalDigest(proposal);
+
+    type Commit =
+      | { readonly kind: "abandoned" }
+      | { readonly kind: "gated"; readonly pendingOperationId: PendingOperationId; readonly confirmationId: string };
+
+    const commit = await this.deps.store.transact(executionId, async (tx): Promise<Commit> => {
+      const now = nowIso(this.deps.clock);
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, now)) return { kind: "abandoned" };
+      const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+      const confirmationId = this.deps.ids.next(ID_PREFIXES.confirmationRequest);
+
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: proposal.kind,
+        phase: "authorized",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { confirmationRequired: true, confirmationId, proposalDigest: digest, ...(reason ? { reason } : {}) },
+      });
+
+      // Deliberately NOT markDispatched: the concrete payload is authorized, but its dispatch is
+      // gated on a trusted approval.
+      const pending = createPendingOperation({
+        pendingOperationId,
+        executionId,
+        effectId,
+        effectKind: proposal.kind,
+        correlationId,
+        causationId: input.activationId,
+        idempotencyKey: `confirm:${effectId}` as IdempotencyKey,
+        createdAt: now,
+        // A human may take arbitrarily long, and may never decide.
+        deadline: null,
+      });
+      await tx.pendingOperations.insert(pending);
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: proposal.kind,
+        phase: "confirmation_pending",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { confirmationId, proposalDigest: digest },
+      });
+      await tx.confirmationRequests.insert(
+        createConfirmationRequest({
+          confirmationId,
+          executionId,
+          effectId,
+          effectKind: proposal.kind,
+          pendingOperationId,
+          correlationId,
+          proposal,
+          reason,
+          createdAt: now,
+        }),
+      );
+      return { kind: "gated", pendingOperationId, confirmationId };
+    });
+
+    if (commit.kind === "abandoned") {
+      return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    }
+    return {
+      effectId,
+      effectKind: proposal.kind,
+      correlationId,
+      pendingOperationId: commit.pendingOperationId,
+      phase: "confirmation_pending",
+      settledInline: false,
+    };
+  }
+
+  /**
+   * Resolves one pending exact-payload confirmation.
+   *
+   * A trusted runtime entry point at the same level as `settleEffect` / `submitUserInput`. The
+   * `confirmationId` grants nothing: an internet-facing application authenticates the human/UI before
+   * reaching here, and the decision is a trusted `approve` / `decline`, never free prose.
+   *
+   * ```text
+   * decline   -> ConfirmationRequest declined, PendingOperation settled `declined`, one correlated
+   *              `confirmation.declined` Event; nothing dispatched
+   * approve   -> ConfirmationRequest approved (linearization point), then the CURRENT authority is
+   *              re-checked on the STORED proposal:
+   *                still allowed -> dispatch the STORED exact payload through the ordinary path,
+   *                                 reusing the exact PendingOperation; no model turn
+   *                now denied    -> nothing dispatched; an ordinary authorization denial
+   * ```
+   *
+   * An approve/decline race linearizes on the ConfirmationRequest state: exactly one call moves it
+   * off `pending`. A duplicate approval therefore cannot dispatch twice. A dispatch intent already
+   * committed cannot be rolled back by a later contradictory decision.
+   */
+  async resolveConfirmation(input: ResolveConfirmationInput): Promise<ResolveConfirmationReceipt> {
+    const existing = await this.deps.store.readConfirmationRequest(input.confirmationId);
+    if (!existing) return { status: "unknown_confirmation", confirmationId: input.confirmationId };
+    if (existing.state !== "pending") {
+      return { status: "already_resolved", confirmationId: input.confirmationId, state: existing.state };
+    }
+    return input.decision === "decline" ? this.declineConfirmation(existing) : this.approveConfirmation(existing);
+  }
+
+  private async declineConfirmation(request: ConfirmationRequest): Promise<ResolveConfirmationReceipt> {
+    const at = nowIso(this.deps.clock);
+    const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+
+    type Commit =
+      | { readonly done: true; readonly receipt: ResolveConfirmationReceipt }
+      | {
+          readonly done: false;
+          readonly executionId: ExecutionId;
+          readonly pendingOperationId: PendingOperationId;
+          readonly routed: EventRoutingResult;
+        };
+
+    const result = await this.deps.store.transact(request.executionId, async (tx): Promise<Commit> => {
+      const current = await tx.confirmationRequests.get(request.confirmationId);
+      if (!current || current.state !== "pending") {
+        return { done: true, receipt: { status: "already_resolved", confirmationId: request.confirmationId, state: current?.state ?? "abandoned" } };
+      }
+      const operation = await tx.pendingOperations.get(current.pendingOperationId);
+      if (!operation || operation.status !== "pending") {
+        await tx.confirmationRequests.update(markConfirmationAbandoned(current, at));
+        return { done: true, receipt: { status: "abandoned", confirmationId: request.confirmationId } };
+      }
+      const context = await tx.executions.get(request.executionId);
+      const cancelRequest = await tx.cancellationRequests.get(request.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle) || cancelRequest?.state === "pending") {
+        await tx.pendingOperations.update(markAbandoned(operation, at));
+        await tx.confirmationRequests.update(markConfirmationAbandoned(current, at));
+        await this.journal(tx, {
+          effectId: current.effectId,
+          executionId: request.executionId,
+          effectKind: current.effectKind,
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: operation.pendingOperationId,
+          at,
+          detail: { reason: "execution unavailable", confirmationId: current.confirmationId },
+        });
+        return { done: true, receipt: { status: "abandoned", confirmationId: request.confirmationId } };
+      }
+
+      await tx.confirmationRequests.update(markConfirmationDeclined(current, at));
+      await this.journal(tx, {
+        effectId: current.effectId,
+        executionId: request.executionId,
+        effectKind: current.effectKind,
+        phase: "declined",
+        activationId: null,
+        pendingOperationId: operation.pendingOperationId,
+        at,
+        detail: { confirmationId: current.confirmationId, proposalDigest: current.proposalDigest, resultEventId: eventId },
+      });
+      await tx.pendingOperations.update(markSettled(operation, "declined", eventId, at));
+      const routed = await routeEvent({
+        tx,
+        envelope: {
+          eventId,
+          destination: { executionId: request.executionId },
+          kind: "confirmation.declined",
+          body: {
+            effectId: current.effectId,
+            effectKind: current.effectKind,
+            pendingOperationId: operation.pendingOperationId,
+            confirmationId: current.confirmationId,
+            proposalDigest: current.proposalDigest,
+          },
+          correlationId: current.correlationId,
+          causationId: current.effectId,
+          occurredAt: at,
+        },
+        deliveredAt: at,
+        recordTransition: async (executionId, from, to, when, why) => {
+          await tx.transitions.append({ executionId, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+      return { done: false, executionId: request.executionId, pendingOperationId: operation.pendingOperationId, routed };
+    });
+
+    if (result.done) return result.receipt;
+    const woke = result.routed.status === "delivered" && result.routed.wokeExecution;
+    if (woke) await this.deps.wake(result.executionId);
+    return {
+      status: "declined",
+      confirmationId: request.confirmationId,
+      executionId: result.executionId,
+      pendingOperationId: result.pendingOperationId,
+      eventId,
+      wokeExecution: woke,
+    };
+  }
+
+  private async approveConfirmation(request: ConfirmationRequest): Promise<ResolveConfirmationReceipt> {
+    const claimedAt = nowIso(this.deps.clock);
+
+    // Claim the approval atomically. This is the linearization point: exactly one approve/decline
+    // moves the state off `pending`, so a duplicate approval cannot dispatch twice.
+    type Claim =
+      | { readonly ok: true; readonly operation: PendingOperation }
+      | { readonly ok: false; readonly receipt: ResolveConfirmationReceipt };
+    const claim = await this.deps.store.transact(request.executionId, async (tx): Promise<Claim> => {
+      const current = await tx.confirmationRequests.get(request.confirmationId);
+      if (!current || current.state !== "pending") {
+        return { ok: false, receipt: { status: "already_resolved", confirmationId: request.confirmationId, state: current?.state ?? "abandoned" } };
+      }
+      const operation = await tx.pendingOperations.get(current.pendingOperationId);
+      if (!operation || operation.status !== "pending" || operation.dispatch === "dispatched") {
+        await tx.confirmationRequests.update(markConfirmationAbandoned(current, claimedAt));
+        return { ok: false, receipt: { status: "abandoned", confirmationId: request.confirmationId } };
+      }
+      const context = await tx.executions.get(request.executionId);
+      const cancelRequest = await tx.cancellationRequests.get(request.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle) || cancelRequest?.state === "pending") {
+        await tx.pendingOperations.update(markAbandoned(operation, claimedAt));
+        await tx.confirmationRequests.update(markConfirmationAbandoned(current, claimedAt));
+        await this.journal(tx, {
+          effectId: current.effectId,
+          executionId: request.executionId,
+          effectKind: current.effectKind,
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: operation.pendingOperationId,
+          at: claimedAt,
+          detail: { reason: "execution unavailable", confirmationId: current.confirmationId },
+        });
+        return { ok: false, receipt: { status: "abandoned", confirmationId: request.confirmationId } };
+      }
+      // The human approved. The Effect outcome is decided by the CURRENT-authority re-check below.
+      await tx.confirmationRequests.update(markConfirmationApproved(current, claimedAt));
+      return { ok: true, operation };
+    });
+    if (!claim.ok) return claim.receipt;
+
+    const operation = claim.operation;
+    const context = await this.deps.store.readExecution(request.executionId);
+    if (!context || isTerminalLifecycle(context.lifecycle)) {
+      return this.abandonApprovedConfirmation(request, operation, "execution terminal after approval");
+    }
+
+    const resumeActivationId = (operation.causationId ?? request.effectId) as ActivationId;
+    const resumeInput: ProcessEffectsInput = {
+      context,
+      definition: context.definition,
+      activationId: resumeActivationId,
+      proposals: [],
+    };
+
+    // Re-check CURRENT authority on the STORED exact proposal. Approval never widens or replaces
+    // authority - an old approval cannot override a revocation that happened while it waited.
+    if (request.effectKind === "use_capability") {
+      const proposal = request.proposal as UseCapabilityProposal;
+      const ceiling = await this.withinEffectiveAuthority(request.executionId, proposal);
+      if (ceiling !== null) return this.denyApprovedConfirmation(request, operation, ceiling.code, ceiling.message);
+      const decision = await this.decide(resumeInput, proposal, request.effectId, nowIso(this.deps.clock));
+      if (decision.decision === "deny") return this.denyApprovedConfirmation(request, operation, decision.code, decision.message);
+      if (this.deps.capabilities === null) {
+        return this.denyApprovedConfirmation(
+          request,
+          operation,
+          "capability_execution_unavailable",
+          "this deployment has no CapabilityExecutor, so an approved capability still cannot be performed",
+        );
+      }
+      const record = await this.dispatchCapability(resumeInput, proposal, request.effectId, request.correlationId, decision, {
+        pendingOperationId: operation.pendingOperationId,
+        confirmationId: request.confirmationId,
+      });
+      await this.wakeRequesterIfReady(request.executionId);
+      return this.dispatchedReceipt(request, operation, record);
+    }
+
+    if (request.effectKind === "spawn_execution") {
+      const proposal = request.proposal as SpawnExecutionProposal;
+      const decision = await this.decide(resumeInput, proposal, request.effectId, nowIso(this.deps.clock));
+      if (decision.decision === "deny") return this.denyApprovedConfirmation(request, operation, decision.code, decision.message);
+      const record = await this.dispatchSpawn(resumeInput, proposal, request.effectId, request.correlationId, nowIso(this.deps.clock), {
+        pendingOperationId: operation.pendingOperationId,
+        confirmationId: request.confirmationId,
+      });
+      await this.wakeRequesterIfReady(request.executionId);
+      return this.dispatchedReceipt(request, operation, record);
+    }
+
+    if (request.effectKind === "send_message") {
+      const proposal = request.proposal as SendMessageProposal;
+      const decision = await this.decide(resumeInput, proposal, request.effectId, nowIso(this.deps.clock));
+      if (decision.decision === "deny") return this.denyApprovedConfirmation(request, operation, decision.code, decision.message);
+      const record = await this.dispatchSendMessage(resumeInput, proposal, request.effectId, request.correlationId, nowIso(this.deps.clock), {
+        pendingOperationId: operation.pendingOperationId,
+        confirmationId: request.confirmationId,
+      });
+      await this.wakeRequesterIfReady(request.executionId);
+      return this.dispatchedReceipt(request, operation, record);
+    }
+
+    return this.denyApprovedConfirmation(
+      request,
+      operation,
+      "effect_kind_not_confirmable",
+      `effect kind "${request.effectKind}" cannot be dispatched from an approved confirmation in this slice`,
+    );
+  }
+
+  private dispatchedReceipt(
+    request: ConfirmationRequest,
+    operation: PendingOperation,
+    record: EffectDispatchRecord,
+  ): ResolveConfirmationReceipt {
+    return {
+      status: "dispatched",
+      confirmationId: request.confirmationId,
+      executionId: request.executionId,
+      pendingOperationId: operation.pendingOperationId,
+      phase: record.phase,
+      settledInline: record.settledInline,
+    };
+  }
+
+  /**
+   * The confirmed-dispatch path runs outside an Activation, so a result Event that transitioned the
+   * requester WAITING -> READY inside a dispatch transaction still needs to be enqueued. (The
+   * capability path settles through `settle()`, which already enqueues; this covers the
+   * `spawn`/`send` acknowledgements.)
+   */
+  private async wakeRequesterIfReady(executionId: ExecutionId): Promise<void> {
+    const context = await this.deps.store.readExecution(executionId);
+    if (context?.lifecycle === "READY") await this.deps.wake(executionId);
+  }
+
+  /** Approved, but the current authority now denies it: an ordinary denial, nothing dispatched. */
+  private async denyApprovedConfirmation(
+    request: ConfirmationRequest,
+    operation: PendingOperation,
+    code: string,
+    message: string,
+  ): Promise<ResolveConfirmationReceipt> {
+    const at = nowIso(this.deps.clock);
+    const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+
+    const woke = await this.deps.store.transact(request.executionId, async (tx): Promise<ExecutionId | null> => {
+      const current = await tx.pendingOperations.get(operation.pendingOperationId);
+      if (!current || current.status !== "pending") return null;
+      const context = await tx.executions.get(request.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle)) {
+        await tx.pendingOperations.update(markAbandoned(current, at));
+        return null;
+      }
+      await this.journal(tx, {
+        effectId: request.effectId,
+        executionId: request.executionId,
+        effectKind: request.effectKind,
+        phase: "denied",
+        activationId: null,
+        pendingOperationId: operation.pendingOperationId,
+        at,
+        detail: { code, message, confirmationId: request.confirmationId, resultEventId: eventId, reason: "authority changed while confirmation was pending" },
+      });
+      await tx.pendingOperations.update(markSettled(current, "denied", eventId, at));
+      const routed = await routeEvent({
+        tx,
+        envelope: {
+          eventId,
+          destination: { executionId: request.executionId },
+          kind: "effect.denied",
+          body: { effectId: request.effectId, effectKind: request.effectKind, code, message },
+          correlationId: request.correlationId,
+          causationId: request.effectId,
+          occurredAt: at,
+        },
+        deliveredAt: at,
+        recordTransition: async (executionId, from, to, when, why) => {
+          await tx.transitions.append({ executionId, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+      return routed.status === "delivered" && routed.wokeExecution ? request.executionId : null;
+    });
+
+    if (woke) await this.deps.wake(woke);
+    return {
+      status: "denied",
+      confirmationId: request.confirmationId,
+      executionId: request.executionId,
+      pendingOperationId: operation.pendingOperationId,
+      code,
+      message,
+    };
+  }
+
+  private async abandonApprovedConfirmation(
+    request: ConfirmationRequest,
+    operation: PendingOperation,
+    reason: string,
+  ): Promise<ResolveConfirmationReceipt> {
+    const at = nowIso(this.deps.clock);
+    await this.deps.store.transact(request.executionId, async (tx) => {
+      const current = await tx.pendingOperations.get(operation.pendingOperationId);
+      if (current && current.status === "pending") {
+        await tx.pendingOperations.update(markAbandoned(current, at));
+        await this.journal(tx, {
+          effectId: request.effectId,
+          executionId: request.executionId,
+          effectKind: request.effectKind,
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: operation.pendingOperationId,
+          at,
+          detail: { reason, confirmationId: request.confirmationId },
+        });
+      }
+    });
+    return { status: "abandoned", confirmationId: request.confirmationId };
   }
 
   /**
@@ -683,6 +1223,7 @@ export class EffectProcessor {
     effectId: EffectId,
     correlationId: string,
     requestedAt: string,
+    resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
   ): Promise<EffectDispatchRecord> {
     const parent = input.context;
     const parentId = parent.executionId;
@@ -699,6 +1240,11 @@ export class EffectProcessor {
       });
     }
     const grantId = decision.grantId;
+
+    if (resume === undefined) {
+      const gated = await this.gateOrNull(input, proposal, effectId, correlationId, requestedAt, grantId);
+      if (gated) return gated;
+    }
 
     const definition = isDefinitionId(proposal.definitionId)
       ? await this.deps.definitions.getVersion(proposal.definitionId as DefinitionId, proposal.definitionVersion)
@@ -764,7 +1310,8 @@ export class EffectProcessor {
       const childId = toExecutionId(this.deps.ids.next(ID_PREFIXES.execution));
       const childMailboxId = this.deps.ids.next(ID_PREFIXES.mailbox);
       const childAuthorityId = this.deps.ids.next(ID_PREFIXES.operationAuthority);
-      const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+      const pendingOperationId =
+        resume?.pendingOperationId ?? (this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId);
       const awaited = proposal.awaitTerminalResult === true;
 
       await tx.lineageSpawnBudgets.update(consumeSpawnCredit(budget), budget.revision);
@@ -840,7 +1387,8 @@ export class EffectProcessor {
         }),
         at,
       );
-      await tx.pendingOperations.insert(pending);
+      if (resume) await tx.pendingOperations.update(pending);
+      else await tx.pendingOperations.insert(pending);
 
       const grantedDetail = granted.map((ref) => `${ref.capability}/${ref.operation}`);
       await this.journal(tx, {
@@ -1020,6 +1568,7 @@ export class EffectProcessor {
     effectId: EffectId,
     correlationId: string,
     requestedAt: string,
+    resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
   ): Promise<EffectDispatchRecord> {
     const senderId = input.context.executionId;
     const isReply = proposal.inReplyToMessageId !== undefined;
@@ -1034,6 +1583,11 @@ export class EffectProcessor {
       });
     }
     const grantId = decision.grantId;
+
+    if (resume === undefined) {
+      const gated = await this.gateOrNull(input, proposal, effectId, correlationId, requestedAt, grantId);
+      if (gated) return gated;
+    }
 
     type MessageCommit =
       | { readonly kind: "refused"; readonly code: string; readonly message: string }
@@ -1101,7 +1655,8 @@ export class EffectProcessor {
         };
       }
 
-      const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+      const pendingOperationId =
+        resume?.pendingOperationId ?? (this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId);
       const mode = isReply ? "reply" : awaited ? "ask" : "send";
 
       await this.journal(tx, {
@@ -1118,6 +1673,7 @@ export class EffectProcessor {
           messageId,
           mode,
           ...(isReply ? { inReplyToMessageId: replyLink!.messageId } : {}),
+          ...(resume ? { viaConfirmation: resume.confirmationId } : {}),
         },
       });
 
@@ -1136,7 +1692,10 @@ export class EffectProcessor {
         }),
         now,
       );
-      await tx.pendingOperations.insert(pending);
+      // On the confirmed-dispatch path the gated PendingOperation already exists; reuse it so the
+      // controller's correlation stays stable across the confirmation.
+      if (resume) await tx.pendingOperations.update(pending);
+      else await tx.pendingOperations.insert(pending);
       await this.journal(tx, {
         effectId,
         executionId: senderId,
@@ -1409,6 +1968,7 @@ export class EffectProcessor {
     effectId: EffectId,
     correlationId: string,
     decision: Extract<AuthorizationDecision, { decision: "allow" }>,
+    resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
   ): Promise<EffectDispatchRecord> {
     const executionId = input.context.executionId;
     const constraints: AuthorizationConstraints = decision.constraints ?? {};
@@ -1432,18 +1992,25 @@ export class EffectProcessor {
       input: proposal.input,
     });
 
-    const guard = await this.checkPriorOperations(executionId, idempotencyKey, consequential, proposal);
-    if (guard.kind === "refuse") {
-      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
-        code: guard.code,
-        message: guard.message,
-      });
-    }
-    if (guard.kind === "replay") {
-      return this.replay(input, proposal, effectId, correlationId, guard.operation, guard.observation);
+    // The duplicate/unresolved guard runs at proposal time. On the confirmed-dispatch path the exact
+    // payload was already guarded when it was proposed, and §18's re-check concerns *authority*, not
+    // duplicate suppression - which `approveConfirmation` handled by re-running the ceiling and
+    // authorizer on the stored proposal.
+    if (resume === undefined) {
+      const guard = await this.checkPriorOperations(executionId, idempotencyKey, consequential, proposal);
+      if (guard.kind === "refuse") {
+        return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+          code: guard.code,
+          message: guard.message,
+        });
+      }
+      if (guard.kind === "replay") {
+        return this.replay(input, proposal, effectId, correlationId, guard.operation, guard.observation);
+      }
     }
 
-    const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+    const pendingOperationId =
+      resume?.pendingOperationId ?? (this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId);
     const dispatchedAt = nowIso(this.deps.clock);
     const deadline = this.deadlineFor(proposal, constraints, dispatchedAt);
     // A decision that names no resource narrowing has authorized what was asked for; the fallback
@@ -1478,6 +2045,7 @@ export class EffectProcessor {
           idempotencyKey,
           deadline,
           resources: resources.map((resource) => `${resource.bindingId}:${resource.mode}`),
+          ...(resume ? { viaConfirmation: resume.confirmationId } : {}),
         },
       });
       const created = createPendingOperation({
@@ -1492,7 +2060,11 @@ export class EffectProcessor {
         deadline,
       });
       const dispatched = markDispatched(created, dispatchedAt);
-      await tx.pendingOperations.insert(dispatched);
+      // On the confirmed-dispatch path the gated PendingOperation already exists (state `pending`,
+      // `not_dispatched`); reuse it, so the controller's correlation is stable across the
+      // confirmation and there is only ever one PendingOperation for this Effect.
+      if (resume) await tx.pendingOperations.update(dispatched);
+      else await tx.pendingOperations.insert(dispatched);
       await this.journal(tx, {
         effectId,
         executionId,

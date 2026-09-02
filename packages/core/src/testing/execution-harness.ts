@@ -17,6 +17,7 @@ import type { ExecutionController } from "../ports/controller.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
+import type { ConfirmationPolicy } from "../ports/confirmation-policy.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import { createDeterministicIds, createFixedClock } from "../reference/deterministic.ts";
 import { FifoScheduler } from "../reference/fifo-scheduler.ts";
@@ -57,6 +58,8 @@ export interface TestHarnessOptions {
    * asserting "requesting is not permission" wants.
    */
   readonly authorizer?: EffectAuthorizer;
+  /** The exact-payload confirmation gate. Left unset, no Effect requires confirmation. */
+  readonly confirmationPolicy?: ConfirmationPolicy;
   /** Where an operation's baseline consequentiality is declared. Left unset, nothing is classified. */
   readonly capabilityCatalog?: CapabilityCatalog;
   readonly capabilities?: CapabilityExecutor;
@@ -85,6 +88,7 @@ export function createTestHarness(options: TestHarnessOptions = {}): TestHarness
     ...(options.activationBudget !== undefined ? { activationBudget: options.activationBudget } : {}),
     ...(options.maxActivationsPerRun !== undefined ? { maxActivationsPerRun: options.maxActivationsPerRun } : {}),
     ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
+    ...(options.confirmationPolicy !== undefined ? { confirmationPolicy: options.confirmationPolicy } : {}),
     ...(options.capabilityCatalog !== undefined ? { capabilityCatalog: options.capabilityCatalog } : {}),
     ...(options.capabilities !== undefined ? { capabilities: options.capabilities } : {}),
     ...(options.inlineWait !== undefined ? { inlineWait: options.inlineWait } : {}),
