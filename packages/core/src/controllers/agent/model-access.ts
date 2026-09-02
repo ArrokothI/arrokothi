@@ -71,7 +71,7 @@ export interface AgentProjectedBindingRecord {
   readonly target: ModelActionTarget;
 }
 
-export interface AgentOperationProposalRecord {
+export interface AgentActionProposalRecord {
   readonly step: number;
   readonly correlationId: string;
   readonly bindingId: string;
@@ -121,12 +121,12 @@ export interface AgentModelInvocation {
   readonly informationSelectionId: string;
   readonly projectionId: string;
   readonly viewId: string;
-  readonly exposedOperations: number;
+  readonly exposedActions: number;
   readonly bindings: readonly AgentProjectedBindingRecord[];
   readonly outcome: AgentExecutorOutcome["kind"];
   readonly decision: AgentControllerDecision;
   /** The Effect proposals this step produced, with the correlations their results will carry. */
-  readonly proposals: readonly AgentOperationProposalRecord[];
+  readonly proposals: readonly AgentActionProposalRecord[];
   /** Provider evidence. Absent when the executor reported none; never invented. */
   readonly metadata?: AgentModelInvocationMetadata;
 }
@@ -139,7 +139,7 @@ export interface AgentModelInvocation {
  */
 export interface AgentTrace {
   modelInvoked?(record: AgentModelInvocation): void;
-  operationProposed?(record: AgentOperationProposalRecord): void;
+  actionProposed?(record: AgentActionProposalRecord): void;
 }
 
 /** What one executor step produced, before the controller interprets it. */

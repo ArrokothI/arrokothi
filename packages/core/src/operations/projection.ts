@@ -1,84 +1,65 @@
 /**
- * The Model Operation Projection: what one specific model invocation was shown.
+ * The Model Action Projection: the exact action bindings one model invocation was shown.
  *
- * Layer four, and the one that has to be *immutable* to be correct. A model answers with a name it
- * was given; that name means whatever it meant **when the model was shown it**, and never whatever
- * it happens to mean when the answer arrives.
- *
- * ```text
- * invocation N sees      search_docs -> capability A / operation old-search
- * the view later changes search_docs -> capability B / operation new-search
- * the answer to N says   search_docs
- * it MUST resolve to     capability A / operation old-search
- * ```
- *
- * So resolution goes through the snapshot handed to that call and through nothing else. There is
- * no fallback to the latest Active View, no lookup in the catalog, and no fuzzy match: a name that
- * is not in these bindings resolves to nothing, deterministically, and a projection that would
- * have contained two bindings under one name is refused at construction rather than resolved
- * ambiguously later.
- *
- * ```text
- * projection id  ≠ credential
- * binding id     ≠ credential
- * alias          ≠ authority
- * ```
- *
- * Everything here is correlation and integrity data. It explains which meaning the model saw; the
- * Effect that results is still authorized, from current authority, at dispatch.
- *
- * `ModelCapabilitySpec[]` is derived from this snapshot and is deliberately smaller than it: name,
- * description, input schema. The provider sees model vocabulary; the binding that maps that
- * vocabulary back to an operation identity never leaves the kernel.
+ * It is an immutable snapshot cut only from a heterogeneous `ActiveModelActionView`. A returned
+ * alias resolves through this snapshot and nothing current: not a catalog, not a memory view, and
+ * not a freshly resolved Active View. Projection membership is correlation/integrity data, never
+ * authority; the resulting concrete Effect is authorized again by the Harness.
  */
 
 import type { ModelCapabilitySpec } from "../model/types.ts";
 import type { ObjectSchema } from "../schema/value-schema.ts";
 import type { ModelActionTarget } from "./action-target.ts";
-import { capabilityOperationTarget, formatModelActionTarget } from "./action-target.ts";
-import type { ActiveOperationEntry, ActiveOperationView } from "./active-view.ts";
+import { formatModelActionTarget } from "./action-target.ts";
+import type { ActiveModelActionEntry, ActiveModelActionView } from "./model-action-view.ts";
+import { findActiveModelAction, targetOfActiveModelAction } from "./model-action-view.ts";
 import type { OperationRef } from "./refs.ts";
 
-/**
- * One model-facing name and what it stands for, for one invocation.
- *
- * The target is a discriminated record rather than a bare `capability`/`operation` pair, and that is
- * the only reason this type is not simply an `ActiveOperationEntry`. A binding is written into a
- * persisted invocation snapshot, so the shape chosen here is the shape a stored projection has; a
- * flat pair would have persisted the claim that every model-visible action *is* a capability
- * operation, which canonical interoperability does not say. v0.4 mints exactly one target kind.
- */
-export interface ModelOperationBinding {
-  /** Stable within the projection. Deterministic, derived from the projection id and position. */
+export interface ModelActionBinding {
   readonly bindingId: string;
-  /** Model-facing vocabulary. Never treated as an identifier anything is looked up by. */
+  /** Provider/model vocabulary. Never parsed back into an identity. */
   readonly alias: string;
-  /** What this name resolves to. Identity, never permission. */
+  /** Exact meaning shown to this invocation. Identity only, never permission. */
   readonly target: ModelActionTarget;
   readonly description: string;
   readonly input: ObjectSchema;
 }
 
-export interface ModelOperationProjection {
-  /** Deterministic, derived from persisted Agent coordinates. Correlation data, never authority. */
+export interface ModelActionProjection {
   readonly projectionId: string;
-  /** The Active View this snapshot was cut from. */
+  /** The heterogeneous Active Model Action View this snapshot was cut from. */
   readonly viewId: string;
-  readonly viewRevision: number;
-  /** Immutable, ordered. The only thing a returned name is ever resolved against. */
-  readonly bindings: readonly ModelOperationBinding[];
+  readonly bindings: readonly ModelActionBinding[];
 }
 
-/**
- * The model-facing alias for one operation.
- *
- * Provider tool names are conventionally restricted to word characters, so the identity is
- * flattened rather than passed through. Flattening can collide - `a.b` / `c` and `a` / `b.c` both
- * flatten to `a_b_c` - which is precisely why construction below rejects duplicates instead of
- * hoping it never happens.
- */
+/** Stable provider-safe alias for a capability operation. */
 export function modelOperationAlias(ref: OperationRef): string {
   return `${ref.capability}_${ref.operation}`.replace(/[^A-Za-z0-9_]/g, "_");
+}
+
+/** Stable provider-safe alias for one exact Structured Memory write binding. */
+export function modelStructuredMemoryWriteAlias(key: string): string {
+  return `memory_write_${key}`.replace(/[^A-Za-z0-9_]/g, "_");
+}
+
+function aliasOf(entry: ActiveModelActionEntry): string {
+  return entry.kind === "capability_operation"
+    ? modelOperationAlias(entry)
+    : modelStructuredMemoryWriteAlias(entry.key);
+}
+
+function inputOf(entry: ActiveModelActionEntry): ObjectSchema {
+  if (entry.kind === "capability_operation") return entry.input;
+  return {
+    kind: "object",
+    fields: {
+      value: {
+        required: true,
+        schema: entry.valueSchema,
+      },
+    },
+    additionalProperties: false,
+  };
 }
 
 export interface ProjectionIssue {
@@ -87,50 +68,33 @@ export interface ProjectionIssue {
 }
 
 export type ProjectionResult =
-  | { readonly ok: true; readonly projection: ModelOperationProjection }
+  | { readonly ok: true; readonly projection: ModelActionProjection }
   | { readonly ok: false; readonly issues: readonly ProjectionIssue[] };
 
 export interface CreateProjectionInput {
-  /** Derived from persisted Agent coordinates only, so a resumed Activation rebuilds the same id. */
   readonly projectionId: string;
-  readonly view: ActiveOperationView;
+  readonly view: ActiveModelActionView;
   /**
-   * Optional narrowing for this call alone: token budget, provider tool limits, relevance.
-   *
-   * Each ref is *only* a requested operation identity. The binding is always constructed from the
-   * matching canonical entry inside `view.entries`; nothing a caller puts here can add an operation,
-   * change a description, or alter an input schema. A ref that names no entry of `view` fails
-   * projection construction rather than being projected from caller-supplied data. Absent, the whole
-   * Active View is projected.
+   * Optional identity-only narrowing. Every target is resolved back through `view.entries`; it can
+   * select less, but cannot add an action or substitute description/schema/target metadata.
    */
-  readonly operations?: readonly OperationRef[];
+  readonly actions?: readonly ModelActionTarget[];
 }
 
-/**
- * Resolves the entry set a projection is cut from.
- *
- * With no `operations` narrowing this is just the Active View's entries. With one, every requested
- * ref must name an entry that is already in the view; the *view's* entry is returned, never the
- * caller's ref, so a narrowing request can subset the Active View but can neither extend it nor
- * substitute its own description/schema/consequentiality/groups for an in-view identity. Any ref
- * absent from the view is recorded as an issue and the projection is not built.
- */
 function selectProjectedEntries(
   input: CreateProjectionInput,
   issues: ProjectionIssue[],
-): readonly ActiveOperationEntry[] {
-  if (input.operations === undefined) return input.view.entries;
-  const selected: ActiveOperationEntry[] = [];
-  input.operations.forEach((ref, index) => {
-    const canonical = input.view.entries.find(
-      (entry) => entry.capability === ref.capability && entry.operation === ref.operation,
-    );
+): readonly ActiveModelActionEntry[] {
+  if (input.actions === undefined) return input.view.entries;
+  const selected: ActiveModelActionEntry[] = [];
+  input.actions.forEach((target, index) => {
+    const canonical = findActiveModelAction(input.view, target);
     if (!canonical) {
       issues.push({
-        path: `operations[${index}]`,
+        path: `actions[${index}]`,
         message:
-          `requested operation ${ref.capability}/${ref.operation} is not exposed by Active View ` +
-          `${input.view.viewId}; a projection narrowing can only subset the view it names, never add to it`,
+          `requested action ${formatModelActionTarget(target)} is not exposed by Active Model Action View ` +
+          `${input.view.viewId}; projection narrowing can only subset the view it names`,
       });
       return;
     }
@@ -139,69 +103,53 @@ function selectProjectedEntries(
   return selected;
 }
 
-/**
- * Builds the immutable snapshot for one invocation.
- *
- * Refuses rather than repairs. A duplicate alias is an ambiguity that would later have to be
- * resolved by guessing which operation the model meant, and there is no correct guess, so the
- * projection never comes into existence.
- *
- * Every binding originates in one entry of the `ActiveOperationView` named by the projection's
- * `viewId` / `viewRevision`. There is no side channel that appends a binding the authorized Active
- * View did not contain; a model-directed action family that is not a capability operation (memory
- * writes, child executions, messages) must first enter an Active View through its own authorized
- * exposure path before it can be projected.
- *
- * The optional `operations` narrowing can only *shrink* that set. Each requested ref is resolved
- * against `view.entries` and the binding is built from the entry found there, so a ref outside the
- * view is rejected and altered caller metadata for an in-view identity is ignored — the Active View
- * entry is the single source of every binding's description and schema.
- */
-export function createModelOperationProjection(input: CreateProjectionInput): ProjectionResult {
+export function createModelActionProjection(input: CreateProjectionInput): ProjectionResult {
   const issues: ProjectionIssue[] = [];
   const source = selectProjectedEntries(input, issues);
   if (issues.length > 0) return { ok: false, issues };
-  const bindings: ModelOperationBinding[] = [];
-  const byAlias = new Map<string, ModelOperationBinding>();
 
+  const bindings: ModelActionBinding[] = [];
+  const byAlias = new Map<string, ModelActionBinding>();
   source.forEach((entry, index) => {
-    const alias = modelOperationAlias(entry);
+    const alias = aliasOf(entry);
+    const target = targetOfActiveModelAction(entry);
     const existing = byAlias.get(alias);
     if (existing) {
       issues.push({
         path: `bindings[${index}]`,
         message:
           `model-facing name "${alias}" would mean both ${formatModelActionTarget(existing.target)} and ` +
-          `${entry.capability}/${entry.operation}; a projection with an ambiguous name cannot resolve a response`,
+          `${formatModelActionTarget(target)}; a projection with an ambiguous name cannot exist`,
       });
       return;
     }
-    const binding: ModelOperationBinding = {
+    const binding: ModelActionBinding = {
       bindingId: `${input.projectionId}/b${index + 1}`,
       alias,
-      target: capabilityOperationTarget(entry),
+      target,
       description: entry.description,
-      input: entry.input,
+      input: inputOf(entry),
     };
     byAlias.set(alias, binding);
     bindings.push(binding);
   });
 
   if (issues.length > 0) return { ok: false, issues };
-
   return {
     ok: true,
     projection: {
       projectionId: input.projectionId,
       viewId: input.view.viewId,
-      viewRevision: input.view.authorityVersion,
       bindings,
     },
   };
 }
 
-/** The provider-facing projection: model vocabulary only, with no route back to an identity. */
-export function modelCapabilitySpecs(projection: ModelOperationProjection): readonly ModelCapabilitySpec[] {
+/**
+ * Provider-facing callable specs. Providers still call this vocabulary "capabilities"; the kernel
+ * binding remains a typed model action and is never reduced back to a capability identity.
+ */
+export function modelActionSpecs(projection: ModelActionProjection): readonly ModelCapabilitySpec[] {
   return projection.bindings.map((binding) => ({
     name: binding.alias,
     description: binding.description,
@@ -210,17 +158,10 @@ export function modelCapabilitySpecs(projection: ModelOperationProjection): read
 }
 
 export type ProjectionResolution =
-  | { readonly resolved: true; readonly binding: ModelOperationBinding }
-  /** Deterministic non-resolution. Never a nearest match, and never a catalog lookup. */
+  | { readonly resolved: true; readonly binding: ModelActionBinding }
   | { readonly resolved: false; readonly alias: string };
 
-/**
- * Resolves a model-returned name against **this** snapshot.
- *
- * The only supported way to interpret a response. A caller that reached for the current Active View
- * instead would silently rebind an old answer to a new operation.
- */
-export function resolveProjectedAlias(projection: ModelOperationProjection, alias: string): ProjectionResolution {
+export function resolveProjectedAlias(projection: ModelActionProjection, alias: string): ProjectionResolution {
   const binding = projection.bindings.find((candidate) => candidate.alias === alias);
   return binding ? { resolved: true, binding } : { resolved: false, alias };
 }

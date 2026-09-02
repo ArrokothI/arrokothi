@@ -37,7 +37,7 @@ import type {
   AgentExecutorRequest,
   AgentExecutorStepResult,
   AgentModelInvocationMetadata,
-  ModelOperationCall,
+  ModelActionCall,
   ModelProviderLookup,
 } from "@agent-sdk/core/ports";
 import { Agent, BeforeToolCallEvent, FunctionTool, InterruptResponseContent } from "@strands-agents/sdk";
@@ -134,10 +134,10 @@ export function createStrandsAgentExecutor(options: StrandsAgentExecutorOptions)
         return {
           outcome: {
             kind: "fail",
-            code: "model_cannot_receive_operations",
+            code: "model_cannot_receive_actions",
             message:
               `logical model "${request.model.logicalRef}" resolved to ${request.model.provider}/${request.model.model}, ` +
-              `which cannot receive operation calls`,
+              `which cannot receive action calls`,
           },
         };
       }
@@ -259,7 +259,7 @@ export function createStrandsAgentExecutor(options: StrandsAgentExecutorOptions)
         // Paused before any native execution. The snapshot is plain JSON and travels back through
         // Agent control state; the ArrokothI binding snapshot remains the resolver of record.
         const snapshot = agent.takeSnapshot({ preset: "session" });
-        const calls: ModelOperationCall[] = captured.map((call) => ({
+        const calls: ModelActionCall[] = captured.map((call) => ({
           callId: call.toolUseId,
           alias: call.alias,
           input: (call.input ?? {}) as never,

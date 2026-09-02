@@ -201,7 +201,7 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
         "EffectAuthorizer",
         "EffectiveOperationAuthority",
         "ActiveOperationView",
-        "ModelOperationProjection",
+        "ModelActionProjection",
         "AgentSpec",
         "AgentController",
         "AgentExecutor",

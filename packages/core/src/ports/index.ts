@@ -75,6 +75,11 @@ export type {
   StructuredMemoryReadViewResolver,
 } from "./structured-memory-read-view.ts";
 export { noStructuredMemoryRead } from "./structured-memory-read-view.ts";
+export type {
+  ActiveStructuredMemoryWriteViewRequest,
+  ActiveStructuredMemoryWriteViewResolver,
+} from "./active-structured-memory-write-view.ts";
+export { noActiveStructuredMemoryWriteView } from "./active-structured-memory-write-view.ts";
 
 export type {
   ConfirmationPolicy,
@@ -103,7 +108,7 @@ export type {
   AgentExecutorStepResult,
   AgentInformationContext,
   AgentModelInvocationMetadata,
-  ModelOperationCall,
+  ModelActionCall,
 } from "./agent-executor.ts";
 export { agentExecutorOutcomeIssues, agentExecutorStepResultIssues } from "./agent-executor.ts";
 
@@ -127,17 +132,28 @@ export type {
   OmittedExposure,
   OmittedExposureReason,
 } from "../operations/active-view.ts";
-export type { ModelOperationBinding, ModelOperationProjection } from "../operations/projection.ts";
+export type { ModelActionBinding, ModelActionProjection } from "../operations/projection.ts";
+export type {
+  ActiveModelActionEntry,
+  ActiveModelActionView,
+  CapabilityOperationActionEntry,
+  StructuredMemoryWriteActionEntry,
+} from "../operations/model-action-view.ts";
 export type {
   CapabilityOperationTarget,
   ModelActionTarget,
+  StructuredMemoryWriteTarget,
   ModelActionTargetKind,
 } from "../operations/action-target.ts";
 export type {
   StructuredMemoryReadField,
   StructuredMemoryReadView,
 } from "../execution/structured-memory-read.ts";
-export type { AgentObservationOutcome, AgentOperationObservation } from "../agent/observations.ts";
+export type {
+  ActiveStructuredMemoryWriteEntry,
+  ActiveStructuredMemoryWriteView,
+} from "../execution/structured-memory-write-view.ts";
+export type { AgentObservationOutcome, AgentActionObservation } from "../agent/observations.ts";
 export type {
   AgentModelObservation,
   AgentObservationProjectionContext,

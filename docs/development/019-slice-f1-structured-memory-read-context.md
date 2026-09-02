@@ -1,14 +1,14 @@
 # Slice F.1 — Bounded Structured Memory Read into Agent Context
 
-> **Status:** F.1 runtime on `slice-f1-memory-read`, rebased onto current `main` (`3f140d6`).
-> First implementation, then two bounded architecture-review corrections: resolution moved to the
-> controller per new invocation (§11), and whole-view revision removed from the consumer projection
-> (§12). Not merged; awaiting review. The branch's own duplicate copy of the agent-caching research
-> note was dropped in the rebase — that doc comes from `main`'s canonical commits, unmodified.
+> **Status:** accepted and merged before the F.1.1 baseline (`main`
+> `47ec13153fecc3a8a5bdf5036eb6407137d163a2`). The two bounded architecture-review corrections
+> remain recorded in §11–12: resolution moved to the controller per new invocation, and whole-view
+> revision was removed from the consumer projection.
 > **Scope:** an authorized, read-only Structured Memory snapshot the reference Agent resolves for
 > one new model invocation, from its authored read request intersected with read authority, and
-> renders into model context. Reads only — model-directed `WriteMemory` exposure is **F.1.1** and
-> not begun.
+> renders into model context. Reads only; model-directed `WriteMemory` exposure is the separate
+> current **F.1.1** checkpoint recorded in
+> [`020`](020-slice-f11-structured-memory-model-write-exposure.md).
 > **Canonical documentation change:** none.
 
 This note records what the F.1 checkpoint became in code. It is an engineering record, not a new
@@ -47,9 +47,9 @@ Local runs, not CI evidence.
 
 Doc [`018`](018-slice-f0-structured-memory-write-foundation.md) §8 recorded that F.0 adds no memory
 contents to Agent context, and §13 sketched a "Future direction (F.1)" that was the model-directed
-**write**-exposure chain. F.1 is now the **read** path; that write-exposure chain is renumbered
-**F.1.1** and has not begun. The name F.1.1 stays reserved for model-directed Structured Memory
-write exposure.
+**write**-exposure chain. F.1 is the accepted **read** path; the write-exposure chain was
+renumbered **F.1.1** and is now implemented on its review branch, as recorded in
+[`020`](020-slice-f11-structured-memory-model-write-exposure.md).
 
 The split is clean against the canonical docs, which already separate the two mechanisms:
 
@@ -126,8 +126,8 @@ unknown property at any level             -> rejected
 plain JSON only (enforced by definitions/validation.ts)
 ```
 
-Not a `MemorySpec` union: a write-exposure request (F.1.1) or Working Notes are separate future
-shapes, added when they exist.
+Not a generic `MemorySpec` union: F.1.1 adds the independent sibling `write` request recorded in
+[`020`](020-slice-f11-structured-memory-model-write-exposure.md); Working Notes remain deferred.
 
 ## 6. Where and when the read view is resolved
 
@@ -285,9 +285,11 @@ Effect path.
 
 ## 10. Explicit deferrals
 
+Model-directed `WriteMemory` exposure is no longer a deferral; it is the separate F.1.1 checkpoint
+recorded in [`020`](020-slice-f11-structured-memory-model-write-exposure.md). Remaining deferrals:
+
 ```text
-model-directed WriteMemory exposure / memory Active/Exposed View / memory operation interface  (F.1.1)
-wiring the snapshot into Workflow LLM Stages, Function Stages, or adapters                      (later F)
+wiring the read snapshot into Workflow LLM Stages, Function Stages, or adapters                 (later F)
 a ReadMemory Effect
 Derived Semantic Memory, retrieval, ranking, summarisation, provenance selection
 Working Notes, Artifacts
@@ -401,4 +403,5 @@ because unrelated hidden runtime state changed.
 Everything else: `AgentSpec.structuredMemory.read.keys`, `StructuredMemoryReadViewResolver`,
 grant-before-view-resolution, per-new-invocation resolution, zero resolution on re-entry, Agent
 information compilation, and read/write authority separation. No F.0 write-runtime change. F.1.1
-not started.
+is implemented separately and does not alter these read semantics; see
+[`020`](020-slice-f11-structured-memory-model-write-exposure.md).

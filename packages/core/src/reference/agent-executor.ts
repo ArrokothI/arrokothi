@@ -28,7 +28,7 @@ import type {
   AgentExecutorRequest,
   AgentExecutorStepResult,
   AgentModelInvocationMetadata,
-  ModelOperationCall,
+  ModelActionCall,
 } from "../ports/agent-executor.ts";
 import type { ModelProviderLookup } from "../ports/model-provider.ts";
 
@@ -71,10 +71,10 @@ export function createReferenceAgentExecutor(options: ReferenceAgentExecutorOpti
         return {
           outcome: {
             kind: "fail",
-            code: "model_cannot_receive_operations",
+            code: "model_cannot_receive_actions",
             message:
               `logical model "${request.model.logicalRef}" resolved to ${request.model.provider}/${request.model.model}, ` +
-              `which cannot receive operation calls, but this step exposes ${request.capabilities.length}`,
+              `which cannot receive action calls, but this step exposes ${request.capabilities.length}`,
           },
         };
       }
@@ -117,14 +117,14 @@ export function createReferenceAgentExecutor(options: ReferenceAgentExecutorOpti
           return {
             outcome: {
               kind: "fail",
-              code: "agent_operation_fanout_exceeded",
+              code: "agent_action_fanout_exceeded",
               message:
-                `this step requested ${returned.length} operations; at most ${request.limits.maxOperationCallsPerStep} are permitted`,
+                `this step requested ${returned.length} actions; at most ${request.limits.maxOperationCallsPerStep} are permitted`,
             },
             metadata,
           };
         }
-        const calls: ModelOperationCall[] = returned.map((call) => ({
+        const calls: ModelActionCall[] = returned.map((call) => ({
           callId: call.id ?? null,
           // The provider's string, carried verbatim. Whether it means anything is the controller's
           // question, answered against the projection this call was shown and against nothing else.

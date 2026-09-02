@@ -23,7 +23,7 @@ import type { AgentInformationCompiler } from "../controllers/agent/information.
 import type {
   AgentModelAccess,
   AgentModelInvocation,
-  AgentOperationProposalRecord,
+  AgentActionProposalRecord,
   AgentTrace,
 } from "../controllers/agent/model-access.ts";
 import type { AgentObservationProjector } from "../agent/observation-projection.ts";
@@ -33,6 +33,7 @@ import type { StructuredMemoryBinding } from "../execution/structured-memory.ts"
 import type { OperationRef } from "../operations/refs.ts";
 import type { ActiveOperationViewResolver } from "../ports/active-operation-view.ts";
 import type { StructuredMemoryReadViewResolver } from "../ports/structured-memory-read-view.ts";
+import type { ActiveStructuredMemoryWriteViewResolver } from "../ports/active-structured-memory-write-view.ts";
 import type { AgentExecutor } from "../ports/agent-executor.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
@@ -45,13 +46,15 @@ import { ModelProviderRegistry } from "../reference/model-provider-registry.ts";
 import { createRuntimeOperationAuthoritySource } from "../reference/operation-authority.ts";
 import type { StructuredMemoryReadGrantRule } from "../reference/structured-memory-read-view-resolver.ts";
 import { createStructuredMemoryReadViewResolver } from "../reference/structured-memory-read-view-resolver.ts";
+import type { StructuredMemoryWriteExposureGrantRule } from "../reference/structured-memory-write-view-resolver.ts";
+import { createStructuredMemoryWriteViewResolver } from "../reference/structured-memory-write-view-resolver.ts";
 import { createTestHarness } from "./execution-harness.ts";
 import type { TestHarnessBundle, TestHarnessOptions } from "./execution-harness.ts";
 
 /** A trace sink that keeps what it was told, and does nothing else. */
 export interface RecordingAgentTrace extends AgentTrace {
   readonly modelInvocations: readonly AgentModelInvocation[];
-  readonly proposals: readonly AgentOperationProposalRecord[];
+  readonly proposals: readonly AgentActionProposalRecord[];
   /** `provider/model` for each step, which is the usual portability assertion. */
   deployments(): readonly string[];
   /** The projection identity each step was shown, which is the usual snapshot assertion. */
@@ -62,14 +65,14 @@ export interface RecordingAgentTrace extends AgentTrace {
 
 export function recordingAgentTrace(): RecordingAgentTrace {
   const modelInvocations: AgentModelInvocation[] = [];
-  const proposals: AgentOperationProposalRecord[] = [];
+  const proposals: AgentActionProposalRecord[] = [];
   return {
     modelInvocations,
     proposals,
     modelInvoked(record) {
       modelInvocations.push(record);
     },
-    operationProposed(record) {
+    actionProposed(record) {
       proposals.push(record);
     },
     deployments() {
@@ -130,6 +133,10 @@ export interface AgentTestHarnessOptions extends Omit<TestHarnessOptions, "contr
    * `WriteMemory`. A test that needs a custom resolver passes `structuredMemoryReadView` instead.
    */
   readonly memoryReadGrants?: StructuredMemoryReadGrantRule;
+  /** Replaces the reference write-exposure resolver. It exposes metadata only, never values. */
+  readonly structuredMemoryWriteView?: ActiveStructuredMemoryWriteViewResolver;
+  /** Convenience: builds the reference write-exposure resolver against the shared store. */
+  readonly memoryWriteExposureGrants?: StructuredMemoryWriteExposureGrantRule;
 }
 
 export interface CreateTestAgentInput {
@@ -175,6 +182,12 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
       ? createStructuredMemoryReadViewResolver({ store, grants: options.memoryReadGrants })
       : undefined);
 
+  const structuredMemoryWriteView =
+    options.structuredMemoryWriteView ??
+    (options.memoryWriteExposureGrants !== undefined
+      ? createStructuredMemoryWriteViewResolver({ store, grants: options.memoryWriteExposureGrants })
+      : undefined);
+
   const controller = createAgentController({
     views,
     ...(options.models !== undefined ? { models: options.models } : {}),
@@ -182,6 +195,7 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
     ...(options.observations !== undefined ? { observations: options.observations } : {}),
     ...(options.information !== undefined ? { information: options.information } : {}),
     ...(structuredMemoryReadView !== undefined ? { structuredMemoryReadView } : {}),
+    ...(structuredMemoryWriteView !== undefined ? { structuredMemoryWriteView } : {}),
     ...(options.taskScope !== undefined ? { taskScope: options.taskScope } : {}),
     trace,
   });

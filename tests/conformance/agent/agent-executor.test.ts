@@ -106,7 +106,6 @@ describe("an AgentExecutor reports selections and cannot perform them", () => {
       projection: {
         projectionId: "ag/step1/projection",
         viewId: "aov_1",
-        viewRevision: 1,
         bindings: [
           {
             bindingId: "ag/step1/projection/b1",

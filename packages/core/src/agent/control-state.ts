@@ -27,9 +27,9 @@
  * *later* step; they cannot retroactively change what the in-flight invocation saw, because what it
  * saw is already frozen in `invocation.information`.
  *
- * ## Correlating operation results
+ * ## Correlating action results
  *
- * `pending` is one entry per operation the current step requested, carrying the correlation the
+ * `pending` is one entry per model action the current step requested, carrying the correlation the
  * controller chose. Entries are scoped to the step that made them, so a result from step 2 matches
  * nothing in step 3, and an entry that has already settled ignores a duplicate result rather than
  * being answered twice.
@@ -37,7 +37,7 @@
 
 import type { ModelMessage } from "../model/types.ts";
 import type { ModelActionTarget } from "../operations/action-target.ts";
-import type { ModelOperationProjection } from "../operations/projection.ts";
+import type { ModelActionProjection } from "../operations/projection.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import type { AgentModelObservation } from "./observation-projection.ts";
 import type { AgentObservationOutcome } from "./observations.ts";
@@ -77,7 +77,7 @@ export interface AgentInvocationState {
   /** 1-based step this invocation belongs to. Part of the resumption key and the correlations. */
   readonly step: number;
   readonly information: AgentInformationSnapshot;
-  readonly projection: ModelOperationProjection;
+  readonly projection: ModelActionProjection;
   readonly continuation: JsonValue | null;
   /**
    * The settled results this invocation was given, as the model was shown them.
@@ -125,7 +125,7 @@ export interface AgentControlState {
   readonly invocation: AgentInvocationState | null;
   /** Executor-owned continuation carried between steps. Opaque JSON to the kernel. */
   readonly continuation: JsonValue | null;
-  /** Operations the current step requested. Empty means nothing is outstanding. */
+  /** Model actions the current step requested. Empty means nothing is outstanding. */
   readonly pending: readonly AgentPendingCall[];
   /** How many times this Agent has responded without terminating. `response != terminal result`. */
   readonly responses: number;

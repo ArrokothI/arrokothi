@@ -10,7 +10,7 @@
  *        v  explicit EffectiveOperationAuthority for that exact operation
  * Active Operation View
  *        v
- * immutable ModelOperationProjection
+ * immutable ModelActionProjection
  *        v  the model selects an alias
  * exact binding resolution
  *        v
@@ -41,7 +41,12 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import type { OperationRef } from "@agent-sdk/core/execution";
-import { EVENT_KINDS, effectRequestsIn } from "@agent-sdk/core/execution";
+import {
+  createActiveModelActionView,
+  createActiveStructuredMemoryWriteView,
+  EVENT_KINDS,
+  effectRequestsIn,
+} from "@agent-sdk/core/execution";
 import type { EffectAuthorizer } from "@agent-sdk/core/ports";
 import { createActiveOperationViewResolver, createAllowListAuthorizer, createRuntimeOperationAuthoritySource, InMemoryRuntimeStore } from "@agent-sdk/core/reference";
 import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
@@ -141,7 +146,12 @@ describe("an imported MCP Tool travels the ordinary Agent path", () => {
 
       // -- the immutable projection the model was shown -----------------------
       const invocation = bundle.trace.modelInvocations[0]!;
-      assert.equal(invocation.viewId, view.viewId, "the projection was cut from that same view");
+      const actionView = createActiveModelActionView({
+        operations: view,
+        structuredMemoryWrites: createActiveStructuredMemoryWriteView([]),
+      });
+      assert.equal(actionView.sources.operations, view.viewId);
+      assert.equal(invocation.viewId, actionView.viewId, "the projection was cut from the combined view containing it");
       assert.deepEqual(invocation.bindings.map((binding) => binding.alias), ["external_lookup_lookup_code"]);
       assert.deepEqual(invocation.bindings[0]!.target, {
         kind: "capability_operation",
@@ -242,7 +252,7 @@ describe("an imported MCP Tool travels the ordinary Agent path", () => {
 
       // What the *model* was shown is the descriptor's schema, which is the server's schema.
       const shown = bundle.trace.modelInvocations[0]!;
-      assert.equal(shown.exposedOperations, 1);
+      assert.equal(shown.exposedActions, 1);
       const descriptor = snapshot.catalog.describe(IMPORTED.capability as never, IMPORTED.operation as never)!;
       assert.deepEqual(descriptor.input, {
         kind: "object",

@@ -141,7 +141,7 @@ describe("the Agent controller proposes Effects and never performs them", () => 
 
     const context = await bundle.harness.inspect(agent.executionId);
     assert.equal(context?.lifecycle, "FAILED");
-    assert.equal(context?.failure?.code, "agent_operation_not_projected");
+    assert.equal(context?.failure?.code, "agent_action_not_projected");
     assert.match(context!.failure!.message, /vocabulary, never an identity to look up/);
     assert.deepEqual(await bundle.harness.effectJournalOf(agent.executionId), [], "nothing was proposed");
   });

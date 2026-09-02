@@ -113,7 +113,7 @@ async function runWith(projector: AgentObservationProjector | undefined, id: str
   };
 }
 
-describe("a settled operation result is not the same thing as how a model reads it", () => {
+describe("a settled action result is not the same thing as how a model reads it", () => {
   test("two projectors over the same result change what the model reads and nothing else", async () => {
     const a = await runWith(concise, "concise");
     const b = await runWith(detailed, "detailed");

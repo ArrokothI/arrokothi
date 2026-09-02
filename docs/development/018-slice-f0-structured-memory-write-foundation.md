@@ -4,9 +4,9 @@
 > review. The F.0.1 correction removed the reference Agent's direct `memoryWrite` model-exposure
 > path; the F.0.2 retrofit (§14) hardened the optional projection-narrowing parameter so the
 > restored subset invariant is enforced by construction. **Merged to `main` as `b56b631` (PR #9).**
-> Model-directed memory-operation exposure remains deferred: §13's "Future direction" chain is now
-> **F.1.1**, and F.1 became the memory *read* path instead — see
-> [`019`](019-slice-f1-structured-memory-read-context.md).
+> The authorized model-directed write-exposure chain reserved as **F.1.1** is now implemented on
+> its review branch; see [`020`](020-slice-f11-structured-memory-model-write-exposure.md). F.1 is
+> the accepted memory *read* path recorded in [`019`](019-slice-f1-structured-memory-read-context.md).
 > **Scope:** one schema-bound Execution-local Structured Memory write through the existing Effect
 > gateway.
 > **Canonical documentation change:** none.
@@ -209,8 +209,9 @@ a memory credential.
 the `write_memory` model action target, `CreateProjectionInput.memoryWrite`, and the controller arm
 that turned an injected target into `WriteMemory` are all removed (§13). Every
 `ModelOperationProjection.binding` again comes from the `ActiveOperationView` named by that
-projection. A model-directed memory operation returns in F.1, and only through an authorized
-memory-interface Active View.
+projection. F.1.1 now restores model-directed memory writes only through an authorized memory
+write view composed into the heterogeneous Active Model Action View; see
+[`020`](020-slice-f11-structured-memory-model-write-exposure.md).
 
 The reference Workflow Function Stage may return a discriminated `StageMemoryWriteRequest`. The
 Workflow records it as a typed effect-barrier entry, proposes `WriteMemory`, and maps
@@ -219,8 +220,10 @@ Workflow records it as a typed effect-barrier entry, proposes `WriteMemory`, and
 The Workflow controller includes `memory.written` in result collection, settles its required
 barrier entry, and may re-enter/continue the Stage. **F.0.1:** the Agent controller no longer maps
 `memory.written` — with no memory operation exposed, it can never correlate one — and the passive
-arm was removed rather than left as unreachable code. No memory contents are added to Agent
-information context in F.0.
+arm was removed rather than left as unreachable code. F.1.1 re-enables only correlated settlement
+for its projected memory action and reduces the model observation to the binding-owned key plus
+`written: true`; it does not expose runtime view ids or revisions. No memory contents are added to
+Agent information context by the F.0 write path.
 
 ## 9. Revision semantics
 
@@ -278,7 +281,7 @@ MCP/A2A memory/resource mappings
 Mem0/Graphiti
 automatic child view inheritance
 controller-authored authority/trust/provenance flags
-model-directed memory-operation exposure (removed in F.0.1; deferred — now F.1.1)
+model-directed memory-operation exposure (removed in F.0.1; added correctly in F.1.1; see 020)
 ```
 
 No unresolved canonical contradiction was found during F.0.
@@ -336,7 +339,7 @@ the `memory.written` Event, the atomic RuntimeStore transaction, confirmation se
 Effect-barrier support, read-only Harness inspection, child non-inheritance, and the no-feature
 cost path. The generic runtime Event vocabulary keeps `memory.written`.
 
-### Future direction (now F.1.1, not started)
+### Follow-up direction (implemented as F.1.1)
 
 ```text
 authorized memory interface / memory authority
@@ -347,11 +350,12 @@ authorized memory interface / memory authority
   ↓ fresh Harness authorization
 ```
 
-This write-exposure chain is what F.0.1's premature bypass anticipated. It is now **F.1.1** and has
-not begun. F.1 instead implemented the memory *read* path — a controller-neutral, deny-by-default
-read-authority seam feeding context compilation, with no Active View and no Effect — recorded in
-[`019`](019-slice-f1-structured-memory-read-context.md). F.0.1 only stopped the premature bypass;
-no canonical document changed.
+This write-exposure chain is what F.0.1's premature bypass anticipated. F.1 implemented the memory
+*read* path — a controller-neutral, deny-by-default read-authority seam feeding context compilation,
+with no Active View and no Effect — as recorded in [`019`](019-slice-f1-structured-memory-read-context.md).
+F.1.1 now implements the authorized heterogeneous Active View path in
+[`020`](020-slice-f11-structured-memory-model-write-exposure.md). F.0.1 only stopped the premature
+bypass; no canonical document changed.
 
 ## 14. F.0.2 projection-integrity retrofit
 

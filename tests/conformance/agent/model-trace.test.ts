@@ -94,7 +94,7 @@ describe("model invocation is traceable without becoming semantic", () => {
     assert.equal(`${first.provider}/${first.model}`, "test/model-a");
     assert.match(first.informationSelectionId, /^ic_/, "a digest of the selection, not the prompt");
     assert.equal(first.projectionId, "ag/step1/projection");
-    assert.equal(first.exposedOperations, 1);
+    assert.equal(first.exposedActions, 1);
     assert.deepEqual(first.bindings, [
       {
         bindingId: "ag/step1/projection/b1",
