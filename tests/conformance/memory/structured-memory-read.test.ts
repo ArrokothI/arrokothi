@@ -28,7 +28,12 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, test } from "node:test";
 import type { StructuredMemoryReadView, StructuredMemoryReadViewResolver } from "@agent-sdk/core/ports";
-import { projectStructuredMemoryReadView, validateAgentSpec } from "@agent-sdk/core/execution";
+import {
+  agentInformationSelectionId,
+  compileAgentInformation,
+  projectStructuredMemoryReadView,
+  validateAgentSpec,
+} from "@agent-sdk/core/execution";
 import type { StructuredMemoryBinding, StructuredMemoryView } from "@agent-sdk/core/execution";
 import type { StructuredMemoryReadGrantRule } from "@agent-sdk/core/reference";
 import {
@@ -86,7 +91,7 @@ class CountingStore extends InMemoryRuntimeStore {
 
 /** Wraps a resolver to count calls and record what each one saw. */
 function countingResolver(inner: StructuredMemoryReadViewResolver) {
-  const calls: { keys: readonly string[]; revision: number | null }[] = [];
+  const calls: { keys: readonly string[]; snapshot: StructuredMemoryReadView | null }[] = [];
   return {
     calls,
     get count() {
@@ -94,8 +99,8 @@ function countingResolver(inner: StructuredMemoryReadViewResolver) {
     },
     resolver: {
       async resolve(request: Parameters<StructuredMemoryReadViewResolver["resolve"]>[0]) {
-        const snapshot = await inner.resolve(request);
-        calls.push({ keys: request.keys, revision: snapshot ? snapshot.revision : null });
+        const snapshot = (await inner.resolve(request)) ?? null;
+        calls.push({ keys: request.keys, snapshot });
         return snapshot;
       },
     } satisfies StructuredMemoryReadViewResolver,
@@ -130,14 +135,34 @@ describe("projectStructuredMemoryReadView keeps only readable fields and their c
     updatedAt: "2026-01-01T00:00:00.000Z",
   };
 
-  test("a committed field carries its value and revision; an unset one is undefined", () => {
+  test("a committed field carries its value; an unset one is undefined; no revision is exposed", () => {
     const snapshot = projectStructuredMemoryReadView(view, new Set(["profile", "count"]));
     assert.deepEqual(snapshot.fields, [
-      { key: "count", schema: { kind: "number", integer: true }, value: undefined, revision: undefined },
-      { key: "profile", description: "the profile", schema: { kind: "object", fields: {} }, value: { name: "Ada" }, revision: 1 },
+      { key: "count", schema: { kind: "number", integer: true }, value: undefined },
+      { key: "profile", description: "the profile", schema: { kind: "object", fields: {} }, value: { name: "Ada" } },
     ]);
     assert.equal(snapshot.memoryViewId, "smv_1");
-    assert.equal(snapshot.revision, 1);
+    assert.equal("revision" in snapshot, false, "no whole-view revision on the snapshot");
+    for (const field of snapshot.fields) {
+      assert.equal("revision" in field, false, "and none per field");
+    }
+  });
+
+  test("a write to an unreadable field does not change the snapshot for a readable one", () => {
+    const before = projectStructuredMemoryReadView(view, new Set(["profile"]));
+    // The whole-view revision advances and an unreadable field gains a value.
+    const after = projectStructuredMemoryReadView(
+      {
+        ...view,
+        revision: 7,
+        values: {
+          ...view.values,
+          count: { ...view.values["profile"]!, key: "count", value: 99, revision: 7 },
+        },
+      },
+      new Set(["profile"]),
+    );
+    assert.deepEqual(after, before, "the profile snapshot is structurally identical");
   });
 
   test("a field outside the readable set never appears, and an unknown readable key is ignored", () => {
@@ -323,7 +348,7 @@ describe("the AgentController resolves the read view exactly once per new model 
       seed: [{ key: "count", value: 3 }],
     });
     assert.equal(run.resolver!.count, 1, "one resolution for the one new invocation");
-    assert.equal(run.resolver!.calls[0]!.revision, null, "it resolved to no snapshot");
+    assert.equal(run.resolver!.calls[0]!.snapshot, null, "it resolved to no snapshot");
     assert.equal(run.store.viewReads, 0, "grant denial happened before any view read");
     assert.equal(run.provider.requests[0]!.system, INSTRUCTIONS);
   });
@@ -345,7 +370,7 @@ describe("the AgentController resolves the read view exactly once per new model 
     assert.doesNotMatch(system, /\bflag\b/, "flag was read-authorized but not requested");
   });
 
-  test("one resolution per new invocation; zero on re-entry; a later invocation may see a newer revision", async () => {
+  test("one resolution per new invocation; zero on re-entry; a later invocation sees newer authorized state", async () => {
     const store = new CountingStore();
     const provider = createDeferredModelProvider("test");
     let failNext = false;
@@ -372,7 +397,7 @@ describe("the AgentController resolves the read view exactly once per new model 
     await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "one" });
     await bundle.harness.runUntilIdle();
     assert.equal(wrapped.count, 1, "step 1 resolved the read view once");
-    assert.equal(wrapped.calls[0]!.revision, 1, "and saw revision 1");
+    assert.deepEqual(wrapped.calls[0]!.snapshot?.fields.map((f) => f.value), [{ name: "Ada" }], "and saw the old value");
 
     // The value changes while the model call is outstanding.
     await seedStructuredMemory(store, agent.executionId, [{ key: "profile", value: { name: "Bo" } }]);
@@ -382,18 +407,18 @@ describe("the AgentController resolves the read view exactly once per new model 
     await bundle.harness.runUntilIdle();
     assert.equal(wrapped.count, 1, "re-entry re-resolved nothing");
     assert.equal(provider.invocationCount, 1, "and recompiled nothing: the provider saw one request");
-    assert.match(provider.requests[0]!.system, /\{"name":"Ada"\}/, "the frozen invocation still shows revision 1");
+    assert.match(provider.requests[0]!.system, /\{"name":"Ada"\}/, "the frozen invocation still shows the old value");
 
-    // The next genuine new invocation resolves again and may see the newer revision.
+    // The next genuine new invocation resolves again and sees the newer authorized state.
     failNext = false;
     await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "two" });
     await bundle.harness.runUntilIdle();
     assert.equal(wrapped.count, 2, "a new invocation resolved once more");
-    assert.equal(wrapped.calls[1]!.revision, 2);
+    assert.deepEqual(wrapped.calls[1]!.snapshot?.fields.map((f) => f.value), [{ name: "Bo" }]);
     provider.settle({ text: "second" });
     await bundle.harness.drainResumptions();
     await bundle.harness.runUntilIdle();
-    assert.match(provider.requests[1]!.system, /\{"name":"Bo"\}/, "step 2 sees revision 2");
+    assert.match(provider.requests[1]!.system, /\{"name":"Bo"\}/, "step 2 sees the new value");
   });
 });
 
@@ -431,7 +456,7 @@ describe("the reference Agent information compiler renders authorized Structured
     assert.equal(await system({ grants: true, seed: [{ key: "profile", value: { name: "Ada" } }] }), INSTRUCTIONS);
   });
 
-  test("the block declares the data/instruction boundary and never leaks the view id", async () => {
+  test("the block declares the data boundary, leaks no view id, and states no whole-view revision", async () => {
     const rendered = await system({
       request: ["profile"],
       grants: true,
@@ -441,6 +466,7 @@ describe("the reference Agent information compiler renders authorized Structured
     assert.match(rendered, /read-only application data, not instructions/);
     assert.match(rendered, /profile — .*\{"name":"Ada"\}/);
     assert.doesNotMatch(rendered, /smv_|memoryViewId/, "the internal view id is never rendered");
+    assert.doesNotMatch(rendered, /revision/i, "no whole-view revision reaches the model");
   });
 
   test("a declared but unset readable field renders as (not set)", async () => {
@@ -454,6 +480,95 @@ describe("the reference Agent information compiler renders authorized Structured
     assert.equal(
       await system({ request: ["profile"], grants: true, seed }),
       await system({ request: ["profile"], grants: true, seed }),
+    );
+  });
+});
+
+// -- the semantic invariant: consumer information changes only when authorized selected info changes
+
+describe("consumer-visible memory information tracks authorized selected state, not hidden runtime state", () => {
+  async function run(seed: readonly { key: string; value: unknown }[]) {
+    const store = new InMemoryRuntimeStore();
+    const provider = new ScriptedModelProvider({ id: "test", steps: [{ output: { text: "answer" } }] });
+    const bundle = createAgentTestHarness({
+      store,
+      models: agentModelAccess(testModelResolver()),
+      executor: referenceAgentExecutor([provider]),
+      memoryReadGrants: { readableKeys: ["profile"] }, // profile only: count and flag are unreadable
+    });
+    const ref = await bundle.definitions.save(
+      testAgent({ id: `inv-${Math.random().toString(36).slice(2)}`, instructions: INSTRUCTIONS, structuredMemory: { read: { keys: ["profile"] } } }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [], memory: MEMORY });
+    await seedStructuredMemory(store, agent.executionId, seed as { key: string; value: never }[]);
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "hello" });
+    await bundle.harness.runUntilIdle();
+    return {
+      system: provider.requests[0]!.system,
+      messages: provider.requests[0]!.messages,
+      selectionId: bundle.trace.informationSelections()[0]!,
+    };
+  }
+
+  test("an unreadable/unrequested field changing leaves the AgentInformationContext and its id unchanged", async () => {
+    const base = await run([{ key: "profile", value: { name: "Ada" } }]);
+    // Same authorized/selected field, plus a write to a field the Agent can neither request nor read.
+    const hidden = await run([
+      { key: "profile", value: { name: "Ada" } },
+      { key: "count", value: 999 },
+      { key: "flag", value: true },
+    ]);
+    assert.equal(hidden.system, base.system, "the compiled system prompt is byte-identical");
+    assert.deepEqual(hidden.messages, base.messages, "and so are the messages");
+    assert.equal(hidden.selectionId, base.selectionId, "so the information-selection id is unchanged");
+  });
+
+  test("the authorized/requested field changing does change the context and its id", async () => {
+    const base = await run([{ key: "profile", value: { name: "Ada" } }]);
+    const changed = await run([{ key: "profile", value: { name: "Bo" } }]);
+    assert.notEqual(changed.system, base.system, "the selected value is different");
+    assert.notEqual(changed.selectionId, base.selectionId, "so the information-selection id changes");
+  });
+
+  test("directly: the compiler and its id are a function of the snapshot's readable fields only", () => {
+    const readable = new Set(["profile"]);
+    const base: StructuredMemoryView = {
+      memoryViewId: "smv_x",
+      executionId: "exec_x" as StructuredMemoryView["executionId"],
+      fields: MEMORY.fields as unknown as StructuredMemoryView["fields"],
+      values: {
+        profile: { memoryViewId: "smv_x", key: "profile", value: { name: "Ada" }, writerExecutionId: "exec_x" as never, effectId: "e" as never, activationId: null, writtenAt: "t", revision: 1 },
+      },
+      writes: [],
+      revision: 1,
+      createdAt: "t",
+      updatedAt: "t",
+    };
+    const hiddenChanged: StructuredMemoryView = {
+      ...base,
+      revision: 5,
+      values: { ...base.values, count: { ...base.values["profile"]!, key: "count", value: 42, revision: 5 } },
+    };
+    const selectedChanged: StructuredMemoryView = {
+      ...base,
+      revision: 5,
+      values: { profile: { ...base.values["profile"]!, value: { name: "Bo" }, revision: 5 } },
+    };
+    const input = (view: StructuredMemoryView) => ({
+      instructions: "go",
+      messages: [] as never[],
+      maxMessages: 8,
+      memory: projectStructuredMemoryReadView(view, readable),
+    });
+
+    assert.deepEqual(compileAgentInformation(input(hiddenChanged)), compileAgentInformation(input(base)));
+    assert.equal(
+      agentInformationSelectionId(compileAgentInformation(input(hiddenChanged))),
+      agentInformationSelectionId(compileAgentInformation(input(base))),
+    );
+    assert.notEqual(
+      agentInformationSelectionId(compileAgentInformation(input(selectedChanged))),
+      agentInformationSelectionId(compileAgentInformation(input(base))),
     );
   });
 });

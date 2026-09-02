@@ -11,19 +11,37 @@
  * ```text
  * StructuredMemoryView        runtime state, changed by WriteMemory
  *         ↓ authorized read projection (readable keys only)
- * StructuredMemoryReadView    plain frozen data, carried on ActivationInput
+ * StructuredMemoryReadView    plain frozen data
+ *         ↓ resolved by the AgentController, per new model invocation
  *         ↓ context compilation (information selection)
  * model context
  * ```
+ *
+ * The snapshot is **not** carried on `ActivationInput` and the Harness does not resolve it. The
+ * `AgentController` holds a `StructuredMemoryReadViewResolver`, calls it when it builds a new model
+ * invocation for an Agent that authored a read request, and compiles the result into the persisted
+ * invocation information.
  *
  * It is **controller-neutral**. Nothing here mentions a step, a projection, a model message, an
  * Agent, or a Stage: it is "what this Execution may currently read from its Structured Memory". A
  * later checkpoint that hands the same snapshot to a Workflow Stage or an adapter needs no change
  * to this file.
  *
- * Holding one grants nothing. It is a value, not a handle: there is no id here that anything looks
- * a record up by, no write path, and no authority. Read authorization happened before this snapshot
- * was built; see [`../ports/structured-memory-read-view.ts`](../ports/structured-memory-read-view.ts).
+ * ## What is deliberately absent: any whole-view revision
+ *
+ * The runtime view has a monotonic `revision` that advances for *every* committed write to the
+ * whole view, including writes to fields this snapshot is not authorized to show. Exposing it here
+ * would let a reader authorized for field A observe that field B - which it cannot read - changed.
+ * So this projection carries no revision, per field or per view. `StructuredMemoryView.revision`
+ * stays where it belongs: runtime/store metadata for atomic updates, future conflict detection,
+ * and diagnostics. A field-local version, if a later concurrency checkpoint needs one, is that
+ * checkpoint's to design.
+ *
+ * Holding one grants nothing. It is a value, not a handle: nothing here looks a record up, there is
+ * no write path, and no authority. `memoryViewId` is internal correlation metadata only - not a
+ * credential, and the reference information compiler does not render it. Read authorization
+ * happened before this snapshot was built; see
+ * [`../ports/structured-memory-read-view.ts`](../ports/structured-memory-read-view.ts).
  */
 
 import type { ValueSchema } from "../schema/value-schema.ts";
@@ -37,21 +55,17 @@ export interface StructuredMemoryReadField {
   readonly schema: ValueSchema;
   /** The current committed value, or `undefined` when the field is declared but never written. */
   readonly value: JsonValue | undefined;
-  /** The view revision this field's value was committed at, or `undefined` when unset. */
-  readonly revision: number | undefined;
 }
 
 /**
  * A read-only snapshot of the readable subset of one Execution-local Structured Memory view.
  *
- * `revision` is the whole-view revision at snapshot time - the same counter
- * `StructuredMemoryView.revision` carries - so a consumer can tell two snapshots apart and a trace
- * can record which one an invocation saw. `fields` contains only authorized-readable declarations,
- * sorted by key for determinism.
+ * `fields` contains only authorized-readable declarations, sorted by key for determinism. There is
+ * no revision: see the module comment. `memoryViewId` is correlation metadata, never rendered to a
+ * model.
  */
 export interface StructuredMemoryReadView {
   readonly memoryViewId: string;
-  readonly revision: number;
   readonly fields: readonly StructuredMemoryReadField[];
 }
 
@@ -60,8 +74,10 @@ export interface StructuredMemoryReadView {
  *
  * Pure and total: the same view and the same key set produce a structurally identical snapshot, so a
  * resumed Activation replaying a persisted context and the Activation that produced it cannot
- * disagree about what memory the model was shown. A key in `readableKeys` that the view does not
- * declare is ignored - a read grant naming an absent field reveals nothing and is not an error.
+ * disagree about what memory the model was shown. Because the snapshot carries no whole-view
+ * revision, a write to an unreadable field does not change it. A key in `readableKeys` that the view
+ * does not declare is ignored - a read grant naming an absent field reveals nothing and is not an
+ * error.
  */
 export function projectStructuredMemoryReadView(
   view: StructuredMemoryView,
@@ -76,9 +92,8 @@ export function projectStructuredMemoryReadView(
         ...(field.description !== undefined ? { description: field.description } : {}),
         schema: field.schema,
         value: committed ? committed.value : undefined,
-        revision: committed ? committed.revision : undefined,
       };
     })
     .sort((a, b) => a.key.localeCompare(b.key));
-  return { memoryViewId: view.memoryViewId, revision: view.revision, fields };
+  return { memoryViewId: view.memoryViewId, fields };
 }
