@@ -96,7 +96,13 @@ export type ChildBarrierOutcome =
   /** The `SpawnExecution` request was refused by policy - no child exists. */
   | "spawn_denied"
   /** The `SpawnExecution` request was never dispatchable (bad ref, kind mismatch) - no child exists. */
-  | "spawn_rejected";
+  | "spawn_rejected"
+  /**
+   * A human declined the exact-payload mechanical confirmation for the child `SpawnExecution`
+   * (Slice E.2.1) - no child exists. Distinct from `spawn_denied` (policy refused) and
+   * `spawn_rejected` (request/runtime could not dispatch): the human declined the exact payload.
+   */
+  | "spawn_declined";
 
 /**
  * One required child call - an Agent Stage or a Workflow Stage (Slice E.2).

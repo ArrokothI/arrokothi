@@ -186,6 +186,16 @@ function outcomeOf(event: DeliveredEvent): {
       return { outcome: "denied", error: { code: event.body.code, message: event.body.message } };
     case "effect.rejected":
       return { outcome: "rejected", error: { code: event.body.code, message: event.body.message } };
+    case "confirmation.declined":
+      // A human declined the exact-payload confirmation for this required Effect. The barrier settles
+      // `declined` - nothing dispatched, policy did not deny - so the Workflow does not wait forever.
+      return {
+        outcome: "declined",
+        error: {
+          code: "confirmation_declined",
+          message: `a human declined the mechanical confirmation for this operation (${event.body.proposalDigest})`,
+        },
+      };
     default:
       return null;
   }
@@ -232,6 +242,16 @@ function childOutcomeOf(event: DeliveredEvent): {
       return { outcome: "spawn_denied", error: { code: event.body.code, message: event.body.message } };
     case "effect.rejected":
       return { outcome: "spawn_rejected", error: { code: event.body.code, message: event.body.message } };
+    case "confirmation.declined":
+      // A human declined the exact-payload confirmation for the child `SpawnExecution`. No child was
+      // created; distinct from a policy denial and from a runtime rejection.
+      return {
+        outcome: "spawn_declined",
+        error: {
+          code: "spawn_confirmation_declined",
+          message: `a human declined the mechanical confirmation for this child call (${event.body.proposalDigest})`,
+        },
+      };
     default:
       return null;
   }
@@ -562,9 +582,12 @@ class WorkflowController implements ExecutionController {
    *
    * `child.failed` and `child.cancelled` fail the Stage explicitly, and cancellation keeps a
    * cancellation-specific reason - it is never relabelled as ordinary failure. A refused
-   * `SpawnExecution` (`effect.denied` / `effect.rejected`) also fails the Stage, because the Stage's
-   * one required call received a terminal answer even though no child exists. A structured/non-string
-   * child terminal value fails the Stage rather than being smuggled through the `text | none` edge.
+   * `SpawnExecution` also fails the Stage, because the Stage's one required call received a terminal
+   * answer even though no child exists, and each refusal keeps its own code: `effect.denied` ->
+   * `<kind>_stage_spawn_denied`, `effect.rejected` -> `<kind>_stage_spawn_rejected`, and a declined
+   * exact-payload confirmation (`confirmation.declined`, Slice E.2.1) -> `<kind>_stage_spawn_declined`.
+   * A structured/non-string child terminal value fails the Stage rather than being smuggled through
+   * the `text | none` edge.
    */
   private async finishChildStage(
     spec: WorkflowSpec,
@@ -596,6 +619,15 @@ class WorkflowController implements ExecutionController {
           `${stage.kind}_stage_spawn_denied`,
           `stage "${stage.id}" could not start its child ${entry.childDefinitionId}@${entry.childDefinitionVersion}: ` +
             `${entry.error?.code ?? "spawn_denied"}: ${entry.error?.message ?? ""}`,
+        );
+      case "spawn_declined":
+        // A human declined the exact-payload confirmation for the child call. No child exists; this
+        // is not a policy denial and not a runtime rejection, and it gets its own failure code.
+        return failure(
+          `${stage.kind}_stage_spawn_declined`,
+          `stage "${stage.id}" child ${entry.childDefinitionId}@${entry.childDefinitionVersion} was not started: ` +
+            `a human declined its mechanical confirmation` +
+            (entry.error?.message ? ` (${entry.error.message})` : ""),
         );
       case "spawn_rejected":
       default:

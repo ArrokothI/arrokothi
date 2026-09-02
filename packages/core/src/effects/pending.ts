@@ -42,11 +42,15 @@ export type PendingDispatchState = "not_dispatched" | "dispatched";
  * `CANCELLED` settles as `cancelled`, and the runtime must never relabel that as failure merely
  * because the union once lacked the word.
  *
- * `declined` and `denied` (Slice E.2) are each distinct from `failure` and `cancelled`. `declined`
- * is a human declining an exact-payload mechanical confirmation. `denied` is the confirmation's
- * current-authority re-check refusing an approved payload whose authority was revoked while it
- * waited. In both cases the Effect never dispatched, and the runtime must not relabel the outcome as
- * a capability failure.
+ * `declined`, `denied`, and `rejected` (Slice E.2 / E.2.1) are each distinct from `failure` and
+ * `cancelled`. `declined` is a human declining an exact-payload mechanical confirmation. `denied` is
+ * an authorization refusal of an approved payload - the confirmation's current-authority re-check, or
+ * a hard operation-authority ceiling narrowed while the human deliberated. `rejected` is a runtime
+ * refusal of an approved payload *before* dispatch - a missing/kind-mismatched child Definition, an
+ * exhausted structural spawn budget, an invalid/terminal message destination. In every case the
+ * Effect never dispatched, nothing reached the external world, and the runtime must not relabel the
+ * outcome as a capability failure, a decline, a denial, or a cancellation - they mean different
+ * things.
  */
 export type PendingOutcomeState =
   | "success"
@@ -55,6 +59,7 @@ export type PendingOutcomeState =
   | "cancelled"
   | "declined"
   | "denied"
+  | "rejected"
   | null;
 
 export interface PendingOperation {

@@ -464,6 +464,114 @@ redefining architecture here.
 
 ---
 
+## E.2.1 — post-review corrections
+
+> **Status: bounded post-review correction on `slice-e-composition`, on top of the E.2 checkpoint
+> `6a433064`. Not a redesign. Canonical architecture documents remain unchanged — no contradiction
+> was exposed.** Validation after E.2.1: `npm test` 810, `npm run test:conformance` clean,
+> `npm run test:mcp` 68, `npm run test:evals` 12, `npm run test:benchmark-subjects` 8,
+> `npm run typecheck` clean, `git diff --check` clean.
+
+Three review findings, all in the *confirmation-enabled* path and in reference controller
+result-mapping; nothing on the confirmation-disabled fast path changed.
+
+### E.2.1(a) — resume-aware confirmed-refusal settlement
+
+E.2 created exactly one `PendingOperation` at the confirmation gate, but the confirmed-dispatch
+(`resume`) path for `spawn_execution` / `send_message` could still hit an ordinary runtime answer
+*after* approval and *before* dispatch — a missing / kind-mismatched child Definition, an exhausted
+or absent structural spawn budget, spawn-budget contention, an invalid or terminal message
+destination, or (spawn/send) a fresh authorization `deny`. The generic `refuse()` path minted a new
+`effect.denied` / `effect.rejected` Event with `pendingOperationId: null` and **left the gated
+`PendingOperation` pending forever**, violating the E.2 contract "one Effect → one PendingOperation →
+… → dispatch OR terminal refusal → that SAME PendingOperation is no longer pending".
+
+`refuse()` now takes an optional `resume` argument. On the resume path it settles the **existing**
+gated `PendingOperation` inside one transaction — `markSettled` with the new outcome, `dispatch`
+left `not_dispatched` (nothing reached the world) — journals the phase against that
+`pendingOperationId`, and routes exactly one correlated Event. It never creates a second
+`PendingOperation` and never reports `pendingOperationId: null` when a real gated one exists. A
+cancellation committed mid-resume abandons that same operation in the dispatch-intent transaction
+(`abandonIfCancellationPending` gained an optional pending-operation id).
+
+### E.2.1(b) — `PendingOutcomeState.rejected`
+
+`PendingOutcomeState` gained `rejected`, distinct from `failure` / `denied` / `declined` /
+`cancelled`. A confirmed Effect that becomes **authorization-denied** before dispatch settles
+`denied` + one `effect.denied`; one that becomes **runtime-rejected** before dispatch settles
+`rejected` + one `effect.rejected`. `ResolveConfirmationReceipt` gained a matching `rejected` arm;
+`receiptForResumedRecord` maps the dispatch record (which now carries an optional `refusal`) to the
+right receipt.
+
+### E.2.1(c) — no duplicate authorization on a confirmed spawn/send
+
+`approveConfirmation` previously ran its own `decide(...)` for spawn/send and then the resumed
+`dispatchSpawn` / `dispatchSendMessage` ran authorization **again** — two independent policy
+decisions for one approved dispatch. `approveConfirmation` no longer calls `decide` for spawn/send;
+the resumed dispatch function owns the single fresh authorization check, and its refusal paths now
+settle the gated `PendingOperation` (a1). The capability path already had a single `decide`
+(in `approveConfirmation`) and is unchanged in that respect.
+
+### E.2.1(d) — Agent `declined` observation
+
+`AgentObservationOutcome` gained `declined`. The Agent controller's result collector maps
+`confirmation.declined` → `declined` (was unmapped → the `AgentPendingCall` stayed unsettled while
+the runtime `PendingOperation` was already `declined`). The model-facing projector renders it
+truthfully via the existing non-`completed` arm (`code: confirmation_declined`), never as `denied`
+or `failed`. A confirmation-declined capability call now settles the pending call and the Agent
+makes its next model decision.
+
+### E.2.1(e) — Workflow `declined` observation and child `spawn_declined`
+
+`StageObservationOutcome` gained `declined`; `ChildBarrierOutcome` gained `spawn_declined`. The
+Workflow controller's `outcomeOf` maps `confirmation.declined` → `declined` for an ordinary Effect
+barrier, and `childOutcomeOf` maps it → `spawn_declined` for a child barrier (distinct from
+`spawn_denied` = policy, `spawn_rejected` = request/runtime). `finishChildStage` terminates the
+Stage with `agent_stage_spawn_declined` / `workflow_stage_spawn_declined` — an explicit case before
+the `spawn_rejected` default, so a declined child call is never relabelled as a denial, a rejection,
+or a child failure, and no child Execution is pretended into existence. A declined Effect barrier no
+longer leaves the Workflow WAITING.
+
+### E.2.1(f) — hard operation-authority recheck at confirmed dispatch intent
+
+On a confirmed `use_capability` dispatch, the transaction that commits `dispatch_started` now also
+re-reads the runtime-owned Effective Operation Authority and refuses if the operation is no longer
+within it — closing the window between `approveConfirmation`'s outer ceiling read and the
+dispatch-intent commit. On failure: no `dispatch_started`, no executor call, the existing
+`PendingOperation` settles `denied`, one correlated `effect.denied`. This is a single store read
+inside the *delayed confirmed* transaction only — the ordinary proposal path (`resume === undefined`)
+never runs it, and there is no global revalidation scan.
+
+### E.2.1 — invariant after the retrofit
+
+For every gated Effect, the pending `ConfirmationRequest` eventually corresponds to exactly one of:
+approved + dispatch committed; approved + existing `PendingOperation` settled `denied`; approved +
+existing `PendingOperation` settled `rejected`; declined + existing `PendingOperation` settled
+`declined`; abandoned + existing `PendingOperation` abandoned. There is no path to
+"approved + `PendingOperation` pending forever".
+
+### E.2.1 — deterministic regressions added
+
+- `tests/conformance/interaction/confirmation-settlement.test.ts` — resumed spawn refusals (missing
+  Definition, kind mismatch, structural budget), resumed send refusals (invalid destination,
+  authorization recheck deny with a "no second policy evaluation" assertion), and the deterministic
+  authority-race regression (an instrumented `InMemoryRuntimeStore` whose revocation is made
+  observable the instant the outer approval recheck reads "allowed" — no sleeps). Several assertions
+  read RuntimeStore records directly.
+- `tests/conformance/interaction/confirmation-decline-controllers.test.ts` — `confirmation.declined`
+  through the reference Agent (pending call settles `declined`, executor call count 0, projector
+  renders `declined`, next model step runs) and through a Workflow Effect barrier (barrier settles
+  `declined`, Stage observes `declined`, Workflow not left WAITING).
+- `tests/conformance/workflow/child-stage-decline.test.ts` — full conformance for both an Agent
+  Stage and a Workflow Stage whose child `SpawnExecution` confirmation is declined: no child
+  Execution, same spawn `PendingOperation` settled `declined`, child barrier `spawn_declined`,
+  parent Stage terminates with `<kind>_stage_spawn_declined`, parent not left WAITING.
+
+Testing-helper change: `createAgentTestHarness` now forwards `confirmationPolicy` (it was already in
+the options type). No agent-configuration artifact changed.
+
+---
+
 ## 18. Deferred work
 
 - `reply_and_ask()` (future-plan §1.7).

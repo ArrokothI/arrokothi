@@ -203,6 +203,16 @@ function outcomeOf(event: DeliveredEvent): {
       return { outcome: "denied", error: { code: event.body.code, message: event.body.message } };
     case "effect.rejected":
       return { outcome: "rejected", error: { code: event.body.code, message: event.body.message } };
+    case "confirmation.declined":
+      // A human declined the exact-payload confirmation. Nothing dispatched, policy did not deny:
+      // the call settles as `declined` and the Agent goes on to its next model decision.
+      return {
+        outcome: "declined",
+        error: {
+          code: "confirmation_declined",
+          message: `a human declined the mechanical confirmation for this operation (${event.body.proposalDigest})`,
+        },
+      };
     default:
       return null;
   }

@@ -49,11 +49,12 @@ export interface StageCapabilityRequest {
  * How a required operation settled.
  *
  * Mirrors the Event vocabulary rather than compressing it: `denied` is policy refusing, `rejected`
- * is a request that was never answerable, `failed` is a definite non-event, and `unknown` is the
- * ambiguous case where the operation may well have happened. Collapsing any pair of these would
- * make a Stage confidently wrong about the world.
+ * is a request that was never answerable, `failed` is a definite non-event, `unknown` is the
+ * ambiguous case where the operation may well have happened, and `declined` (Slice E.2.1) is a human
+ * declining an exact-payload mechanical confirmation - nothing dispatched, policy did not deny.
+ * Collapsing any pair of these would make a Stage confidently wrong about the world.
  */
-export type StageObservationOutcome = "completed" | "failed" | "unknown" | "denied" | "rejected";
+export type StageObservationOutcome = "completed" | "failed" | "unknown" | "denied" | "rejected" | "declined";
 
 export interface StageObservation {
   /** The Stage-local key this answers. */

@@ -18,7 +18,19 @@
 import type { ModelActionTarget } from "../operations/action-target.ts";
 import type { JsonValue } from "../util/json.ts";
 
-export type AgentObservationOutcome = "completed" | "failed" | "unknown" | "denied" | "rejected";
+export type AgentObservationOutcome =
+  | "completed"
+  | "failed"
+  | "unknown"
+  | "denied"
+  | "rejected"
+  /**
+   * A human declined an exact-payload mechanical confirmation for this operation (Slice E.2.1).
+   * Nothing dispatched, no executor ran, and policy did not deny - the human declined execution. The
+   * Agent settles the pending call and makes its next model decision; the projector must render this
+   * truthfully rather than as `denied` / `failed` / `cancelled`.
+   */
+  | "declined";
 
 export const AGENT_OBSERVATION_OUTCOMES: readonly AgentObservationOutcome[] = [
   "completed",
@@ -26,6 +38,7 @@ export const AGENT_OBSERVATION_OUTCOMES: readonly AgentObservationOutcome[] = [
   "unknown",
   "denied",
   "rejected",
+  "declined",
 ];
 
 /**
