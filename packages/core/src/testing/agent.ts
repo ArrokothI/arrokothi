@@ -32,6 +32,7 @@ import type { ExecutionId } from "../execution/ids.ts";
 import type { StructuredMemoryBinding } from "../execution/structured-memory.ts";
 import type { OperationRef } from "../operations/refs.ts";
 import type { ActiveOperationViewResolver } from "../ports/active-operation-view.ts";
+import type { StructuredMemoryReadViewResolver } from "../ports/structured-memory-read-view.ts";
 import type { AgentExecutor } from "../ports/agent-executor.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
@@ -115,10 +116,17 @@ export interface AgentTestHarnessOptions extends Omit<TestHarnessOptions, "contr
   readonly taskScope?: readonly string[];
   readonly trace?: AgentTrace;
   /**
-   * Convenience: builds the reference Structured Memory read resolver against the shared store.
+   * The Structured Memory read resolver handed to the `AgentController`.
    *
-   * Deny-by-default like the real thing - omitting it means no memory reaches the Agent's context
-   * even when the Execution has a binding. Independent of `authorizer`: this grants reads, never
+   * Held by the controller the way the exposure resolver is - a narrow read-only port, not runtime
+   * state. Omitting it (and `memoryReadGrants`) means the fail-closed default: no Structured Memory
+   * reaches the model even for an Agent that authored a read request.
+   */
+  readonly structuredMemoryReadView?: StructuredMemoryReadViewResolver;
+  /**
+   * Convenience: builds the reference read resolver against the shared store with these grants.
+   *
+   * Deny-by-default like the real thing. Independent of `authorizer`: this grants reads, never
    * `WriteMemory`. A test that needs a custom resolver passes `structuredMemoryReadView` instead.
    */
   readonly memoryReadGrants?: StructuredMemoryReadGrantRule;
@@ -161,21 +169,22 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
       catalog,
     });
 
+  const structuredMemoryReadView =
+    options.structuredMemoryReadView ??
+    (options.memoryReadGrants !== undefined
+      ? createStructuredMemoryReadViewResolver({ store, grants: options.memoryReadGrants })
+      : undefined);
+
   const controller = createAgentController({
     views,
     ...(options.models !== undefined ? { models: options.models } : {}),
     ...(options.executor !== undefined ? { executor: options.executor } : {}),
     ...(options.observations !== undefined ? { observations: options.observations } : {}),
     ...(options.information !== undefined ? { information: options.information } : {}),
+    ...(structuredMemoryReadView !== undefined ? { structuredMemoryReadView } : {}),
     ...(options.taskScope !== undefined ? { taskScope: options.taskScope } : {}),
     trace,
   });
-
-  const structuredMemoryReadView =
-    options.structuredMemoryReadView ??
-    (options.memoryReadGrants !== undefined
-      ? createStructuredMemoryReadViewResolver({ store, grants: options.memoryReadGrants })
-      : undefined);
 
   const bundle = createTestHarness({
     controllers: [controller],
@@ -185,7 +194,6 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
     ...(options.maxActivationsPerRun !== undefined ? { maxActivationsPerRun: options.maxActivationsPerRun } : {}),
     ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
     ...(options.confirmationPolicy !== undefined ? { confirmationPolicy: options.confirmationPolicy } : {}),
-    ...(structuredMemoryReadView !== undefined ? { structuredMemoryReadView } : {}),
     ...(options.capabilities !== undefined ? { capabilities: options.capabilities } : {}),
     ...(options.inlineWait !== undefined ? { inlineWait: options.inlineWait } : {}),
     ...(options.defaultEffectDeadlineMs !== undefined ? { defaultEffectDeadlineMs: options.defaultEffectDeadlineMs } : {}),

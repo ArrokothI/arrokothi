@@ -49,8 +49,16 @@ export type {
   AgentLimits,
   AgentSpec,
   AgentSpecInput,
+  AgentStructuredMemoryRead,
+  AgentStructuredMemorySpec,
 } from "./agent/spec.ts";
-export { AGENT_COMPLETION_MODES, DEFAULT_AGENT_LIMITS, agentCompletionMode, agentLimits } from "./agent/spec.ts";
+export {
+  AGENT_COMPLETION_MODES,
+  DEFAULT_AGENT_LIMITS,
+  agentCompletionMode,
+  agentLimits,
+  agentStructuredMemoryRead,
+} from "./agent/spec.ts";
 export type { AgentSpecIssue, AgentSpecIssueCode, AgentSpecValidation } from "./agent/validation.ts";
 export { validateAgentSpec } from "./agent/validation.ts";
 export type { AgentInformationContext } from "./agent/information-context.ts";

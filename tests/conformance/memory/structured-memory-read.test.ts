@@ -1,22 +1,25 @@
 /**
- * Slice F.1: the authorized read-only Structured Memory snapshot, and the Agent reading it.
- *
- * F.0 made Structured Memory writable through the Effect gateway but unreadable by any model. F.1
- * adds the read path, and only the read path:
+ * Slice F.1 (as corrected by the F.1 review): the authorized Structured Memory read path.
  *
  * ```text
- * authorized Structured Memory
- *   -> read-only memory information view   (Harness resolves it, deny-by-default)
- *   -> context compilation                (the information branch selects from it)
- *   -> the model reads memory
+ * authored Agent information request         spec.structuredMemory.read.keys
+ *   ↓ request only, never authority
+ * read authority / grant narrowing
+ *   ↓
+ * bound Structured Memory view                resolved only for an authorized key
+ *   ↓
+ * authorized read snapshot
+ *   ↓
+ * context compilation (information branch)
+ *   ↓
+ * the model reads memory
  * ```
  *
- * The canonical distinctions this slice keeps:
- *   - memory != context: the compiler *selects* the snapshot into context and could select none;
- *   - information selection != operation projection: nothing here touches the Active View;
- *   - read authority != write authority: a `WriteMemory` grant is not a read grant and vice versa;
- *   - no `ReadMemory` Effect: a read never crosses the Effect gateway;
- *   - the seam is controller-neutral; F.1 wires only the Agent as a consumer.
+ * The corrected design: the AgentController holds a narrow `StructuredMemoryReadViewResolver` the
+ * way it holds the exposure resolver, and calls it *only* when it builds a new model invocation and
+ * *only* if the Agent authored a read request. There is no `ActivationInput.memory` and no
+ * per-Activation resolution. Read authority stays separate from `WriteMemory` authority; a read is
+ * never an Effect.
  */
 
 import assert from "node:assert/strict";
@@ -24,29 +27,28 @@ import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, test } from "node:test";
-import type {
-  ActivationInput,
-  ActivationOutcome,
-  ControllerResumptionScope,
-  ExecutionController,
-  StructuredMemoryReadView,
-} from "@agent-sdk/core/ports";
-import { projectStructuredMemoryReadView } from "@agent-sdk/core/execution";
+import type { StructuredMemoryReadView, StructuredMemoryReadViewResolver } from "@agent-sdk/core/ports";
+import { projectStructuredMemoryReadView, validateAgentSpec } from "@agent-sdk/core/execution";
 import type { StructuredMemoryBinding, StructuredMemoryView } from "@agent-sdk/core/execution";
 import type { StructuredMemoryReadGrantRule } from "@agent-sdk/core/reference";
 import {
   createAllowListAuthorizer,
+  createDeferredModelProvider,
+  createNoInlineWaitBudget,
   createStructuredMemoryReadViewResolver,
+  InMemoryRuntimeStore,
+  ScriptedModelProvider,
 } from "@agent-sdk/core/reference";
 import {
   agentModelAccess,
   createAgentTestHarness,
   createTestHarness,
+  referenceAgentExecutor,
   scriptedAgentDefinition,
   scriptedWorkflowDefinition,
   seedStructuredMemory,
 } from "@agent-sdk/core/testing";
-import { scriptedAgentExecutor, testAgent, testModelResolver } from "../agent/fixtures.ts";
+import { testAgent, testModelResolver } from "../agent/fixtures.ts";
 
 const CORE_SRC = resolve(dirname(fileURLToPath(import.meta.url)), "../../../packages/core/src");
 
@@ -62,25 +64,45 @@ const MEMORY = {
       },
     },
     { key: "count", description: "A bounded integer.", schema: { kind: "number", integer: true, min: 0 } },
+    { key: "flag", description: "A boolean.", schema: { kind: "boolean" } },
   ],
 } as const satisfies StructuredMemoryBinding;
 
 const INSTRUCTIONS = "Use the operations you were given, then answer.";
 
-/** Captures what the Harness handed one Activation, then completes. Parametrised by kind. */
-class CapturingController implements ExecutionController {
-  captured: ActivationInput | null = null;
-  readonly kind: "agent" | "workflow";
-  constructor(kind: "agent" | "workflow") {
-    this.kind = kind;
+/** A store that counts every Structured Memory read it serves. */
+class CountingStore extends InMemoryRuntimeStore {
+  viewReads = 0;
+  executionReads = 0;
+  override async readStructuredMemoryView(id: string): Promise<StructuredMemoryView | undefined> {
+    this.viewReads += 1;
+    return super.readStructuredMemoryView(id);
   }
-  activate(input: ActivationInput, _resumptions: ControllerResumptionScope): ActivationOutcome {
-    this.captured = input;
-    return { control: { kind: this.kind, progress: {} }, next: { status: "complete" } };
+  override async readExecution(id: Parameters<InMemoryRuntimeStore["readExecution"]>[0]) {
+    this.executionReads += 1;
+    return super.readExecution(id);
   }
 }
 
-// -- the read snapshot is plain, narrowed data -------------------------------
+/** Wraps a resolver to count calls and record what each one saw. */
+function countingResolver(inner: StructuredMemoryReadViewResolver) {
+  const calls: { keys: readonly string[]; revision: number | null }[] = [];
+  return {
+    calls,
+    get count() {
+      return calls.length;
+    },
+    resolver: {
+      async resolve(request: Parameters<StructuredMemoryReadViewResolver["resolve"]>[0]) {
+        const snapshot = await inner.resolve(request);
+        calls.push({ keys: request.keys, revision: snapshot ? snapshot.revision : null });
+        return snapshot;
+      },
+    } satisfies StructuredMemoryReadViewResolver,
+  };
+}
+
+// -- the read snapshot is plain, narrowed data ------------------------------
 
 describe("projectStructuredMemoryReadView keeps only readable fields and their current value", () => {
   const view: StructuredMemoryView = {
@@ -124,13 +146,39 @@ describe("projectStructuredMemoryReadView keeps only readable fields and their c
   });
 });
 
-// -- the resolver applies read grants, deny-by-default -----------------------
+// -- the authored read request -------------------------------------------------
 
-describe("the Structured Memory read resolver is deny-by-default and separate from WriteMemory", () => {
-  async function writerBundle(grants: Parameters<typeof createStructuredMemoryReadViewResolver>[0]["grants"]) {
-    const bundle = createTestHarness({
-      authorizer: createAllowListAuthorizer({ grants: [], memory: true }),
-    });
+describe("AgentSpec.structuredMemory.read is a strictly validated request, not authority", () => {
+  const base = {
+    model: { logicalRef: "primary", requirements: { text: true } },
+    instructions: "go",
+  };
+  const check = (structuredMemory: unknown) => validateAgentSpec({ ...base, structuredMemory });
+
+  test("absent request is valid and means no memory read", () => {
+    assert.equal(validateAgentSpec(base).ok, true);
+  });
+
+  test("a present request needs at least one non-empty unique key", () => {
+    assert.equal(check({ read: { keys: ["profile", "count"] } }).ok, true);
+    assert.equal(check({ read: { keys: [] } }).ok, false);
+    assert.equal(check({ read: { keys: ["profile", "profile"] } }).ok, false);
+    assert.equal(check({ read: { keys: ["profile", ""] } }).ok, false);
+    assert.equal(check({ read: { keys: "profile" } }).ok, false);
+  });
+
+  test("unknown properties are rejected at every level", () => {
+    assert.equal(check({ read: { keys: ["a"] }, write: {} }).ok, false);
+    assert.equal(check({ read: { keys: ["a"], limit: 1 } }).ok, false);
+    assert.equal(check({ readable: ["a"] }).ok, false);
+  });
+});
+
+// -- the read resolver: deny-by-default, ordering, independence -----------------
+
+describe("the reference read resolver applies the grant before any Structured Memory view read", () => {
+  async function boundExecution(store: InMemoryRuntimeStore) {
+    const bundle = createTestHarness({ store, authorizer: createAllowListAuthorizer({ grants: [], memory: true }) });
     const ref = await bundle.definitions.save(
       scriptedAgentDefinition({
         id: "writer",
@@ -142,32 +190,39 @@ describe("the Structured Memory read resolver is deny-by-default and separate fr
     );
     const handle = await bundle.harness.createExecution({ definition: ref, structuredMemory: MEMORY });
     await bundle.harness.runUntilIdle();
-    const resolver = createStructuredMemoryReadViewResolver({ store: bundle.store, grants });
-    return { resolver, executionId: handle.executionId };
+    return handle.executionId;
   }
 
-  test("no grant resolves to null even when a value is committed", async () => {
-    const { resolver, executionId } = await writerBundle(false);
-    assert.equal(await resolver.resolve({ executionId, keys: ["profile", "count"] }), null);
+  test("an unauthorized key - declared or unknown - resolves to null with zero view reads", async () => {
+    const store = new CountingStore();
+    const executionId = await boundExecution(store);
+    store.viewReads = 0;
+    store.executionReads = 0;
+    const resolver = createStructuredMemoryReadViewResolver({ store, grants: { readableKeys: ["profile"] } });
+
+    assert.equal(await resolver.resolve({ executionId, keys: ["count"] }), null, "declared but ungranted");
+    assert.equal(await resolver.resolve({ executionId, keys: ["does_not_exist"] }), null, "unknown");
+    assert.equal(await resolver.resolve({ executionId, keys: ["count", "does_not_exist"] }), null);
+    assert.equal(store.viewReads, 0, "grant denial reads no Structured Memory view");
+    assert.equal(store.executionReads, 0, "grant denial reads no Execution context either");
   });
 
-  test("a per-key grant returns only that field", async () => {
-    const { resolver, executionId } = await writerBundle({ readableKeys: ["profile"] });
+  test("an authorized key does read the view, and existence is resolved there", async () => {
+    const store = new CountingStore();
+    const executionId = await boundExecution(store);
+    store.viewReads = 0;
+    const resolver = createStructuredMemoryReadViewResolver({ store, grants: { readableKeys: ["profile", "count"] } });
+
     const snapshot = await resolver.resolve({ executionId, keys: ["profile", "count"] });
-    assert.deepEqual(snapshot?.fields.map((field) => field.key), ["profile"]);
-    assert.deepEqual(snapshot?.fields[0]?.value, { name: "Ada" });
+    assert.deepEqual(snapshot?.fields.map((f) => ({ key: f.key, value: f.value })), [
+      { key: "count", value: undefined },
+      { key: "profile", value: { name: "Ada" } },
+    ]);
+    assert.ok(store.viewReads >= 1, "an authorized request resolves the bound view");
   });
 
-  test("an Execution with no memory binding resolves to null", async () => {
-    const bundle = createTestHarness();
-    const ref = await bundle.definitions.save(scriptedAgentDefinition({ id: "bare", program: [{ do: "complete" }] }));
-    const handle = await bundle.harness.createExecution({ definition: ref });
-    const resolver = createStructuredMemoryReadViewResolver({ store: bundle.store, grants: true });
-    assert.equal(await resolver.resolve({ executionId: handle.executionId, keys: ["profile"] }), null);
-  });
-
-  test("read grants and WriteMemory grants are independent knobs", async () => {
-    // A read grant does not authorize a write: the writer's `write_memory` is denied by policy.
+  test("read grants and WriteMemory grants are independent", async () => {
+    // read yes / write no: the writer's write_memory is denied by policy even though reads are granted.
     const bundle = createTestHarness({ authorizer: createAllowListAuthorizer({ grants: [], memory: false }) });
     const ref = await bundle.definitions.save(
       scriptedAgentDefinition({
@@ -186,142 +241,258 @@ describe("the Structured Memory read resolver is deny-by-default and separate fr
   });
 });
 
-// -- the Harness delivers the snapshot to any controller, unchanged ----------
+// -- the AgentController resolves the read view, per new invocation only --------
 
-describe("the Harness resolves the snapshot and delivers it on ActivationInput.memory", () => {
-  async function capture(kind: "agent" | "workflow", options: { grant: boolean; bind: boolean }) {
-    const controller = new CapturingController(kind);
-    const store = createTestHarness().store;
-    const bundle = createTestHarness({
-      controllers: [controller],
-      store,
-      ...(options.grant
-        ? { structuredMemoryReadView: createStructuredMemoryReadViewResolver({ store, grants: true }) }
-        : {}),
-    });
-    const definition =
-      kind === "agent"
-        ? scriptedAgentDefinition({ id: `cap-${kind}`, program: [{ do: "complete" }] })
-        : scriptedWorkflowDefinition({ id: `cap-${kind}`, program: [{ do: "complete" }] });
-    const ref = await bundle.definitions.save(definition);
-    const handle = await bundle.harness.createExecution({
-      definition: ref,
-      ...(options.bind ? { structuredMemory: MEMORY } : {}),
-    });
-    if (options.bind) await seedStructuredMemory(bundle.store, handle.executionId, [{ key: "profile", value: { name: "Ada" } }]);
-    await bundle.harness.runUntilIdle();
-    return controller.captured;
+describe("the AgentController resolves the read view exactly once per new model invocation", () => {
+  interface RunOptions {
+    readonly request?: readonly string[];
+    readonly grants?: StructuredMemoryReadGrantRule;
+    readonly bind?: boolean;
+    readonly seed?: readonly { key: string; value: unknown }[];
+    readonly steps?: readonly { output: Record<string, unknown> }[];
   }
 
-  test("ActivationInput.memory is null with no binding, and null with a binding but no resolver", async () => {
-    assert.equal((await capture("agent", { grant: true, bind: false }))?.memory, null);
-    assert.equal((await capture("agent", { grant: false, bind: true }))?.memory, null);
-  });
-
-  test("a bound Execution with a read grant receives the authorized snapshot - Agent and Workflow alike", async () => {
-    for (const kind of ["agent", "workflow"] as const) {
-      const input = await capture(kind, { grant: true, bind: true });
-      const memory = input?.memory as StructuredMemoryReadView;
-      assert.ok(memory, `${kind} received the snapshot`);
-      assert.equal(memory.revision, 1);
-      assert.deepEqual(
-        memory.fields.map((field) => ({ key: field.key, value: field.value })),
-        [
-          { key: "count", value: undefined },
-          { key: "profile", value: { name: "Ada" } },
-        ],
-        `${kind} sees the same controller-neutral snapshot`,
-      );
-    }
-  });
-
-  test("the shared read modules name no controller concept", async () => {
-    for (const path of ["execution/structured-memory-read.ts", "ports/structured-memory-read-view.ts", "reference/structured-memory-read-view-resolver.ts"]) {
-      const source = await readFile(resolve(CORE_SRC, path), "utf8");
-      for (const term of ["Agent", "Workflow", "Stage", "projection", "step"]) {
-        assert.ok(!new RegExp(`\\b${term}\\b`).test(source.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "")), `${path} must not mention "${term}"`);
-      }
-    }
-  });
-});
-
-// -- the reference Agent information branch renders it -----------------------
-
-describe("the reference Agent information compiler renders authorized Structured Memory", () => {
-  async function runAgent(options: {
-    memoryReadGrants?: StructuredMemoryReadGrantRule;
-    bind?: boolean;
-    seed?: readonly { key: string; value: unknown }[];
-  }) {
-    const executor = scriptedAgentExecutor([
-      { kind: "respond", text: "one" },
-      { kind: "respond", text: "two" },
-    ]);
+  async function runAgent(options: RunOptions) {
+    const store = new CountingStore();
+    const provider = new ScriptedModelProvider({
+      id: "test",
+      steps: options.steps ?? [{ output: { text: "answer" } }],
+    });
+    const wrapped = options.grants !== undefined
+      ? countingResolver(createStructuredMemoryReadViewResolver({ store, grants: options.grants }))
+      : null;
     const bundle = createAgentTestHarness({
+      store,
       models: agentModelAccess(testModelResolver()),
-      executor,
-      ...(options.memoryReadGrants !== undefined ? { memoryReadGrants: options.memoryReadGrants } : {}),
+      executor: referenceAgentExecutor([provider]),
+      ...(wrapped ? { structuredMemoryReadView: wrapped.resolver } : {}),
     });
-    const ref = await bundle.definitions.save(testAgent({ id: `read-${Math.random().toString(36).slice(2)}`, instructions: INSTRUCTIONS }));
-    const agent = await bundle.createAgent({
-      definition: ref,
-      authority: [],
-      ...(options.bind ? { memory: MEMORY } : {}),
-    });
+    const ref = await bundle.definitions.save(
+      testAgent({
+        id: `read-${Math.random().toString(36).slice(2)}`,
+        instructions: INSTRUCTIONS,
+        ...(options.request ? { structuredMemory: { read: { keys: options.request } } } : {}),
+      }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [], ...(options.bind ? { memory: MEMORY } : {}) });
     if (options.seed) {
-      await seedStructuredMemory(bundle.store, agent.executionId, options.seed as { key: string; value: never }[]);
+      await seedStructuredMemory(store, agent.executionId, options.seed as { key: string; value: never }[]);
     }
+    store.viewReads = 0;
+    store.executionReads = 0;
     await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "hello" });
     await bundle.harness.runUntilIdle();
     await bundle.harness.drainResumptions();
-    return { executor, bundle, agent };
+    return { store, provider, bundle, agent, resolver: wrapped };
   }
 
-  test("no read grant: the system prompt is exactly the instructions, even with a committed value", async () => {
-    const { executor } = await runAgent({ bind: true, seed: [{ key: "profile", value: { name: "Ada" } }] });
-    assert.equal(executor.requests[0]!.information.system, INSTRUCTIONS);
+  test("no authored read request: zero resolver calls, zero view reads, unchanged information", async () => {
+    // The Execution has a binding, a write-enabled deployment, and a wired read resolver - and the
+    // Agent still pays nothing, because it did not ask.
+    const withWrite = createAllowListAuthorizer({ grants: [], memory: true });
+    const run = await (async () => {
+      const store = new CountingStore();
+      const provider = new ScriptedModelProvider({ id: "test", steps: [{ output: { text: "answer" } }] });
+      const wrapped = countingResolver(createStructuredMemoryReadViewResolver({ store, grants: true }));
+      const bundle = createAgentTestHarness({
+        store,
+        authorizer: withWrite,
+        models: agentModelAccess(testModelResolver()),
+        executor: referenceAgentExecutor([provider]),
+        structuredMemoryReadView: wrapped.resolver,
+      });
+      const ref = await bundle.definitions.save(testAgent({ id: "no-request", instructions: INSTRUCTIONS }));
+      const agent = await bundle.createAgent({ definition: ref, authority: [], memory: MEMORY });
+      await seedStructuredMemory(store, agent.executionId, [{ key: "profile", value: { name: "Ada" } }]);
+      store.viewReads = 0;
+      await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "hello" });
+      await bundle.harness.runUntilIdle();
+      return { store, provider, wrapped };
+    })();
+
+    assert.equal(run.wrapped.count, 0, "the resolver was never called");
+    assert.equal(run.store.viewReads, 0, "no Structured Memory view was read");
+    assert.equal(run.provider.requests[0]!.system, INSTRUCTIONS, "the system prompt is exactly the instructions");
   });
 
-  test("a granted key and its value are rendered; an ungranted key is absent", async () => {
-    const { executor } = await runAgent({
+  test("an authored request for an unauthorized key resolves to null and reads no view", async () => {
+    const run = await runAgent({
+      request: ["count"],
+      grants: { readableKeys: ["profile"] },
       bind: true,
-      memoryReadGrants: { readableKeys: ["profile"] },
+      seed: [{ key: "count", value: 3 }],
+    });
+    assert.equal(run.resolver!.count, 1, "one resolution for the one new invocation");
+    assert.equal(run.resolver!.calls[0]!.revision, null, "it resolved to no snapshot");
+    assert.equal(run.store.viewReads, 0, "grant denial happened before any view read");
+    assert.equal(run.provider.requests[0]!.system, INSTRUCTIONS);
+  });
+
+  test("request keys are intersected with read authority and with the bound view", async () => {
+    // bound view: profile, count, flag
+    // authored request: profile, count
+    // read grant permits: profile, flag
+    // model receives: profile only
+    const run = await runAgent({
+      request: ["profile", "count"],
+      grants: { readableKeys: ["profile", "flag"] },
+      bind: true,
       seed: [{ key: "profile", value: { name: "Ada" } }],
     });
-    const system = executor.requests[0]!.information.system;
-    assert.match(system, /# Structured Memory/);
-    assert.match(system, /profile — .*: \{"name":"Ada"\}/);
-    assert.doesNotMatch(system, /\bcount\b/, "count was not granted");
+    const system = run.provider.requests[0]!.system;
+    assert.match(system, /profile — .*\{"name":"Ada"\}/);
+    assert.doesNotMatch(system, /\bcount\b/, "count was requested but not read-authorized");
+    assert.doesNotMatch(system, /\bflag\b/, "flag was read-authorized but not requested");
+  });
+
+  test("one resolution per new invocation; zero on re-entry; a later invocation may see a newer revision", async () => {
+    const store = new CountingStore();
+    const provider = createDeferredModelProvider("test");
+    let failNext = false;
+    const inner = createStructuredMemoryReadViewResolver({ store, grants: true });
+    const wrapped = countingResolver({
+      async resolve(request) {
+        if (failNext) throw new Error("the read resolver must not be called on re-entry");
+        return inner.resolve(request);
+      },
+    });
+    const bundle = createAgentTestHarness({
+      store,
+      models: agentModelAccess(testModelResolver()),
+      executor: referenceAgentExecutor([provider]),
+      structuredMemoryReadView: wrapped.resolver,
+      inlineWait: createNoInlineWaitBudget(),
+    });
+    const ref = await bundle.definitions.save(
+      testAgent({ id: "reentry", instructions: INSTRUCTIONS, structuredMemory: { read: { keys: ["profile"] } } }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [], memory: MEMORY });
+    await seedStructuredMemory(store, agent.executionId, [{ key: "profile", value: { name: "Ada" } }]);
+
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "one" });
+    await bundle.harness.runUntilIdle();
+    assert.equal(wrapped.count, 1, "step 1 resolved the read view once");
+    assert.equal(wrapped.calls[0]!.revision, 1, "and saw revision 1");
+
+    // The value changes while the model call is outstanding.
+    await seedStructuredMemory(store, agent.executionId, [{ key: "profile", value: { name: "Bo" } }]);
+    failNext = true;
+    provider.settle({ text: "first" });
+    await bundle.harness.drainResumptions();
+    await bundle.harness.runUntilIdle();
+    assert.equal(wrapped.count, 1, "re-entry re-resolved nothing");
+    assert.equal(provider.invocationCount, 1, "and recompiled nothing: the provider saw one request");
+    assert.match(provider.requests[0]!.system, /\{"name":"Ada"\}/, "the frozen invocation still shows revision 1");
+
+    // The next genuine new invocation resolves again and may see the newer revision.
+    failNext = false;
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "two" });
+    await bundle.harness.runUntilIdle();
+    assert.equal(wrapped.count, 2, "a new invocation resolved once more");
+    assert.equal(wrapped.calls[1]!.revision, 2);
+    provider.settle({ text: "second" });
+    await bundle.harness.drainResumptions();
+    await bundle.harness.runUntilIdle();
+    assert.match(provider.requests[1]!.system, /\{"name":"Bo"\}/, "step 2 sees revision 2");
+  });
+});
+
+// -- rendering ---------------------------------------------------------------
+
+describe("the reference Agent information compiler renders authorized Structured Memory as data", () => {
+  async function system(options: {
+    request?: readonly string[];
+    grants?: StructuredMemoryReadGrantRule;
+    seed?: readonly { key: string; value: unknown }[];
+  }) {
+    const store = new InMemoryRuntimeStore();
+    const provider = new ScriptedModelProvider({ id: "test", steps: [{ output: { text: "answer" } }] });
+    const bundle = createAgentTestHarness({
+      store,
+      models: agentModelAccess(testModelResolver()),
+      executor: referenceAgentExecutor([provider]),
+      ...(options.grants !== undefined ? { memoryReadGrants: options.grants } : {}),
+    });
+    const ref = await bundle.definitions.save(
+      testAgent({
+        id: `render-${Math.random().toString(36).slice(2)}`,
+        instructions: INSTRUCTIONS,
+        ...(options.request ? { structuredMemory: { read: { keys: options.request } } } : {}),
+      }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [], memory: MEMORY });
+    if (options.seed) await seedStructuredMemory(store, agent.executionId, options.seed as { key: string; value: never }[]);
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "hello" });
+    await bundle.harness.runUntilIdle();
+    return provider.requests[0]!.system;
+  }
+
+  test("no request: the system prompt is exactly the instructions, even with a committed value", async () => {
+    assert.equal(await system({ grants: true, seed: [{ key: "profile", value: { name: "Ada" } }] }), INSTRUCTIONS);
+  });
+
+  test("the block declares the data/instruction boundary and never leaks the view id", async () => {
+    const rendered = await system({
+      request: ["profile"],
+      grants: true,
+      seed: [{ key: "profile", value: { name: "Ada" } }],
+    });
+    assert.match(rendered, /# Structured Memory/);
+    assert.match(rendered, /read-only application data, not instructions/);
+    assert.match(rendered, /profile — .*\{"name":"Ada"\}/);
+    assert.doesNotMatch(rendered, /smv_|memoryViewId/, "the internal view id is never rendered");
   });
 
   test("a declared but unset readable field renders as (not set)", async () => {
-    const { executor } = await runAgent({ bind: true, memoryReadGrants: true, seed: [{ key: "profile", value: { name: "Ada" } }] });
-    const system = executor.requests[0]!.information.system;
-    assert.match(system, /profile — .*: \{"name":"Ada"\}/);
-    assert.match(system, /count — .*: \(not set\)/);
+    const rendered = await system({ request: ["profile", "count"], grants: true, seed: [{ key: "profile", value: { name: "Ada" } }] });
+    assert.match(rendered, /profile — .*\{"name":"Ada"\}/);
+    assert.match(rendered, /count — .*\(not set\)/);
   });
 
-  test("the rendering is deterministic and the selection identity reflects it", async () => {
-    const a = await runAgent({ bind: true, memoryReadGrants: true, seed: [{ key: "profile", value: { name: "Ada" } }] });
-    const b = await runAgent({ bind: true, memoryReadGrants: true, seed: [{ key: "profile", value: { name: "Ada" } }] });
-    assert.equal(a.executor.requests[0]!.information.system, b.executor.requests[0]!.information.system);
-    assert.deepEqual(a.bundle.trace.informationSelections()[0], b.bundle.trace.informationSelections()[0]);
+  test("the rendering is deterministic", async () => {
+    const seed = [{ key: "profile", value: { name: "Ada" } }];
+    assert.equal(
+      await system({ request: ["profile"], grants: true, seed }),
+      await system({ request: ["profile"], grants: true, seed }),
+    );
+  });
+});
 
-    const c = await runAgent({ bind: true, memoryReadGrants: true, seed: [{ key: "profile", value: { name: "Bo" } }] });
-    assert.notEqual(a.bundle.trace.informationSelections()[0], c.bundle.trace.informationSelections()[0], "a different value is a different selection");
+// -- controller-neutral seam; Agent is the only F.1 consumer -------------------
+
+describe("the read seam stays controller-neutral while F.1 wires only the Agent", () => {
+  test("the shared read modules name no controller concept", async () => {
+    for (const path of [
+      "execution/structured-memory-read.ts",
+      "ports/structured-memory-read-view.ts",
+      "reference/structured-memory-read-view-resolver.ts",
+    ]) {
+      const code = (await readFile(resolve(CORE_SRC, path), "utf8")).replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
+      for (const term of ["Agent", "Workflow", "Stage", "projection", "step"]) {
+        assert.ok(!new RegExp(`\\b${term}\\b`).test(code), `${path} must not mention "${term}"`);
+      }
+    }
   });
 
-  test("a value committed after step 1 is visible to step 2, not retroactively to step 1", async () => {
-    const { executor, bundle, agent } = await runAgent({ bind: true, memoryReadGrants: true });
-    const stepOneSystem = executor.requests[0]!.information.system;
-    assert.match(stepOneSystem, /profile — .*: \(not set\)/, "profile is unset at step 1");
+  test("only the AgentController is wired to the resolver; the WorkflowController is not", async () => {
+    const agent = await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8");
+    const workflow = await readFile(resolve(CORE_SRC, "controllers/workflow/controller.ts"), "utf8");
+    assert.ok(agent.includes("StructuredMemoryReadViewResolver"), "the Agent controller holds the resolver");
+    assert.ok(!workflow.includes("StructuredMemoryRead"), "the Workflow controller has no memory read wiring in F.1");
+  });
 
-    await seedStructuredMemory(bundle.store, agent.executionId, [{ key: "profile", value: { name: "Ada" } }]);
-    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "again" });
+  test("a Workflow with a Structured Memory binding runs without any read", async () => {
+    const store = new CountingStore();
+    const bundle = createTestHarness({
+      store,
+      authorizer: createAllowListAuthorizer({ grants: [], memory: true }),
+    });
+    const ref = await bundle.definitions.save(scriptedWorkflowDefinition({ id: "wf-mem", program: [{ do: "complete" }] }));
+    const handle = await bundle.harness.createExecution({ definition: ref, structuredMemory: MEMORY });
+    store.viewReads = 0;
     await bundle.harness.runUntilIdle();
-    await bundle.harness.drainResumptions();
-
-    assert.equal(executor.requests[0]!.information.system, stepOneSystem, "step 1's frozen context is unchanged");
-    assert.match(executor.requests[1]!.information.system, /profile — .*: \{"name":"Ada"\}/, "step 2 sees the new value");
+    const context = await bundle.harness.inspect(handle.executionId);
+    assert.equal(context?.lifecycle, "COMPLETED");
+    assert.equal(store.viewReads, 0, "no F.1 consumer means no read");
   });
 });

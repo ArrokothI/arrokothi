@@ -21,6 +21,7 @@ export type AgentSpecIssueCode =
   | "invalid_model"
   | "invalid_instructions"
   | "invalid_operations"
+  | "invalid_structured_memory"
   | "invalid_limits"
   | "invalid_completion"
   | "unknown_field";
@@ -35,7 +36,7 @@ export type AgentSpecValidation =
   | { readonly ok: true; readonly spec: AgentSpec }
   | { readonly ok: false; readonly issues: readonly AgentSpecIssue[] };
 
-const KNOWN_FIELDS = new Set(["model", "instructions", "operations", "limits", "completion"]);
+const KNOWN_FIELDS = new Set(["model", "instructions", "operations", "structuredMemory", "limits", "completion"]);
 const REQUIREMENT_LEVELS = new Set<ModelRequirementLevel>(["required", "optional"]);
 const LIMIT_FIELDS = ["maxModelCalls", "maxOperationCallsPerStep", "maxContextMessages"] as const;
 
@@ -92,6 +93,56 @@ function modelIssues(value: unknown): AgentSpecIssue[] {
   return issues;
 }
 
+/**
+ * The authored Structured Memory read request.
+ *
+ * Strict and small: `structuredMemory` carries only `read`, `read` carries only `keys`, and `keys`
+ * is a non-empty list of unique non-empty strings. Absent means no memory read. This is a request
+ * intersected with read authority downstream - validating it here keeps a malformed one from
+ * becoming a definition, not from becoming a grant.
+ */
+function structuredMemoryIssues(value: unknown): AgentSpecIssue[] {
+  if (value === undefined) return [];
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return [{ path: "spec.structuredMemory", code: "invalid_structured_memory", message: "expected a Structured Memory spec object" }];
+  }
+  const issues: AgentSpecIssue[] = [];
+  const spec = value as Record<string, unknown>;
+  for (const key of Object.keys(spec)) {
+    if (key !== "read") {
+      issues.push({ path: `spec.structuredMemory.${key}`, code: "invalid_structured_memory", message: `unknown Structured Memory spec field "${key}"` });
+    }
+  }
+  const read = spec["read"];
+  if (read === undefined) return issues;
+  if (read === null || typeof read !== "object" || Array.isArray(read)) {
+    issues.push({ path: "spec.structuredMemory.read", code: "invalid_structured_memory", message: "expected a read-request object" });
+    return issues;
+  }
+  const request = read as Record<string, unknown>;
+  for (const key of Object.keys(request)) {
+    if (key !== "keys") {
+      issues.push({ path: `spec.structuredMemory.read.${key}`, code: "invalid_structured_memory", message: `unknown read-request field "${key}"` });
+    }
+  }
+  const keys = request["keys"];
+  if (!Array.isArray(keys) || keys.length === 0) {
+    issues.push({ path: "spec.structuredMemory.read.keys", code: "invalid_structured_memory", message: "expected a non-empty array of field keys" });
+    return issues;
+  }
+  const seen = new Set<string>();
+  for (const [index, key] of keys.entries()) {
+    if (typeof key !== "string" || key.trim().length === 0) {
+      issues.push({ path: `spec.structuredMemory.read.keys[${index}]`, code: "invalid_structured_memory", message: "expected a non-empty field key" });
+    } else if (seen.has(key)) {
+      issues.push({ path: `spec.structuredMemory.read.keys[${index}]`, code: "invalid_structured_memory", message: `key "${key}" is requested more than once` });
+    } else {
+      seen.add(key);
+    }
+  }
+  return issues;
+}
+
 function limitIssues(value: unknown): AgentSpecIssue[] {
   if (value === undefined) return [];
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -127,6 +178,8 @@ export function validateAgentSpec(input: unknown): AgentSpecValidation {
   for (const issue of exposureRequestIssues(candidate["operations"], "spec.operations")) {
     issues.push({ path: issue.path, code: "invalid_operations", message: issue.message });
   }
+
+  issues.push(...structuredMemoryIssues(candidate["structuredMemory"]));
 
   issues.push(...limitIssues(candidate["limits"]));
 

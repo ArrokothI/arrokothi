@@ -82,7 +82,7 @@ describe("the Effect gateway", () => {
 
     const input = captured as unknown as ActivationInput;
     assert.ok(input, "the controller ran");
-    assert.deepEqual(Object.keys(input).sort(), ["activation", "definition", "events", "execution", "memory"]);
+    assert.deepEqual(Object.keys(input).sort(), ["activation", "definition", "events", "execution"]);
 
     // The proposal is data the Harness acted on; the controller never touched what acted on it.
     assert.equal(executor.callCount, 1, "the Harness dispatched, having authorized first");

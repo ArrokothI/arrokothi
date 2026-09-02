@@ -20,7 +20,6 @@ import type { DefinitionKind, ExecutionDefinition } from "../definitions/types.t
 import type { EffectProposal } from "../effects/types.ts";
 import { effectProposalIssues } from "../effects/types.ts";
 import type { ControllerProgress, ExecutionView } from "../execution/context.ts";
-import type { StructuredMemoryReadView } from "../execution/structured-memory-read.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
 import { emissionBodyIssues } from "../execution/emission.ts";
 import type { ActivationId, ExecutionId } from "../execution/ids.ts";
@@ -270,14 +269,12 @@ export function buildActivationInput(input: {
   readonly execution: ExecutionView;
   readonly definition: ExecutionDefinition;
   readonly events: readonly DeliveredEvent[];
-  readonly memory: StructuredMemoryReadView | null;
   readonly activation: ActivationInput["activation"];
 }): ActivationInput {
   return deepFreeze({
     execution: structuredClone(input.execution) as ExecutionView,
     definition: structuredClone(input.definition) as ExecutionDefinition,
     events: structuredClone(input.events) as readonly DeliveredEvent[],
-    memory: input.memory === null ? null : (structuredClone(input.memory) as StructuredMemoryReadView),
     activation: structuredClone(input.activation) as ActivationInput["activation"],
   });
 }
