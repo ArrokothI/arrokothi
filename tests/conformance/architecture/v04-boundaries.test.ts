@@ -64,6 +64,7 @@ const V04_OWNED_FILES = [
   "runtime/resumption-processor.ts",
   "testing/scripted-controllers.ts",
   "testing/execution-harness.ts",
+  "testing/structured-memory.ts",
 ];
 
 /**

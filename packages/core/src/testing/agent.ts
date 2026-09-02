@@ -29,8 +29,10 @@ import type {
 import type { AgentObservationProjector } from "../agent/observation-projection.ts";
 import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { ExecutionId } from "../execution/ids.ts";
+import type { StructuredMemoryBinding } from "../execution/structured-memory.ts";
 import type { OperationRef } from "../operations/refs.ts";
 import type { ActiveOperationViewResolver } from "../ports/active-operation-view.ts";
+import type { StructuredMemoryReadViewResolver } from "../ports/structured-memory-read-view.ts";
 import type { AgentExecutor } from "../ports/agent-executor.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
@@ -41,6 +43,8 @@ import { createReferenceAgentExecutor } from "../reference/agent-executor.ts";
 import { InMemoryRuntimeStore } from "../reference/in-memory-runtime-store.ts";
 import { ModelProviderRegistry } from "../reference/model-provider-registry.ts";
 import { createRuntimeOperationAuthoritySource } from "../reference/operation-authority.ts";
+import type { StructuredMemoryReadGrantRule } from "../reference/structured-memory-read-view-resolver.ts";
+import { createStructuredMemoryReadViewResolver } from "../reference/structured-memory-read-view-resolver.ts";
 import { createTestHarness } from "./execution-harness.ts";
 import type { TestHarnessBundle, TestHarnessOptions } from "./execution-harness.ts";
 
@@ -111,6 +115,21 @@ export interface AgentTestHarnessOptions extends Omit<TestHarnessOptions, "contr
   readonly store?: InMemoryRuntimeStore;
   readonly taskScope?: readonly string[];
   readonly trace?: AgentTrace;
+  /**
+   * The Structured Memory read resolver handed to the `AgentController`.
+   *
+   * Held by the controller the way the exposure resolver is - a narrow read-only port, not runtime
+   * state. Omitting it (and `memoryReadGrants`) means the fail-closed default: no Structured Memory
+   * reaches the model even for an Agent that authored a read request.
+   */
+  readonly structuredMemoryReadView?: StructuredMemoryReadViewResolver;
+  /**
+   * Convenience: builds the reference read resolver against the shared store with these grants.
+   *
+   * Deny-by-default like the real thing. Independent of `authorizer`: this grants reads, never
+   * `WriteMemory`. A test that needs a custom resolver passes `structuredMemoryReadView` instead.
+   */
+  readonly memoryReadGrants?: StructuredMemoryReadGrantRule;
 }
 
 export interface CreateTestAgentInput {
@@ -122,6 +141,8 @@ export interface CreateTestAgentInput {
    * a conformance run needs to be able to produce deliberately.
    */
   readonly authority?: readonly OperationRef[];
+  /** One Execution-local Structured Memory binding. Grants no authority - reads and writes are separate. */
+  readonly memory?: StructuredMemoryBinding;
 }
 
 export interface AgentTestHarnessBundle extends TestHarnessBundle {
@@ -148,12 +169,19 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
       catalog,
     });
 
+  const structuredMemoryReadView =
+    options.structuredMemoryReadView ??
+    (options.memoryReadGrants !== undefined
+      ? createStructuredMemoryReadViewResolver({ store, grants: options.memoryReadGrants })
+      : undefined);
+
   const controller = createAgentController({
     views,
     ...(options.models !== undefined ? { models: options.models } : {}),
     ...(options.executor !== undefined ? { executor: options.executor } : {}),
     ...(options.observations !== undefined ? { observations: options.observations } : {}),
     ...(options.information !== undefined ? { information: options.information } : {}),
+    ...(structuredMemoryReadView !== undefined ? { structuredMemoryReadView } : {}),
     ...(options.taskScope !== undefined ? { taskScope: options.taskScope } : {}),
     trace,
   });
@@ -179,6 +207,7 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
       const handle = await bundle.harness.createExecution({
         definition: input.definition,
         ...(input.authority !== undefined ? { operationAuthority: { operations: [...input.authority] } } : {}),
+        ...(input.memory !== undefined ? { structuredMemory: input.memory } : {}),
       });
       return { executionId: handle.executionId };
     },

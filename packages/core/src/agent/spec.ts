@@ -58,6 +58,38 @@ export const DEFAULT_AGENT_LIMITS: AgentLimits = Object.freeze({
   maxContextMessages: 64,
 });
 
+/**
+ * An authored request to read named Structured Memory fields into the model's information context.
+ *
+ * A *request*, not authority - the exact counterpart of `operations` on the operation branch:
+ *
+ * ```text
+ * spec.structuredMemory.read.keys   what the author would like read
+ * read authority / grant            what the deployment decided is readable
+ * bound Structured Memory view      what actually exists
+ *          ↓ intersection
+ * authorized read snapshot          what the model is shown
+ * ```
+ *
+ * Absent means no memory read - reading is never implicit, exactly as exposure is never implicit.
+ * Writing a key here neither grants read access to it nor makes it appear if it is unwritten.
+ */
+export interface AgentStructuredMemoryRead {
+  /** The field keys the author would like read. Non-empty, unique. Intersected with read authority. */
+  readonly keys: readonly string[];
+}
+
+/**
+ * The authored Structured Memory spec.
+ *
+ * Deliberately a single optional `read` member rather than a general memory-form union. F.1 is the
+ * read path; a write-exposure request (F.1.1) or Working Notes are separate future shapes, added
+ * here only when they exist.
+ */
+export interface AgentStructuredMemorySpec {
+  readonly read?: AgentStructuredMemoryRead;
+}
+
 export interface AgentSpec {
   /** Logical model plus the portable features this Agent genuinely needs. Never a provider id. */
   readonly model: LogicalModelRequest;
@@ -65,6 +97,8 @@ export interface AgentSpec {
   readonly instructions: string;
   /** Which authorized operations to expose. Absent means none: exposure is never implicit. */
   readonly operations?: OperationExposureRequest;
+  /** Which Structured Memory fields to request into context. Absent means none: reading is never implicit. */
+  readonly structuredMemory?: AgentStructuredMemorySpec;
   readonly limits?: AgentLimits;
   readonly completion?: AgentCompletionMode;
 }
@@ -74,8 +108,14 @@ export interface AgentSpecInput {
   readonly model: LogicalModelRequest;
   readonly instructions: string;
   readonly operations?: OperationExposureRequest;
+  readonly structuredMemory?: AgentStructuredMemorySpec;
   readonly limits?: Partial<AgentLimits>;
   readonly completion?: AgentCompletionMode;
+}
+
+/** The authored Structured Memory read request, or `null` when the Agent asked for none. */
+export function agentStructuredMemoryRead(spec: AgentSpec): AgentStructuredMemoryRead | null {
+  return spec.structuredMemory?.read ?? null;
 }
 
 export function agentLimits(spec: AgentSpec): AgentLimits {

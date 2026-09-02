@@ -129,15 +129,15 @@ describe("an information compiler chooses what the model reads and nothing else"
 
   test("the reference compiler bounds the window, which is the one thing it is for", () => {
     const messages = Array.from({ length: 10 }, (_, index) => ({ role: "user" as const, content: `m${index}` }));
-    const compiled = compileAgentInformation({ instructions: "go", messages, maxMessages: 3 });
+    const compiled = compileAgentInformation({ instructions: "go", messages, maxMessages: 3, memory: null });
     assert.deepEqual(compiled.messages.map((message) => message.content), ["m7", "m8", "m9"]);
-    assert.deepEqual(compileAgentInformation({ instructions: "go", messages, maxMessages: 0 }).messages, []);
+    assert.deepEqual(compileAgentInformation({ instructions: "go", messages, maxMessages: 0, memory: null }).messages, []);
   });
 
   test("the selection identity is content-derived and stable", () => {
-    const one = compileAgentInformation({ instructions: "go", messages: [{ role: "user", content: "a" }], maxMessages: 5 });
-    const same = compileAgentInformation({ instructions: "go", messages: [{ role: "user", content: "a" }], maxMessages: 5 });
-    const other = compileAgentInformation({ instructions: "go", messages: [{ role: "user", content: "b" }], maxMessages: 5 });
+    const one = compileAgentInformation({ instructions: "go", messages: [{ role: "user", content: "a" }], maxMessages: 5, memory: null });
+    const same = compileAgentInformation({ instructions: "go", messages: [{ role: "user", content: "a" }], maxMessages: 5, memory: null });
+    const other = compileAgentInformation({ instructions: "go", messages: [{ role: "user", content: "b" }], maxMessages: 5, memory: null });
 
     assert.equal(agentInformationSelectionId(same), agentInformationSelectionId(one), "equal selections, equal identity");
     assert.notEqual(agentInformationSelectionId(other), agentInformationSelectionId(one));

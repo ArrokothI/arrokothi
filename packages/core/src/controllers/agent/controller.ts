@@ -88,7 +88,7 @@ import type { AgentModelObservation, AgentObservationProjector } from "../../age
 import { projectAgentObservations, referenceAgentObservationProjector } from "../../agent/observation-projection.ts";
 import type { AgentObservationOutcome, AgentOperationObservation } from "../../agent/observations.ts";
 import type { AgentSpec } from "../../agent/spec.ts";
-import { agentCompletionMode, agentLimits } from "../../agent/spec.ts";
+import { agentCompletionMode, agentLimits, agentStructuredMemoryRead } from "../../agent/spec.ts";
 import { agentInformationSelectionId } from "../../agent/information-context.ts";
 import { validateAgentSpec } from "../../agent/validation.ts";
 import type { ModelActionTarget } from "../../operations/action-target.ts";
@@ -96,6 +96,8 @@ import { createModelOperationProjection, modelCapabilitySpecs, resolveProjectedA
 import { EMPTY_EXPOSURE_REQUEST } from "../../operations/exposure.ts";
 import type { ActiveOperationViewResolver } from "../../ports/active-operation-view.ts";
 import { noActiveOperationView } from "../../ports/active-operation-view.ts";
+import type { StructuredMemoryReadViewResolver } from "../../ports/structured-memory-read-view.ts";
+import { noStructuredMemoryRead } from "../../ports/structured-memory-read-view.ts";
 import type { AgentExecutor, AgentExecutorOutcome } from "../../ports/agent-executor.ts";
 import { agentExecutorOutcomeIssues } from "../../ports/agent-executor.ts";
 import type { ActivationInput, ActivationOutcome, ExecutionController } from "../../ports/controller.ts";
@@ -135,6 +137,18 @@ export interface AgentControllerOptions {
    * instructions plus a bounded window of recent messages.
    */
   readonly information?: AgentInformationCompiler;
+  /**
+   * Resolves the authorized read-only Structured Memory snapshot for one model invocation.
+   *
+   * Held here the way `views` is - a narrow read-only port, not runtime state. It is consulted
+   * only when the Agent has an authored `spec.structuredMemory.read` request, and only when a *new*
+   * model invocation is being constructed; a re-entering invocation replays its persisted
+   * information and never re-resolves. Absent means the fail-closed default: no Structured Memory
+   * reaches the model even for an Agent that requested it. It is independent of Effect
+   * authorization - a read is not an Effect, and read authority is separate from `WriteMemory`
+   * authority.
+   */
+  readonly structuredMemoryReadView?: StructuredMemoryReadViewResolver;
   /**
    * Application task scope: authored group labels to narrow to now.
    *
@@ -228,6 +242,7 @@ class AgentController implements ExecutionController {
   private readonly trace: AgentTrace | undefined;
   private readonly observations: AgentObservationProjector;
   private readonly information: AgentInformationCompiler;
+  private readonly structuredMemoryReadView: StructuredMemoryReadViewResolver;
 
   constructor(options: AgentControllerOptions) {
     this.views = options.views ?? noActiveOperationView;
@@ -237,6 +252,7 @@ class AgentController implements ExecutionController {
     this.trace = options.trace;
     this.observations = options.observations ?? referenceAgentObservationProjector;
     this.information = options.information ?? referenceAgentInformationCompiler;
+    this.structuredMemoryReadView = options.structuredMemoryReadView ?? noStructuredMemoryRead;
   }
 
   async activate(input: ActivationInput, resumptions: ControllerResumptionScope): Promise<ActivationOutcome> {
@@ -425,12 +441,26 @@ class AgentController implements ExecutionController {
           },
         };
       }
+      // The read snapshot is resolved here, for this one new invocation, and only if the Agent
+      // authored a request. The request is a request: it names keys, the resolver intersects them
+      // with read authority, and an unauthorized key never causes the bound view to be read. The
+      // result is compiled into `invocation.information` and frozen with it - a re-entering step
+      // replays that and never reaches this line, so a memory write mid-step is seen only by the
+      // next new invocation.
+      const memoryRead = agentStructuredMemoryRead(spec);
+      const memory = memoryRead
+        ? ((await this.structuredMemoryReadView.resolve({
+            executionId: input.execution.executionId,
+            keys: memoryRead.keys,
+          })) ?? null)
+        : null;
       invocation = {
         step,
         information: this.information.compile({
           instructions: spec.instructions,
           messages: state.messages,
           maxMessages: limits.maxContextMessages,
+          memory,
         }),
         projection: projected.projection,
         continuation: state.continuation,

@@ -10,6 +10,9 @@
  * is the invariant a resumption field would have destroyed, and it is why the scope is a separate
  * argument. The scope itself is then checked on its own terms: exactly one method, and no route
  * from it to a store, a scheduler, a lifecycle, the Effect gateway, or a settlement path.
+ *
+ * Slice F.1's read snapshot does *not* appear here: it is resolved by the AgentController from a
+ * narrow read-only port when it builds a model invocation, never delivered per Activation.
  */
 
 import { test, describe } from "node:test";
