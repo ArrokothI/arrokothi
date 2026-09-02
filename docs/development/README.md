@@ -52,6 +52,18 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   cancellation hook (child.cancelled, PendingOperation outcome "cancelled",
   trusted Harness.cancelExecution). No canonical-doc change. Not merged.
 
+017-slice-e2-human-interaction-composition-surfaces.md
+  the final Slice E checkpoint: RequestUserInput made dispatchable through the
+  ordinary Effect gateway with a runtime-owned UserInputRequest, a dedicated
+  user.input result Event, a trusted Harness.submitUserInput, and a deny-by-default
+  user-interaction grant; a separate exact-payload mechanical-confirmation gate
+  (ConfirmationPolicy port, ConfirmationRequest bound to the exact proposal +
+  canonical digest, trusted Harness.resolveConfirmation approve|decline,
+  current-authority re-check on approval, confirmation.declined Event); and Agent
+  Stage / Workflow Stage implemented as a child `call` with definition-kind
+  integrity, explicit attenuated child authority, and the child arm of the
+  Workflow completion barrier. No canonical-doc change. Not merged.
+
 014-v1-efficiency-and-developer-ergonomics-validation.md
   cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
   becoming mandatory physical/developer overhead; define kernel/end-to-end/
@@ -84,10 +96,11 @@ MCP-1.1 post-proof semantic correction   done, recorded in 012
 MCP operation proof                      accepted
         ↓
 Slice E composition
-  E.0   child Execution foundation       accepted (013), not merged
-  E.0.1 review retrofit                  accepted (013 §14a), not merged
-  E.1   interleaving + peer interaction  E.1.1 review retrofit (016), not merged
-  E.2   user interaction + surfaces      next
+  E.0 / E.0.1   child Execution foundation        accepted (013), not merged
+  E.1 / E.1.1   interleaving + peer interaction   accepted (016), not merged
+  E.2           human interaction, mechanical     current / final Slice E
+                confirmation, Agent & Workflow    checkpoint (017), not merged;
+                Stage                             stop for independent review
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

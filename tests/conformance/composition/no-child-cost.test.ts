@@ -1,13 +1,13 @@
 /**
- * A no-child Activation performs no child-specific RuntimeStore work (014 simple-path cost check).
+ * A no-feature Activation performs no feature-specific RuntimeStore work (014 simple-path cost check).
  *
  * `docs/development/014-v1-efficiency-and-developer-ergonomics-validation.md` §9's review discipline
  * for a slice that adds a new semantic guarantee: state what physical work the simple path that does
  * not use the new guarantee now pays for, and prove it stays zero. Child composition's guarantee is
- * recursive delegation under a bounded lineage budget; the facets that exist purely to implement it -
- * the lineage spawn budget and the child-Execution link - must not be touched by an ordinary
- * Activation that never proposes `SpawnExecution`. This is a narrow instrumented regression, not a
- * benchmark: it counts RuntimeStore facet calls, not wall time.
+ * recursive delegation under a bounded lineage budget; E.2 adds user-input requests and exact-payload
+ * confirmations. The facets that exist purely to implement any of these must not be touched by an
+ * ordinary Activation whose whole program is a capability call and which uses none of them. This is a
+ * narrow instrumented regression, not a benchmark: it counts RuntimeStore facet calls, not wall time.
  */
 
 import { test, describe } from "node:test";
@@ -117,12 +117,48 @@ class CountingRuntimeStore implements RuntimeStore {
           return tx.pendingOperations.insert(operation);
         },
       },
+      userInputRequests: {
+        insert: (request) => {
+          this.bump("userInputRequests.insert");
+          return tx.userInputRequests.insert(request);
+        },
+        get: (id) => {
+          this.bump("userInputRequests.get");
+          return tx.userInputRequests.get(id);
+        },
+        update: (request) => {
+          this.bump("userInputRequests.update");
+          return tx.userInputRequests.update(request);
+        },
+        listByExecution: (id) => {
+          this.bump("userInputRequests.listByExecution");
+          return tx.userInputRequests.listByExecution(id);
+        },
+      },
+      confirmationRequests: {
+        insert: (request) => {
+          this.bump("confirmationRequests.insert");
+          return tx.confirmationRequests.insert(request);
+        },
+        get: (id) => {
+          this.bump("confirmationRequests.get");
+          return tx.confirmationRequests.get(id);
+        },
+        update: (request) => {
+          this.bump("confirmationRequests.update");
+          return tx.confirmationRequests.update(request);
+        },
+        listByExecution: (id) => {
+          this.bump("confirmationRequests.listByExecution");
+          return tx.confirmationRequests.listByExecution(id);
+        },
+      },
     };
   }
 }
 
-describe("no-child Activation performs no child-specific store work", () => {
-  test("a root with a spawn budget and authority that never spawns touches neither child facet during its Activation", async () => {
+describe("no-feature Activation performs no feature-specific store work", () => {
+  test("a root with a spawn budget and authority that never spawns touches no child / user-input / confirmation facet during its Activation", async () => {
     const definitions = new InMemoryDefinitionStore();
     const store = new CountingRuntimeStore();
     const executor = createScriptedCapabilityExecutor({
@@ -176,6 +212,18 @@ describe("no-child Activation performs no child-specific store work", () => {
       "childExecutionLinks.listByParent",
     ]) {
       assert.equal(store.counts[facet] ?? 0, 0, `no-child Activation must not touch ${facet}`);
+    }
+    for (const facet of [
+      "userInputRequests.insert",
+      "userInputRequests.get",
+      "userInputRequests.update",
+      "userInputRequests.listByExecution",
+      "confirmationRequests.insert",
+      "confirmationRequests.get",
+      "confirmationRequests.update",
+      "confirmationRequests.listByExecution",
+    ]) {
+      assert.equal(store.counts[facet] ?? 0, 0, `an Activation that uses no E.2 feature must not touch ${facet}`);
     }
     assert.equal(store.counts["operationAuthorities.insert"] ?? 0, 0, "no child authority was created for a no-child Activation");
   });
