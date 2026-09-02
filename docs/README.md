@@ -1,6 +1,6 @@
 # ArrokothI Architecture Documents
 
-This directory contains the canonical architecture for ArrokothI plus implementation working documents, one cross-repository product-vision document, and one retained research dossier.
+This directory contains the canonical architecture for ArrokothI plus implementation working documents, one cross-repository product-vision document, one retained research dossier, and focused non-canonical research notes.
 
 The canonical documents intentionally have **non-overlapping ownership**:
 
@@ -28,8 +28,9 @@ Supporting material:
 | [`product-vision.md`](product-vision.md) | cross-repository ArrokothI product direction: heterogeneous Agent application composition, Studio/Cloud direction, ecosystem/adoption/business posture; **not canonical kernel architecture** |
 | [`development/`](development/) | current implementation plans, audits, slice decisions, reviews, migration notes |
 | [`architecture-research-dossier.md`](architecture-research-dossier.md) | retained non-canonical research/source dossier; useful evidence and external-system survey |
+| [`research/`](research/) | focused, non-canonical protocol/system comparisons and experiment directions outside the active implementation sequence |
 
-The product vision may guide future repositories and product surfaces, but it does not own kernel semantics. The research dossier is intentionally **not** canonical even when it contains useful reasoning. When either conflicts with a canonical document, the canonical document wins.
+The product vision may guide future repositories and product surfaces, but it does not own kernel semantics. The research dossier and focused notes under `research/` are intentionally **not** canonical even when they contain useful reasoning. When any supporting research conflicts with a canonical document, the canonical document wins.
 
 ---
 
@@ -118,6 +119,14 @@ Also read `memory.md` for inferred-vs-trusted information and `interoperability.
 future-plan
 ```
 
+### Researching an external system outside the active implementation sequence?
+
+```text
+research/
+```
+
+Research notes frame questions and experiments; return to the canonical concept owner before changing semantics.
+
 ### Actually implementing or reviewing the current slice?
 
 ```text
@@ -164,7 +173,10 @@ development/
   owns implementation work-in-progress, not architecture truth
 
 architecture-research-dossier.md
-  research evidence only, never canonical truth
+  retained research evidence only, never canonical truth
+
+research/
+  focused research observations only, never canonical truth or an implementation commitment
 ```
 
 For example:
