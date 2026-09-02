@@ -2,7 +2,9 @@
 
 > **Status:** F.0 runtime implemented on `slice-f-memory` and accepted by the F.0.1 architecture
 > review. The F.0.1 correction removed the reference Agent's direct `memoryWrite` model-exposure
-> path; model-directed memory-operation exposure is deferred to F.1. Not merged; do not begin F.1.
+> path; the F.0.2 retrofit (§14) hardened the optional projection-narrowing parameter so the
+> restored subset invariant is enforced by construction. Model-directed memory-operation exposure
+> is deferred to F.1. Not merged; do not begin F.1.
 > **Scope:** one schema-bound Execution-local Structured Memory write through the existing Effect
 > gateway.
 > **Canonical documentation change:** none.
@@ -345,3 +347,26 @@ authorized memory interface / memory authority
 
 F.1 may establish the minimum honest shape for that path. F.0.1 only stops the premature bypass.
 No canonical document changed.
+
+## 14. F.0.2 projection-integrity retrofit
+
+A follow-up review noted that `createModelOperationProjection` still carried a pre-existing
+optional per-call narrowing parameter (`CreateProjectionInput.entries`) whose entries were used
+directly as binding source data. Nothing proved a supplied entry belonged to `input.view`, so a
+caller could name an operation the Active View never exposed, or reuse an in-view identity with an
+altered description or input schema, and have it projected. That reopened the same
+`Model Invocation Projection ⊆ Active/Exposed View` gap on the narrowing path.
+
+F.0.2 hardens that parameter so the subset invariant is enforced by construction rather than by
+caller convention. It is now `CreateProjectionInput.operations?: readonly OperationRef[]` — an
+identity-only request. Each ref is resolved against `view.entries`; the binding is built from the
+entry found there, and a ref absent from the view fails projection construction. Caller-supplied
+description, schema, consequentiality, and groups can no longer reach a binding, because the
+parameter no longer carries them. Absent the parameter, the whole Active View is projected, exactly
+as before. The reference Agent does not pass the parameter and its behavior is unchanged; the F.0
+runtime files (Structured Memory state, WriteMemory Effect processing, `memory.written`, Effect
+authorization, confirmation, RuntimeStore memory facet, Workflow memory-write support, Agent
+context compilation) were not touched. The F.0.1 structural test that only counted `bindings.push`
+sites now asserts the semantic property: every successful binding — full view or narrowed subset —
+traces to an entry of the supplied view, and an off-view request is rejected. No canonical document
+changed.

@@ -29,7 +29,7 @@ import {
   readAgentControlState,
   resolveProjectedAlias,
 } from "@agent-sdk/core/execution";
-import { readFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -103,15 +103,62 @@ describe("a projection binding names a typed action target", () => {
     );
   });
 
-  test("the projection builder has no side channel that appends a binding off the Active View (F.0.1)", async () => {
-    const source = await readFile(
+  test("the projection builder has no side channel that adds a binding off the Active View (F.0.1 / F.0.2)", () => {
+    // F.0.2 hardens the optional per-call narrowing so this is enforced by construction, not by
+    // caller convention: every projected binding must be traceable to an entry of the supplied view,
+    // whether the whole view is projected or only a subset.
+    const activeView = view([DOCS_SEARCH, { capability: "mail", operation: "send" }]);
+
+    for (const built of [
+      createModelOperationProjection({ projectionId: "ag/full/projection", view: activeView }),
+      createModelOperationProjection({
+        projectionId: "ag/subset/projection",
+        view: activeView,
+        operations: [DOCS_SEARCH],
+      }),
+    ]) {
+      assert.ok(built.ok);
+      if (!built.ok) continue;
+      assert.equal(built.projection.viewId, activeView.viewId);
+      assert.equal(built.projection.viewRevision, activeView.authorityVersion);
+      assert.ok(built.projection.bindings.length >= 1);
+      assert.ok(
+        built.projection.bindings.length <= activeView.entries.length,
+        "a narrowing can only subset the Active View, never extend it",
+      );
+      for (const binding of built.projection.bindings) {
+        const ref = operationRefOfTarget(binding.target)!;
+        const canonical = activeView.entries.find(
+          (entry) => entry.capability === ref.capability && entry.operation === ref.operation,
+        );
+        assert.ok(canonical, `binding "${binding.alias}" must trace to an entry of the named Active View`);
+        assert.equal(binding.description, canonical!.description, "the view entry is the only source of metadata");
+        assert.deepEqual(binding.input, canonical!.input);
+      }
+      assert.equal(
+        modelCapabilitySpecs(built.projection).some((spec) => spec.name === "write_memory"),
+        false,
+        "no name the Active View did not authorize - write_memory included - reaches the provider",
+      );
+    }
+
+    // A requested identity that the Active View never exposed is rejected outright; it cannot be
+    // projected from the caller's own data.
+    const offView = createModelOperationProjection({
+      projectionId: "ag/offview/projection",
+      view: activeView,
+      operations: [{ capability: "memory", operation: "write" }],
+    });
+    assert.equal(offView.ok, false);
+    assert.ok(!offView.ok && offView.issues.some((issue) => /not exposed by Active View/.test(issue.message)));
+
+    // And the builder still mints no view-neutral memory action from a source-level side channel.
+    const src = readFileSync(
       resolve(dirname(fileURLToPath(import.meta.url)), "../../../packages/core/src/operations/projection.ts"),
       "utf8",
     );
-    // Exactly one place writes a binding, and it is inside the loop over the Active View's entries.
-    assert.equal((source.match(/bindings\.push\(/g) ?? []).length, 1, "one, and only one, binding source");
-    assert.equal(source.includes("memoryWrite"), false, "no authored memory-write exposure request reaches projection");
-    assert.equal(source.includes("write_memory"), false, "the builder mints no view-neutral memory action");
+    assert.equal(src.includes("memoryWrite"), false, "no authored memory-write exposure request reaches projection");
+    assert.equal(src.includes('"write_memory"'), false, "the builder mints no view-neutral memory action");
   });
 
   test("the built snapshot carries the target, and an alias resolves to that exact one", () => {
