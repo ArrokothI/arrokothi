@@ -35,6 +35,7 @@ import {
   workingNotesFrameFromHandoff,
   workingNotesHandoffBudgetIssue,
   workingNotesHandoffIssues,
+  workingNotesHandoffSelectionIssues,
 } from "@agent-sdk/core/execution";
 import type { WorkingNotesFrame, WorkingNotesHandoff } from "@agent-sdk/core/execution";
 import { createAllowListAuthorizer } from "@agent-sdk/core/reference";
@@ -44,7 +45,7 @@ import {
   createScriptedWorkflowController,
   scriptedWorkflowDefinition,
 } from "@agent-sdk/core/testing";
-import type { AgentExecutorOutcome } from "@agent-sdk/core/ports";
+import type { AgentExecutorOutcome, EffectAuthorizer } from "@agent-sdk/core/ports";
 import type { AgentDefinitionInput } from "../agent/fixtures.ts";
 import { scriptedAgentExecutor, testAgent, testCatalog, testModelResolver } from "../agent/fixtures.ts";
 
@@ -129,6 +130,51 @@ describe("Working Notes handoff selection is pure and deterministic", () => {
 
     assert.equal(workingNotesHandoffBudgetIssue({ entries: [{ key: "plan", content: "small" }] }), null);
   });
+
+  test("workingNotesHandoffSelectionIssues enforces the { keys } shape", () => {
+    assert.deepEqual(workingNotesHandoffSelectionIssues({ keys: [] }), [], "an empty key list is valid");
+    assert.deepEqual(workingNotesHandoffSelectionIssues({ keys: ["a", "b"] }), []);
+    for (const bad of [
+      "not an object",
+      null,
+      ["a"],
+      { keys: "a" },
+      { keys: ["", "b"] },
+      { keys: ["  ", "b"] },
+      { keys: ["a", "a"] },
+      { keys: [1, 2] },
+      { keys: ["a"], extra: true },
+    ]) {
+      assert.ok(workingNotesHandoffSelectionIssues(bad).length > 0, `rejected: ${JSON.stringify(bad)}`);
+    }
+  });
+
+  test("the public helpers are fail-closed - they throw on malformed runtime input, never launder it", () => {
+    // selectWorkingNotesHandoff refuses a malformed source frame...
+    for (const badFrame of [
+      { entries: [{ key: "b", content: 1 }, { key: "a", content: 2 }] }, // out of key order
+      { entries: [{ key: "dup", content: 1 }, { key: "dup", content: 2 }] }, // duplicate key
+      { entries: [{ key: "", content: 1 }] }, // blank key
+      { entries: [{ key: "x", content: (() => 0) as never }] }, // non-JSON content
+    ] as const) {
+      assert.throws(
+        () => selectWorkingNotesHandoff(badFrame as never, { keys: ["a"] }),
+        /malformed Working Notes frame/,
+      );
+    }
+    // ...and a malformed selection.
+    for (const badSelection of [{ keys: "a" }, { keys: ["", "b"] }, { keys: ["a", "a"] }, { keys: ["a"], extra: 1 }] as const) {
+      assert.throws(() => selectWorkingNotesHandoff(emptyWorkingNotesFrame(), badSelection as never), /malformed selection/);
+    }
+    // cloneWorkingNotesHandoff and workingNotesFrameFromHandoff refuse a malformed handoff input.
+    const badHandoff = { entries: [{ key: "b", content: 1 }, { key: "a", content: 2 }] } as never;
+    assert.throws(() => cloneWorkingNotesHandoff(badHandoff), /malformed handoff/);
+    assert.throws(() => workingNotesFrameFromHandoff(badHandoff), /malformed handoff/);
+    // a well-formed handoff still round-trips.
+    const good = selectWorkingNotesHandoff(setWorkingNote(emptyWorkingNotesFrame(), "plan", { ok: true }), { keys: ["plan"] });
+    assert.deepEqual(cloneWorkingNotesHandoff(good), good);
+    assert.deepEqual(workingNotesFrameFromHandoff(good).entries, good.entries);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -146,6 +192,7 @@ function rig(input: {
   readonly childInput?: string;
   readonly requestedOperations?: readonly { readonly capability: string; readonly operation: string }[];
   readonly parentAuthority?: readonly { readonly capability: string; readonly operation: string }[];
+  readonly authorizer?: EffectAuthorizer;
 }) {
   const executor = scriptedAgentExecutor(input.outcomes);
   const bundle = createAgentTestHarness({
@@ -153,10 +200,12 @@ function rig(input: {
     executor,
     catalog: testCatalog(),
     extraControllers: [createScriptedWorkflowController()],
-    authorizer: createAllowListAuthorizer({
-      grants: [{ capability: "docs" }, { capability: "mail" }],
-      spawn: true,
-    }),
+    authorizer:
+      input.authorizer ??
+      createAllowListAuthorizer({
+        grants: [{ capability: "docs" }, { capability: "mail" }],
+        spawn: true,
+      }),
   });
 
   return {
@@ -268,13 +317,16 @@ describe("a child Execution starts with an explicitly handed-off Working Notes f
 });
 
 describe("parent and child Working Notes are never a shared mutable frame", () => {
-  test("a parent update after the spawn does not change the child, and vice versa", async () => {
-    // "parent" is a real Agent's own persisted frame; we snapshot it and hand it to the child.
+  test("parent plan A -> B, inherited snapshot stays A, child-local frame -> C - all independent", async () => {
+    // The parent is a real Agent that writes plan=A, we snapshot after step 1, hand it to the child,
+    // and then the parent *actually* advances plan A -> B on step 2.
     const parentBundle = createAgentTestHarness({
       models: agentModelAccess(testModelResolver()),
       executor: scriptedAgentExecutor([
         { kind: "call_operations", calls: [{ callId: "p1", alias: "working_notes_set", input: { key: "plan", content: { v: "A" } } as never }] },
-        { kind: "respond", text: "parent step 1 done" },
+        { kind: "respond", text: "step 1 done" },
+        { kind: "call_operations", calls: [{ callId: "p2", alias: "working_notes_set", input: { key: "plan", content: { v: "B" } } as never }] },
+        { kind: "respond", text: "step 2 done" },
       ]),
     });
     const parentRef = await parentBundle.definitions.save(
@@ -283,8 +335,9 @@ describe("parent and child Working Notes are never a shared mutable frame", () =
     const parentAgent = await parentBundle.createAgent({ definition: parentRef, authority: [] });
     await parentBundle.harness.deliverExternalInput({ destination: parentAgent.executionId, label: "task", payload: "plan it" });
     await parentBundle.harness.runUntilIdle();
+
     const parentFrameAtSpawn = childState((await parentBundle.harness.inspect(parentAgent.executionId))!).workingNotes;
-    assert.deepEqual(parentFrameAtSpawn.entries, [{ key: "plan", content: { v: "A" } }]);
+    assert.deepEqual(parentFrameAtSpawn.entries, [{ key: "plan", content: { v: "A" } }], "parent frame is A at spawn time");
 
     const handoff = selectWorkingNotesHandoff(parentFrameAtSpawn, { keys: ["plan"] });
 
@@ -300,16 +353,116 @@ describe("parent and child Working Notes are never a shared mutable frame", () =
     });
     const { childCtx } = await r.run();
 
-    // The parent keeps progressing after the spawn.
+    // The parent actually advances plan A -> B.
     await parentBundle.harness.deliverExternalInput({ destination: parentAgent.executionId, label: "more", payload: "revise" });
-    // (its next scripted outcome is exhausted, which is fine - we only care its frame is untouched by the child)
-
-    assert.deepEqual(childState(childCtx!).workingNotes.entries, [{ key: "plan", content: { v: "C" } }], "child diverged to C");
+    await parentBundle.harness.runUntilIdle();
     assert.deepEqual(
       childState((await parentBundle.harness.inspect(parentAgent.executionId))!).workingNotes.entries,
-      [{ key: "plan", content: { v: "A" } }],
-      "the parent's frame still reads A - the child never wrote through to it",
+      [{ key: "plan", content: { v: "B" } }],
+      "the parent's own frame is now B",
     );
+
+    // The snapshot value the parent selected is still A (it was deep-copied and is immutable).
+    assert.deepEqual(handoff.entries, [{ key: "plan", content: { v: "A" } }], "the selected snapshot is still A");
+    // The immutable inherited snapshot on the child's ExecutionContext is still A.
+    assert.deepEqual(childCtx!.workingNotesHandoff, { entries: [{ key: "plan", content: { v: "A" } }] }, "inherited snapshot still A");
+    // The child's own writable frame is C - it never wrote through to the parent, and the parent's
+    // move to B never reached the child.
+    assert.deepEqual(childState(childCtx!).workingNotes.entries, [{ key: "plan", content: { v: "C" } }], "child-local frame is C");
+  });
+
+  test("nested JSON content: mutating any source structure after the spawn cannot reach the child", async () => {
+    const nested = { list: [1, 2], deep: { flag: true } };
+    const parentFrame = setWorkingNote(emptyWorkingNotesFrame(), "plan", nested);
+    const handoff = selectWorkingNotesHandoff(parentFrame, { keys: ["plan"] });
+
+    const r = rig({
+      childId: "wn-nested-child",
+      childSpec: { workingNotes: { read: true } },
+      handoff,
+      childInput: "go",
+      outcomes: [{ kind: "respond", text: "done" }],
+    });
+    const { childCtx } = await r.run();
+
+    // Mutate the caller-side structure and the caller's own `handoff` object after the child exists.
+    nested.list.push(999);
+    nested.deep.flag = false;
+    (handoff.entries[0]!.content as { list: number[] }).list.push(42);
+
+    // Neither the child's writable frame nor the inherited snapshot on its ExecutionContext moved -
+    // the snapshot was deep-copied at selection AND again onto the child context at spawn.
+    assert.deepEqual(childState(childCtx!).workingNotes.entries, [{ key: "plan", content: { list: [1, 2], deep: { flag: true } } }]);
+    assert.deepEqual(childCtx!.workingNotesHandoff!.entries[0]!.content, { list: [1, 2], deep: { flag: true } });
+  });
+});
+
+describe("current policy may deny a concrete spawn because of the handoff it proposes to transfer", () => {
+  /** A narrow authorizer: allow every spawn, except one that proposes to hand off a prohibited key. */
+  function handoffScreeningAuthorizer(prohibitedKey: string): EffectAuthorizer {
+    const base = createAllowListAuthorizer({ grants: [{ capability: "docs" }, { capability: "mail" }], spawn: true });
+    return {
+      authorize(request) {
+        if (
+          request.effectKind === "spawn_execution" &&
+          request.proposal.kind === "spawn_execution" &&
+          (request.proposal.workingNotes?.entries ?? []).some((entry) => entry.key === prohibitedKey)
+        ) {
+          return {
+            decision: "deny",
+            code: "handoff_transfer_prohibited",
+            message: `policy forbids transferring "${prohibitedKey}" across this Execution boundary`,
+          };
+        }
+        return base.authorize(request);
+      },
+    };
+  }
+
+  test("same spawn without the prohibited handoff is allowed; with it, effect.denied and no child", async () => {
+    const source = setWorkingNote(
+      setWorkingNote(emptyWorkingNotesFrame(), "public_plan", "ok to share"),
+      "secret_credentials",
+      "token-xyz",
+    );
+
+    // (a) hand off only the benign key -> allowed.
+    const allowed = rig({
+      childId: "wn-policy-ok",
+      childSpec: { workingNotes: { read: true } },
+      authorizer: handoffScreeningAuthorizer("secret_credentials"),
+      handoff: selectWorkingNotesHandoff(source, { keys: ["public_plan"] }),
+      childInput: "go",
+      outcomes: [{ kind: "respond", text: "done" }],
+    });
+    const okRun = await allowed.run();
+    assert.ok(okRun.childCtx, "the benign handoff spawn created a child");
+    assert.deepEqual(childState(okRun.childCtx!).workingNotes.entries, [{ key: "public_plan", content: "ok to share" }]);
+
+    // (b) same spawn, handoff now includes the prohibited key -> policy denies the concrete transfer.
+    const denied = rig({
+      childId: "wn-policy-denied",
+      childSpec: { workingNotes: { read: true } },
+      authorizer: handoffScreeningAuthorizer("secret_credentials"),
+      handoff: selectWorkingNotesHandoff(source, { keys: ["public_plan", "secret_credentials"] }),
+      childInput: "go",
+      outcomes: [{ kind: "respond", text: "unreached" }],
+    });
+    const { parent, childCtx } = await denied.run();
+    assert.equal(childCtx, undefined, "no child Execution was created");
+    assert.deepEqual(await denied.harness.childExecutionLinksOf(parent.executionId), [], "no child link");
+
+    const journal = await denied.harness.effectJournalOf(parent.executionId);
+    const spawn = effectRequestsIn(journal).find((e) => e.kind === "spawn_execution");
+    assert.ok(spawn);
+    const phases = journal.filter((e) => e.effectId === spawn!.effectId).map((e) => e.phase);
+    assert.ok(phases.includes("denied"), "the spawn was denied by policy");
+    assert.equal(phases.includes("dispatch_started"), false, "nothing was dispatched");
+
+    const budget = await denied.store.readLineageSpawnBudget(parent.executionId);
+    assert.equal(budget?.consumed, 0, "no structural spawn credit was spent");
+    // This is an ordinary authorization denial - not a new Working Notes authority ontology.
+    assert.equal(spawn!.kind, "spawn_execution");
   });
 });
 

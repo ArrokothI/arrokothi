@@ -280,8 +280,12 @@ export function workingNotesFrameIssues(value: unknown): readonly string[] {
  * nothing revises it, and it is never a live reference back to the source frame. It carries no
  * owner id, revision, authority, credential, or provenance graph - only the selected entries. A
  * parent selects it with [`selectWorkingNotesHandoff`](#selectWorkingNotesHandoff) and attaches it
- * to a `SpawnExecution` proposal; the child turns it into its own *fresh* writable frame with
- * [`workingNotesFrameFromHandoff`](#workingNotesFrameFromHandoff) and never sees it again.
+ * to a `SpawnExecution` proposal; the child Execution retains it as an **immutable inherited
+ * (read-only) record** on its `ExecutionContext`, and its controller *seeds* its own separate
+ * fresh writable frame from a deep copy with
+ * [`workingNotesFrameFromHandoff`](#workingNotesFrameFromHandoff), exactly once. The two artifacts
+ * coexist - the inherited snapshot does not disappear once it has seeded the writable frame; it is
+ * simply never re-overlaid.
  */
 export interface WorkingNotesHandoff {
   readonly entries: readonly WorkingNoteEntry[];
@@ -299,16 +303,56 @@ export interface WorkingNotesHandoff {
 export type WorkingNotesHandoffSelection = { readonly keys: readonly string[] };
 
 /**
- * Pure: select the named entries from a frame into an immutable, deeply copied handoff snapshot.
+ * The runtime invariants a `WorkingNotesHandoffSelection` must hold, not just its TypeScript shape.
  *
- * The result never aliases the source frame or its content objects, so a later mutation on either
- * side cannot reach the other. Absent selected keys are ignored. The source frame's entries are
- * already key-ordered and unique, and the filter preserves that.
+ * A plain object with exactly `keys`, an array of unique non-empty strings. An empty `keys` array
+ * is valid (an explicit "hand off nothing"). Unknown properties are rejected rather than dropped.
+ */
+export function workingNotesHandoffSelectionIssues(value: unknown): readonly string[] {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return ["expected a { keys } selection object"];
+  }
+  const record = value as Record<string, unknown>;
+  const issues: string[] = [];
+  for (const extra of Object.keys(record).filter((key) => key !== "keys")) {
+    issues.push(`unknown selection property "${extra}"`);
+  }
+  const keys = record["keys"];
+  if (!Array.isArray(keys)) return [...issues, "`keys` must be an array"];
+  const seen = new Set<string>();
+  keys.forEach((key, index) => {
+    if (typeof key !== "string" || key.trim().length === 0) {
+      issues.push(`keys[${index}] must be a non-empty string`);
+      return;
+    }
+    if (seen.has(key)) issues.push(`keys[${index}] "${key}" is repeated`);
+    seen.add(key);
+  });
+  return issues;
+}
+
+/**
+ * Select the named entries from a frame into an immutable, deeply copied handoff snapshot.
+ *
+ * The invariant-preserving public boundary, in the same fail-closed discipline as `setWorkingNote`:
+ * it **throws** on a malformed source `frame` (out of key order, duplicate keys, non-JSON content)
+ * or a malformed `selection`, rather than filtering a bad frame into a value that is only
+ * statically typed valid. The result never aliases the source frame or its content objects, so a
+ * later mutation on either side cannot reach the other. Absent selected keys are ignored; the
+ * source frame's key order is preserved.
  */
 export function selectWorkingNotesHandoff(
   frame: WorkingNotesFrame,
   selection: WorkingNotesHandoffSelection,
 ): WorkingNotesHandoff {
+  const frameIssues = workingNotesFrameIssues(frame);
+  if (frameIssues.length > 0) {
+    throw new TypeError(`selectWorkingNotesHandoff was given a malformed Working Notes frame: ${frameIssues[0]}`);
+  }
+  const selectionIssues = workingNotesHandoffSelectionIssues(selection);
+  if (selectionIssues.length > 0) {
+    throw new TypeError(`selectWorkingNotesHandoff was given a malformed selection: ${selectionIssues[0]}`);
+  }
   const wanted = new Set(selection.keys);
   const entries = frame.entries
     .filter((entry) => wanted.has(entry.key))
@@ -319,10 +363,15 @@ export function selectWorkingNotesHandoff(
 /**
  * A handoff snapshot as a child controller's *fresh* initial writable frame.
  *
- * Deep-copies every entry, so the child's frame is independent of the snapshot from the first
- * Activation onward.
+ * Invariant-preserving: it **throws** on a malformed input `handoff` rather than returning a
+ * `WorkingNotesFrame` that violates its own invariants. Deep-copies every entry, so the child's
+ * frame is independent of the snapshot from the first Activation onward.
  */
 export function workingNotesFrameFromHandoff(handoff: WorkingNotesHandoff): WorkingNotesFrame {
+  const issues = workingNotesHandoffIssues(handoff);
+  if (issues.length > 0) {
+    throw new TypeError(`workingNotesFrameFromHandoff was given a malformed handoff: ${issues[0]}`);
+  }
   const entries = handoff.entries
     .map((entry) => ({ key: entry.key, content: cloneJson(entry.content) }))
     .sort((a, b) => compareKeys(a.key, b.key));
@@ -334,8 +383,18 @@ export function workingNotesHandoffIssues(value: unknown): readonly string[] {
   return orderedEntryListIssues(value, "handoff");
 }
 
-/** A deep, alias-free copy of a handoff snapshot, so a stored record never aliases the proposal. */
+/**
+ * A deep, alias-free copy of a handoff snapshot, so a stored record never aliases the proposal.
+ *
+ * Invariant-preserving: it **throws** on a malformed input rather than returning a
+ * `WorkingNotesHandoff` that violates its invariants. (The Effect gateway's own call is safe
+ * because the proposal was already structurally validated by `effectProposalIssues`.)
+ */
 export function cloneWorkingNotesHandoff(handoff: WorkingNotesHandoff): WorkingNotesHandoff {
+  const issues = workingNotesHandoffIssues(handoff);
+  if (issues.length > 0) {
+    throw new TypeError(`cloneWorkingNotesHandoff was given a malformed handoff: ${issues[0]}`);
+  }
   return { entries: handoff.entries.map((entry) => ({ key: entry.key, content: cloneJson(entry.content) })) };
 }
 

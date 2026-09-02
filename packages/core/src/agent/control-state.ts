@@ -156,9 +156,10 @@ export interface AgentControlState {
   readonly responses: number;
   /**
    * The Agent controller's local Working Notes: temporary scratch state it owns and persists with
-   * the rest of its progress. Not a runtime-owned record, not read through the Harness, not
-   * inherited by a child. A fresh Agent, and one that authored no `workingNotes`, carries the
-   * empty frame.
+   * the rest of its progress. Not a runtime-owned record and not read through the Harness. A child
+   * does *not* inherit it by ancestry; a child spawned with an explicit F.2b handoff receives an
+   * immutable inherited snapshot (on its `ExecutionContext`, not here) that seeds this writable
+   * frame once. A fresh Agent, and one that authored no `workingNotes`, carries the empty frame.
    */
   readonly workingNotes: WorkingNotesFrame;
 }
@@ -166,10 +167,12 @@ export interface AgentControlState {
 /**
  * Fresh Agent progress.
  *
- * `workingNotes` seeds the local scratch frame. It is the empty frame for an ordinary Execution,
- * and - for a child spawned with an explicit Working Notes handoff (Slice F.2b) - the frame the
- * AgentController derived from that handoff snapshot. Either way it is *this* Agent's own frame
- * from here on: the handoff is consumed exactly once, at initialization, and never re-overlaid.
+ * `workingNotes` seeds the child-owned *writable* scratch frame. It is the empty frame for an
+ * ordinary Execution, and - for a child spawned with an explicit Working Notes handoff (Slice
+ * F.2b) - a deep copy the AgentController took of the immutable inherited snapshot. That inherited
+ * snapshot is not consumed away by this: it stays on the `ExecutionContext` as the read-only
+ * record of what was delegated. "Consume once" means this writable frame is seeded from it exactly
+ * once, at initialization, and never re-overlaid.
  */
 export function initialAgentControlState(workingNotes: WorkingNotesFrame = emptyWorkingNotesFrame()): AgentControlState {
   return {

@@ -355,12 +355,14 @@ class AgentController implements ExecutionController {
 
     let state: AgentControlState;
     if (stored.status === "read") {
-      // Persisted progress is authoritative. A Working Notes handoff (if any) was already consumed
-      // into this state on the first Activation; it is never re-overlaid.
+      // Persisted progress is authoritative for the child's *writable* frame. An inherited handoff
+      // (if any) still exists as an immutable read-only record on `input.execution.workingNotesHandoff`,
+      // but it seeded the writable frame once, on the first Activation, and is never re-overlaid.
       state = stored.state;
     } else {
-      // Fresh progress. Seed the local Working Notes frame from an explicit handoff snapshot when
-      // this child was spawned with one - exactly once, here.
+      // Fresh progress. Seed this Agent's own writable Working Notes frame from a deep copy of the
+      // inherited handoff snapshot when this child was spawned with one - exactly once, here. The
+      // inherited snapshot is not consumed away; it remains the read-only record of what was delegated.
       const seeded = this.seedInitialState(spec, input.execution.workingNotesHandoff);
       if ("failure" in seeded) {
         return this.failed(input.execution.control.progress, seeded.failure);
@@ -416,19 +418,23 @@ class AgentController implements ExecutionController {
   }
 
   /**
-   * Builds fresh Agent progress, seeding the local Working Notes frame from an explicit handoff.
+   * Builds fresh Agent progress, seeding the child-owned *writable* frame from the inherited handoff.
    *
    * ```text
    * no handoff                     -> the empty frame (zero cost; nothing is scanned or cloned)
    * handoff snapshot present       -> a fresh, deep-copied writable frame from the selected entries
    * ```
    *
-   * The handoff is *information the spawning Execution delegated*, never authority: it is folded in
-   * here whether or not `spec.workingNotes.read` / `.write` is authored, and whether the model then
-   * sees it or may update it stays entirely governed by those independent flags. It is validated
-   * against this Agent's own Working Notes budget - the generic transfer envelope the Harness
-   * enforced at spawn may be looser than a child with tighter custom limits - and a handoff that
-   * does not fit fails the Execution deterministically rather than being silently trimmed.
+   * Two artifacts, as canonical [`memory.md`](../../../../docs/memory.md) §5 /
+   * [`composition.md`](../../../../docs/composition.md) §15 describe: the immutable *inherited*
+   * snapshot stays on the `ExecutionContext`, and this builds the separate child-local writable
+   * frame from a deep copy of it. The handoff is *information the spawning Execution delegated*,
+   * never authority: it is folded in here whether or not `spec.workingNotes.read` / `.write` is
+   * authored, and whether the model then sees it or may update it stays entirely governed by those
+   * independent flags. It is validated against this Agent's own Working Notes budget - the generic
+   * transfer envelope the Harness enforced at spawn may be looser than a child with tighter custom
+   * limits - and a handoff that does not fit fails the Execution deterministically rather than
+   * being silently trimmed.
    */
   private seedInitialState(
     spec: AgentSpec,

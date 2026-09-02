@@ -348,6 +348,7 @@ export {
   workingNotesFrameIssues,
   workingNotesHandoffBudgetIssue,
   workingNotesHandoffIssues,
+  workingNotesHandoffSelectionIssues,
 } from "./execution/working-notes.ts";
 /**
  * Controller-local resumptions are exported as *readable* shapes only.

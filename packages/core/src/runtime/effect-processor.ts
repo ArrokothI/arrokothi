@@ -1340,13 +1340,16 @@ export class EffectProcessor {
     }
     const grantId = decision.grantId;
 
-    // The Working Notes handoff (Slice F.2b) is data attached to this already-authorized spawn, not
-    // a separate operation - it grants nothing and does not affect authority attenuation. But it
-    // still must not cross the Harness unbounded. The generic transfer envelope is trusted
-    // information the Harness has without parsing Agent-internal limits, so an oversized handoff is
-    // refused atomically - before any confirmation is even created: no child, no credit, no partial
-    // state. It is never truncated. A child Definition with a tighter per-controller budget
-    // re-validates at initialization.
+    // The Working Notes handoff (Slice F.2b) is data on the concrete SpawnExecution proposal - NOT a
+    // separate operation, and it grants no authority and does not affect child operation attenuation.
+    // The authorizer above (and the confirmation gate below) receive the WHOLE proposal, handoff
+    // included, so current policy may legitimately deny (or gate) this concrete transfer because of
+    // what it proposes to move; that is an ordinary `effect.denied` on the spawn, not a Working
+    // Notes authority ontology. The envelope check here is a separate, bounded concern: a handoff
+    // still must not cross the Harness unbounded. The envelope is trusted information the Harness has
+    // without parsing Agent-internal limits, so an oversized handoff is refused atomically - before
+    // any confirmation is even created: no child, no credit, no partial state, never truncated. A
+    // child Definition with a tighter per-controller budget re-validates at initialization.
     if (proposal.workingNotes !== undefined) {
       const overBudget = workingNotesHandoffBudgetIssue(proposal.workingNotes);
       if (overBudget !== null) {

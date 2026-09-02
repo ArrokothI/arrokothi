@@ -21,12 +21,15 @@
  * `slots.workingNotes` placeholder implied a runtime-owned subsystem that F.2a decided not to
  * build, so it was removed rather than left claiming an architecture that does not exist.
  *
- * Slice F.2b adds `workingNotesHandoff`: an immutable, controller-neutral snapshot the spawning
- * Execution explicitly selected, stored here at child creation and surfaced once through the
- * `ExecutionView` so the child's controller can seed its own fresh local frame from it. It is plain
- * data, not a slot ref and not a runtime-owned subsystem - the child consumes it exactly once, at
- * initialization, and its own persisted progress is authoritative from then on. `null` for a root
- * Execution and for any child spawned without a handoff, which is the zero-cost default.
+ * Slice F.2b adds `workingNotesHandoff`: the immutable, controller-neutral snapshot the spawning
+ * Execution explicitly selected. It is the "selected inherited (read-only) view" half of canonical
+ * `memory.md` §5 / `composition.md` §15; the child-local *writable* frame half lives in the
+ * controller's own progress (`AgentControlState.workingNotes` for an Agent). Stored here at child
+ * creation, surfaced through the `ExecutionView`, and read by the child's controller *only* while
+ * initializing its writable frame - seeded once, never re-overlaid. It is plain data, not a slot
+ * ref and not a runtime-owned subsystem, and it does not disappear after seeding: it stays as the
+ * read-only record of what was delegated. `null` for a root Execution and for any child spawned
+ * without a handoff, which is the zero-cost default.
  *
  * There is deliberately no Active View slot. An Active Operation View is a deterministic derivation
  * from authority plus catalog plus an authored exposure request, so persisting one would store a
@@ -177,11 +180,13 @@ export interface ExecutionContext {
   readonly mailbox: MailboxRef;
   readonly slots: DeferredSlots;
   /**
-   * The Working Notes handoff snapshot this Execution was spawned with (Slice F.2b), or `null`.
+   * The immutable inherited Working Notes snapshot this Execution was spawned with (Slice F.2b), or
+   * `null`.
    *
-   * Immutable plain data, assigned once at creation by the Effect gateway from the spawning
-   * proposal, never rewritten. The child's controller reads it once - to seed its own fresh local
-   * frame - and never again; it grants no authority.
+   * Plain data, assigned once at creation by the Effect gateway from the spawning proposal, never
+   * rewritten - the read-only record of what the parent explicitly delegated. The child's
+   * controller reads it once, to seed its own separate writable frame, and then leaves it in place;
+   * it grants no authority.
    */
   readonly workingNotesHandoff: WorkingNotesHandoff | null;
   readonly terminalResult: TerminalResultEnvelope | null;

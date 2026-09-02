@@ -142,11 +142,14 @@ export interface SpawnExecutionProposal extends ProposalBase {
    *
    * An immutable, deep-copied snapshot of an explicitly selected subset of the proposing
    * controller's own Working Notes - data attached to an already-authorized child-spawn proposal,
-   * *not* a new operation. It grants nothing: it does not widen or attenuate child authority, is
-   * never confirmation, and never becomes Effective Authority or an Active View. Absent means zero
-   * notes cross - a parent/child ownership relation carries no ambient note visibility. The Harness
-   * checks it against a fixed transfer envelope and rejects the whole spawn atomically if it does
-   * not fit; it never truncates.
+   * *not* a new operation and *not* an authority grant: it does not widen or attenuate the child's
+   * Effective Authority, does not become authority evidence, and adds no Working Notes authority
+   * ontology. It is nonetheless part of the *concrete* cross-Execution `SpawnExecution` request, so
+   * the `EffectAuthorizer` and the exact-payload confirmation gate see the whole proposal and
+   * current policy may deny (or gate) this concrete transfer because of the information it proposes
+   * to move. Absent means zero notes cross - a parent/child ownership relation carries no ambient
+   * note visibility. The Harness also checks it against a fixed transfer envelope and rejects the
+   * whole spawn atomically if it does not fit; it never truncates.
    */
   readonly workingNotes?: WorkingNotesHandoff;
 }
