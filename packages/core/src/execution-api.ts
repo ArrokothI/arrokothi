@@ -52,6 +52,7 @@ export type {
   AgentStructuredMemoryRead,
   AgentStructuredMemorySpec,
   AgentStructuredMemoryWrite,
+  AgentWorkingNotesSpec,
 } from "./agent/spec.ts";
 export {
   AGENT_COMPLETION_MODES,
@@ -60,6 +61,8 @@ export {
   agentLimits,
   agentStructuredMemoryRead,
   agentStructuredMemoryWrite,
+  agentWorkingNotesRead,
+  agentWorkingNotesWrite,
 } from "./agent/spec.ts";
 export type { AgentSpecIssue, AgentSpecIssueCode, AgentSpecValidation } from "./agent/validation.ts";
 export { validateAgentSpec } from "./agent/validation.ts";
@@ -102,6 +105,7 @@ export type {
   ModelActionTarget,
   StructuredMemoryWriteTarget,
   ModelActionTargetKind,
+  WorkingNotesSetTarget,
 } from "./operations/action-target.ts";
 export {
   MODEL_ACTION_TARGET_KINDS,
@@ -110,6 +114,7 @@ export {
   isModelActionTarget,
   operationRefOfTarget,
   structuredMemoryWriteTarget,
+  workingNotesSetTarget,
 } from "./operations/action-target.ts";
 export type { OperationRef, OperationRefInput } from "./operations/refs.ts";
 export {
@@ -150,6 +155,7 @@ export type {
   ProjectionResult,
 } from "./operations/projection.ts";
 export {
+  MODEL_WORKING_NOTES_SET_ALIAS,
   createModelActionProjection,
   modelActionSpecs,
   modelOperationAlias,
@@ -161,6 +167,7 @@ export type {
   ActiveModelActionView,
   CapabilityOperationActionEntry,
   StructuredMemoryWriteActionEntry,
+  WorkingNotesSetActionEntry,
 } from "./operations/model-action-view.ts";
 export { createActiveModelActionView, targetOfActiveModelAction } from "./operations/model-action-view.ts";
 
@@ -279,6 +286,30 @@ export {
   emptyActiveStructuredMemoryWriteView,
   projectActiveStructuredMemoryWriteView,
 } from "./execution/structured-memory-write-view.ts";
+export type {
+  WorkingNoteEntry,
+  WorkingNotesBudget,
+  WorkingNotesBudgetIssue,
+  WorkingNotesFrame,
+  WorkingNoteUpdateValidation,
+} from "./execution/working-notes.ts";
+export {
+  emptyWorkingNotesFrame,
+  setWorkingNote,
+  validateWorkingNoteUpdate,
+  workingNoteContent,
+  workingNotesBudgetIssue,
+  workingNotesFrameBytes,
+  workingNotesFrameIssues,
+} from "./execution/working-notes.ts";
+export type {
+  ActiveWorkingNotesActionEntry,
+  ActiveWorkingNotesActionView,
+} from "./execution/working-notes-action-view.ts";
+export {
+  createActiveWorkingNotesActionView,
+  emptyActiveWorkingNotesActionView,
+} from "./execution/working-notes-action-view.ts";
 /**
  * Controller-local resumptions are exported as *readable* shapes only.
  *

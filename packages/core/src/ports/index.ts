@@ -138,12 +138,14 @@ export type {
   ActiveModelActionView,
   CapabilityOperationActionEntry,
   StructuredMemoryWriteActionEntry,
+  WorkingNotesSetActionEntry,
 } from "../operations/model-action-view.ts";
 export type {
   CapabilityOperationTarget,
   ModelActionTarget,
   StructuredMemoryWriteTarget,
   ModelActionTargetKind,
+  WorkingNotesSetTarget,
 } from "../operations/action-target.ts";
 export type {
   StructuredMemoryReadField,
@@ -153,6 +155,11 @@ export type {
   ActiveStructuredMemoryWriteEntry,
   ActiveStructuredMemoryWriteView,
 } from "../execution/structured-memory-write-view.ts";
+export type {
+  ActiveWorkingNotesActionEntry,
+  ActiveWorkingNotesActionView,
+} from "../execution/working-notes-action-view.ts";
+export type { WorkingNoteEntry, WorkingNotesFrame } from "../execution/working-notes.ts";
 export type { AgentObservationOutcome, AgentActionObservation } from "../agent/observations.ts";
 export type {
   AgentModelObservation,

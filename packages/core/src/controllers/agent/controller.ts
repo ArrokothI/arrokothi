@@ -26,22 +26,28 @@
  *
  * ```text
  * capability catalog/authority/request + memory write-exposure authority/request/declarations
+ *   + authored local Working Notes enablement
  *        ↓ deterministic
- * ActiveOperationView + ActiveStructuredMemoryWriteView
+ * ActiveOperationView + ActiveStructuredMemoryWriteView + ActiveWorkingNotesActionView
  *        ↓ deterministic composition
  * ActiveModelActionView
  *        ↓ immutable, one per invocation
  * ModelActionProjection            → provider callable specs → the model
  *        ↓ the model answers with a name
- * resolved through THAT projection    → typed UseCapability or WriteMemory proposal
+ * resolved through THAT projection    → typed UseCapability / WriteMemory proposal, OR a local
+ *                                       Working Notes update that never leaves this controller
  *        ↓
- * Harness authorizes the concrete request, from current authority
+ * Harness authorizes the concrete Effect, from current authority (local note updates skip this:
+ * there is no concrete Effect, because nothing crossed a runtime boundary)
  * ```
  *
- * None of the middle layers is a permission. An action can be authorized, exposed, projected,
- * selected, proposed - and still denied at dispatch, because authority may have changed or because
- * the concrete payload is not allowed. That denial arrives as an ordinary Effect-result Event, and
- * this controller reports it to the model like any other observation.
+ * None of the middle layers is a permission. A capability or Structured Memory action can be
+ * authorized, exposed, projected, selected, proposed - and still denied at dispatch, because
+ * authority may have changed or because the concrete payload is not allowed. That denial arrives as
+ * an ordinary Effect-result Event, and this controller reports it to the model like any other
+ * observation. A `working_notes_set` action still originates in the Active View, but it mutates only
+ * this controller's own persisted scratch frame: it settles locally, with the ordinary controller
+ * progress commit, and produces no Effect, Event, or PendingOperation.
  *
  * ## The two kinds of waiting
  *
@@ -90,11 +96,21 @@ import type { AgentModelObservation, AgentObservationProjector } from "../../age
 import { projectAgentObservations, referenceAgentObservationProjector } from "../../agent/observation-projection.ts";
 import type { AgentObservationOutcome, AgentActionObservation } from "../../agent/observations.ts";
 import type { AgentSpec } from "../../agent/spec.ts";
-import { agentCompletionMode, agentLimits, agentStructuredMemoryRead, agentStructuredMemoryWrite } from "../../agent/spec.ts";
+import {
+  agentCompletionMode,
+  agentLimits,
+  agentStructuredMemoryRead,
+  agentStructuredMemoryWrite,
+  agentWorkingNotesRead,
+  agentWorkingNotesWrite,
+} from "../../agent/spec.ts";
 import { agentInformationSelectionId } from "../../agent/information-context.ts";
 import { validateAgentSpec } from "../../agent/validation.ts";
 import type { ModelActionTarget } from "../../operations/action-target.ts";
 import { emptyActiveStructuredMemoryWriteView } from "../../execution/structured-memory-write-view.ts";
+import { createActiveWorkingNotesActionView } from "../../execution/working-notes-action-view.ts";
+import type { WorkingNotesFrame } from "../../execution/working-notes.ts";
+import { setWorkingNote, validateWorkingNoteUpdate, workingNotesBudgetIssue } from "../../execution/working-notes.ts";
 import { createActiveModelActionView } from "../../operations/model-action-view.ts";
 import { createModelActionProjection, modelActionSpecs, resolveProjectedAlias } from "../../operations/projection.ts";
 import { EMPTY_EXPOSURE_REQUEST } from "../../operations/exposure.ts";
@@ -462,7 +478,15 @@ class AgentController implements ExecutionController {
             keys: memoryWrite.keys,
           })
         : emptyActiveStructuredMemoryWriteView();
-      const actionView = createActiveModelActionView({ operations: operationView, structuredMemoryWrites });
+      // The local Working Notes action needs no resolver, store read, or policy call: an update
+      // mutates only this controller's own scratch frame, so authored enablement is the whole
+      // input. With no `workingNotes.write`, this is the shared empty constant.
+      const workingNotesActions = createActiveWorkingNotesActionView(agentWorkingNotesWrite(spec));
+      const actionView = createActiveModelActionView({
+        operations: operationView,
+        structuredMemoryWrites,
+        workingNotes: workingNotesActions,
+      });
       const projected = createModelActionProjection({
         projectionId: agentProjectionId(step),
         view: actionView,
@@ -491,6 +515,8 @@ class AgentController implements ExecutionController {
             keys: memoryRead.keys,
           })) ?? null)
         : null;
+      // A snapshot, frozen with the invocation. A note written this step reaches only a later step.
+      const workingNotes = agentWorkingNotesRead(spec) ? state.workingNotes : null;
       invocation = {
         step,
         information: this.information.compile({
@@ -498,6 +524,7 @@ class AgentController implements ExecutionController {
           messages: state.messages,
           maxMessages: limits.maxContextMessages,
           memory,
+          workingNotes,
         }),
         projection: projected.projection,
         continuation: state.continuation,
@@ -574,7 +601,12 @@ class AgentController implements ExecutionController {
     result: StepOutcome,
   ): void {
     if (!this.trace?.modelInvoked) return;
-    const proposals = result.kind === "awaitEffects" ? this.proposalRecords(invocation.step, result.state.pending) : [];
+    // `continue` covers a turn whose only selected actions were local Working Notes updates: they
+    // settled without an Effect, but the model still selected them, so the trace records them.
+    const proposals =
+      result.kind === "awaitEffects" || result.kind === "continue"
+        ? this.proposalRecords(invocation.step, result.state.pending)
+        : [];
     this.trace.modelInvoked({
       executionId: input.execution.executionId,
       activationId: input.activation.activationId,
@@ -684,9 +716,18 @@ class AgentController implements ExecutionController {
             ? [{ role: "assistant", content: outcome.text } as ModelMessage]
             : [],
         );
+        const emissions: readonly EmissionProposal[] =
+          outcome.text !== undefined && outcome.text.length > 0
+            ? [{ body: { kind: "text", text: outcome.text } }]
+            : [];
+        const limits = agentLimits(spec);
 
         const pending: AgentPendingCall[] = [];
         const proposals: EffectProposal[] = [];
+        // Threaded across the turn: a local Working Notes update is applied here, in memory, not
+        // proposed. If any call in the turn is bad, the whole step fails and this frame is
+        // discarded - `advanced.workingNotes` is what gets persisted, unchanged.
+        let workingNotes: WorkingNotesFrame = advanced.workingNotes;
         for (const [index, call] of outcome.calls.entries()) {
           // Resolved against the snapshot this model call was shown, and against nothing else. A
           // name that is not in it resolves to nothing - never to whatever the current view or the
@@ -710,6 +751,58 @@ class AgentController implements ExecutionController {
           // Structured Memory arm accepts exactly `{ value }`, so a model cannot substitute a key.
           const target: ModelActionTarget = binding.target;
           const correlationId = agentCallCorrelationId(invocation.step, index + 1);
+
+          if (target.kind === "working_notes_set") {
+            // A LOCAL action. It mutates only this controller's own scratch frame: no Effect, no
+            // Event, no PendingOperation, no Harness dispatch, no confirmation. The pending entry is
+            // recorded already settled, so the Agent never waits on a runtime result for it.
+            const update = validateWorkingNoteUpdate(call.input);
+            if (!update.ok) {
+              return {
+                kind: "fail",
+                state: { ...advanced, messages },
+                emissions: [],
+                failure: {
+                  code: "agent_working_notes_update_invalid",
+                  message: `the model input for ${binding.alias} is not a valid { key, content } update: ${update.issues.join("; ")}`,
+                },
+              };
+            }
+            const candidate = setWorkingNote(workingNotes, update.key, update.content);
+            const budget = workingNotesBudgetIssue(candidate, {
+              maxEntries: limits.maxWorkingNoteEntries,
+              maxBytes: limits.maxWorkingNotesBytes,
+            });
+            if (budget) {
+              return {
+                kind: "fail",
+                state: { ...advanced, messages },
+                emissions: [],
+                failure: { code: "agent_working_notes_budget_exhausted", message: budget.message },
+              };
+            }
+            workingNotes = candidate;
+            pending.push({
+              correlationId,
+              bindingId: binding.bindingId,
+              alias: binding.alias,
+              target,
+              callId: call.callId,
+              settled: true,
+              outcome: "completed",
+              observation: { key: update.key, updated: true },
+              error: null,
+            });
+            this.trace?.actionProposed?.({
+              step: invocation.step,
+              correlationId,
+              bindingId: binding.bindingId,
+              alias: binding.alias,
+              target,
+            });
+            continue;
+          }
+
           let proposal: EffectProposal;
           switch (target.kind) {
             case "capability_operation":
@@ -761,15 +854,18 @@ class AgentController implements ExecutionController {
           });
         }
 
-        return {
-          kind: "awaitEffects",
-          state: { ...advanced, messages, pending },
-          proposals,
-          emissions:
-            outcome.text !== undefined && outcome.text.length > 0
-              ? [{ body: { kind: "text", text: outcome.text } }]
-              : [],
-        };
+        const nextState = { ...advanced, messages, pending, workingNotes };
+
+        // Nothing crossed the Harness: every selected action was a local note update. Commit the
+        // frame with progress and run another step - the settled observations are folded in at the
+        // top of the next Activation, exactly as a settled Effect result would be.
+        if (proposals.length === 0) {
+          return { kind: "continue", state: nextState, emissions };
+        }
+
+        // At least one real Effect. The local note updates are already committed in `nextState`;
+        // the Agent waits only for the unsettled external actions.
+        return { kind: "awaitEffects", state: nextState, proposals, emissions };
       }
     }
   }
@@ -803,7 +899,9 @@ class AgentController implements ExecutionController {
           control,
           ...emissions,
           effects: step.proposals,
-          next: { status: "await_event", wake: this.wakeFor(step.state, step.state.pending) },
+          // Only the unsettled calls are waited on. A local Working Notes update that settled in the
+          // same turn is already committed and must not widen or confuse the wake condition.
+          next: { status: "await_event", wake: this.wakeFor(step.state, unsettledAgentCalls(step.state)) },
         };
       case "suspend":
         // A dependency report, not a lifecycle instruction. The Harness checks that this Activation

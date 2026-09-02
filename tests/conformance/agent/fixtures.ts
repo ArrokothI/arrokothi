@@ -88,6 +88,7 @@ export interface AgentDefinitionInput {
   readonly id: string;
   readonly operations?: AgentSpecInput["operations"];
   readonly structuredMemory?: AgentSpecInput["structuredMemory"];
+  readonly workingNotes?: AgentSpecInput["workingNotes"];
   readonly limits?: AgentSpecInput["limits"];
   readonly completion?: AgentSpecInput["completion"];
   readonly instructions?: string;
@@ -103,6 +104,7 @@ export function testAgent(input: AgentDefinitionInput): AgentDefinition {
       instructions: input.instructions ?? "Use the operations you were given, then answer.",
       ...(input.operations !== undefined ? { operations: input.operations } : {}),
       ...(input.structuredMemory !== undefined ? { structuredMemory: input.structuredMemory } : {}),
+      ...(input.workingNotes !== undefined ? { workingNotes: input.workingNotes } : {}),
       ...(input.limits !== undefined ? { limits: input.limits } : {}),
       ...(input.completion !== undefined ? { completion: input.completion } : {}),
     },

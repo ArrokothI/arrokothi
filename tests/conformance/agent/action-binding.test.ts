@@ -44,14 +44,17 @@ function view(entries: readonly { readonly capability: string; readonly operatio
 }
 
 describe("a projection binding names a typed action target", () => {
-  test("the target vocabulary has independent capability and Structured Memory arms", () => {
-    assert.deepEqual(MODEL_ACTION_TARGET_KINDS, ["capability_operation", "structured_memory_write"]);
+  test("the target vocabulary has independent capability, Structured Memory, and Working Notes arms", () => {
+    assert.deepEqual(MODEL_ACTION_TARGET_KINDS, ["capability_operation", "structured_memory_write", "working_notes_set"]);
     assert.equal(isModelActionTarget({ kind: "capability_operation", capability: "docs", operation: "search" }), true);
     assert.equal(isModelActionTarget({ kind: "structured_memory_write", key: "profile" }), true);
     assert.equal(isModelActionTarget({ kind: "structured_memory_write", key: "profile", value: "x" }), false);
+    assert.equal(isModelActionTarget({ kind: "working_notes_set" }), true);
+    assert.equal(isModelActionTarget({ kind: "working_notes_set", key: "plan" }), false);
     assert.equal(isModelActionTarget({ kind: "write_memory", key: "profile" }), false);
     assert.deepEqual(operationRefOfTarget({ kind: "capability_operation", capability: "docs", operation: "search" }), DOCS_SEARCH);
     assert.equal(operationRefOfTarget({ kind: "structured_memory_write", key: "profile" }), null);
+    assert.equal(operationRefOfTarget({ kind: "working_notes_set" }), null);
   });
 
   test("every binding originates in the heterogeneous Active Model Action View", () => {

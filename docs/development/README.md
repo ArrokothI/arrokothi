@@ -88,13 +88,23 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   baseline. No canonical-doc change.
 
 020-slice-f11-structured-memory-model-write-exposure.md
-  the current F.1.1 checkpoint: AgentSpec.structuredMemory.write.keys request ∩ current
+  the accepted and merged F.1.1 checkpoint: AgentSpec.structuredMemory.write.keys request ∩ current
   write-exposure authority ∩ bound declarations -> authorized Structured Memory write view;
   composition with ActiveOperationView into a heterogeneous ActiveModelActionView; immutable
   ModelActionProjection; exact binding-owned key plus model-supplied value -> ordinary WriteMemory;
   fresh Harness authorization, existing confirmation/commit, and minimal memory.written model
   observation. Agent-only consumer, controller-neutral resolver, no caching or Workflow LLM change.
-  No canonical-doc change. Not merged; awaiting review.
+  No canonical-doc change. Merged to main (PR #11); part of the merged `main` F.2a baseline.
+
+021-slice-f2a-working-notes-local-scratch.md
+  the current F.2a checkpoint, on the long-lived branch `slice-f-memory-completion`: a
+  controller-owned Working Notes frame in AgentControlState; authored AgentSpec.workingNotes
+  { read?: true, write?: true } enablement; a `working_notes_set` model action as a typed third
+  ActiveModelActionView arm that settles locally with the ordinary controller progress commit -
+  no Effect, Event, or PendingOperation; bounded by two new AgentLimits budgets; the read snapshot
+  rendered into model information; AGENT_CONTROL_STATE_VERSION 2 -> 3 (fail-closed); the reserved
+  DeferredSlots.workingNotes placeholder removed. No canonical-doc change. Not merged; awaiting
+  review. F.2b / F.3 / final Slice F integration continue on the same branch.
 
 014-v1-efficiency-and-developer-ergonomics-validation.md
   cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
@@ -149,9 +159,16 @@ Slice F memory
                 model invocation; review correction
                 moved resolution off the Harness
                 (019 §11)
-  F.1.1         model-directed WriteMemory         current checkpoint (020);
-                exposure via authorized memory     not merged, awaiting review
+  F.1.1         model-directed WriteMemory         accepted, merged (020, PR #11)
+                exposure via authorized memory
                 view + heterogeneous action view
+  F.2a          Working Notes local scratch:       current checkpoint (021);
+                controller-owned frame in          on branch slice-f-memory-completion,
+                AgentControlState, authored         not merged, awaiting review
+                read/write enablement, local
+                working_notes_set action with no
+                Effect/Event, bounded persistence,
+                control-state version 2 -> 3
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

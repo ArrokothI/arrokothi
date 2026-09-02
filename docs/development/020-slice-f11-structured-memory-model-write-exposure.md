@@ -1,7 +1,11 @@
 # Slice F.1.1 — Model-Directed Structured Memory Write Exposure
 
-> **Status:** implemented on `slice-f11-memory-write-exposure` from merged `main`
-> `47ec13153fecc3a8a5bdf5036eb6407137d163a2`; not merged, awaiting independent review.
+> **Status:** accepted and merged to `main` (PR #11, merge commit
+> `3598c88cb999000b3dd6a631524199a180e509b0`). It is part of the baseline for Slice F.2a (Working
+> Notes local scratch, doc [`021`](021-slice-f2a-working-notes-local-scratch.md)), which continues
+> the remaining Slice F work on the long-lived branch `slice-f-memory-completion`. F.2a generalises
+> the heterogeneous `ActiveModelActionView` this checkpoint introduced with a third
+> (`working_notes_set`) arm and preserves every projection-integrity regression below.
 > **Scope:** authorized model visibility and selection of Execution-local Structured Memory write
 > interfaces in the reference Agent, translated into the existing F.0 `WriteMemory` Effect.
 > **Canonical documentation change:** none.

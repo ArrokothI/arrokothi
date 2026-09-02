@@ -10,10 +10,17 @@
  *   control                                 owned by the controller, opaque to the kernel
  *   terminalResult / failure                written only by a validated Activation outcome
  *
- * Slots that later slices own (memory, notes, resources, pending, policy) are present as explicit
+ * Slots that later slices own (memory, resources, pending, policy) are present as explicit
  * null/empty references rather than absent or improvised. They mark where those concerns live
  * without pretending an earlier slice has answered them. `authority` is no longer one of those: it
  * is a typed reference to the Execution's runtime-owned effective operation authority.
+ *
+ * There is deliberately no Working Notes slot. Slice F.2a established that an Agent's Working Notes
+ * are *controller-owned* plain semantic state - they live in `AgentControlState` next to `messages`
+ * and `pending`, not in a `RuntimeStore` record a slot ref would address. The early
+ * `slots.workingNotes` placeholder implied a runtime-owned subsystem that F.2a decided not to
+ * build, so it was removed rather than left claiming an architecture that does not exist. F.2b adds
+ * explicit cross-Execution note visibility, but through `SpawnExecution`/Stage handoff, not a slot.
  *
  * There is deliberately no Active View slot. An Active Operation View is a deterministic derivation
  * from authority plus catalog plus an authored exposure request, so persisting one would store a
@@ -132,8 +139,6 @@ export interface DeferredSlots {
   readonly authority: OperationAuthorityRef | null;
   /** Execution-local Structured Memory view. A typed address, never an authorization. */
   readonly memoryView: StructuredMemoryViewRef | null;
-  /** Slice F: Working Note frame/view. */
-  readonly workingNotes: string | null;
   /** Slice H: effective runtime policy. */
   readonly policy: string | null;
   /** Slice B/C: logical resource bindings. */
@@ -145,7 +150,6 @@ export interface DeferredSlots {
 export const EMPTY_SLOTS: DeferredSlots = Object.freeze({
   authority: null,
   memoryView: null,
-  workingNotes: null,
   policy: null,
   resources: Object.freeze([]) as readonly string[],
   pending: Object.freeze([]) as readonly string[],

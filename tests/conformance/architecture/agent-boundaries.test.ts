@@ -225,12 +225,12 @@ describe("Agent architecture boundaries", () => {
     }
   });
 
-  test("model action targets are identity only, with capability and Structured Memory arms", async () => {
+  test("model action targets are identity only, with capability, Structured Memory, and Working Notes arms", async () => {
     const code = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
     const declared = [...code.matchAll(/readonly kind: "(\w+)"/g)].map((match) => match[1]!);
     assert.deepEqual(
       [...new Set(declared)],
-      ["capability_operation", "structured_memory_write"],
+      ["capability_operation", "structured_memory_write", "working_notes_set"],
       "the heterogeneous target is explicit and discriminated",
     );
     for (const forbidden of ["grant", "authorize", "Harness", "Executor", "credential", "token"]) {
@@ -266,6 +266,59 @@ describe("Agent architecture boundaries", () => {
       [],
       "an exposure resolver and a projector own no instructions, transcript, or memory selection",
     );
+  });
+
+  test("Working Notes are plain controller-owned state - the frame helper reaches nothing operational", async () => {
+    // The frame module and the local action-view module are leaves. They import no package and no
+    // runtime builtin, and their graphs reach no Harness, store, authorizer, or Effect machinery.
+    for (const entry of ["execution/working-notes.ts", "execution/working-notes-action-view.ts"]) {
+      const files = await walk([entry]);
+      assert.deepEqual([...files].filter((path) => OPERATIONAL_MACHINERY.includes(path)), [], `${entry} reaches nothing operational`);
+      for (const path of files) {
+        const source = await readFile(resolve(CORE_SRC, path), "utf8");
+        for (const specifier of specifiersIn(source)) {
+          assert.ok(specifier.startsWith("."), `${entry} graph imports only relative modules (${specifier})`);
+        }
+      }
+      const code = codeOf(await readFile(resolve(CORE_SRC, entry), "utf8"));
+      for (const forbidden of ["Harness", "RuntimeStore", "EffectAuthorizer", "EffectProposal", "CapabilityExecutor", "writeMemory", "useCapability", "Effect"]) {
+        assert.equal(code.includes(forbidden), false, `${entry} must not name ${forbidden}`);
+      }
+    }
+  });
+
+  test("a local Working Notes update is not an Effect, an Event, or a Spawn field", async () => {
+    const effects = await readFile(resolve(CORE_SRC, "effects/types.ts"), "utf8");
+    const kinds = effects.slice(effects.indexOf("export const EFFECT_KINDS"));
+    const list = kinds.slice(0, kinds.indexOf("]"));
+    assert.equal(/working[_ ]?notes/i.test(list), false, "no sixth Effect for Working Notes");
+    assert.equal(effects.includes("working_notes"), false, "and no Working Notes field on any Effect proposal, SpawnExecution included");
+
+    const events = await readFile(resolve(CORE_SRC, "interaction/events.ts"), "utf8");
+    assert.equal(/working[_ ]?notes/i.test(events), false, "no working_notes.* Event kind was invented");
+  });
+
+  test("the Agent controller owns the local Working Notes update; the Workflow controller does not", async () => {
+    const agent = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8"));
+    assert.ok(agent.includes("setWorkingNote") && agent.includes("validateWorkingNoteUpdate"), "the Agent applies the update locally");
+    assert.ok(agent.includes("createActiveWorkingNotesActionView"));
+
+    const workflow = codeOf(await readFile(resolve(CORE_SRC, "controllers/workflow/controller.ts"), "utf8"));
+    for (const forbidden of ["workingNotes", "WorkingNote", "working_notes", "createActiveWorkingNotesActionView"]) {
+      assert.equal(workflow.includes(forbidden), false, `the Workflow controller is untouched as a Working Notes consumer (${forbidden})`);
+    }
+  });
+
+  test("the information compiler may read a Working Notes frame but cannot mutate it or choose actions", async () => {
+    const files = await walk(["controllers/agent/information.ts"]);
+    // Same forbidden set as the Structured Memory read case: no route to exposure or projection.
+    for (const forbidden of ["operations/model-action-view.ts", "operations/projection.ts", "operations/active-view.ts", "execution/working-notes-action-view.ts"]) {
+      assert.equal(files.has(forbidden), false, `the information compiler must not reach ${forbidden}`);
+    }
+    const code = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/information.ts"), "utf8"));
+    for (const mutator of ["setWorkingNote", "workingNotesBudgetIssue", "validateWorkingNoteUpdate"]) {
+      assert.equal(code.includes(mutator), false, `an information compiler renders notes; it does not ${mutator}`);
+    }
   });
 
   test("projection has no AgentSpec side channel, and only the Agent consumes write exposure", async () => {

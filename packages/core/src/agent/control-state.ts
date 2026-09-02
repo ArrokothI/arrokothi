@@ -35,6 +35,8 @@
  * being answered twice.
  */
 
+import type { WorkingNotesFrame } from "../execution/working-notes.ts";
+import { emptyWorkingNotesFrame } from "../execution/working-notes.ts";
 import type { ModelMessage } from "../model/types.ts";
 import type { ModelActionTarget } from "../operations/action-target.ts";
 import type { ModelActionProjection } from "../operations/projection.ts";
@@ -43,16 +45,22 @@ import type { AgentModelObservation } from "./observation-projection.ts";
 import type { AgentObservationOutcome } from "./observations.ts";
 
 /**
- * Version 2.
+ * Version 3.
  *
  * Version 1 persisted a projection binding and a pending call as a flat `capability`/`operation`
  * pair, and persisted observations as the semantic record rather than as what the model was shown.
- * Both are now typed: a binding names a `ModelActionTarget`, and an invocation snapshot records the
- * projected observations. Old progress is *refused* rather than reinterpreted - see
- * [`readAgentControlState`](#readAgentControlState) - because a shape that could be read either way
- * would silently resolve a stored alias against a guess.
+ * Version 2 typed both: a binding names a `ModelActionTarget`, and an invocation snapshot records
+ * the projected observations.
+ *
+ * Version 3 (Slice F.2a) adds `workingNotes`: the Agent controller's local scratch frame, now part
+ * of its persisted semantic progression. A version-2 record would read as though it had *no* frame;
+ * defaulting that to an empty frame is in fact semantically safe (absence of notes and an empty
+ * frame are the same thing, and no stored alias resolves against it). The version is bumped and the
+ * older record *refused* anyway - see [`readAgentControlState`](#readAgentControlState) - to keep
+ * the persisted-shape contract honest and the refusal path uniform, exactly as the 1 -> 2 bump did.
+ * Pre-v1 the repository carries no migration.
  */
-export const AGENT_CONTROL_STATE_VERSION = 2;
+export const AGENT_CONTROL_STATE_VERSION = 3;
 
 /**
  * The compiled information one invocation was given. Frozen at dispatch, replayed on resume.
@@ -129,6 +137,13 @@ export interface AgentControlState {
   readonly pending: readonly AgentPendingCall[];
   /** How many times this Agent has responded without terminating. `response != terminal result`. */
   readonly responses: number;
+  /**
+   * The Agent controller's local Working Notes: temporary scratch state it owns and persists with
+   * the rest of its progress. Not a runtime-owned record, not read through the Harness, not
+   * inherited by a child. A fresh Agent, and one that authored no `workingNotes`, carries the
+   * empty frame.
+   */
+  readonly workingNotes: WorkingNotesFrame;
 }
 
 export function initialAgentControlState(): AgentControlState {
@@ -141,6 +156,7 @@ export function initialAgentControlState(): AgentControlState {
     continuation: null,
     pending: [],
     responses: 0,
+    workingNotes: emptyWorkingNotesFrame(),
   };
 }
 
@@ -193,6 +209,7 @@ export function readAgentControlState(progress: JsonObject): AgentControlStateRe
       continuation: state.continuation ?? null,
       pending: state.pending ?? [],
       responses: state.responses ?? 0,
+      workingNotes: state.workingNotes ?? emptyWorkingNotesFrame(),
     },
   };
 }

@@ -22,6 +22,7 @@ export type AgentSpecIssueCode =
   | "invalid_instructions"
   | "invalid_operations"
   | "invalid_structured_memory"
+  | "invalid_working_notes"
   | "invalid_limits"
   | "invalid_completion"
   | "unknown_field";
@@ -36,9 +37,23 @@ export type AgentSpecValidation =
   | { readonly ok: true; readonly spec: AgentSpec }
   | { readonly ok: false; readonly issues: readonly AgentSpecIssue[] };
 
-const KNOWN_FIELDS = new Set(["model", "instructions", "operations", "structuredMemory", "limits", "completion"]);
+const KNOWN_FIELDS = new Set([
+  "model",
+  "instructions",
+  "operations",
+  "structuredMemory",
+  "workingNotes",
+  "limits",
+  "completion",
+]);
 const REQUIREMENT_LEVELS = new Set<ModelRequirementLevel>(["required", "optional"]);
-const LIMIT_FIELDS = ["maxModelCalls", "maxOperationCallsPerStep", "maxContextMessages"] as const;
+const LIMIT_FIELDS = [
+  "maxModelCalls",
+  "maxOperationCallsPerStep",
+  "maxContextMessages",
+  "maxWorkingNoteEntries",
+  "maxWorkingNotesBytes",
+] as const;
 
 function modelIssues(value: unknown): AgentSpecIssue[] {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -166,6 +181,40 @@ function structuredMemoryIssues(value: unknown): AgentSpecIssue[] {
   return issues;
 }
 
+/**
+ * Strict authored Working Notes enablement.
+ *
+ * A plain object whose only keys are `read` and `write`, each - when present - literally `true`.
+ * Nothing is inferred, and unknown properties are rejected rather than carried.
+ */
+function workingNotesIssues(value: unknown): AgentSpecIssue[] {
+  if (value === undefined) return [];
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return [{ path: "spec.workingNotes", code: "invalid_working_notes", message: "expected a Working Notes spec object" }];
+  }
+  const issues: AgentSpecIssue[] = [];
+  const spec = value as Record<string, unknown>;
+  for (const key of Object.keys(spec)) {
+    if (key !== "read" && key !== "write") {
+      issues.push({
+        path: `spec.workingNotes.${key}`,
+        code: "invalid_working_notes",
+        message: `unknown Working Notes spec field "${key}"`,
+      });
+    }
+  }
+  for (const key of ["read", "write"] as const) {
+    if (Object.prototype.hasOwnProperty.call(spec, key) && spec[key] !== true) {
+      issues.push({
+        path: `spec.workingNotes.${key}`,
+        code: "invalid_working_notes",
+        message: `"${key}" must be literally true when present`,
+      });
+    }
+  }
+  return issues;
+}
+
 function limitIssues(value: unknown): AgentSpecIssue[] {
   if (value === undefined) return [];
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -203,6 +252,8 @@ export function validateAgentSpec(input: unknown): AgentSpecValidation {
   }
 
   issues.push(...structuredMemoryIssues(candidate["structuredMemory"]));
+
+  issues.push(...workingNotesIssues(candidate["workingNotes"]));
 
   issues.push(...limitIssues(candidate["limits"]));
 
