@@ -28,7 +28,7 @@ Supporting material:
 | [`product-vision.md`](product-vision.md) | cross-repository ArrokothI product direction: heterogeneous Agent application composition, Studio/Cloud direction, ecosystem/adoption/business posture; **not canonical kernel architecture** |
 | [`development/`](development/) | current implementation plans, audits, slice decisions, reviews, migration notes |
 | [`architecture-research-dossier.md`](architecture-research-dossier.md) | retained non-canonical research/source dossier; useful evidence and external-system survey |
-| [`research/`](research/) | focused, non-canonical protocol/system comparisons and experiment directions outside the active implementation sequence |
+| [`research/`](research/) | focused, non-canonical protocol/system comparisons and experiment directions outside the active implementation sequence; includes MCP semantic mapping and Agent caching research |
 
 The product vision may guide future repositories and product surfaces, but it does not own kernel semantics. The research dossier and focused notes under `research/` are intentionally **not** canonical even when they contain useful reasoning. When any supporting research conflicts with a canonical document, the canonical document wins.
 
@@ -96,6 +96,26 @@ mental-model → memory
 ```
 
 Use `authority.md` for visibility/permission and `composition.md` for Working Note/Stage/child handoff consequences.
+
+### Working on caching / derived-view efficiency?
+
+Start from the semantic owner first, then use the focused research note:
+
+```text
+Active View / operation exposure
+  mental-model → authority
+
+memory read views / context compilation
+  mental-model → memory
+
+suspension / invocation recovery
+  mental-model → execution-runtime
+
+then:
+  research/agent-caching-semantics-and-strategy.md
+```
+
+The research note distinguishes optional caches from deterministic derived views and immutable invocation/recovery snapshots. It does not redefine any of those canonical concepts.
 
 ### Working on MCP/A2A/Agent Skills/APIs?
 
@@ -200,6 +220,10 @@ Does a sandbox define Execution?
 Should Studio eventually live in a separate repository?
   → product-vision.md may state the product direction
   → no kernel semantic follows from that repository choice
+
+Is Active View a cache?
+  → authority.md owns what Active View means
+  → research/agent-caching-semantics-and-strategy.md may discuss caching it as an implementation optimization
 ```
 
 ---
