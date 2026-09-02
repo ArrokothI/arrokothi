@@ -27,7 +27,7 @@
  * ```text
  * catalog descriptors + effective authority + authored exposure request
  *        ↓ deterministic
- * Active Operation View + authored view-neutral memory-write exposure
+ * Active Operation View
  *        ↓ immutable, one per invocation
  * ModelOperationProjection            → ModelCapabilitySpec[] → the model
  *        ↓ the model answers with a name
@@ -64,7 +64,7 @@
 
 import type { DefinitionKind } from "../../definitions/types.ts";
 import type { EffectProposal } from "../../effects/types.ts";
-import { useCapability, writeMemory } from "../../effects/types.ts";
+import { useCapability } from "../../effects/types.ts";
 import type { EmissionProposal } from "../../execution/emission.ts";
 import type { ControllerResumptionId } from "../../execution/ids.ts";
 import type { DeliveredEvent, WakeCondition } from "../../interaction/event-envelope.ts";
@@ -195,16 +195,6 @@ function outcomeOf(event: DeliveredEvent): {
   switch (event.kind) {
     case "capability.completed":
       return { outcome: "completed", observation: event.body.observation };
-    case "memory.written":
-      return {
-        outcome: "completed",
-        observation: {
-          effectKind: "write_memory",
-          memoryViewId: event.body.memoryViewId,
-          key: event.body.key,
-          revision: event.body.revision,
-        },
-      };
     case "capability.failed":
       return { outcome: "failed", error: { code: event.body.error.code, message: event.body.error.message } };
     case "capability.unknown":
@@ -423,7 +413,6 @@ class AgentController implements ExecutionController {
       const projected = createModelOperationProjection({
         projectionId: agentProjectionId(step),
         view,
-        ...(spec.memoryWrite !== undefined ? { memoryWrite: spec.memoryWrite } : {}),
       });
       if (!projected.ok) {
         return {
@@ -650,10 +639,12 @@ class AgentController implements ExecutionController {
             };
           }
           const binding = resolution.binding;
-          // The binding's target decides which existing Effect this becomes. The default remains a
-          // refusal so an unknown persisted arm is never guessed into one of the supported Effects.
+          // The binding's target decides which Effect this becomes. v0.4 mints one target kind, so
+          // the switch has one arm and a default that refuses; the point is that the *shape* of the
+          // decision is already the one a second action family would extend, rather than the
+          // assumption that every model-visible action is a capability operation.
           const target: ModelActionTarget = binding.target;
-          if (target.kind !== "capability_operation" && target.kind !== "write_memory") {
+          if (target.kind !== "capability_operation") {
             return {
               kind: "fail",
               state: { ...advanced, messages },
@@ -678,30 +669,14 @@ class AgentController implements ExecutionController {
             observation: null,
             error: null,
           });
-          if (target.kind === "capability_operation") {
-            proposals.push(
-              useCapability({
-                capability: target.capability,
-                operation: target.operation,
-                input: call.input,
-                requestKey: correlationId,
-              }),
-            );
-          } else {
-            const key = call.input["key"];
-            if (typeof key !== "string" || key.length === 0 || !("value" in call.input)) {
-              return {
-                kind: "fail",
-                state: { ...advanced, messages },
-                emissions: [],
-                failure: {
-                  code: "agent_memory_write_call_invalid",
-                  message: "the projected write_memory call requires a non-empty key and a JSON value",
-                },
-              };
-            }
-            proposals.push(writeMemory({ key, value: call.input["value"] as JsonValue, requestKey: correlationId }));
-          }
+          proposals.push(
+            useCapability({
+              capability: target.capability,
+              operation: target.operation,
+              input: call.input,
+              requestKey: correlationId,
+            }),
+          );
           this.trace?.operationProposed?.({
             step: invocation.step,
             correlationId,

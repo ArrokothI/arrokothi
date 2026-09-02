@@ -89,14 +89,12 @@ export { agentCallCorrelationId, agentModelResumptionKey } from "./agent/resumpt
 // -- operation identity, authority, exposure, and projection -----------------
 export type {
   CapabilityOperationTarget,
-  MemoryWriteTarget,
   ModelActionTarget,
   ModelActionTargetKind,
 } from "./operations/action-target.ts";
 export {
   MODEL_ACTION_TARGET_KINDS,
   capabilityOperationTarget,
-  memoryWriteTarget,
   formatModelActionTarget,
   isModelActionTarget,
   operationRefOfTarget,

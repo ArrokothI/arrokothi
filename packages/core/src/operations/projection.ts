@@ -35,7 +35,7 @@
 import type { ModelCapabilitySpec } from "../model/types.ts";
 import type { ObjectSchema } from "../schema/value-schema.ts";
 import type { ModelActionTarget } from "./action-target.ts";
-import { capabilityOperationTarget, formatModelActionTarget, memoryWriteTarget } from "./action-target.ts";
+import { capabilityOperationTarget, formatModelActionTarget } from "./action-target.ts";
 import type { ActiveOperationEntry, ActiveOperationView } from "./active-view.ts";
 import type { OperationRef } from "./refs.ts";
 
@@ -46,7 +46,7 @@ import type { OperationRef } from "./refs.ts";
  * the only reason this type is not simply an `ActiveOperationEntry`. A binding is written into a
  * persisted invocation snapshot, so the shape chosen here is the shape a stored projection has; a
  * flat pair would have persisted the claim that every model-visible action *is* a capability
- * operation, which canonical interoperability does not say. Slice F.0 mints the second target kind.
+ * operation, which canonical interoperability does not say. v0.4 mints exactly one target kind.
  */
 export interface ModelOperationBinding {
   /** Stable within the projection. Deterministic, derived from the projection id and position. */
@@ -96,8 +96,6 @@ export interface CreateProjectionInput {
   readonly view: ActiveOperationView;
   /** Optional narrowing for this call alone: token budget, provider tool limits, relevance. */
   readonly entries?: readonly ActiveOperationEntry[];
-  /** Authored exposure request for the existing WriteMemory Effect. It grants nothing. */
-  readonly memoryWrite?: { readonly description?: string };
 }
 
 /**
@@ -106,6 +104,12 @@ export interface CreateProjectionInput {
  * Refuses rather than repairs. A duplicate alias is an ambiguity that would later have to be
  * resolved by guessing which operation the model meant, and there is no correct guess, so the
  * projection never comes into existence.
+ *
+ * Every binding originates in one entry of the `ActiveOperationView` named by the projection's
+ * `viewId` / `viewRevision`. There is no side channel that appends a binding the authorized Active
+ * View did not contain; a model-directed action family that is not a capability operation (memory
+ * writes, child executions, messages) must first enter an Active View through its own authorized
+ * exposure path before it can be projected.
  */
 export function createModelOperationProjection(input: CreateProjectionInput): ProjectionResult {
   const source = input.entries ?? input.view.entries;
@@ -135,38 +139,6 @@ export function createModelOperationProjection(input: CreateProjectionInput): Pr
     byAlias.set(alias, binding);
     bindings.push(binding);
   });
-
-  if (input.memoryWrite !== undefined) {
-    const alias = "write_memory";
-    const existing = byAlias.get(alias);
-    if (existing) {
-      issues.push({
-        path: `bindings[${bindings.length}]`,
-        message:
-          `model-facing name "${alias}" would mean both ${formatModelActionTarget(existing.target)} and ` +
-          "the Structured Memory write target; a projection with an ambiguous name cannot resolve a response",
-      });
-    } else {
-      const binding: ModelOperationBinding = {
-        bindingId: `${input.projectionId}/b${bindings.length + 1}`,
-        alias,
-        target: memoryWriteTarget(),
-        description:
-          input.memoryWrite.description ??
-          "Write one declared Structured Memory field. The runtime validates the key and value against the bound schema.",
-        input: {
-          kind: "object",
-          fields: {
-            key: { required: true, schema: { kind: "string", minLength: 1 } },
-            value: { required: true, schema: { kind: "any" } },
-          },
-          additionalProperties: false,
-        },
-      };
-      byAlias.set(alias, binding);
-      bindings.push(binding);
-    }
-  }
 
   if (issues.length > 0) return { ok: false, issues };
 

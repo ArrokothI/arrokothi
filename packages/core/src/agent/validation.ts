@@ -21,7 +21,6 @@ export type AgentSpecIssueCode =
   | "invalid_model"
   | "invalid_instructions"
   | "invalid_operations"
-  | "invalid_memory_write"
   | "invalid_limits"
   | "invalid_completion"
   | "unknown_field";
@@ -36,7 +35,7 @@ export type AgentSpecValidation =
   | { readonly ok: true; readonly spec: AgentSpec }
   | { readonly ok: false; readonly issues: readonly AgentSpecIssue[] };
 
-const KNOWN_FIELDS = new Set(["model", "instructions", "operations", "memoryWrite", "limits", "completion"]);
+const KNOWN_FIELDS = new Set(["model", "instructions", "operations", "limits", "completion"]);
 const REQUIREMENT_LEVELS = new Set<ModelRequirementLevel>(["required", "optional"]);
 const LIMIT_FIELDS = ["maxModelCalls", "maxOperationCallsPerStep", "maxContextMessages"] as const;
 
@@ -127,34 +126,6 @@ export function validateAgentSpec(input: unknown): AgentSpecValidation {
 
   for (const issue of exposureRequestIssues(candidate["operations"], "spec.operations")) {
     issues.push({ path: issue.path, code: "invalid_operations", message: issue.message });
-  }
-
-  const memoryWrite = candidate["memoryWrite"];
-  if (memoryWrite !== undefined) {
-    if (memoryWrite === null || typeof memoryWrite !== "object" || Array.isArray(memoryWrite)) {
-      issues.push({ path: "spec.memoryWrite", code: "invalid_memory_write", message: "expected an exposure object" });
-    } else {
-      const declaration = memoryWrite as Record<string, unknown>;
-      if (
-        declaration["description"] !== undefined &&
-        (typeof declaration["description"] !== "string" || (declaration["description"] as string).trim().length === 0)
-      ) {
-        issues.push({
-          path: "spec.memoryWrite.description",
-          code: "invalid_memory_write",
-          message: "expected a non-empty description when present",
-        });
-      }
-      for (const key of Object.keys(declaration)) {
-        if (key !== "description") {
-          issues.push({
-            path: `spec.memoryWrite.${key}`,
-            code: "invalid_memory_write",
-            message: `unknown memory-write exposure field "${key}"`,
-          });
-        }
-      }
-    }
   }
 
   issues.push(...limitIssues(candidate["limits"]));

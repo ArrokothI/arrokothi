@@ -24,10 +24,14 @@ import {
   createModelOperationProjection,
   MODEL_ACTION_TARGET_KINDS,
   isModelActionTarget,
+  modelCapabilitySpecs,
   operationRefOfTarget,
   readAgentControlState,
   resolveProjectedAlias,
 } from "@agent-sdk/core/execution";
+import { readFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   createAllowListAuthorizer,
   createDeferredModelProvider,
@@ -56,17 +60,58 @@ function view(entries: readonly { readonly capability: string; readonly operatio
 }
 
 describe("a projection binding names a typed action target", () => {
-  test("F.0 adds only the view-neutral memory-write target", () => {
-    assert.deepEqual(MODEL_ACTION_TARGET_KINDS, ["capability_operation", "write_memory"]);
+  test("v0.4 supports exactly one target kind, and says so", () => {
+    assert.deepEqual(MODEL_ACTION_TARGET_KINDS, ["capability_operation"]);
     assert.equal(isModelActionTarget({ kind: "capability_operation", capability: "docs", operation: "search" }), true);
-    assert.equal(isModelActionTarget({ kind: "write_memory" }), true);
-    assert.equal(isModelActionTarget({ kind: "write_memory", scope: "session" }), false, "the target does not encode a future scope model");
+    assert.equal(isModelActionTarget({ kind: "write_memory", scope: "session" }), false, "no other kind is accepted");
     assert.equal(isModelActionTarget({ capability: "docs", operation: "search" }), false, "and an untagged pair is not one");
     assert.deepEqual(
       operationRefOfTarget({ kind: "capability_operation", capability: "docs", operation: "search" }),
       { capability: "docs", operation: "search" },
     );
-    assert.equal(operationRefOfTarget({ kind: "write_memory" }), null, "a memory write is not a capability operation");
+  });
+
+  test("every projection binding originates in the Active View the projection names (F.0.1)", () => {
+    const activeView = view([DOCS_SEARCH, { capability: "mail", operation: "send" }]);
+    const built = createModelOperationProjection({ projectionId: "ag/step1/projection", view: activeView });
+    assert.ok(built.ok);
+    if (!built.ok) return;
+
+    // The snapshot truthfully names its source view...
+    assert.equal(built.projection.viewId, activeView.viewId);
+    assert.equal(built.projection.viewRevision, activeView.authorityVersion);
+    // ...and holds nothing the view did not contain.
+    assert.equal(built.projection.bindings.length, activeView.entries.length);
+    for (const binding of built.projection.bindings) {
+      assert.equal(binding.target.kind, "capability_operation", "F.0.1 defers every non-capability model action");
+      const ref = operationRefOfTarget(binding.target)!;
+      assert.ok(
+        activeView.entries.some((entry) => entry.capability === ref.capability && entry.operation === ref.operation),
+        `binding "${binding.alias}" must resolve to one of the Active View's entries`,
+      );
+    }
+
+    // The provider-facing capability list is derived 1:1 from those bindings, so no name the
+    // Active View did not authorize - `write_memory` included - can appear in it.
+    assert.deepEqual(
+      modelCapabilitySpecs(built.projection).map((spec) => spec.name),
+      built.projection.bindings.map((binding) => binding.alias),
+    );
+    assert.equal(
+      modelCapabilitySpecs(built.projection).some((spec) => spec.name === "write_memory"),
+      false,
+    );
+  });
+
+  test("the projection builder has no side channel that appends a binding off the Active View (F.0.1)", async () => {
+    const source = await readFile(
+      resolve(dirname(fileURLToPath(import.meta.url)), "../../../packages/core/src/operations/projection.ts"),
+      "utf8",
+    );
+    // Exactly one place writes a binding, and it is inside the loop over the Active View's entries.
+    assert.equal((source.match(/bindings\.push\(/g) ?? []).length, 1, "one, and only one, binding source");
+    assert.equal(source.includes("memoryWrite"), false, "no authored memory-write exposure request reaches projection");
+    assert.equal(source.includes("write_memory"), false, "the builder mints no view-neutral memory action");
   });
 
   test("the built snapshot carries the target, and an alias resolves to that exact one", () => {

@@ -372,14 +372,11 @@ describe("WriteMemory mechanical confirmation", () => {
 });
 
 describe("reference controller observation", () => {
-  test("a real Agent proposes WriteMemory, consumes memory.written, and performs its next model step", async () => {
-    const executor = scriptedAgentExecutor([
-      {
-        kind: "call_operations",
-        calls: [{ callId: "save", alias: "write_memory", input: { key: "profile", value: { name: "Agent" } } }],
-      },
-      { kind: "respond", text: "saved" },
-    ]);
+  test("authored Agent data plus a bound memory view still exposes no model-visible write_memory (F.0.1)", async () => {
+    // F.0.1: the reference Agent has no memory-interface exposure path yet, so even an Execution
+    // that is fully set up to write memory - a valid binding and an allowing memory grant - must
+    // not advertise a WriteMemory operation to the model. That exposure is deferred to F.1.
+    const executor = scriptedAgentExecutor([{ kind: "respond", text: "done" }]);
     const bundle = createAgentTestHarness({
       models: agentModelAccess(testModelResolver()),
       executor,
@@ -388,7 +385,7 @@ describe("reference controller observation", () => {
     const ref = await bundle.definitions.save(
       testAgent({
         id: "memory-agent",
-        memoryWrite: { description: "Save one asserted profile field." },
+        instructions: "Save the user's name to Structured Memory, then answer.",
         completion: "complete_on_response",
       }),
     );
@@ -396,13 +393,19 @@ describe("reference controller observation", () => {
     await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "task", payload: "save the profile" });
     await bundle.harness.runUntilIdle();
 
-    assert.equal((await bundle.harness.inspect(agent.executionId))?.lifecycle, "COMPLETED");
-    assert.equal(executor.requests.length, 2, "the result enabled the next semantic/model progression");
-    assert.equal(executor.requests[1]?.observations.length, 1);
-    assert.match(executor.requests[1]?.observations[0]?.content ?? "", /write_memory|profile|revision/i);
-    assert.deepEqual((await bundle.harness.structuredMemoryOf(agent.executionId))?.values["profile"]?.value, { name: "Agent" });
-    const [request] = effectRequestsIn(await bundle.harness.effectJournalOf(agent.executionId));
-    assert.equal(request?.proposal.kind, "write_memory");
+    const request = executor.requests[0]!;
+    assert.deepEqual(request.projection.bindings, [], "no binding was projected from authored data alone");
+    assert.equal(
+      (request.capabilities ?? []).some((spec) => spec.name === "write_memory"),
+      false,
+      "the provider-facing capability list contains no WriteMemory operation",
+    );
+    assert.equal((await bundle.harness.structuredMemoryOf(agent.executionId))?.revision, 0, "and nothing was written");
+    assert.deepEqual(
+      effectRequestsIn(await bundle.harness.effectJournalOf(agent.executionId)).map((entry) => entry.proposal.kind),
+      [],
+      "the Agent proposed no Effect",
+    );
   });
 
   test("a real Workflow required WriteMemory settles its barrier and continues the Stage", async () => {

@@ -71,8 +71,10 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   the current Slice F.0 checkpoint: Execution-local schema-bound Structured Memory, runtime-owned
   view/state and revision, operational WriteMemory dispatch with authorization-before-view
   resolution, atomic memory.written settlement, exact-payload confirmation composition, read-only
-  application inspection, and Agent/Workflow continuation. No canonical-doc change; current branch
-  is awaiting independent architecture review.
+  application inspection, and Workflow Effect-barrier continuation. The F.0.1 architecture review
+  accepted that runtime and removed the reference Agent's direct memoryWrite model exposure, which
+  bypassed the canonical Active/Exposed View chain; model-directed memory-operation exposure is
+  deferred to F.1. No canonical-doc change. Not merged; F.1 not started.
 
 014-v1-efficiency-and-developer-ergonomics-validation.md
   cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
@@ -114,8 +116,12 @@ Slice E composition
   Slice E accepted + merged                       main @ e0ba59b
         ↓
 Slice F memory
-  F.0           Structured Memory + operational   current checkpoint (018);
-                WriteMemory foundation            stop for independent review
+  F.0           Structured Memory + operational   runtime accepted
+                WriteMemory foundation
+  F.0.1         removed premature reference-Agent  current checkpoint (018);
+                memoryWrite model exposure;        stop before F.1
+                model-directed memory exposure
+                deferred to F.1
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /
