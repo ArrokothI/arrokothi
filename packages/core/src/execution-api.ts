@@ -138,6 +138,7 @@ export {
   emptyLocalModelControlView,
   formatModelLocalControlTarget,
   isModelLocalControlTarget,
+  localModelControlProjectionIssues,
   resolveLocalControlAlias,
   workingNotesSetTarget,
 } from "./operations/local-model-control.ts";
@@ -545,7 +546,8 @@ export type {
   AgentModelAccess,
   AgentModelInvocation,
   AgentActionProposalRecord,
-  AgentProjectedBindingRecord,
+  AgentLocalControlApplicationRecord,
+  AgentProjectedCallableRecord,
   AgentTrace,
 } from "./controllers/agent/model-access.ts";
 export type {

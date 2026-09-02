@@ -139,7 +139,7 @@ unable to masquerade as an authority-governed action
 
 If a provider represents both an authorized operation and a local control as the same tool/function-call syntax, that shared wire syntax does not collapse the kernel distinction: the two are assembled into one provider-visible namespace only after each keeps its own provenance, and a returned name still resolves against the exact snapshot — authority-governed projection or local-control projection — it came from.
 
-Anything that *can* cross a boundary (a capability, a Structured Memory write, spawning, messaging, resource access) remains a full authority-governed model action and stays inside the subset chain.
+Any model-facing callable whose selection can request an interaction across an Execution/runtime boundary — a capability, a Structured Memory write, spawning, messaging, resource access — remains authority-governed and inside the `Projection ⊆ Active View ⊆ Effective Authority` chain. Authorized information reads and context compilation are not model callables at all (see [`memory.md`](memory.md) §13); they are neither model actions nor Effects and this chain does not describe them.
 
 ---
 

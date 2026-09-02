@@ -33,6 +33,7 @@
 import type { ControllerResumptionId } from "../../execution/ids.ts";
 import type { LogicalModelRequest, ResolvedModel } from "../../model/types.ts";
 import type { ModelActionTarget } from "../../operations/action-target.ts";
+import type { ModelLocalControlTarget } from "../../operations/local-model-control.ts";
 import type {
   AgentExecutor,
   AgentExecutorOutcome,
@@ -64,19 +65,53 @@ export type AgentControllerDecision =
   | "complete"
   | "fail";
 
-/** One binding as a trace record: which name meant what, without the schema it was shown with. */
-export interface AgentProjectedBindingRecord {
-  readonly bindingId: string;
-  readonly alias: string;
-  readonly target: ModelActionTarget;
-}
+/**
+ * One callable as a trace record: which name meant what, and which of the two sources it came from,
+ * without the schema it was shown with.
+ *
+ * The provider is shown one namespace; the kernel keeps the provenance. `origin: "action"` came from
+ * the authority-governed `ModelActionProjection` (and can become an Effect proposal); `origin:
+ * "local_control"` came from the `LocalModelControlProjection` (and never can).
+ */
+export type AgentProjectedCallableRecord =
+  | {
+      readonly origin: "action";
+      readonly bindingId: string;
+      readonly alias: string;
+      readonly target: ModelActionTarget;
+    }
+  | {
+      readonly origin: "local_control";
+      readonly bindingId: string;
+      readonly alias: string;
+      readonly target: ModelLocalControlTarget;
+    };
 
+/** One Effect proposal this step produced. Authority-governed actions only - never a local control. */
 export interface AgentActionProposalRecord {
   readonly step: number;
   readonly correlationId: string;
   readonly bindingId: string;
   readonly alias: string;
   readonly target: ModelActionTarget;
+}
+
+/**
+ * One controller-local model control the step selected and applied.
+ *
+ * It settled in-controller with no Effect, Event, or PendingOperation, so it is *not* an
+ * `AgentActionProposalRecord`. This record carries only correlation/integrity data - enough to see
+ * that `working_notes_set` was shown, chosen, and applied, without the note content and without
+ * inventing an Event.
+ */
+export interface AgentLocalControlApplicationRecord {
+  readonly step: number;
+  readonly correlationId: string;
+  readonly bindingId: string;
+  readonly alias: string;
+  readonly target: ModelLocalControlTarget;
+  /** The provider's own id for the call, when it supplied one. Correlation only. */
+  readonly callId: string | null;
 }
 
 /**
@@ -94,9 +129,11 @@ export interface AgentActionProposalRecord {
  * which Execution, which Activation, which step
  * which logical model, and which deployment answered it
  * which information selection it saw          (a digest, not the prompt)
- * which projection it was shown, and what the bindings meant
+ * which two projections the provider callable namespace was assembled from, and what every
+ *   callable meant - each tagged action or local_control
  * what the model produced, semantically
- * what the controller then decided, and what it proposed
+ * what the controller then decided: Effect proposals (authority-governed) and local-control
+ *   applications (in-controller, no Effect)
  * provider usage, finish reason, diagnostics, latency
  * ```
  *
@@ -119,14 +156,20 @@ export interface AgentModelInvocation {
   readonly deployment?: JsonObject;
   /** Content-derived identity of the compiled information this call saw. Not the prompt. */
   readonly informationSelectionId: string;
-  readonly projectionId: string;
-  readonly viewId: string;
-  readonly exposedActions: number;
-  readonly bindings: readonly AgentProjectedBindingRecord[];
+  /** The authority-governed action projection/view the provider namespace was partly cut from. */
+  readonly actionProjectionId: string;
+  readonly actionViewId: string;
+  /** The controller-local model-control projection/view the provider namespace was partly cut from. */
+  readonly localControlProjectionId: string;
+  readonly localControlViewId: string;
+  /** Every callable the provider was actually shown, tagged with its source. */
+  readonly callables: readonly AgentProjectedCallableRecord[];
   readonly outcome: AgentExecutorOutcome["kind"];
   readonly decision: AgentControllerDecision;
-  /** The Effect proposals this step produced, with the correlations their results will carry. */
+  /** The Effect proposals this step produced, with the correlations their results will carry. Authority-governed only. */
   readonly proposals: readonly AgentActionProposalRecord[];
+  /** The controller-local model controls this step applied. In-controller, no Effect. */
+  readonly localControlApplications: readonly AgentLocalControlApplicationRecord[];
   /** Provider evidence. Absent when the executor reported none; never invented. */
   readonly metadata?: AgentModelInvocationMetadata;
 }

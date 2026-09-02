@@ -193,3 +193,76 @@ export function resolveLocalControlAlias(
   const binding = projection.bindings.find((candidate) => candidate.alias === alias);
   return binding ? { resolved: true, binding } : { resolved: false, alias };
 }
+
+const LOCAL_CONTROL_KIND_SET = new Set<string>(MODEL_LOCAL_CONTROL_KINDS);
+
+/**
+ * Deterministic structural validation of a *persisted* local-control projection.
+ *
+ * A returned alias is resolved against this snapshot on re-entry, so a persisted snapshot must be an
+ * honest F.2a local-control projection: plain data, non-empty ids, and every binding's alias, target,
+ * and input schema canonical for its kind, with no duplicate aliases. This is scoped to the F.2a
+ * re-entry contract - it is not a universal persisted-Agent-state validator.
+ */
+export function localModelControlProjectionIssues(value: unknown): readonly string[] {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return ["expected a local model-control projection object"];
+  }
+  const record = value as Record<string, unknown>;
+  const issues: string[] = [];
+  for (const extra of Object.keys(record).filter((k) => k !== "projectionId" && k !== "viewId" && k !== "bindings")) {
+    issues.push(`unknown projection property "${extra}"`);
+  }
+  if (typeof record["projectionId"] !== "string" || (record["projectionId"] as string).length === 0) {
+    issues.push("projectionId must be a non-empty string");
+  }
+  if (typeof record["viewId"] !== "string" || (record["viewId"] as string).length === 0) {
+    issues.push("viewId must be a non-empty string");
+  }
+  const bindings = record["bindings"];
+  if (!Array.isArray(bindings)) return [...issues, "bindings must be an array"];
+
+  const seenAliases = new Set<string>();
+  bindings.forEach((binding, index) => {
+    if (binding === null || typeof binding !== "object" || Array.isArray(binding)) {
+      issues.push(`bindings[${index}] must be an object`);
+      return;
+    }
+    const b = binding as Record<string, unknown>;
+    for (const extra of Object.keys(b).filter(
+      (k) => !["bindingId", "alias", "target", "description", "input"].includes(k),
+    )) {
+      issues.push(`bindings[${index}] has unknown property "${extra}"`);
+    }
+    if (typeof b["bindingId"] !== "string" || (b["bindingId"] as string).length === 0) {
+      issues.push(`bindings[${index}].bindingId must be a non-empty string`);
+    }
+    if (typeof b["description"] !== "string") {
+      issues.push(`bindings[${index}].description must be a string`);
+    }
+    const target = b["target"];
+    if (
+      target === null ||
+      typeof target !== "object" ||
+      Array.isArray(target) ||
+      !LOCAL_CONTROL_KIND_SET.has(String((target as Record<string, unknown>)["kind"])) ||
+      Object.keys(target as Record<string, unknown>).length !== 1
+    ) {
+      issues.push(`bindings[${index}].target is not a valid local model-control target`);
+      return;
+    }
+    const kind = (target as ModelLocalControlTarget).kind;
+    const expectedAlias = aliasOfLocalControl(kind);
+    if (b["alias"] !== expectedAlias) {
+      issues.push(`bindings[${index}].alias "${String(b["alias"])}" is not "${expectedAlias}" for ${kind}`);
+    } else if (seenAliases.has(expectedAlias)) {
+      issues.push(`bindings[${index}].alias "${expectedAlias}" is repeated`);
+    } else {
+      seenAliases.add(expectedAlias);
+    }
+    if (hashValue(b["input"]) !== hashValue(inputOfLocalControl(kind))) {
+      issues.push(`bindings[${index}].input is not the canonical schema for ${kind}`);
+    }
+  });
+  return issues;
+}

@@ -88,12 +88,21 @@ export function workingNoteEntryIssue(key: unknown, content: unknown): string | 
 /**
  * Invariant-preserving upsert of one entry, re-sorted by key, content structurally cloned.
  *
- * The public runtime boundary, not just a static type: an empty/blank key or non-JSON content
- * **throws** rather than producing a frame that violates `WorkingNotesFrame` invariants. Never
- * mutates its input. Boundedness is a separate check
+ * The public runtime boundary, not just a static type. It **throws** rather than ever returning a
+ * `WorkingNotesFrame` that violates its invariants:
+ *
+ * - a malformed input `frame` (out of key order, duplicate keys, non-JSON content, ...) is refused
+ *   before the update is applied - the function cannot "fix" a bad frame into a good one silently;
+ * - an empty/blank `key` or non-JSON `content` for the new entry is refused.
+ *
+ * Never mutates its input. Boundedness is a separate check
  * ([`workingNotesBudgetIssue`](#workingNotesBudgetIssue)) so a rejected candidate is just discarded.
  */
 export function setWorkingNote(frame: WorkingNotesFrame, key: string, content: JsonValue): WorkingNotesFrame {
+  const frameIssues = workingNotesFrameIssues(frame);
+  if (frameIssues.length > 0) {
+    throw new TypeError(`setWorkingNote was given a malformed Working Notes frame: ${frameIssues[0]}`);
+  }
   const issue = workingNoteEntryIssue(key, content);
   if (issue !== null) throw new TypeError(issue);
   const kept = frame.entries.filter((entry) => entry.key !== key);

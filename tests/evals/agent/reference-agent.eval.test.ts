@@ -276,7 +276,7 @@ describe("reference Agent behavioural baseline", () => {
     );
 
     assert.deepEqual(
-      result.invocations[0]?.bindings.map((binding) => binding.alias),
+      result.invocations[0]?.callables.map((callable) => callable.alias),
       ["docs_search", "mail_send"],
       "the ledger was never in front of the model",
     );

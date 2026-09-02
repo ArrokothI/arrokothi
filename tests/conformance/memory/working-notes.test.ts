@@ -17,12 +17,14 @@ import {
   createModelInvocationInterface,
   effectRequestsIn,
   emptyWorkingNotesFrame,
+  localModelControlProjectionIssues,
   modelInvocationCallableSpecs,
   readAgentControlState,
   resolveModelInvocationAlias,
   setWorkingNote,
   validateAgentSpec,
   validateWorkingNoteUpdate,
+  WORKING_NOTES_SET_INPUT,
   workingNoteContent,
   workingNoteEntryIssue,
   workingNotesBudgetIssue,
@@ -136,6 +138,24 @@ describe("the Working Notes frame is deterministic plain JSON", () => {
     assert.throws(() => setWorkingNote(emptyWorkingNotesFrame(), "k", (() => 0) as never), /JSON value/);
     assert.equal(workingNoteEntryIssue("k", { ok: true }), null);
     assert.match(workingNoteEntryIssue("", 1)!, /non-empty string/);
+  });
+
+  test("the public checked mutator also refuses a malformed INPUT frame - it cannot launder one clean", () => {
+    for (const malformed of [
+      { entries: [{ key: "b", content: 1 }, { key: "a", content: 2 }] }, // out of key order
+      { entries: [{ key: "dup", content: 1 }, { key: "dup", content: 2 }] }, // duplicate key
+      { entries: [{ key: "x", content: (() => 0) as never }] }, // non-JSON content
+      { entries: [{ key: "", content: 1 }] }, // empty key
+    ] as const) {
+      assert.throws(
+        () => setWorkingNote(malformed as never, "new", "ok"),
+        /malformed Working Notes frame/,
+        `refused: ${JSON.stringify(malformed).slice(0, 50)}`,
+      );
+    }
+    // a well-formed frame still updates normally
+    const ok = setWorkingNote({ entries: [{ key: "a", content: 1 }] }, "b", 2);
+    assert.deepEqual(ok.entries.map((e) => e.key), ["a", "b"]);
   });
 });
 
@@ -664,6 +684,147 @@ describe("the one callable namespace, assembled from two snapshots", () => {
   });
 });
 
+describe("the model-invocation trace faithfully describes both callable sources", () => {
+  test("a Working-Notes-only invocation traces the callable the provider saw and the local control applied", async () => {
+    const executor = scriptedAgentExecutor([
+      noteSelection("plan", { next: "draft" }),
+      { kind: "respond", text: "noted" },
+    ]);
+    const bundle = createAgentTestHarness({
+      models: agentModelAccess(testModelResolver()),
+      executor,
+      authorizer: createAllowListAuthorizer({ grants: [] }),
+    });
+    const ref = await bundle.definitions.save(
+      testAgent({ id: "wn-trace-only", completion: "complete_on_response", workingNotes: { read: true, write: true } }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [] });
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "task", payload: "go" });
+    await bundle.harness.runUntilIdle();
+
+    const step1 = bundle.trace.modelInvocations[0]!;
+    // The provider was shown exactly working_notes_set...
+    assert.deepEqual(executor.requests[0]!.capabilities.map((s) => s.name), ["working_notes_set"]);
+    // ...and the trace records it, tagged local_control, with the authority-governed side empty.
+    assert.deepEqual(step1.callables, [
+      {
+        origin: "local_control",
+        bindingId: "ag/step1/local-controls/c1",
+        alias: "working_notes_set",
+        target: { kind: "working_notes_set" },
+      },
+    ]);
+    assert.equal(step1.callables.filter((c) => c.origin === "action").length, 0);
+    assert.deepEqual(step1.proposals, [], "a local control is never an Effect proposal");
+    assert.deepEqual(step1.localControlApplications, [
+      {
+        step: 1,
+        correlationId: "ag/step1/call1",
+        bindingId: "ag/step1/local-controls/c1",
+        alias: "working_notes_set",
+        target: { kind: "working_notes_set" },
+        callId: "n1",
+      },
+    ]);
+    assert.match(step1.actionProjectionId, /^ag\/step1\/projection$/);
+    assert.match(step1.localControlProjectionId, /^ag\/step1\/local-controls$/);
+    assert.deepEqual(JSON.parse(JSON.stringify(step1)), step1, "the whole record is data");
+  });
+
+  test("a mixed invocation traces both callable origins; only the action is an Effect proposal", async () => {
+    const executor = scriptedAgentExecutor([
+      {
+        kind: "call_operations",
+        calls: [
+          { callId: "c1", alias: "docs_search", input: { query: "kernels" } },
+          { callId: "n1", alias: "working_notes_set", input: { key: "plan", content: "searched" } },
+        ],
+      },
+      { kind: "respond", text: "done" },
+    ]);
+    const bundle = createAgentTestHarness({
+      catalog: testCatalog(),
+      models: agentModelAccess(testModelResolver()),
+      executor,
+      authorizer: createAllowListAuthorizer({ grants: [{ capability: "docs", operations: ["search"] }] }),
+      capabilities: createScriptedCapabilityExecutor({
+        handlers: { "docs:search": () => ({ status: "success", observation: { hits: 1 } }) },
+      }),
+    });
+    const ref = await bundle.definitions.save(
+      testAgent({
+        id: "wn-trace-mixed",
+        completion: "complete_on_response",
+        operations: { refs: [DOCS_SEARCH] },
+        workingNotes: { write: true },
+      }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [DOCS_SEARCH] });
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "task", payload: "go" });
+    await bundle.harness.runUntilIdle();
+
+    const step1 = bundle.trace.modelInvocations[0]!;
+    assert.deepEqual(
+      step1.callables.map((c) => ({ origin: c.origin, alias: c.alias })),
+      [
+        { origin: "action", alias: "docs_search" },
+        { origin: "local_control", alias: "working_notes_set" },
+      ],
+    );
+    assert.deepEqual(step1.proposals.map((p) => p.alias), ["docs_search"], "only the action is a proposal");
+    assert.deepEqual(step1.localControlApplications.map((a) => a.alias), ["working_notes_set"]);
+    assert.equal(step1.proposals[0]!.target.kind, "capability_operation");
+    assert.equal(step1.localControlApplications[0]!.target.kind, "working_notes_set");
+  });
+
+  test("after a delayed model return the trace names the same persisted local-control projection", async () => {
+    const provider = createDeferredModelProvider("test");
+    const bundle = createAgentTestHarness({
+      models: agentModelAccess(testModelResolver()),
+      executor: referenceAgentExecutor([provider]),
+      authorizer: createAllowListAuthorizer({ grants: [] }),
+      inlineWait: createNoInlineWaitBudget(),
+    });
+    const ref = await bundle.definitions.save(
+      testAgent({ id: "wn-trace-reentry", completion: "complete_on_response", workingNotes: { read: true, write: true } }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [] });
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "task", payload: "go" });
+    await bundle.harness.runUntilIdle();
+
+    provider.settle({ capabilityCalls: [{ id: "n1", capability: "working_notes_set", input: { key: "plan", content: "A" } }] });
+    await bundle.harness.drainResumptions();
+    await bundle.harness.runUntilIdle();
+
+    const step1 = bundle.trace.modelInvocations.find((r) => r.step === 1)!;
+    assert.equal(step1.reentered, true);
+    assert.equal(step1.localControlProjectionId, "ag/step1/local-controls");
+    assert.deepEqual(step1.callables.map((c) => ({ origin: c.origin, bindingId: c.bindingId, alias: c.alias })), [
+      { origin: "local_control", bindingId: "ag/step1/local-controls/c1", alias: "working_notes_set" },
+    ]);
+    assert.deepEqual(step1.localControlApplications.map((a) => a.bindingId), ["ag/step1/local-controls/c1"]);
+  });
+
+  test("trace stays inert: recording a local-control application creates no Event, journal entry, or pending work", async () => {
+    const executor = scriptedAgentExecutor([noteSelection("plan", 1), { kind: "respond", text: "ok" }]);
+    const bundle = createAgentTestHarness({
+      models: agentModelAccess(testModelResolver()),
+      executor,
+      authorizer: createAllowListAuthorizer({ grants: [] }),
+    });
+    const ref = await bundle.definitions.save(
+      testAgent({ id: "wn-trace-inert", completion: "complete_on_response", workingNotes: { write: true } }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [] });
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "task", payload: "go" });
+    await bundle.harness.runUntilIdle();
+
+    assert.ok(bundle.trace.modelInvocations[0]!.localControlApplications.length === 1);
+    assert.deepEqual(await bundle.harness.effectJournalOf(agent.executionId), []);
+    assert.deepEqual(await bundle.harness.pendingOperationsOf(agent.executionId), []);
+  });
+});
+
 describe("independence from Structured Memory and from authority", () => {
   test("the write-action arms are independent: Working Notes vs Structured Memory", async () => {
     async function actions(input: { wnWrite: boolean; smWrite: boolean }) {
@@ -890,5 +1051,131 @@ describe("Agent control-state versioning and persisted-frame validation", () => 
     assert.equal(after?.lifecycle, "FAILED");
     assert.equal(after?.failure?.code, "agent_control_state_invalid");
     assert.match(after?.failure?.message ?? "", /malformed/);
+  });
+});
+
+describe("persisted local-control snapshot validation", () => {
+  const goodLocalControls = createLocalModelControlProjection({
+    projectionId: "ag/step1/local-controls",
+    view: createLocalModelControlView({ workingNotesSet: true }),
+  });
+  const goodProjection = { projectionId: "ag/step1/projection", viewId: "amav_x", bindings: [] };
+  const v3inv = (invocation: unknown) => ({
+    version: 3,
+    step: 0,
+    started: true,
+    messages: [],
+    invocation,
+    continuation: null,
+    pending: [],
+    responses: 0,
+    workingNotes: { entries: [] },
+  });
+
+  test("localModelControlProjectionIssues accepts the canonical projection and rejects malformed ones", () => {
+    assert.deepEqual(localModelControlProjectionIssues(goodLocalControls), []);
+    assert.deepEqual(
+      localModelControlProjectionIssues(
+        createLocalModelControlProjection({ projectionId: "p", view: createLocalModelControlView({ workingNotesSet: false }) }),
+      ),
+      [],
+      "an empty projection is valid",
+    );
+    for (const bad of [
+      "not an object",
+      { projectionId: "", viewId: "v", bindings: [] },
+      { projectionId: "p", viewId: "", bindings: [] },
+      { projectionId: "p", viewId: "v", bindings: "nope" },
+      { projectionId: "p", viewId: "v", bindings: [{ bindingId: "b1", alias: "wrong_alias", target: { kind: "working_notes_set" }, description: "d", input: WORKING_NOTES_SET_INPUT }] },
+      { projectionId: "p", viewId: "v", bindings: [{ bindingId: "b1", alias: "working_notes_set", target: { kind: "not_a_control" }, description: "d", input: WORKING_NOTES_SET_INPUT }] },
+      { projectionId: "p", viewId: "v", bindings: [{ bindingId: "b1", alias: "working_notes_set", target: { kind: "working_notes_set" }, description: "d", input: { kind: "object", fields: {} } }] },
+      { projectionId: "p", viewId: "v", bindings: [{ bindingId: "", alias: "working_notes_set", target: { kind: "working_notes_set" }, description: "d", input: WORKING_NOTES_SET_INPUT }] },
+      {
+        projectionId: "p",
+        viewId: "v",
+        bindings: [
+          { bindingId: "b1", alias: "working_notes_set", target: { kind: "working_notes_set" }, description: "d", input: WORKING_NOTES_SET_INPUT },
+          { bindingId: "b2", alias: "working_notes_set", target: { kind: "working_notes_set" }, description: "d", input: WORKING_NOTES_SET_INPUT },
+        ],
+      },
+    ]) {
+      assert.ok(localModelControlProjectionIssues(bad).length > 0, `rejected: ${JSON.stringify(bad).slice(0, 60)}`);
+    }
+  });
+
+  test("readAgentControlState: invocation with a valid localControls snapshot reads", () => {
+    const read = readAgentControlState(v3inv({ projection: goodProjection, localControls: goodLocalControls }) as never);
+    assert.equal(read.status, "read");
+  });
+
+  test("readAgentControlState: invocation === null reads normally", () => {
+    assert.equal(readAgentControlState(v3inv(null) as never).status, "read");
+  });
+
+  test("readAgentControlState: invocation missing localControls is refused", () => {
+    const read = readAgentControlState(v3inv({ projection: goodProjection }) as never);
+    assert.equal(read.status, "invalid");
+    assert.match((read as { reason: string }).reason, /localControls is missing/);
+  });
+
+  test("readAgentControlState: invocation with a malformed localControls snapshot is refused", () => {
+    const read = readAgentControlState(
+      v3inv({
+        projection: goodProjection,
+        localControls: { projectionId: "p", viewId: "v", bindings: [{ bindingId: "b1", alias: "nope", target: { kind: "working_notes_set" }, description: "d", input: WORKING_NOTES_SET_INPUT }] },
+      }) as never,
+    );
+    assert.equal(read.status, "invalid");
+    assert.match((read as { reason: string }).reason, /invocation is malformed/);
+  });
+
+  test("a running Agent with a corrupted persisted local-control snapshot fails deterministically, not by throwing", async () => {
+    const provider = createDeferredModelProvider("test");
+    const bundle = createAgentTestHarness({
+      models: agentModelAccess(testModelResolver()),
+      executor: referenceAgentExecutor([provider]),
+      authorizer: createAllowListAuthorizer({ grants: [] }),
+      inlineWait: createNoInlineWaitBudget(),
+    });
+    const ref = await bundle.definitions.save(testAgent({ id: "wn-corrupt-lc", workingNotes: { write: true } }));
+    const agent = await bundle.createAgent({ definition: ref, authority: [] });
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "task", payload: "go" });
+    await bundle.harness.runUntilIdle(); // suspended on the model call, invocation persisted
+
+    await bundle.store.transact(agent.executionId, async (tx) => {
+      const context = (await tx.executions.get(agent.executionId))!;
+      const progress = context.control.progress as Record<string, unknown>;
+      const invocation = progress["invocation"] as Record<string, unknown>;
+      await tx.executions.update(
+        {
+          ...context,
+          control: {
+            kind: "agent",
+            progress: {
+              ...progress,
+              invocation: {
+                ...invocation,
+                localControls: {
+                  ...(invocation["localControls"] as object),
+                  bindings: [
+                    { bindingId: "b1", alias: "nope", target: { kind: "working_notes_set" }, description: "d", input: WORKING_NOTES_SET_INPUT },
+                  ],
+                },
+              },
+            } as never,
+          },
+          revision: context.revision + 1,
+        },
+        context.revision,
+      );
+    });
+
+    provider.settle({ capabilityCalls: [{ id: "n1", capability: "working_notes_set", input: { key: "plan", content: "A" } }] });
+    await bundle.harness.drainResumptions();
+    await bundle.harness.runUntilIdle();
+
+    const after = await bundle.harness.inspect(agent.executionId);
+    assert.equal(after?.lifecycle, "FAILED");
+    assert.equal(after?.failure?.code, "agent_control_state_invalid");
   });
 });

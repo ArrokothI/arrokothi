@@ -57,7 +57,7 @@ export interface RecordingAgentTrace extends AgentTrace {
   readonly proposals: readonly AgentActionProposalRecord[];
   /** `provider/model` for each step, which is the usual portability assertion. */
   deployments(): readonly string[];
-  /** The projection identity each step was shown, which is the usual snapshot assertion. */
+  /** The authority-governed action-projection identity each step was shown. */
   projections(): readonly string[];
   /** The information-selection identity each step saw, for reproducibility assertions. */
   informationSelections(): readonly string[];
@@ -79,7 +79,7 @@ export function recordingAgentTrace(): RecordingAgentTrace {
       return modelInvocations.map((invocation) => `${invocation.provider}/${invocation.model}`);
     },
     projections() {
-      return modelInvocations.map((invocation) => invocation.projectionId);
+      return modelInvocations.map((invocation) => invocation.actionProjectionId);
     },
     informationSelections() {
       return modelInvocations.map((invocation) => invocation.informationSelectionId);

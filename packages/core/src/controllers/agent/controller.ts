@@ -152,6 +152,7 @@ import type {
   AgentControllerDecision,
   AgentModelAccess,
   AgentActionProposalRecord,
+  AgentLocalControlApplicationRecord,
   AgentStepInvocation,
   AgentTrace,
 } from "./model-access.ts";
@@ -645,23 +646,24 @@ class AgentController implements ExecutionController {
     reentered: boolean,
   ): StepOutcome {
     const result = this.interpretOutcome(spec, state, invocation, invocationInterface, step.outcome, input);
-    this.record(invocation, step, input, reentered, result);
+    this.record(invocation, invocationInterface, step, input, reentered, result);
     return result;
   }
 
   /** The trace record for one invocation. Observation only: no Event, no journal, no state. */
   private record(
     invocation: AgentInvocationState,
+    invocationInterface: ModelInvocationInterface,
     step: AgentStepInvocation,
     input: ActivationInput,
     reentered: boolean,
     result: StepOutcome,
   ): void {
     if (!this.trace?.modelInvoked) return;
-    // Only authority-governed actions become Effect proposals. A local Working Notes update settles
-    // in-controller with no Effect, so it is not a `proposal` - `proposalRecords` filters it out.
-    const proposals =
-      result.kind === "awaitEffects" ? this.proposalRecords(invocation.step, result.state.pending) : [];
+    // Only authority-governed actions become Effect proposals; a settled local control is recorded
+    // separately as an application. Both are read from the same interpreted `pending` list.
+    const settledPending =
+      result.kind === "awaitEffects" || result.kind === "continue" ? result.state.pending : [];
     this.trace.modelInvoked({
       executionId: input.execution.executionId,
       activationId: input.activation.activationId,
@@ -672,17 +674,30 @@ class AgentController implements ExecutionController {
       model: step.resolved.model,
       ...(step.resolved.deploymentMetadata !== undefined ? { deployment: step.resolved.deploymentMetadata } : {}),
       informationSelectionId: agentInformationSelectionId(invocation.information),
-      projectionId: invocation.projection.projectionId,
-      viewId: invocation.projection.viewId,
-      exposedActions: invocation.projection.bindings.length,
-      bindings: invocation.projection.bindings.map((binding) => ({
-        bindingId: binding.bindingId,
-        alias: binding.alias,
-        target: binding.target,
-      })),
+      actionProjectionId: invocation.projection.projectionId,
+      actionViewId: invocation.projection.viewId,
+      localControlProjectionId: invocation.localControls.projectionId,
+      localControlViewId: invocation.localControls.viewId,
+      // Every callable the provider was actually shown, from the assembled namespace, each tagged.
+      callables: invocationInterface.callables.map((callable) =>
+        callable.origin === "action"
+          ? {
+              origin: "action" as const,
+              bindingId: callable.binding.bindingId,
+              alias: callable.binding.alias,
+              target: callable.binding.target,
+            }
+          : {
+              origin: "local_control" as const,
+              bindingId: callable.binding.bindingId,
+              alias: callable.binding.alias,
+              target: callable.binding.target,
+            },
+      ),
       outcome: step.outcome.kind,
       decision: DECISION_OF[result.kind],
-      proposals,
+      proposals: this.proposalRecords(invocation.step, settledPending),
+      localControlApplications: this.localControlApplicationRecords(invocation.step, settledPending),
       ...(step.metadata !== undefined ? { metadata: step.metadata } : {}),
     });
   }
@@ -699,6 +714,26 @@ class AgentController implements ExecutionController {
         bindingId: call.bindingId,
         alias: call.alias,
         target,
+      });
+    }
+    return records;
+  }
+
+  private localControlApplicationRecords(
+    step: number,
+    pending: readonly AgentPendingCall[],
+  ): readonly AgentLocalControlApplicationRecord[] {
+    const records: AgentLocalControlApplicationRecord[] = [];
+    for (const call of pending) {
+      const target = call.target;
+      if (target.kind !== "working_notes_set") continue;
+      records.push({
+        step,
+        correlationId: call.correlationId,
+        bindingId: call.bindingId,
+        alias: call.alias,
+        target,
+        callId: call.callId,
       });
     }
     return records;

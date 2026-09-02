@@ -41,6 +41,7 @@ import { emptyWorkingNotesFrame, workingNotesFrameIssues } from "../execution/wo
 import type { ModelMessage } from "../model/types.ts";
 import type { ModelActionTarget } from "../operations/action-target.ts";
 import type { ModelLocalControlTarget, LocalModelControlProjection } from "../operations/local-model-control.ts";
+import { localModelControlProjectionIssues } from "../operations/local-model-control.ts";
 import type { ModelActionProjection } from "../operations/projection.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import type { AgentModelObservation } from "./observation-projection.ts";
@@ -215,10 +216,41 @@ export type AgentControlStateRead =
  * record would resolve a stored alias against a target that is not there, which is worse than
  * refusing to run.
  *
- * A version-3 record must also carry a valid `workingNotes` frame. It is not defaulted: "no frame
- * persisted" is a corrupt v3 record, not the same as a fresh Execution's empty frame, and silently
- * substituting one would hide the corruption.
+ * A version-3 record must also carry a valid `workingNotes` frame and, when an invocation is in
+ * flight, an honest `invocation.localControls` snapshot (a returned alias is resolved against it on
+ * re-entry). Neither is defaulted or repaired: "no frame persisted" / "no local-control snapshot
+ * persisted" is a corrupt v3 record, not the same as a fresh Execution, and silently substituting
+ * one would hide the corruption or resolve a stored alias against a guess.
  */
+function persistedInvocationIssues(value: unknown): readonly string[] {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return ["expected an invocation object"];
+  }
+  const record = value as Record<string, unknown>;
+  const issues: string[] = [];
+  // The authority-governed action projection is F.1.1; a shallow shape check is enough to keep
+  // callable-namespace reconstruction from throwing on a corrupt record.
+  const projection = record["projection"] as Record<string, unknown> | null | undefined;
+  if (
+    projection === null ||
+    typeof projection !== "object" ||
+    Array.isArray(projection) ||
+    typeof projection["projectionId"] !== "string" ||
+    !Array.isArray(projection["bindings"])
+  ) {
+    issues.push("invocation.projection is missing or malformed");
+  }
+  // The controller-local model-control snapshot is F.2a and is validated in full.
+  if (!Object.prototype.hasOwnProperty.call(record, "localControls") || record["localControls"] == null) {
+    issues.push("invocation.localControls is missing");
+  } else {
+    for (const issue of localModelControlProjectionIssues(record["localControls"])) {
+      issues.push(`invocation.localControls ${issue}`);
+    }
+  }
+  return issues;
+}
+
 export function readAgentControlState(progress: JsonObject): AgentControlStateRead {
   if (!isAgentControlState(progress)) return { status: "absent" };
   const state = progress as unknown as AgentControlState;
@@ -232,6 +264,14 @@ export function readAgentControlState(progress: JsonObject): AgentControlStateRe
   const frameIssues = workingNotesFrameIssues(frame);
   if (frameIssues.length > 0) {
     return { status: "invalid", reason: `persisted Working Notes frame is malformed: ${frameIssues.join("; ")}` };
+  }
+
+  const invocation = (state as { invocation?: unknown }).invocation;
+  if (invocation !== undefined && invocation !== null) {
+    const invocationIssues = persistedInvocationIssues(invocation);
+    if (invocationIssues.length > 0) {
+      return { status: "invalid", reason: `persisted invocation is malformed: ${invocationIssues.join("; ")}` };
+    }
   }
 
   return {

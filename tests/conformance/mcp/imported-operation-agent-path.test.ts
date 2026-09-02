@@ -151,9 +151,10 @@ describe("an imported MCP Tool travels the ordinary Agent path", () => {
         structuredMemoryWrites: createActiveStructuredMemoryWriteView([]),
       });
       assert.equal(actionView.sources.operations, view.viewId);
-      assert.equal(invocation.viewId, actionView.viewId, "the projection was cut from the combined view containing it");
-      assert.deepEqual(invocation.bindings.map((binding) => binding.alias), ["external_lookup_lookup_code"]);
-      assert.deepEqual(invocation.bindings[0]!.target, {
+      assert.equal(invocation.actionViewId, actionView.viewId, "the projection was cut from the combined view containing it");
+      assert.deepEqual(invocation.callables.map((callable) => callable.alias), ["external_lookup_lookup_code"]);
+      assert.deepEqual(invocation.callables.map((callable) => callable.origin), ["action"]);
+      assert.deepEqual(invocation.callables[0]!.target, {
         kind: "capability_operation",
         capability: IMPORTED.capability,
         operation: IMPORTED.operation,
@@ -161,7 +162,7 @@ describe("an imported MCP Tool travels the ordinary Agent path", () => {
 
       // -- exact binding resolution, and only UseCapability -------------------
       const proposal = bundle.trace.proposals[0]!;
-      assert.equal(proposal.bindingId, invocation.bindings[0]!.bindingId, "resolved through that exact projection");
+      assert.equal(proposal.bindingId, invocation.callables[0]!.bindingId, "resolved through that exact projection");
       const journal = await bundle.harness.effectJournalOf(agent.executionId);
       assert.deepEqual([...new Set(journal.map((entry) => entry.effectKind))], ["use_capability"]);
       assert.equal(effectRequestsIn(journal).length, 1);
@@ -252,7 +253,7 @@ describe("an imported MCP Tool travels the ordinary Agent path", () => {
 
       // What the *model* was shown is the descriptor's schema, which is the server's schema.
       const shown = bundle.trace.modelInvocations[0]!;
-      assert.equal(shown.exposedActions, 1);
+      assert.equal(shown.callables.filter((callable) => callable.origin === "action").length, 1);
       const descriptor = snapshot.catalog.describe(IMPORTED.capability as never, IMPORTED.operation as never)!;
       assert.deepEqual(descriptor.input, {
         kind: "object",

@@ -1,8 +1,8 @@
 # Slice F.2a — Working Notes Local Scratch Semantics
 
 > **Status:** implemented on the long-lived branch `slice-f-memory-completion` from merged `main`
-> `3598c88cb999000b3dd6a631524199a180e509b0`, then **corrected by an independent architecture
-> review of F.2a HEAD `0c53aadeae1239a0c0b873859e3285fa7f617d66`** (§0). **Not merged. Awaiting
+> `3598c88cb999000b3dd6a631524199a180e509b0`, then corrected by two independent architecture
+> reviews — of F.2a HEAD `0c53aad` (§0.1–0.2) and of `4ed87cd` (§0.3). **Not merged. Awaiting
 > re-review.** If F.2a passes, F.2b (explicit Working Notes handoff), F.3 (Derived Semantic Memory +
 > provenance/promotion), and the final Slice F integration corrections continue on this same branch.
 > The branch merges into `main` only after the whole of Slice F is independently accepted.
@@ -106,6 +106,54 @@ document was not broadly rewritten.
 - `setWorkingNote` is now the invariant-preserving public runtime boundary: an empty/blank key or
   non-JSON content **throws** (`workingNoteEntryIssue` is the shared check), rather than relying on
   TypeScript static types. It still never mutates its input and boundedness stays a separate check.
+
+### 0.3 Second-review correction — trace fidelity, local-control snapshot validation, mutator input
+
+The review of `4ed87cd` accepted the authority/local-control split and the blocker-2 work, and
+required three narrow fixes.
+
+**Trace.** F.2a gives a provider two callable sources, but the D.0.1 `AgentModelInvocation` trace
+recorded only the authority-governed projection - a Working-Notes-only call could show
+`bindings = []`, `proposals = []` while the model was in fact shown and selected `working_notes_set`.
+`AgentModelInvocation` now carries:
+
+```text
+actionProjectionId / actionViewId          the authority-governed F.1.1 snapshot
+localControlProjectionId / localControlViewId  the controller-local snapshot
+callables: AgentProjectedCallableRecord[]   EVERY callable the provider was shown, each tagged
+                                            origin: "action" | "local_control"  (replaces `bindings`)
+proposals: AgentActionProposalRecord[]      Effect proposals - authority-governed only, unchanged
+localControlApplications: AgentLocalControlApplicationRecord[]
+                                            { step, correlationId, bindingId, alias, target, callId }
+                                            - the local controls the step applied, no note content
+```
+
+The trace stays inert: no Event, journal entry, PendingOperation, or persisted state; a local
+control is **never** an `AgentActionProposalRecord` (`proposalRecords` filters it; the dedicated
+`localControlApplicationRecords` collects it). `exposedActions` / `bindings` / `projectionId` /
+`viewId` were renamed to the split fields above.
+
+**Persisted local-control snapshot.** `AgentInvocationState.localControls` is required whenever an
+invocation is persisted. A pure `localModelControlProjectionIssues(value)` validates a persisted
+snapshot (plain object; non-empty `projectionId`/`viewId`; `bindings` array; each binding's
+`bindingId` non-empty, `target` a valid `ModelLocalControlTarget`, `alias` canonical for that kind,
+`description` a string, `input` deep-equal the canonical schema for that kind; no duplicate
+aliases). `readAgentControlState` now also refuses a v3 record whose in-flight `invocation` is
+missing `localControls` or carries a malformed one (and a shallow guard for a missing/malformed
+`invocation.projection`, so interface reconstruction cannot throw). All resolve to the same
+`{ status: "invalid" }` → `agent_control_state_invalid`, never a throw or a restart.
+`AGENT_CONTROL_STATE_VERSION` stays 3 (F.2a is unmerged; the final accepted v3 shape is validated
+consistently).
+
+**Mutator input frame.** `setWorkingNote` now also validates its *input* frame
+(`workingNotesFrameIssues`) and **throws** on a malformed one (out-of-order/duplicate keys, non-JSON
+content), so the public mutator cannot launder a bad frame into a good one.
+
+**Canonical wording.** [`../authority.md`](../authority.md) §3's closing sentence is rescoped from
+"anything that *can* cross a boundary … remains a … model action" to "any model-facing callable
+whose *selection* can request an interaction across an Execution/runtime boundary … remains
+authority-governed", and explicitly notes that authorized information reads / context compilation
+are not model callables at all (they are neither actions nor Effects).
 
 Everything else below reflects the corrected implementation.
 
@@ -409,11 +457,16 @@ is F.3 and a different epistemic mechanism.
 - On re-entry neither snapshot is rebuilt and authored local controls are not re-evaluated. The
   callable namespace is re-derived from the two persisted snapshots by
   `createModelInvocationInterface` (a pure merge, no view resolution), and a returned
-  `working_notes_set` resolves through the persisted `LocalModelControlBinding`.
+  `working_notes_set` resolves through the persisted `LocalModelControlBinding`. A persisted
+  `read`-status v3 record is guaranteed by `readAgentControlState` to carry a valid
+  `invocation.localControls` (and a shape-checked `invocation.projection`), so this merge cannot
+  throw; a corrupt one is `agent_control_state_invalid` before re-entry.
 - `pending[].target` for a settled local-control entry is `{ kind: "working_notes_set" }`
   (`AgentPendingCall.target` widened to `ModelActionTarget | ModelLocalControlTarget`;
-  `AgentActionObservation.target` likewise). The trace's `bindings` and `proposals` lists remain
-  authority-governed only - a local control is filtered out of `proposalRecords`.
+  `AgentActionObservation.target` likewise). The trace records the local control in `callables`
+  (`origin: "local_control"`) and `localControlApplications`, never in `proposals` - a local control
+  is filtered out of `proposalRecords`. The trace after a delayed model return names the same
+  persisted `localControlProjectionId` and binding.
 - The Working Notes frame the model *reads* is compiled into `invocation.information` and frozen
   with the invocation. A note written in step N is committed *after* step N's model call returns, so
   step N's information is never retroactively altered; step N+1 is a genuinely new invocation and
@@ -464,25 +517,36 @@ invocation - trivial constants, and the reason the control-state version is bump
 `createModelInvocationInterface` merge is a pure concatenation of the F.1.1 action bindings with an
 empty list.
 
-## 15. Control-state versioning and persisted-frame validation
+## 15. Control-state versioning and persisted-state validation
 
 `AGENT_CONTROL_STATE_VERSION` is bumped **2 -> 3** (`workingNotes` at top level;
-`invocation.localControls` on an in-flight invocation). `readAgentControlState` now returns one of
-four results:
+`invocation.localControls` on an in-flight invocation) and stays 3 through both review rounds - F.2a
+is unmerged, and the final accepted v3 shape is validated consistently. `readAgentControlState`
+returns one of four results:
 
 ```text
-version 3 + valid workingNotes frame        -> read
-version 3 + missing workingNotes             -> invalid  (NOT defaulted to an empty frame)
-version 3 + malformed workingNotes frame     -> invalid  (workingNotesFrameIssues; NOT normalised)
-version 2 (or anything else)                 -> unsupported
+version 3, valid frame, invocation null or with a valid localControls   -> read
+version 3, missing workingNotes                                          -> invalid  (NOT defaulted)
+version 3, malformed workingNotes frame (workingNotesFrameIssues)        -> invalid  (NOT normalised)
+version 3, in-flight invocation missing / malformed localControls        -> invalid
+version 3, in-flight invocation missing / malformed projection           -> invalid  (shallow guard)
+version 2 (or anything else)                                             -> unsupported
 ```
+
+`localModelControlProjectionIssues(value)` is the pure validator for a persisted local-control
+snapshot: plain object; non-empty `projectionId`/`viewId`; `bindings` array; each binding's
+`bindingId` non-empty, `target` a valid `ModelLocalControlTarget`, `alias` canonical for that kind,
+`description` a string, `input` deep-equal (`hashValue`) the canonical schema for that kind; no
+duplicate aliases. It is scoped to the F.2a re-entry contract, not a universal persisted-Agent
+validator.
 
 `{ status: "invalid"; reason }` was added rather than overloading `unsupported`. The
 `AgentController` turns `invalid` into a deterministic `agent_control_state_invalid` Execution
-failure and does **not** restart corrupted progress; `unsupported` still yields
-`agent_control_state_version_unsupported`. Pre-v1 the repository carries no migration. All four
-paths are pinned by tests, including a harness test that pokes a malformed frame into persisted
-progress and asserts the Execution FAILS.
+failure and does **not** restart corrupted progress or throw during callable-namespace
+reconstruction; `unsupported` still yields `agent_control_state_version_unsupported`. Pre-v1 the
+repository carries no migration. Every path is pinned by tests, including two harness regressions
+that poke a malformed frame / a malformed persisted `invocation.localControls` into progress and
+assert the Execution FAILS `agent_control_state_invalid`.
 
 ## 16. DeferredSlots cleanup
 
@@ -495,11 +559,19 @@ authorised; the remaining deferred slots (`authority`, `memoryView`, `policy`, `
 
 ## 17. Tests
 
-`tests/conformance/memory/working-notes.test.ts` (35 cases) covers:
+`tests/conformance/memory/working-notes.test.ts` (~56 cases) covers:
 
 - frame determinism: empty, lookup, key-ordered upsert, non-mutation, canonical byte measure,
-  frame-structure validation, `{ key, content }` update validation, budget-issue reasons, **and the
-  checked public mutator throwing on an empty/blank key or non-JSON content** (blocker 2);
+  frame-structure validation, `{ key, content }` update validation, budget-issue reasons, the
+  checked public mutator throwing on an empty/blank key or non-JSON content, **and the mutator
+  throwing on a malformed INPUT frame (out-of-order / duplicate keys / non-JSON content) - it
+  cannot launder one clean** (§0.3);
+- trace fidelity: a Working-Notes-only invocation records the callable the provider saw
+  (`origin: "local_control"`), zero action-origin callables, empty `proposals`, and a
+  `localControlApplications` entry; a mixed `docs_search + working_notes_set` invocation records
+  both callable origins, `docs_search` as the only proposal, `working_notes_set` as the only
+  application; after a delayed model return the trace names the same persisted
+  `localControlProjectionId` and binding; the trace stays inert (no Event / journal / pending work);
 - strict `AgentSpec.workingNotes` validation and the two positive-integer budgets;
 - read disabled -> absent; read enabled + empty -> absent; read enabled + a note -> reaches the real
   provider-facing information, as data, with no revision/frame id;
@@ -527,8 +599,13 @@ authorised; the remaining deferred slots (`authority`, `memoryView`, `policy`, `
 - no-feature cost (byte-identical system prompt, `working_notes_set` only when authored);
 - child non-inheritance (a fresh Execution shares no Agent progress);
 - control-state: version-2 refused (`unsupported`), version-3 missing/malformed frame refused
-  (`invalid`), valid version-3 round-trips, and a running Agent with a poked-in malformed frame
-  FAILS with `agent_control_state_invalid`.
+  (`invalid`), valid version-3 round-trips, a running Agent with a poked-in malformed frame FAILS
+  with `agent_control_state_invalid`;
+- persisted local-control snapshot: `localModelControlProjectionIssues` accepts the canonical
+  projection and rejects ~9 malformed shapes; `readAgentControlState` reads an invocation with a
+  valid snapshot and `invocation === null`, refuses one missing / malformed `localControls`; a
+  running Agent with a poked-in corrupt persisted `invocation.localControls` FAILS
+  `agent_control_state_invalid` (not a throw).
 
 `tests/conformance/architecture/agent-boundaries.test.ts` gains/keeps:
 
@@ -544,20 +621,26 @@ authorised; the remaining deferred slots (`authority`, `memoryView`, `policy`, `
   names none of it (`LocalModelControl`, `ModelInvocationInterface`, `workingNotes` all absent);
 - the information compiler may read a frame but cannot mutate it and cannot reach the
   local-control, invocation-interface, projection, or model-action-view modules;
+- the model-invocation trace contract (`model-access.ts`) names `AgentLocalControlApplicationRecord`
+  / `AgentProjectedCallableRecord`, reaches nothing operational, and names no `EffectProposal` /
+  `useCapability` / `writeMemory` / store / authorizer; `proposalRecords` skips local controls;
 - `MODEL_ACTION_TARGET_KINDS` back to two entries.
 
 Updated existing tests: `action-binding.test.ts` (two-arm vocabulary); `agent-executor.test.ts` and
-`strands-agent-executor.test.ts` request shape gains `localControls`; `AgentInformationInput` call
-sites gain `workingNotes: null`; `serialization.test.ts` slot shape; `fixtures.ts` `testAgent`
-passes `workingNotes` through.
+`strands-agent-executor.test.ts` request shape gains `localControls`; the trace-shape rename
+(`bindings`/`viewId`/`projectionId`/`exposedActions` -> `callables`/`actionViewId`/
+`actionProjectionId` + `localControl*` fields) in `model-trace.test.ts`, `information-compiler.test.ts`,
+`authority-ceiling.test.ts`, the MCP agent-path/authority tests, both eval tests, and the
+gemini canary; `AgentInformationInput` call sites gain `workingNotes: null`;
+`serialization.test.ts` slot shape; `fixtures.ts` `testAgent` passes `workingNotes` through.
 
 ## 18. Local validation
 
 Run at the corrected branch tip (local, not CI):
 
 ```text
-npm test                        906 pass, 0 fail   (was 866 at merged main)
-npm run test:conformance        655 pass, 0 fail   (was 615)
+npm test                        918 pass, 0 fail   (was 866 at merged main)
+npm run test:conformance        667 pass, 0 fail   (was 615)
 npm run test:mcp                 68 pass, 0 fail
 npm run test:evals               12 pass, 0 fail   (unchanged: default wiring authors no workingNotes)
 npm run test:benchmark-subjects   8 pass, 0 fail
@@ -571,12 +654,16 @@ git diff --check                clean
 state and `note ancestry != note visibility`; §12 explicit views; §15 "explicit handoff/commit is
 safer than turning scratch state into ambient shared memory"; §16 not authority evidence by
 default; §17 invariants), and [`../composition.md`](../composition.md) §15 records the child/Stage
-handoff consequences F.2a defers to F.2b. The review found one category not previously represented
-in [`../authority.md`](../authority.md) - a model-facing callable that cannot cross an
+handoff consequences F.2a defers to F.2b. The first review found one category not previously
+represented in [`../authority.md`](../authority.md) - a model-facing callable that cannot cross an
 Execution/runtime boundary and is therefore not an exercise of Execution authority. The **minimal**
 canonical clarification (authority.md §3 subsection + §14 invariant/rule) records it without
 weakening the existing `Projection ⊆ Active View ⊆ Effective Authority ⊆ Catalog` invariant, which
-is now explicitly scoped to authority-governed actions. [`020`](020-slice-f11-structured-memory-model-write-exposure.md)
-is amended only to note its `ActiveModelActionView` remains the authority-governed F.1.1 view.
+is now explicitly scoped to authority-governed callables; the second review (§0.3) rescoped one
+closing sentence of §3 from "anything that *can* cross a boundary" to "any model-facing callable
+whose *selection* can request an interaction across a boundary", and noted that authorized
+information reads / context compilation are not model callables at all (neither actions nor
+Effects). [`020`](020-slice-f11-structured-memory-model-write-exposure.md) is amended only to note
+its `ActiveModelActionView` remains the authority-governed F.1.1 view.
 [`../future-plan.md`](../future-plan.md) §1.3 still lists parallel-branch Working Notes and branch
 handoff/commit as open - F.2a does not decide them.

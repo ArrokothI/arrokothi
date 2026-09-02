@@ -215,7 +215,7 @@ try {
     checks,
     mcpToolCalls: invoked,
     modelCalls: bundle.trace.modelInvocations.length,
-    exposedAlias: bundle.trace.modelInvocations[0]?.bindings.map((binding) => binding.alias) ?? [],
+    exposedAlias: bundle.trace.modelInvocations[0]?.callables.map((callable) => callable.alias) ?? [],
     providerReportedModel: bundle.trace.modelInvocations[0]?.metadata?.model ?? null,
     journalPhases: journal.map((entry) => entry.phase),
     // The generated code is printed so a reader can confirm the answer matched it. It is a

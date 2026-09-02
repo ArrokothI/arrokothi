@@ -149,7 +149,7 @@ describe("Case B: a buggy Active View plus a permissive authorizer still calls n
       await settleAgent(bundle.harness, agent.executionId);
 
       // Every Agent-side layer did say yes.
-      assert.deepEqual(bundle.trace.modelInvocations[0]?.bindings.map((binding) => binding.alias), [ALIAS]);
+      assert.deepEqual(bundle.trace.modelInvocations[0]?.callables.map((callable) => callable.alias), [ALIAS]);
       assert.equal(bundle.trace.proposals.length, 1, "the controller really did propose it");
 
       // And nothing happened.
@@ -250,7 +250,7 @@ describe("Case C: authorized and exposed, but policy denies", () => {
       await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "code?" });
       await settleAgent(bundle.harness, agent.executionId);
 
-      assert.deepEqual(bundle.trace.modelInvocations[0]?.bindings.map((b) => b.alias), ["external_lookup_lookup_code"]);
+      assert.deepEqual(bundle.trace.modelInvocations[0]?.callables.map((c) => c.alias), ["external_lookup_lookup_code"]);
       const journal = await bundle.harness.effectJournalOf(agent.executionId);
       assert.deepEqual(journal.map((entry) => entry.phase), ["requested", "denied"]);
       assert.equal(journal[1]!.detail["code"], "policy_refused");
@@ -292,7 +292,7 @@ describe("Case D: a tool description is untrusted content, not a grant", () => {
 
       // And the operation it demanded was never even exposed, so the model's choice resolved to
       // nothing - no Effect, no dispatch, no protocol call.
-      assert.deepEqual(bundle.trace.modelInvocations[0]?.bindings.map((b) => b.alias), ["external_lookup_lookup_code"]);
+      assert.deepEqual(bundle.trace.modelInvocations[0]?.callables.map((c) => c.alias), ["external_lookup_lookup_code"]);
       assert.deepEqual(bundle.trace.proposals, []);
       assert.deepEqual(await bundle.harness.effectJournalOf(agent.executionId), []);
       assert.equal(executor.dispatches.length, 0);

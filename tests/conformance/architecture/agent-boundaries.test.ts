@@ -335,6 +335,29 @@ describe("Agent architecture boundaries", () => {
     }
   });
 
+  test("the model-invocation trace records local controls distinctly from Effect proposals", async () => {
+    const modelAccess = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/model-access.ts"), "utf8"));
+    // A local control application record exists and is not an AgentActionProposalRecord.
+    assert.ok(modelAccess.includes("AgentLocalControlApplicationRecord"));
+    assert.ok(modelAccess.includes("AgentProjectedCallableRecord"));
+    // The trace module reaches nothing operational and names no Effect/dispatch machinery.
+    const files = await walk(["controllers/agent/model-access.ts"]);
+    assert.deepEqual([...files].filter((path) => OPERATIONAL_MACHINERY.includes(path)), []);
+    for (const forbidden of ["EffectProposal", "useCapability", "writeMemory", "RuntimeStore", "EffectAuthorizer"]) {
+      assert.equal(modelAccess.includes(forbidden), false, `the trace contract must not name ${forbidden}`);
+    }
+    // The controller has a dedicated local-control application record builder, distinct from
+    // proposalRecords (which filters local controls out).
+    const controller = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8"));
+    assert.ok(controller.includes("localControlApplicationRecords"));
+    const defStart = controller.indexOf("private proposalRecords(");
+    const proposalFn = controller.slice(defStart, controller.indexOf("private ", defStart + 1));
+    assert.ok(
+      proposalFn.includes('"working_notes_set"') && proposalFn.includes("continue"),
+      "proposalRecords skips local controls",
+    );
+  });
+
   test("a local Working Notes update is not an Effect, an Event, or a Spawn field", async () => {
     const effects = await readFile(resolve(CORE_SRC, "effects/types.ts"), "utf8");
     const kinds = effects.slice(effects.indexOf("export const EFFECT_KINDS"));

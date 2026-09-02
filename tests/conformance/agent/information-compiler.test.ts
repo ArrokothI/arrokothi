@@ -84,8 +84,8 @@ async function runWith(compiler: AgentInformationCompiler | undefined, id: strin
     messageCounts: provider.requests.map((request) => request.messages.length),
     toolSpecs: provider.requests.map((request) => request.capabilities ?? []),
     // What it was allowed to do.
-    bindings: bundle.trace.modelInvocations.map((invocation) => invocation.bindings),
-    views: bundle.trace.modelInvocations.map((invocation) => invocation.viewId),
+    bindings: bundle.trace.modelInvocations.map((invocation) => invocation.callables),
+    views: bundle.trace.modelInvocations.map((invocation) => invocation.actionViewId),
     selections: bundle.trace.informationSelections(),
     journal: (await bundle.harness.effectJournalOf(agent.executionId)).map((entry) => entry.phase),
     authority: await bundle.harness.effectiveOperationAuthorityOf(agent.executionId),
