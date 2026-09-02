@@ -76,6 +76,7 @@ import type {
   SendMessageProposal,
   SpawnExecutionProposal,
   UseCapabilityProposal,
+  WriteMemoryProposal,
 } from "../effects/types.ts";
 import { DISPATCHABLE_EFFECT_KINDS } from "../effects/types.ts";
 import type { DefinitionId } from "../definitions/ids.ts";
@@ -99,6 +100,10 @@ import {
 import { createPeerRequestLink, markPeerRequestLinkSettled } from "../execution/peer-request-link.ts";
 import { canConsumeSpawnCredit, consumeSpawnCredit } from "../execution/structural-budget.ts";
 import { createUserInputRequest, markUserInputAbandoned, markUserInputResponded } from "../execution/user-input-request.ts";
+import {
+  commitStructuredMemoryWrite,
+  validateStructuredMemoryWrite,
+} from "../execution/structured-memory.ts";
 import type { EventEnvelope, EventId } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
 import type { ValueSchema } from "../schema/value-schema.ts";
@@ -581,6 +586,10 @@ export class EffectProcessor {
       return this.dispatchSpawn(input, proposal, effectId, correlationId, requestedAt);
     }
 
+    if (proposal.kind === "write_memory") {
+      return this.dispatchWriteMemory(input, proposal, effectId, correlationId, requestedAt);
+    }
+
     if (proposal.kind === "send_message") {
       return this.dispatchSendMessage(input, proposal, effectId, correlationId, requestedAt);
     }
@@ -968,6 +977,19 @@ export class EffectProcessor {
       const record = await this.dispatchSpawn(
         resumeInput,
         request.proposal as SpawnExecutionProposal,
+        request.effectId,
+        request.correlationId,
+        nowIso(this.deps.clock),
+        resume,
+      );
+      await this.wakeRequesterIfReady(request.executionId);
+      return this.receiptForResumedRecord(request, operation, record);
+    }
+
+    if (request.effectKind === "write_memory") {
+      const record = await this.dispatchWriteMemory(
+        resumeInput,
+        request.proposal as WriteMemoryProposal,
         request.effectId,
         request.correlationId,
         nowIso(this.deps.clock),
@@ -1930,6 +1952,286 @@ export class EffectProcessor {
       pendingOperationId: commit.pendingOperationId,
       phase: commit.settledNow ? "completed" : "dispatch_started",
       settledInline: commit.settledNow,
+    };
+  }
+
+  // -- Structured Memory -------------------------------------------------
+
+  /**
+   * Commits one schema-bound Execution-local Structured Memory value.
+   *
+   * Ordering is security-significant:
+   *
+   * ```text
+   * structurally valid proposal
+   *   -> authorize concrete WriteMemory
+   *   -> optional exact-payload confirmation
+   *   -> resolve current Execution memory-view ref + declared field/schema
+   *   -> commit view revision + journal/result Event atomically
+   * ```
+   *
+   * Policy denial therefore performs no memory-view lookup and cannot reveal whether a field or
+   * schema exists. The local store write is atomic and creates no PendingOperation merely for
+   * uniformity; when confirmation is enabled, it reuses and settles the gate's exact operation.
+   */
+  private async dispatchWriteMemory(
+    input: ProcessEffectsInput,
+    proposal: WriteMemoryProposal,
+    effectId: EffectId,
+    correlationId: string,
+    requestedAt: string,
+    resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
+  ): Promise<EffectDispatchRecord> {
+    const executionId = input.context.executionId;
+
+    // The one fresh policy decision for this dispatch attempt. Nothing about the concrete view is
+    // resolved before it, on either the ordinary or confirmed path.
+    const decision = await this.decide(input, proposal, effectId, requestedAt);
+    if (decision.decision === "deny") {
+      return this.refuse(
+        input,
+        proposal,
+        effectId,
+        correlationId,
+        "effect.denied",
+        { code: decision.code, message: decision.message, phase: "denied" },
+        resume,
+      );
+    }
+
+    if (resume === undefined) {
+      const gated = await this.gateOrNull(
+        input,
+        proposal,
+        effectId,
+        correlationId,
+        requestedAt,
+        decision.grantId,
+      );
+      if (gated) return gated;
+    }
+
+    const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+    type Commit =
+      | { readonly kind: "abandoned" }
+      | {
+          readonly kind: "rejected";
+          readonly code: string;
+          readonly message: string;
+          readonly routed: EventRoutingResult;
+        }
+      | {
+          readonly kind: "written";
+          readonly memoryViewId: string;
+          readonly revision: number;
+          readonly routed: EventRoutingResult;
+        };
+
+    const commit = await this.deps.store.transact(executionId, async (tx): Promise<Commit> => {
+      const at = nowIso(this.deps.clock);
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at, resume?.pendingOperationId)) {
+        return { kind: "abandoned" };
+      }
+
+      const context = await tx.executions.get(executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle)) {
+        if (resume) {
+          const operation = await tx.pendingOperations.get(resume.pendingOperationId);
+          if (operation?.status === "pending") await tx.pendingOperations.update(markAbandoned(operation, at));
+        }
+        await this.journal(tx, {
+          effectId,
+          executionId,
+          effectKind: "write_memory",
+          phase: "abandoned",
+          activationId: input.activationId,
+          pendingOperationId: resume?.pendingOperationId ?? null,
+          at,
+          detail: { reason: "execution unavailable before Structured Memory commit" },
+        });
+        return { kind: "abandoned" };
+      }
+
+      let gatedOperation: PendingOperation | undefined;
+      if (resume) {
+        gatedOperation = await tx.pendingOperations.get(resume.pendingOperationId);
+        if (!gatedOperation || gatedOperation.status !== "pending" || gatedOperation.dispatch === "dispatched") {
+          return { kind: "abandoned" };
+        }
+      }
+
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: "write_memory",
+        phase: "authorized",
+        activationId: input.activationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        at,
+        detail: {
+          grantId: decision.grantId,
+          key: proposal.key,
+          ...(resume ? { viaConfirmation: resume.confirmationId } : {}),
+        },
+      });
+
+      const reject = async (code: string, message: string): Promise<Commit> => {
+        await this.journal(tx, {
+          effectId,
+          executionId,
+          effectKind: "write_memory",
+          phase: "rejected",
+          activationId: input.activationId,
+          pendingOperationId: resume?.pendingOperationId ?? null,
+          at,
+          detail: { code, message, resultEventId: eventId },
+        });
+        if (gatedOperation) {
+          // Nothing reached the memory state: dispatch remains `not_dispatched`.
+          await tx.pendingOperations.update(markSettled(gatedOperation, "rejected", eventId, at));
+        }
+        const routed = await routeEvent({
+          tx,
+          envelope: {
+            eventId,
+            destination: { executionId },
+            kind: "effect.rejected",
+            body: { effectId, effectKind: "write_memory", code, message },
+            correlationId,
+            causationId: effectId,
+            occurredAt: at,
+          },
+          deliveredAt: at,
+          recordTransition: async (id, from, to, when, why) => {
+            await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+          },
+        });
+        return { kind: "rejected", code, message, routed };
+      };
+
+      const viewRef = context.slots.memoryView;
+      if (!viewRef) {
+        return reject(
+          "structured_memory_view_not_configured",
+          `execution ${executionId} has no configured Structured Memory view`,
+        );
+      }
+      const view = await tx.structuredMemory.get(viewRef.memoryViewId);
+      if (!view || view.executionId !== executionId) {
+        return reject(
+          "structured_memory_view_unavailable",
+          `the Structured Memory view bound to execution ${executionId} is unavailable`,
+        );
+      }
+
+      const validation = validateStructuredMemoryWrite(view, proposal.key, proposal.value);
+      if (!validation.ok) return reject(validation.code, validation.message);
+
+      const written = commitStructuredMemoryWrite(view, {
+        key: proposal.key,
+        value: validation.value,
+        writerExecutionId: executionId,
+        effectId,
+        activationId: input.activationId,
+        writtenAt: at,
+      });
+
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: "write_memory",
+        phase: "dispatch_started",
+        activationId: input.activationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        at,
+        detail: { memoryViewId: view.memoryViewId, key: proposal.key },
+      });
+
+      await tx.structuredMemory.update(written, view.revision);
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: "write_memory",
+        phase: "completed",
+        activationId: input.activationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        at,
+        detail: {
+          memoryViewId: view.memoryViewId,
+          key: proposal.key,
+          revision: written.revision,
+          resultEventId: eventId,
+        },
+      });
+      if (gatedOperation) {
+        await tx.pendingOperations.update(
+          markSettled(markDispatched(gatedOperation, at), "success", eventId, at),
+        );
+      }
+      const routed = await routeEvent({
+        tx,
+        envelope: {
+          eventId,
+          destination: { executionId },
+          kind: "memory.written",
+          body: {
+            effectId,
+            effectKind: "write_memory",
+            pendingOperationId: resume?.pendingOperationId ?? null,
+            memoryViewId: view.memoryViewId,
+            key: proposal.key,
+            revision: written.revision,
+          },
+          correlationId,
+          causationId: effectId,
+          occurredAt: at,
+        },
+        deliveredAt: at,
+        recordTransition: async (id, from, to, when, why) => {
+          await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+      return {
+        kind: "written",
+        memoryViewId: view.memoryViewId,
+        revision: written.revision,
+        routed,
+      };
+    });
+
+    if (commit.kind === "abandoned") {
+      return {
+        effectId,
+        effectKind: "write_memory",
+        correlationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        phase: "abandoned",
+        settledInline: false,
+      };
+    }
+
+    const woke = commit.routed.status === "delivered" && commit.routed.wokeExecution;
+    if (woke) await this.deps.wake(executionId);
+    if (commit.kind === "rejected") {
+      return {
+        effectId,
+        effectKind: "write_memory",
+        correlationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        phase: "rejected",
+        settledInline: true,
+        ...(resume
+          ? { refusal: { kind: "effect.rejected", code: commit.code, message: commit.message } as const }
+          : {}),
+      };
+    }
+    return {
+      effectId,
+      effectKind: "write_memory",
+      correlationId,
+      pendingOperationId: resume?.pendingOperationId ?? null,
+      phase: "completed",
+      settledInline: true,
     };
   }
 

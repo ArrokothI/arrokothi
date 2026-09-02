@@ -318,7 +318,7 @@ describe("the Effect gateway", () => {
     assert.ok(!isTerminalEffectPhase("dispatch_started"), "dispatched is not completed");
   });
 
-  test("an accepted Effect kind with no implementation is refused explicitly, never silently dropped", async () => {
+  test("an authorized WriteMemory without a configured view is rejected explicitly, never silently dropped", async () => {
     const executor = searchExecutor();
     const { harness, definitions } = createTestHarness({
       // Deliberately permissive: the refusal must come from the kernel, not from policy.
@@ -329,7 +329,7 @@ describe("the Effect gateway", () => {
       scriptedAgentDefinition({
         id: "wants-to-write-memory",
         program: [
-          // `write_memory` is accepted v0.4 vocabulary that no slice yet dispatches (Slice F owns it).
+          // F.0 dispatches `write_memory`, but a successful write requires a runtime-bound view.
           { do: "propose_effect", effect: { kind: "write_memory", key: "note", value: { text: "hi" } } },
           { do: "complete" },
         ],
@@ -341,10 +341,10 @@ describe("the Effect gateway", () => {
     assert.equal(executor.callCount, 0);
     const progress = readScriptedProgress((await harness.inspect(handle.executionId))!.control.progress);
     assert.deepEqual(progress.seenKinds, ["effect.rejected"], "the controller was told, not left waiting");
-    assert.equal((progress.observations[0] as { code: string }).code, "effect_kind_not_supported");
+    assert.equal((progress.observations[0] as { code: string }).code, "structured_memory_view_not_configured");
 
     const journal = await harness.effectJournalOf(handle.executionId);
-    assert.deepEqual(journal.map((entry) => entry.phase), ["requested", "rejected"]);
+    assert.deepEqual(journal.map((entry) => entry.phase), ["requested", "authorized", "rejected"]);
     assert.equal(journal[0]!.effectKind, "write_memory", "the request is recorded as what it was");
   });
 

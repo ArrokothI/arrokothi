@@ -44,6 +44,7 @@ import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
 import type { UserInputRequest } from "../execution/user-input-request.ts";
+import type { StructuredMemoryView } from "../execution/structured-memory.ts";
 import type { EffectiveOperationAuthority } from "../operations/authority.ts";
 
 export interface ExecutionRecordFacet {
@@ -258,6 +259,20 @@ export interface ConfirmationRequestFacet {
   listByExecution(executionId: ExecutionId): Promise<readonly ConfirmationRequest[]>;
 }
 
+/**
+ * Execution-kernel Structured Memory (Slice F.0).
+ *
+ * A view is a facet of the same transaction as the Effect journal and mailbox so a committed field
+ * value and its `memory.written` observation can never become visible separately. The view has its
+ * own monotonic revision; F.0 uses it for attribution and future persistence compatibility, not as
+ * a public compare-and-set Effect API.
+ */
+export interface StructuredMemoryFacet {
+  insert(view: StructuredMemoryView): Promise<void>;
+  get(memoryViewId: string): Promise<StructuredMemoryView | undefined>;
+  update(view: StructuredMemoryView, expectedRevision: number): Promise<void>;
+}
+
 export interface RuntimeTransaction {
   readonly executions: ExecutionRecordFacet;
   readonly mailboxes: MailboxFacet;
@@ -273,6 +288,7 @@ export interface RuntimeTransaction {
   readonly cancellationRequests: CancellationRequestFacet;
   readonly userInputRequests: UserInputRequestFacet;
   readonly confirmationRequests: ConfirmationRequestFacet;
+  readonly structuredMemory: StructuredMemoryFacet;
 }
 
 export interface RuntimeStore {
@@ -336,6 +352,8 @@ export interface RuntimeStore {
   listConfirmationRequests(executionId: ExecutionId): Promise<readonly ConfirmationRequest[]>;
   /** Every currently-pending confirmation, for an application/UI to discover. Read-only. */
   listPendingConfirmations(): Promise<readonly ConfirmationRequest[]>;
+  /** One runtime-owned Structured Memory view. Read-only data; never a mutable store capability. */
+  readStructuredMemoryView(memoryViewId: string): Promise<StructuredMemoryView | undefined>;
 }
 
 export class UnknownControllerResumptionError extends Error {
@@ -384,5 +402,15 @@ export class SpawnBudgetConcurrencyError extends Error {
         `(expected revision ${expectedRevision}, found ${actualRevision})`,
     );
     this.name = "SpawnBudgetConcurrencyError";
+  }
+}
+
+export class StructuredMemoryConcurrencyError extends Error {
+  constructor(memoryViewId: string, expectedRevision: number, actualRevision: number) {
+    super(
+      `Structured Memory view ${memoryViewId} changed underneath this writer ` +
+        `(expected revision ${expectedRevision}, found ${actualRevision})`,
+    );
+    this.name = "StructuredMemoryConcurrencyError";
   }
 }

@@ -43,6 +43,7 @@ export const EFFECT_KINDS: readonly EffectKind[] = [
 /** The kinds the runtime actually dispatches. Everything else is answered, never silently dropped. */
 export const DISPATCHABLE_EFFECT_KINDS: readonly EffectKind[] = [
   "use_capability",
+  "write_memory",
   "spawn_execution",
   "send_message",
   "request_user_input",
@@ -377,6 +378,10 @@ export function isUseCapabilityProposal(proposal: EffectProposal): proposal is U
   return proposal.kind === "use_capability";
 }
 
+export function isWriteMemoryProposal(proposal: EffectProposal): proposal is WriteMemoryProposal {
+  return proposal.kind === "write_memory";
+}
+
 export function isSpawnExecutionProposal(proposal: EffectProposal): proposal is SpawnExecutionProposal {
   return proposal.kind === "spawn_execution";
 }
@@ -394,6 +399,24 @@ export interface SendMessageInput {
   readonly body?: JsonValue;
   readonly requestKey?: string;
   readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+export interface WriteMemoryInput {
+  readonly key: string;
+  readonly value: JsonValue;
+  readonly requestKey?: string;
+  readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+/** Builds a schema-bound Structured Memory write proposal. The Harness still authorizes it. */
+export function writeMemory(input: WriteMemoryInput): WriteMemoryProposal {
+  return {
+    kind: "write_memory",
+    key: input.key,
+    value: input.value,
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+  };
 }
 
 /**

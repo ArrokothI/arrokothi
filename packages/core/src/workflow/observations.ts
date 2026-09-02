@@ -28,11 +28,12 @@ import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
  * WorkflowController scopes that name to the current Stage visit before it ever becomes a
  * correlation. Stage logic therefore never learns, and never needs, a runtime-minted `EffectId`.
  *
- * `UseCapability` is the only Effect a Slice-C Stage can request. Memory writes, child calls,
- * messages, and user input belong to slices that own them; a Stage that could ask for one now would
- * be asking for something the runtime cannot honestly answer.
+ * `UseCapability` remains the default. Slice F.0 adds a discriminated Structured Memory request;
+ * child calls remain owned by their dedicated Stage kinds, and messages/user input stay deferred.
  */
 export interface StageCapabilityRequest {
+  /** Omitted for backward-compatible authored data; when present, discriminates the request. */
+  readonly kind?: "use_capability";
   /** Stage-local name for this request. Unique within one Stage visit. */
   readonly key: string;
   readonly capability: string;
@@ -45,6 +46,17 @@ export interface StageCapabilityRequest {
   readonly idempotency?: EffectIdempotencyScope;
 }
 
+/** One schema-bound Structured Memory write required by a Function Stage. */
+export interface StageMemoryWriteRequest {
+  readonly kind: "write_memory";
+  /** Stage-local correlation key, distinct from the memory field identity. */
+  readonly key: string;
+  readonly memoryKey: string;
+  readonly value: JsonValue;
+}
+
+export type StageEffectRequest = StageCapabilityRequest | StageMemoryWriteRequest;
+
 /**
  * How a required operation settled.
  *
@@ -56,7 +68,7 @@ export interface StageCapabilityRequest {
  */
 export type StageObservationOutcome = "completed" | "failed" | "unknown" | "denied" | "rejected" | "declined";
 
-export interface StageObservation {
+export interface StageCapabilityObservation {
   /** The Stage-local key this answers. */
   readonly key: string;
   readonly outcome: StageObservationOutcome;
@@ -67,6 +79,17 @@ export interface StageObservation {
   /** Present for every outcome except `completed`. */
   readonly error?: { readonly code: string; readonly message: string };
 }
+
+export interface StageMemoryWriteObservation {
+  readonly key: string;
+  readonly outcome: StageObservationOutcome;
+  readonly effectKind: "write_memory";
+  readonly memoryKey: string;
+  readonly observation?: JsonValue;
+  readonly error?: { readonly code: string; readonly message: string };
+}
+
+export type StageObservation = StageCapabilityObservation | StageMemoryWriteObservation;
 
 export function isSuccessfulObservation(observation: StageObservation): boolean {
   return observation.outcome === "completed";

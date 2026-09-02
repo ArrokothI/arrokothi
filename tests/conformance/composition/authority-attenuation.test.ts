@@ -165,6 +165,8 @@ describe("child authority attenuation", () => {
       readConfirmationRequest: RuntimeStore["readConfirmationRequest"] = (id) => this.inner.readConfirmationRequest(id);
       listConfirmationRequests: RuntimeStore["listConfirmationRequests"] = (id) => this.inner.listConfirmationRequests(id);
       listPendingConfirmations: RuntimeStore["listPendingConfirmations"] = () => this.inner.listPendingConfirmations();
+      readStructuredMemoryView: RuntimeStore["readStructuredMemoryView"] = (id) =>
+        this.inner.readStructuredMemoryView(id);
     }
 
     const store = new NarrowingStore();

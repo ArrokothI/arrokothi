@@ -30,6 +30,7 @@ export type {
   PendingOperationFacet,
   RuntimeStore,
   RuntimeTransaction,
+  StructuredMemoryFacet,
   TransitionAuditFacet,
   UserInputRequestFacet,
 } from "./runtime-store.ts";
@@ -37,6 +38,7 @@ export {
   ExecutionAlreadyExistsError,
   RuntimeConcurrencyError,
   SpawnBudgetConcurrencyError,
+  StructuredMemoryConcurrencyError,
   UnknownControllerResumptionError,
   UnknownExecutionError,
   UnknownPendingOperationError,

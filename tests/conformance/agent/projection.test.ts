@@ -183,7 +183,7 @@ describe("a model invocation projection is an immutable binding snapshot", () =>
     const built = createModelOperationProjection({
       projectionId: "ag/step1/projection",
       view: source,
-      entries: source.entries.slice(0, 1),
+      operations: [{ capability: "docs", operation: "search" }],
     });
     assert.ok(built.ok);
     if (!built.ok) return;
@@ -193,5 +193,79 @@ describe("a model invocation projection is an immutable binding snapshot", () =>
       { resolved: false, alias: "mail_send" },
       "an operation the Active View contained but this call was not shown resolves to nothing",
     );
+
+    // The projection still truthfully names the view it was cut from, and every surviving binding
+    // is one of that view's entries.
+    assert.equal(built.projection.viewId, source.viewId);
+    for (const binding of built.projection.bindings) {
+      assert.ok(
+        source.entries.some(
+          (e) => e.capability === binding.target.capability && e.operation === binding.target.operation,
+        ),
+      );
+    }
+  });
+
+  test("a narrowing ref outside the Active View is rejected, not projected from caller data", () => {
+    const source = view([entry("docs", "search")]);
+    const built = createModelOperationProjection({
+      projectionId: "ag/step1/projection",
+      view: source,
+      operations: [
+        { capability: "docs", operation: "search" },
+        { capability: "mail", operation: "send" },
+      ],
+    });
+    assert.equal(built.ok, false);
+    assert.ok(
+      !built.ok && built.issues.some((issue) => /not exposed by Active View/.test(issue.message)),
+      "asking for an operation the view never exposed cannot conjure a binding",
+    );
+  });
+
+  test("a narrowing ref cannot substitute its own description or schema for the Active View entry", () => {
+    // The Active View is the only source of binding metadata. `operations` carries an identity and
+    // nothing else, so even the type has no room for a forged description or input schema — and the
+    // projected binding is byte-for-byte the view's entry.
+    const canonical = entry("docs", "search", "The canonical Active View description.");
+    const source = view([canonical]);
+    const built = createModelOperationProjection({
+      projectionId: "ag/step1/projection",
+      view: source,
+      operations: [{ capability: "docs", operation: "search" }],
+    });
+    assert.ok(built.ok);
+    if (!built.ok) return;
+    assert.equal(built.projection.bindings[0]!.description, "The canonical Active View description.");
+    assert.deepEqual(built.projection.bindings[0]!.input, canonical.input);
+    assert.deepEqual(modelCapabilitySpecs(built.projection), [
+      { name: "docs_search", description: "The canonical Active View description.", input: canonical.input },
+    ]);
+  });
+
+  test("a genuine subset still projects, and an alias collision is still refused under narrowing", () => {
+    const source = view([entry("docs", "search"), entry("mail", "send", "Send mail.")]);
+    const subset = createModelOperationProjection({
+      projectionId: "ag/step1/projection",
+      view: source,
+      operations: [{ capability: "mail", operation: "send" }, { capability: "docs", operation: "search" }],
+    });
+    assert.ok(subset.ok);
+    if (!subset.ok) return;
+    assert.deepEqual(subset.projection.bindings.map((b) => b.alias).sort(), ["docs_search", "mail_send"]);
+
+    // Two genuinely different identities that both live in the view and flatten to one alias remain
+    // an ambiguity, whether or not a narrowing selected them.
+    const colliding = view([entry("docs.search", "v2"), entry("docs", "search.v2")]);
+    const built = createModelOperationProjection({
+      projectionId: "ag/step2/projection",
+      view: colliding,
+      operations: [
+        { capability: "docs.search", operation: "v2" },
+        { capability: "docs", operation: "search.v2" },
+      ],
+    });
+    assert.equal(built.ok, false);
+    assert.ok(!built.ok && built.issues.some((issue) => /would mean both/.test(issue.message)));
   });
 });

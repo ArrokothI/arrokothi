@@ -67,6 +67,10 @@ class CountingRuntimeStore implements RuntimeStore {
   readConfirmationRequest: RuntimeStore["readConfirmationRequest"] = (id) => this.inner.readConfirmationRequest(id);
   listConfirmationRequests: RuntimeStore["listConfirmationRequests"] = (id) => this.inner.listConfirmationRequests(id);
   listPendingConfirmations: RuntimeStore["listPendingConfirmations"] = () => this.inner.listPendingConfirmations();
+  readStructuredMemoryView: RuntimeStore["readStructuredMemoryView"] = (id) => {
+    this.bump("readStructuredMemoryView");
+    return this.inner.readStructuredMemoryView(id);
+  };
 
   private wrap(tx: RuntimeTransaction): RuntimeTransaction {
     return {
@@ -153,12 +157,26 @@ class CountingRuntimeStore implements RuntimeStore {
           return tx.confirmationRequests.listByExecution(id);
         },
       },
+      structuredMemory: {
+        insert: (view) => {
+          this.bump("structuredMemory.insert");
+          return tx.structuredMemory.insert(view);
+        },
+        get: (id) => {
+          this.bump("structuredMemory.get");
+          return tx.structuredMemory.get(id);
+        },
+        update: (view, expectedRevision) => {
+          this.bump("structuredMemory.update");
+          return tx.structuredMemory.update(view, expectedRevision);
+        },
+      },
     };
   }
 }
 
 describe("no-feature Activation performs no feature-specific store work", () => {
-  test("a root with a spawn budget and authority that never spawns touches no child / user-input / confirmation facet during its Activation", async () => {
+  test("a root with no memory view and no WriteMemory touches no child / interaction / memory facet during its Activation", async () => {
     const definitions = new InMemoryDefinitionStore();
     const store = new CountingRuntimeStore();
     const executor = createScriptedCapabilityExecutor({
@@ -222,8 +240,12 @@ describe("no-feature Activation performs no feature-specific store work", () => 
       "confirmationRequests.get",
       "confirmationRequests.update",
       "confirmationRequests.listByExecution",
+      "structuredMemory.insert",
+      "structuredMemory.get",
+      "structuredMemory.update",
+      "readStructuredMemoryView",
     ]) {
-      assert.equal(store.counts[facet] ?? 0, 0, `an Activation that uses no E.2 feature must not touch ${facet}`);
+      assert.equal(store.counts[facet] ?? 0, 0, `an Activation that does not use the feature must not touch ${facet}`);
     }
     assert.equal(store.counts["operationAuthorities.insert"] ?? 0, 0, "no child authority was created for a no-child Activation");
   });

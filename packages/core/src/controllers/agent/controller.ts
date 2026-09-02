@@ -410,7 +410,10 @@ class AgentController implements ExecutionController {
         exposure: spec.operations ?? EMPTY_EXPOSURE_REQUEST,
         ...(this.taskScope ? { taskScope: this.taskScope } : {}),
       });
-      const projected = createModelOperationProjection({ projectionId: agentProjectionId(step), view });
+      const projected = createModelOperationProjection({
+        projectionId: agentProjectionId(step),
+        view,
+      });
       if (!projected.ok) {
         return {
           kind: "fail",

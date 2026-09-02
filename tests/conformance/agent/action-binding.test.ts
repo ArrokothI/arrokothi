@@ -24,10 +24,14 @@ import {
   createModelOperationProjection,
   MODEL_ACTION_TARGET_KINDS,
   isModelActionTarget,
+  modelCapabilitySpecs,
   operationRefOfTarget,
   readAgentControlState,
   resolveProjectedAlias,
 } from "@agent-sdk/core/execution";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   createAllowListAuthorizer,
   createDeferredModelProvider,
@@ -65,6 +69,96 @@ describe("a projection binding names a typed action target", () => {
       operationRefOfTarget({ kind: "capability_operation", capability: "docs", operation: "search" }),
       { capability: "docs", operation: "search" },
     );
+  });
+
+  test("every projection binding originates in the Active View the projection names (F.0.1)", () => {
+    const activeView = view([DOCS_SEARCH, { capability: "mail", operation: "send" }]);
+    const built = createModelOperationProjection({ projectionId: "ag/step1/projection", view: activeView });
+    assert.ok(built.ok);
+    if (!built.ok) return;
+
+    // The snapshot truthfully names its source view...
+    assert.equal(built.projection.viewId, activeView.viewId);
+    assert.equal(built.projection.viewRevision, activeView.authorityVersion);
+    // ...and holds nothing the view did not contain.
+    assert.equal(built.projection.bindings.length, activeView.entries.length);
+    for (const binding of built.projection.bindings) {
+      assert.equal(binding.target.kind, "capability_operation", "F.0.1 defers every non-capability model action");
+      const ref = operationRefOfTarget(binding.target)!;
+      assert.ok(
+        activeView.entries.some((entry) => entry.capability === ref.capability && entry.operation === ref.operation),
+        `binding "${binding.alias}" must resolve to one of the Active View's entries`,
+      );
+    }
+
+    // The provider-facing capability list is derived 1:1 from those bindings, so no name the
+    // Active View did not authorize - `write_memory` included - can appear in it.
+    assert.deepEqual(
+      modelCapabilitySpecs(built.projection).map((spec) => spec.name),
+      built.projection.bindings.map((binding) => binding.alias),
+    );
+    assert.equal(
+      modelCapabilitySpecs(built.projection).some((spec) => spec.name === "write_memory"),
+      false,
+    );
+  });
+
+  test("the projection builder has no side channel that adds a binding off the Active View (F.0.1 / F.0.2)", () => {
+    // F.0.2 hardens the optional per-call narrowing so this is enforced by construction, not by
+    // caller convention: every projected binding must be traceable to an entry of the supplied view,
+    // whether the whole view is projected or only a subset.
+    const activeView = view([DOCS_SEARCH, { capability: "mail", operation: "send" }]);
+
+    for (const built of [
+      createModelOperationProjection({ projectionId: "ag/full/projection", view: activeView }),
+      createModelOperationProjection({
+        projectionId: "ag/subset/projection",
+        view: activeView,
+        operations: [DOCS_SEARCH],
+      }),
+    ]) {
+      assert.ok(built.ok);
+      if (!built.ok) continue;
+      assert.equal(built.projection.viewId, activeView.viewId);
+      assert.equal(built.projection.viewRevision, activeView.authorityVersion);
+      assert.ok(built.projection.bindings.length >= 1);
+      assert.ok(
+        built.projection.bindings.length <= activeView.entries.length,
+        "a narrowing can only subset the Active View, never extend it",
+      );
+      for (const binding of built.projection.bindings) {
+        const ref = operationRefOfTarget(binding.target)!;
+        const canonical = activeView.entries.find(
+          (entry) => entry.capability === ref.capability && entry.operation === ref.operation,
+        );
+        assert.ok(canonical, `binding "${binding.alias}" must trace to an entry of the named Active View`);
+        assert.equal(binding.description, canonical!.description, "the view entry is the only source of metadata");
+        assert.deepEqual(binding.input, canonical!.input);
+      }
+      assert.equal(
+        modelCapabilitySpecs(built.projection).some((spec) => spec.name === "write_memory"),
+        false,
+        "no name the Active View did not authorize - write_memory included - reaches the provider",
+      );
+    }
+
+    // A requested identity that the Active View never exposed is rejected outright; it cannot be
+    // projected from the caller's own data.
+    const offView = createModelOperationProjection({
+      projectionId: "ag/offview/projection",
+      view: activeView,
+      operations: [{ capability: "memory", operation: "write" }],
+    });
+    assert.equal(offView.ok, false);
+    assert.ok(!offView.ok && offView.issues.some((issue) => /not exposed by Active View/.test(issue.message)));
+
+    // And the builder still mints no view-neutral memory action from a source-level side channel.
+    const src = readFileSync(
+      resolve(dirname(fileURLToPath(import.meta.url)), "../../../packages/core/src/operations/projection.ts"),
+      "utf8",
+    );
+    assert.equal(src.includes("memoryWrite"), false, "no authored memory-write exposure request reaches projection");
+    assert.equal(src.includes('"write_memory"'), false, "the builder mints no view-neutral memory action");
   });
 
   test("the built snapshot carries the target, and an alias resolves to that exact one", () => {

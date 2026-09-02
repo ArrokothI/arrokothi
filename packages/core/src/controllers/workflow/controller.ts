@@ -69,7 +69,7 @@
 import type { DefinitionKind } from "../../definitions/types.ts";
 import type { EmissionProposal } from "../../execution/emission.ts";
 import type { EffectProposal } from "../../effects/types.ts";
-import { callExecution, useCapability } from "../../effects/types.ts";
+import { callExecution, useCapability, writeMemory } from "../../effects/types.ts";
 import type { DeliveredEvent, WakeCondition } from "../../interaction/event-envelope.ts";
 import { EFFECT_RESULT_EVENT_KINDS, isEffectResultEventKind } from "../../interaction/events.ts";
 import type { ChildCompletedBody } from "../../interaction/events.ts";
@@ -178,6 +178,16 @@ function outcomeOf(event: DeliveredEvent): {
   switch (event.kind) {
     case "capability.completed":
       return { outcome: "completed", observation: event.body.observation };
+    case "memory.written":
+      return {
+        outcome: "completed",
+        observation: {
+          effectKind: "write_memory",
+          memoryViewId: event.body.memoryViewId,
+          key: event.body.key,
+          revision: event.body.revision,
+        },
+      };
     case "capability.failed":
       return { outcome: "failed", error: { code: event.body.error.code, message: event.body.error.message } };
     case "capability.unknown":
@@ -482,28 +492,43 @@ class WorkflowController implements ExecutionController {
       const proposals: EffectProposal[] = [];
       for (const request of body.outcome.effects) {
         const correlationId = stageCorrelationId(state.currentStage, state.visit, request.key);
-        barrier.push({
-          key: request.key,
-          correlationId,
-          kind: "effect",
-          capability: request.capability,
-          operation: request.operation,
-          settled: false,
-          outcome: null,
-          observation: null,
-          error: null,
-        });
-        proposals.push(
-          useCapability({
+        if (request.kind === "write_memory") {
+          barrier.push({
+            key: request.key,
+            correlationId,
+            kind: "effect",
+            effectKind: "write_memory",
+            memoryKey: request.memoryKey,
+            settled: false,
+            outcome: null,
+            observation: null,
+            error: null,
+          });
+          proposals.push(writeMemory({ key: request.memoryKey, value: request.value, requestKey: correlationId }));
+        } else {
+          barrier.push({
+            key: request.key,
+            correlationId,
+            kind: "effect",
             capability: request.capability,
             operation: request.operation,
-            ...(request.input !== undefined ? { input: request.input } : {}),
-            requestKey: correlationId,
-            ...(request.resources !== undefined ? { resources: [...request.resources] } : {}),
-            ...(request.deadlineMs !== undefined ? { deadlineMs: request.deadlineMs } : {}),
-            ...(request.idempotency !== undefined ? { idempotency: request.idempotency } : {}),
-          }),
-        );
+            settled: false,
+            outcome: null,
+            observation: null,
+            error: null,
+          });
+          proposals.push(
+            useCapability({
+              capability: request.capability,
+              operation: request.operation,
+              ...(request.input !== undefined ? { input: request.input } : {}),
+              requestKey: correlationId,
+              ...(request.resources !== undefined ? { resources: [...request.resources] } : {}),
+              ...(request.deadlineMs !== undefined ? { deadlineMs: request.deadlineMs } : {}),
+              ...(request.idempotency !== undefined ? { idempotency: request.idempotency } : {}),
+            }),
+          );
+        }
       }
       return { kind: "awaitEffects", state: { ...advanced, barrier }, proposals, emissions };
     }

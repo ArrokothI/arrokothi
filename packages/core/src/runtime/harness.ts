@@ -46,6 +46,12 @@ import type { PeerRequestLink } from "../execution/peer-request-link.ts";
 import { markPeerRequestLinkAbandoned } from "../execution/peer-request-link.ts";
 import type { UserInputRequest } from "../execution/user-input-request.ts";
 import { markUserInputAbandoned } from "../execution/user-input-request.ts";
+import type { StructuredMemoryBinding, StructuredMemoryView } from "../execution/structured-memory.ts";
+import {
+  createStructuredMemoryView,
+  structuredMemoryBindingIssues,
+  structuredMemoryViewRef,
+} from "../execution/structured-memory.ts";
 import type { WaitForEdge } from "../execution/wait-for.ts";
 import type { ExecutionContext, ExecutionWait } from "../execution/context.ts";
 import {
@@ -195,6 +201,14 @@ export interface CreateExecutionInput {
    * same. A grant is not delegation: attenuating one for a child belongs to the composition slice.
    */
   readonly operationAuthority?: OperationAuthorityGrant;
+  /**
+   * Configures one Execution-local Structured Memory view.
+   *
+   * The Harness validates and stores the schema, creates the runtime-owned view identity, and puts
+   * only a typed reference on the Execution. The binding grants no write authority; `WriteMemory`
+   * still crosses the ordinary Effect authorizer. Autonomous children do not inherit this view.
+   */
+  readonly structuredMemory?: StructuredMemoryBinding;
 }
 
 export interface ExecutionHandle {
@@ -264,6 +278,13 @@ export class InvalidStructuralSpawnBudgetError extends Error {
   constructor(detail: string) {
     super(`invalid structural spawn budget: ${detail}`);
     this.name = "InvalidStructuralSpawnBudgetError";
+  }
+}
+
+export class InvalidStructuredMemoryBindingError extends Error {
+  constructor(detail: string) {
+    super(`invalid Structured Memory binding: ${detail}`);
+    this.name = "InvalidStructuredMemoryBindingError";
   }
 }
 
@@ -374,6 +395,24 @@ export class Harness {
       spawnBudget = createLineageSpawnBudget({ rootExecutionId: id, capacity: input.structuralSpawnBudget, grantedAt: createdAt });
     }
 
+    // The schema is trusted application configuration, but still data: refuse malformed or
+    // unbounded declarations before any Execution/view record exists.
+    let memoryView: StructuredMemoryView | null = null;
+    if (input.structuredMemory !== undefined) {
+      const issues = structuredMemoryBindingIssues(input.structuredMemory);
+      if (issues.length > 0) {
+        throw new InvalidStructuredMemoryBindingError(
+          issues.map((issue) => `${issue.path}: ${issue.message}`).join("; "),
+        );
+      }
+      memoryView = createStructuredMemoryView({
+        memoryViewId: this.options.ids.next(ID_PREFIXES.structuredMemoryView),
+        executionId: id,
+        binding: input.structuredMemory,
+        createdAt,
+      });
+    }
+
     const created = createExecutionContext({
       executionId: id,
       kind: definition.kind,
@@ -383,6 +422,7 @@ export class Harness {
       mailboxId,
       createdAt,
       ...(authority ? { authority: { authorityId: authority.authorityId } } : {}),
+      ...(memoryView ? { memoryView: structuredMemoryViewRef(memoryView.memoryViewId) } : {}),
     });
 
     await this.options.store.transact(id, async (tx) => {
@@ -390,6 +430,7 @@ export class Harness {
       // having no authority at all, and a ceiling without its Execution would permit nothing.
       if (authority) await tx.operationAuthorities.insert(authority);
       if (spawnBudget) await tx.lineageSpawnBudgets.insert(spawnBudget);
+      if (memoryView) await tx.structuredMemory.insert(memoryView);
       await tx.executions.insert(created);
       const ready = transitionContext(created, "READY", createdAt);
       await tx.executions.update(ready, created.revision);
@@ -616,6 +657,18 @@ export class Harness {
    */
   async effectJournalOf(executionId: ExecutionId): Promise<readonly EffectJournalEntry[]> {
     return this.options.store.listEffectJournal(executionId);
+  }
+
+  /**
+   * Read-only application inspection of one Execution's committed Structured Memory.
+   *
+   * Returns cloned data through the RuntimeStore read surface, never a mutable facet/store handle.
+   * This is not a `ReadMemory` Effect and is not available to a controller or model context.
+   */
+  async structuredMemoryOf(executionId: ExecutionId): Promise<StructuredMemoryView | undefined> {
+    const context = await this.options.store.readExecution(executionId);
+    const ref = context?.slots.memoryView;
+    return ref ? this.options.store.readStructuredMemoryView(ref.memoryViewId) : undefined;
   }
 
   // -- scheduling ------------------------------------------------------------

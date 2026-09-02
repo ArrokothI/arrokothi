@@ -94,8 +94,49 @@ export interface CreateProjectionInput {
   /** Derived from persisted Agent coordinates only, so a resumed Activation rebuilds the same id. */
   readonly projectionId: string;
   readonly view: ActiveOperationView;
-  /** Optional narrowing for this call alone: token budget, provider tool limits, relevance. */
-  readonly entries?: readonly ActiveOperationEntry[];
+  /**
+   * Optional narrowing for this call alone: token budget, provider tool limits, relevance.
+   *
+   * Each ref is *only* a requested operation identity. The binding is always constructed from the
+   * matching canonical entry inside `view.entries`; nothing a caller puts here can add an operation,
+   * change a description, or alter an input schema. A ref that names no entry of `view` fails
+   * projection construction rather than being projected from caller-supplied data. Absent, the whole
+   * Active View is projected.
+   */
+  readonly operations?: readonly OperationRef[];
+}
+
+/**
+ * Resolves the entry set a projection is cut from.
+ *
+ * With no `operations` narrowing this is just the Active View's entries. With one, every requested
+ * ref must name an entry that is already in the view; the *view's* entry is returned, never the
+ * caller's ref, so a narrowing request can subset the Active View but can neither extend it nor
+ * substitute its own description/schema/consequentiality/groups for an in-view identity. Any ref
+ * absent from the view is recorded as an issue and the projection is not built.
+ */
+function selectProjectedEntries(
+  input: CreateProjectionInput,
+  issues: ProjectionIssue[],
+): readonly ActiveOperationEntry[] {
+  if (input.operations === undefined) return input.view.entries;
+  const selected: ActiveOperationEntry[] = [];
+  input.operations.forEach((ref, index) => {
+    const canonical = input.view.entries.find(
+      (entry) => entry.capability === ref.capability && entry.operation === ref.operation,
+    );
+    if (!canonical) {
+      issues.push({
+        path: `operations[${index}]`,
+        message:
+          `requested operation ${ref.capability}/${ref.operation} is not exposed by Active View ` +
+          `${input.view.viewId}; a projection narrowing can only subset the view it names, never add to it`,
+      });
+      return;
+    }
+    selected.push(canonical);
+  });
+  return selected;
 }
 
 /**
@@ -104,10 +145,22 @@ export interface CreateProjectionInput {
  * Refuses rather than repairs. A duplicate alias is an ambiguity that would later have to be
  * resolved by guessing which operation the model meant, and there is no correct guess, so the
  * projection never comes into existence.
+ *
+ * Every binding originates in one entry of the `ActiveOperationView` named by the projection's
+ * `viewId` / `viewRevision`. There is no side channel that appends a binding the authorized Active
+ * View did not contain; a model-directed action family that is not a capability operation (memory
+ * writes, child executions, messages) must first enter an Active View through its own authorized
+ * exposure path before it can be projected.
+ *
+ * The optional `operations` narrowing can only *shrink* that set. Each requested ref is resolved
+ * against `view.entries` and the binding is built from the entry found there, so a ref outside the
+ * view is rejected and altered caller metadata for an in-view identity is ignored — the Active View
+ * entry is the single source of every binding's description and schema.
  */
 export function createModelOperationProjection(input: CreateProjectionInput): ProjectionResult {
-  const source = input.entries ?? input.view.entries;
   const issues: ProjectionIssue[] = [];
+  const source = selectProjectedEntries(input, issues);
+  if (issues.length > 0) return { ok: false, issues };
   const bindings: ModelOperationBinding[] = [];
   const byAlias = new Map<string, ModelOperationBinding>();
 
