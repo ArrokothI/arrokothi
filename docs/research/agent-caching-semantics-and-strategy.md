@@ -2,7 +2,7 @@
 
 > **Status: focused non-canonical research note.**
 >
-> This document compares external caching patterns and derives implementation guidance for ArrokothI. It does **not** redefine current kernel semantics. Canonical ownership remains with [`../authority.md`](../authority.md), [`../memory.md`](../execution-runtime.md), [`../execution-runtime.md`](../execution-runtime.md), and the other documents indexed by [`../README.md`](../README.md).
+> This document compares external caching patterns and derives implementation guidance for ArrokothI. It does **not** redefine current kernel semantics. Canonical ownership remains with [`../authority.md`](../authority.md), [`../memory.md`](../memory.md), [`../execution-runtime.md`](../execution-runtime.md), and the other documents indexed by [`../README.md`](../README.md).
 >
 > Research date: **2026-09-02**.
 
