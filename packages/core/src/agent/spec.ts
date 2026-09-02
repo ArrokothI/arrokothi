@@ -3,24 +3,19 @@
  *
  * Slice A left this as `JsonObject` so the substrate would not guess at this slice. This is the
  * replacement, and like the Workflow spec it is chosen by what it *cannot* contain. An Agent
- * definition names a logical model, its instructions, its bounds, and the operations it would like
- * exposed. It holds no provider client, no API key, no executor, no store, no Harness, no capability
- * catalog, no authority grant, no Active View, no model projection, no provider tool schema, no
- * application principal, and no protocol type - `definitions/validation.ts` enforces the structural
- * half of that (plain JSON only), and the shapes here enforce the rest by having nowhere to put them.
+ * definition names a logical model, its instructions, its bounds, and the actions/information it
+ * would like exposed. It holds no provider client, API key, executor, store, Harness, capability
+ * catalog, authority grant, Active View, model projection, provider tool schema, application
+ * principal, or protocol type. `definitions/validation.ts` enforces the plain-JSON half, and the
+ * shapes here enforce the rest by having nowhere to put them.
  *
- * The exposure request is the part that most invites mistakes, so it is the smallest thing that
- * works: operation identities and authored group labels. It is a *request*, intersected with the
- * runtime-owned ceiling; writing an operation here neither grants it nor makes it appear.
- *
- * ```text
- * spec.operations             what the author would like exposed
- * effective authority         what the runtime decided is legal
- * Active Operation View       the intersection, ordered and bounded
- * ```
+ * Authored exposure is only a request. Capability-operation refs are intersected with the
+ * runtime-owned operation ceiling and catalog; Structured Memory read/write keys go through their
+ * own independent authority branches and bound declarations. Writing a name here neither grants it
+ * nor makes it appear.
  *
  * Bounds are runtime limits, not permissions. `maxModelCalls` says how much autonomous progression
- * may occur; it says nothing about whether any of it is allowed.
+ * may occur; it says nothing about whether any action is allowed.
  */
 
 import type { LogicalModelRequest } from "../model/types.ts";
@@ -46,7 +41,10 @@ export const AGENT_COMPLETION_MODES: readonly AgentCompletionMode[] = ["respond_
 export interface AgentLimits {
   /** How many model invocations this Execution may make in total. */
   readonly maxModelCalls: number;
-  /** How many operations one model step may request at once. Fan-out, not strategy. */
+  /**
+   * Provider callable-interface fan-out for one step. `call_operations` is retained provider/tool
+   * protocol vocabulary; these calls may resolve to more than capability operations.
+   */
   readonly maxOperationCallsPerStep: number;
   /** How many messages the information branch may carry into a model call. */
   readonly maxContextMessages: number;
@@ -61,8 +59,6 @@ export const DEFAULT_AGENT_LIMITS: AgentLimits = Object.freeze({
 /**
  * An authored request to read named Structured Memory fields into the model's information context.
  *
- * A *request*, not authority - the exact counterpart of `operations` on the operation branch:
- *
  * ```text
  * spec.structuredMemory.read.keys   what the author would like read
  * read authority / grant            what the deployment decided is readable
@@ -71,23 +67,36 @@ export const DEFAULT_AGENT_LIMITS: AgentLimits = Object.freeze({
  * authorized read snapshot          what the model is shown
  * ```
  *
- * Absent means no memory read - reading is never implicit, exactly as exposure is never implicit.
- * Writing a key here neither grants read access to it nor makes it appear if it is unwritten.
+ * Absent means no memory read. A key here grants nothing and need not exist.
  */
 export interface AgentStructuredMemoryRead {
-  /** The field keys the author would like read. Non-empty, unique. Intersected with read authority. */
+  /** Non-empty, unique field keys, intersected with independent read authority. */
   readonly keys: readonly string[];
 }
 
 /**
- * The authored Structured Memory spec.
+ * An authored request to expose exact Structured Memory write interfaces to the model.
  *
- * Deliberately a single optional `read` member rather than a general memory-form union. F.1 is the
- * read path; a write-exposure request (F.1.1) or Working Notes are separate future shapes, added
- * here only when they exist.
+ * ```text
+ * spec.structuredMemory.write.keys  what the author would like exposed
+ * write-exposure authority          what may be visible now
+ * bound Structured Memory view      which declared schemas exist
+ *          ↓ intersection
+ * authorized write-interface view   what may enter the model action projection
+ * ```
+ *
+ * Absent means no write-exposure work. A key here is not permission and is never a model-supplied
+ * payload field: the eventual projection binding owns the exact key identity.
  */
+export interface AgentStructuredMemoryWrite {
+  /** Non-empty, unique field keys, intersected with independent write-exposure authority. */
+  readonly keys: readonly string[];
+}
+
+/** Independent Structured Memory information/action requests, not a general memory-form union. */
 export interface AgentStructuredMemorySpec {
   readonly read?: AgentStructuredMemoryRead;
+  readonly write?: AgentStructuredMemoryWrite;
 }
 
 export interface AgentSpec {
@@ -95,9 +104,9 @@ export interface AgentSpec {
   readonly model: LogicalModelRequest;
   /** The Agent's standing instructions. Information, compiled by the information branch. */
   readonly instructions: string;
-  /** Which authorized operations to expose. Absent means none: exposure is never implicit. */
+  /** Which authorized capability operations to expose. Absent means none. */
   readonly operations?: OperationExposureRequest;
-  /** Which Structured Memory fields to request into context. Absent means none: reading is never implicit. */
+  /** Independent read-information and write-action requests. Absent means no memory work. */
   readonly structuredMemory?: AgentStructuredMemorySpec;
   readonly limits?: AgentLimits;
   readonly completion?: AgentCompletionMode;
@@ -116,6 +125,11 @@ export interface AgentSpecInput {
 /** The authored Structured Memory read request, or `null` when the Agent asked for none. */
 export function agentStructuredMemoryRead(spec: AgentSpec): AgentStructuredMemoryRead | null {
   return spec.structuredMemory?.read ?? null;
+}
+
+/** The authored Structured Memory write-exposure request, or `null` when none was authored. */
+export function agentStructuredMemoryWrite(spec: AgentSpec): AgentStructuredMemoryWrite | null {
+  return spec.structuredMemory?.write ?? null;
 }
 
 export function agentLimits(spec: AgentSpec): AgentLimits {

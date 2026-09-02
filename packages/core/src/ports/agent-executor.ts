@@ -1,7 +1,7 @@
 /**
  * The AgentExecutor boundary: semantic outcomes in, nothing operational out.
  *
- * An executor turns compiled information plus one immutable operation projection into a semantic
+ * An executor turns compiled information plus one immutable action projection into a semantic
  * decision. It is where a provider call, or a whole third-party agent framework, is allowed to
  * live. It is not where anything happens to the world.
  *
@@ -14,7 +14,7 @@
  * no protocol or HTTP client
  * ```
  *
- * The consequence is the one that matters. When a model selects an operation, the executor can only
+ * The consequence is the one that matters. When a model selects an action, the executor can only
  * *report* that selection; it cannot carry it out. The Agent controller resolves the reported name
  * against the same projection snapshot, proposes an ordinary typed Effect, and the Harness decides
  * everything after that. A framework with a native tool loop therefore cannot become an alternate
@@ -27,7 +27,7 @@
  */
 
 import type { ModelCapabilitySpec, ModelRequirements, ModelUsage, ResolvedModel } from "../model/types.ts";
-import type { ModelOperationProjection } from "../operations/projection.ts";
+import type { ModelActionProjection } from "../operations/projection.ts";
 import type { AgentInformationContext } from "../agent/information-context.ts";
 import type { AgentModelObservation } from "../agent/observation-projection.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
@@ -44,11 +44,11 @@ export interface AgentExecutorRequest {
   readonly requirements: ModelRequirements;
   readonly information: AgentInformationContext;
   /** The immutable snapshot this call is being shown. The controller resolves the answer with it. */
-  readonly projection: ModelOperationProjection;
+  readonly projection: ModelActionProjection;
   /** The provider-facing derivation of that snapshot: names, descriptions, input schemas. */
   readonly capabilities: readonly ModelCapabilitySpec[];
   /**
-   * Results of the operations the previous step requested, already projected for a model.
+   * Results of the actions the previous step requested, already projected for a model.
    *
    * The semantic observations were shaped by the controller's observation projector before they got
    * here, so an executor renders nothing itself: it forwards what the strategy decided the model
@@ -62,8 +62,8 @@ export interface AgentExecutorRequest {
   readonly continuation: JsonValue | null;
 }
 
-/** One operation the model selected, named in the vocabulary the projection gave it. */
-export interface ModelOperationCall {
+/** One action the model selected, named in the vocabulary the projection gave it. */
+export interface ModelActionCall {
   /** The provider's own correlation for this call, when it supplied one. */
   readonly callId: string | null;
   /** A model-facing name. Resolved by the controller against the projection, or by nothing at all. */
@@ -74,10 +74,10 @@ export interface ModelOperationCall {
 export type AgentExecutorOutcome =
   /** The model produced text. Communication, which is not by itself terminal completion. */
   | { readonly kind: "respond"; readonly text: string; readonly continuation?: JsonValue }
-  /** The model selected operations. Data: nothing has been dispatched and nothing will be here. */
+  /** The model selected provider-callable actions. Data: nothing has been dispatched and nothing will be here. */
   | {
       readonly kind: "call_operations";
-      readonly calls: readonly ModelOperationCall[];
+      readonly calls: readonly ModelActionCall[];
       readonly text?: string;
       readonly continuation?: JsonValue;
     }
@@ -85,7 +85,7 @@ export type AgentExecutorOutcome =
   | { readonly kind: "continue"; readonly continuation?: JsonValue }
   /** The model is done. The controller decides whether the definition permits completing on it. */
   | { readonly kind: "stop"; readonly text?: string; readonly continuation?: JsonValue }
-  /** This step cannot produce a semantic answer. Distinct from one operation failing. */
+  /** This step cannot produce a semantic answer. Distinct from one action failing. */
   | { readonly kind: "fail"; readonly code: string; readonly message: string };
 
 /**
@@ -166,13 +166,13 @@ export function agentExecutorOutcomeIssues(outcome: unknown, path = "outcome"): 
     case "call_operations": {
       const calls = candidate["calls"];
       if (!Array.isArray(calls) || calls.length === 0) {
-        return [{ path: `${path}.calls`, message: "expected at least one selected operation" }];
+        return [{ path: `${path}.calls`, message: "expected at least one selected action" }];
       }
       const issues: AgentExecutorIssue[] = [];
       calls.forEach((call, index) => {
         const at = `${path}.calls[${index}]`;
         if (call === null || typeof call !== "object" || Array.isArray(call)) {
-          issues.push({ path: at, message: "expected an operation call object" });
+          issues.push({ path: at, message: "expected an action call object" });
           return;
         }
         const value = call as Record<string, unknown>;

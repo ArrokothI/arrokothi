@@ -73,19 +73,28 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   resolution, atomic memory.written settlement, exact-payload confirmation composition, read-only
   application inspection, and Workflow Effect-barrier continuation. The F.0.1 architecture review
   accepted that runtime and removed the reference Agent's direct memoryWrite model exposure, which
-  bypassed the canonical Active/Exposed View chain; model-directed memory-operation exposure is
-  deferred. No canonical-doc change. Merged to main as b56b631 (PR #9).
+  bypassed the canonical Active/Exposed View chain. The corrected authorized model-directed path is
+  now F.1.1 (020). No canonical-doc change. Merged to main as b56b631 (PR #9).
 
 019-slice-f1-structured-memory-read-context.md
-  the current Slice F.1 checkpoint: the memory *read* path. An authored Agent read request
+  the accepted and merged Slice F.1 checkpoint: the memory *read* path. An authored Agent read request
   (AgentSpec.structuredMemory.read.keys - a request, not authority), intersected with a
   deny-by-default read-authority grant and then the bound view, resolved by the AgentController
   (holding a narrow StructuredMemoryReadViewResolver, like the exposure resolver) for one new model
   invocation and never on re-entry, then rendered into standing model context as explicit
   application data. Reads never become an Effect; read authority is independent of WriteMemory
   authority; ActivationInput is unchanged. §11 records the F.1 architecture-review correction that
-  moved resolution off the Harness/ActivationInput. The write-exposure chain 018 §13 sketched is
-  F.1.1 and not begun. No canonical-doc change. Not merged; awaiting review.
+  moved resolution off the Harness/ActivationInput. F.1 is included in the F.1.1 merged-main
+  baseline. No canonical-doc change.
+
+020-slice-f11-structured-memory-model-write-exposure.md
+  the current F.1.1 checkpoint: AgentSpec.structuredMemory.write.keys request ∩ current
+  write-exposure authority ∩ bound declarations -> authorized Structured Memory write view;
+  composition with ActiveOperationView into a heterogeneous ActiveModelActionView; immutable
+  ModelActionProjection; exact binding-owned key plus model-supplied value -> ordinary WriteMemory;
+  fresh Harness authorization, existing confirmation/commit, and minimal memory.written model
+  observation. Agent-only consumer, controller-neutral resolver, no caching or Workflow LLM change.
+  No canonical-doc change. Not merged; awaiting review.
 
 014-v1-efficiency-and-developer-ergonomics-validation.md
   cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
@@ -133,15 +142,16 @@ Slice F memory
                 memoryWrite model exposure
   F.0.2         projection-narrowing subset        accepted, merged
                 invariant enforced by construction
-  F.1           Structured Memory read path:       current checkpoint (019);
-                authored read request ∩ read       not merged, awaiting review
+  F.1           Structured Memory read path:       accepted, merged (019);
+                authored read request ∩ read       included in F.1.1 base
                 authority ∩ bound view, resolved
                 by the AgentController per new
                 model invocation; review correction
                 moved resolution off the Harness
                 (019 §11)
-  F.1.1         model-directed WriteMemory         deferred (the 018 §13 chain)
-                exposure via memory Active View
+  F.1.1         model-directed WriteMemory         current checkpoint (020);
+                exposure via authorized memory     not merged, awaiting review
+                view + heterogeneous action view
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

@@ -1,5 +1,5 @@
 /**
- * What an Agent observed about one operation it requested.
+ * What an Agent observed about one projected action it requested.
  *
  * The vocabulary mirrors the Effect-result Event kinds because it *is* those kinds, folded into
  * Agent progress: a denial and an unknown outcome are answers the Agent must be able to report to
@@ -42,15 +42,15 @@ export const AGENT_OBSERVATION_OUTCOMES: readonly AgentObservationOutcome[] = [
 ];
 
 /**
- * One settled operation result, as the executor sees it.
+ * One settled action result, as the executor sees it.
  *
  * `callId` is the provider's own correlation for the call it emitted, carried through so a stateful
  * executor can hand the observation back to the exact tool use that produced it. It is correlation
  * data; it authorizes nothing.
  */
-export interface AgentOperationObservation {
+export interface AgentActionObservation {
   readonly callId: string | null;
-  /** The model-facing name the operation was shown under, for this invocation. */
+  /** The model-facing name the action was shown under, for this invocation. */
   readonly alias: string;
   /** What that name resolved to. The same typed target the binding carried. */
   readonly target: ModelActionTarget;
@@ -59,6 +59,6 @@ export interface AgentOperationObservation {
   readonly error?: { readonly code: string; readonly message: string };
 }
 
-export function isSuccessfulAgentObservation(observation: AgentOperationObservation): boolean {
+export function isSuccessfulAgentObservation(observation: AgentActionObservation): boolean {
   return observation.outcome === "completed";
 }

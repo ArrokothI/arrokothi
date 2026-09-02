@@ -51,6 +51,7 @@ export type {
   AgentSpecInput,
   AgentStructuredMemoryRead,
   AgentStructuredMemorySpec,
+  AgentStructuredMemoryWrite,
 } from "./agent/spec.ts";
 export {
   AGENT_COMPLETION_MODES,
@@ -58,15 +59,16 @@ export {
   agentCompletionMode,
   agentLimits,
   agentStructuredMemoryRead,
+  agentStructuredMemoryWrite,
 } from "./agent/spec.ts";
 export type { AgentSpecIssue, AgentSpecIssueCode, AgentSpecValidation } from "./agent/validation.ts";
 export { validateAgentSpec } from "./agent/validation.ts";
 export type { AgentInformationContext } from "./agent/information-context.ts";
 export { agentInformationSelectionId } from "./agent/information-context.ts";
-export type { AgentObservationOutcome, AgentOperationObservation } from "./agent/observations.ts";
+export type { AgentObservationOutcome, AgentActionObservation } from "./agent/observations.ts";
 export { AGENT_OBSERVATION_OUTCOMES, isSuccessfulAgentObservation } from "./agent/observations.ts";
 /**
- * How a settled operation result is shown to a model.
+ * How a settled action result is shown to a model.
  *
  * A replaceable strategy, exported so a deployment can supply its own. The semantic observation is
  * unchanged by whichever one is installed.
@@ -98,6 +100,7 @@ export { agentCallCorrelationId, agentModelResumptionKey } from "./agent/resumpt
 export type {
   CapabilityOperationTarget,
   ModelActionTarget,
+  StructuredMemoryWriteTarget,
   ModelActionTargetKind,
 } from "./operations/action-target.ts";
 export {
@@ -106,6 +109,7 @@ export {
   formatModelActionTarget,
   isModelActionTarget,
   operationRefOfTarget,
+  structuredMemoryWriteTarget,
 } from "./operations/action-target.ts";
 export type { OperationRef, OperationRefInput } from "./operations/refs.ts";
 export {
@@ -139,18 +143,26 @@ export type {
 export { activeOperationRefs, findActiveOperation } from "./operations/active-view.ts";
 export type {
   CreateProjectionInput,
-  ModelOperationBinding,
-  ModelOperationProjection,
+  ModelActionBinding,
+  ModelActionProjection,
   ProjectionIssue,
   ProjectionResolution,
   ProjectionResult,
 } from "./operations/projection.ts";
 export {
-  createModelOperationProjection,
-  modelCapabilitySpecs,
+  createModelActionProjection,
+  modelActionSpecs,
   modelOperationAlias,
+  modelStructuredMemoryWriteAlias,
   resolveProjectedAlias,
 } from "./operations/projection.ts";
+export type {
+  ActiveModelActionEntry,
+  ActiveModelActionView,
+  CapabilityOperationActionEntry,
+  StructuredMemoryWriteActionEntry,
+} from "./operations/model-action-view.ts";
+export { createActiveModelActionView, targetOfActiveModelAction } from "./operations/model-action-view.ts";
 
 // -- workflow topology -------------------------------------------------------
 export type {
@@ -258,6 +270,15 @@ export type {
   StructuredMemoryReadView,
 } from "./execution/structured-memory-read.ts";
 export { projectStructuredMemoryReadView } from "./execution/structured-memory-read.ts";
+export type {
+  ActiveStructuredMemoryWriteEntry,
+  ActiveStructuredMemoryWriteView,
+} from "./execution/structured-memory-write-view.ts";
+export {
+  createActiveStructuredMemoryWriteView,
+  emptyActiveStructuredMemoryWriteView,
+  projectActiveStructuredMemoryWriteView,
+} from "./execution/structured-memory-write-view.ts";
 /**
  * Controller-local resumptions are exported as *readable* shapes only.
  *
@@ -463,7 +484,7 @@ export type {
   AgentControllerDecision,
   AgentModelAccess,
   AgentModelInvocation,
-  AgentOperationProposalRecord,
+  AgentActionProposalRecord,
   AgentProjectedBindingRecord,
   AgentTrace,
 } from "./controllers/agent/model-access.ts";

@@ -37,6 +37,11 @@ export type {
   StructuredMemoryReadGrantRule,
   StructuredMemoryReadViewResolverOptions,
 } from "./structured-memory-read-view-resolver.ts";
+export { createStructuredMemoryWriteViewResolver } from "./structured-memory-write-view-resolver.ts";
+export type {
+  StructuredMemoryWriteExposureGrantRule,
+  StructuredMemoryWriteViewResolverOptions,
+} from "./structured-memory-write-view-resolver.ts";
 export { createReferenceAgentExecutor } from "./agent-executor.ts";
 export type { ReferenceAgentExecutorOptions } from "./agent-executor.ts";
 export { createNoInlineWaitBudget, createTimeoutInlineBudget } from "./inline-wait.ts";

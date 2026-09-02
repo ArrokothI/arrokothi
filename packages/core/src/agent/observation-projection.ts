@@ -1,22 +1,22 @@
 /**
- * The model-facing observation projection: what a settled operation *looks like* to a model.
+ * The model-facing observation projection: what a settled action *looks like* to a model.
  *
  * The action path already has a replaceable boundary at every layer:
  *
  * ```text
- * Catalog -> Effective Authority -> Active View -> ModelOperationProjection -> the model
+ * Catalog -> Effective Authority -> Active View -> ModelActionProjection -> the model
  * ```
  *
- * The return path needs one too, and for the same reason. `AgentOperationObservation` is a semantic
- * fact - this operation was requested, and this is what happened. How that fact is *rendered* for a
+ * The return path needs one too, and for the same reason. `AgentActionObservation` is a semantic
+ * fact - this action was requested, and this is what happened. How that fact is *rendered* for a
  * model is a strategy: concise or detailed, redacted or complete, truncated, paginated, summarised,
  * replaced by a stable reference, or rewritten so a failure tells the model what it could do next.
  * Those are model- and task-dependent decisions, and none of them is a semantic one.
  *
  * ```text
- * Event / settled operation result          semantic, owned by the Harness
+ * Event / settled action result          semantic, owned by the Harness
  *        ↓
- * AgentOperationObservation                 semantic, owned by Agent progress
+ * AgentActionObservation                 semantic, owned by Agent progress
  *        ↓ replaceable
  * AgentModelObservation                     model-facing, owned by a strategy
  *        ↓
@@ -25,7 +25,7 @@
  *
  * Swapping the projector changes what the model reads and changes nothing else: not the Event, not
  * the Effect, not the authorization decision, not the capability implementation, and not the
- * `AgentOperationObservation` itself. That is the property the conformance suite asserts, and it is
+ * `AgentActionObservation` itself. That is the property the conformance suite asserts, and it is
  * the reason a provider or framework adapter must not do this shaping on its own - a second
  * independent renderer would be a second, invisible answer to the same question.
  *
@@ -40,7 +40,7 @@
  */
 
 import type { JsonValue } from "../util/json.ts";
-import type { AgentObservationOutcome, AgentOperationObservation } from "./observations.ts";
+import type { AgentObservationOutcome, AgentActionObservation } from "./observations.ts";
 
 /**
  * One observation as the model is shown it.
@@ -51,7 +51,7 @@ import type { AgentObservationOutcome, AgentOperationObservation } from "./obser
 export interface AgentModelObservation {
   /** The provider's own id for the call this answers, when it supplied one. Correlation only. */
   readonly callId: string | null;
-  /** The model-facing name the operation was shown under, for the invocation that requested it. */
+  /** The model-facing name the action was shown under, for the invocation that requested it. */
   readonly alias: string;
   /** Carried through so a strategy downstream can distinguish success from denial without parsing. */
   readonly outcome: AgentObservationOutcome;
@@ -75,7 +75,7 @@ export interface AgentObservationProjector {
    * persisted invocation and the Activation that produced it cannot disagree about what was shown.
    */
   project(
-    observation: AgentOperationObservation,
+    observation: AgentActionObservation,
     context?: AgentObservationProjectionContext,
   ): AgentModelObservation;
 }
@@ -93,7 +93,7 @@ export interface AgentObservationProjector {
  * a policy rather than a baseline.
  */
 export const referenceAgentObservationProjector: AgentObservationProjector = {
-  project(observation: AgentOperationObservation): AgentModelObservation {
+  project(observation: AgentActionObservation): AgentModelObservation {
     if (observation.outcome === "completed") {
       const value = observation.observation ?? null;
       return {
@@ -122,7 +122,7 @@ export const referenceAgentObservationProjector: AgentObservationProjector = {
 /** Projects a whole step's worth of observations with one strategy. */
 export function projectAgentObservations(
   projector: AgentObservationProjector,
-  observations: readonly AgentOperationObservation[],
+  observations: readonly AgentActionObservation[],
   context?: AgentObservationProjectionContext,
 ): readonly AgentModelObservation[] {
   return observations.map((observation) => projector.project(observation, context));

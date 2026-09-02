@@ -97,12 +97,14 @@ describe("Agent architecture boundaries", () => {
       "EffectiveOperationAuthority",
       "OperationAuthorityRef",
       "AgentExecutor",
-      "ModelOperationProjection",
+      "ModelActionProjection",
       "ModelProvider",
       "ModelResolver",
       // The read snapshot and its resolver belong to the controller, never to ActivationInput.
       "StructuredMemoryReadView",
       "StructuredMemoryReadViewResolver",
+      "ActiveStructuredMemoryWriteView",
+      "ActiveStructuredMemoryWriteViewResolver",
     ]) {
       assert.equal(source.includes(forbidden), false, `ports/controller.ts must not mention ${forbidden}`);
     }
@@ -122,22 +124,27 @@ describe("Agent architecture boundaries", () => {
     );
   });
 
-  test("the Agent controller holds the Structured Memory read resolver as a narrow port, not runtime state", async () => {
-    // F.1 review: the read snapshot is resolved by the controller (the way exposure is), not
-    // delivered by the Harness. So the controller may name the resolver port - and still nothing
-    // that could read the store, mutate memory, or dispatch.
+  test("the Agent controller holds narrow Structured Memory view resolvers, not runtime state", async () => {
     const controller = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8"));
-    assert.ok(controller.includes("StructuredMemoryReadViewResolver"), "the controller holds the read resolver port");
-    for (const forbidden of ["RuntimeStore", "Harness", "EffectAuthorizer", "StructuredMemoryViewRef", "writeMemory", "WriteMemory"]) {
+    assert.ok(controller.includes("StructuredMemoryReadViewResolver"));
+    assert.ok(controller.includes("ActiveStructuredMemoryWriteViewResolver"));
+    for (const forbidden of ["RuntimeStore", "Harness", "EffectAuthorizer", "StructuredMemoryViewRef"]) {
       assert.equal(controller.includes(forbidden), false, `the AgentController must not name ${forbidden}`);
     }
 
-    // The port and its default reach nothing operational and cannot write or dispatch.
-    const portFiles = await walk(["ports/structured-memory-read-view.ts"]);
-    assert.deepEqual([...portFiles].filter((path) => OPERATIONAL_MACHINERY.includes(path)), []);
-    const port = codeOf(await readFile(resolve(CORE_SRC, "ports/structured-memory-read-view.ts"), "utf8"));
-    for (const forbidden of ["Effect", "dispatch", "write", "mutate", "RuntimeStore", "Harness"]) {
-      assert.equal(port.includes(forbidden), false, `the read-view port must not name ${forbidden}`);
+    for (const entry of [
+      "ports/structured-memory-read-view.ts",
+      "ports/active-structured-memory-write-view.ts",
+    ]) {
+      const portFiles = await walk([entry]);
+      assert.deepEqual([...portFiles].filter((path) => OPERATIONAL_MACHINERY.includes(path)), []);
+    }
+
+    const resolver = codeOf(
+      await readFile(resolve(CORE_SRC, "reference/structured-memory-write-view-resolver.ts"), "utf8"),
+    );
+    for (const forbidden of ["transact", ".update(", ".insert(", "EffectProposal", "writeMemory(", "dispatch", "settle"]) {
+      assert.equal(resolver.includes(forbidden), false, `the write-view resolver must not ${forbidden}`);
     }
   });
 
@@ -174,10 +181,13 @@ describe("Agent architecture boundaries", () => {
       "operations/authority.ts",
       "operations/exposure.ts",
       "operations/projection.ts",
+      "operations/model-action-view.ts",
       "operations/refs.ts",
+      "execution/structured-memory-write-view.ts",
       "ports/active-operation-view.ts",
       "ports/effective-operation-authority.ts",
       "ports/capability-catalog.ts",
+      "ports/active-structured-memory-write-view.ts",
     ];
     assert.deepEqual(
       [...files].filter((path) => forbidden.includes(path)),
@@ -215,10 +225,14 @@ describe("Agent architecture boundaries", () => {
     }
   });
 
-  test("the model action target is identity only, and v0.4 mints exactly one kind", async () => {
+  test("model action targets are identity only, with capability and Structured Memory arms", async () => {
     const code = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
     const declared = [...code.matchAll(/readonly kind: "(\w+)"/g)].map((match) => match[1]!);
-    assert.deepEqual([...new Set(declared)], ["capability_operation"], "one target kind, and it is discriminated");
+    assert.deepEqual(
+      [...new Set(declared)],
+      ["capability_operation", "structured_memory_write"],
+      "the heterogeneous target is explicit and discriminated",
+    );
     for (const forbidden of ["grant", "authorize", "Harness", "Executor", "credential", "token"]) {
       assert.equal(code.includes(forbidden), false, `an action target must not carry "${forbidden}"`);
     }
@@ -231,18 +245,42 @@ describe("Agent architecture boundaries", () => {
     );
   });
 
-  test("the operation branch does not depend on context compilation", async () => {
+  test("the action branch does not depend on context compilation or memory reads", async () => {
     const files = await walk([
       "operations/active-view.ts",
+      "operations/model-action-view.ts",
       "operations/projection.ts",
+      "execution/structured-memory-write-view.ts",
       "reference/active-operation-view-resolver.ts",
+      "reference/structured-memory-write-view-resolver.ts",
     ]);
-    const forbidden = ["controllers/agent/information.ts", "controllers/agent/controller.ts", "agent/control-state.ts"];
+    const forbidden = [
+      "controllers/agent/information.ts",
+      "controllers/agent/controller.ts",
+      "agent/control-state.ts",
+      "execution/structured-memory-read.ts",
+      "ports/structured-memory-read-view.ts",
+    ];
     assert.deepEqual(
       [...files].filter((path) => forbidden.includes(path)),
       [],
       "an exposure resolver and a projector own no instructions, transcript, or memory selection",
     );
+  });
+
+  test("projection has no AgentSpec side channel, and only the Agent consumes write exposure", async () => {
+    const projectionFiles = await walk(["operations/projection.ts"]);
+    assert.equal(projectionFiles.has("agent/spec.ts"), false, "projection cannot read an authored write request");
+    const projection = codeOf(await readFile(resolve(CORE_SRC, "operations/projection.ts"), "utf8"));
+    for (const forbidden of ["AgentSpec", "structuredMemory.write", "AgentStructuredMemoryWrite"]) {
+      assert.equal(projection.includes(forbidden), false, `projection must not synthesize from ${forbidden}`);
+    }
+
+    const agent = await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8");
+    const workflow = await readFile(resolve(CORE_SRC, "controllers/workflow/controller.ts"), "utf8");
+    assert.ok(agent.includes("ActiveStructuredMemoryWriteViewResolver"));
+    assert.equal(workflow.includes("ActiveStructuredMemoryWriteViewResolver"), false);
+    assert.equal(workflow.includes("createActiveModelActionView"), false);
   });
 
   test("core Agent semantics mention no protocol, framework, or vendor type", async () => {
@@ -278,7 +316,9 @@ describe("Agent architecture boundaries", () => {
       "operations/authority.ts",
       "operations/active-view.ts",
       "operations/projection.ts",
+      "operations/model-action-view.ts",
       "operations/action-target.ts",
+      "execution/structured-memory-write-view.ts",
     ]) {
       const source = await readFile(resolve(CORE_SRC, path), "utf8");
       assert.equal(/^export (?:declare )?class /m.test(source), false, `${path} declares a class`);
@@ -337,7 +377,9 @@ describe("Agent architecture boundaries", () => {
       "controllers/agent/information.ts",
       "agent/observation-projection.ts",
       "operations/action-target.ts",
+      "operations/model-action-view.ts",
       "reference/active-operation-view-resolver.ts",
+      "reference/structured-memory-write-view-resolver.ts",
       "reference/agent-executor.ts",
       "reference/operation-authority.ts",
     ]);

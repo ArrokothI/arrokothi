@@ -7,7 +7,7 @@
  * information branch                     operation branch
  *   instructions                           catalog descriptors
  *   input and responses so far             + effective authority
- *   settled operation observations         + authored exposure request
+ *   settled action observations            + authored exposure request
  *          ↓                                      ↓
  *   system prompt + messages               Active View → projection → specs
  *          ↘                                      ↙
@@ -71,7 +71,7 @@ export interface AgentInformationInput {
  * ```
  *
  * Swapping a compiler changes the first and provably not the second. It cannot widen effective
- * authority, cannot change an Active View, cannot alter a ModelOperationProjection, and cannot
+ * authority, cannot change an Active View, cannot alter a ModelActionProjection, and cannot
  * touch Effect semantics - it is handed instructions and a transcript and returns a context. The
  * architecture suite walks this module's import graph to keep that true.
  */

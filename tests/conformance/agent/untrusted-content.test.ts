@@ -88,7 +88,7 @@ describe("untrusted content influences requests, never authority or exposure", (
 
     const context = await bundle.harness.inspect(agent.executionId);
     assert.equal(context?.lifecycle, "FAILED");
-    assert.equal(context?.failure?.code, "agent_operation_not_projected");
+    assert.equal(context?.failure?.code, "agent_action_not_projected");
     assert.deepEqual(await bundle.harness.effectJournalOf(agent.executionId), [], "no Effect was ever proposed");
     assert.equal(capabilities.callCount, 0, "and nothing was executed");
   });

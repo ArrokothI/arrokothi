@@ -17,7 +17,7 @@
  *   completion/failure proposal        terminal-result validation
  * ```
  *
- * It holds an exposure resolver, model resolution, an executor, and an optional trace sink. Every
+ * It holds narrow exposure resolvers, model resolution, an executor, and an optional trace sink. Every
  * one of those is *local semantic computation*. It holds no runtime state, no queue, no policy
  * evaluator, no capability dispatcher, no settlement path, and no lifecycle setter - and the
  * architecture suite walks the import graph and greps these modules to keep it that way.
@@ -25,18 +25,20 @@
  * ## The four layers, in the order this file walks them
  *
  * ```text
- * catalog descriptors + effective authority + authored exposure request
+ * capability catalog/authority/request + memory write-exposure authority/request/declarations
  *        ↓ deterministic
- * Active Operation View
+ * ActiveOperationView + ActiveStructuredMemoryWriteView
+ *        ↓ deterministic composition
+ * ActiveModelActionView
  *        ↓ immutable, one per invocation
- * ModelOperationProjection            → ModelCapabilitySpec[] → the model
+ * ModelActionProjection            → provider callable specs → the model
  *        ↓ the model answers with a name
- * resolved through THAT projection    → typed UseCapability proposal
+ * resolved through THAT projection    → typed UseCapability or WriteMemory proposal
  *        ↓
  * Harness authorizes the concrete request, from current authority
  * ```
  *
- * None of the middle layers is a permission. An operation can be authorized, exposed, projected,
+ * None of the middle layers is a permission. An action can be authorized, exposed, projected,
  * selected, proposed - and still denied at dispatch, because authority may have changed or because
  * the concrete payload is not allowed. That denial arrives as an ordinary Effect-result Event, and
  * this controller reports it to the model like any other observation.
@@ -46,7 +48,7 @@
  * A slow *model* step crosses no runtime boundary: it produces no Event, is authorized by nobody,
  * and is local computation that happens to take a long time. It takes the controller-local
  * resumption path - persist the invocation, report `await_resumption`, and let a later Activation
- * be handed the stored outcome. A requested *operation* is the opposite: it is a proposal that
+ * be handed the stored outcome. A requested *action* is the opposite: it is a proposal that
  * crosses the Harness, and its result comes back as a correlated Event.
  *
  * The persisted invocation is what makes resuming correct rather than merely possible. It records
@@ -64,7 +66,7 @@
 
 import type { DefinitionKind } from "../../definitions/types.ts";
 import type { EffectProposal } from "../../effects/types.ts";
-import { useCapability } from "../../effects/types.ts";
+import { useCapability, writeMemory } from "../../effects/types.ts";
 import type { EmissionProposal } from "../../execution/emission.ts";
 import type { ControllerResumptionId } from "../../execution/ids.ts";
 import type { DeliveredEvent, WakeCondition } from "../../interaction/event-envelope.ts";
@@ -86,29 +88,34 @@ import {
 } from "../../agent/control-state.ts";
 import type { AgentModelObservation, AgentObservationProjector } from "../../agent/observation-projection.ts";
 import { projectAgentObservations, referenceAgentObservationProjector } from "../../agent/observation-projection.ts";
-import type { AgentObservationOutcome, AgentOperationObservation } from "../../agent/observations.ts";
+import type { AgentObservationOutcome, AgentActionObservation } from "../../agent/observations.ts";
 import type { AgentSpec } from "../../agent/spec.ts";
-import { agentCompletionMode, agentLimits, agentStructuredMemoryRead } from "../../agent/spec.ts";
+import { agentCompletionMode, agentLimits, agentStructuredMemoryRead, agentStructuredMemoryWrite } from "../../agent/spec.ts";
 import { agentInformationSelectionId } from "../../agent/information-context.ts";
 import { validateAgentSpec } from "../../agent/validation.ts";
 import type { ModelActionTarget } from "../../operations/action-target.ts";
-import { createModelOperationProjection, modelCapabilitySpecs, resolveProjectedAlias } from "../../operations/projection.ts";
+import { emptyActiveStructuredMemoryWriteView } from "../../execution/structured-memory-write-view.ts";
+import { createActiveModelActionView } from "../../operations/model-action-view.ts";
+import { createModelActionProjection, modelActionSpecs, resolveProjectedAlias } from "../../operations/projection.ts";
 import { EMPTY_EXPOSURE_REQUEST } from "../../operations/exposure.ts";
 import type { ActiveOperationViewResolver } from "../../ports/active-operation-view.ts";
 import { noActiveOperationView } from "../../ports/active-operation-view.ts";
 import type { StructuredMemoryReadViewResolver } from "../../ports/structured-memory-read-view.ts";
 import { noStructuredMemoryRead } from "../../ports/structured-memory-read-view.ts";
+import type { ActiveStructuredMemoryWriteViewResolver } from "../../ports/active-structured-memory-write-view.ts";
+import { noActiveStructuredMemoryWriteView } from "../../ports/active-structured-memory-write-view.ts";
 import type { AgentExecutor, AgentExecutorOutcome } from "../../ports/agent-executor.ts";
 import { agentExecutorOutcomeIssues } from "../../ports/agent-executor.ts";
 import type { ActivationInput, ActivationOutcome, ExecutionController } from "../../ports/controller.ts";
 import type { ControllerResumptionScope } from "../../ports/controller-resumption.ts";
 import type { JsonObject, JsonValue } from "../../util/json.ts";
+import { jsonIssues } from "../../util/json.ts";
 import type { AgentInformationCompiler } from "./information.ts";
 import { referenceAgentInformationCompiler } from "./information.ts";
 import type {
   AgentControllerDecision,
   AgentModelAccess,
-  AgentOperationProposalRecord,
+  AgentActionProposalRecord,
   AgentStepInvocation,
   AgentTrace,
 } from "./model-access.ts";
@@ -122,7 +129,7 @@ export interface AgentControllerOptions {
   /** Where one bounded semantic step happens. Absent means no model step can run. */
   readonly executor?: AgentExecutor;
   /**
-   * How a settled operation result is shown to the model.
+   * How a settled action result is shown to the model.
    *
    * A replaceable strategy. Swapping it changes what the model reads and nothing else - not the
    * Event, not the Effect, not the authorization, not the capability implementation. Absent means
@@ -149,6 +156,15 @@ export interface AgentControllerOptions {
    * authority.
    */
   readonly structuredMemoryReadView?: StructuredMemoryReadViewResolver;
+  /**
+   * Resolves the authorized Structured Memory write interfaces for one new model invocation.
+   *
+   * The Agent's authored write keys are only a request. This resolver intersects them with current
+   * write-exposure authority and the bound field declarations, and returns metadata only. It is not
+   * consulted when no write request exists or when a persisted invocation is resumed. Final
+   * `WriteMemory` authorization remains the Harness's independent, fresh decision.
+   */
+  readonly structuredMemoryWriteView?: ActiveStructuredMemoryWriteViewResolver;
   /**
    * Application task scope: authored group labels to narrow to now.
    *
@@ -243,6 +259,7 @@ class AgentController implements ExecutionController {
   private readonly observations: AgentObservationProjector;
   private readonly information: AgentInformationCompiler;
   private readonly structuredMemoryReadView: StructuredMemoryReadViewResolver;
+  private readonly structuredMemoryWriteView: ActiveStructuredMemoryWriteViewResolver;
 
   constructor(options: AgentControllerOptions) {
     this.views = options.views ?? noActiveOperationView;
@@ -253,6 +270,7 @@ class AgentController implements ExecutionController {
     this.observations = options.observations ?? referenceAgentObservationProjector;
     this.information = options.information ?? referenceAgentInformationCompiler;
     this.structuredMemoryReadView = options.structuredMemoryReadView ?? noStructuredMemoryRead;
+    this.structuredMemoryWriteView = options.structuredMemoryWriteView ?? noActiveStructuredMemoryWriteView;
   }
 
   async activate(input: ActivationInput, resumptions: ControllerResumptionScope): Promise<ActivationOutcome> {
@@ -303,7 +321,7 @@ class AgentController implements ExecutionController {
       };
     }
 
-    // Every requested operation has an answer. Project the semantic observations once, with this
+    // Every requested action has an answer. Project the semantic observations once, with this
     // controller's strategy, and use that one projection for both consumers: the transcript the
     // information branch compiles from, and the observations the executor is handed. Two renderings
     // of one result would be two answers to "what was the model told".
@@ -343,7 +361,15 @@ class AgentController implements ExecutionController {
     let next = state;
     for (const event of events) {
       if (isEffectResultEventKind(event.kind) && event.correlationId !== null) {
-        const mapped = outcomeOf(event);
+        const pending = next.pending.find((call) => call.correlationId === event.correlationId);
+        // `memory.written` carries runtime view metadata, but the pending projection binding already
+        // owns the exact key. Project only that binding-owned fact and accept the Event only for the
+        // action family that could have produced it.
+        const mapped: ReturnType<typeof outcomeOf> = event.kind === "memory.written"
+          ? pending?.target.kind === "structured_memory_write"
+            ? { outcome: "completed" as const, observation: { key: pending.target.key, written: true } }
+            : null
+          : outcomeOf(event);
         if (!mapped) continue;
         next = settleAgentCall(next, event.correlationId, mapped.outcome, {
           ...(mapped.observation !== undefined ? { observation: mapped.observation } : {}),
@@ -360,7 +386,7 @@ class AgentController implements ExecutionController {
     return next;
   }
 
-  private observationOf(call: AgentPendingCall): AgentOperationObservation {
+  private observationOf(call: AgentPendingCall): AgentActionObservation {
     return {
       callId: call.callId,
       alias: call.alias,
@@ -374,8 +400,8 @@ class AgentController implements ExecutionController {
   /**
    * What this Agent still needs.
    *
-   * With one outstanding operation the condition names its correlation exactly. With several it
-   * waits broadly on Effect-result kinds and re-checks after each wake, so several operations
+   * With one outstanding action the condition names its correlation exactly. With several it
+   * waits broadly on Effect-result kinds and re-checks after each wake, so several actions
    * requested in one step join without any per-operation machinery.
    */
   private wakeFor(state: AgentControlState, outstanding: readonly AgentPendingCall[]): WakeCondition {
@@ -383,7 +409,7 @@ class AgentController implements ExecutionController {
     return {
       eventKinds: [...EFFECT_RESULT_EVENT_KINDS],
       correlationId: single ? single.correlationId : null,
-      description: `agent step ${state.step + 1}: ${outstanding.length} requested operation(s) outstanding`,
+      description: `agent step ${state.step + 1}: ${outstanding.length} requested action(s) outstanding`,
     };
   }
 
@@ -421,14 +447,25 @@ class AgentController implements ExecutionController {
       }
 
       const step = state.step + 1;
-      const view = await this.views.resolve({
+      const operationView = await this.views.resolve({
         executionId: input.execution.executionId,
         exposure: spec.operations ?? EMPTY_EXPOSURE_REQUEST,
         ...(this.taskScope ? { taskScope: this.taskScope } : {}),
       });
-      const projected = createModelOperationProjection({
+      // Write exposure is a separate authority branch. With no authored request, the resolver is
+      // not called at all. With a request, it returns only authorized, binding-owned declaration
+      // metadata; it never reads or returns a current memory value.
+      const memoryWrite = agentStructuredMemoryWrite(spec);
+      const structuredMemoryWrites = memoryWrite
+        ? await this.structuredMemoryWriteView.resolve({
+            executionId: input.execution.executionId,
+            keys: memoryWrite.keys,
+          })
+        : emptyActiveStructuredMemoryWriteView();
+      const actionView = createActiveModelActionView({ operations: operationView, structuredMemoryWrites });
+      const projected = createModelActionProjection({
         projectionId: agentProjectionId(step),
-        view,
+        view: actionView,
       });
       if (!projected.ok) {
         return {
@@ -483,7 +520,7 @@ class AgentController implements ExecutionController {
           requirements: spec.model.requirements,
           information: invocation.information,
           projection: invocation.projection,
-          capabilities: modelCapabilitySpecs(invocation.projection),
+          capabilities: modelActionSpecs(invocation.projection),
           observations: invocation.observations,
           step: invocation.step,
           limits: { maxOperationCallsPerStep: limits.maxOperationCallsPerStep },
@@ -550,7 +587,7 @@ class AgentController implements ExecutionController {
       informationSelectionId: agentInformationSelectionId(invocation.information),
       projectionId: invocation.projection.projectionId,
       viewId: invocation.projection.viewId,
-      exposedOperations: invocation.projection.bindings.length,
+      exposedActions: invocation.projection.bindings.length,
       bindings: invocation.projection.bindings.map((binding) => ({
         bindingId: binding.bindingId,
         alias: binding.alias,
@@ -563,7 +600,7 @@ class AgentController implements ExecutionController {
     });
   }
 
-  private proposalRecords(step: number, pending: readonly AgentPendingCall[]): readonly AgentOperationProposalRecord[] {
+  private proposalRecords(step: number, pending: readonly AgentPendingCall[]): readonly AgentActionProposalRecord[] {
     return pending.map((call) => ({
       step,
       correlationId: call.correlationId,
@@ -661,7 +698,7 @@ class AgentController implements ExecutionController {
               state: { ...advanced, messages },
               emissions: [],
               failure: {
-                code: "agent_operation_not_projected",
+                code: "agent_action_not_projected",
                 message:
                   `the model returned "${call.alias}", which projection ${invocation.projection.projectionId} ` +
                   `did not expose; a returned name is vocabulary, never an identity to look up`,
@@ -669,25 +706,40 @@ class AgentController implements ExecutionController {
             };
           }
           const binding = resolution.binding;
-          // The binding's target decides which Effect this becomes. v0.4 mints one target kind, so
-          // the switch has one arm and a default that refuses; the point is that the *shape* of the
-          // decision is already the one a second action family would extend, rather than the
-          // assumption that every model-visible action is a capability operation.
+          // The binding owns identity. Provider input supplies arguments only; in particular, the
+          // Structured Memory arm accepts exactly `{ value }`, so a model cannot substitute a key.
           const target: ModelActionTarget = binding.target;
-          if (target.kind !== "capability_operation") {
-            return {
-              kind: "fail",
-              state: { ...advanced, messages },
-              emissions: [],
-              failure: {
-                code: "agent_action_target_not_supported",
-                message:
-                  `binding ${binding.bindingId} names target kind ` +
-                  `"${(target as { readonly kind: string }).kind}", which this build does not resolve to an Effect`,
-              },
-            };
-          }
           const correlationId = agentCallCorrelationId(invocation.step, index + 1);
+          let proposal: EffectProposal;
+          switch (target.kind) {
+            case "capability_operation":
+              proposal = useCapability({
+                capability: target.capability,
+                operation: target.operation,
+                input: call.input,
+                requestKey: correlationId,
+              });
+              break;
+            case "structured_memory_write": {
+              const keys = Object.keys(call.input);
+              const value = call.input["value"];
+              if (keys.length !== 1 || keys[0] !== "value" || jsonIssues(value, "input.value").length > 0) {
+                return {
+                  kind: "fail",
+                  state: { ...advanced, messages },
+                  emissions: [],
+                  failure: {
+                    code: "agent_structured_memory_write_input_invalid",
+                    message:
+                      `the model input for ${binding.alias} must be a plain JSON object containing exactly ` +
+                      '`{ value }`; the binding owns the Structured Memory key',
+                  },
+                };
+              }
+              proposal = writeMemory({ key: target.key, value: value as JsonValue, requestKey: correlationId });
+              break;
+            }
+          }
           pending.push({
             correlationId,
             bindingId: binding.bindingId,
@@ -699,15 +751,8 @@ class AgentController implements ExecutionController {
             observation: null,
             error: null,
           });
-          proposals.push(
-            useCapability({
-              capability: target.capability,
-              operation: target.operation,
-              input: call.input,
-              requestKey: correlationId,
-            }),
-          );
-          this.trace?.operationProposed?.({
+          proposals.push(proposal);
+          this.trace?.actionProposed?.({
             step: invocation.step,
             correlationId,
             bindingId: binding.bindingId,

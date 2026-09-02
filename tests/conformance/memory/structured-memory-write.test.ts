@@ -372,10 +372,9 @@ describe("WriteMemory mechanical confirmation", () => {
 });
 
 describe("reference controller observation", () => {
-  test("authored Agent data plus a bound memory view still exposes no model-visible write_memory (F.0.1)", async () => {
-    // F.0.1: the reference Agent has no memory-interface exposure path yet, so even an Execution
-    // that is fully set up to write memory - a valid binding and an allowing memory grant - must
-    // not advertise a WriteMemory operation to the model. That exposure is deferred to F.1.
+  test("without an authored F.1.1 write request, a bound write-enabled Agent exposes no memory action", async () => {
+    // F.1.1 retains the F.0.1 correction: a binding and final Effect permission do not create
+    // model visibility. Only an authored request passing the authorized write-view path may do so.
     const executor = scriptedAgentExecutor([{ kind: "respond", text: "done" }]);
     const bundle = createAgentTestHarness({
       models: agentModelAccess(testModelResolver()),
@@ -398,7 +397,7 @@ describe("reference controller observation", () => {
     assert.equal(
       (request.capabilities ?? []).some((spec) => spec.name === "write_memory"),
       false,
-      "the provider-facing capability list contains no WriteMemory operation",
+      "the provider-facing callable list contains no Structured Memory write action",
     );
     assert.equal((await bundle.harness.structuredMemoryOf(agent.executionId))?.revision, 0, "and nothing was written");
     assert.deepEqual(

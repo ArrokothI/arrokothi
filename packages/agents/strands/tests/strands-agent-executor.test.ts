@@ -22,8 +22,8 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type {
   AgentExecutorRequest,
-  ModelOperationBinding,
-  ModelOperationProjection,
+  ModelActionBinding,
+  ModelActionProjection,
   ObjectSchema,
   ResolvedModel,
 } from "@agent-sdk/core/ports";
@@ -46,10 +46,9 @@ const SEARCH_INPUT: ObjectSchema = {
   fields: { query: { required: true, schema: { kind: "string" } } },
 };
 
-const PROJECTION: ModelOperationProjection = {
+const PROJECTION: ModelActionProjection = {
   projectionId: "ag/step1/projection",
   viewId: "aov_1",
-  viewRevision: 1,
   bindings: [
     {
       bindingId: "ag/step1/projection/b1",
@@ -84,7 +83,7 @@ function requestFor(
     requirements: { text: true, capabilityCalls: "required" },
     information: { system: "Search before answering.", messages: [{ role: "user", content: "find kernels" }] },
     projection: PROJECTION,
-    capabilities: PROJECTION.bindings.map((binding: ModelOperationBinding) => ({
+    capabilities: PROJECTION.bindings.map((binding: ModelActionBinding) => ({
       name: binding.alias,
       description: binding.description,
       input: binding.input,

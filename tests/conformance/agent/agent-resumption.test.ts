@@ -204,7 +204,8 @@ describe("a slow Agent model step suspends without becoming an Event", () => {
     await rig.bundle.harness.runUntilIdle();
 
     const suspended = stateOf((await rig.bundle.harness.inspect(agent.executionId))!.control.progress);
-    assert.equal(suspended.invocation!.projection.viewId, "aov_first");
+    const firstActionViewId = suspended.invocation!.projection.viewId;
+    assert.match(firstActionViewId, /^amav_/);
     assert.deepEqual(suspended.invocation!.projection.bindings.map((binding) => binding.alias), ["docs_search"]);
 
     // The model answers with the name it was shown, long after the view stopped exposing it.
@@ -226,7 +227,7 @@ describe("a slow Agent model step suspends without becoming an Event", () => {
     // resolved against this empty view and produced a deterministic failure instead of an Effect.
     const after = stateOf((await rig.bundle.harness.inspect(agent.executionId))!.control.progress);
     assert.equal(after.invocation?.step, 2);
-    assert.equal(after.invocation?.projection.viewId, "aov_empty");
+    assert.notEqual(after.invocation?.projection.viewId, firstActionViewId);
     assert.deepEqual(after.invocation?.projection.bindings, []);
     assert.equal((await rig.bundle.harness.inspect(agent.executionId))?.lifecycle, "WAITING");
   });

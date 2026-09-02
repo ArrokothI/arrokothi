@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { Client } from "@modelcontextprotocol/client";
 import { fromJsonSchema, InMemoryTransport, McpServer } from "@modelcontextprotocol/server";
-import type { AgentOperationObservation, AgentObservationProjector, OperationRef } from "@agent-sdk/core/execution";
+import type { AgentActionObservation, AgentObservationProjector, OperationRef } from "@agent-sdk/core/execution";
 import { referenceAgentObservationProjector } from "@agent-sdk/core/execution";
 import { createAllowListAuthorizer } from "@agent-sdk/core/reference";
 import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
@@ -42,7 +42,7 @@ async function runOutcomeCase(input: {
   readonly dispatches: number;
   readonly phases: readonly string[];
   readonly pendingOutcome: string | null;
-  readonly semanticObservations: readonly AgentOperationObservation[];
+  readonly semanticObservations: readonly AgentActionObservation[];
   readonly providerCapabilityMessages: readonly string[];
 }> {
   let serverCalls = 0;
@@ -73,7 +73,7 @@ async function runOutcomeCase(input: {
     });
     const executor = counting(snapshot.executor);
     const provider = selectingProvider("external_records_change_record", { key: "alpha" }, "Outcome reported.");
-    const semanticObservations: AgentOperationObservation[] = [];
+    const semanticObservations: AgentActionObservation[] = [];
     const projector: AgentObservationProjector = {
       project(observation, context) {
         semanticObservations.push(structuredClone(observation));
