@@ -31,7 +31,7 @@ import { wakeConditionIssues } from "../interaction/event-envelope.ts";
 import type { ActivationInput, ActivationOutcome, ControllerNext } from "../ports/controller.ts";
 import { isJsonObject, jsonIssues } from "../util/json.ts";
 
-export type ActivationResultKind = "continued" | "waiting" | "completed" | "failed";
+export type ActivationResultKind = "continued" | "waiting" | "completed" | "failed" | "cancelled";
 
 /** What one Activation did. An audit record, never a delivered Event. */
 export interface ActivationRecord {
@@ -74,6 +74,24 @@ export type OutcomeValidation =
 
 const reject = (code: OutcomeRejectionCode, message: string): OutcomeValidation => ({ ok: false, rejection: { code, message } });
 
+/**
+ * A controlled-interleaving wake condition (Slice E.1).
+ *
+ * Optional, and when present it is checked exactly like the primary `wake`: it must be declarative,
+ * serializable runtime data. A malformed one is a rejected outcome, not a silently dropped field.
+ */
+function interleaveRejection(interleave: unknown): OutcomeRejection | null {
+  if (interleave === undefined) return null;
+  if (interleave === null || typeof interleave !== "object" || Array.isArray(interleave)) {
+    return { code: "invalid_wake", message: "interleave must be a wake condition when present" };
+  }
+  const issues = wakeConditionIssues(interleave as never);
+  if (issues.length > 0) {
+    return { code: "invalid_wake", message: `interleave: ${issues.map((i) => `${i.path}: ${i.message}`).join("; ")}` };
+  }
+  return null;
+}
+
 function validateNext(next: unknown): OutcomeRejection | null {
   if (next === null || typeof next !== "object" || Array.isArray(next)) {
     return { code: "invalid_next", message: "outcome.next must be an object" };
@@ -91,14 +109,14 @@ function validateNext(next: unknown): OutcomeRejection | null {
       if (issues.length > 0) {
         return { code: "invalid_wake", message: issues.map((i) => `${i.path}: ${i.message}`).join("; ") };
       }
-      return null;
+      return interleaveRejection((next as { interleave?: unknown }).interleave);
     }
     case "await_resumption": {
       const resumptionId = (next as { resumptionId?: unknown }).resumptionId;
       if (!isControllerResumptionId(resumptionId)) {
         return { code: "invalid_resumption", message: "await_resumption requires a controller resumption id" };
       }
-      return null;
+      return interleaveRejection((next as { interleave?: unknown }).interleave);
     }
     case "complete": {
       const result = (next as { result?: unknown }).result;

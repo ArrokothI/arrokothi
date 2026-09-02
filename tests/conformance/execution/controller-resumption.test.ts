@@ -185,6 +185,11 @@ describe("controller-local resumption", () => {
       "createdAt",
       "executionId",
       "failure",
+      // Slice E.1 invalidation provenance: diagnostics for an interleave Event that overtook the
+      // work. Still only plain data - no Effect vocabulary.
+      "invalidatedAt",
+      "invalidatedAtRevision",
+      "invalidatedByEventId",
       "key",
       "observedRevision",
       "resumptionId",

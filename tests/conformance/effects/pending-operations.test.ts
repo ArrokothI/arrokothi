@@ -14,7 +14,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import type { EffectId, ExecutionContext, PendingOperationId, WakeCondition } from "@agent-sdk/core/execution";
-import { isExpired, isUnresolved, isUnresolvedDispatch } from "@agent-sdk/core/execution";
+import { createPendingOperation, isExpired, isUnresolved, isUnresolvedDispatch } from "@agent-sdk/core/execution";
 import { ControllerRegistry, Harness } from "@agent-sdk/core/execution";
 import {
   createAllowListAuthorizer,
@@ -70,6 +70,38 @@ function eventWakeOf(context: ExecutionContext | undefined): WakeCondition | nul
 }
 
 describe("pending operations", () => {
+  test("a null deadline never expires; a real deadline still expires by the same rule (E.0.1)", () => {
+    const noDeadline = createPendingOperation({
+      pendingOperationId: "pop_1" as PendingOperationId,
+      executionId: "exe_1" as never,
+      effectId: "eff_1" as EffectId,
+      effectKind: "spawn_execution",
+      correlationId: "c",
+      causationId: null,
+      idempotencyKey: "spawn:eff_1" as never,
+      createdAt: "2026-01-01T00:00:00.000Z",
+      deadline: null,
+    });
+    // Arbitrarily far in the future: a null deadline is "no configured deadline", not merely a
+    // deadline nobody has reached yet.
+    assert.equal(isExpired(noDeadline, "2999-01-01T00:00:00.000Z"), false, "no configured deadline never expires");
+
+    const withDeadline = createPendingOperation({
+      pendingOperationId: "pop_2" as PendingOperationId,
+      executionId: "exe_1" as never,
+      effectId: "eff_2" as EffectId,
+      effectKind: "use_capability",
+      correlationId: "c2",
+      causationId: null,
+      idempotencyKey: "cap:eff_2" as never,
+      createdAt: "2026-01-01T00:00:00.000Z",
+      deadline: "2026-01-01T00:00:30.000Z",
+    });
+    assert.equal(isExpired(withDeadline, "2026-01-01T00:00:00.000Z"), false, "not yet reached");
+    assert.equal(isExpired(withDeadline, "2026-01-01T00:00:30.000Z"), true, "reached: the same existing rule still applies");
+    assert.equal(isExpired(withDeadline, "2026-01-01T01:00:00.000Z"), true, "and stays expired afterwards");
+  });
+
   test("the Activation's inline wait budget is not the Effect's deadline", async () => {
     const executor = createDeferredCapabilityExecutor();
     const { harness, definitions, clock } = createTestHarness({
@@ -93,6 +125,7 @@ describe("pending operations", () => {
     assert.equal(operation.dispatch, "dispatched");
 
     const dispatchedAt = new Date(operation.dispatchedAt!).getTime();
+    assert.ok(operation.deadline, "a capability Effect always carries a real deadline");
     assert.equal(
       new Date(operation.deadline).getTime() - dispatchedAt,
       30_000,
@@ -132,7 +165,7 @@ describe("pending operations", () => {
     await harness.runUntilIdle();
 
     const [operation] = await harness.pendingOperationsOf(handle.executionId);
-    const window = new Date(operation!.deadline).getTime() - new Date(operation!.dispatchedAt!).getTime();
+    const window = new Date(operation!.deadline!).getTime() - new Date(operation!.dispatchedAt!).getTime();
     assert.equal(window, 5_000, "policy narrowed the requested deadline; a requester cannot extend its own");
   });
 

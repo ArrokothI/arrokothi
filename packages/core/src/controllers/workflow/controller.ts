@@ -69,9 +69,10 @@
 import type { DefinitionKind } from "../../definitions/types.ts";
 import type { EmissionProposal } from "../../execution/emission.ts";
 import type { EffectProposal } from "../../effects/types.ts";
-import { useCapability } from "../../effects/types.ts";
+import { callExecution, useCapability } from "../../effects/types.ts";
 import type { DeliveredEvent, WakeCondition } from "../../interaction/event-envelope.ts";
 import { EFFECT_RESULT_EVENT_KINDS, isEffectResultEventKind } from "../../interaction/events.ts";
+import type { ChildCompletedBody } from "../../interaction/events.ts";
 import type { ControllerResumptionId } from "../../execution/ids.ts";
 import type { ActivationInput, ActivationOutcome, ExecutionController } from "../../ports/controller.ts";
 import type { ControllerResumptionScope } from "../../ports/controller-resumption.ts";
@@ -82,18 +83,33 @@ import { emptyLocalResourceEnvironment } from "../../ports/local-resource.ts";
 import type { FunctionStageOutcome, FunctionStageRegistry, StageExecutionContext } from "../../ports/stage.ts";
 import { emptyFunctionStageRegistry, functionStageOutcomeIssues } from "../../ports/stage.ts";
 import type { JsonObject, JsonValue } from "../../util/json.ts";
-import type { BarrierEntry, WorkflowBoundaryState, WorkflowControlState } from "../../workflow/control-state.ts";
+import type {
+  BarrierEntry,
+  ChildBarrierEntry,
+  ChildBarrierOutcome,
+  WorkflowBoundaryState,
+  WorkflowControlState,
+} from "../../workflow/control-state.ts";
 import {
+  childBarrierEntry,
   initialWorkflowControlState,
   observationsOf,
   readWorkflowControlState,
   settleBarrierEntry,
+  settleChildBarrierEntry,
   stageCorrelationId,
   toControllerProgress,
   unsettledEntries,
 } from "../../workflow/control-state.ts";
 import type { StageObservationOutcome } from "../../workflow/observations.ts";
-import type { StageDefinition, StageId, TransitionTarget, WorkflowSpec } from "../../workflow/spec.ts";
+import type {
+  AgentStageDefinition,
+  StageDefinition,
+  StageId,
+  TransitionTarget,
+  WorkflowSpec,
+  WorkflowStageDefinition,
+} from "../../workflow/spec.ts";
 import type { StageResult } from "../../workflow/stage-result.ts";
 import { validateWorkflowSpec } from "../../workflow/validation.ts";
 import { runAdapterChain } from "./adapters.ts";
@@ -153,7 +169,7 @@ function startInput(events: readonly DeliveredEvent[]): StageResult {
   return null;
 }
 
-/** Maps a delivered Effect-result Event to the barrier vocabulary. Settled is not successful. */
+/** Maps a delivered Effect-result Event to the effect-barrier vocabulary. Settled is not successful. */
 function outcomeOf(event: DeliveredEvent): {
   readonly outcome: StageObservationOutcome;
   readonly observation?: JsonValue;
@@ -170,6 +186,72 @@ function outcomeOf(event: DeliveredEvent): {
       return { outcome: "denied", error: { code: event.body.code, message: event.body.message } };
     case "effect.rejected":
       return { outcome: "rejected", error: { code: event.body.code, message: event.body.message } };
+    case "confirmation.declined":
+      // A human declined the exact-payload confirmation for this required Effect. The barrier settles
+      // `declined` - nothing dispatched, policy did not deny - so the Workflow does not wait forever.
+      return {
+        outcome: "declined",
+        error: {
+          code: "confirmation_declined",
+          message: `a human declined the mechanical confirmation for this operation (${event.body.proposalDigest})`,
+        },
+      };
+    default:
+      return null;
+  }
+}
+
+/**
+ * Maps a delivered child-result Event to the child-barrier vocabulary.
+ *
+ * `child.completed` derives the cross-Stage `text | none` here. A structured/non-string terminal
+ * value settles as `failed` - it is never JSON-stringified through the Stage edge. `effect.denied` /
+ * `effect.rejected` mean the `SpawnExecution` request itself was refused, so no child ever existed.
+ */
+function childOutcomeOf(event: DeliveredEvent): {
+  readonly outcome: ChildBarrierOutcome;
+  readonly childResult?: string | null;
+  readonly error?: { readonly code: string; readonly message: string };
+} | null {
+  switch (event.kind) {
+    case "child.completed": {
+      const terminal = (event.body as ChildCompletedBody).terminalResult;
+      if (terminal.value === null) return { outcome: "completed", childResult: null };
+      if (typeof terminal.value === "string") return { outcome: "completed", childResult: terminal.value };
+      return {
+        outcome: "failed",
+        error: {
+          code: "child_structured_terminal_result",
+          message:
+            "the child Execution produced a structured terminal result; the cross-Stage contract is text | none, " +
+            "and structured data belongs in explicit shared resources, not hidden transition serialization",
+        },
+      };
+    }
+    case "child.failed":
+      return { outcome: "failed", error: { code: event.body.failure.code, message: event.body.failure.message } };
+    case "child.cancelled":
+      return {
+        outcome: "cancelled",
+        error: {
+          code: "child_cancelled",
+          message: event.body.reason ?? "the child Execution was cancelled",
+        },
+      };
+    case "effect.denied":
+      return { outcome: "spawn_denied", error: { code: event.body.code, message: event.body.message } };
+    case "effect.rejected":
+      return { outcome: "spawn_rejected", error: { code: event.body.code, message: event.body.message } };
+    case "confirmation.declined":
+      // A human declined the exact-payload confirmation for the child `SpawnExecution`. No child was
+      // created; distinct from a policy denial and from a runtime rejection.
+      return {
+        outcome: "spawn_declined",
+        error: {
+          code: "spawn_confirmation_declined",
+          message: `a human declined the mechanical confirmation for this child call (${event.body.proposalDigest})`,
+        },
+      };
     default:
       return null;
   }
@@ -246,6 +328,18 @@ class WorkflowController implements ExecutionController {
     let next = state;
     for (const event of events) {
       if (!isEffectResultEventKind(event.kind) || event.correlationId === null) continue;
+      const target = next.barrier.find((entry) => entry.correlationId === event.correlationId);
+      if (target === undefined) continue;
+      if (target.kind === "child") {
+        const mapped = childOutcomeOf(event);
+        if (!mapped) continue;
+        next = settleChildBarrierEntry(next, event.correlationId, {
+          outcome: mapped.outcome,
+          ...(mapped.childResult !== undefined ? { childResult: mapped.childResult } : {}),
+          ...(mapped.error !== undefined ? { error: mapped.error } : {}),
+        }).state;
+        continue;
+      }
       const mapped = outcomeOf(event);
       if (!mapped) continue;
       next = settleBarrierEntry(next, event.correlationId, mapped.outcome, {
@@ -316,9 +410,48 @@ class WorkflowController implements ExecutionController {
           );
     }
 
+    // A settled child barrier: the Agent/Workflow Stage's one semantic operation - the child call -
+    // has returned. Derive the Stage result from it and never re-propose the call.
+    const settledChild = childBarrierEntry(state);
+    if (settledChild !== undefined && settledChild.settled) {
+      return this.finishChildStage(spec, stage, state, settledChild, resumptions);
+    }
+
     const view = this.viewFor(stage);
     const body = await this.runBody(stage, state, view, input, resumptions);
     if (body.kind === "fail") return { kind: "fail", state, emissions: [], failure: body.failure };
+
+    if (body.kind === "child") {
+      // First visit of an Agent/Workflow Stage: propose exactly one child `call` and record one
+      // child barrier entry. The Stage's adapted `StageResult` is the child's semantic input.
+      const correlationId = stageCorrelationId(state.currentStage, state.visit, "child");
+      const entry: ChildBarrierEntry = {
+        kind: "child",
+        key: "child",
+        correlationId,
+        childDefinitionId: body.child.definitionId,
+        childDefinitionVersion: body.child.definitionVersion,
+        childKind: body.child.childKind,
+        requestedOperations: body.child.requestedOperations.map((ref) => ({
+          capability: ref.capability,
+          operation: ref.operation,
+        })),
+        settled: false,
+        outcome: null,
+        childResult: null,
+        error: null,
+      };
+      const proposal: EffectProposal = callExecution({
+        definitionId: body.child.definitionId,
+        definitionVersion: body.child.definitionVersion,
+        // `text` -> the child's input; `none` -> no input Event is delivered to the child.
+        ...(body.child.input !== null ? { input: body.child.input } : {}),
+        requestedOperations: body.child.requestedOperations,
+        expectedChildKind: body.child.childKind,
+        requestKey: correlationId,
+      });
+      return { kind: "awaitEffects", state: { ...state, barrier: [entry] }, proposals: [proposal], emissions: [] };
+    }
 
     if (body.outcome.status === "suspended") {
       // The Stage body itself is mid-model-call. Its own progress is what re-entry needs; there is
@@ -443,14 +576,113 @@ class WorkflowController implements ExecutionController {
     return this.applyTransition(spec, stage, state, resolution.target, adapted.value, label, emissions, resumptions);
   }
 
-  /** Runs the Stage body for its kind. Agent and Workflow Stages are explicitly unsupported here. */
+  /**
+   * Everything after a settled child barrier: derive the Stage's own `text | none` result from the
+   * child's terminal outcome, then run the ordinary output Adapters and transition.
+   *
+   * `child.failed` and `child.cancelled` fail the Stage explicitly, and cancellation keeps a
+   * cancellation-specific reason - it is never relabelled as ordinary failure. A refused
+   * `SpawnExecution` also fails the Stage, because the Stage's one required call received a terminal
+   * answer even though no child exists, and each refusal keeps its own code: `effect.denied` ->
+   * `<kind>_stage_spawn_denied`, `effect.rejected` -> `<kind>_stage_spawn_rejected`, and a declined
+   * exact-payload confirmation (`confirmation.declined`, Slice E.2.1) -> `<kind>_stage_spawn_declined`.
+   * A structured/non-string child terminal value fails the Stage rather than being smuggled through
+   * the `text | none` edge.
+   */
+  private async finishChildStage(
+    spec: WorkflowSpec,
+    stage: StageDefinition,
+    state: WorkflowControlState,
+    entry: ChildBarrierEntry,
+    resumptions: ControllerResumptionScope,
+  ): Promise<StepOutcome> {
+    const cleared: WorkflowControlState = { ...state, barrier: [] };
+    const failure = (code: string, message: string): StepOutcome => ({ kind: "fail", state: cleared, emissions: [], failure: { code, message } });
+
+    switch (entry.outcome) {
+      case "completed":
+        return this.finishStage(spec, stage, cleared, entry.childResult, null, [], 0, resumptions);
+      case "failed":
+        return failure(
+          `${stage.kind}_stage_child_failed`,
+          `stage "${stage.id}" child ${entry.childDefinitionId}@${entry.childDefinitionVersion} failed: ` +
+            `${entry.error?.code ?? "child_failed"}: ${entry.error?.message ?? ""}`,
+        );
+      case "cancelled":
+        return failure(
+          `${stage.kind}_stage_child_cancelled`,
+          `stage "${stage.id}" child ${entry.childDefinitionId}@${entry.childDefinitionVersion} was cancelled: ` +
+            `${entry.error?.message ?? "the child Execution was cancelled"}`,
+        );
+      case "spawn_denied":
+        return failure(
+          `${stage.kind}_stage_spawn_denied`,
+          `stage "${stage.id}" could not start its child ${entry.childDefinitionId}@${entry.childDefinitionVersion}: ` +
+            `${entry.error?.code ?? "spawn_denied"}: ${entry.error?.message ?? ""}`,
+        );
+      case "spawn_declined":
+        // A human declined the exact-payload confirmation for the child call. No child exists; this
+        // is not a policy denial and not a runtime rejection, and it gets its own failure code.
+        return failure(
+          `${stage.kind}_stage_spawn_declined`,
+          `stage "${stage.id}" child ${entry.childDefinitionId}@${entry.childDefinitionVersion} was not started: ` +
+            `a human declined its mechanical confirmation` +
+            (entry.error?.message ? ` (${entry.error.message})` : ""),
+        );
+      case "spawn_rejected":
+      default:
+        return failure(
+          `${stage.kind}_stage_spawn_rejected`,
+          `stage "${stage.id}" could not start its child ${entry.childDefinitionId}@${entry.childDefinitionVersion}: ` +
+            `${entry.error?.code ?? "spawn_rejected"}: ${entry.error?.message ?? ""}`,
+        );
+    }
+  }
+
+  /**
+   * The child call an Agent/Workflow Stage's first visit produces.
+   *
+   * Carries only what the call needs. The child Definition kind is checked at the Harness's
+   * `SpawnExecution` boundary against `childKind`, not here - the controller has no DefinitionStore
+   * and must not become an existence oracle.
+   */
+  private childCall(stage: AgentStageDefinition | WorkflowStageDefinition, input: StageResult): {
+    readonly kind: "child";
+    readonly child: {
+      readonly definitionId: string;
+      readonly definitionVersion: number;
+      readonly childKind: "agent" | "workflow";
+      readonly requestedOperations: readonly { readonly capability: string; readonly operation: string }[];
+      readonly input: StageResult;
+    };
+  } {
+    return {
+      kind: "child",
+      child: {
+        definitionId: stage.child.definitionId,
+        definitionVersion: stage.child.definitionVersion,
+        childKind: stage.kind,
+        requestedOperations: (stage.requestedOperations ?? []).map((ref) => ({
+          capability: ref.capability,
+          operation: ref.operation,
+        })),
+        input,
+      },
+    };
+  }
+
+  /** Runs the Stage body for its kind, or returns the child call an Agent/Workflow Stage requires. */
   private async runBody(
     stage: StageDefinition,
     state: WorkflowControlState,
     view: LocalResourceView,
     input: ActivationInput,
     resumptions: ControllerResumptionScope,
-  ): Promise<{ readonly kind: "ok"; readonly outcome: LLMStageOutcome } | { readonly kind: "fail"; readonly failure: Failure }> {
+  ): Promise<
+    | { readonly kind: "ok"; readonly outcome: LLMStageOutcome }
+    | { readonly kind: "fail"; readonly failure: Failure }
+    | ReturnType<WorkflowController["childCall"]>
+  > {
     const context: StageExecutionContext = {
       stage,
       stageId: stage.id,
@@ -497,25 +729,10 @@ class WorkflowController implements ExecutionController {
           return { kind: "ok", outcome: await runLLMStage(stage, context, this.models, this.trace, resumptions) };
         case "agent":
         case "workflow":
-          // Definition-valid, runtime unsupported. Slice E owns child composition, so this reports
-          // an explicit unsupported result rather than doing any of the tempting wrong things:
-          // creating a child Execution, fabricating a child result, flattening the child's topology
-          // into this graph, running the child definition as if it were a local function, or
-          // proposing the `SpawnExecution` Effect that nothing can currently dispatch.
-          return {
-            kind: "fail",
-            failure: {
-              code: "stage_kind_unsupported",
-              message: `stage "${stage.id}" is a ${stage.kind} Stage; child Execution composition is not implemented in this slice`,
-              details: {
-                stageId: stage.id as string,
-                stageKind: stage.kind,
-                childDefinitionId: stage.child.definitionId,
-                childDefinitionVersion: stage.child.definitionVersion,
-                supportedFrom: "slice-e",
-              },
-            },
-          };
+          // One Workflow Stage boundary implemented by a child `call`. The controller *proposes* the
+          // spawn - it never creates a child, fabricates a result, flattens the child's topology into
+          // this graph, or runs the child definition as a local function.
+          return this.childCall(stage, state.stageInput);
       }
     } catch (error) {
       return {

@@ -36,6 +36,17 @@
 
 import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { ExecutionDefinition } from "../definitions/types.ts";
+import type { CancellationRequest } from "../execution/cancellation-request.ts";
+import { createCancellationRequest, markCancellationApplied } from "../execution/cancellation-request.ts";
+import type { ConfirmationRequest } from "../execution/confirmation-request.ts";
+import { markConfirmationAbandoned } from "../execution/confirmation-request.ts";
+import type { ChildExecutionLink } from "../execution/child-link.ts";
+import { markChildLinkAbandoned, markChildLinkSettled } from "../execution/child-link.ts";
+import type { PeerRequestLink } from "../execution/peer-request-link.ts";
+import { markPeerRequestLinkAbandoned } from "../execution/peer-request-link.ts";
+import type { UserInputRequest } from "../execution/user-input-request.ts";
+import { markUserInputAbandoned } from "../execution/user-input-request.ts";
+import type { WaitForEdge } from "../execution/wait-for.ts";
 import type { ExecutionContext, ExecutionWait } from "../execution/context.ts";
 import {
   controllerResumptionWait,
@@ -48,6 +59,9 @@ import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ActivationId, ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
 import { activationId as toActivationId, executionId as toExecutionId } from "../execution/ids.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
+import { invalidateControllerResumptionAtSuspension } from "../execution/resumption.ts";
+import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
+import { createLineageSpawnBudget, spawnBudgetCapacityIssues } from "../execution/structural-budget.ts";
 import type { EffectiveOperationAuthority, OperationAuthorityGrant } from "../operations/authority.ts";
 import { createEffectiveOperationAuthority, operationAuthorityGrantIssues } from "../operations/authority.ts";
 import type { LifecycleState, LifecycleTransitionRecord } from "../execution/lifecycle.ts";
@@ -57,6 +71,8 @@ import { validateTerminalResult } from "../execution/terminal-result.ts";
 import type { EffectId, PendingOperationId } from "../effects/ids.ts";
 import type { EffectJournalEntry } from "../effects/journal.ts";
 import type { PendingOperation } from "../effects/pending.ts";
+import { markAbandoned, markSettled } from "../effects/pending.ts";
+import { hashValue } from "../util/hash.ts";
 import type { SecurityProfile } from "../effects/capability.ts";
 import type { DeliveredEvent, EventEnvelope, EventId, WakeCondition } from "../interaction/event-envelope.ts";
 import { eventSatisfiesWake } from "../interaction/event-envelope.ts";
@@ -65,6 +81,8 @@ import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
 import { denyAllEffects } from "../ports/effect-authorizer.ts";
+import type { ConfirmationPolicy } from "../ports/confirmation-policy.ts";
+import { confirmationNotRequired } from "../ports/confirmation-policy.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import { microtaskInlineWaitBudget } from "../ports/inline-wait.ts";
 import type { Clock } from "../ports/clock.ts";
@@ -80,7 +98,15 @@ import type { JsonValue } from "../util/json.ts";
 import type { ActivationRecord, ActivationResultKind } from "./activation.ts";
 import { buildActivationInput, validateActivationOutcome } from "./activation.ts";
 import type { ControllerRegistry } from "./controller-registry.ts";
-import type { EffectDispatchRecord, SettleEffectInput, SettleEffectReceipt } from "./effect-processor.ts";
+import type {
+  EffectDispatchRecord,
+  ResolveConfirmationInput,
+  ResolveConfirmationReceipt,
+  SettleEffectInput,
+  SettleEffectReceipt,
+  SubmitUserInputInput,
+  SubmitUserInputReceipt,
+} from "./effect-processor.ts";
 import { EffectProcessor } from "./effect-processor.ts";
 import { routeEvent } from "./event-router.ts";
 import type { ActivationResumptions, ResumptionDependency } from "./resumption-processor.ts";
@@ -109,6 +135,14 @@ export interface HarnessOptions {
    */
   readonly authorizer?: EffectAuthorizer;
   /**
+   * The exact-payload mechanical-confirmation gate.
+   *
+   * Omitting it means no Effect requires confirmation - the correct baseline, not a stub. Unlike the
+   * authorizer's fail-closed default, this default is permissive because confirmation is an optional
+   * *extra* gate that runs strictly after authorization.
+   */
+  readonly confirmationPolicy?: ConfirmationPolicy;
+  /**
    * Where capability-operation consequentiality is declared.
    *
    * Omitting it classifies nothing, and an unclassified operation is treated as consequential -
@@ -134,13 +168,24 @@ export interface CreateExecutionInput {
   /** A pinned definition ref. The Execution runs against these exact bytes for its whole life. */
   readonly definition: ExecutionDefinitionRef;
   /**
-   * Creates an owned Execution under an existing one.
+   * Creates an owned Execution under an existing one, through trusted application wiring.
    *
-   * This assigns ownership and root identity only. Real `spawn`/`call` semantics - delegated
-   * authority, memory visibility, child-completion Events - belong to Slice E; nothing here
-   * pretends to provide them.
+   * This assigns ownership and root identity only. It is deliberately *not* the autonomous
+   * `spawn`/`call` path: it does not attenuate authority, does not spend a structural spawn credit,
+   * and registers no child-completion dependency. An Execution creating a child *itself* proposes a
+   * `SpawnExecution` Effect, which the gateway mediates; this parameter is for a programmer
+   * constructing an initial ownership tree by hand.
    */
   readonly ownerExecutionId?: ExecutionId;
+  /**
+   * The finite structural spawn budget this Execution's whole lineage shares.
+   *
+   * Only meaningful when creating a root Execution: it fixes how many autonomous descendants the
+   * lineage may ever create through `SpawnExecution`. Omitted means the lineage has no budget, and
+   * an Execution with no budget can spawn nothing - "nobody granted spawn capacity" is not
+   * "unlimited spawn capacity". A descendant cannot enlarge it.
+   */
+  readonly structuralSpawnBudget?: number;
   /**
    * The root operation grant application/deployment policy supplies for this Execution.
    *
@@ -187,6 +232,20 @@ export type EventDeliveryReceipt =
       readonly detail: string;
     };
 
+export interface CancelExecutionInput {
+  readonly executionId: ExecutionId;
+  /** Recorded on the request, surfaced in the `child.cancelled` Event and the audit trail. */
+  readonly reason?: string | null;
+}
+
+export type CancelExecutionReceipt =
+  /** A `CREATED` / `READY` / `WAITING` Execution reached `CANCELLED` synchronously. */
+  | { readonly status: "cancelled"; readonly executionId: ExecutionId }
+  /** A `RUNNING` Execution will reach `CANCELLED` when its current Activation reaches a safe boundary. */
+  | { readonly status: "cancellation_pending"; readonly executionId: ExecutionId }
+  | { readonly status: "already_terminal"; readonly executionId: ExecutionId; readonly lifecycle: LifecycleState }
+  | { readonly status: "unknown_execution"; readonly executionId: ExecutionId };
+
 export class UnknownDefinitionError extends Error {
   constructor(ref: ExecutionDefinitionRef) {
     super(`no stored definition for ${ref.id}@${ref.version}`);
@@ -198,6 +257,13 @@ export class InvalidOperationAuthorityError extends Error {
   constructor(detail: string) {
     super(`invalid operation authority grant: ${detail}`);
     this.name = "InvalidOperationAuthorityError";
+  }
+}
+
+export class InvalidStructuralSpawnBudgetError extends Error {
+  constructor(detail: string) {
+    super(`invalid structural spawn budget: ${detail}`);
+    this.name = "InvalidStructuralSpawnBudgetError";
   }
 }
 
@@ -235,8 +301,15 @@ export class Harness {
       store: options.store,
       clock: options.clock,
       ids: options.ids,
+      definitions: options.definitions,
+      // A child whose Definition kind has no registered controller is refused before any runtime
+      // state exists for it, exactly as `createExecution` fails before inserting an Execution record.
+      hasController: (kind) => options.controllers.has(kind),
       // Fail closed. An unconfigured Harness denies every Effect rather than permitting them.
       authorizer: options.authorizer ?? denyAllEffects,
+      // Permissive default: confirmation is an optional extra gate, so an unconfigured workload pays
+      // only one branch per dispatchable Effect.
+      confirmationPolicy: options.confirmationPolicy ?? confirmationNotRequired,
       // Fail conservative. An unconfigured catalog classifies nothing, and nothing classified
       // means every capability operation is treated as consequential.
       catalog: options.capabilityCatalog ?? emptyCapabilityCatalog,
@@ -287,6 +360,20 @@ export class Harness {
       });
     }
 
+    // A lineage structural spawn budget is fixed at the root. A descendant does not start a new
+    // lineage and cannot be handed a separate budget here.
+    let spawnBudget: LineageSpawnBudget | null = null;
+    if (input.structuralSpawnBudget !== undefined) {
+      if (input.ownerExecutionId !== undefined) {
+        throw new InvalidStructuralSpawnBudgetError("a structural spawn budget belongs to a lineage and may only be set on a root Execution");
+      }
+      const issues = spawnBudgetCapacityIssues(input.structuralSpawnBudget);
+      if (issues.length > 0) {
+        throw new InvalidStructuralSpawnBudgetError(issues.map((issue) => `${issue.path}: ${issue.message}`).join("; "));
+      }
+      spawnBudget = createLineageSpawnBudget({ rootExecutionId: id, capacity: input.structuralSpawnBudget, grantedAt: createdAt });
+    }
+
     const created = createExecutionContext({
       executionId: id,
       kind: definition.kind,
@@ -302,6 +389,7 @@ export class Harness {
       // One transaction: an Execution whose context committed without its ceiling would read as
       // having no authority at all, and a ceiling without its Execution would permit nothing.
       if (authority) await tx.operationAuthorities.insert(authority);
+      if (spawnBudget) await tx.lineageSpawnBudgets.insert(spawnBudget);
       await tx.executions.insert(created);
       const ready = transitionContext(created, "READY", createdAt);
       await tx.executions.update(ready, created.revision);
@@ -405,6 +493,62 @@ export class Harness {
    */
   async settleEffect(input: SettleEffectInput): Promise<SettleEffectReceipt> {
     return this.effects.settleEffect(input);
+  }
+
+  /**
+   * Delivers a trusted response to an open `RequestUserInput`.
+   *
+   * A trusted runtime entry point at the same level as `settleEffect`, `deliverExternalInput`, and
+   * `cancelExecution`. An internet-facing deployment authenticates the human/application *before* it
+   * reaches here; the `requestId` itself grants nothing. The runtime validates the value against the
+   * request's stored schema, settles the exact PendingOperation, marks the request responded, and
+   * routes one correlated `user.input` Event - which is *not* deliverable through the generic
+   * `external.input` path.
+   */
+  async submitUserInput(input: SubmitUserInputInput): Promise<SubmitUserInputReceipt> {
+    return this.effects.submitUserInput(input);
+  }
+
+  /** Every user-input request one Execution proposed. Read-only; a controller never receives one. */
+  async userInputRequestsOf(executionId: ExecutionId): Promise<readonly UserInputRequest[]> {
+    return this.options.store.listUserInputRequests(executionId);
+  }
+
+  async userInputRequest(requestId: string): Promise<UserInputRequest | undefined> {
+    return this.options.store.readUserInputRequest(requestId);
+  }
+
+  /** Every currently-open user-input request, so an application/UI can discover pending questions. */
+  async openUserInputRequests(): Promise<readonly UserInputRequest[]> {
+    return this.options.store.listOpenUserInputRequests();
+  }
+
+  /**
+   * Resolves one pending exact-payload mechanical confirmation with a trusted `approve` / `decline`.
+   *
+   * A trusted runtime entry point at the same level as `settleEffect` / `submitUserInput`. The
+   * `confirmationId` grants nothing, the decision is never free prose, and approval never widens or
+   * replaces authority: an approved dispatch re-checks the *current* authority ceiling on the stored
+   * exact payload before it runs, so an old approval cannot override a revocation that happened while
+   * it waited. A duplicate approval cannot dispatch twice; an approve/decline race linearizes to one
+   * decision.
+   */
+  async resolveConfirmation(input: ResolveConfirmationInput): Promise<ResolveConfirmationReceipt> {
+    return this.effects.resolveConfirmation(input);
+  }
+
+  /** Every confirmation request one Execution's Effects triggered. Read-only diagnostics. */
+  async confirmationRequestsOf(executionId: ExecutionId): Promise<readonly ConfirmationRequest[]> {
+    return this.options.store.listConfirmationRequests(executionId);
+  }
+
+  async confirmationRequest(confirmationId: string): Promise<ConfirmationRequest | undefined> {
+    return this.options.store.readConfirmationRequest(confirmationId);
+  }
+
+  /** Every currently-pending confirmation, so an application/UI can discover what needs a decision. */
+  async pendingConfirmations(): Promise<readonly ConfirmationRequest[]> {
+    return this.options.store.listPendingConfirmations();
   }
 
   /**
@@ -536,19 +680,42 @@ export class Harness {
     const startedAt = nowIso(this.options.clock);
     const activationId = toActivationId(this.options.ids.next(ID_PREFIXES.activation));
 
-    const started = await this.options.store.transact(executionId, async (tx) => {
+    type ClaimResult =
+      | null
+      | { readonly kind: "run"; readonly running: ExecutionContext; readonly events: readonly DeliveredEvent[] }
+      | { readonly kind: "cancelled"; readonly context: ExecutionContext; readonly reason: string | null };
+
+    const started: ClaimResult = await this.options.store.transact(executionId, async (tx): Promise<ClaimResult> => {
       const context = await tx.executions.get(executionId);
       if (!context) throw new UnknownExecutionError(executionId);
       if (context.lifecycle !== "READY") return null;
+
+      // A pending cancellation request claims a READY Execution before it ever runs an Activation.
+      // No controller work happens; it goes straight to CANCELLED.
+      const cancelRequest = await tx.cancellationRequests.get(executionId);
+      if (cancelRequest !== undefined && cancelRequest.state === "pending") {
+        const cancelled = transitionContext(context, "CANCELLED", startedAt);
+        await tx.executions.update(cancelled, context.revision);
+        await tx.cancellationRequests.update(markCancellationApplied(cancelRequest, startedAt));
+        await this.record(tx, executionId, context.lifecycle, "CANCELLED", startedAt, activationId, "cancellation requested");
+        await this.abandonOutgoingDependencies(tx, executionId, startedAt, "execution CANCELLED");
+        return { kind: "cancelled", context: cancelled, reason: cancelRequest.reason };
+      }
 
       const running = transitionContext(context, "RUNNING", startedAt);
       await tx.executions.update(running, context.revision);
       await this.record(tx, executionId, context.lifecycle, "RUNNING", startedAt, activationId, `claim ${claim.claimId}`);
       const events = await tx.mailboxes.consume(context.mailbox.mailboxId);
-      return { running, events };
+      return { kind: "run", running, events };
     });
 
     if (!started) {
+      await this.options.scheduler.ack(claim);
+      return null;
+    }
+
+    if (started.kind === "cancelled") {
+      await this.settleOwnerOnChildTerminal(started.context, "CANCELLED", null, null, startedAt, started.reason);
       await this.options.scheduler.ack(claim);
       return null;
     }
@@ -694,44 +861,95 @@ export class Harness {
     }
 
     const applied = await this.options.store.transact(executionId, async (tx) => {
-      const emissionIds = await this.persistEmissions(tx, running, activationId, outcome, finishedAt);
-
       // The wake dependency is only real if nothing already satisfies it. Events that arrived while
       // the controller was running are runnable local work, so WAITING would be wrong.
-      let to: LifecycleState;
+      let to: LifecycleState = "CANCELLED";
       let terminalResult: TerminalResultEnvelope | null = null;
       let failure: ExecutionFailure | null = null;
       let waitingFor: ExecutionWait | null = null;
-      let result: ActivationResultKind;
+      let result: ActivationResultKind = "cancelled";
       let rejection: string | null = null;
       let requeue = false;
+      let cancellationReason: string | null = null;
+      let attachResumption = false;
+      let emissionIds: readonly string[] = [];
 
-      if (next.status === "continue") {
+      // A cancellation request that arrived while this Activation was running is applied at this
+      // safe boundary: future semantic progression stops. If the request committed first, every
+      // controller report loses, including complete/fail, and no emission is published.
+      const cancelRequest = await tx.cancellationRequests.get(executionId);
+      const cancelling = cancelRequest !== undefined && cancelRequest.state === "pending";
+      if (cancelling) {
+        to = "CANCELLED";
+        result = "cancelled";
+        cancellationReason = cancelRequest!.reason;
+        await tx.cancellationRequests.update(markCancellationApplied(cancelRequest!, finishedAt));
+      } else {
+        emissionIds = await this.persistEmissions(tx, running, activationId, outcome, finishedAt);
+      }
+
+      if (!cancelling && next.status === "continue") {
         to = "READY";
         result = "continued";
         requeue = true;
-      } else if (next.status === "await_event") {
+      } else if (!cancelling && next.status === "await_event") {
         const pending = await tx.mailboxes.peek(running.mailbox.mailboxId);
-        const satisfied = pending.some((event) => eventSatisfiesWake(event, next.wake));
+        // Either the primary dependency or, when the controller opted in, an interleave Event that
+        // is already in the mailbox is runnable local work - so WAITING would be wrong.
+        const satisfied =
+          pending.some((event) => eventSatisfiesWake(event, next.wake)) ||
+          (next.interleave !== undefined && pending.some((event) => eventSatisfiesWake(event, next.interleave!)));
         if (satisfied) {
           to = "READY";
           result = "continued";
           requeue = true;
         } else {
           to = "WAITING";
-          waitingFor = eventWait(next.wake);
+          waitingFor = eventWait(next.wake, next.interleave);
           result = "waiting";
         }
-      } else if (next.status === "await_resumption") {
+      } else if (!cancelling && next.status === "await_resumption") {
         // One transaction: the controller's progress, the pending resumption record, and WAITING.
         // Splitting these would leave either a record nothing waits on or an Execution waiting on a
         // record that does not exist. A recovered dependency already has its record and needs only
         // the wait.
-        if (dependency!.status === "new") await tx.controllerResumptions.insert(dependency!.record);
-        to = "WAITING";
-        waitingFor = controllerResumptionWait(next.resumptionId);
-        result = "waiting";
-      } else if (next.status === "complete") {
+        const pending =
+          next.interleave !== undefined ? await tx.mailboxes.peek(running.mailbox.mailboxId) : [];
+        const interleaveEvent =
+          next.interleave !== undefined
+            ? pending.find((event) => eventSatisfiesWake(event, next.interleave!))
+            : undefined;
+        if (interleaveEvent !== undefined) {
+          // The Event committed while this Activation was still RUNNING, before the suspension
+          // boundary. The pre-Event continuation must never become reusable. A new record is
+          // inserted directly as invalidated; a recovered record is invalidated in place. This
+          // also covers the narrow case where its promise settled after the Event but before this
+          // transaction - the Event still won the semantic ordering.
+          const current =
+            dependency!.status === "new"
+              ? dependency!.record
+              : await tx.controllerResumptions.get(next.resumptionId);
+          if (current !== undefined) {
+            const invalidated = invalidateControllerResumptionAtSuspension(
+              current,
+              finishedAt,
+              interleaveEvent.eventId,
+              running.revision,
+            );
+            if (dependency!.status === "new") await tx.controllerResumptions.insert(invalidated);
+            else await tx.controllerResumptions.update(invalidated);
+          }
+          to = "READY";
+          result = "continued";
+          requeue = true;
+        } else {
+          if (dependency!.status === "new") await tx.controllerResumptions.insert(dependency!.record);
+          to = "WAITING";
+          waitingFor = controllerResumptionWait(next.resumptionId, next.interleave);
+          result = "waiting";
+          attachResumption = true;
+        }
+      } else if (!cancelling && next.status === "complete") {
         const validation = validateTerminalResult(definition.terminalResult, next.result, {
           activationId,
           completedAt: finishedAt,
@@ -754,7 +972,7 @@ export class Harness {
             details: validation.rejection.issues.length > 0 ? (validation.rejection.issues as unknown as JsonValue) : undefined,
           };
         }
-      } else {
+      } else if (!cancelling && next.status === "fail") {
         to = "FAILED";
         result = "failed";
         failure = {
@@ -775,16 +993,34 @@ export class Harness {
       await tx.executions.update(updated, running.revision);
       await this.record(tx, executionId, "RUNNING", to, finishedAt, activationId, `activation ${result}`);
 
-      return { emissionIds, to, result, rejection, requeue };
+      if (isTerminalLifecycle(to)) {
+        await this.abandonOutgoingDependencies(tx, executionId, finishedAt, `execution ${to}`);
+      }
+
+      return { emissionIds, to, result, rejection, requeue, terminalResult, failure, cancellationReason, attachResumption };
     });
 
     setRequeue(applied.requeue);
 
+    // A child reaching a terminal state settles the exact dependency its `call` parent registered,
+    // through the ordinary PendingOperation/Event path. Post-commit, like every other wake.
+    if (applied.to === "COMPLETED" || applied.to === "FAILED" || applied.to === "CANCELLED") {
+      await this.settleOwnerOnChildTerminal(
+        running,
+        applied.to,
+        applied.terminalResult,
+        applied.failure,
+        finishedAt,
+        applied.cancellationReason,
+      );
+    }
+
     // Only now, with the WAITING record durable, does anything start following the promise. A
     // continuation attached earlier could have settled - and tried to wake an Execution that was
     // still RUNNING - before the record it settles existed. Everything else this Activation
-    // registered is abandoned by never being attached, and can no longer wake anything.
-    if (next.status === "await_resumption") resumptions.attach(next.resumptionId);
+    // registered is abandoned by never being attached, and can no longer wake anything. A cancelled
+    // Execution is terminal, so nothing is followed.
+    if (next.status === "await_resumption" && applied.attachResumption) resumptions.attach(next.resumptionId);
 
     return {
       activationId,
@@ -826,6 +1062,127 @@ export class Harness {
     return ids;
   }
 
+  /**
+   * Closes cross-Execution dependencies whose source can no longer observe a result.
+   *
+   * This is diagnostic/runtime cleanup only: the peer or child remains independently managed and
+   * is not cancelled. `abandoned` is distinct from `settled` because no semantic reply/child result
+   * was delivered.
+   */
+  private async abandonOutgoingDependencies(
+    tx: RuntimeTransaction,
+    executionId: ExecutionId,
+    at: string,
+    reason: string,
+  ): Promise<void> {
+    // Keep the no-feature terminal path cheap: if no live cross-Execution, user-input, or gated
+    // operation exists, do not touch any feature-specific facet. The pending-operation facet is the
+    // shared dependency index; a gated confirmation is the only persisted `not_dispatched` operation.
+    const allPending = (await tx.pendingOperations.listByExecution(executionId)).filter(
+      (operation) => operation.status === "pending",
+    );
+    const pendingDependencies = allPending.filter(
+      (operation) =>
+        operation.effectKind === "send_message" ||
+        operation.effectKind === "spawn_execution" ||
+        operation.effectKind === "request_user_input",
+    );
+    const gatedOperations = allPending.filter((operation) => operation.dispatch === "not_dispatched");
+
+    if (gatedOperations.length > 0) {
+      // A confirmation still pending when its Execution terminalizes can never be dispatched: the
+      // Effect PendingOperation and the ConfirmationRequest are both abandoned, and a late
+      // approve/decline does nothing (both resolve paths re-check the requester's lifecycle).
+      const gatedById = new Map(gatedOperations.map((operation) => [operation.pendingOperationId, operation]));
+      for (const confirmation of await tx.confirmationRequests.listByExecution(executionId)) {
+        if (confirmation.state !== "pending") continue;
+        const pending = gatedById.get(confirmation.pendingOperationId);
+        if (pending !== undefined) {
+          await tx.pendingOperations.update(markAbandoned(pending, at));
+          await tx.effectJournal.append({
+            effectId: confirmation.effectId,
+            executionId,
+            effectKind: confirmation.effectKind,
+            phase: "abandoned",
+            activationId: null,
+            pendingOperationId: pending.pendingOperationId,
+            at,
+            detail: { reason, confirmationId: confirmation.confirmationId },
+          });
+        }
+        await tx.confirmationRequests.update(markConfirmationAbandoned(confirmation, at));
+      }
+    }
+
+    if (pendingDependencies.length === 0) return;
+    const pendingById = new Map(pendingDependencies.map((operation) => [operation.pendingOperationId, operation]));
+
+    if (pendingDependencies.some((operation) => operation.effectKind === "send_message")) {
+      for (const link of await tx.peerRequestLinks.listByRequester(executionId)) {
+        if (link.state !== "open") continue;
+        const pending = pendingById.get(link.requestPendingOperationId);
+        if (pending !== undefined) {
+          await tx.pendingOperations.update(markAbandoned(pending, at));
+          await tx.effectJournal.append({
+            effectId: link.requestEffectId,
+            executionId,
+            effectKind: "send_message",
+            phase: "abandoned",
+            activationId: null,
+            pendingOperationId: pending.pendingOperationId,
+            at,
+            detail: { reason, responderExecutionId: link.responderExecutionId },
+          });
+        }
+        await tx.peerRequestLinks.update(markPeerRequestLinkAbandoned(link, at));
+      }
+    }
+
+    if (pendingDependencies.some((operation) => operation.effectKind === "spawn_execution")) {
+      for (const link of await tx.childExecutionLinks.listByParent(executionId)) {
+        if (link.state !== "active" || link.pendingOperationId === null) continue;
+        const pending = pendingById.get(link.pendingOperationId);
+        if (pending !== undefined) {
+          await tx.pendingOperations.update(markAbandoned(pending, at));
+          await tx.effectJournal.append({
+            effectId: link.effectId,
+            executionId,
+            effectKind: "spawn_execution",
+            phase: "abandoned",
+            activationId: null,
+            pendingOperationId: pending.pendingOperationId,
+            at,
+            detail: { reason, childExecutionId: link.childExecutionId },
+          });
+        }
+        await tx.childExecutionLinks.update(markChildLinkAbandoned(link, at));
+      }
+    }
+
+    // An open `RequestUserInput` whose Execution terminalized can never be answered. The
+    // PendingOperation and the UserInputRequest are both abandoned; a later response wakes nothing.
+    if (pendingDependencies.some((operation) => operation.effectKind === "request_user_input")) {
+      for (const request of await tx.userInputRequests.listByExecution(executionId)) {
+        if (request.state !== "open") continue;
+        const pending = pendingById.get(request.pendingOperationId);
+        if (pending !== undefined) {
+          await tx.pendingOperations.update(markAbandoned(pending, at));
+          await tx.effectJournal.append({
+            effectId: request.effectId,
+            executionId,
+            effectKind: "request_user_input",
+            phase: "abandoned",
+            activationId: null,
+            pendingOperationId: pending.pendingOperationId,
+            at,
+            detail: { reason, requestId: request.requestId },
+          });
+        }
+        await tx.userInputRequests.update(markUserInputAbandoned(request, at));
+      }
+    }
+  }
+
   /** Terminates an Activation the Harness refuses to trust. Controller progress is not persisted. */
   private async failActivation(
     running: ExecutionContext,
@@ -835,13 +1192,38 @@ export class Harness {
     failure: { readonly code: string; readonly message: string },
   ): Promise<ActivationRecord> {
     const finishedAt = nowIso(this.options.clock);
-    await this.options.store.transact(running.executionId, async (tx) => {
-      const failed = transitionContext(running, "FAILED", finishedAt, {
-        failure: { ...failure, failedByActivationId: activationId, failedAt: finishedAt },
-      });
-      await tx.executions.update(failed, running.revision);
-      await this.record(tx, running.executionId, "RUNNING", "FAILED", finishedAt, activationId, failure.code);
+    const applied = await this.options.store.transact(running.executionId, async (tx) => {
+      const cancelRequest = await tx.cancellationRequests.get(running.executionId);
+      const cancelling = cancelRequest !== undefined && cancelRequest.state === "pending";
+      const to = cancelling ? "CANCELLED" as const : "FAILED" as const;
+      const recordedFailure = cancelling
+        ? null
+        : { ...failure, failedByActivationId: activationId, failedAt: finishedAt };
+      const terminal = transitionContext(running, to, finishedAt, { failure: recordedFailure });
+      await tx.executions.update(terminal, running.revision);
+      if (cancelling) await tx.cancellationRequests.update(markCancellationApplied(cancelRequest, finishedAt));
+      await this.record(
+        tx,
+        running.executionId,
+        "RUNNING",
+        to,
+        finishedAt,
+        activationId,
+        cancelling ? "cancellation requested" : failure.code,
+      );
+      await this.abandonOutgoingDependencies(tx, running.executionId, finishedAt, `execution ${to}`);
+      return { to, recordedFailure, cancellationReason: cancelling ? cancelRequest.reason : null };
     });
+
+    // A child the Harness itself refused to trust still terminated; a `call` parent must be told.
+    await this.settleOwnerOnChildTerminal(
+      running,
+      applied.to,
+      null,
+      applied.recordedFailure,
+      finishedAt,
+      applied.cancellationReason,
+    );
 
     return {
       activationId,
@@ -853,9 +1235,315 @@ export class Harness {
       emissionIds: [],
       effects: [],
       lifecycleBefore: "RUNNING",
-      lifecycleAfter: "FAILED",
-      result: "failed",
-      rejection: `${failure.code}: ${failure.message}`,
+      lifecycleAfter: applied.to,
+      result: applied.to === "CANCELLED" ? "cancelled" : "failed",
+      rejection: applied.to === "CANCELLED" ? null : `${failure.code}: ${failure.message}`,
     };
+  }
+
+  /**
+   * Settles a `call` parent's dependency when the child it called reaches a terminal state.
+   *
+   * ```text
+   * child COMPLETED / FAILED / CANCELLED
+   *        ↓ ChildExecutionLink names the parent PendingOperation
+   *   one transaction:
+   *     journal completed / failed / cancelled on the parent's Effect
+   *     markSettled the PendingOperation  (outcome success | failure | cancelled)
+   *     markChildLinkSettled the link          <- duplicate delivery is refused here and by the
+   *     route child.completed / .failed / .cancelled   PendingOperation status check
+   *        ↓
+   *   parent WAITING -> READY, if it was waiting on this
+   * ```
+   *
+   * A plain `spawn` recorded `pendingOperationId: null`, so nothing settles - it observed
+   * `child.spawned` and nothing else, and the parent's own lifecycle is untouched by the child's.
+   * A child created through trusted `createExecution` wiring has no link and is likewise ignored.
+   *
+   * `child.cancelled` is a *distinct* kind from `child.failed`, and the PendingOperation outcome is
+   * `cancelled`, not `failure`: cancellation is a terminal outcome in its own right. Cancellation
+   * does not propagate to this parent - it settles a dependency, it does not fail the parent.
+   *
+   * This is *not* a `ControllerResumption`: the child's terminal result is runtime-mediated
+   * semantic work, and it settles through a PendingOperation and a correlated Event. There is a
+   * crash window between the child's terminal commit and this settlement; recovering it is Slice I's
+   * durable-outbox work, exactly as for an inline Effect result that woke a waiting Execution.
+   */
+  private async settleOwnerOnChildTerminal(
+    child: ExecutionContext,
+    terminal: "COMPLETED" | "FAILED" | "CANCELLED",
+    terminalResult: TerminalResultEnvelope | null,
+    failure: ExecutionFailure | null,
+    at: string,
+    cancellationReason: string | null = null,
+  ): Promise<void> {
+    if (child.ownerExecutionId === null) return;
+    const link = await this.options.store.readChildExecutionLink(child.executionId);
+    if (!link || link.pendingOperationId === null || link.state !== "active") return;
+
+    const parentId = link.parentExecutionId;
+    const eventId = this.options.ids.next(ID_PREFIXES.event) as EventId;
+    const phase: "completed" | "failed" | "cancelled" =
+      terminal === "COMPLETED" ? "completed" : terminal === "FAILED" ? "failed" : "cancelled";
+    const outcome: "success" | "failure" | "cancelled" =
+      terminal === "COMPLETED" ? "success" : terminal === "FAILED" ? "failure" : "cancelled";
+
+    const woke = await this.options.store.transact(parentId, async (tx): Promise<ExecutionId | null> => {
+      const currentLink = await tx.childExecutionLinks.get(child.executionId);
+      if (!currentLink || currentLink.state !== "active" || currentLink.pendingOperationId === null) return null;
+      const pending = await tx.pendingOperations.get(currentLink.pendingOperationId);
+      if (!pending || pending.status !== "pending") return null;
+
+      const parent = await tx.executions.get(parentId);
+      if (!parent) return null;
+
+      if (isTerminalLifecycle(parent.lifecycle)) {
+        // The parent cannot observe anything, and no required result was delivered: the link is
+        // `abandoned` (the source terminalized first), never `settled` (which means a result
+        // arrived). Ordinary terminal cleanup usually gets here first; this is the defensive
+        // fallback for the window between the child's terminal commit and this settlement.
+        await tx.pendingOperations.update(markAbandoned(pending, at));
+        await tx.childExecutionLinks.update(markChildLinkAbandoned(currentLink, at));
+        await tx.effectJournal.append({
+          effectId: currentLink.effectId,
+          executionId: parentId,
+          effectKind: "spawn_execution",
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: pending.pendingOperationId,
+          at,
+          detail: { reason: `parent ${parent.lifecycle}`, childExecutionId: child.executionId },
+        });
+        return null;
+      }
+
+      await tx.effectJournal.append({
+        effectId: currentLink.effectId,
+        executionId: parentId,
+        effectKind: "spawn_execution",
+        phase,
+        activationId: null,
+        pendingOperationId: pending.pendingOperationId,
+        at,
+        detail: { childExecutionId: child.executionId, resultEventId: eventId },
+      });
+      await tx.pendingOperations.update(markSettled(pending, outcome, eventId, at));
+      await tx.childExecutionLinks.update(markChildLinkSettled(currentLink, at));
+
+      const shared = {
+        effectId: currentLink.effectId,
+        effectKind: "spawn_execution" as const,
+        pendingOperationId: pending.pendingOperationId,
+        childExecutionId: child.executionId,
+        rootExecutionId: currentLink.rootExecutionId,
+        definitionId: currentLink.definition.id,
+        definitionVersion: currentLink.definition.version,
+      };
+      const base = {
+        eventId,
+        destination: { executionId: parentId },
+        correlationId: currentLink.resultCorrelationId,
+        causationId: currentLink.effectId,
+        occurredAt: at,
+      } as const;
+      const envelope: EventEnvelope =
+        terminal === "COMPLETED"
+          ? {
+              ...base,
+              kind: "child.completed",
+              body: {
+                ...shared,
+                terminalResult: {
+                  schemaId: terminalResult?.schema?.schemaId ?? null,
+                  schemaVersion: terminalResult?.schema?.schemaVersion ?? null,
+                  value: terminalResult?.value ?? null,
+                  valueDigest: terminalResult?.valueDigest ?? hashValue(null),
+                },
+              },
+            }
+          : terminal === "FAILED"
+            ? {
+                ...base,
+                kind: "child.failed",
+                body: { ...shared, failure: { code: failure?.code ?? "child_failed", message: failure?.message ?? "" } },
+              }
+            : {
+                ...base,
+                kind: "child.cancelled",
+                body: { ...shared, reason: cancellationReason },
+              };
+
+      const routed = await routeEvent({
+        tx,
+        envelope,
+        deliveredAt: at,
+        recordTransition: async (id, from, to, when, why) => {
+          await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+      return routed.status === "delivered" && routed.wokeExecution ? parentId : null;
+    });
+
+    if (woke) await this.options.scheduler.enqueue(woke);
+  }
+
+  // -- child composition (read-only diagnostics) ----------------------------
+
+  /** One lineage's structural spawn budget: capacity, consumed, remaining. */
+  async lineageSpawnBudgetOf(rootExecutionId: ExecutionId): Promise<LineageSpawnBudget | undefined> {
+    return this.options.store.readLineageSpawnBudget(rootExecutionId);
+  }
+
+  /** Every child one Execution spawned, and whether each `call` dependency has settled. */
+  async childExecutionLinksOf(parentExecutionId: ExecutionId): Promise<readonly ChildExecutionLink[]> {
+    return this.options.store.listChildExecutionLinks(parentExecutionId);
+  }
+
+  async childExecutionLink(childExecutionId: ExecutionId): Promise<ChildExecutionLink | undefined> {
+    return this.options.store.readChildExecutionLink(childExecutionId);
+  }
+
+  // -- peer messaging (read-only diagnostics) -------------------------------
+
+  /** One peer request link by message id. Runtime state; a controller never receives one. */
+  async peerRequestLink(messageId: string): Promise<PeerRequestLink | undefined> {
+    return this.options.store.readPeerRequestLink(messageId);
+  }
+
+  /** Every `ask` one Execution sent. Read-only. */
+  async peerRequestLinksOf(requesterExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]> {
+    return this.options.store.listPeerRequestLinksByRequester(requesterExecutionId);
+  }
+
+  /** Every `ask` one Execution is the expected responder for. Read-only. */
+  async peerRequestLinksTo(responderExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]> {
+    return this.options.store.listPeerRequestLinksByResponder(responderExecutionId);
+  }
+
+  // -- cross-Execution wait-for diagnostics --------------------------------
+
+  /**
+   * The required-wait edges *out of* one Execution: which children/peers it is currently blocked on.
+   *
+   * Derived from the child-call and peer-ask links, not a third stored graph. A cycle across these
+   * edges is a deadlock *candidate* for diagnostics - the runtime never terminates one. Once a
+   * dependency settles or is abandoned its edge disappears from this view.
+   */
+  async waitForEdgesFrom(executionId: ExecutionId): Promise<readonly WaitForEdge[]> {
+    const edges: WaitForEdge[] = [];
+    for (const link of await this.options.store.listChildExecutionLinks(executionId)) {
+      if (link.state === "active" && link.pendingOperationId !== null) {
+        edges.push({
+          sourceExecutionId: executionId,
+          targetExecutionId: link.childExecutionId,
+          kind: "child_call",
+          pendingOperationId: link.pendingOperationId,
+          correlationId: link.resultCorrelationId,
+        });
+      }
+    }
+    for (const link of await this.options.store.listPeerRequestLinksByRequester(executionId)) {
+      if (link.state === "open") {
+        edges.push({
+          sourceExecutionId: executionId,
+          targetExecutionId: link.responderExecutionId,
+          kind: "peer_ask",
+          pendingOperationId: link.requestPendingOperationId,
+          correlationId: link.requestCorrelationId,
+        });
+      }
+    }
+    return edges;
+  }
+
+  // -- cancellation (trusted runtime control) -----------------------------
+
+  /**
+   * The trusted runtime-control entry point for child/Execution cancellation.
+   *
+   * This is *not* a model action and *not* an Effect - it sits at the same trust level as
+   * `settleEffect` and `deliverExternalInput`. An internet-facing deployment authenticates the
+   * caller before it reaches here, exactly as for creating or messaging an Execution.
+   *
+   * ```text
+   * CREATED / READY / WAITING child   -> straight to CANCELLED now
+   * RUNNING child                     -> a CancellationRequest is recorded; the current Activation
+   *                                      reaches a safe boundary and the Harness applies CANCELLED
+   *                                      instead of the controller's reported next
+   * already terminal                  -> idempotent no-op
+   * ```
+   *
+   * A `call` parent's exact PendingOperation settles as `cancelled` (never `failure`) with one
+   * correlated `child.cancelled` Event. Cancellation does not propagate: the parent is not
+   * cancelled, siblings are not cancelled, and descendants are not cancelled. A detached `spawn`
+   * has no terminal-result dependency, so nothing is delivered to its parent.
+   */
+  async cancelExecution(input: CancelExecutionInput): Promise<CancelExecutionReceipt> {
+    const executionId = input.executionId;
+    const reason = input.reason ?? null;
+
+    const existing = await this.options.store.readExecution(executionId);
+    if (!existing) return { status: "unknown_execution", executionId };
+    if (isTerminalLifecycle(existing.lifecycle)) {
+      return { status: "already_terminal", executionId, lifecycle: existing.lifecycle };
+    }
+
+    const outcome = await this.options.store.transact(executionId, async (tx) => {
+      const current = await tx.executions.get(executionId);
+      if (!current || isTerminalLifecycle(current.lifecycle)) {
+        return { status: "already_terminal" as const, lifecycle: current?.lifecycle ?? "CANCELLED", child: null, reason };
+      }
+
+      const prior = await tx.cancellationRequests.get(executionId);
+      if (prior !== undefined) {
+        // Idempotent: a second cancel while one is already in flight changes nothing.
+        return { status: "cancellation_pending" as const, lifecycle: current.lifecycle, child: null, reason: prior.reason };
+      }
+
+      const at = nowIso(this.options.clock);
+      const request = createCancellationRequest({ executionId, reason, requestedAt: at });
+      await tx.cancellationRequests.insert(request);
+
+      if (current.lifecycle === "RUNNING") {
+        // The current Activation cannot be safely interrupted. `applyOutcome` will see this record.
+        return { status: "cancellation_pending" as const, lifecycle: "RUNNING", child: null, reason };
+      }
+
+      const cancelled = transitionContext(current, "CANCELLED", at);
+      await tx.executions.update(cancelled, current.revision);
+      await tx.cancellationRequests.update(markCancellationApplied(request, at));
+      await this.record(
+        tx,
+        executionId,
+        current.lifecycle,
+        "CANCELLED",
+        at,
+        null,
+        reason !== null ? `cancelled: ${reason}` : "cancelled",
+      );
+      await this.abandonOutgoingDependencies(tx, executionId, at, "execution CANCELLED");
+      return { status: "cancelled" as const, lifecycle: "CANCELLED", child: cancelled as ExecutionContext, reason };
+    });
+
+    if (outcome.status === "cancelled" && outcome.child !== null) {
+      await this.settleOwnerOnChildTerminal(
+        outcome.child,
+        "CANCELLED",
+        null,
+        null,
+        nowIso(this.options.clock),
+        outcome.reason,
+      );
+    }
+
+    if (outcome.status === "already_terminal") {
+      return { status: "already_terminal", executionId, lifecycle: outcome.lifecycle };
+    }
+    return { status: outcome.status, executionId };
+  }
+
+  /** One Execution's pending/applied cancellation request, if the runtime recorded one. Read-only. */
+  async cancellationRequestOf(executionId: ExecutionId): Promise<CancellationRequest | undefined> {
+    return this.options.store.readCancellationRequest(executionId);
   }
 }

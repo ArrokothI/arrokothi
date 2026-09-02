@@ -33,11 +33,17 @@ import type { EffectJournalDraft, EffectJournalEntry } from "../effects/journal.
 import type { EffectId, IdempotencyKey, PendingOperationId } from "../effects/ids.ts";
 import type { PendingOperation } from "../effects/pending.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
+import type { CancellationRequest } from "../execution/cancellation-request.ts";
+import type { ConfirmationRequest } from "../execution/confirmation-request.ts";
+import type { ChildExecutionLink } from "../execution/child-link.ts";
 import type { ExecutionContext } from "../execution/context.ts";
 import type { ExecutionEmission } from "../execution/emission.ts";
 import type { ControllerResumptionId, ExecutionId } from "../execution/ids.ts";
+import type { PeerRequestLink } from "../execution/peer-request-link.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
+import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
+import type { UserInputRequest } from "../execution/user-input-request.ts";
 import type { EffectiveOperationAuthority } from "../operations/authority.ts";
 
 export interface ExecutionRecordFacet {
@@ -124,6 +130,12 @@ export interface EffectJournalFacet {
  * `findByKey` is what makes a slow call dispatch once. A later Activation reconstructing the same
  * controller-local key finds the settled record and reads its outcome instead of starting the work
  * again.
+ *
+ * Since E.1 a key may accumulate historical `invalidated` records (an interleave Event overtook the
+ * work) alongside a fresh one. `findByKey` must return the *reusable* record - a `pending` or
+ * `settled` one - and never an `invalidated` one, so a re-derived key after invalidation starts
+ * fresh work rather than recovering an obsolete result. A durable store should index this rather
+ * than scan.
  */
 export interface ControllerResumptionFacet {
   insert(resumption: ControllerResumption): Promise<void>;
@@ -131,7 +143,7 @@ export interface ControllerResumptionFacet {
   /** Replaces the record wholesale. Resumptions have no independent revision counter. */
   update(resumption: ControllerResumption): Promise<void>;
   listByExecution(executionId: ExecutionId): Promise<readonly ControllerResumption[]>;
-  /** The record for one Execution's stable controller-local key, if it has one. */
+  /** The reusable (`pending` | `settled`) record for one Execution's stable key; never `invalidated`. */
   findByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined>;
 }
 
@@ -143,13 +155,107 @@ export interface ControllerResumptionFacet {
  * Execution whose exposure silently reads as "nothing authorized", and one whose ceiling committed
  * without its context would be a permission attached to nothing.
  *
- * There is no `delete` and no `widen`. Narrowing for child delegation belongs to the composition
- * slice and will arrive as an update that bumps the record's version; nothing in v0.4 rewrites one.
+ * There is no `delete`, no `widen`, and no `update`. Child delegation - implemented in E.0 - does
+ * not narrow or otherwise rewrite the parent's record: it inserts a *fresh* delegated authority
+ * record for the child, `version: 1`, computed from `requestedOperations ∩ the parent's current
+ * effective authority` at spawn time. The parent's own record is untouched by delegating from it.
  */
 export interface OperationAuthorityFacet {
   insert(authority: EffectiveOperationAuthority): Promise<void>;
   /** The ceiling for one Execution, or `undefined` when none was configured. */
   get(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined>;
+}
+
+/**
+ * Lineage-scoped structural spawn budget.
+ *
+ * Keyed by the root Execution, because the whole ownership tree shares one finite pool. A facet of
+ * the same transaction as everything else so that "one credit spent" and "one child created" commit
+ * together or not at all - a spawn that created a child without spending a credit would let a
+ * lineage exceed its budget, and a spend without a child would leak capacity. `update` is
+ * compare-and-set on the record's revision so two concurrent spawns cannot both spend the last
+ * credit. There is no `widen` and no per-Execution variant: capacity is set once, at the root.
+ */
+export interface LineageSpawnBudgetFacet {
+  insert(budget: LineageSpawnBudget): Promise<void>;
+  get(rootExecutionId: ExecutionId): Promise<LineageSpawnBudget | undefined>;
+  update(budget: LineageSpawnBudget, expectedRevision: number): Promise<void>;
+}
+
+/**
+ * Child-Execution links.
+ *
+ * The edge from a spawning Execution to a child it created, plus the pending dependency (if any)
+ * that a `call` registered on the child's terminal result. A facet of the same transaction because
+ * the child, its authority, the spent budget credit, the parent's pending operation, and this link
+ * are one atomic creation: a partially created child is exactly what §24 forbids.
+ */
+export interface ChildExecutionLinkFacet {
+  insert(link: ChildExecutionLink): Promise<void>;
+  get(childExecutionId: ExecutionId): Promise<ChildExecutionLink | undefined>;
+  update(link: ChildExecutionLink): Promise<void>;
+  listByParent(parentExecutionId: ExecutionId): Promise<readonly ChildExecutionLink[]>;
+}
+
+/**
+ * Peer request links (Slice E.1).
+ *
+ * The runtime-owned correlation between an `ask` and the reply that settles it. A facet of the same
+ * transaction because "the message reached the recipient", "the requester's PendingOperation is
+ * pending", and "this link exists" are one atomic admission - an `ask` to a terminal or nonexistent
+ * peer must leave no half-created link.
+ */
+export interface PeerRequestLinkFacet {
+  insert(link: PeerRequestLink): Promise<void>;
+  get(messageId: string): Promise<PeerRequestLink | undefined>;
+  update(link: PeerRequestLink): Promise<void>;
+  listByRequester(requesterExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]>;
+  listByResponder(responderExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]>;
+}
+
+/**
+ * Cancellation requests (Slice E.1).
+ *
+ * A narrow record that a RUNNING Execution should reach a safe boundary and become CANCELLED. Its
+ * own facet - not a field of the ExecutionContext - so recording one does not touch the context
+ * revision an in-flight Activation will compare-and-set against.
+ */
+export interface CancellationRequestFacet {
+  insert(request: CancellationRequest): Promise<void>;
+  get(executionId: ExecutionId): Promise<CancellationRequest | undefined>;
+  update(request: CancellationRequest): Promise<void>;
+}
+
+/**
+ * User-input requests (Slice E.2).
+ *
+ * The runtime-owned record of one open `RequestUserInput` Effect. A facet of the same transaction
+ * because "the request exists", "the sender's PendingOperation is pending", and the journal entries
+ * are one atomic admission - and because settling one (mark responded, settle the PendingOperation,
+ * route the `user.input` Event) must commit together or not at all. `get` is keyed by the
+ * runtime-minted `requestId`, which is correlation/integrity data, never a bearer credential.
+ */
+export interface UserInputRequestFacet {
+  insert(request: UserInputRequest): Promise<void>;
+  get(requestId: string): Promise<UserInputRequest | undefined>;
+  update(request: UserInputRequest): Promise<void>;
+  listByExecution(executionId: ExecutionId): Promise<readonly UserInputRequest[]>;
+}
+
+/**
+ * Confirmation requests (Slice E.2).
+ *
+ * The runtime-owned record of one pending exact-payload mechanical confirmation. A facet of the same
+ * transaction because "the exact proposal is stored", "the Effect PendingOperation exists", and the
+ * journal entries are one atomic gate - and because resolving one (mark approved/declined, commit
+ * dispatch intent or settle the decline) must commit together or not at all. This is what makes an
+ * approve/decline race linearize to one winner and a duplicate approval unable to dispatch twice.
+ */
+export interface ConfirmationRequestFacet {
+  insert(request: ConfirmationRequest): Promise<void>;
+  get(confirmationId: string): Promise<ConfirmationRequest | undefined>;
+  update(request: ConfirmationRequest): Promise<void>;
+  listByExecution(executionId: ExecutionId): Promise<readonly ConfirmationRequest[]>;
 }
 
 export interface RuntimeTransaction {
@@ -161,6 +267,12 @@ export interface RuntimeTransaction {
   readonly effectJournal: EffectJournalFacet;
   readonly controllerResumptions: ControllerResumptionFacet;
   readonly operationAuthorities: OperationAuthorityFacet;
+  readonly lineageSpawnBudgets: LineageSpawnBudgetFacet;
+  readonly childExecutionLinks: ChildExecutionLinkFacet;
+  readonly peerRequestLinks: PeerRequestLinkFacet;
+  readonly cancellationRequests: CancellationRequestFacet;
+  readonly userInputRequests: UserInputRequestFacet;
+  readonly confirmationRequests: ConfirmationRequestFacet;
 }
 
 export interface RuntimeStore {
@@ -180,11 +292,14 @@ export interface RuntimeStore {
   listControllerResumptions(executionId: ExecutionId): Promise<readonly ControllerResumption[]>;
   readControllerResumption(resumptionId: ControllerResumptionId): Promise<ControllerResumption | undefined>;
   /**
-   * One Execution's record for a controller-local key.
+   * One Execution's *reusable* record for a controller-local key (`pending` | `settled`, never
+   * `invalidated`).
    *
    * On the read surface as well as the transaction facet because the runtime consults it on every
    * `run(key, ...)` - it is the lookup that decides whether a resumed Activation dispatches a second
-   * provider call or is handed the stored one. A durable store should index it rather than scan.
+   * provider call or is handed the stored one. After an interleave Event invalidated the prior work
+   * it returns `undefined`, so the resumed Activation starts fresh. A durable store should index it
+   * rather than scan.
    */
   findControllerResumptionByKey(executionId: ExecutionId, key: string): Promise<ControllerResumption | undefined>;
   /**
@@ -195,6 +310,32 @@ export interface RuntimeStore {
    * data with no way to write one back.
    */
   readOperationAuthority(executionId: ExecutionId): Promise<EffectiveOperationAuthority | undefined>;
+  /** One lineage's structural spawn budget. Read-only diagnostics; the gateway owns spending. */
+  readLineageSpawnBudget(rootExecutionId: ExecutionId): Promise<LineageSpawnBudget | undefined>;
+  /** The link for one child Execution, or `undefined` when it was not spawned through the gateway. */
+  readChildExecutionLink(childExecutionId: ExecutionId): Promise<ChildExecutionLink | undefined>;
+  /** Every child one Execution spawned. Read-only lineage/wait-for diagnostics. */
+  listChildExecutionLinks(parentExecutionId: ExecutionId): Promise<readonly ChildExecutionLink[]>;
+  /** One peer request link by its message id. Read-only diagnostics. */
+  readPeerRequestLink(messageId: string): Promise<PeerRequestLink | undefined>;
+  /** Every `ask` one Execution sent. Read-only wait-for diagnostics (asker -> expected responder). */
+  listPeerRequestLinksByRequester(requesterExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]>;
+  /** Every `ask` one Execution is the expected responder for. Read-only diagnostics. */
+  listPeerRequestLinksByResponder(responderExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]>;
+  /** One Execution's pending cancellation request, if the runtime recorded one. Read-only. */
+  readCancellationRequest(executionId: ExecutionId): Promise<CancellationRequest | undefined>;
+  /** One user-input request by its runtime-minted id. Read-only; a controller never receives one. */
+  readUserInputRequest(requestId: string): Promise<UserInputRequest | undefined>;
+  /** Every user-input request one Execution proposed. Read-only diagnostics. */
+  listUserInputRequests(executionId: ExecutionId): Promise<readonly UserInputRequest[]>;
+  /** Every currently-open user-input request, for an application/UI to discover. Read-only. */
+  listOpenUserInputRequests(): Promise<readonly UserInputRequest[]>;
+  /** One confirmation request by its runtime-minted id. Read-only; a controller never receives one. */
+  readConfirmationRequest(confirmationId: string): Promise<ConfirmationRequest | undefined>;
+  /** Every confirmation request one Execution's Effects triggered. Read-only diagnostics. */
+  listConfirmationRequests(executionId: ExecutionId): Promise<readonly ConfirmationRequest[]>;
+  /** Every currently-pending confirmation, for an application/UI to discover. Read-only. */
+  listPendingConfirmations(): Promise<readonly ConfirmationRequest[]>;
 }
 
 export class UnknownControllerResumptionError extends Error {
@@ -233,5 +374,15 @@ export class UnknownExecutionError extends Error {
   constructor(executionId: string) {
     super(`unknown execution ${executionId}`);
     this.name = "UnknownExecutionError";
+  }
+}
+
+export class SpawnBudgetConcurrencyError extends Error {
+  constructor(rootExecutionId: string, expectedRevision: number, actualRevision: number) {
+    super(
+      `lineage spawn budget for ${rootExecutionId} changed underneath this writer ` +
+        `(expected revision ${expectedRevision}, found ${actualRevision})`,
+    );
+    this.name = "SpawnBudgetConcurrencyError";
   }
 }

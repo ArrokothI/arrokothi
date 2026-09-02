@@ -55,7 +55,7 @@ const everyStageKind: WorkflowSpecInput = {
       id: "researcher",
       kind: "agent",
       child: { definitionId: "research-agent", definitionVersion: 3 },
-      childInput: { depth: "shallow" },
+      requestedOperations: [{ capability: "knowledge.query", operation: "search" }],
       transitions: { kind: "always", next: { to: "complete" } },
     },
     {

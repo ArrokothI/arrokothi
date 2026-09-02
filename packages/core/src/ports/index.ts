@@ -16,20 +16,27 @@ export type { DefinitionStore } from "./definition-store.ts";
 export { DefinitionIntegrityError, DefinitionVersionConflictError } from "./definition-store.ts";
 
 export type {
+  CancellationRequestFacet,
+  ChildExecutionLinkFacet,
   ControllerResumptionFacet,
   EffectJournalFacet,
   EmissionFacet,
   ExecutionRecordFacet,
+  LineageSpawnBudgetFacet,
   MailboxAppendResult,
   MailboxFacet,
+  OperationAuthorityFacet,
+  PeerRequestLinkFacet,
   PendingOperationFacet,
   RuntimeStore,
   RuntimeTransaction,
   TransitionAuditFacet,
+  UserInputRequestFacet,
 } from "./runtime-store.ts";
 export {
   ExecutionAlreadyExistsError,
   RuntimeConcurrencyError,
+  SpawnBudgetConcurrencyError,
   UnknownControllerResumptionError,
   UnknownExecutionError,
   UnknownPendingOperationError,
@@ -60,6 +67,13 @@ export { emptyLocalResourceEnvironment, UnexposedLocalResourceError } from "./lo
 
 export type { EffectAuthorizer } from "./effect-authorizer.ts";
 export { denyAllEffects } from "./effect-authorizer.ts";
+
+export type {
+  ConfirmationPolicy,
+  ConfirmationPolicyRequest,
+  ConfirmationRequirement,
+} from "./confirmation-policy.ts";
+export { confirmationNotRequired, confirmationRequirementIssues } from "./confirmation-policy.ts";
 
 export type { CapabilityCatalog, CapabilityOperationDescriptor } from "./capability-catalog.ts";
 export { emptyCapabilityCatalog } from "./capability-catalog.ts";

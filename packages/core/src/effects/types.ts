@@ -5,10 +5,8 @@
  * and it is not a claim that anything happened. A controller returns proposals as plain data; the
  * Harness assigns identity, authorizes, journals, dispatches, and eventually delivers an Event.
  *
- * The union is closed at the five accepted v0.4 kinds. Four of them are discriminants only in this
- * slice: they validate, they are journaled, and they are answered with an explicit
- * "not implemented in this slice" observation. They are deliberately *not* silent no-ops, because a
- * controller that asks to send a message and hears nothing back has been lied to.
+ * The union is closed at the five accepted v0.4 kinds. The dispatchable subset is explicit; an
+ * accepted but unimplemented kind is answered with a refusal rather than becoming a silent no-op.
  *
  * What is not an Effect: a function call, a parse, a local rerank over an already-exposed corpus, a
  * model inference that returns to the controller inside the same Activation, or a Stage computation.
@@ -16,6 +14,10 @@
  */
 
 import type { EventId } from "../interaction/event-envelope.ts";
+import type { OperationRef, OperationRefInput } from "../operations/refs.ts";
+import { isOperationRef, operationRef } from "../operations/refs.ts";
+import type { ValueSchema } from "../schema/value-schema.ts";
+import { valueSchemaIssues } from "../schema/value-schema.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import { isJsonObject, jsonIssues } from "../util/json.ts";
 import type { EffectIdempotencyScope } from "./fingerprint.ts";
@@ -38,8 +40,13 @@ export const EFFECT_KINDS: readonly EffectKind[] = [
   "request_user_input",
 ];
 
-/** The kinds this slice actually dispatches. Everything else is answered, never silently dropped. */
-export const DISPATCHABLE_EFFECT_KINDS: readonly EffectKind[] = ["use_capability"];
+/** The kinds the runtime actually dispatches. Everything else is answered, never silently dropped. */
+export const DISPATCHABLE_EFFECT_KINDS: readonly EffectKind[] = [
+  "use_capability",
+  "spawn_execution",
+  "send_message",
+  "request_user_input",
+];
 
 export function isEffectKind(value: unknown): value is EffectKind {
   return typeof value === "string" && (EFFECT_KINDS as readonly string[]).includes(value);
@@ -96,19 +103,101 @@ export interface SpawnExecutionProposal extends ProposalBase {
   readonly kind: "spawn_execution";
   readonly definitionId: string;
   readonly definitionVersion: number;
+  /** Delivered to the child as an `external.input` Event labelled `"spawn"` once it is READY. */
   readonly input?: JsonValue;
+  /**
+   * Operations the child is requested to receive.
+   *
+   * The child's effective operation authority is `requestedOperations ∩ the spawning Execution's
+   * CURRENT effective operation authority` - an attenuation, never a grant. An **absent** request
+   * means the child receives no operation authority; it is never read as "inherit everything". A
+   * child Definition that declares operations does not change this: a Definition requirement is not
+   * a grant.
+   */
+  readonly requestedOperations?: readonly OperationRef[];
+  /**
+   * `call` semantics.
+   *
+   * When `true`, the spawning Execution registers a `PendingOperation` on the child's terminal
+   * result and is woken by a correlated `child.completed` / `child.failed` Event. When `false` or
+   * absent (`spawn`), the child is created and runs independently and the parent observes only
+   * `child.spawned`. Either way the child is the same independently managed Execution.
+   */
+  readonly awaitTerminalResult?: boolean;
+  /**
+   * The Definition kind the caller expects the child to resolve to (Slice E.2).
+   *
+   * Set by an Agent Stage / Workflow Stage so the Harness refuses a mismatched child kind rather
+   * than running it under the wrong Stage semantics. The check happens at the Harness's ordinary
+   * SpawnExecution boundary, *after* authorization and Definition resolution - it is never an
+   * existence oracle a denied caller could probe. Absent means the caller accepts whichever
+   * supported kind the Definition is.
+   */
+  readonly expectedChildKind?: "agent" | "workflow";
 }
 
+/**
+ * Communicate with an already-existing peer Execution.
+ *
+ * `send`, `ask`, and `reply` are the *same* Effect kind - there is no `AskMessage` or `ReplyMessage`.
+ * They differ only in the completion dependency they create:
+ *
+ * ```text
+ * send   awaitReply absent/false, inReplyToMessageId absent
+ *        -> the sender's Effect settles as soon as the runtime admits the message; a `message.sent`
+ *           acknowledgement Event tells the sender it was persisted for the destination (not that
+ *           the recipient processed it)
+ *
+ * ask    awaitReply: true
+ *        -> the sender's PendingOperation stays pending; a runtime-minted PeerRequestLink correlates
+ *           it; the exact original PendingOperation settles only when the intended peer replies
+ *
+ * reply  to + inReplyToMessageId set, awaitReply absent/false
+ *        -> an outbound send that also settles the asker's original `ask` PendingOperation. It must
+ *           pass the responder's own current messaging policy, and it can settle only the exact
+ *           request it names, only from the Execution that request expected.
+ * ```
+ *
+ * The sender never names its own identity: `peer.message` carries a runtime-owned `fromExecutionId`.
+ * A message/correlation id is integrity data, never a capability - holding one does not authorize a
+ * reply or let a third Execution settle someone else's `ask`.
+ */
 export interface SendMessageProposal extends ProposalBase {
   readonly kind: "send_message";
-  readonly to: string;
+  /**
+   * The concrete destination Execution id. A reply names the original requester here as well as
+   * naming the request link; policy can therefore authorize the actual outbound target before the
+   * runtime resolves the link. The runtime later verifies the two agree and never redirects.
+   */
+  readonly to?: string;
   readonly body: JsonValue;
+  /** `ask`: keep the sender's PendingOperation pending until the intended peer replies. */
+  readonly awaitReply?: boolean;
+  /**
+   * `reply`: the runtime-minted message id of the peer request this message answers.
+   *
+   * The runtime checks that a matching open `PeerRequestLink` exists and that this Execution is the
+   * peer it expected a reply from. A guessed id settles nothing.
+   */
+  readonly inReplyToMessageId?: string;
 }
 
+/**
+ * Ask the human/application for a piece of semantic data through the Harness.
+ *
+ * This is *not* mechanical confirmation. `RequestUserInput` asks an open question ("Which
+ * environment?"); confirmation gates the execution of one already-concrete Effect payload and takes
+ * a trusted `approve`/`decline`, never free prose. The two never collapse into one another.
+ *
+ * `schema` is the existing serializable core value-schema vocabulary. Absent, the response is
+ * validated as ordinary text - `{ kind: "string" }` - so an unconstrained implicit object is never
+ * assumed and structured input is never silently stringified into a string field.
+ */
 export interface RequestUserInputProposal extends ProposalBase {
   readonly kind: "request_user_input";
   readonly prompt: string;
-  readonly schema?: JsonObject;
+  /** Absent means the response is validated as `{ kind: "string" }` - ordinary text. */
+  readonly schema?: ValueSchema;
 }
 
 /** What a controller returns. Data only - no handles, no callbacks, no executor. */
@@ -223,18 +312,58 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
       if (typeof candidate["definitionVersion"] !== "number" || !Number.isInteger(candidate["definitionVersion"])) {
         issues.push(issue(`${path}.definitionVersion`, "expected an integer definition version"));
       }
+      const requestedOperations = candidate["requestedOperations"];
+      if (requestedOperations !== undefined) {
+        if (!Array.isArray(requestedOperations) || !requestedOperations.every(isOperationRef)) {
+          // Fail closed: an ambiguous authority request is refused as malformed data rather than
+          // silently treated as "no operations" or "all operations".
+          issues.push(issue(`${path}.requestedOperations`, "expected an array of { capability, operation } refs"));
+        }
+      }
+      const awaitTerminalResult = candidate["awaitTerminalResult"];
+      if (awaitTerminalResult !== undefined && typeof awaitTerminalResult !== "boolean") {
+        issues.push(issue(`${path}.awaitTerminalResult`, "expected a boolean when present"));
+      }
+      const expectedChildKind = candidate["expectedChildKind"];
+      if (expectedChildKind !== undefined && expectedChildKind !== "agent" && expectedChildKind !== "workflow") {
+        issues.push(issue(`${path}.expectedChildKind`, `expected "agent" or "workflow" when present`));
+      }
       break;
     }
     case "send_message": {
-      if (typeof candidate["to"] !== "string" || candidate["to"].length === 0) {
+      const to = candidate["to"];
+      const inReplyTo = candidate["inReplyToMessageId"];
+      const hasTo = to !== undefined;
+      const hasReply = inReplyTo !== undefined;
+      if (hasTo && (typeof to !== "string" || to.length === 0)) {
         issues.push(issue(`${path}.to`, "expected a destination"));
       }
+      if (hasReply && (typeof inReplyTo !== "string" || inReplyTo.length === 0)) {
+        issues.push(issue(`${path}.inReplyToMessageId`, "expected a non-empty message id when present"));
+      }
+      if (!hasTo) {
+        issues.push(issue(`${path}.to`, "expected a concrete destination for send, ask, or reply"));
+      }
       issues.push(...jsonIssues(candidate["body"], `${path}.body`).map((i) => issue(i.path, i.message)));
+      const awaitReply = candidate["awaitReply"];
+      if (awaitReply !== undefined && typeof awaitReply !== "boolean") {
+        issues.push(issue(`${path}.awaitReply`, "expected a boolean when present"));
+      }
+      if (hasReply && awaitReply === true) {
+        issues.push(issue(`${path}.awaitReply`, "a reply answers one existing ask and cannot itself await another reply"));
+      }
       break;
     }
     case "request_user_input": {
       if (typeof candidate["prompt"] !== "string" || candidate["prompt"].length === 0) {
         issues.push(issue(`${path}.prompt`, "expected a prompt"));
+      }
+      if (candidate["schema"] !== undefined) {
+        // A malformed response schema is refused as data here, exactly like a malformed proposal
+        // field - never carried into a UserInputRequest and discovered when a response arrives.
+        issues.push(
+          ...valueSchemaIssues(candidate["schema"], `${path}.schema`).map((i) => issue(i.path, i.message)),
+        );
       }
       break;
     }
@@ -248,6 +377,129 @@ export function isUseCapabilityProposal(proposal: EffectProposal): proposal is U
   return proposal.kind === "use_capability";
 }
 
+export function isSpawnExecutionProposal(proposal: EffectProposal): proposal is SpawnExecutionProposal {
+  return proposal.kind === "spawn_execution";
+}
+
+export function isSendMessageProposal(proposal: EffectProposal): proposal is SendMessageProposal {
+  return proposal.kind === "send_message";
+}
+
+export function isRequestUserInputProposal(proposal: EffectProposal): proposal is RequestUserInputProposal {
+  return proposal.kind === "request_user_input";
+}
+
+export interface SendMessageInput {
+  readonly to: string;
+  readonly body?: JsonValue;
+  readonly requestKey?: string;
+  readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+/**
+ * `send`: deliver a message to a peer and do not wait for a reply.
+ *
+ * The sender's Effect settles as soon as the runtime admits the message for the destination; a
+ * `message.sent` Event carries the acknowledgement. "sent" means persisted for that destination,
+ * never that the recipient processed it.
+ */
+export function send(input: SendMessageInput): SendMessageProposal {
+  return {
+    kind: "send_message",
+    to: input.to,
+    body: input.body ?? null,
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+  };
+}
+
+/**
+ * `ask`: deliver a message and keep the sender's PendingOperation pending until the peer replies.
+ *
+ * Not a child call: the destination Execution need not terminate. The exact original PendingOperation
+ * settles when - and only when - the intended peer replies to this exact request.
+ */
+export function ask(input: SendMessageInput): SendMessageProposal {
+  return { ...send(input), awaitReply: true };
+}
+
+export interface ReplyMessageInput {
+  /** The original requester, taken from the runtime-owned incoming `peer.message`. */
+  readonly to: string;
+  /** The runtime-minted message id of the peer request being answered. */
+  readonly inReplyToMessageId: string;
+  readonly body?: JsonValue;
+  readonly requestKey?: string;
+  readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+/**
+ * `reply`: an outbound send that also settles the asker's original `ask`.
+ *
+ * Resolves to the same `SendMessage` Effect. Policy authorizes the concrete `to` before the runtime
+ * resolves `inReplyToMessageId`; the runtime then requires that link to name the same requester and
+ * this Execution as responder. A reply answers one ask and never opens another one.
+ */
+export function reply(input: ReplyMessageInput): SendMessageProposal {
+  return {
+    kind: "send_message",
+    to: input.to,
+    body: input.body ?? null,
+    inReplyToMessageId: input.inReplyToMessageId,
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+  };
+}
+
+export interface SpawnExecutionInput {
+  readonly definitionId: string;
+  readonly definitionVersion: number;
+  readonly input?: JsonValue;
+  readonly requestedOperations?: readonly OperationRefInput[];
+  /** The Definition kind the caller requires the child to be. See `SpawnExecutionProposal`. */
+  readonly expectedChildKind?: "agent" | "workflow";
+  readonly requestKey?: string;
+  readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+function spawnProposal(input: SpawnExecutionInput, awaitTerminalResult: boolean): SpawnExecutionProposal {
+  return {
+    kind: "spawn_execution",
+    definitionId: input.definitionId,
+    definitionVersion: input.definitionVersion,
+    ...(input.input !== undefined ? { input: input.input } : {}),
+    ...(input.requestedOperations !== undefined
+      ? { requestedOperations: input.requestedOperations.map((ref) => operationRef(ref.capability, ref.operation)) }
+      : {}),
+    ...(input.expectedChildKind !== undefined ? { expectedChildKind: input.expectedChildKind } : {}),
+    ...(awaitTerminalResult ? { awaitTerminalResult: true } : {}),
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+  };
+}
+
+/**
+ * `spawn`: create an independent child Execution and do not wait for its terminal result.
+ *
+ * A request, like every proposal: the Harness resolves the Definition, attenuates authority against
+ * this Execution's current ceiling, spends one lineage structural-budget credit, and creates the
+ * child - or refuses, and nothing is created.
+ */
+export function spawnExecution(input: SpawnExecutionInput): SpawnExecutionProposal {
+  return spawnProposal(input, false);
+}
+
+/**
+ * `call`: `spawn` plus a required dependency on the child's terminal result.
+ *
+ * The child is the same independently managed Execution a `spawn` would create; the only difference
+ * is that the spawning Execution registers a `PendingOperation` and is woken by the correlated
+ * `child.completed` / `child.failed` Event. It is not another kind of Execution.
+ */
+export function callExecution(input: SpawnExecutionInput): SpawnExecutionProposal {
+  return spawnProposal(input, true);
+}
+
 export interface UseCapabilityInput {
   readonly capability: string;
   readonly operation: string;
@@ -258,6 +510,33 @@ export interface UseCapabilityInput {
   readonly deadlineMs?: number;
   readonly idempotency?: EffectIdempotencyScope;
   readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+export interface RequestUserInputInput {
+  readonly prompt: string;
+  /** Absent means the response is validated as ordinary text (`{ kind: "string" }`). */
+  readonly schema?: ValueSchema;
+  readonly requestKey?: string;
+  readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+/**
+ * `RequestUserInput`: ask the human/application a question and keep the sender's PendingOperation
+ * pending until a trusted response arrives.
+ *
+ * A request like every other proposal. The Harness authorizes it (deny-by-default; a narrow
+ * user-interaction grant is required), records a runtime-owned `UserInputRequest`, and settles the
+ * PendingOperation only when `Harness.submitUserInput` delivers a value that validates against the
+ * stored schema. There is no fabricated user Event at dispatch time - the user has not answered yet.
+ */
+export function requestUserInput(input: RequestUserInputInput): RequestUserInputProposal {
+  return {
+    kind: "request_user_input",
+    prompt: input.prompt,
+    ...(input.schema !== undefined ? { schema: input.schema } : {}),
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+  };
 }
 
 /**

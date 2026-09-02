@@ -19,8 +19,8 @@
  * ```text
  * FunctionStageDefinition
  * LLMStageDefinition
- * AgentStageDefinition      // definition-valid, runtime unsupported until Slice E
- * WorkflowStageDefinition   // definition-valid, runtime unsupported until Slice E
+ * AgentStageDefinition      // one Workflow Stage boundary implemented by a child Agent call
+ * WorkflowStageDefinition   // one Workflow Stage boundary implemented by a child Workflow call
  * ```
  *
  * Router, classifier, retriever, aggregator, gate, and guard are *compositions* of these plus
@@ -216,24 +216,39 @@ export interface LLMStageDefinition extends StageDefinitionBase {
 }
 
 /**
- * A child Agent Execution behind one Stage boundary.
+ * One Workflow Stage boundary implemented by a child Agent Execution (Slice E.2).
  *
- * Definition-valid now, unsupported at runtime until Slice E supplies child composition. It carries
- * only what a future child call needs: which definition, and how the Stage adapts around it. It
- * does not carry the child's spec, because flattening a child's topology into the parent is exactly
- * the mistake the Stage boundary exists to prevent.
+ * The Stage runs the child through a `call` (`SpawnExecution` with `awaitTerminalResult`). It carries
+ * only what the child call needs: which definition, and which child operations it requests. It never
+ * carries the child's spec - flattening a child's topology into the parent is exactly the mistake
+ * the Stage boundary exists to prevent.
+ *
+ * The Stage's adapted `StageResult` (`text | none`) is the child's semantic input. There is no
+ * separate authored `childInput` object: a static object that could collide with, or silently
+ * override, the dynamic Stage input would make merge/precedence semantics an architecture accident.
  */
 export interface AgentStageDefinition extends StageDefinitionBase {
   readonly kind: "agent";
   readonly child: ChildDefinitionRef;
-  /** Authored input adaptation for the future child call. Data only. */
-  readonly childInput?: JsonObject;
+  /**
+   * The child operations this Stage requests. A Definition requirement is not authority: the child's
+   * effective operation authority is this set intersected with the parent Workflow Execution's
+   * *current* effective operation authority. Absent means the child receives no operation authority -
+   * never "inherit everything".
+   */
+  readonly requestedOperations?: readonly ChildOperationRef[];
 }
 
 export interface WorkflowStageDefinition extends StageDefinitionBase {
   readonly kind: "workflow";
   readonly child: ChildDefinitionRef;
-  readonly childInput?: JsonObject;
+  readonly requestedOperations?: readonly ChildOperationRef[];
+}
+
+/** A logical operation a child Stage requests. Attenuated against the parent's current authority. */
+export interface ChildOperationRef {
+  readonly capability: string;
+  readonly operation: string;
 }
 
 /** Which definition a child Stage would instantiate. A reference, never an inlined definition. */

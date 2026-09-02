@@ -119,7 +119,7 @@ export type {
   OperationAuthorityGrant,
   OperationAuthorityRef,
 } from "./operations/authority.ts";
-export { authorizesOperation, operationAuthorityGrantIssues } from "./operations/authority.ts";
+export { attenuateChildOperations, authorizesOperation, operationAuthorityGrantIssues } from "./operations/authority.ts";
 export type { ExposureIssue, OperationExposureRequest } from "./operations/exposure.ts";
 export { EMPTY_EXPOSURE_REQUEST, exposureRequestIssues } from "./operations/exposure.ts";
 export type {
@@ -148,6 +148,7 @@ export {
 export type {
   AgentStageDefinition,
   ChildDefinitionRef,
+  ChildOperationRef,
   FunctionStageDefinition,
   ImplementationRef,
   LLMStageDefinition,
@@ -182,8 +183,16 @@ export { MAX_MODEL_PHASES, validateWorkflowSpec } from "./workflow/validation.ts
  * controller that owns it. An application inspects what a Workflow is doing; it does not reach in
  * and change where the Workflow thinks it is.
  */
-export type { BarrierEntry, BarrierEntryKind, WorkflowBoundaryState, WorkflowControlState } from "./workflow/control-state.ts";
-export { readWorkflowControlState, stageCorrelationId, WORKFLOW_CONTROL_STATE_VERSION } from "./workflow/control-state.ts";
+export type {
+  BarrierEntry,
+  BarrierEntryKind,
+  ChildBarrierEntry,
+  ChildBarrierOutcome,
+  EffectBarrierEntry,
+  WorkflowBoundaryState,
+  WorkflowControlState,
+} from "./workflow/control-state.ts";
+export { childBarrierEntry, readWorkflowControlState, stageCorrelationId, WORKFLOW_CONTROL_STATE_VERSION } from "./workflow/control-state.ts";
 export { stageAdapterResumptionKey, stageModelResumptionKey } from "./workflow/resumption-keys.ts";
 
 // -- execution identity and lifecycle ----------------------------------------
@@ -236,6 +245,65 @@ export type {
   TerminalResultRejection,
 } from "./execution/terminal-result.ts";
 
+// -- child Execution composition (Slice E.0) --------------------------------
+/**
+ * Child-Execution composition surface.
+ *
+ * `spawnExecution` / `callExecution` build `SpawnExecution` proposals; a controller *proposes* one
+ * and the Harness mediates creation - resolving the Definition, attenuating authority against this
+ * Execution's current ceiling, spending one lineage structural-spawn credit, and creating the
+ * independently managed child, or refusing and creating nothing. The link and budget records are
+ * runtime-owned and exported as *readable* shapes only.
+ */
+export type { SpawnExecutionInput } from "./effects/types.ts";
+export { callExecution, isSpawnExecutionProposal, spawnExecution } from "./effects/types.ts";
+export type { ChildExecutionLink, ChildLinkState } from "./execution/child-link.ts";
+export { isAwaitingChildResult } from "./execution/child-link.ts";
+export type { LineageSpawnBudget } from "./execution/structural-budget.ts";
+export {
+  canConsumeSpawnCredit,
+  spawnBudgetCapacityIssues,
+  spawnBudgetRemaining,
+} from "./execution/structural-budget.ts";
+
+// -- peer interaction and cancellation (Slice E.1) -------------------------
+/**
+ * `send` / `ask` / `reply` all build the same `SendMessage` proposal; a controller *proposes* one
+ * and the Harness mediates delivery, correlation, and authorization. The peer request link and
+ * cancellation request records are runtime-owned and exported as *readable* shapes only.
+ */
+export type { ReplyMessageInput, SendMessageInput } from "./effects/types.ts";
+export { ask, isSendMessageProposal, reply, send } from "./effects/types.ts";
+export type { PeerRequestLink, PeerRequestLinkState } from "./execution/peer-request-link.ts";
+export { isOpenPeerRequest } from "./execution/peer-request-link.ts";
+export type { CancellationRequest, CancellationRequestState } from "./execution/cancellation-request.ts";
+export type { WaitForEdge, WaitForEdgeKind } from "./execution/wait-for.ts";
+export { WAIT_FOR_EDGE_KINDS } from "./execution/wait-for.ts";
+
+// -- human interaction and mechanical confirmation (Slice E.2) -----------
+/**
+ * `requestUserInput` builds a `RequestUserInput` proposal; a controller *proposes* one and the
+ * Harness mediates it - authorizing (deny-by-default), recording a runtime-owned `UserInputRequest`,
+ * and settling the PendingOperation only when `Harness.submitUserInput` delivers a value that
+ * validates against the stored schema. The request record is exported as a *readable* shape only.
+ * `submitUserInput` is a trusted runtime entry point, not a controller method.
+ */
+export type { RequestUserInputInput } from "./effects/types.ts";
+export { isRequestUserInputProposal, requestUserInput } from "./effects/types.ts";
+export type { UserInputRequest, UserInputRequestState } from "./execution/user-input-request.ts";
+export { isOpenUserInputRequest } from "./execution/user-input-request.ts";
+export type { SubmitUserInputInput, SubmitUserInputReceipt } from "./runtime/effect-processor.ts";
+
+export type {
+  ConfirmationPolicy,
+  ConfirmationPolicyRequest,
+  ConfirmationRequirement,
+} from "./ports/confirmation-policy.ts";
+export { confirmationNotRequired } from "./ports/confirmation-policy.ts";
+export type { ConfirmationRequest, ConfirmationRequestState } from "./execution/confirmation-request.ts";
+export { isPendingConfirmation, proposalDigest } from "./execution/confirmation-request.ts";
+export type { ResolveConfirmationInput, ResolveConfirmationReceipt } from "./runtime/effect-processor.ts";
+
 // -- events ------------------------------------------------------------------
 export type {
   DeliveredEvent,
@@ -249,13 +317,22 @@ export type {
   CapabilityCompletedBody,
   CapabilityFailedBody,
   CapabilityUnknownBody,
+  ChildCancelledBody,
+  ChildCompletedBody,
+  ChildFailedBody,
+  ChildSpawnedBody,
+  ConfirmationDeclinedBody,
   EffectDeniedBody,
   EffectRejectedBody,
   EventBodies,
   EventKind,
   ExternalInputBody,
+  MessageSentBody,
+  PeerMessageBody,
+  UserInputBody,
 } from "./interaction/events.ts";
 export {
+  CHILD_RESULT_EVENT_KINDS,
   EFFECT_RESULT_EVENT_KINDS,
   EVENT_KINDS,
   isEffectResultEventKind,
@@ -323,7 +400,13 @@ export { EFFECT_JOURNAL_PHASES, effectRequestsIn, isTerminalEffectPhase, latestP
 // -- runtime -----------------------------------------------------------------
 export { ControllerRegistry, UnknownControllerKindError } from "./runtime/controller-registry.ts";
 export type { ActivationRecord, ActivationResultKind } from "./runtime/activation.ts";
-export { Harness, HarnessRunawayError, InvalidOperationAuthorityError, UnknownDefinitionError } from "./runtime/harness.ts";
+export {
+  Harness,
+  HarnessRunawayError,
+  InvalidOperationAuthorityError,
+  InvalidStructuralSpawnBudgetError,
+  UnknownDefinitionError,
+} from "./runtime/harness.ts";
 export { createWorkflowController } from "./controllers/workflow/controller.ts";
 export type { WorkflowControllerOptions } from "./controllers/workflow/controller.ts";
 export { createAgentController } from "./controllers/agent/controller.ts";
@@ -346,6 +429,8 @@ export type {
   WorkflowTrace,
 } from "./controllers/workflow/model-access.ts";
 export type {
+  CancelExecutionInput,
+  CancelExecutionReceipt,
   CreateExecutionInput,
   DeliverExternalInputInput,
   EventDeliveryReceipt,

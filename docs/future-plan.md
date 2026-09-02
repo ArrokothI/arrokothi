@@ -154,6 +154,70 @@ cancellation
 Execution completion with work still in flight
 ```
 
+### 1.7 `reply_and_ask()` as a compound peer interaction
+
+Slice E.1 intentionally keeps the first `reply` contract conservative: answering an existing `ask`
+should not claim that the reply itself also opened a new reply dependency unless the runtime actually
+records that second dependency. A richer compound interaction remains worth evaluating after the basic
+send / ask / reply path has implementation evidence.
+
+A possible future convenience API is:
+
+```text
+reply_and_ask(
+  inReplyToMessageId = M1,
+  to = original requester,
+  body = ...
+)
+```
+
+with semantics conceptually equivalent to:
+
+```text
+close the open request identified by M1
+  +
+deliver one new peer.message that is itself an ask
+  +
+create a new runtime-owned PeerRequestLink for that new message
+  +
+keep the replier's new SendMessage PendingOperation pending until the new ask is answered
+```
+
+This should remain the same `SendMessage` Effect family rather than introducing a sixth Effect merely
+for conversational convenience. The helper/API name is also not frozen; `reply_and_ask()` is a useful
+working name for the behavior to preserve.
+
+Questions to validate before implementing it:
+
+```text
+Can closing the old PeerRequestLink, settling the old asker's exact PendingOperation,
+delivering the new message, and opening the new PeerRequestLink commit atomically?
+
+Should one peer.message carry both:
+  inReplyToMessageId = old request id
+  expectsReply = true for its own newly minted message id?
+
+How should the replier's SendMessage PendingOperation and correlation be represented
+so the new ask remains distinct from the request that was just answered?
+
+How should destination-scoped messaging policy authorize the concrete reply target
+before request-link resolution without creating an existence oracle?
+
+Can duplicate delivery/retry avoid both double-settling the old ask and opening
+duplicate new asks?
+
+Does the primitive materially simplify real Agent-to-Agent clarification loops,
+or are two explicit operations (`reply` followed by `ask`) clearer enough?
+
+Can the helper remain a compound interaction convenience without introducing a
+kernel-level conversation/session ontology?
+```
+
+Invariant to preserve:
+
+> **`expectsReply = true` must correspond to a real runtime-owned open reply dependency; a message
+> must never advertise that a reply is expected when no `PeerRequestLink` exists for it.**
+
 ---
 
 ## 2. Authority and policy evolution

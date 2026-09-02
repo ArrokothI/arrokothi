@@ -67,30 +67,72 @@ import { sameLogicalCapabilityRequest } from "../effects/duplicate-detection.ts"
 import type { CapabilityId, EffectId, IdempotencyKey, OperationId, PendingOperationId } from "../effects/ids.ts";
 import { EFFECT_ID_PREFIXES } from "../effects/ids.ts";
 import type { EffectJournalPhase } from "../effects/journal.ts";
-import type { PendingOperation } from "../effects/pending.ts";
+import type { PendingOperation, PendingOutcomeState } from "../effects/pending.ts";
 import { createPendingOperation, markAbandoned, markDispatched, markSettled } from "../effects/pending.ts";
-import type { EffectKind, EffectProposal, UseCapabilityProposal } from "../effects/types.ts";
+import type {
+  EffectKind,
+  EffectProposal,
+  RequestUserInputProposal,
+  SendMessageProposal,
+  SpawnExecutionProposal,
+  UseCapabilityProposal,
+} from "../effects/types.ts";
 import { DISPATCHABLE_EFFECT_KINDS } from "../effects/types.ts";
+import type { DefinitionId } from "../definitions/ids.ts";
+import { isDefinitionId } from "../definitions/ids.ts";
+import type { DefinitionKind } from "../definitions/types.ts";
+import { definitionRef } from "../definitions/validation.ts";
+import { createChildExecutionLink } from "../execution/child-link.ts";
 import type { ExecutionContext } from "../execution/context.ts";
+import { createExecutionContext, transitionContext } from "../execution/context.ts";
 import type { ActivationId, ExecutionId } from "../execution/ids.ts";
+import { executionId as toExecutionId } from "../execution/ids.ts";
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
+import type { ConfirmationRequest, ConfirmationRequestState } from "../execution/confirmation-request.ts";
+import {
+  createConfirmationRequest,
+  markConfirmationAbandoned,
+  markConfirmationApproved,
+  markConfirmationDeclined,
+  proposalDigest,
+} from "../execution/confirmation-request.ts";
+import { createPeerRequestLink, markPeerRequestLinkSettled } from "../execution/peer-request-link.ts";
+import { canConsumeSpawnCredit, consumeSpawnCredit } from "../execution/structural-budget.ts";
+import { createUserInputRequest, markUserInputAbandoned, markUserInputResponded } from "../execution/user-input-request.ts";
 import type { EventEnvelope, EventId } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
-import { authorizesOperation } from "../operations/authority.ts";
+import type { ValueSchema } from "../schema/value-schema.ts";
+import { validateValue } from "../schema/value-schema.ts";
+import { attenuateChildOperations, authorizesOperation, createDelegatedOperationAuthority } from "../operations/authority.ts";
+import type { DefinitionStore } from "../ports/definition-store.ts";
 import type { Clock } from "../ports/clock.ts";
 import { nowIso } from "../ports/clock.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
 import { UnknownCapabilityError } from "../ports/capability-executor.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
+import type { ConfirmationPolicy, ConfirmationRequirement } from "../ports/confirmation-policy.ts";
+import { confirmationNotRequired, confirmationRequirementIssues } from "../ports/confirmation-policy.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
 import type { IdGenerator } from "../ports/ids.ts";
 import { ID_PREFIXES } from "../ports/ids.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import type { RuntimeStore, RuntimeTransaction } from "../ports/runtime-store.ts";
+import { SpawnBudgetConcurrencyError } from "../ports/runtime-store.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import type { EventRoutingResult } from "./event-router.ts";
 import { routeEvent } from "./event-router.ts";
+
+/**
+ * How many times a `SpawnExecution` re-evaluates the structural spawn budget from fresh runtime
+ * state after losing a compare-and-set race on it.
+ *
+ * A losing attempt commits nothing - `store.transact` discards the whole draft when the callback
+ * throws - so retrying is always safe: there is no partial child, no spent credit, and no
+ * already-committed spawn to duplicate. Bounded so that persistent contention becomes an explicit
+ * refusal instead of an unbounded retry loop or a reason to fail the parent Activation.
+ */
+const MAX_SPAWN_BUDGET_CONTENTION_ATTEMPTS = 3;
 
 /** The request facts a result Event needs, recovered from the journal at settlement time. */
 interface RequestFacts {
@@ -109,6 +151,17 @@ export interface EffectDispatchRecord {
   readonly phase: EffectJournalPhase;
   /** True when the result Event was already in the mailbox before the Activation finished. */
   readonly settledInline: boolean;
+  /**
+   * Set only on the confirmed-dispatch (`resume`) path when an approved Effect was refused before it
+   * dispatched: the gated PendingOperation was settled `denied` / `rejected` and one correlated
+   * Event routed. `resolveConfirmation` maps this to its receipt; it is never persisted in an
+   * Activation record because the ordinary proposal path never sets it.
+   */
+  readonly refusal?: {
+    readonly kind: Extract<EventKind, "effect.denied" | "effect.rejected">;
+    readonly code: string;
+    readonly message: string;
+  };
 }
 
 export type SettleEffectReceipt =
@@ -139,11 +192,105 @@ export interface SettleEffectInput {
   readonly outcome: CapabilityOutcome;
 }
 
+export interface SubmitUserInputInput {
+  /** The runtime-minted `UserInputRequest` id. Correlation/integrity data, not an authorization. */
+  readonly requestId: string;
+  /** Validated against the request's stored schema before it settles anything. */
+  readonly value: JsonValue;
+}
+
+export type SubmitUserInputReceipt =
+  | {
+      readonly status: "accepted";
+      readonly requestId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly eventId: EventId;
+      readonly wokeExecution: boolean;
+    }
+  /** A response already settled this request. No second Event, no second settlement. */
+  | { readonly status: "already_responded"; readonly requestId: string }
+  /** The requesting Execution terminalized first; this request can never be answered. */
+  | { readonly status: "abandoned"; readonly requestId: string }
+  | {
+      readonly status: "rejected";
+      readonly reason: "unknown_request" | "execution_unavailable" | "invalid_value";
+      readonly detail: string;
+      /** Present for `invalid_value`: the schema issues, so a UI can re-prompt. */
+      readonly issues?: readonly { readonly path: string; readonly message: string }[];
+    };
+
+export interface ResolveConfirmationInput {
+  /** The runtime-minted `ConfirmationRequest` id. Correlation/integrity data, never an authority. */
+  readonly confirmationId: string;
+  /** A trusted decision. Never free prose - natural-language-to-decision resolution is above this. */
+  readonly decision: "approve" | "decline";
+}
+
+export type ResolveConfirmationReceipt =
+  /** Approved, the current authority still permits it, and the stored exact payload was dispatched. */
+  | {
+      readonly status: "dispatched";
+      readonly confirmationId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly phase: EffectJournalPhase;
+      readonly settledInline: boolean;
+    }
+  /** Approved, but the current authority now denies it. Nothing dispatched; an ordinary denial. */
+  | {
+      readonly status: "denied";
+      readonly confirmationId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly code: string;
+      readonly message: string;
+    }
+  /**
+   * Approved and still authorized, but the runtime could not dispatch the stored payload (missing or
+   * kind-mismatched child Definition, exhausted structural spawn budget, invalid/terminal message
+   * destination). Nothing dispatched; the gated PendingOperation settled `rejected` and one
+   * correlated `effect.rejected` Event routed. Distinct from `denied` (authorization) and `declined`
+   * (human).
+   */
+  | {
+      readonly status: "rejected";
+      readonly confirmationId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly code: string;
+      readonly message: string;
+    }
+  /** Declined. Nothing dispatched; the dependency settled and one `confirmation.declined` Event routed. */
+  | {
+      readonly status: "declined";
+      readonly confirmationId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly eventId: EventId;
+      readonly wokeExecution: boolean;
+    }
+  /** An approve/decline race: another decision already resolved this confirmation. */
+  | { readonly status: "already_resolved"; readonly confirmationId: string; readonly state: ConfirmationRequestState }
+  /** The requesting Execution terminalized first; nothing dispatched. */
+  | { readonly status: "abandoned"; readonly confirmationId: string }
+  | { readonly status: "unknown_confirmation"; readonly confirmationId: string };
+
 export interface EffectProcessorDeps {
   readonly store: RuntimeStore;
   readonly clock: Clock;
   readonly ids: IdGenerator;
   readonly authorizer: EffectAuthorizer;
+  /**
+   * The exact-payload mechanical-confirmation gate, evaluated strictly after an `allow` and strictly
+   * before dispatch. Defaults to `confirmationNotRequired`, so an unconfigured workload pays only
+   * one branch per dispatchable Effect.
+   */
+  readonly confirmationPolicy: ConfirmationPolicy;
+  /** Resolves the Definition a `SpawnExecution` names. Read-only; a child pins whatever resolves. */
+  readonly definitions: DefinitionStore;
+  /** Whether a controller is registered for a kind, so a child with no controller is refused early. */
+  readonly hasController: (kind: DefinitionKind) => boolean;
   /**
    * Where a capability operation's baseline consequentiality is declared.
    *
@@ -220,6 +367,159 @@ export class EffectProcessor {
     return this.settle(input.pendingOperationId, input.effectId, this.normalize(input.outcome, consequential));
   }
 
+  /**
+   * Delivers a trusted response to an open `RequestUserInput`.
+   *
+   * The trust placement mirrors `settleEffect` / `deliverExternalInput` / `cancelExecution`: an
+   * internet-facing application authenticates the human/application *before* this method is reached.
+   * The `requestId` grants nothing - the runtime reads the exact `UserInputRequest`, checks that its
+   * source Execution can still observe it, validates the value against the *stored* schema, and only
+   * then settles the exact PendingOperation with one correlated `user.input` Event.
+   *
+   * ```text
+   * unknown / already responded / abandoned request  -> settles nothing
+   * value fails the stored schema                     -> explicit validation rejection; request open
+   * requesting Execution terminal / cancelling        -> request abandoned; no Event
+   * otherwise                                         -> PendingOperation settles success,
+   *                                                     UserInputRequest -> responded,
+   *                                                     one `user.input` Event, wake if it matched
+   * ```
+   *
+   * A duplicate response produces no second Event and does not settle twice.
+   */
+  async submitUserInput(input: SubmitUserInputInput): Promise<SubmitUserInputReceipt> {
+    const existing = await this.deps.store.readUserInputRequest(input.requestId);
+    if (!existing) {
+      return { status: "rejected", reason: "unknown_request", detail: `no user input request ${input.requestId}` };
+    }
+    if (existing.state === "responded") return { status: "already_responded", requestId: input.requestId };
+    if (existing.state === "abandoned") return { status: "abandoned", requestId: input.requestId };
+
+    // Validate against the STORED schema, strictly - a structured response to a text request is a
+    // rejection, never a silent stringify. An invalid value settles nothing and leaves the request
+    // open so a UI can re-prompt.
+    const validation = validateValue(existing.schema, input.value);
+    if (!validation.ok) {
+      return {
+        status: "rejected",
+        reason: "invalid_value",
+        detail: validation.issues.map((i) => (i.path ? `${i.path}: ${i.message}` : i.message)).join("; "),
+        issues: validation.issues.map((i) => ({ path: i.path, message: i.message })),
+      };
+    }
+    const value = validation.value as JsonValue;
+
+    const settledAt = nowIso(this.deps.clock);
+    const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+
+    type SettleCommit =
+      | { readonly done: true; readonly receipt: SubmitUserInputReceipt }
+      | {
+          readonly done: false;
+          readonly executionId: ExecutionId;
+          readonly pendingOperationId: PendingOperationId;
+          readonly routed: EventRoutingResult;
+        };
+
+    const result = await this.deps.store.transact(existing.executionId, async (tx): Promise<SettleCommit> => {
+      // Re-read inside the transaction: the check and the write must see the same record, so a
+      // duplicate response cannot both pass "is it still open?".
+      const request = await tx.userInputRequests.get(input.requestId);
+      if (!request) {
+        return { done: true, receipt: { status: "rejected", reason: "unknown_request", detail: `no user input request ${input.requestId}` } };
+      }
+      if (request.state === "responded") return { done: true, receipt: { status: "already_responded", requestId: input.requestId } };
+      if (request.state === "abandoned") return { done: true, receipt: { status: "abandoned", requestId: input.requestId } };
+
+      const operation = await tx.pendingOperations.get(request.pendingOperationId);
+      if (!operation || operation.status !== "pending") {
+        await tx.userInputRequests.update(markUserInputAbandoned(request, settledAt));
+        return { done: true, receipt: { status: "abandoned", requestId: input.requestId } };
+      }
+
+      const context = await tx.executions.get(request.executionId);
+      const cancelRequest = await tx.cancellationRequests.get(request.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle) || cancelRequest?.state === "pending") {
+        await tx.pendingOperations.update(markAbandoned(operation, settledAt));
+        await tx.userInputRequests.update(markUserInputAbandoned(request, settledAt));
+        await this.journal(tx, {
+          effectId: request.effectId,
+          executionId: request.executionId,
+          effectKind: "request_user_input",
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: operation.pendingOperationId,
+          at: settledAt,
+          detail: {
+            reason: !context
+              ? "execution missing"
+              : cancelRequest?.state === "pending"
+                ? "execution cancellation pending"
+                : `execution ${context.lifecycle}`,
+            requestId: input.requestId,
+          },
+        });
+        return {
+          done: true,
+          receipt: {
+            status: "rejected",
+            reason: "execution_unavailable",
+            detail: `execution ${request.executionId} cannot observe this response`,
+          },
+        };
+      }
+
+      await this.journal(tx, {
+        effectId: request.effectId,
+        executionId: request.executionId,
+        effectKind: "request_user_input",
+        phase: "completed",
+        activationId: null,
+        pendingOperationId: operation.pendingOperationId,
+        at: settledAt,
+        detail: { requestId: input.requestId, resultEventId: eventId },
+      });
+      await tx.pendingOperations.update(markSettled(operation, "success", eventId, settledAt));
+      await tx.userInputRequests.update(markUserInputResponded(request, settledAt));
+
+      const routed = await routeEvent({
+        tx,
+        envelope: {
+          eventId,
+          destination: { executionId: request.executionId },
+          kind: "user.input",
+          body: {
+            effectId: request.effectId,
+            effectKind: "request_user_input",
+            pendingOperationId: operation.pendingOperationId,
+            requestId: request.requestId,
+            value,
+          },
+          correlationId: request.correlationId,
+          causationId: request.effectId,
+          occurredAt: settledAt,
+        },
+        deliveredAt: settledAt,
+        recordTransition: async (executionId, from, to, at, reason) => {
+          await tx.transitions.append({ executionId, from, to, at, activationId: null, reason });
+        },
+      });
+      return { done: false, executionId: request.executionId, pendingOperationId: operation.pendingOperationId, routed };
+    });
+
+    if (result.done) return result.receipt;
+    const woke = result.routed.status === "delivered" && result.routed.wokeExecution;
+    if (woke) await this.deps.wake(result.executionId);
+    return {
+      status: "accepted",
+      requestId: input.requestId,
+      executionId: result.executionId,
+      pendingOperationId: result.pendingOperationId,
+      eventId,
+      wokeExecution: woke,
+    };
+  }
+
   // -- one proposal ----------------------------------------------------------
 
   private async processOne(input: ProcessEffectsInput, proposal: EffectProposal): Promise<EffectDispatchRecord> {
@@ -228,7 +528,7 @@ export class EffectProcessor {
     const correlationId = proposal.requestKey ?? effectId;
     const requestedAt = nowIso(this.deps.clock);
 
-    const collision = await this.deps.store.transact(executionId, async (tx) => {
+    const initial = await this.deps.store.transact(executionId, async (tx) => {
       await this.journal(tx, {
         effectId,
         executionId,
@@ -246,13 +546,22 @@ export class EffectProcessor {
           proposal: proposal as unknown as JsonValue,
         },
       });
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, requestedAt)) {
+        return "cancelled" as const;
+      }
       // A request key names one outstanding operation. Reusing a live one would make two results
       // indistinguishable to the controller waiting on it.
       const live = await tx.pendingOperations.listByExecution(executionId);
-      return live.some((operation) => operation.status === "pending" && operation.correlationId === correlationId);
+      return live.some((operation) => operation.status === "pending" && operation.correlationId === correlationId)
+        ? "collision" as const
+        : "clear" as const;
     });
 
-    if (collision) {
+    if (initial === "cancelled") {
+      return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    }
+
+    if (initial === "collision") {
       return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
         code: "duplicate_request_key",
         message: `request key "${correlationId}" already names an unresolved pending operation for this Execution`,
@@ -266,6 +575,18 @@ export class EffectProcessor {
         code: "effect_kind_not_supported",
         message: `effect kind "${proposal.kind}" is accepted v0.4 vocabulary but is not implemented in this slice`,
       });
+    }
+
+    if (proposal.kind === "spawn_execution") {
+      return this.dispatchSpawn(input, proposal, effectId, correlationId, requestedAt);
+    }
+
+    if (proposal.kind === "send_message") {
+      return this.dispatchSendMessage(input, proposal, effectId, correlationId, requestedAt);
+    }
+
+    if (proposal.kind === "request_user_input") {
+      return this.dispatchRequestUserInput(input, proposal, effectId, correlationId, requestedAt);
     }
 
     // The ceiling, before policy. An operation outside the Execution's CURRENT effective authority
@@ -296,7 +617,527 @@ export class EffectProcessor {
       });
     }
 
+    // The confirmation gate, strictly after `allow` and strictly before dispatch. If it fires, the
+    // exact payload is persisted and nothing runs until a trusted approve.
+    const gated = await this.gateOrNull(input, proposal, effectId, correlationId, requestedAt, decision.grantId);
+    if (gated) return gated;
+
     return this.dispatchCapability(input, proposal as UseCapabilityProposal, effectId, correlationId, decision);
+  }
+
+  // -- mechanical confirmation gate --------------------------------------
+
+  /**
+   * Consults the confirmation policy for one authorized Effect, and gates it when required.
+   *
+   * Returns `null` to proceed to ordinary dispatch, or an `EffectDispatchRecord` when the Effect is
+   * now waiting for an exact-payload confirmation. A policy that throws or answers malformedly fails
+   * *conservative* - the Effect is gated rather than dispatched unreviewed - mirroring the
+   * authorizer failing closed toward deny.
+   */
+  private async gateOrNull(
+    input: ProcessEffectsInput,
+    proposal: EffectProposal,
+    effectId: EffectId,
+    correlationId: string,
+    requestedAt: string,
+    grantId: string,
+  ): Promise<EffectDispatchRecord | null> {
+    let requirement: unknown;
+    try {
+      requirement = await this.deps.confirmationPolicy.requires({
+        executionId: input.context.executionId,
+        ownerExecutionId: input.context.ownerExecutionId,
+        rootExecutionId: input.context.rootExecutionId,
+        definition: input.definition,
+        activationId: input.activationId,
+        effectId,
+        effectKind: proposal.kind,
+        proposal,
+        grantId,
+        requestedAt,
+      });
+    } catch (error) {
+      requirement = {
+        required: true,
+        reason: `confirmation policy error: ${error instanceof Error ? error.message : String(error)}`,
+      };
+    }
+    const issues = confirmationRequirementIssues(requirement);
+    const resolved: ConfirmationRequirement =
+      issues.length > 0
+        ? { required: true, reason: `invalid confirmation requirement: ${issues.map((i) => `${i.path}: ${i.message}`).join("; ")}` }
+        : (requirement as ConfirmationRequirement);
+    if (!resolved.required) return null;
+    return this.gateForConfirmation(input, proposal, effectId, correlationId, resolved.reason ?? null);
+  }
+
+  /**
+   * Persists the exact payload, an Effect PendingOperation (not yet dispatched), and a
+   * ConfirmationRequest - one transaction, so the gate is atomic.
+   */
+  private async gateForConfirmation(
+    input: ProcessEffectsInput,
+    proposal: EffectProposal,
+    effectId: EffectId,
+    correlationId: string,
+    reason: string | null,
+  ): Promise<EffectDispatchRecord> {
+    const executionId = input.context.executionId;
+    const digest = proposalDigest(proposal);
+
+    type Commit =
+      | { readonly kind: "abandoned" }
+      | { readonly kind: "gated"; readonly pendingOperationId: PendingOperationId; readonly confirmationId: string };
+
+    const commit = await this.deps.store.transact(executionId, async (tx): Promise<Commit> => {
+      const now = nowIso(this.deps.clock);
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, now)) return { kind: "abandoned" };
+      const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+      const confirmationId = this.deps.ids.next(ID_PREFIXES.confirmationRequest);
+
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: proposal.kind,
+        phase: "authorized",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { confirmationRequired: true, confirmationId, proposalDigest: digest, ...(reason ? { reason } : {}) },
+      });
+
+      // Deliberately NOT markDispatched: the concrete payload is authorized, but its dispatch is
+      // gated on a trusted approval.
+      const pending = createPendingOperation({
+        pendingOperationId,
+        executionId,
+        effectId,
+        effectKind: proposal.kind,
+        correlationId,
+        causationId: input.activationId,
+        idempotencyKey: `confirm:${effectId}` as IdempotencyKey,
+        createdAt: now,
+        // A human may take arbitrarily long, and may never decide.
+        deadline: null,
+      });
+      await tx.pendingOperations.insert(pending);
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: proposal.kind,
+        phase: "confirmation_pending",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { confirmationId, proposalDigest: digest },
+      });
+      await tx.confirmationRequests.insert(
+        createConfirmationRequest({
+          confirmationId,
+          executionId,
+          effectId,
+          effectKind: proposal.kind,
+          pendingOperationId,
+          correlationId,
+          proposal,
+          reason,
+          createdAt: now,
+        }),
+      );
+      return { kind: "gated", pendingOperationId, confirmationId };
+    });
+
+    if (commit.kind === "abandoned") {
+      return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    }
+    return {
+      effectId,
+      effectKind: proposal.kind,
+      correlationId,
+      pendingOperationId: commit.pendingOperationId,
+      phase: "confirmation_pending",
+      settledInline: false,
+    };
+  }
+
+  /**
+   * Resolves one pending exact-payload confirmation.
+   *
+   * A trusted runtime entry point at the same level as `settleEffect` / `submitUserInput`. The
+   * `confirmationId` grants nothing: an internet-facing application authenticates the human/UI before
+   * reaching here, and the decision is a trusted `approve` / `decline`, never free prose.
+   *
+   * ```text
+   * decline   -> ConfirmationRequest declined, PendingOperation settled `declined`, one correlated
+   *              `confirmation.declined` Event; nothing dispatched
+   * approve   -> ConfirmationRequest approved (linearization point), then the CURRENT authority is
+   *              re-checked on the STORED proposal:
+   *                still allowed -> dispatch the STORED exact payload through the ordinary path,
+   *                                 reusing the exact PendingOperation; no model turn
+   *                now denied    -> nothing dispatched; an ordinary authorization denial
+   * ```
+   *
+   * An approve/decline race linearizes on the ConfirmationRequest state: exactly one call moves it
+   * off `pending`. A duplicate approval therefore cannot dispatch twice. A dispatch intent already
+   * committed cannot be rolled back by a later contradictory decision.
+   */
+  async resolveConfirmation(input: ResolveConfirmationInput): Promise<ResolveConfirmationReceipt> {
+    const existing = await this.deps.store.readConfirmationRequest(input.confirmationId);
+    if (!existing) return { status: "unknown_confirmation", confirmationId: input.confirmationId };
+    if (existing.state !== "pending") {
+      return { status: "already_resolved", confirmationId: input.confirmationId, state: existing.state };
+    }
+    return input.decision === "decline" ? this.declineConfirmation(existing) : this.approveConfirmation(existing);
+  }
+
+  private async declineConfirmation(request: ConfirmationRequest): Promise<ResolveConfirmationReceipt> {
+    const at = nowIso(this.deps.clock);
+    const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+
+    type Commit =
+      | { readonly done: true; readonly receipt: ResolveConfirmationReceipt }
+      | {
+          readonly done: false;
+          readonly executionId: ExecutionId;
+          readonly pendingOperationId: PendingOperationId;
+          readonly routed: EventRoutingResult;
+        };
+
+    const result = await this.deps.store.transact(request.executionId, async (tx): Promise<Commit> => {
+      const current = await tx.confirmationRequests.get(request.confirmationId);
+      if (!current || current.state !== "pending") {
+        return { done: true, receipt: { status: "already_resolved", confirmationId: request.confirmationId, state: current?.state ?? "abandoned" } };
+      }
+      const operation = await tx.pendingOperations.get(current.pendingOperationId);
+      if (!operation || operation.status !== "pending") {
+        await tx.confirmationRequests.update(markConfirmationAbandoned(current, at));
+        return { done: true, receipt: { status: "abandoned", confirmationId: request.confirmationId } };
+      }
+      const context = await tx.executions.get(request.executionId);
+      const cancelRequest = await tx.cancellationRequests.get(request.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle) || cancelRequest?.state === "pending") {
+        await tx.pendingOperations.update(markAbandoned(operation, at));
+        await tx.confirmationRequests.update(markConfirmationAbandoned(current, at));
+        await this.journal(tx, {
+          effectId: current.effectId,
+          executionId: request.executionId,
+          effectKind: current.effectKind,
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: operation.pendingOperationId,
+          at,
+          detail: { reason: "execution unavailable", confirmationId: current.confirmationId },
+        });
+        return { done: true, receipt: { status: "abandoned", confirmationId: request.confirmationId } };
+      }
+
+      await tx.confirmationRequests.update(markConfirmationDeclined(current, at));
+      await this.journal(tx, {
+        effectId: current.effectId,
+        executionId: request.executionId,
+        effectKind: current.effectKind,
+        phase: "declined",
+        activationId: null,
+        pendingOperationId: operation.pendingOperationId,
+        at,
+        detail: { confirmationId: current.confirmationId, proposalDigest: current.proposalDigest, resultEventId: eventId },
+      });
+      await tx.pendingOperations.update(markSettled(operation, "declined", eventId, at));
+      const routed = await routeEvent({
+        tx,
+        envelope: {
+          eventId,
+          destination: { executionId: request.executionId },
+          kind: "confirmation.declined",
+          body: {
+            effectId: current.effectId,
+            effectKind: current.effectKind,
+            pendingOperationId: operation.pendingOperationId,
+            confirmationId: current.confirmationId,
+            proposalDigest: current.proposalDigest,
+          },
+          correlationId: current.correlationId,
+          causationId: current.effectId,
+          occurredAt: at,
+        },
+        deliveredAt: at,
+        recordTransition: async (executionId, from, to, when, why) => {
+          await tx.transitions.append({ executionId, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+      return { done: false, executionId: request.executionId, pendingOperationId: operation.pendingOperationId, routed };
+    });
+
+    if (result.done) return result.receipt;
+    const woke = result.routed.status === "delivered" && result.routed.wokeExecution;
+    if (woke) await this.deps.wake(result.executionId);
+    return {
+      status: "declined",
+      confirmationId: request.confirmationId,
+      executionId: result.executionId,
+      pendingOperationId: result.pendingOperationId,
+      eventId,
+      wokeExecution: woke,
+    };
+  }
+
+  private async approveConfirmation(request: ConfirmationRequest): Promise<ResolveConfirmationReceipt> {
+    const claimedAt = nowIso(this.deps.clock);
+
+    // Claim the approval atomically. This is the linearization point: exactly one approve/decline
+    // moves the state off `pending`, so a duplicate approval cannot dispatch twice.
+    type Claim =
+      | { readonly ok: true; readonly operation: PendingOperation }
+      | { readonly ok: false; readonly receipt: ResolveConfirmationReceipt };
+    const claim = await this.deps.store.transact(request.executionId, async (tx): Promise<Claim> => {
+      const current = await tx.confirmationRequests.get(request.confirmationId);
+      if (!current || current.state !== "pending") {
+        return { ok: false, receipt: { status: "already_resolved", confirmationId: request.confirmationId, state: current?.state ?? "abandoned" } };
+      }
+      const operation = await tx.pendingOperations.get(current.pendingOperationId);
+      if (!operation || operation.status !== "pending" || operation.dispatch === "dispatched") {
+        await tx.confirmationRequests.update(markConfirmationAbandoned(current, claimedAt));
+        return { ok: false, receipt: { status: "abandoned", confirmationId: request.confirmationId } };
+      }
+      const context = await tx.executions.get(request.executionId);
+      const cancelRequest = await tx.cancellationRequests.get(request.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle) || cancelRequest?.state === "pending") {
+        await tx.pendingOperations.update(markAbandoned(operation, claimedAt));
+        await tx.confirmationRequests.update(markConfirmationAbandoned(current, claimedAt));
+        await this.journal(tx, {
+          effectId: current.effectId,
+          executionId: request.executionId,
+          effectKind: current.effectKind,
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: operation.pendingOperationId,
+          at: claimedAt,
+          detail: { reason: "execution unavailable", confirmationId: current.confirmationId },
+        });
+        return { ok: false, receipt: { status: "abandoned", confirmationId: request.confirmationId } };
+      }
+      // The human approved. The Effect outcome is decided by the CURRENT-authority re-check below.
+      await tx.confirmationRequests.update(markConfirmationApproved(current, claimedAt));
+      return { ok: true, operation };
+    });
+    if (!claim.ok) return claim.receipt;
+
+    const operation = claim.operation;
+    const context = await this.deps.store.readExecution(request.executionId);
+    if (!context || isTerminalLifecycle(context.lifecycle)) {
+      return this.abandonApprovedConfirmation(request, operation, "execution terminal after approval");
+    }
+
+    const resumeActivationId = (operation.causationId ?? request.effectId) as ActivationId;
+    const resumeInput: ProcessEffectsInput = {
+      context,
+      definition: context.definition,
+      activationId: resumeActivationId,
+      proposals: [],
+    };
+
+    const resume = { pendingOperationId: operation.pendingOperationId, confirmationId: request.confirmationId } as const;
+
+    // Re-establish current dispatch permission on the STORED exact proposal, then enter the resumed
+    // dispatch path. Approval never widens or replaces authority - an old approval cannot override a
+    // revocation that happened while it waited - and the resumed dispatch settles the SAME gated
+    // PendingOperation for every outcome: dispatched, authorization-denied, or runtime-rejected.
+    if (request.effectKind === "use_capability") {
+      const proposal = request.proposal as UseCapabilityProposal;
+      const ceiling = await this.withinEffectiveAuthority(request.executionId, proposal);
+      if (ceiling !== null) return this.denyApprovedConfirmation(request, operation, ceiling.code, ceiling.message);
+      const decision = await this.decide(resumeInput, proposal, request.effectId, nowIso(this.deps.clock));
+      if (decision.decision === "deny") return this.denyApprovedConfirmation(request, operation, decision.code, decision.message);
+      if (this.deps.capabilities === null) {
+        return this.denyApprovedConfirmation(
+          request,
+          operation,
+          "capability_execution_unavailable",
+          "this deployment has no CapabilityExecutor, so an approved capability still cannot be performed",
+        );
+      }
+      const record = await this.dispatchCapability(resumeInput, proposal, request.effectId, request.correlationId, decision, resume);
+      await this.wakeRequesterIfReady(request.executionId);
+      return this.receiptForResumedRecord(request, operation, record);
+    }
+
+    if (request.effectKind === "spawn_execution") {
+      // No second `decide` here: `dispatchSpawn` owns the single fresh authorization check for the
+      // resumed dispatch, and its refusal paths now settle this exact PendingOperation.
+      const record = await this.dispatchSpawn(
+        resumeInput,
+        request.proposal as SpawnExecutionProposal,
+        request.effectId,
+        request.correlationId,
+        nowIso(this.deps.clock),
+        resume,
+      );
+      await this.wakeRequesterIfReady(request.executionId);
+      return this.receiptForResumedRecord(request, operation, record);
+    }
+
+    if (request.effectKind === "send_message") {
+      const record = await this.dispatchSendMessage(
+        resumeInput,
+        request.proposal as SendMessageProposal,
+        request.effectId,
+        request.correlationId,
+        nowIso(this.deps.clock),
+        resume,
+      );
+      await this.wakeRequesterIfReady(request.executionId);
+      return this.receiptForResumedRecord(request, operation, record);
+    }
+
+    return this.denyApprovedConfirmation(
+      request,
+      operation,
+      "effect_kind_not_confirmable",
+      `effect kind "${request.effectKind}" cannot be dispatched from an approved confirmation in this slice`,
+    );
+  }
+
+  /**
+   * Maps the record a resumed dispatch returned to a `resolveConfirmation` receipt.
+   *
+   * A refusal record (`refusal` set by `refuse` on the resume path, or by `dispatchCapability`'s
+   * in-transaction authority recheck) means the gated PendingOperation was already settled
+   * `denied` / `rejected` and one correlated Event routed - the receipt just reports which. An
+   * `abandoned` phase means the requester terminalized mid-resume. Otherwise the stored payload
+   * dispatched.
+   */
+  private receiptForResumedRecord(
+    request: ConfirmationRequest,
+    operation: PendingOperation,
+    record: EffectDispatchRecord,
+  ): ResolveConfirmationReceipt {
+    if (record.refusal) {
+      const shared = {
+        confirmationId: request.confirmationId,
+        executionId: request.executionId,
+        pendingOperationId: operation.pendingOperationId,
+        code: record.refusal.code,
+        message: record.refusal.message,
+      } as const;
+      return record.refusal.kind === "effect.denied"
+        ? { status: "denied", ...shared }
+        : { status: "rejected", ...shared };
+    }
+    if (record.phase === "abandoned") {
+      return { status: "abandoned", confirmationId: request.confirmationId };
+    }
+    return this.dispatchedReceipt(request, operation, record);
+  }
+
+  private dispatchedReceipt(
+    request: ConfirmationRequest,
+    operation: PendingOperation,
+    record: EffectDispatchRecord,
+  ): ResolveConfirmationReceipt {
+    return {
+      status: "dispatched",
+      confirmationId: request.confirmationId,
+      executionId: request.executionId,
+      pendingOperationId: operation.pendingOperationId,
+      phase: record.phase,
+      settledInline: record.settledInline,
+    };
+  }
+
+  /**
+   * The confirmed-dispatch path runs outside an Activation, so a result Event that transitioned the
+   * requester WAITING -> READY inside a dispatch transaction still needs to be enqueued. (The
+   * capability path settles through `settle()`, which already enqueues; this covers the
+   * `spawn`/`send` acknowledgements.)
+   */
+  private async wakeRequesterIfReady(executionId: ExecutionId): Promise<void> {
+    const context = await this.deps.store.readExecution(executionId);
+    if (context?.lifecycle === "READY") await this.deps.wake(executionId);
+  }
+
+  /** Approved, but the current authority now denies it: an ordinary denial, nothing dispatched. */
+  private async denyApprovedConfirmation(
+    request: ConfirmationRequest,
+    operation: PendingOperation,
+    code: string,
+    message: string,
+  ): Promise<ResolveConfirmationReceipt> {
+    const at = nowIso(this.deps.clock);
+    const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+
+    const woke = await this.deps.store.transact(request.executionId, async (tx): Promise<ExecutionId | null> => {
+      const current = await tx.pendingOperations.get(operation.pendingOperationId);
+      if (!current || current.status !== "pending") return null;
+      const context = await tx.executions.get(request.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle)) {
+        await tx.pendingOperations.update(markAbandoned(current, at));
+        return null;
+      }
+      await this.journal(tx, {
+        effectId: request.effectId,
+        executionId: request.executionId,
+        effectKind: request.effectKind,
+        phase: "denied",
+        activationId: null,
+        pendingOperationId: operation.pendingOperationId,
+        at,
+        detail: { code, message, confirmationId: request.confirmationId, resultEventId: eventId, reason: "authority changed while confirmation was pending" },
+      });
+      await tx.pendingOperations.update(markSettled(current, "denied", eventId, at));
+      const routed = await routeEvent({
+        tx,
+        envelope: {
+          eventId,
+          destination: { executionId: request.executionId },
+          kind: "effect.denied",
+          body: { effectId: request.effectId, effectKind: request.effectKind, code, message },
+          correlationId: request.correlationId,
+          causationId: request.effectId,
+          occurredAt: at,
+        },
+        deliveredAt: at,
+        recordTransition: async (executionId, from, to, when, why) => {
+          await tx.transitions.append({ executionId, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+      return routed.status === "delivered" && routed.wokeExecution ? request.executionId : null;
+    });
+
+    if (woke) await this.deps.wake(woke);
+    return {
+      status: "denied",
+      confirmationId: request.confirmationId,
+      executionId: request.executionId,
+      pendingOperationId: operation.pendingOperationId,
+      code,
+      message,
+    };
+  }
+
+  private async abandonApprovedConfirmation(
+    request: ConfirmationRequest,
+    operation: PendingOperation,
+    reason: string,
+  ): Promise<ResolveConfirmationReceipt> {
+    const at = nowIso(this.deps.clock);
+    await this.deps.store.transact(request.executionId, async (tx) => {
+      const current = await tx.pendingOperations.get(operation.pendingOperationId);
+      if (current && current.status === "pending") {
+        await tx.pendingOperations.update(markAbandoned(current, at));
+        await this.journal(tx, {
+          effectId: request.effectId,
+          executionId: request.executionId,
+          effectKind: request.effectKind,
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: operation.pendingOperationId,
+          at,
+          detail: { reason, confirmationId: request.confirmationId },
+        });
+      }
+    });
+    return { status: "abandoned", confirmationId: request.confirmationId };
   }
 
   /**
@@ -377,6 +1218,851 @@ export class EffectProcessor {
     return raw as AuthorizationDecision;
   }
 
+  /**
+   * The cancellation check that participates in every dispatch-intent transaction.
+   *
+   * A check outside that transaction is only an optimization: cancellation could commit between
+   * the check and `dispatch_started`. This helper is therefore called again inside the atomic
+   * capability, child-creation, and peer-delivery commits (and before refusal/replay Events).
+   */
+  private async abandonIfCancellationPending(
+    tx: RuntimeTransaction,
+    input: ProcessEffectsInput,
+    proposal: EffectProposal,
+    effectId: EffectId,
+    at: string,
+    resumePendingOperationId?: PendingOperationId,
+  ): Promise<boolean> {
+    const request = await tx.cancellationRequests.get(input.context.executionId);
+    if (request === undefined || request.state !== "pending") return false;
+    // On the confirmed-dispatch path a gated PendingOperation already exists; abandon it in the same
+    // transaction rather than leaving it pending for terminal cleanup, so an approved confirmation
+    // whose Execution is cancelling mid-resume still linearizes to exactly one terminal state.
+    if (resumePendingOperationId !== undefined) {
+      const pending = await tx.pendingOperations.get(resumePendingOperationId);
+      if (pending && pending.status === "pending") {
+        await tx.pendingOperations.update(markAbandoned(pending, at));
+      }
+    }
+    await this.journal(tx, {
+      effectId,
+      executionId: input.context.executionId,
+      effectKind: proposal.kind,
+      phase: "abandoned",
+      activationId: input.activationId,
+      pendingOperationId: resumePendingOperationId ?? null,
+      at,
+      detail: { reason: "execution cancellation committed before dispatch" },
+    });
+    return true;
+  }
+
+  // -- spawn dispatch ------------------------------------------------------
+
+  /**
+   * Turns a `SpawnExecution` proposal into a real, independently managed child - or refuses, and
+   * creates nothing.
+   *
+   * The order is fixed, and every refusal happens before any write:
+   *
+   * ```text
+   * policy decision                  deny                    -> effect.denied
+   * resolve the Definition           missing / no controller -> effect.rejected
+   * one transaction, retried on structural-budget contention:
+   *   structural spawn budget        exhausted / absent      -> effect.rejected, nothing written
+   *   attenuate authority            requested ∩ parent CURRENT effective
+   *   spend one lineage credit
+   *   insert the child's delegated authority record
+   *   insert the child context, CREATED -> READY
+   *   deliver spawn input to the child (if any)
+   *   register the parent PendingOperation and the child link
+   *   spawn:  settle now, deliver child.spawned
+   *   call:   leave the dependency pending for the terminal result
+   * ```
+   *
+   * Policy runs *before* the Definition is resolved. The authorizer already receives the requested
+   * `definitionId`/`definitionVersion` on the proposal, so resolving the actual stored Definition
+   * first would let a caller with no spawn authority learn, from the shape of the refusal alone,
+   * whether a guessed child Definition exists - an information-disclosure channel a denied caller
+   * must not get. A policy `deny` therefore never touches the DefinitionStore.
+   *
+   * The child is a full Execution: its own id, mailbox, lifecycle, controller state, effective
+   * authority, and place in the lineage. It is never an in-process call between controllers, and
+   * `call` does not make it a different kind of Execution - it only adds the pending dependency.
+   */
+  private async dispatchSpawn(
+    input: ProcessEffectsInput,
+    proposal: SpawnExecutionProposal,
+    effectId: EffectId,
+    correlationId: string,
+    requestedAt: string,
+    resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
+  ): Promise<EffectDispatchRecord> {
+    const parent = input.context;
+    const parentId = parent.executionId;
+
+    // Structural validation of the proposal already happened in `processOne` before this method was
+    // ever called. Authorization comes next, and comes before Definition resolution - see the
+    // docstring above.
+    // On the confirmed-dispatch path this is the ONLY authorization decision for the approved spawn:
+    // `approveConfirmation` no longer runs its own `decide` for spawn/send, so a stateful or
+    // instrumented policy is not consulted twice for one approved dispatch.
+    const decision = await this.decide(input, proposal, effectId, requestedAt);
+    if (decision.decision === "deny") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
+        code: decision.code,
+        message: decision.message,
+        phase: "denied",
+      }, resume);
+    }
+    const grantId = decision.grantId;
+
+    if (resume === undefined) {
+      const gated = await this.gateOrNull(input, proposal, effectId, correlationId, requestedAt, grantId);
+      if (gated) return gated;
+    }
+
+    const definition = isDefinitionId(proposal.definitionId)
+      ? await this.deps.definitions.getVersion(proposal.definitionId as DefinitionId, proposal.definitionVersion)
+      : undefined;
+    if (!definition) {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: "spawn_definition_not_found",
+        message: `no stored definition ${proposal.definitionId}@${proposal.definitionVersion}; a malformed child reference creates no runtime state`,
+      }, resume);
+    }
+    if (!this.deps.hasController(definition.kind)) {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: "spawn_definition_kind_unsupported",
+        message: `no controller is registered for definition kind "${definition.kind}"`,
+      }, resume);
+    }
+    if (proposal.expectedChildKind !== undefined && definition.kind !== proposal.expectedChildKind) {
+      // An Agent Stage / Workflow Stage refuses a mismatched child kind rather than running it under
+      // the wrong Stage semantics. This is the ordinary SpawnExecution boundary, after authorization
+      // and Definition resolution - never an existence oracle a denied caller could probe.
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: "spawn_definition_kind_mismatch",
+        message:
+          `${proposal.definitionId}@${proposal.definitionVersion} is a ${definition.kind} definition, ` +
+          `but a ${proposal.expectedChildKind} child was required`,
+      }, resume);
+    }
+    const childDefinitionRef = definitionRef(definition);
+
+    type SpawnCommit =
+      | { readonly kind: "refused"; readonly code: string; readonly message: string }
+      | { readonly kind: "abandoned" }
+      | {
+          readonly kind: "created";
+          readonly childExecutionId: ExecutionId;
+          readonly rootExecutionId: ExecutionId;
+          readonly pendingOperationId: PendingOperationId;
+          readonly awaited: boolean;
+        };
+
+    const attemptSpawn = async (at: string): Promise<SpawnCommit> =>
+      this.deps.store.transact(parentId, async (tx): Promise<SpawnCommit> => {
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at, resume?.pendingOperationId)) {
+        return { kind: "abandoned" };
+      }
+      // Structural budget, read fresh and checked before anything is written. A descendant cannot
+      // enlarge it, and a lineage with no budget cannot spawn at all.
+      const budget = await tx.lineageSpawnBudgets.get(parent.rootExecutionId);
+      if (!budget) {
+        return {
+          kind: "refused",
+          code: "no_structural_spawn_budget",
+          message:
+            `lineage ${parent.rootExecutionId} was created without a structural spawn budget; ` +
+            "autonomous child creation is refused (an absent budget is not an unlimited one)",
+        };
+      }
+      if (!canConsumeSpawnCredit(budget)) {
+        return {
+          kind: "refused",
+          code: "structural_spawn_budget_exhausted",
+          message:
+            `lineage ${parent.rootExecutionId} has spent all ${budget.capacity} of its structural spawn ` +
+            "credits; recursion is legal but finite, and a descendant cannot mint more",
+        };
+      }
+
+      // Attenuation against the parent's CURRENT effective authority, read here inside the same
+      // transaction. A request prepared while an operation was still possible yields nothing once
+      // the parent's ceiling has been narrowed.
+      const parentAuthority = (await tx.operationAuthorities.get(parentId)) ?? null;
+      const granted = attenuateChildOperations(parentAuthority, proposal.requestedOperations ?? []);
+
+      const childId = toExecutionId(this.deps.ids.next(ID_PREFIXES.execution));
+      const childMailboxId = this.deps.ids.next(ID_PREFIXES.mailbox);
+      const childAuthorityId = this.deps.ids.next(ID_PREFIXES.operationAuthority);
+      const pendingOperationId =
+        resume?.pendingOperationId ?? (this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId);
+      const awaited = proposal.awaitTerminalResult === true;
+
+      await tx.lineageSpawnBudgets.update(consumeSpawnCredit(budget), budget.revision);
+
+      await tx.operationAuthorities.insert(
+        createDelegatedOperationAuthority({
+          authorityId: childAuthorityId,
+          executionId: childId,
+          operations: granted,
+          ...(parentAuthority
+            ? { delegatedFrom: { authorityId: parentAuthority.authorityId, executionId: parentId } }
+            : {}),
+          grantedAt: at,
+        }),
+      );
+
+      const childContext = createExecutionContext({
+        executionId: childId,
+        kind: definition.kind,
+        definition: childDefinitionRef,
+        ownerExecutionId: parentId,
+        rootExecutionId: parent.rootExecutionId,
+        mailboxId: childMailboxId,
+        createdAt: at,
+        authority: { authorityId: childAuthorityId },
+      });
+      await tx.executions.insert(childContext);
+      const readyChild = transitionContext(childContext, "READY", at);
+      await tx.executions.update(readyChild, childContext.revision);
+      await tx.transitions.append({
+        executionId: childId,
+        from: "CREATED",
+        to: "READY",
+        at,
+        activationId: null,
+        reason: `spawned by ${effectId}`,
+      });
+
+      if (proposal.input !== undefined) {
+        await routeEvent({
+          tx,
+          envelope: {
+            eventId: this.deps.ids.next(ID_PREFIXES.event) as EventId,
+            destination: { executionId: childId },
+            kind: "external.input",
+            body: { label: "spawn", payload: proposal.input },
+            correlationId: null,
+            causationId: effectId,
+            occurredAt: at,
+          },
+          deliveredAt: at,
+          recordTransition: async (id, from, to, when, why) => {
+            await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+          },
+        });
+      }
+
+      const pending = markDispatched(
+        createPendingOperation({
+          pendingOperationId,
+          executionId: parentId,
+          effectId,
+          effectKind: "spawn_execution",
+          correlationId,
+          causationId: input.activationId,
+          idempotencyKey: `spawn:${effectId}` as IdempotencyKey,
+          createdAt: at,
+          // No configured deadline, not a far-future sentinel: a parent may legitimately wait
+          // indefinitely for a child's terminal result (docs/execution-runtime.md §16), and E.0
+          // implements no child-result deadline/cancellation policy - that is E.1 work. A fabricated
+          // "long enough" timestamp would misrepresent an unconfigured deadline as a configured one.
+          deadline: null,
+        }),
+        at,
+      );
+      if (resume) await tx.pendingOperations.update(pending);
+      else await tx.pendingOperations.insert(pending);
+
+      const grantedDetail = granted.map((ref) => `${ref.capability}/${ref.operation}`);
+      await this.journal(tx, {
+        effectId,
+        executionId: parentId,
+        effectKind: "spawn_execution",
+        phase: "authorized",
+        activationId: input.activationId,
+        pendingOperationId,
+        at,
+        detail: {
+          grantId,
+          definitionId: proposal.definitionId,
+          definitionVersion: proposal.definitionVersion,
+          childExecutionId: childId,
+          rootExecutionId: parent.rootExecutionId,
+          requestedOperations: (proposal.requestedOperations ?? []).map((ref) => `${ref.capability}/${ref.operation}`),
+          grantedOperations: grantedDetail,
+          mode: awaited ? "call" : "spawn",
+        },
+      });
+      await this.journal(tx, {
+        effectId,
+        executionId: parentId,
+        effectKind: "spawn_execution",
+        phase: "dispatch_started",
+        activationId: input.activationId,
+        pendingOperationId,
+        at,
+        detail: { childExecutionId: childId },
+      });
+
+      await tx.childExecutionLinks.insert(
+        createChildExecutionLink({
+          childExecutionId: childId,
+          parentExecutionId: parentId,
+          rootExecutionId: parent.rootExecutionId,
+          definition: childDefinitionRef,
+          effectId,
+          spawnedByActivationId: input.activationId,
+          pendingOperationId: awaited ? pendingOperationId : null,
+          resultCorrelationId: correlationId,
+          createdAt: at,
+        }),
+      );
+
+      if (!awaited) {
+        // spawn: the parent's dependency is "the child exists", and it does. Settle now with the
+        // creation acknowledgement - a distinct Event kind from the terminal result it never waits
+        // for.
+        const spawnedEventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+        await this.journal(tx, {
+          effectId,
+          executionId: parentId,
+          effectKind: "spawn_execution",
+          phase: "completed",
+          activationId: input.activationId,
+          pendingOperationId,
+          at,
+          detail: { childExecutionId: childId, resultEventId: spawnedEventId },
+        });
+        await tx.pendingOperations.update(markSettled(pending, "success", spawnedEventId, at));
+        await routeEvent({
+          tx,
+          envelope: {
+            eventId: spawnedEventId,
+            destination: { executionId: parentId },
+            kind: "child.spawned",
+            body: {
+              effectId,
+              effectKind: "spawn_execution",
+              pendingOperationId,
+              childExecutionId: childId,
+              rootExecutionId: parent.rootExecutionId,
+              definitionId: proposal.definitionId,
+              definitionVersion: proposal.definitionVersion,
+              grantedOperations: granted.map((ref) => ({ capability: ref.capability, operation: ref.operation })),
+            },
+            correlationId,
+            causationId: effectId,
+            occurredAt: at,
+          },
+          deliveredAt: at,
+          recordTransition: async (id, from, to, when, why) => {
+            await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+          },
+        });
+      }
+
+      return { kind: "created", childExecutionId: childId, rootExecutionId: parent.rootExecutionId, pendingOperationId, awaited };
+    });
+
+    // Bounded retry on a genuine budget CAS conflict. A loss here means another Execution's spawn
+    // committed the same lineage credit first; it never means this transaction wrote anything -
+    // `store.transact` discards the whole draft when the callback throws, so re-evaluating from
+    // fresh state cannot overspend, cannot duplicate a child, and cannot leave a partial record. A
+    // caller that merely lost the race is not a controller/Activation failure.
+    let outcome: SpawnCommit | null = null;
+    let lastConflict: SpawnBudgetConcurrencyError | null = null;
+    for (let attempt = 1; attempt <= MAX_SPAWN_BUDGET_CONTENTION_ATTEMPTS; attempt += 1) {
+      try {
+        outcome = await attemptSpawn(nowIso(this.deps.clock));
+        break;
+      } catch (error) {
+        if (!(error instanceof SpawnBudgetConcurrencyError)) throw error;
+        lastConflict = error;
+      }
+    }
+
+    if (outcome === null) {
+      // Contention persisted past the retry limit. This is infrastructure contention, not a
+      // controller semantic decision, so it is answered the same way every other spawn refusal is:
+      // an explicit Event, no Activation failure, no child, no credit spent.
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: "spawn_budget_contention",
+        message:
+          `the structural spawn budget for lineage ${parent.rootExecutionId} kept changing underneath ` +
+          `${MAX_SPAWN_BUDGET_CONTENTION_ATTEMPTS} attempts to spend a credit` +
+          (lastConflict ? ` (${lastConflict.message})` : "") +
+          "; retry the spawn",
+      }, resume);
+    }
+
+    if (outcome.kind === "refused") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: outcome.code,
+        message: outcome.message,
+      }, resume);
+    }
+
+    if (outcome.kind === "abandoned") {
+      return {
+        effectId,
+        effectKind: "spawn_execution",
+        correlationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        phase: "abandoned",
+        settledInline: false,
+      };
+    }
+
+    // The child record is durable; make it runnable. Post-commit, exactly like an Effect result
+    // that woke a waiting Execution.
+    await this.deps.wake(outcome.childExecutionId);
+
+    return {
+      effectId,
+      effectKind: "spawn_execution",
+      correlationId,
+      pendingOperationId: outcome.pendingOperationId,
+      phase: outcome.awaited ? "dispatch_started" : "completed",
+      settledInline: !outcome.awaited,
+    };
+  }
+
+  // -- peer messaging ------------------------------------------------------
+
+  /**
+   * Turns a `SendMessage` proposal (`send` / `ask` / `reply`) into a delivered `peer.message` - or
+   * refuses, and delivers nothing.
+   *
+   * ```text
+   * policy decision                       deny                       -> effect.denied
+   * (reply) resolve the open PeerRequestLink   missing / settled / not the addressee
+   *                                                                  -> effect.rejected
+   * resolve the destination Execution     missing / terminal         -> effect.rejected
+   * one transaction:
+   *   sender PendingOperation + journal
+   *   route peer.message to the recipient (fromExecutionId is runtime-owned)
+   *   reply: settle the asker's exact original PendingOperation, close the link
+   *   ask:   leave the sender PendingOperation pending, insert the PeerRequestLink
+   *   send/reply: settle the sender PendingOperation now, deliver message.sent
+   * ```
+   *
+   * Policy runs *before* the destination is ever looked up. A denied sender must not be able to tell
+   * an existing destination from a nonexistent one - through the refusal class or a pre-policy
+   * runtime lookup - exactly as with the E.0.1 spawn hardening. A message/correlation id is not a
+   * credential: a `reply` is authorized as the responder's *own* outbound send, and it settles a
+   * request only if the runtime holds an open link naming this Execution as the expected responder.
+   */
+  private async dispatchSendMessage(
+    input: ProcessEffectsInput,
+    proposal: SendMessageProposal,
+    effectId: EffectId,
+    correlationId: string,
+    requestedAt: string,
+    resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
+  ): Promise<EffectDispatchRecord> {
+    const senderId = input.context.executionId;
+    const isReply = proposal.inReplyToMessageId !== undefined;
+    const awaited = !isReply && proposal.awaitReply === true;
+
+    // On the confirmed-dispatch path this is the ONLY authorization decision for the approved send:
+    // `approveConfirmation` no longer runs its own `decide` for spawn/send.
+    const decision = await this.decide(input, proposal, effectId, requestedAt);
+    if (decision.decision === "deny") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
+        code: decision.code,
+        message: decision.message,
+        phase: "denied",
+      }, resume);
+    }
+    const grantId = decision.grantId;
+
+    if (resume === undefined) {
+      const gated = await this.gateOrNull(input, proposal, effectId, correlationId, requestedAt, grantId);
+      if (gated) return gated;
+    }
+
+    type MessageCommit =
+      | { readonly kind: "refused"; readonly code: string; readonly message: string }
+      | { readonly kind: "abandoned" }
+      | {
+          readonly kind: "sent";
+          readonly pendingOperationId: PendingOperationId;
+          readonly recipientId: ExecutionId;
+          readonly recipientWoke: boolean;
+          readonly settledNow: boolean;
+        };
+
+    const commit = await this.deps.store.transact(senderId, async (tx): Promise<MessageCommit> => {
+      const now = nowIso(this.deps.clock);
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, now, resume?.pendingOperationId)) {
+        return { kind: "abandoned" };
+      }
+      const messageId = this.deps.ids.next(ID_PREFIXES.message);
+
+      let recipientId: ExecutionId;
+      let replyLink: Awaited<ReturnType<typeof tx.peerRequestLinks.get>> = undefined;
+      let envelopeCorrelation: string | null = null;
+
+      if (isReply) {
+        const link = await tx.peerRequestLinks.get(proposal.inReplyToMessageId!);
+        if (!link) {
+          return { kind: "refused", code: "reply_no_such_request", message: `no peer request ${proposal.inReplyToMessageId}` };
+        }
+        if (link.state === "abandoned") {
+          return { kind: "refused", code: "reply_request_abandoned", message: `peer request ${link.messageId} was abandoned` };
+        }
+        if (link.state !== "open") {
+          return { kind: "refused", code: "reply_already_settled", message: `peer request ${link.messageId} was already answered` };
+        }
+        if (link.responderExecutionId !== senderId) {
+          return {
+            kind: "refused",
+            code: "reply_not_addressee",
+            message: `execution ${senderId} is not the peer that request ${link.messageId} expected a reply from`,
+          };
+        }
+        replyLink = link;
+        if (link.requesterExecutionId !== proposal.to) {
+          return {
+            kind: "refused",
+            code: "reply_destination_mismatch",
+            message: `reply destination ${proposal.to} does not match requester ${link.requesterExecutionId}`,
+          };
+        }
+        recipientId = proposal.to as ExecutionId;
+        envelopeCorrelation = link.requestCorrelationId;
+      } else {
+        recipientId = proposal.to as ExecutionId;
+      }
+
+      const recipient = await tx.executions.get(recipientId);
+      if (!recipient) {
+        return { kind: "refused", code: "message_destination_not_found", message: `no execution ${recipientId}` };
+      }
+      if (isTerminalLifecycle(recipient.lifecycle)) {
+        return {
+          kind: "refused",
+          code: "message_destination_terminal",
+          message: `execution ${recipientId} is ${recipient.lifecycle} and cannot receive a message`,
+        };
+      }
+
+      const pendingOperationId =
+        resume?.pendingOperationId ?? (this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId);
+      const mode = isReply ? "reply" : awaited ? "ask" : "send";
+
+      await this.journal(tx, {
+        effectId,
+        executionId: senderId,
+        effectKind: "send_message",
+        phase: "authorized",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: {
+          grantId,
+          to: recipientId,
+          messageId,
+          mode,
+          ...(isReply ? { inReplyToMessageId: replyLink!.messageId } : {}),
+          ...(resume ? { viaConfirmation: resume.confirmationId } : {}),
+        },
+      });
+
+      const pending = markDispatched(
+        createPendingOperation({
+          pendingOperationId,
+          executionId: senderId,
+          effectId,
+          effectKind: "send_message",
+          correlationId,
+          causationId: input.activationId,
+          idempotencyKey: `send:${effectId}` as IdempotencyKey,
+          createdAt: now,
+          // A peer may take arbitrarily long to reply; an `ask` legitimately waits indefinitely.
+          deadline: null,
+        }),
+        now,
+      );
+      // On the confirmed-dispatch path the gated PendingOperation already exists; reuse it so the
+      // controller's correlation stays stable across the confirmation.
+      if (resume) await tx.pendingOperations.update(pending);
+      else await tx.pendingOperations.insert(pending);
+      await this.journal(tx, {
+        effectId,
+        executionId: senderId,
+        effectKind: "send_message",
+        phase: "dispatch_started",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { messageId, to: recipientId },
+      });
+
+      const peerEventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+      const peerRouted = await routeEvent({
+        tx,
+        envelope: {
+          eventId: peerEventId,
+          destination: { executionId: recipientId },
+          kind: "peer.message",
+          body: {
+            messageId,
+            // Runtime-owned. Never a controller-provided `from` field.
+            fromExecutionId: senderId,
+            body: proposal.body,
+            expectsReply: awaited,
+            inReplyToMessageId: isReply ? replyLink!.messageId : null,
+          },
+          // A reply carries the asker's original correlation so its exact PendingOperation settles;
+          // a fresh send/ask is an unsolicited observation and carries none.
+          correlationId: envelopeCorrelation,
+          causationId: effectId,
+          occurredAt: now,
+        },
+        deliveredAt: now,
+        recordTransition: async (id, from, to, when, why) => {
+          await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+      const recipientWoke = peerRouted.status === "delivered" && peerRouted.wokeExecution;
+
+      if (isReply) {
+        // Settle the asker's exact original `ask` PendingOperation. Only this link's requester, only
+        // its recorded PendingOperation, and only while it is still pending.
+        const askerPending = await tx.pendingOperations.get(replyLink!.requestPendingOperationId);
+        if (askerPending && askerPending.status === "pending") {
+          await tx.pendingOperations.update(markSettled(askerPending, "success", peerEventId, now));
+          await this.journal(tx, {
+            effectId: replyLink!.requestEffectId,
+            executionId: replyLink!.requesterExecutionId,
+            effectKind: "send_message",
+            phase: "completed",
+            activationId: null,
+            pendingOperationId: askerPending.pendingOperationId,
+            at: now,
+            detail: { messageId, replyEventId: peerEventId, viaEffectId: effectId },
+          });
+        }
+        await tx.peerRequestLinks.update(markPeerRequestLinkSettled(replyLink!, now));
+      }
+
+      let settledNow: boolean;
+      if (awaited && !isReply) {
+        // ask: the sender stays owed a reply. Record the correlation link; no message.sent.
+        await tx.peerRequestLinks.insert(
+          createPeerRequestLink({
+            messageId,
+            requesterExecutionId: senderId,
+            responderExecutionId: recipientId,
+            requestEffectId: effectId,
+            requestPendingOperationId: pendingOperationId,
+            requestCorrelationId: correlationId,
+            createdAt: now,
+          }),
+        );
+        settledNow = false;
+      } else {
+        // send, or reply: "admitted for the destination" is the whole dependency, and it is met.
+        const ackEventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+        await this.journal(tx, {
+          effectId,
+          executionId: senderId,
+          effectKind: "send_message",
+          phase: "completed",
+          activationId: input.activationId,
+          pendingOperationId,
+          at: now,
+          detail: { messageId, resultEventId: ackEventId },
+        });
+        await tx.pendingOperations.update(markSettled(pending, "success", ackEventId, now));
+        await routeEvent({
+          tx,
+          envelope: {
+            eventId: ackEventId,
+            destination: { executionId: senderId },
+            kind: "message.sent",
+            body: { effectId, effectKind: "send_message", pendingOperationId, messageId, to: recipientId },
+            correlationId,
+            causationId: effectId,
+            occurredAt: now,
+          },
+          deliveredAt: now,
+          recordTransition: async (id, from, to, when, why) => {
+            await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+          },
+        });
+        settledNow = true;
+      }
+
+      return { kind: "sent", pendingOperationId, recipientId, recipientWoke, settledNow };
+    });
+
+    if (commit.kind === "refused") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: commit.code,
+        message: commit.message,
+      }, resume);
+    }
+
+    if (commit.kind === "abandoned") {
+      return {
+        effectId,
+        effectKind: "send_message",
+        correlationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        phase: "abandoned",
+        settledInline: false,
+      };
+    }
+
+    // Scheduling is post-commit, exactly as for a capability result or a spawned child.
+    if (commit.recipientWoke) await this.deps.wake(commit.recipientId);
+
+    return {
+      effectId,
+      effectKind: "send_message",
+      correlationId,
+      pendingOperationId: commit.pendingOperationId,
+      phase: commit.settledNow ? "completed" : "dispatch_started",
+      settledInline: commit.settledNow,
+    };
+  }
+
+  // -- user input ---------------------------------------------------------
+
+  /**
+   * Turns a `RequestUserInput` proposal into an open runtime-owned `UserInputRequest` - or refuses,
+   * and records nothing.
+   *
+   * ```text
+   * policy decision              deny -> effect.denied
+   * one transaction:
+   *   journal authorized + dispatch_started
+   *   sender PendingOperation (deadline null - a user may never answer)
+   *   UserInputRequest { state: open }, schema resolved (absent -> { kind: "string" })
+   *   NO result Event - the user has not answered yet
+   * ```
+   *
+   * A controller asking a question is still requesting a runtime interaction, so it crosses the
+   * `EffectAuthorizer` (deny-by-default; the reference policy requires a narrow `userInput` grant).
+   * "the model requested it", "the prompt says it is needed", "the user has interacted before", and
+   * "the Execution knows a user identity" are none of them permission.
+   */
+  private async dispatchRequestUserInput(
+    input: ProcessEffectsInput,
+    proposal: RequestUserInputProposal,
+    effectId: EffectId,
+    correlationId: string,
+    requestedAt: string,
+  ): Promise<EffectDispatchRecord> {
+    const executionId = input.context.executionId;
+
+    const decision = await this.decide(input, proposal, effectId, requestedAt);
+    if (decision.decision === "deny") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
+        code: decision.code,
+        message: decision.message,
+        phase: "denied",
+      });
+    }
+    const grantId = decision.grantId;
+
+    // Absent schema resolves to ordinary text - never an unconstrained object, never a silent
+    // stringify of structured input.
+    const schema: ValueSchema = proposal.schema ?? { kind: "string" };
+
+    type Commit =
+      | { readonly kind: "abandoned" }
+      | { readonly kind: "opened"; readonly pendingOperationId: PendingOperationId; readonly requestId: string };
+
+    const commit = await this.deps.store.transact(executionId, async (tx): Promise<Commit> => {
+      const now = nowIso(this.deps.clock);
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, now)) {
+        return { kind: "abandoned" };
+      }
+      const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+      const requestId = this.deps.ids.next(ID_PREFIXES.userInputRequest);
+
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: "request_user_input",
+        phase: "authorized",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { grantId, requestId, prompt: proposal.prompt, schemaSupplied: proposal.schema !== undefined },
+      });
+
+      const pending = markDispatched(
+        createPendingOperation({
+          pendingOperationId,
+          executionId,
+          effectId,
+          effectKind: "request_user_input",
+          correlationId,
+          causationId: input.activationId,
+          idempotencyKey: `user_input:${effectId}` as IdempotencyKey,
+          createdAt: now,
+          // A user may take arbitrarily long, and may never answer at all.
+          deadline: null,
+        }),
+        now,
+      );
+      await tx.pendingOperations.insert(pending);
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: "request_user_input",
+        phase: "dispatch_started",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { requestId },
+      });
+
+      await tx.userInputRequests.insert(
+        createUserInputRequest({
+          requestId,
+          executionId,
+          effectId,
+          pendingOperationId,
+          correlationId,
+          prompt: proposal.prompt,
+          schema,
+          createdAt: now,
+        }),
+      );
+
+      return { kind: "opened", pendingOperationId, requestId };
+    });
+
+    if (commit.kind === "abandoned") {
+      return {
+        effectId,
+        effectKind: "request_user_input",
+        correlationId,
+        pendingOperationId: null,
+        phase: "abandoned",
+        settledInline: false,
+      };
+    }
+
+    return {
+      effectId,
+      effectKind: "request_user_input",
+      correlationId,
+      pendingOperationId: commit.pendingOperationId,
+      phase: "dispatch_started",
+      settledInline: false,
+    };
+  }
+
   // -- capability dispatch ---------------------------------------------------
 
   private async dispatchCapability(
@@ -385,6 +2071,7 @@ export class EffectProcessor {
     effectId: EffectId,
     correlationId: string,
     decision: Extract<AuthorizationDecision, { decision: "allow" }>,
+    resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
   ): Promise<EffectDispatchRecord> {
     const executionId = input.context.executionId;
     const constraints: AuthorizationConstraints = decision.constraints ?? {};
@@ -408,18 +2095,25 @@ export class EffectProcessor {
       input: proposal.input,
     });
 
-    const guard = await this.checkPriorOperations(executionId, idempotencyKey, consequential, proposal);
-    if (guard.kind === "refuse") {
-      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
-        code: guard.code,
-        message: guard.message,
-      });
-    }
-    if (guard.kind === "replay") {
-      return this.replay(input, proposal, effectId, correlationId, guard.operation, guard.observation);
+    // The duplicate/unresolved guard runs at proposal time. On the confirmed-dispatch path the exact
+    // payload was already guarded when it was proposed, and §18's re-check concerns *authority*, not
+    // duplicate suppression - which `approveConfirmation` handled by re-running the ceiling and
+    // authorizer on the stored proposal.
+    if (resume === undefined) {
+      const guard = await this.checkPriorOperations(executionId, idempotencyKey, consequential, proposal);
+      if (guard.kind === "refuse") {
+        return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+          code: guard.code,
+          message: guard.message,
+        });
+      }
+      if (guard.kind === "replay") {
+        return this.replay(input, proposal, effectId, correlationId, guard.operation, guard.observation);
+      }
     }
 
-    const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+    const pendingOperationId =
+      resume?.pendingOperationId ?? (this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId);
     const dispatchedAt = nowIso(this.deps.clock);
     const deadline = this.deadlineFor(proposal, constraints, dispatchedAt);
     // A decision that names no resource narrowing has authorized what was asked for; the fallback
@@ -433,9 +2127,71 @@ export class EffectProcessor {
       ...(proposal.authorizationEvidence !== undefined ? { evidence: proposal.authorizationEvidence } : {}),
     };
 
+    type DispatchIntent =
+      | { readonly kind: "dispatched"; readonly operation: PendingOperation }
+      | { readonly kind: "abandoned" }
+      | { readonly kind: "denied"; readonly code: string; readonly message: string };
+
     // One transaction: the grant, the pending operation, and the intent to dispatch commit together
     // and commit *before* the call. If this throws, nothing exists and nothing was attempted.
-    const operation = await this.deps.store.transact(executionId, async (tx) => {
+    const intent = await this.deps.store.transact(executionId, async (tx): Promise<DispatchIntent> => {
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, dispatchedAt, resume?.pendingOperationId)) {
+        return { kind: "abandoned" };
+      }
+
+      // Slice E.2.1: the runtime-owned hard operation-authority ceiling must linearize against
+      // confirmed dispatch intent. On the resume path the ceiling was checked before this method, but
+      // a store-owned revocation could have committed since; re-read it here, inside the same
+      // transaction that commits `dispatch_started`, and refuse if the operation is no longer within
+      // it. Paid only by the delayed confirmed path - the ordinary proposal path never sets `resume`.
+      if (resume !== undefined) {
+        const authority = (await tx.operationAuthorities.get(executionId)) ?? null;
+        if (!authority || !authorizesOperation(authority, { capability: proposal.capability, operation: proposal.operation })) {
+          const code = authority ? "operation_outside_effective_authority" : "no_effective_operation_authority";
+          const message = authority
+            ? `${proposal.capability}/${proposal.operation} is no longer in effective operation authority ` +
+              `${authority.authorityId} (version ${authority.version}); an approval never widens authority`
+            : `execution ${executionId} no longer has effective operation authority; an approval never widens authority`;
+          const current = await tx.pendingOperations.get(pendingOperationId);
+          if (current && current.status === "pending") {
+            const denyEventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+            await this.journal(tx, {
+              effectId,
+              executionId,
+              effectKind: proposal.kind,
+              phase: "denied",
+              activationId: input.activationId,
+              pendingOperationId,
+              at: dispatchedAt,
+              detail: {
+                code,
+                message,
+                confirmationId: resume.confirmationId,
+                resultEventId: denyEventId,
+                reason: "operation authority revoked before confirmed dispatch intent",
+              },
+            });
+            await tx.pendingOperations.update(markSettled(current, "denied", denyEventId, dispatchedAt));
+            await routeEvent({
+              tx,
+              envelope: {
+                eventId: denyEventId,
+                destination: { executionId },
+                kind: "effect.denied",
+                body: { effectId, effectKind: proposal.kind, code, message },
+                correlationId,
+                causationId: effectId,
+                occurredAt: dispatchedAt,
+              },
+              deliveredAt: dispatchedAt,
+              recordTransition: async (id, from, to, when, why) => {
+                await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+              },
+            });
+          }
+          return { kind: "denied", code, message };
+        }
+      }
       await this.journal(tx, {
         effectId,
         executionId,
@@ -453,6 +2209,7 @@ export class EffectProcessor {
           idempotencyKey,
           deadline,
           resources: resources.map((resource) => `${resource.bindingId}:${resource.mode}`),
+          ...(resume ? { viaConfirmation: resume.confirmationId } : {}),
         },
       });
       const created = createPendingOperation({
@@ -467,7 +2224,11 @@ export class EffectProcessor {
         deadline,
       });
       const dispatched = markDispatched(created, dispatchedAt);
-      await tx.pendingOperations.insert(dispatched);
+      // On the confirmed-dispatch path the gated PendingOperation already exists (state `pending`,
+      // `not_dispatched`); reuse it, so the controller's correlation is stable across the
+      // confirmation and there is only ever one PendingOperation for this Effect.
+      if (resume) await tx.pendingOperations.update(dispatched);
+      else await tx.pendingOperations.insert(dispatched);
       await this.journal(tx, {
         effectId,
         executionId,
@@ -478,8 +2239,31 @@ export class EffectProcessor {
         at: dispatchedAt,
         detail: { capability: proposal.capability, operation: proposal.operation, consequential },
       });
-      return dispatched;
+      return { kind: "dispatched", operation: dispatched };
     });
+
+    if (intent.kind === "abandoned") {
+      return {
+        effectId,
+        effectKind: proposal.kind,
+        correlationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        phase: "abandoned",
+        settledInline: false,
+      };
+    }
+    if (intent.kind === "denied") {
+      return {
+        effectId,
+        effectKind: proposal.kind,
+        correlationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        phase: "denied",
+        settledInline: true,
+        refusal: { kind: "effect.denied", code: intent.code, message: intent.message },
+      };
+    }
+    const operation = intent.operation;
 
     const request: AuthorizedCapabilityRequest = {
       executionId,
@@ -626,8 +2410,9 @@ export class EffectProcessor {
 
       const request = await this.requestFacts(tx, operation);
       const context = await tx.executions.get(operation.executionId);
-      if (!context || isTerminalLifecycle(context.lifecycle)) {
-        const abandoned = markAbandoned(operation, settledAt);
+      const cancelRequest = await tx.cancellationRequests.get(operation.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle) || cancelRequest?.state === "pending") {
+        const abandoned = markAbandoned(operation, settledAt, outcome.status);
         await tx.pendingOperations.update(abandoned);
         await this.journal(tx, {
           effectId,
@@ -637,7 +2422,14 @@ export class EffectProcessor {
           activationId: null,
           pendingOperationId,
           at: settledAt,
-          detail: { reason: context ? `execution ${context.lifecycle}` : "execution missing" },
+          detail: {
+            reason: !context
+              ? "execution missing"
+              : cancelRequest?.state === "pending"
+                ? "execution cancellation pending"
+                : `execution ${context.lifecycle}`,
+            outcome: outcome as unknown as JsonValue,
+          },
         });
         return {
           done: true,
@@ -697,13 +2489,100 @@ export class EffectProcessor {
     correlationId: string,
     kind: Extract<EventKind, "effect.denied" | "effect.rejected">,
     reason: { readonly code: string; readonly message: string; readonly phase?: EffectJournalPhase },
+    resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
   ): Promise<EffectDispatchRecord> {
     const at = nowIso(this.deps.clock);
     const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
     const phase: EffectJournalPhase = reason.phase ?? "rejected";
     const executionId = input.context.executionId;
+    const refusal = { kind, code: reason.code, message: reason.message } as const;
 
-    await this.deps.store.transact(executionId, async (tx) => {
+    const envelope: EventEnvelope = {
+      eventId,
+      destination: { executionId },
+      kind,
+      body: { effectId, effectKind: proposal.kind, code: reason.code, message: reason.message },
+      correlationId,
+      causationId: effectId,
+      occurredAt: at,
+    };
+    const routeInto = async (tx: RuntimeTransaction): Promise<void> => {
+      await routeEvent({
+        tx,
+        envelope,
+        deliveredAt: at,
+        recordTransition: async (id, from, to, when, why) => {
+          await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+        },
+      });
+    };
+
+    // Confirmed-dispatch path: an approved Effect that is refused before it dispatched must settle
+    // the SAME gated PendingOperation the confirmation gate created - never leave it pending, never
+    // mint a second one, never report `pendingOperationId: null`. `effect.denied` settles it
+    // `denied`; `effect.rejected` settles it `rejected` (distinct from failure / decline / cancel).
+    if (resume !== undefined) {
+      const outcome: Exclude<PendingOutcomeState, null> = kind === "effect.denied" ? "denied" : "rejected";
+      type ResumeCommit = "abandoned" | "settled" | "gone";
+      const committed = await this.deps.store.transact(executionId, async (tx): Promise<ResumeCommit> => {
+        if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at, resume.pendingOperationId)) {
+          return "abandoned";
+        }
+        const operation = await tx.pendingOperations.get(resume.pendingOperationId);
+        // Already settled/abandoned by a concurrent path (terminal cleanup, a racing decision): there
+        // is nothing left to settle and no second Event to route.
+        if (!operation || operation.status !== "pending") return "gone";
+        const context = await tx.executions.get(executionId);
+        if (!context || isTerminalLifecycle(context.lifecycle)) {
+          await tx.pendingOperations.update(markAbandoned(operation, at));
+          return "abandoned";
+        }
+        await this.journal(tx, {
+          effectId,
+          executionId,
+          effectKind: proposal.kind,
+          phase,
+          activationId: input.activationId,
+          pendingOperationId: resume.pendingOperationId,
+          at,
+          detail: {
+            code: reason.code,
+            message: reason.message,
+            confirmationId: resume.confirmationId,
+            resultEventId: eventId,
+            reason: "approved effect refused before dispatch",
+          },
+        });
+        // markSettled leaves `dispatch` untouched: it stays `not_dispatched`, because nothing reached
+        // the external world.
+        await tx.pendingOperations.update(markSettled(operation, outcome, eventId, at));
+        await routeInto(tx);
+        return "settled";
+      });
+      if (committed !== "settled") {
+        // abandoned or already-gone: no correlated refusal Event was routed here.
+        return {
+          effectId,
+          effectKind: proposal.kind,
+          correlationId,
+          pendingOperationId: committed === "gone" ? resume.pendingOperationId : null,
+          phase: "abandoned",
+          settledInline: false,
+        };
+      }
+      return {
+        effectId,
+        effectKind: proposal.kind,
+        correlationId,
+        pendingOperationId: resume.pendingOperationId,
+        phase,
+        settledInline: true,
+        refusal,
+      };
+    }
+
+    const abandoned = await this.deps.store.transact(executionId, async (tx): Promise<boolean> => {
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at)) return true;
       await this.journal(tx, {
         effectId,
         executionId,
@@ -714,26 +2593,18 @@ export class EffectProcessor {
         at,
         detail: { code: reason.code, message: reason.message, resultEventId: eventId },
       });
-      const envelope: EventEnvelope = {
-        eventId,
-        destination: { executionId },
-        kind,
-        body: { effectId, effectKind: proposal.kind, code: reason.code, message: reason.message },
-        correlationId,
-        causationId: effectId,
-        occurredAt: at,
-      };
-      await routeEvent({
-        tx,
-        envelope,
-        deliveredAt: at,
-        recordTransition: async (id, from, to, when, why) => {
-          await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
-        },
-      });
+      await routeInto(tx);
+      return false;
     });
 
-    return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase, settledInline: true };
+    return {
+      effectId,
+      effectKind: proposal.kind,
+      correlationId,
+      pendingOperationId: null,
+      phase: abandoned ? "abandoned" : phase,
+      settledInline: !abandoned,
+    };
   }
 
   /**
@@ -755,7 +2626,8 @@ export class EffectProcessor {
     const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
     const executionId = input.context.executionId;
 
-    await this.deps.store.transact(executionId, async (tx) => {
+    const abandoned = await this.deps.store.transact(executionId, async (tx): Promise<boolean> => {
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at)) return true;
       await this.journal(tx, {
         effectId,
         executionId,
@@ -795,7 +2667,12 @@ export class EffectProcessor {
           await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
         },
       });
+      return false;
     });
+
+    if (abandoned) {
+      return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    }
 
     return {
       effectId,

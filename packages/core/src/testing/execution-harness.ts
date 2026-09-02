@@ -11,11 +11,13 @@ import { ControllerRegistry } from "../runtime/controller-registry.ts";
 import { Harness } from "../runtime/harness.ts";
 import type { HarnessOptions } from "../runtime/harness.ts";
 import type { Clock } from "../ports/clock.ts";
+import type { DefinitionStore } from "../ports/definition-store.ts";
 import type { IdGenerator } from "../ports/ids.ts";
 import type { ExecutionController } from "../ports/controller.ts";
 import type { CapabilityExecutor } from "../ports/capability-executor.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
+import type { ConfirmationPolicy } from "../ports/confirmation-policy.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import { createDeterministicIds, createFixedClock } from "../reference/deterministic.ts";
 import { FifoScheduler } from "../reference/fifo-scheduler.ts";
@@ -25,7 +27,7 @@ import { createScriptedAgentController, createScriptedWorkflowController } from 
 
 export interface TestHarnessBundle {
   readonly harness: Harness;
-  readonly definitions: InMemoryDefinitionStore;
+  readonly definitions: DefinitionStore;
   readonly store: InMemoryRuntimeStore;
   readonly scheduler: FifoScheduler;
   readonly controllers: ControllerRegistry;
@@ -44,6 +46,11 @@ export interface TestHarnessOptions {
    * has to exist before the Harness does.
    */
   readonly store?: InMemoryRuntimeStore;
+  /**
+   * Reuses a DefinitionStore the caller already built - e.g. a counting/instrumented wrapper over
+   * `InMemoryDefinitionStore`, so a test can assert the store was or was not queried.
+   */
+  readonly definitions?: DefinitionStore;
   readonly activationBudget?: HarnessOptions["activationBudget"];
   readonly maxActivationsPerRun?: number;
   /**
@@ -51,6 +58,8 @@ export interface TestHarnessOptions {
    * asserting "requesting is not permission" wants.
    */
   readonly authorizer?: EffectAuthorizer;
+  /** The exact-payload confirmation gate. Left unset, no Effect requires confirmation. */
+  readonly confirmationPolicy?: ConfirmationPolicy;
   /** Where an operation's baseline consequentiality is declared. Left unset, nothing is classified. */
   readonly capabilityCatalog?: CapabilityCatalog;
   readonly capabilities?: CapabilityExecutor;
@@ -60,7 +69,7 @@ export interface TestHarnessOptions {
 }
 
 export function createTestHarness(options: TestHarnessOptions = {}): TestHarnessBundle {
-  const definitions = new InMemoryDefinitionStore();
+  const definitions = options.definitions ?? new InMemoryDefinitionStore();
   const store = options.store ?? new InMemoryRuntimeStore();
   const scheduler = new FifoScheduler();
   const controllers = new ControllerRegistry(
@@ -79,6 +88,7 @@ export function createTestHarness(options: TestHarnessOptions = {}): TestHarness
     ...(options.activationBudget !== undefined ? { activationBudget: options.activationBudget } : {}),
     ...(options.maxActivationsPerRun !== undefined ? { maxActivationsPerRun: options.maxActivationsPerRun } : {}),
     ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
+    ...(options.confirmationPolicy !== undefined ? { confirmationPolicy: options.confirmationPolicy } : {}),
     ...(options.capabilityCatalog !== undefined ? { capabilityCatalog: options.capabilityCatalog } : {}),
     ...(options.capabilities !== undefined ? { capabilities: options.capabilities } : {}),
     ...(options.inlineWait !== undefined ? { inlineWait: options.inlineWait } : {}),

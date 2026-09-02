@@ -70,8 +70,16 @@ export interface EffectiveOperationAuthority {
   readonly version: number;
   /** Deduplicated and ordered, so two equal grants produce byte-identical records. */
   readonly operations: readonly OperationRef[];
-  /** Where this ceiling came from. Delegated child authority is a later slice. */
-  readonly source: "root_grant";
+  /**
+   * Where this ceiling came from.
+   *
+   * `root_grant` is application/deployment policy at creation. `delegated` is a child ceiling the
+   * runtime computed by attenuating a parent's *current* effective authority against a spawn
+   * request - never wider than the parent, never derived from the child's Definition.
+   */
+  readonly source: "root_grant" | "delegated";
+  /** Present only for `delegated`: the parent ceiling this was attenuated from, for provenance. */
+  readonly delegatedFrom?: { readonly authorityId: string; readonly executionId: string };
   readonly grantedAt: string;
 }
 
@@ -98,6 +106,77 @@ export function createEffectiveOperationAuthority(input: CreateOperationAuthorit
     version: 1,
     operations,
     source: "root_grant",
+    grantedAt: input.grantedAt,
+  };
+}
+
+/**
+ * Attenuate a spawn request against the parent's current effective authority.
+ *
+ * ```text
+ * child operations = requestedOperations ∩ parent effective authority
+ * ```
+ *
+ * `parent` is read fresh at spawn time, so a request prepared while an operation was still possible
+ * yields nothing once the parent's ceiling has been narrowed. A `null` parent has no delegable
+ * authority, so the result is empty whatever was requested. This is the whole of "delegable" in the
+ * first implementation: only the parent's *current effective* authority is delegable, and the child
+ * receives only the explicit requested intersection of it - there is no separate delegability flag
+ * to widen that, and an empty request is never "everything".
+ */
+export function attenuateChildOperations(
+  parent: EffectiveOperationAuthority | null | undefined,
+  requestedOperations: readonly OperationRef[],
+): readonly OperationRef[] {
+  if (!parent) return [];
+  const seen = new Set<string>();
+  const attenuated: OperationRef[] = [];
+  for (const ref of requestedOperations) {
+    const key = formatOperationRef(ref);
+    if (seen.has(key)) continue;
+    if (!parent.operations.some((candidate) => isSameOperationRef(candidate, ref))) continue;
+    seen.add(key);
+    attenuated.push({ capability: ref.capability, operation: ref.operation });
+  }
+  attenuated.sort(compareOperationRefs);
+  return attenuated;
+}
+
+export interface CreateDelegatedOperationAuthorityInput {
+  readonly authorityId: string;
+  readonly executionId: string;
+  readonly operations: readonly OperationRef[];
+  /** The parent ceiling this was attenuated from. Absent when the parent had no ceiling at all. */
+  readonly delegatedFrom?: { readonly authorityId: string; readonly executionId: string };
+  readonly grantedAt: string;
+}
+
+/**
+ * The child's own effective operation authority record.
+ *
+ * `version` is 1: this is a fresh ceiling for a new Execution, not a narrowing of the parent's. The
+ * Harness writes it; a child controller never does. `operations` is already the attenuated set - a
+ * child Definition requesting more cannot enlarge it.
+ */
+export function createDelegatedOperationAuthority(
+  input: CreateDelegatedOperationAuthorityInput,
+): EffectiveOperationAuthority {
+  const seen = new Set<string>();
+  const operations: OperationRef[] = [];
+  for (const ref of input.operations) {
+    const key = formatOperationRef(ref);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    operations.push({ capability: ref.capability, operation: ref.operation });
+  }
+  operations.sort(compareOperationRefs);
+  return {
+    authorityId: input.authorityId,
+    executionId: input.executionId,
+    version: 1,
+    operations,
+    source: "delegated",
+    ...(input.delegatedFrom ? { delegatedFrom: input.delegatedFrom } : {}),
     grantedAt: input.grantedAt,
   };
 }

@@ -15,11 +15,30 @@
  * or a poll. And the wake decision is made against `context.waitingFor`, the dependency the Harness
  * recorded when it derived WAITING - not against anything the arriving Event claims about itself.
  *
- * Since Slice C.1 that dependency is a tagged union, and only its Event arm is routable here. An
- * Execution waiting on a controller-local resumption still *accepts* Events - the mailbox is not
- * closed, and an arriving `external.input` is queued for the Activation that follows - but no Event
- * makes it READY. Only that resumption settling does. This file therefore reads the tag rather than
- * inferring the dependency's kind from its shape.
+ * Since Slice C.1 that dependency is a tagged union, and only its Event arm is routable here as a
+ * *primary* wake. An Execution waiting on a controller-local resumption still *accepts* Events - the
+ * mailbox is not closed - and absent an interleave condition no Event makes it READY; only that
+ * resumption settling does.
+ *
+ * ## Controlled interleaving (Slice E.1)
+ *
+ * A wait may carry a second, separate `interleave` wake condition. An Event that matches it makes
+ * the Execution `READY` for another Activation *without* the primary dependency being satisfied:
+ *
+ * ```text
+ * primary `event` wake matches      -> ordinary dependency wake (WAITING -> READY)
+ * `interleave` matches, `event` arm -> WAITING -> READY; the primary PendingOperation stays pending
+ * `interleave` matches, resumption  -> the still-pending resumption is invalidated in THIS
+ *                                      transaction, then WAITING -> READY
+ * nothing matches                   -> mailbox only; no wake
+ * ```
+ *
+ * The invalidation is the minimal stale-continuation rule: once an opted-in Event has overtaken a
+ * resumption, that resumption's late result can no longer wake the Execution and is never reused by
+ * stable-key recovery. It is deliberately conservative - it may fire slightly before "a semantic
+ * commit occurred" - because only an explicitly opted-in interleave Event can trigger it. After the
+ * interleave wake `waitingFor` is `null`, so further Events that arrive before the next Activation
+ * are mailbox-only and cannot re-invalidate an already-obsolete continuation.
  *
  * `routeEvent` runs inside a caller-provided transaction so that "the operation settled" and "the
  * Execution observed it" commit together or not at all. Scheduling happens after the commit: the
@@ -29,6 +48,7 @@
 import { transitionContext } from "../execution/context.ts";
 import type { ExecutionId } from "../execution/ids.ts";
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
+import { invalidateControllerResumption } from "../execution/resumption.ts";
 import type { EventEnvelope, EventId } from "../interaction/event-envelope.ts";
 import { eventEnvelopeIssues, eventSatisfiesWake } from "../interaction/event-envelope.ts";
 import type { RuntimeTransaction } from "../ports/runtime-store.ts";
@@ -95,11 +115,37 @@ export async function routeEvent(input: RouteEventInput): Promise<EventRoutingRe
   if (!appended.accepted) return { status: "duplicate", eventId: envelope.eventId };
 
   const wait = context.waitingFor;
-  if (context.lifecycle === "WAITING" && wait !== null && wait.kind === "event" && eventSatisfiesWake(envelope, wait.wake)) {
-    const ready = transitionContext(context, "READY", deliveredAt);
-    await tx.executions.update(ready, context.revision);
-    await input.recordTransition(destination, "WAITING", "READY", deliveredAt, `event ${envelope.eventId}`);
-    return { status: "delivered", eventId: envelope.eventId, wokeExecution: true };
+  if (context.lifecycle === "WAITING" && wait !== null) {
+    // Primary dependency. Only the `event` arm is satisfiable by an arriving Event; a
+    // resumption-suspended Execution is woken by the resumption settling, never here.
+    if (wait.kind === "event" && eventSatisfiesWake(envelope, wait.wake)) {
+      const ready = transitionContext(context, "READY", deliveredAt);
+      await tx.executions.update(ready, context.revision);
+      await input.recordTransition(destination, "WAITING", "READY", deliveredAt, `event ${envelope.eventId}`);
+      return { status: "delivered", eventId: envelope.eventId, wokeExecution: true };
+    }
+
+    // Controlled interleaving: an explicitly opted-in Event overtakes the wait.
+    if (wait.interleave !== undefined && eventSatisfiesWake(envelope, wait.interleave)) {
+      if (wait.kind === "controller_resumption") {
+        // The resumption's continuation was computed from a now-superseded state. Invalidate it in
+        // this same transaction so its late result cannot wake the Execution or be reused by key.
+        // A no-op if it already settled or was already invalidated - so E2/E3 arriving after E1
+        // has invalidated it produce no second invalidation.
+        const resumption = await tx.controllerResumptions.get(wait.resumptionId);
+        if (resumption !== undefined && resumption.state === "pending") {
+          await tx.controllerResumptions.update(
+            invalidateControllerResumption(resumption, deliveredAt, envelope.eventId, context.revision),
+          );
+        }
+      }
+      // The `event` arm's primary PendingOperation is deliberately NOT settled here: the ask reply
+      // or child result is still owed, and the controller may report the same dependency again.
+      const ready = transitionContext(context, "READY", deliveredAt);
+      await tx.executions.update(ready, context.revision);
+      await input.recordTransition(destination, "WAITING", "READY", deliveredAt, `interleave event ${envelope.eventId}`);
+      return { status: "delivered", eventId: envelope.eventId, wokeExecution: true };
+    }
   }
 
   return { status: "delivered", eventId: envelope.eventId, wokeExecution: false };

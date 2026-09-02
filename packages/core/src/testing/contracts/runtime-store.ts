@@ -29,6 +29,12 @@ import { createPendingOperation, markDispatched, markSettled } from "../../effec
 import type { PendingOperation } from "../../effects/pending.ts";
 import type { ControllerResumptionId } from "../../execution/ids.ts";
 import { createControllerResumption, settleControllerResumption } from "../../execution/resumption.ts";
+import { createCancellationRequest, markCancellationApplied } from "../../execution/cancellation-request.ts";
+import { createChildExecutionLink, markChildLinkSettled } from "../../execution/child-link.ts";
+import { createPeerRequestLink, markPeerRequestLinkSettled } from "../../execution/peer-request-link.ts";
+import { createUserInputRequest, markUserInputResponded } from "../../execution/user-input-request.ts";
+import { createConfirmationRequest, markConfirmationApproved } from "../../execution/confirmation-request.ts";
+import { consumeSpawnCredit, createLineageSpawnBudget } from "../../execution/structural-budget.ts";
 import { createEffectiveOperationAuthority } from "../../operations/authority.ts";
 import type { EventEnvelope, EventId } from "../../interaction/event-envelope.ts";
 import type { RuntimeStore } from "../../ports/runtime-store.ts";
@@ -453,6 +459,211 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
           "Error",
           "authority is written once at creation, never quietly overwritten",
         );
+      },
+    },
+    {
+      name: "the lineage spawn budget is compare-and-set and cannot be over-spent concurrently",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        const budget = createLineageSpawnBudget({ rootExecutionId: EXECUTION, capacity: 1, grantedAt: "2026-01-01T00:00:00.000Z" });
+        await store.transact(EXECUTION, async (tx) => tx.lineageSpawnBudgets.insert(budget));
+        assertEqual((await store.readLineageSpawnBudget(EXECUTION))?.capacity, 1, "the capacity is stored");
+        assertEqual((await store.readLineageSpawnBudget(EXECUTION))?.consumed, 0, "nothing consumed yet");
+
+        // Two writers both read revision 1 and both compute a spend; only the first commit succeeds.
+        const beforeEither = (await store.readLineageSpawnBudget(EXECUTION))!;
+        await store.transact(EXECUTION, async (tx) =>
+          tx.lineageSpawnBudgets.update(consumeSpawnCredit(beforeEither), beforeEither.revision),
+        );
+        await assertRejects(
+          () =>
+            store.transact(EXECUTION, async (tx) =>
+              tx.lineageSpawnBudgets.update(consumeSpawnCredit(beforeEither), beforeEither.revision),
+            ),
+          "SpawnBudgetConcurrencyError",
+          "a writer that read the pre-spend revision cannot also spend the credit",
+        );
+        assertEqual((await store.readLineageSpawnBudget(EXECUTION))?.consumed, 1, "consumed never exceeds capacity");
+      },
+    },
+    {
+      name: "a child execution link records the wait-for edge and settles once",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        const link = createChildExecutionLink({
+          childExecutionId: "exe_child" as ExecutionId,
+          parentExecutionId: EXECUTION,
+          rootExecutionId: EXECUTION,
+          definition: { id: "child" as never, version: 1, integrity: "abc" },
+          effectId: "eff_spawn" as EffectId,
+          spawnedByActivationId: "act_1" as ActivationId,
+          pendingOperationId: "pop_1" as PendingOperationId,
+          resultCorrelationId: "job-1",
+          createdAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.childExecutionLinks.insert(link));
+
+        const stored = await store.readChildExecutionLink("exe_child" as ExecutionId);
+        assertEqual(stored?.parentExecutionId, EXECUTION, "the link names its parent");
+        assertEqual(stored?.pendingOperationId, "pop_1", "a call records its terminal-result dependency");
+        assertEqual(stored?.state, "active", "a fresh link is active");
+
+        const byParent = await store.listChildExecutionLinks(EXECUTION);
+        assertEqual(byParent.length, 1, "the link is listable by parent");
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.childExecutionLinks.get("exe_child" as ExecutionId);
+          await tx.childExecutionLinks.update(markChildLinkSettled(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        const settled = await store.readChildExecutionLink("exe_child" as ExecutionId);
+        assertEqual(settled?.state, "settled", "delivery marks the link settled");
+        assertEqual(settled?.settledAt, "2026-01-01T00:00:03.000Z", "with the time it settled");
+      },
+    },
+    {
+      name: "a peer request link correlates an ask and settles once (Slice E.1)",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        const link = createPeerRequestLink({
+          messageId: "msg_1",
+          requesterExecutionId: EXECUTION,
+          responderExecutionId: "exe_peer" as ExecutionId,
+          requestEffectId: "eff_ask" as EffectId,
+          requestPendingOperationId: "pop_ask" as PendingOperationId,
+          requestCorrelationId: "AB",
+          createdAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.peerRequestLinks.insert(link));
+
+        assertEqual((await store.readPeerRequestLink("msg_1"))?.state, "open", "a fresh link is open");
+        assertEqual((await store.listPeerRequestLinksByRequester(EXECUTION)).length, 1, "listable by requester");
+        assertEqual(
+          (await store.listPeerRequestLinksByResponder("exe_peer" as ExecutionId)).length,
+          1,
+          "and by responder",
+        );
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.peerRequestLinks.get("msg_1");
+          await tx.peerRequestLinks.update(markPeerRequestLinkSettled(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        assertEqual((await store.readPeerRequestLink("msg_1"))?.state, "settled", "a reply closes the link");
+        assertEqual((await store.listEffectJournal(EXECUTION)).length, 0, "a peer link journals no Effect");
+      },
+    },
+    {
+      name: "a cancellation request is a single per-Execution record, applied once (Slice E.1)",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        assertEqual(await store.readCancellationRequest(EXECUTION), undefined, "none by default");
+        const request = createCancellationRequest({
+          executionId: EXECUTION,
+          reason: "halt",
+          requestedAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.cancellationRequests.insert(request));
+        assertEqual((await store.readCancellationRequest(EXECUTION))?.state, "pending", "recorded as pending");
+
+        await assertRejects(
+          () => store.transact(EXECUTION, async (tx) => tx.cancellationRequests.insert(request)),
+          "Error",
+          "one cancellation request per Execution, never a silent second",
+        );
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.cancellationRequests.get(EXECUTION);
+          await tx.cancellationRequests.update(markCancellationApplied(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        assertEqual((await store.readCancellationRequest(EXECUTION))?.state, "applied", "moves to applied once");
+      },
+    },
+    {
+      name: "a user-input request is keyed by requestId, listable, and discoverable while open (Slice E.2)",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        assertEqual((await store.listOpenUserInputRequests()).length, 0, "none open by default");
+        const request = createUserInputRequest({
+          requestId: "uir_1",
+          executionId: EXECUTION,
+          effectId: "eff_ui" as EffectId,
+          pendingOperationId: "pop_ui" as PendingOperationId,
+          correlationId: "which-env",
+          prompt: "Which environment?",
+          schema: { kind: "string" },
+          createdAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.userInputRequests.insert(request));
+
+        assertEqual((await store.readUserInputRequest("uir_1"))?.state, "open", "a fresh request is open");
+        assertEqual((await store.listUserInputRequests(EXECUTION)).length, 1, "listable by execution");
+        assertEqual((await store.listOpenUserInputRequests()).length, 1, "and discoverable while open");
+        assertEqual((await store.listEffectJournal(EXECUTION)).length, 0, "the record itself journals no Effect");
+
+        await assertRejects(
+          () => store.transact(EXECUTION, async (tx) => tx.userInputRequests.insert(request)),
+          "Error",
+          "one record per requestId, never a silent second",
+        );
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.userInputRequests.get("uir_1");
+          await tx.userInputRequests.update(markUserInputResponded(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        assertEqual((await store.readUserInputRequest("uir_1"))?.state, "responded", "a response marks it responded");
+        assertEqual((await store.listOpenUserInputRequests()).length, 0, "and it leaves the open set");
+      },
+    },
+    {
+      name: "a confirmation request binds one exact proposal + digest, resolved once (Slice E.2)",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        assertEqual((await store.listPendingConfirmations()).length, 0, "none pending by default");
+        const request = createConfirmationRequest({
+          confirmationId: "cnf_1",
+          executionId: EXECUTION,
+          effectId: "eff_trade" as EffectId,
+          effectKind: "use_capability",
+          pendingOperationId: "pop_trade" as PendingOperationId,
+          correlationId: "t1",
+          proposal: {
+            kind: "use_capability",
+            capability: "world.trade" as never,
+            operation: "execute" as never,
+            input: { asset: "BTC", qty: 1 },
+          },
+          reason: "a live trade",
+          createdAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.confirmationRequests.insert(request));
+
+        const stored = await store.readConfirmationRequest("cnf_1");
+        assertEqual(stored?.state, "pending", "a fresh request is pending");
+        assertTrue(
+          typeof stored?.proposalDigest === "string" && stored.proposalDigest.length > 0,
+          "it carries a canonical digest of the exact proposal",
+        );
+        assertEqual((await store.listConfirmationRequests(EXECUTION)).length, 1, "listable by execution");
+        assertEqual((await store.listPendingConfirmations()).length, 1, "and discoverable while pending");
+        assertEqual((await store.listEffectJournal(EXECUTION)).length, 0, "the record itself journals no Effect");
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.confirmationRequests.get("cnf_1");
+          await tx.confirmationRequests.update(markConfirmationApproved(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        assertEqual((await store.readConfirmationRequest("cnf_1"))?.state, "approved", "a decision resolves it once");
+        assertEqual((await store.listPendingConfirmations()).length, 0, "and it leaves the pending set");
       },
     },
     {

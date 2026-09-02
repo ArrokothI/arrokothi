@@ -16,10 +16,9 @@
  * `forceConsequential: true` to promote handling beyond that baseline, never to relax it. There is
  * no way to write a rule that downgrades a descriptor-declared consequential operation.
  *
- * Effect kinds other than `UseCapability` are denied here too, though the Harness refuses them
- * before policy is ever consulted - which kind of Effect the runtime can perform is a kernel fact,
- * not a policy one. The branch stays because an authorizer is a public component that application
- * code may call directly, and it should not answer "allow" for something nothing can do.
+ * Operational `SpawnExecution` and `SendMessage` proposals have their own explicit rules below.
+ * Other non-capability Effect kinds are denied because their owning runtime slices have not made
+ * them dispatchable; an authorizer is public and must not answer "allow" for unsupported work.
  */
 
 import type { AuthorizationDecision, EffectAuthorizationRequest } from "../effects/authorization.ts";
@@ -27,7 +26,12 @@ import type { ResourceAccessMode, ResourceBindingRef } from "../effects/capabili
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
 import { resourceBindingId } from "../effects/ids.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
-import { isUseCapabilityProposal } from "../effects/types.ts";
+import {
+  isRequestUserInputProposal,
+  isSendMessageProposal,
+  isSpawnExecutionProposal,
+  isUseCapabilityProposal,
+} from "../effects/types.ts";
 
 export interface CapabilityGrantRule {
   /** Plain strings: this is application configuration, so the factory brands and validates. */
@@ -49,10 +53,43 @@ export interface CapabilityGrantRule {
   readonly maxDeadlineMs?: number;
 }
 
+/**
+ * Whether this policy permits `SpawnExecution`.
+ *
+ * `true` allows any child Definition; a `{ definitions }` list allows only those definition ids.
+ * Omitted (the default) denies every spawn - "requested requirement is not a grant" applies to
+ * child creation exactly as it does to capabilities.
+ */
+export type SpawnGrantRule = boolean | { readonly definitions: readonly string[] };
+
+/**
+ * Whether this policy permits `SendMessage` (`send` / `ask` / `reply`).
+ *
+ * `true` allows a message to any destination; a `{ destinations }` list allows only those Execution
+ * ids. Omitted (the default) denies every send - "knowing a peer's ExecutionId is not permission to
+ * message it". A `reply` is an outbound send and is checked here exactly like a fresh `send`: holding
+ * request/correlation metadata does not bypass this rule. Peer destinations are deliberately *not*
+ * modelled as capability operations - they are not operations - so this first peer-messaging runtime
+ * treats the policy boundary itself as the effective decision for peer sends.
+ */
+export type MessageGrantRule = boolean | { readonly destinations: readonly string[] };
+
 export interface AllowListAuthorizerOptions {
   readonly grants: readonly CapabilityGrantRule[];
   /** Restricts the whole allow-list to named Executions. Omitted means every Execution. */
   readonly executions?: readonly string[];
+  /** Whether `SpawnExecution` is permitted, and for which child Definitions. Default: denied. */
+  readonly spawn?: SpawnGrantRule;
+  /** Whether `SendMessage` is permitted, and to which destinations. Default: denied. */
+  readonly message?: MessageGrantRule;
+  /**
+   * Whether `RequestUserInput` is permitted at all. Default: denied.
+   *
+   * A narrow explicit user-interaction grant. "the model requested it", "the prompt says it is
+   * needed", "the user has interacted before", and "the Execution knows a user identity" are none of
+   * them permission - with no configured `userInput`, every `RequestUserInput` is denied.
+   */
+  readonly userInput?: boolean;
 }
 
 export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): EffectAuthorizer {
@@ -65,6 +102,62 @@ export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): 
           decision: "deny",
           code: "execution_not_authorized",
           message: `execution ${request.executionId} holds no capability authority under this policy`,
+        };
+      }
+
+      if (isSpawnExecutionProposal(request.proposal)) {
+        const rule = options.spawn ?? false;
+        const allowed =
+          rule === true ||
+          (typeof rule === "object" && rule.definitions.includes(request.proposal.definitionId));
+        if (!allowed) {
+          return {
+            decision: "deny",
+            code: "spawn_not_authorized",
+            message:
+              `execution ${request.executionId} is not authorized to spawn ` +
+              `${request.proposal.definitionId}@${request.proposal.definitionVersion} under this policy`,
+          };
+        }
+        issued += 1;
+        return { decision: "allow", grantId: `grant_${issued}` };
+      }
+
+      if (isSendMessageProposal(request.proposal)) {
+        const rule = options.message ?? false;
+        // Replies name the concrete requester as `to`, so destination-scoped policy constrains them
+        // before the runtime resolves the request link. Link resolution later verifies that `to`
+        // matches runtime truth; policy authorization can never redirect the reply.
+        const allowed =
+          rule === true ||
+          (typeof rule === "object" &&
+            request.proposal.to !== undefined &&
+            rule.destinations.includes(request.proposal.to));
+        if (!allowed) {
+          return {
+            decision: "deny",
+            code: "message_not_authorized",
+            message:
+              `execution ${request.executionId} is not authorized to send messages` +
+              ` to ${request.proposal.to}` +
+              " under this policy",
+          };
+        }
+        issued += 1;
+        return { decision: "allow", grantId: `grant_${issued}` };
+      }
+
+      if (isRequestUserInputProposal(request.proposal)) {
+        if (options.userInput === true) {
+          issued += 1;
+          return { decision: "allow", grantId: `grant_${issued}` };
+        }
+        return {
+          decision: "deny",
+          code: "user_input_not_authorized",
+          message:
+            `execution ${request.executionId} holds no user-interaction authority under this policy; ` +
+            "asking the user a question is a runtime interaction and requires an explicit grant",
         };
       }
 
