@@ -124,6 +124,16 @@ export interface SpawnExecutionProposal extends ProposalBase {
    * `child.spawned`. Either way the child is the same independently managed Execution.
    */
   readonly awaitTerminalResult?: boolean;
+  /**
+   * The Definition kind the caller expects the child to resolve to (Slice E.2).
+   *
+   * Set by an Agent Stage / Workflow Stage so the Harness refuses a mismatched child kind rather
+   * than running it under the wrong Stage semantics. The check happens at the Harness's ordinary
+   * SpawnExecution boundary, *after* authorization and Definition resolution - it is never an
+   * existence oracle a denied caller could probe. Absent means the caller accepts whichever
+   * supported kind the Definition is.
+   */
+  readonly expectedChildKind?: "agent" | "workflow";
 }
 
 /**
@@ -314,6 +324,10 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
       if (awaitTerminalResult !== undefined && typeof awaitTerminalResult !== "boolean") {
         issues.push(issue(`${path}.awaitTerminalResult`, "expected a boolean when present"));
       }
+      const expectedChildKind = candidate["expectedChildKind"];
+      if (expectedChildKind !== undefined && expectedChildKind !== "agent" && expectedChildKind !== "workflow") {
+        issues.push(issue(`${path}.expectedChildKind`, `expected "agent" or "workflow" when present`));
+      }
       break;
     }
     case "send_message": {
@@ -442,6 +456,8 @@ export interface SpawnExecutionInput {
   readonly definitionVersion: number;
   readonly input?: JsonValue;
   readonly requestedOperations?: readonly OperationRefInput[];
+  /** The Definition kind the caller requires the child to be. See `SpawnExecutionProposal`. */
+  readonly expectedChildKind?: "agent" | "workflow";
   readonly requestKey?: string;
   readonly authorizationEvidence?: AuthorizationEvidence;
 }
@@ -455,6 +471,7 @@ function spawnProposal(input: SpawnExecutionInput, awaitTerminalResult: boolean)
     ...(input.requestedOperations !== undefined
       ? { requestedOperations: input.requestedOperations.map((ref) => operationRef(ref.capability, ref.operation)) }
       : {}),
+    ...(input.expectedChildKind !== undefined ? { expectedChildKind: input.expectedChildKind } : {}),
     ...(awaitTerminalResult ? { awaitTerminalResult: true } : {}),
     ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
     ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),

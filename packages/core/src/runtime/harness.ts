@@ -1298,9 +1298,12 @@ export class Harness {
       if (!parent) return null;
 
       if (isTerminalLifecycle(parent.lifecycle)) {
-        // The parent cannot observe anything. Record honestly; deliver nothing.
+        // The parent cannot observe anything, and no required result was delivered: the link is
+        // `abandoned` (the source terminalized first), never `settled` (which means a result
+        // arrived). Ordinary terminal cleanup usually gets here first; this is the defensive
+        // fallback for the window between the child's terminal commit and this settlement.
         await tx.pendingOperations.update(markAbandoned(pending, at));
-        await tx.childExecutionLinks.update(markChildLinkSettled(currentLink, at));
+        await tx.childExecutionLinks.update(markChildLinkAbandoned(currentLink, at));
         await tx.effectJournal.append({
           effectId: currentLink.effectId,
           executionId: parentId,

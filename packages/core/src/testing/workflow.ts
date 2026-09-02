@@ -20,6 +20,7 @@ import type {
   WorkflowTrace,
 } from "../controllers/workflow/model-access.ts";
 import type { AdapterRegistry } from "../ports/adapter.ts";
+import type { ExecutionController } from "../ports/controller.ts";
 import type { LocalResourceEnvironment } from "../ports/local-resource.ts";
 import type { ModelProvider, ModelProviderLookup } from "../ports/model-provider.ts";
 import type { ModelResolver } from "../ports/model-resolver.ts";
@@ -67,6 +68,8 @@ export interface WorkflowTestHarnessOptions extends Omit<TestHarnessOptions, "co
   readonly resources?: LocalResourceEnvironment;
   readonly trace?: WorkflowTrace;
   readonly maxTransitions?: number;
+  /** Extra controllers to register beside the WorkflowController - e.g. an Agent controller for an Agent Stage child. */
+  readonly extraControllers?: readonly ExecutionController[];
 }
 
 export interface WorkflowTestHarnessBundle extends TestHarnessBundle {
@@ -91,10 +94,11 @@ export function createWorkflowTestHarness(options: WorkflowTestHarnessOptions = 
     ...(options.maxTransitions !== undefined ? { maxTransitions: options.maxTransitions } : {}),
   });
   const bundle = createTestHarness({
-    controllers: [controller],
+    controllers: [controller, ...(options.extraControllers ?? [])],
     ...(options.activationBudget !== undefined ? { activationBudget: options.activationBudget } : {}),
     ...(options.maxActivationsPerRun !== undefined ? { maxActivationsPerRun: options.maxActivationsPerRun } : {}),
     ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
+    ...(options.confirmationPolicy !== undefined ? { confirmationPolicy: options.confirmationPolicy } : {}),
     ...(options.capabilityCatalog !== undefined ? { capabilityCatalog: options.capabilityCatalog } : {}),
     ...(options.capabilities !== undefined ? { capabilities: options.capabilities } : {}),
     ...(options.inlineWait !== undefined ? { inlineWait: options.inlineWait } : {}),

@@ -148,6 +148,7 @@ export {
 export type {
   AgentStageDefinition,
   ChildDefinitionRef,
+  ChildOperationRef,
   FunctionStageDefinition,
   ImplementationRef,
   LLMStageDefinition,
@@ -182,8 +183,16 @@ export { MAX_MODEL_PHASES, validateWorkflowSpec } from "./workflow/validation.ts
  * controller that owns it. An application inspects what a Workflow is doing; it does not reach in
  * and change where the Workflow thinks it is.
  */
-export type { BarrierEntry, BarrierEntryKind, WorkflowBoundaryState, WorkflowControlState } from "./workflow/control-state.ts";
-export { readWorkflowControlState, stageCorrelationId, WORKFLOW_CONTROL_STATE_VERSION } from "./workflow/control-state.ts";
+export type {
+  BarrierEntry,
+  BarrierEntryKind,
+  ChildBarrierEntry,
+  ChildBarrierOutcome,
+  EffectBarrierEntry,
+  WorkflowBoundaryState,
+  WorkflowControlState,
+} from "./workflow/control-state.ts";
+export { childBarrierEntry, readWorkflowControlState, stageCorrelationId, WORKFLOW_CONTROL_STATE_VERSION } from "./workflow/control-state.ts";
 export { stageAdapterResumptionKey, stageModelResumptionKey } from "./workflow/resumption-keys.ts";
 
 // -- execution identity and lifecycle ----------------------------------------

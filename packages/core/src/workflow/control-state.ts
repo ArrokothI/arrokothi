@@ -27,8 +27,11 @@
  *
  * `barrier` is the Stage completion barrier as data: one entry per required operation, each
  * carrying the correlation the controller chose, whether it has settled, and - once it has - what
- * it observed. A Stage transitions only when every entry is settled. The `kind` field reserves the
- * semantic slot for required child calls without implementing them; Slice C never writes `"child"`.
+ * it observed. A Stage transitions only when every entry is settled. `BarrierEntry` is a
+ * discriminated union: an `effect` entry carries capability/operation and a capability observation;
+ * a `child` entry (Slice E.2 - Agent Stage / Workflow Stage) carries the child Definition identity,
+ * the operations the call requested, and the child's terminal outcome. Child data is never stuffed
+ * into the effect entry's capability/operation fields.
  *
  * ## The Stage boundary
  *
@@ -64,22 +67,63 @@ import type { StageResult } from "./stage-result.ts";
  */
 export const WORKFLOW_CONTROL_STATE_VERSION = 2;
 
-/** What a barrier entry is waiting for. `child` is reserved for Slice E and never produced here. */
+/** What a barrier entry is waiting for. */
 export type BarrierEntryKind = "effect" | "child";
 
-export interface BarrierEntry {
+interface BarrierEntryBase {
   /** Stage-local request name. */
   readonly key: string;
   /** The controller-chosen correlation the matching result Event will carry. */
   readonly correlationId: string;
-  readonly kind: BarrierEntryKind;
-  readonly capability: string;
-  readonly operation: string;
   readonly settled: boolean;
-  readonly outcome: StageObservationOutcome | null;
-  readonly observation: JsonValue | null;
   readonly error: { readonly code: string; readonly message: string } | null;
 }
+
+/** One required capability operation. */
+export interface EffectBarrierEntry extends BarrierEntryBase {
+  readonly kind: "effect";
+  readonly capability: string;
+  readonly operation: string;
+  readonly outcome: StageObservationOutcome | null;
+  readonly observation: JsonValue | null;
+}
+
+/** How a required child call settled. */
+export type ChildBarrierOutcome =
+  | "completed"
+  | "failed"
+  | "cancelled"
+  /** The `SpawnExecution` request was refused by policy - no child exists. */
+  | "spawn_denied"
+  /** The `SpawnExecution` request was never dispatchable (bad ref, kind mismatch) - no child exists. */
+  | "spawn_rejected";
+
+/**
+ * One required child call - an Agent Stage or a Workflow Stage (Slice E.2).
+ *
+ * The whole Stage body is this one call. On the first visit the controller proposes it and records
+ * this entry; on a later Activation it correlates the child result, settles this entry, derives the
+ * Stage result, and continues. It never re-proposes the call merely because the Workflow controller
+ * re-entered.
+ */
+export interface ChildBarrierEntry extends BarrierEntryBase {
+  readonly kind: "child";
+  readonly childDefinitionId: string;
+  readonly childDefinitionVersion: number;
+  /** The Stage kind, which is also the child Definition kind the call requires. */
+  readonly childKind: "agent" | "workflow";
+  /** The operations the call requested (attenuated against the parent's current authority). */
+  readonly requestedOperations: readonly { readonly capability: string; readonly operation: string }[];
+  readonly outcome: ChildBarrierOutcome | null;
+  /**
+   * The child's terminal value adapted to the cross-Stage contract, present only when the child
+   * `completed` with a `string` value (text) or `null` value (none). A structured/non-string
+   * terminal value settles the entry as `failed` - it is never JSON-stringified through the edge.
+   */
+  readonly childResult: StageResult | null;
+}
+
+export type BarrierEntry = EffectBarrierEntry | ChildBarrierEntry;
 
 /**
  * Where inside a Stage boundary an Activation stopped, when it suspended on controller-local work.
@@ -203,12 +247,12 @@ export function unsettledEntries(state: WorkflowControlState): readonly BarrierE
 }
 
 /**
- * Applies one settled outcome to the barrier.
+ * Applies one settled capability outcome to an `effect` barrier entry.
  *
  * Idempotent by construction: an entry that has already settled is left exactly as it was, so a
  * duplicate result Event cannot settle the same requirement twice or overwrite the authoritative
- * first answer. An outcome whose correlation matches no entry of this visit changes nothing, which
- * is what makes a stale result from a previous loop iteration harmless.
+ * first answer. An outcome whose correlation matches no `effect` entry of this visit changes
+ * nothing, which is what makes a stale result from a previous loop iteration harmless.
  */
 export function settleBarrierEntry(
   state: WorkflowControlState,
@@ -218,7 +262,7 @@ export function settleBarrierEntry(
 ): { readonly state: WorkflowControlState; readonly settled: boolean } {
   let settled = false;
   const barrier = state.barrier.map((entry) => {
-    if (entry.correlationId !== correlationId || entry.settled) return entry;
+    if (entry.kind !== "effect" || entry.correlationId !== correlationId || entry.settled) return entry;
     settled = true;
     return {
       ...entry,
@@ -231,10 +275,35 @@ export function settleBarrierEntry(
   return settled ? { state: { ...state, barrier }, settled } : { state, settled };
 }
 
-/** The settled barrier entries as Stage-facing observations. */
+/** Applies one settled child-call outcome to a `child` barrier entry. Idempotent, correlation-exact. */
+export function settleChildBarrierEntry(
+  state: WorkflowControlState,
+  correlationId: string,
+  detail: {
+    readonly outcome: ChildBarrierOutcome;
+    readonly childResult?: StageResult;
+    readonly error?: { readonly code: string; readonly message: string };
+  },
+): { readonly state: WorkflowControlState; readonly settled: boolean } {
+  let settled = false;
+  const barrier = state.barrier.map((entry) => {
+    if (entry.kind !== "child" || entry.correlationId !== correlationId || entry.settled) return entry;
+    settled = true;
+    return {
+      ...entry,
+      settled: true,
+      outcome: detail.outcome,
+      childResult: detail.childResult ?? null,
+      error: detail.error ?? null,
+    };
+  });
+  return settled ? { state: { ...state, barrier }, settled } : { state, settled };
+}
+
+/** The settled `effect` barrier entries as Stage-facing observations. Child entries are not these. */
 export function observationsOf(state: WorkflowControlState): readonly StageObservation[] {
   return state.barrier
-    .filter((entry) => entry.settled && entry.outcome !== null)
+    .filter((entry): entry is EffectBarrierEntry => entry.kind === "effect" && entry.settled && entry.outcome !== null)
     .map((entry) => ({
       key: entry.key,
       outcome: entry.outcome as StageObservationOutcome,
@@ -243,4 +312,9 @@ export function observationsOf(state: WorkflowControlState): readonly StageObser
       ...(entry.observation !== null ? { observation: entry.observation } : {}),
       ...(entry.error !== null ? { error: entry.error } : {}),
     }));
+}
+
+/** The single `child` barrier entry for the current visit, if this is an Agent/Workflow Stage. */
+export function childBarrierEntry(state: WorkflowControlState): ChildBarrierEntry | undefined {
+  return state.barrier.find((entry): entry is ChildBarrierEntry => entry.kind === "child");
 }

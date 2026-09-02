@@ -156,11 +156,21 @@ describe("Slice E.0 composition boundaries", () => {
     }
   });
 
-  test("Workflow Agent/Workflow Stages still report unsupported and never propose a spawn", async () => {
+  test("an Agent/Workflow Stage proposes a child call - it never creates the child or routes its result", async () => {
     const source = await readFile(resolve(CORE_SRC, "controllers/workflow/controller.ts"), "utf8");
-    assert.ok(source.includes("stage_kind_unsupported"), "an Agent/Workflow Stage is still a Slice-E.2 gap");
-    assert.equal(source.includes("spawnExecution"), false);
-    assert.equal(source.includes("spawn_execution"), false);
+    // Slice E.2: the Stage is implemented by a child `call` the controller *proposes*.
+    assert.ok(source.includes("callExecution"), "an Agent/Workflow Stage proposes a child call");
+    assert.equal(source.includes("stage_kind_unsupported"), false, "no longer a gap");
+    // But it still may not perform the spawn itself or touch child-result machinery.
+    for (const forbidden of ["createExecutionContext", "createChildExecutionLink", "settleOwnerOnChildTerminal", "routeEvent", ".executions.insert("]) {
+      assert.equal(source.includes(forbidden), false, `the controller must not ${forbidden}`);
+    }
+  });
+
+  test("the Workflow controller's import graph still cannot reach the child-creation machinery", async () => {
+    const { files } = await walkGraph(["controllers/workflow/controller.ts"]);
+    const forbidden = ["ports/runtime-store.ts", "runtime/harness.ts", "runtime/effect-processor.ts", "execution/child-link.ts", "execution/structural-budget.ts"];
+    assert.deepEqual([...files].filter((path) => forbidden.includes(path)), [], "it proposes a spawn; it does not perform one");
   });
 });
 

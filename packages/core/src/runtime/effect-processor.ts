@@ -1261,6 +1261,17 @@ export class EffectProcessor {
         message: `no controller is registered for definition kind "${definition.kind}"`,
       });
     }
+    if (proposal.expectedChildKind !== undefined && definition.kind !== proposal.expectedChildKind) {
+      // An Agent Stage / Workflow Stage refuses a mismatched child kind rather than running it under
+      // the wrong Stage semantics. This is the ordinary SpawnExecution boundary, after authorization
+      // and Definition resolution - never an existence oracle a denied caller could probe.
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: "spawn_definition_kind_mismatch",
+        message:
+          `${proposal.definitionId}@${proposal.definitionVersion} is a ${definition.kind} definition, ` +
+          `but a ${proposal.expectedChildKind} child was required`,
+      });
+    }
     const childDefinitionRef = definitionRef(definition);
 
     type SpawnCommit =

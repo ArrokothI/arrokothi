@@ -394,9 +394,34 @@ function stageIssues(stage: unknown, path: string, known: ReadonlySet<string>): 
           "a child Stage references a definition; it never inlines one",
         ));
       }
-      const childInput = candidate["childInput"];
-      if (childInput !== undefined && (childInput === null || typeof childInput !== "object" || Array.isArray(childInput))) {
-        issues.push(issue(`${path}.childInput`, "invalid_spec", "expected an object when present"));
+      if (candidate["childInput"] !== undefined) {
+        // The Stage's adapted `StageResult` is the child's semantic input; a static `childInput`
+        // object would make merge/precedence semantics an architecture accident.
+        issues.push(issue(
+          `${path}.childInput`,
+          "invalid_spec",
+          "childInput was removed in Slice E.2; the Stage's adapted StageResult is the child's input",
+        ));
+      }
+      const requestedOperations = candidate["requestedOperations"];
+      if (requestedOperations !== undefined) {
+        if (!Array.isArray(requestedOperations)) {
+          issues.push(issue(`${path}.requestedOperations`, "invalid_spec", "expected an array of { capability, operation } refs"));
+        } else {
+          requestedOperations.forEach((requested, index) => {
+            const at = `${path}.requestedOperations[${index}]`;
+            if (requested === null || typeof requested !== "object" || Array.isArray(requested)) {
+              issues.push(issue(at, "invalid_spec", "expected an operation ref object"));
+              return;
+            }
+            const op = requested as Record<string, unknown>;
+            for (const key of ["capability", "operation"] as const) {
+              if (typeof op[key] !== "string" || !CAPABILITY_NAME.test(op[key] as string)) {
+                issues.push(issue(`${at}.${key}`, "invalid_spec", `expected a logical ${key} name`));
+              }
+            }
+          });
+        }
       }
       break;
     }
