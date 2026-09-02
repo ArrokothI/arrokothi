@@ -144,10 +144,16 @@ describe("Slice E.0 composition boundaries", () => {
     }
   });
 
-  test("the SpawnExecution proposal is plain data", () => {
+  test("the SpawnExecution proposal is plain data, handoff snapshot included", () => {
     for (const proposal of [
       spawnExecution({ definitionId: "child", definitionVersion: 1, requestedOperations: [{ capability: "a", operation: "b" }], input: { x: 1 } }),
       callExecution({ definitionId: "child", definitionVersion: 1 }),
+      // Slice F.2b: a Working Notes handoff is data on the proposal, nothing more.
+      spawnExecution({
+        definitionId: "child",
+        definitionVersion: 1,
+        workingNotes: { entries: [{ key: "plan", content: { step: 1, nested: [true, null] } }] },
+      }),
     ]) {
       assert.equal(JSON.stringify(proposal), JSON.stringify(JSON.parse(JSON.stringify(proposal))), "round-trips JSON");
       for (const value of Object.values(proposal)) {
@@ -253,6 +259,99 @@ describe("Slice E.1 interleaving / peer / cancellation boundaries", () => {
         false,
         `resumption.ts must not import ${specifier}`,
       );
+    }
+  });
+});
+
+describe("Slice F.2b explicit Working Notes handoff boundaries", () => {
+  test("the handoff snapshot / selection helper is a dependency-free execution leaf", async () => {
+    const { files, bare } = await walkGraph(["execution/working-notes.ts"]);
+    assert.deepEqual([...bare].sort(), [], "Working Notes (frame + handoff) imports no package and no builtin");
+    const forbidden = [
+      "runtime/harness.ts",
+      "runtime/effect-processor.ts",
+      "ports/runtime-store.ts",
+      "ports/effect-authorizer.ts",
+      "operations/authority.ts",
+      "operations/active-view.ts",
+      "agent/control-state.ts",
+      "agent/spec.ts",
+      "controllers/agent/controller.ts",
+    ];
+    assert.deepEqual(
+      [...files].filter((path) => forbidden.includes(path)),
+      [],
+      "the handoff select/snapshot helpers reach no Harness, store, authorizer, Active View, or Agent internals",
+    );
+  });
+
+  test("the generic spawn runtime never reaches Agent control state or the Agent controller", async () => {
+    const gateway = await readFile(resolve(CORE_SRC, "runtime/effect-processor.ts"), "utf8");
+    // The gateway's own imports name no Agent module. (`agent/spec.ts` is reachable only as a *type*
+    // through `definitions/types.ts`, which types `AgentDefinition.spec` - a pre-existing, unavoidable
+    // type edge, not a coupling to Agent runtime internals.)
+    for (const specifier of specifiersIn(gateway)) {
+      assert.equal(/(^|\/)agent\//.test(specifier), false, `the Effect gateway imports ${specifier}, an Agent module`);
+      assert.equal(specifier.includes("controllers/agent"), false, `the Effect gateway imports ${specifier}`);
+    }
+    for (const name of ["AgentControlState", "AgentSpec", "AgentController", "initialAgentControlState", "local-model-control"]) {
+      assert.equal(gateway.includes(name), false, `the Effect gateway must not name ${name}`);
+    }
+    // Its graph never reaches Agent runtime-state modules (spec-as-type via definitions is the only edge).
+    const { files } = await walkGraph(["runtime/effect-processor.ts"]);
+    for (const forbidden of ["agent/control-state.ts", "controllers/agent/controller.ts", "operations/local-model-control.ts"]) {
+      assert.equal(files.has(forbidden), false, `the Effect gateway graph must not reach ${forbidden}`);
+    }
+    // It does read the generic handoff envelope - that is an execution/ concept, not an Agent one.
+    assert.ok(gateway.includes("workingNotesHandoffBudgetIssue"), "it enforces the generic transfer envelope atomically");
+  });
+
+  test("the handoff is carried on the Execution context, not a DeferredSlot and not a runtime record", async () => {
+    const context = await readFile(resolve(CORE_SRC, "execution/context.ts"), "utf8");
+    const slots = context.slice(context.indexOf("export interface DeferredSlots"));
+    assert.equal(slots.slice(0, slots.indexOf("\n}")).toLowerCase().includes("workingnotes"), false, "no Working Notes slot");
+    assert.ok(context.includes("readonly workingNotesHandoff: WorkingNotesHandoff | null"), "it is a plain typed field");
+    // No RuntimeStore facet was invented for it.
+    const runtimeStore = await readFile(resolve(CORE_SRC, "ports/runtime-store.ts"), "utf8");
+    assert.equal(/workingNotesHandoff|workingNotes/i.test(runtimeStore), false, "no store facet for a handoff record");
+  });
+
+  test("the AgentController consumes a handoff but still holds no runtime handle", async () => {
+    const controller = await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8");
+    const code = controller.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+    assert.ok(code.includes("workingNotesFrameFromHandoff"), "it seeds its own frame from the handoff snapshot");
+    for (const forbidden of ["RuntimeStore", "Harness", "EffectAuthorizer", "SpawnExecutionProposal", "spawn_execution"]) {
+      assert.equal(code.includes(forbidden), false, `the AgentController must not name ${forbidden}`);
+    }
+    const { files } = await walkGraph(["controllers/agent/controller.ts"]);
+    for (const forbidden of ["runtime/harness.ts", "runtime/effect-processor.ts", "ports/runtime-store.ts"]) {
+      assert.equal(files.has(forbidden), false, `the AgentController graph must not reach ${forbidden}`);
+    }
+  });
+
+  test("the handoff adds no new Effect kind, Event kind, or local model control", async () => {
+    const effects = await readFile(resolve(CORE_SRC, "effects/types.ts"), "utf8");
+    const kinds = effects.slice(effects.indexOf("export type EffectKind"));
+    assert.deepEqual(
+      [...kinds.slice(0, kinds.indexOf(";")).matchAll(/"([a-z_]+)"/g)].map((m) => m[1]),
+      ["use_capability", "write_memory", "spawn_execution", "send_message", "request_user_input"],
+      "the handoff rides spawn_execution; it is not a sixth kind",
+    );
+    const localControl = await readFile(resolve(CORE_SRC, "operations/local-model-control.ts"), "utf8");
+    assert.equal(/handoff/i.test(localControl), false, "a handoff is not a local model control");
+    assert.equal(localControl.includes("spawn"), false, "and LocalModelControlProjection has no spawn target");
+    const localKinds = localControl.slice(localControl.indexOf("MODEL_LOCAL_CONTROL_KINDS"));
+    assert.deepEqual(
+      [...localKinds.slice(0, localKinds.indexOf("]")).matchAll(/"([a-z_]+)"/g)].map((m) => m[1]),
+      ["working_notes_set"],
+      "the local-control vocabulary is unchanged by F.2b",
+    );
+  });
+
+  test("ActiveModelActionView stays F.1.1 authority-governed only", async () => {
+    const view = await readFile(resolve(CORE_SRC, "operations/model-action-view.ts"), "utf8");
+    for (const forbidden of ["handoff", "Handoff", "workingNotes", "WorkingNotes", "spawn", "localControl"]) {
+      assert.equal(view.includes(forbidden), false, `the Active Model Action View knows nothing about ${forbidden}`);
     }
   });
 });

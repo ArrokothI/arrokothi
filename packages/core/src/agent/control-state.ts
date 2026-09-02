@@ -163,7 +163,15 @@ export interface AgentControlState {
   readonly workingNotes: WorkingNotesFrame;
 }
 
-export function initialAgentControlState(): AgentControlState {
+/**
+ * Fresh Agent progress.
+ *
+ * `workingNotes` seeds the local scratch frame. It is the empty frame for an ordinary Execution,
+ * and - for a child spawned with an explicit Working Notes handoff (Slice F.2b) - the frame the
+ * AgentController derived from that handoff snapshot. Either way it is *this* Agent's own frame
+ * from here on: the handoff is consumed exactly once, at initialization, and never re-overlaid.
+ */
+export function initialAgentControlState(workingNotes: WorkingNotesFrame = emptyWorkingNotesFrame()): AgentControlState {
   return {
     version: AGENT_CONTROL_STATE_VERSION,
     step: 0,
@@ -173,7 +181,7 @@ export function initialAgentControlState(): AgentControlState {
     continuation: null,
     pending: [],
     responses: 0,
-    workingNotes: emptyWorkingNotesFrame(),
+    workingNotes,
   };
 }
 

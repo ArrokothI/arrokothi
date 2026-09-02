@@ -96,8 +96,22 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   observation. Agent-only consumer, controller-neutral resolver, no caching or Workflow LLM change.
   No canonical-doc change. Merged to main (PR #11); part of the merged `main` F.2a baseline.
 
+022-slice-f2b-working-notes-explicit-handoff.md
+  the current F.2b checkpoint, on the long-lived branch `slice-f-memory-completion` from the accepted
+  F.2a checkpoint. The first explicit Working Notes composition transfer: a parent selects a subset
+  of its own Working Notes with the pure `selectWorkingNotesHandoff` helper; that subset crosses one
+  child Execution boundary as an immutable, deep-copied `WorkingNotesHandoff` snapshot attached to an
+  already-authorized `SpawnExecution` proposal (no new gateway, no new Effect/Event/PendingOperation
+  kind); the Effect gateway envelope-checks it and rejects an oversized handoff atomically; the child
+  starts with its own fresh *writable* local frame seeded from it, consumed exactly once at
+  initialization. The handoff grants no authority, does not affect child attenuation, is independent
+  of the child's model read/write enablement, and is never returned to the parent automatically.
+  Sequential Workflow Stage handoff, parallel-branch notes, and child-to-parent return stay deferred.
+  No canonical-doc change (one `composition.md` §15 wording concretization flagged for review). Not
+  merged; awaiting review. F.3 continues on the same branch.
+
 021-slice-f2a-working-notes-local-scratch.md
-  the current F.2a checkpoint, on the long-lived branch `slice-f-memory-completion`, after two
+  the accepted F.2a checkpoint, on the long-lived branch `slice-f-memory-completion`, after two
   independent architecture-review corrections (021 §0.1-0.3): a controller-owned Working Notes frame
   in AgentControlState; authored AgentSpec.workingNotes { read?: true, write?: true } enablement; the
   read snapshot rendered into model information; two new AgentLimits budgets. The model-directed
@@ -112,7 +126,7 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   Notes frame or a missing/malformed persisted `invocation.localControls` is refused (`invalid` ->
   `agent_control_state_invalid`), not defaulted. `setWorkingNote` refuses a malformed input frame.
   DeferredSlots.workingNotes removed. One minimal canonical clarification to authority.md §3/§14.
-  Not merged; awaiting re-review. F.2b / F.3 / final Slice F integration continue on the same branch.
+  Independently accepted; still on the branch (unmerged with the rest of Slice F). F.2b builds on it.
 
 014-v1-efficiency-and-developer-ergonomics-validation.md
   cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
@@ -170,14 +184,25 @@ Slice F memory
   F.1.1         model-directed WriteMemory         accepted, merged (020, PR #11)
                 exposure via authorized memory
                 view + heterogeneous action view
-  F.2a          Working Notes local scratch:       current checkpoint (021), review-corrected;
-                controller-owned frame in          on branch slice-f-memory-completion,
-                AgentControlState, authored         not merged, awaiting re-review.
-                read/write enablement, local        working_notes_set is a controller-local
-                working_notes_set control with no   model CONTROL (not a model action /
-                Effect/Event, bounded persistence,  Active View member); one minimal
-                control-state version 2 -> 3 +      authority.md §3/§14 clarification
+  F.2a          Working Notes local scratch:       accepted (021), review-corrected; on branch
+                controller-owned frame in          slice-f-memory-completion, unmerged with the
+                AgentControlState, authored         rest of Slice F. working_notes_set is a
+                read/write enablement, local        controller-local model CONTROL (not a model
+                working_notes_set control with no   action / Active View member); one minimal
+                Effect/Event, bounded persistence,  authority.md §3/§14 clarification
+                control-state version 2 -> 3 +
                 fail-closed frame validation
+  F.2b          Working Notes explicit handoff:    current checkpoint (022); on branch
+                selectWorkingNotesHandoff (pure)   slice-f-memory-completion, not merged,
+                -> immutable WorkingNotesHandoff   awaiting review. First explicit Working
+                snapshot on an already-authorized  Notes composition transfer, across ONE child
+                SpawnExecution -> Effect gateway   Execution boundary. No new gateway / Effect /
+                envelope-checks + rejects oversize Event / PendingOperation kind. Child seeds its
+                atomically -> child seeds its own  own fresh WRITABLE frame, consumed exactly once
+                fresh writable frame, consumed     at init; grants no authority; independent of
+                once. Workflow Stage handoff,      the child's read/write enablement; never
+                parallel notes, child->parent      returned to the parent. No canonical-doc
+                return all deferred.               change (one §15 wording note for review).
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

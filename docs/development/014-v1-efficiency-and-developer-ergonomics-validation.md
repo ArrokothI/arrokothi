@@ -571,6 +571,67 @@ in-memory vs durable store
 
 This is the concrete evidence for "pay only for enabled guarantees."
 
+### 7.6 Dedicated orchestration-overhead measurement after Slice F (and again after Slice G)
+
+> **Recorded during Slice F.2b (doc [`022`](022-slice-f2b-working-notes-explicit-handoff.md)) from
+> the architecture review. This is a planned measurement, not a performance guarantee, and it must
+> not block F.2b (or any Slice-F) behaviour. It must survive the future Slice-G new-chat handoff.**
+
+Once Slice F is complete — and again after Slice G if G materially changes the hot path — run a
+dedicated orchestration-overhead measurement with **fake/instant external dependencies** so that
+external latency cannot hide kernel cost. Use deterministic fake/instant model and capability
+providers; the InMemory store, local authority, and minimal trace.
+
+The main question:
+
+```text
+For a simple / local workload, is ArrokothI orchestration insignificant relative to ONE model
+inference, and do disabled features add approximately zero external round trips / work?
+```
+
+Proposed measurement matrix (approximate; refine when the workloads exist):
+
+```text
+A. minimal Agent            no operations, no Structured Memory, no Working Notes
+B. small action surface     ~10 operations exposed / authorized
+C. larger action surface    ~100 operations
+D. Structured Memory        ~10 declared fields, read ~3, optional write exposure
+E. Working Notes            (i) empty  (ii) representative bounded frame  (iii) max/default bounded frame
+F. combined F workload      operations + Structured Memory read/write exposure + Working Notes
+G. suspended invocation     re-entry: verify no re-resolution of invocation snapshots
+   re-entry
+H. after Slice G            repeat representative cases with concurrency/conflict machinery
+                            enabled vs disabled
+```
+
+Measure where practical, per representative case:
+
+```text
+wall-clock p50 / p95        CPU time                       allocations / GC proxy
+store reads                 store writes / transactions    policy / authority calls
+view / projection           serialization / hash bytes     external round trips
+  construction counts         or counts
+```
+
+Also measure one representative **real** LLM invocation separately, so the report can state:
+
+```text
+kernel orchestration latency   vs   model / tool latency
+```
+
+Record that a future lightweight / local product profile should use the **same kernel semantics
+with cheaper mechanisms**:
+
+```text
+InMemory / local store         local authority                minimal trace
+no Derived Semantic Memory      no distributed scheduler       small / static catalog
+  provider unless enabled       no sandbox unless required
+```
+
+Do **not** define a separate weakened "light kernel". Mechanism / profile may differ; semantics stay
+shared. Prefer a repeatable benchmark command, operation / count metrics, and broad regression
+envelopes over brittle CI millisecond thresholds.
+
 ---
 
 ## 8. v0.4 validation checkpoint

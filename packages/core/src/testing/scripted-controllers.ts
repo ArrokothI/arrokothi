@@ -30,6 +30,7 @@ import type { DefinitionKind } from "../definitions/types.ts";
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
 import type { EffectProposal } from "../effects/types.ts";
 import { ask, callExecution, reply, requestUserInput, send, spawnExecution, useCapability } from "../effects/types.ts";
+import type { WorkingNotesHandoff } from "../execution/working-notes.ts";
 import type { OperationRefInput } from "../operations/refs.ts";
 import type { ValueSchema } from "../schema/value-schema.ts";
 import { eventSatisfiesWake } from "../interaction/event-envelope.ts";
@@ -110,6 +111,14 @@ export type ScriptedControllerStep =
       readonly definitionVersion: number;
       readonly childInput?: JsonValue;
       readonly requestedOperations?: readonly OperationRefInput[];
+      /**
+       * An explicit Working Notes handoff snapshot for the child (Slice F.2b).
+       *
+       * A substrate fixture has no Working Notes frame of its own, so it supplies the already-selected
+       * snapshot directly - the shape a real controller would produce with
+       * `selectWorkingNotesHandoff(frame, { keys })`.
+       */
+      readonly workingNotes?: WorkingNotesHandoff;
       readonly requestKey?: string;
       readonly interleave?: { readonly eventKinds?: readonly EventKind[]; readonly correlationId?: string };
       /** `spawn` only: report `continue` instead of waiting for `child.spawned`. */
@@ -471,6 +480,7 @@ class ScriptedController implements ExecutionController {
           definitionVersion: step.definitionVersion,
           ...(step.childInput !== undefined ? { input: step.childInput } : {}),
           ...(step.requestedOperations !== undefined ? { requestedOperations: step.requestedOperations } : {}),
+          ...(step.workingNotes !== undefined ? { workingNotes: step.workingNotes } : {}),
           requestKey,
         });
         if (step.do === "spawn" && step.await === false) {

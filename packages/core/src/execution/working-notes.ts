@@ -205,19 +205,21 @@ export function validateWorkingNoteUpdate(input: unknown): WorkingNoteUpdateVali
 }
 
 /**
- * Deterministic validation of a whole frame's structure.
+ * Deterministic validation of an ordered Working-Note entry list.
  *
- * Used to assert the persisted/derived shape holds its invariants: only `entries`, each an object
- * of exactly `key` and `content`, keys non-empty, unique, and in ascending order, content JSON.
+ * The structural invariants are the same whether the list is a mutable-by-owner
+ * [`WorkingNotesFrame`](#WorkingNotesFrame) or an immutable [`WorkingNotesHandoff`](#WorkingNotesHandoff)
+ * snapshot: only `entries`, each an object of exactly `key` and `content`, keys non-empty, unique,
+ * and in ascending order, content JSON. `noun` only shapes the messages.
  */
-export function workingNotesFrameIssues(value: unknown): readonly string[] {
+function orderedEntryListIssues(value: unknown, noun: string): readonly string[] {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    return ["expected a Working Notes frame object"];
+    return [`expected a Working Notes ${noun} object`];
   }
   const record = value as Record<string, unknown>;
   const issues: string[] = [];
   for (const extra of Object.keys(record).filter((key) => key !== "entries")) {
-    issues.push(`unknown frame property "${extra}"`);
+    issues.push(`unknown ${noun} property "${extra}"`);
   }
   const entries = record["entries"];
   if (!Array.isArray(entries)) return [...issues, "`entries` must be an array"];
@@ -252,4 +254,109 @@ export function workingNotesFrameIssues(value: unknown): readonly string[] {
     }
   });
   return issues;
+}
+
+/**
+ * Deterministic validation of a whole frame's structure.
+ *
+ * Used to assert the persisted/derived shape holds its invariants: only `entries`, each an object
+ * of exactly `key` and `content`, keys non-empty, unique, and in ascending order, content JSON.
+ */
+export function workingNotesFrameIssues(value: unknown): readonly string[] {
+  return orderedEntryListIssues(value, "frame");
+}
+
+// -- explicit handoff across a composition boundary (F.2b) ---------------------
+
+/**
+ * An immutable Working Notes transfer snapshot for exactly one composition boundary.
+ *
+ * ```text
+ * WorkingNotesFrame      mutable-by-owner scratch state carried across a controller's own progress
+ * WorkingNotesHandoff    a deep copy of an explicitly selected subset, frozen at one boundary
+ * ```
+ *
+ * Structurally an ordered entry list like a frame, but it is a *different concept*: nothing owns it,
+ * nothing revises it, and it is never a live reference back to the source frame. It carries no
+ * owner id, revision, authority, credential, or provenance graph - only the selected entries. A
+ * parent selects it with [`selectWorkingNotesHandoff`](#selectWorkingNotesHandoff) and attaches it
+ * to a `SpawnExecution` proposal; the child turns it into its own *fresh* writable frame with
+ * [`workingNotesFrameFromHandoff`](#workingNotesFrameFromHandoff) and never sees it again.
+ */
+export interface WorkingNotesHandoff {
+  readonly entries: readonly WorkingNoteEntry[];
+}
+
+/**
+ * Which notes cross the boundary.
+ *
+ * Explicit and small: a list of keys. There is deliberately no "all" mode and an absent selection
+ * is not "all" - no handoff declaration means zero notes cross. A Working Note key is dynamic local
+ * vocabulary rather than a stable identity, so a selected key that the source frame does not
+ * currently hold is *ignored* (it reveals nothing to the child and it is not an error). Selection
+ * is data-flow intent, never permission.
+ */
+export type WorkingNotesHandoffSelection = { readonly keys: readonly string[] };
+
+/**
+ * Pure: select the named entries from a frame into an immutable, deeply copied handoff snapshot.
+ *
+ * The result never aliases the source frame or its content objects, so a later mutation on either
+ * side cannot reach the other. Absent selected keys are ignored. The source frame's entries are
+ * already key-ordered and unique, and the filter preserves that.
+ */
+export function selectWorkingNotesHandoff(
+  frame: WorkingNotesFrame,
+  selection: WorkingNotesHandoffSelection,
+): WorkingNotesHandoff {
+  const wanted = new Set(selection.keys);
+  const entries = frame.entries
+    .filter((entry) => wanted.has(entry.key))
+    .map((entry) => ({ key: entry.key, content: cloneJson(entry.content) }));
+  return { entries };
+}
+
+/**
+ * A handoff snapshot as a child controller's *fresh* initial writable frame.
+ *
+ * Deep-copies every entry, so the child's frame is independent of the snapshot from the first
+ * Activation onward.
+ */
+export function workingNotesFrameFromHandoff(handoff: WorkingNotesHandoff): WorkingNotesFrame {
+  const entries = handoff.entries
+    .map((entry) => ({ key: entry.key, content: cloneJson(entry.content) }))
+    .sort((a, b) => compareKeys(a.key, b.key));
+  return { entries };
+}
+
+/** Deterministic structural validation of a handoff snapshot. Same invariants as a frame. */
+export function workingNotesHandoffIssues(value: unknown): readonly string[] {
+  return orderedEntryListIssues(value, "handoff");
+}
+
+/** A deep, alias-free copy of a handoff snapshot, so a stored record never aliases the proposal. */
+export function cloneWorkingNotesHandoff(handoff: WorkingNotesHandoff): WorkingNotesHandoff {
+  return { entries: handoff.entries.map((entry) => ({ key: entry.key, content: cloneJson(entry.content) })) };
+}
+
+/**
+ * The generic maximum a handoff may be to ride a `SpawnExecution` across the Harness.
+ *
+ * This is a transfer *envelope*, not a per-child budget: the Harness resolves a child Definition
+ * but must not parse Agent-internal limits to mediate a generic spawn, so it enforces this fixed
+ * ceiling atomically at creation. The values equal `DEFAULT_AGENT_LIMITS`'s Working Notes budgets
+ * on purpose - a default-limits parent's frame is already within that budget, so any subset of it
+ * fits the envelope and a default-limits child accepts it without a second failure. A child with a
+ * *lower* custom budget re-validates the handoff at initialization; a child with a *higher* custom
+ * budget cannot receive a handoff larger than the envelope. Neither case ever truncates silently.
+ */
+export const WORKING_NOTES_HANDOFF_MAX_ENTRIES = 32;
+export const WORKING_NOTES_HANDOFF_MAX_BYTES = 16384;
+
+/** Whether a handoff is within the transfer envelope. `null` means it is. */
+export function workingNotesHandoffBudgetIssue(handoff: WorkingNotesHandoff): WorkingNotesBudgetIssue | null {
+  return workingNotesBudgetIssue(
+    { entries: handoff.entries },
+    { maxEntries: WORKING_NOTES_HANDOFF_MAX_ENTRIES, maxBytes: WORKING_NOTES_HANDOFF_MAX_BYTES },
+  );
 }

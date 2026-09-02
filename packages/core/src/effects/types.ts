@@ -13,6 +13,8 @@
  * Work is not an Effect merely because it is work - an Effect is work that crosses the Harness.
  */
 
+import type { WorkingNotesHandoff } from "../execution/working-notes.ts";
+import { workingNotesHandoffIssues } from "../execution/working-notes.ts";
 import type { EventId } from "../interaction/event-envelope.ts";
 import type { OperationRef, OperationRefInput } from "../operations/refs.ts";
 import { isOperationRef, operationRef } from "../operations/refs.ts";
@@ -135,6 +137,18 @@ export interface SpawnExecutionProposal extends ProposalBase {
    * supported kind the Definition is.
    */
   readonly expectedChildKind?: "agent" | "workflow";
+  /**
+   * An explicit Working Notes handoff for this child (Slice F.2b).
+   *
+   * An immutable, deep-copied snapshot of an explicitly selected subset of the proposing
+   * controller's own Working Notes - data attached to an already-authorized child-spawn proposal,
+   * *not* a new operation. It grants nothing: it does not widen or attenuate child authority, is
+   * never confirmation, and never becomes Effective Authority or an Active View. Absent means zero
+   * notes cross - a parent/child ownership relation carries no ambient note visibility. The Harness
+   * checks it against a fixed transfer envelope and rejects the whole spawn atomically if it does
+   * not fit; it never truncates.
+   */
+  readonly workingNotes?: WorkingNotesHandoff;
 }
 
 /**
@@ -329,6 +343,14 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
       if (expectedChildKind !== undefined && expectedChildKind !== "agent" && expectedChildKind !== "workflow") {
         issues.push(issue(`${path}.expectedChildKind`, `expected "agent" or "workflow" when present`));
       }
+      const workingNotes = candidate["workingNotes"];
+      if (workingNotes !== undefined) {
+        // A malformed handoff is refused here as data, before identity is assigned - exactly like
+        // any other malformed proposal field, never carried into child creation.
+        for (const detail of workingNotesHandoffIssues(workingNotes)) {
+          issues.push(issue(`${path}.workingNotes`, detail));
+        }
+      }
       break;
     }
     case "send_message": {
@@ -481,6 +503,13 @@ export interface SpawnExecutionInput {
   readonly requestedOperations?: readonly OperationRefInput[];
   /** The Definition kind the caller requires the child to be. See `SpawnExecutionProposal`. */
   readonly expectedChildKind?: "agent" | "workflow";
+  /**
+   * An explicit Working Notes handoff snapshot for the child. See `SpawnExecutionProposal`.
+   *
+   * Normally built with `selectWorkingNotesHandoff(frame, { keys })` from the proposing
+   * controller's own Working Notes frame, so the snapshot is deep-copied and bounded by its source.
+   */
+  readonly workingNotes?: WorkingNotesHandoff;
   readonly requestKey?: string;
   readonly authorizationEvidence?: AuthorizationEvidence;
 }
@@ -495,6 +524,7 @@ function spawnProposal(input: SpawnExecutionInput, awaitTerminalResult: boolean)
       ? { requestedOperations: input.requestedOperations.map((ref) => operationRef(ref.capability, ref.operation)) }
       : {}),
     ...(input.expectedChildKind !== undefined ? { expectedChildKind: input.expectedChildKind } : {}),
+    ...(input.workingNotes !== undefined ? { workingNotes: input.workingNotes } : {}),
     ...(awaitTerminalResult ? { awaitTerminalResult: true } : {}),
     ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
     ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),

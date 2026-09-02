@@ -963,8 +963,8 @@ describe("no-feature cost and child non-inheritance", () => {
     await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "task", payload: "go" });
     await bundle.harness.runUntilIdle();
 
-    // F.2a adds no handoff path at all: there is no SpawnExecution field, no ExecutionView note
-    // reference, and a fresh Agent always starts from the empty frame.
+    // An Agent created directly (not spawned with an explicit F.2b handoff) always starts from the
+    // empty frame; ownership ancestry alone never carries note visibility.
     const state = stateOf((await bundle.harness.inspect(agent.executionId))!.control.progress);
     assert.deepEqual(state.workingNotes.entries, [{ key: "secret", content: "parent-only scratch" }]);
     const fresh = await bundle.createAgent({ definition: ref, authority: [] });

@@ -2,10 +2,13 @@
 
 > **Status:** implemented on the long-lived branch `slice-f-memory-completion` from merged `main`
 > `3598c88cb999000b3dd6a631524199a180e509b0`, then corrected by two independent architecture
-> reviews — of F.2a HEAD `0c53aad` (§0.1–0.2) and of `4ed87cd` (§0.3). **Not merged. Awaiting
-> re-review.** If F.2a passes, F.2b (explicit Working Notes handoff), F.3 (Derived Semantic Memory +
-> provenance/promotion), and the final Slice F integration corrections continue on this same branch.
-> The branch merges into `main` only after the whole of Slice F is independently accepted.
+> reviews — of F.2a HEAD `0c53aad` (§0.1–0.2) and of `4ed87cd` (§0.3). **Independently accepted at
+> checkpoint `fe837f24ba853df7ab797bb64751c75c6be11fdd`; still on the branch, not yet merged with
+> the rest of Slice F.** F.2b (explicit Working Notes handoff across a child Execution boundary, doc
+> [`022`](022-slice-f2b-working-notes-explicit-handoff.md)) is the current checkpoint and builds
+> directly on the frame and helpers below; F.3 (Derived Semantic Memory + provenance/promotion) and
+> the final Slice F integration corrections continue on this same branch. The branch merges into
+> `main` only after the whole of Slice F is independently accepted.
 > **Scope:** the smallest honest *local* Working Notes vertical slice for the reference Agent -
 > a controller-owned scratch frame, authored read visibility, a model-directed local update
 > *control*, and bounded persistence.
@@ -186,11 +189,11 @@ control-state versioning + frame validation              AGENT_CONTROL_STATE_VER
 minimal canonical clarification                          authority.md §3 + §14 (local model controls)
 ```
 
-Explicitly deferred (unchanged from the task brief):
+Explicitly deferred by F.2a (the task brief):
 
 ```text
-parent -> child Working Notes handoff                    F.2b
-Workflow Stage Working Notes handoff                     F.2b
+parent -> child Working Notes handoff                    F.2b (done: doc 022, child Execution boundary)
+Workflow Stage Working Notes handoff                     still deferred (a Stage is not a parent/child)
 parallel-branch notes / shared mutable notes             Slice G / later evidence
 cross-Execution note references / Working Notes RuntimeStore / WorkingNotesFrameRef
 note scope ontology
@@ -198,8 +201,10 @@ Derived Semantic Memory / promotion / Artifacts          F.3
 Structured Memory CAS / concurrency / Active View caching
 ```
 
-`SpawnExecution` is unchanged. Workflow is not wired. Canonical change is limited to the minimal
-authority.md clarification in §0.1.
+In F.2a itself `SpawnExecution` is unchanged and Workflow is not wired; the F.2a canonical change is
+limited to the minimal authority.md clarification in §0.1. F.2b then adds the optional
+`SpawnExecutionProposal.workingNotes` handoff snapshot for the **child Execution** boundary only -
+see [`022`](022-slice-f2b-working-notes-explicit-handoff.md).
 
 ## 2. Audit before coding
 

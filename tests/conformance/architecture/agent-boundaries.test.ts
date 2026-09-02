@@ -358,15 +358,29 @@ describe("Agent architecture boundaries", () => {
     );
   });
 
-  test("a local Working Notes update is not an Effect, an Event, or a Spawn field", async () => {
+  test("the local Working Notes control is not an Effect or Event; the F.2b handoff is only spawn data", async () => {
     const effects = await readFile(resolve(CORE_SRC, "effects/types.ts"), "utf8");
     const kinds = effects.slice(effects.indexOf("export const EFFECT_KINDS"));
     const list = kinds.slice(0, kinds.indexOf("]"));
     assert.equal(/working[_ ]?notes/i.test(list), false, "no sixth Effect for Working Notes");
-    assert.equal(effects.includes("working_notes"), false, "and no Working Notes field on any Effect proposal, SpawnExecution included");
+    // F.2a: the `working_notes_set` *local control* is never an Effect proposal field of any kind.
+    assert.equal(effects.includes("working_notes_set"), false, "working_notes_set is a local control, never an Effect field");
+    // F.2b: an explicit Working Notes *handoff* rides SpawnExecution as plain data - a snapshot
+    // attached to an already-authorized child-spawn proposal, not a new operation.
+    const spawnProposal = effects.slice(effects.indexOf("export interface SpawnExecutionProposal"));
+    const spawnBody = spawnProposal.slice(0, spawnProposal.indexOf("\n}"));
+    assert.ok(spawnBody.includes("workingNotes?: WorkingNotesHandoff"), "SpawnExecution carries an optional handoff snapshot");
+    assert.ok(
+      /WorkingNotesHandoff/.test(effects) && !/working_notes\./.test(effects),
+      "the handoff is a plain-data field, never a working_notes.* Effect/Event kind",
+    );
 
     const events = await readFile(resolve(CORE_SRC, "interaction/events.ts"), "utf8");
-    assert.equal(/working[_ ]?notes/i.test(events), false, "no working_notes.* Event kind was invented");
+    assert.equal(/working[_ ]?notes/i.test(events), false, "no working_notes.* Event kind was invented for the handoff");
+
+    // And the handoff creates no new PendingOperation kind - it settles nothing of its own.
+    const pending = await readFile(resolve(CORE_SRC, "effects/pending.ts"), "utf8");
+    assert.equal(/working[_ ]?notes/i.test(pending), false, "the handoff is not a PendingOperation kind");
   });
 
   test("the Agent controller owns the local Working Notes update; the Workflow controller does not", async () => {

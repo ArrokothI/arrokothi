@@ -37,6 +37,7 @@ import type { ActiveStructuredMemoryWriteViewResolver } from "../ports/active-st
 import type { AgentExecutor } from "../ports/agent-executor.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
+import type { ExecutionController } from "../ports/controller.ts";
 import type { ModelProvider, ModelProviderLookup } from "../ports/model-provider.ts";
 import type { ModelResolver } from "../ports/model-resolver.ts";
 import { createActiveOperationViewResolver } from "../reference/active-operation-view-resolver.ts";
@@ -118,6 +119,13 @@ export interface AgentTestHarnessOptions extends Omit<TestHarnessOptions, "contr
   readonly store?: InMemoryRuntimeStore;
   readonly taskScope?: readonly string[];
   readonly trace?: AgentTrace;
+  /**
+   * Extra controllers to register alongside the real `AgentController`.
+   *
+   * Needed when a case needs a *parent* of a different kind - e.g. a scripted Workflow controller
+   * that proposes a `SpawnExecution` (with a Working Notes handoff) for a real Agent child.
+   */
+  readonly extraControllers?: readonly ExecutionController[];
   /**
    * The Structured Memory read resolver handed to the `AgentController`.
    *
@@ -201,7 +209,7 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
   });
 
   const bundle = createTestHarness({
-    controllers: [controller],
+    controllers: [controller, ...(options.extraControllers ?? [])],
     store,
     capabilityCatalog: options.capabilityCatalog ?? catalog,
     ...(options.activationBudget !== undefined ? { activationBudget: options.activationBudget } : {}),

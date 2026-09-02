@@ -328,17 +328,26 @@ export type {
   WorkingNotesBudget,
   WorkingNotesBudgetIssue,
   WorkingNotesFrame,
+  WorkingNotesHandoff,
+  WorkingNotesHandoffSelection,
   WorkingNoteUpdateValidation,
 } from "./execution/working-notes.ts";
 export {
+  cloneWorkingNotesHandoff,
   emptyWorkingNotesFrame,
+  selectWorkingNotesHandoff,
   setWorkingNote,
   validateWorkingNoteUpdate,
+  WORKING_NOTES_HANDOFF_MAX_BYTES,
+  WORKING_NOTES_HANDOFF_MAX_ENTRIES,
   workingNoteContent,
   workingNoteEntryIssue,
   workingNotesBudgetIssue,
   workingNotesFrameBytes,
+  workingNotesFrameFromHandoff,
   workingNotesFrameIssues,
+  workingNotesHandoffBudgetIssue,
+  workingNotesHandoffIssues,
 } from "./execution/working-notes.ts";
 /**
  * Controller-local resumptions are exported as *readable* shapes only.

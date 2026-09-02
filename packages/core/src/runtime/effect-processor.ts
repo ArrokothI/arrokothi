@@ -104,6 +104,7 @@ import {
   commitStructuredMemoryWrite,
   validateStructuredMemoryWrite,
 } from "../execution/structured-memory.ts";
+import { cloneWorkingNotesHandoff, workingNotesHandoffBudgetIssue } from "../execution/working-notes.ts";
 import type { EventEnvelope, EventId } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
 import type { ValueSchema } from "../schema/value-schema.ts";
@@ -1339,6 +1340,25 @@ export class EffectProcessor {
     }
     const grantId = decision.grantId;
 
+    // The Working Notes handoff (Slice F.2b) is data attached to this already-authorized spawn, not
+    // a separate operation - it grants nothing and does not affect authority attenuation. But it
+    // still must not cross the Harness unbounded. The generic transfer envelope is trusted
+    // information the Harness has without parsing Agent-internal limits, so an oversized handoff is
+    // refused atomically - before any confirmation is even created: no child, no credit, no partial
+    // state. It is never truncated. A child Definition with a tighter per-controller budget
+    // re-validates at initialization.
+    if (proposal.workingNotes !== undefined) {
+      const overBudget = workingNotesHandoffBudgetIssue(proposal.workingNotes);
+      if (overBudget !== null) {
+        return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+          code: "spawn_working_notes_handoff_over_budget",
+          message:
+            `the Working Notes handoff for ${proposal.definitionId}@${proposal.definitionVersion} exceeds the ` +
+            `transfer envelope (${overBudget.message}); the spawn is refused whole rather than truncated`,
+        }, resume);
+      }
+    }
+
     if (resume === undefined) {
       const gated = await this.gateOrNull(input, proposal, effectId, correlationId, requestedAt, grantId);
       if (gated) return gated;
@@ -1370,6 +1390,7 @@ export class EffectProcessor {
           `but a ${proposal.expectedChildKind} child was required`,
       }, resume);
     }
+
     const childDefinitionRef = definitionRef(definition);
 
     type SpawnCommit =
@@ -1446,6 +1467,11 @@ export class EffectProcessor {
         mailboxId: childMailboxId,
         createdAt: at,
         authority: { authorityId: childAuthorityId },
+        // A deep, alias-free copy: the child's stored snapshot must not share structure with the
+        // proposal object the journal also retains.
+        ...(proposal.workingNotes !== undefined
+          ? { workingNotesHandoff: cloneWorkingNotesHandoff(proposal.workingNotes) }
+          : {}),
       });
       await tx.executions.insert(childContext);
       const readyChild = transitionContext(childContext, "READY", at);
@@ -1516,6 +1542,11 @@ export class EffectProcessor {
           rootExecutionId: parent.rootExecutionId,
           requestedOperations: (proposal.requestedOperations ?? []).map((ref) => `${ref.capability}/${ref.operation}`),
           grantedOperations: grantedDetail,
+          // Parent-side audit of what scratch information the parent chose to delegate. Keys only -
+          // the parent selected them and the content is not a runtime concern.
+          ...(proposal.workingNotes !== undefined
+            ? { workingNotesHandoffKeys: proposal.workingNotes.entries.map((entry) => entry.key) }
+            : {}),
           mode: awaited ? "call" : "spawn",
         },
       });

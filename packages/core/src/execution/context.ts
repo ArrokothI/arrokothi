@@ -19,8 +19,14 @@
  * are *controller-owned* plain semantic state - they live in `AgentControlState` next to `messages`
  * and `pending`, not in a `RuntimeStore` record a slot ref would address. The early
  * `slots.workingNotes` placeholder implied a runtime-owned subsystem that F.2a decided not to
- * build, so it was removed rather than left claiming an architecture that does not exist. F.2b adds
- * explicit cross-Execution note visibility, but through `SpawnExecution`/Stage handoff, not a slot.
+ * build, so it was removed rather than left claiming an architecture that does not exist.
+ *
+ * Slice F.2b adds `workingNotesHandoff`: an immutable, controller-neutral snapshot the spawning
+ * Execution explicitly selected, stored here at child creation and surfaced once through the
+ * `ExecutionView` so the child's controller can seed its own fresh local frame from it. It is plain
+ * data, not a slot ref and not a runtime-owned subsystem - the child consumes it exactly once, at
+ * initialization, and its own persisted progress is authoritative from then on. `null` for a root
+ * Execution and for any child spawned without a handoff, which is the zero-cost default.
  *
  * There is deliberately no Active View slot. An Active Operation View is a deterministic derivation
  * from authority plus catalog plus an authored exposure request, so persisting one would store a
@@ -37,6 +43,7 @@ import type { JsonObject } from "../util/json.ts";
 import type { ControllerResumptionId, ExecutionId } from "./ids.ts";
 import type { LifecycleState } from "./lifecycle.ts";
 import type { StructuredMemoryViewRef } from "./structured-memory.ts";
+import type { WorkingNotesHandoff } from "./working-notes.ts";
 import { assertTransition } from "./lifecycle.ts";
 import type { ExecutionFailure, TerminalResultEnvelope } from "./terminal-result.ts";
 
@@ -169,6 +176,14 @@ export interface ExecutionContext {
   readonly waitingFor: ExecutionWait | null;
   readonly mailbox: MailboxRef;
   readonly slots: DeferredSlots;
+  /**
+   * The Working Notes handoff snapshot this Execution was spawned with (Slice F.2b), or `null`.
+   *
+   * Immutable plain data, assigned once at creation by the Effect gateway from the spawning
+   * proposal, never rewritten. The child's controller reads it once - to seed its own fresh local
+   * frame - and never again; it grants no authority.
+   */
+  readonly workingNotesHandoff: WorkingNotesHandoff | null;
   readonly terminalResult: TerminalResultEnvelope | null;
   readonly failure: ExecutionFailure | null;
   readonly createdAt: string;
@@ -191,6 +206,14 @@ export interface ExecutionView {
   readonly rootExecutionId: ExecutionId;
   readonly lifecycle: LifecycleState;
   readonly control: ControllerProgress;
+  /**
+   * The Working Notes handoff this Execution was spawned with (Slice F.2b), or `null`.
+   *
+   * A read-only copy of the immutable snapshot. A controller reads it *only* when initializing its
+   * own progress and never afterwards; it is information the spawning Execution explicitly
+   * delegated, not authority and not ambient context.
+   */
+  readonly workingNotesHandoff: WorkingNotesHandoff | null;
   readonly createdAt: string;
   readonly updatedAt: string;
 }
@@ -213,6 +236,13 @@ export interface CreateExecutionContextInput {
   readonly authority?: OperationAuthorityRef;
   /** Runtime-created Execution-local Structured Memory view, when one was configured. */
   readonly memoryView?: StructuredMemoryViewRef;
+  /**
+   * The Working Notes handoff snapshot the spawning proposal carried (Slice F.2b).
+   *
+   * Supplied by the Effect gateway from an already-validated, envelope-checked, deep-copied
+   * snapshot. Omitted for a root Execution and for any child spawned without a handoff.
+   */
+  readonly workingNotesHandoff?: WorkingNotesHandoff;
 }
 
 export function createExecutionContext(input: CreateExecutionContextInput): ExecutionContext {
@@ -226,6 +256,7 @@ export function createExecutionContext(input: CreateExecutionContextInput): Exec
     control: initialControllerProgress(input.kind),
     waitingFor: null,
     mailbox: { mailboxId: input.mailboxId },
+    workingNotesHandoff: input.workingNotesHandoff ?? null,
     slots:
       input.authority || input.memoryView
         ? {
@@ -251,6 +282,7 @@ export function toExecutionView(context: ExecutionContext): ExecutionView {
     rootExecutionId: context.rootExecutionId,
     lifecycle: context.lifecycle,
     control: context.control,
+    workingNotesHandoff: context.workingNotesHandoff,
     createdAt: context.createdAt,
     updatedAt: context.updatedAt,
   };

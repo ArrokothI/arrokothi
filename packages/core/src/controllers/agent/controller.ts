@@ -123,8 +123,14 @@ import {
   createLocalModelControlView,
 } from "../../operations/local-model-control.ts";
 import { emptyActiveStructuredMemoryWriteView } from "../../execution/structured-memory-write-view.ts";
-import type { WorkingNotesFrame } from "../../execution/working-notes.ts";
-import { setWorkingNote, validateWorkingNoteUpdate, workingNotesBudgetIssue } from "../../execution/working-notes.ts";
+import type { WorkingNotesFrame, WorkingNotesHandoff } from "../../execution/working-notes.ts";
+import {
+  setWorkingNote,
+  validateWorkingNoteUpdate,
+  workingNotesBudgetIssue,
+  workingNotesFrameFromHandoff,
+  workingNotesHandoffIssues,
+} from "../../execution/working-notes.ts";
 import { createActiveModelActionView } from "../../operations/model-action-view.ts";
 import { createModelActionProjection } from "../../operations/projection.ts";
 import {
@@ -346,7 +352,21 @@ class AgentController implements ExecutionController {
         message: `this Agent's persisted progress cannot be interpreted: ${stored.reason}`,
       });
     }
-    let state = stored.status === "read" ? stored.state : initialAgentControlState();
+
+    let state: AgentControlState;
+    if (stored.status === "read") {
+      // Persisted progress is authoritative. A Working Notes handoff (if any) was already consumed
+      // into this state on the first Activation; it is never re-overlaid.
+      state = stored.state;
+    } else {
+      // Fresh progress. Seed the local Working Notes frame from an explicit handoff snapshot when
+      // this child was spawned with one - exactly once, here.
+      const seeded = this.seedInitialState(spec, input.execution.workingNotesHandoff);
+      if ("failure" in seeded) {
+        return this.failed(input.execution.control.progress, seeded.failure);
+      }
+      state = seeded.state;
+    }
     state = this.collect(state, input.events);
 
     if (!state.started) {
@@ -393,6 +413,56 @@ class AgentController implements ExecutionController {
 
     const step = await this.step(spec, state, input, observations, resumptions);
     return this.finish(step);
+  }
+
+  /**
+   * Builds fresh Agent progress, seeding the local Working Notes frame from an explicit handoff.
+   *
+   * ```text
+   * no handoff                     -> the empty frame (zero cost; nothing is scanned or cloned)
+   * handoff snapshot present       -> a fresh, deep-copied writable frame from the selected entries
+   * ```
+   *
+   * The handoff is *information the spawning Execution delegated*, never authority: it is folded in
+   * here whether or not `spec.workingNotes.read` / `.write` is authored, and whether the model then
+   * sees it or may update it stays entirely governed by those independent flags. It is validated
+   * against this Agent's own Working Notes budget - the generic transfer envelope the Harness
+   * enforced at spawn may be looser than a child with tighter custom limits - and a handoff that
+   * does not fit fails the Execution deterministically rather than being silently trimmed.
+   */
+  private seedInitialState(
+    spec: AgentSpec,
+    handoff: WorkingNotesHandoff | null,
+  ): { readonly state: AgentControlState } | { readonly failure: Failure } {
+    if (handoff === null) return { state: initialAgentControlState() };
+
+    const issues = workingNotesHandoffIssues(handoff);
+    if (issues.length > 0) {
+      return {
+        failure: {
+          code: "agent_working_notes_handoff_invalid",
+          message: `the Working Notes handoff this Agent was spawned with is malformed: ${issues.join("; ")}`,
+        },
+      };
+    }
+
+    const frame = workingNotesFrameFromHandoff(handoff);
+    const limits = agentLimits(spec);
+    const budget = workingNotesBudgetIssue(frame, {
+      maxEntries: limits.maxWorkingNoteEntries,
+      maxBytes: limits.maxWorkingNotesBytes,
+    });
+    if (budget) {
+      return {
+        failure: {
+          code: "agent_working_notes_handoff_over_budget",
+          message:
+            `the Working Notes handoff this Agent was spawned with does not fit its own Working Notes budget: ${budget.message}`,
+        },
+      };
+    }
+
+    return { state: initialAgentControlState(frame) };
   }
 
   // -- event collection ------------------------------------------------------
