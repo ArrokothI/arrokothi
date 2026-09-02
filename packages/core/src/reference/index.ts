@@ -32,6 +32,11 @@ export {
 } from "./operation-authority.ts";
 export { createActiveOperationViewResolver } from "./active-operation-view-resolver.ts";
 export type { ActiveOperationViewResolverOptions } from "./active-operation-view-resolver.ts";
+export { createStructuredMemoryReadViewResolver } from "./structured-memory-read-view-resolver.ts";
+export type {
+  StructuredMemoryReadGrantRule,
+  StructuredMemoryReadViewResolverOptions,
+} from "./structured-memory-read-view-resolver.ts";
 export { createReferenceAgentExecutor } from "./agent-executor.ts";
 export type { ReferenceAgentExecutorOptions } from "./agent-executor.ts";
 export { createNoInlineWaitBudget, createTimeoutInlineBudget } from "./inline-wait.ts";

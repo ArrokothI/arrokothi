@@ -52,6 +52,7 @@ import {
   structuredMemoryBindingIssues,
   structuredMemoryViewRef,
 } from "../execution/structured-memory.ts";
+import type { StructuredMemoryReadView } from "../execution/structured-memory-read.ts";
 import type { WaitForEdge } from "../execution/wait-for.ts";
 import type { ExecutionContext, ExecutionWait } from "../execution/context.ts";
 import {
@@ -89,6 +90,8 @@ import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
 import { denyAllEffects } from "../ports/effect-authorizer.ts";
 import type { ConfirmationPolicy } from "../ports/confirmation-policy.ts";
 import { confirmationNotRequired } from "../ports/confirmation-policy.ts";
+import type { StructuredMemoryReadViewResolver } from "../ports/structured-memory-read-view.ts";
+import { noStructuredMemoryRead } from "../ports/structured-memory-read-view.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import { microtaskInlineWaitBudget } from "../ports/inline-wait.ts";
 import type { Clock } from "../ports/clock.ts";
@@ -148,6 +151,16 @@ export interface HarnessOptions {
    * *extra* gate that runs strictly after authorization.
    */
   readonly confirmationPolicy?: ConfirmationPolicy;
+  /**
+   * How the authorized read-only Structured Memory snapshot for an Activation is resolved.
+   *
+   * Omitting it means no memory ever reaches a controller's context - the correct fail-closed
+   * default, not a stub: "nobody wired memory reads" and "this memory is readable" must never look
+   * the same. When present, it is consulted only for an Execution that has a memory binding, and its
+   * result is delivered as `ActivationInput.memory`. It is independent of the Effect `authorizer`:
+   * read authority and `WriteMemory` authority do not imply one another.
+   */
+  readonly structuredMemoryReadView?: StructuredMemoryReadViewResolver;
   /**
    * Where capability-operation consequentiality is declared.
    *
@@ -300,10 +313,13 @@ export class Harness {
   private readonly maxActivationsPerRun: number;
   private readonly effects: EffectProcessor;
   private readonly resumptions: ControllerResumptionProcessor;
+  /** Fail closed. An unconfigured Harness never puts Structured Memory into a controller's context. */
+  private readonly structuredMemoryReadView: StructuredMemoryReadViewResolver;
 
   constructor(options: HarnessOptions) {
     this.options = options;
     this.maxActivationsPerRun = options.maxActivationsPerRun ?? 1000;
+    this.structuredMemoryReadView = options.structuredMemoryReadView ?? noStructuredMemoryRead;
     this.resumptions = new ControllerResumptionProcessor({
       store: options.store,
       clock: options.clock,
@@ -671,6 +687,32 @@ export class Harness {
     return ref ? this.options.store.readStructuredMemoryView(ref.memoryViewId) : undefined;
   }
 
+  /**
+   * Resolves the authorized read-only Structured Memory snapshot delivered on `ActivationInput`.
+   *
+   * Two ways to reach `null` with no Structured Memory work at all: no read resolver was wired, or
+   * the Execution has no memory binding. Otherwise the bound view's declared keys are handed to the
+   * read resolver, which applies this Execution's read grants (deny-by-default) and returns the
+   * readable subset - or `null` when nothing is readable. Read authorization is the resolver's,
+   * exactly as Effect authorization is the `authorizer`'s; the controller receives only the plain
+   * snapshot.
+   */
+  private async resolveStructuredMemoryRead(
+    context: ExecutionContext,
+  ): Promise<StructuredMemoryReadView | null> {
+    if (this.structuredMemoryReadView === noStructuredMemoryRead) return null;
+    const ref = context.slots.memoryView;
+    if (!ref) return null;
+    const view = await this.options.store.readStructuredMemoryView(ref.memoryViewId);
+    if (!view) return null;
+    return (
+      (await this.structuredMemoryReadView.resolve({
+        executionId: context.executionId,
+        keys: view.fields.map((field) => field.key),
+      })) ?? null
+    );
+  }
+
   // -- scheduling ------------------------------------------------------------
 
   /**
@@ -807,10 +849,12 @@ export class Harness {
     // only if the controller reports the matching dependency and the Harness accepts the outcome.
     const resumptions = this.resumptions.beginActivation(running, activationId);
     const budget = this.options.activationBudget;
+    const memory = await this.resolveStructuredMemoryRead(running);
     const input = buildActivationInput({
       execution: toExecutionView(running),
       definition,
       events,
+      memory,
       activation: {
         activationId,
         startedAt,

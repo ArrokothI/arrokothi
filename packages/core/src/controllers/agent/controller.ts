@@ -431,6 +431,10 @@ class AgentController implements ExecutionController {
           instructions: spec.instructions,
           messages: state.messages,
           maxMessages: limits.maxContextMessages,
+          // The Harness resolved this from the Execution's read grants before the Activation. On
+          // re-entry the branch above replays the persisted `invocation.information`, so a write
+          // that lands mid-step is seen by the next step's compile, never this one's.
+          memory: input.memory,
         }),
         projection: projected.projection,
         continuation: state.continuation,

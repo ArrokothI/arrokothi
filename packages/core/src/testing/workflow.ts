@@ -95,10 +95,14 @@ export function createWorkflowTestHarness(options: WorkflowTestHarnessOptions = 
   });
   const bundle = createTestHarness({
     controllers: [controller, ...(options.extraControllers ?? [])],
+    ...(options.store !== undefined ? { store: options.store } : {}),
     ...(options.activationBudget !== undefined ? { activationBudget: options.activationBudget } : {}),
     ...(options.maxActivationsPerRun !== undefined ? { maxActivationsPerRun: options.maxActivationsPerRun } : {}),
     ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
     ...(options.confirmationPolicy !== undefined ? { confirmationPolicy: options.confirmationPolicy } : {}),
+    ...(options.structuredMemoryReadView !== undefined
+      ? { structuredMemoryReadView: options.structuredMemoryReadView }
+      : {}),
     ...(options.capabilityCatalog !== undefined ? { capabilityCatalog: options.capabilityCatalog } : {}),
     ...(options.capabilities !== undefined ? { capabilities: options.capabilities } : {}),
     ...(options.inlineWait !== undefined ? { inlineWait: options.inlineWait } : {}),

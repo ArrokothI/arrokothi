@@ -76,15 +76,21 @@ const OPERATIONAL_MACHINERY = [
 ];
 
 describe("Agent architecture boundaries", () => {
-  test("ActivationInput is still exactly four fields and function-free", async () => {
+  test("ActivationInput is exactly five fields of delivered data, and function-free", async () => {
     // Slice D had every reason to want an authority handle, an Active View, or a resolver in here.
     // It got none of them: the exposure resolver is a controller construction dependency, and the
     // one live capability a controller receives is still the resumption scope, as a second argument.
+    //
+    // Slice F.1 added the fifth field, `memory`: the authorized read-only Structured Memory
+    // snapshot. That is not the thing Slice D was refused. It is a frozen value in the same category
+    // as `events` and `definition` - delivered, already-authorized information with no functions and
+    // no route to runtime state. The resolver that produced it stays a Harness dependency and must
+    // not appear here (asserted below); `ExecutionView` still hands out no `slots`.
     const source = await readFile(resolve(CORE_SRC, "ports/controller.ts"), "utf8");
     const declaration = source.slice(source.indexOf("export interface ActivationInput"));
     const body = declaration.slice(0, declaration.indexOf("\n}"));
     const fields = [...body.matchAll(/readonly\s+(\w+)\s*:/g)].map((match) => match[1]!);
-    assert.deepEqual(fields.sort(), ["activation", "definition", "events", "execution"]);
+    assert.deepEqual(fields.sort(), ["activation", "definition", "events", "execution", "memory"]);
 
     for (const forbidden of [
       "ActiveOperationView",
@@ -95,6 +101,8 @@ describe("Agent architecture boundaries", () => {
       "ModelOperationProjection",
       "ModelProvider",
       "ModelResolver",
+      // The read snapshot is delivered data; the resolver that applies read authority is not here.
+      "StructuredMemoryReadViewResolver",
     ]) {
       assert.equal(source.includes(forbidden), false, `ports/controller.ts must not mention ${forbidden}`);
     }

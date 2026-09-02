@@ -71,6 +71,12 @@ export type { EffectAuthorizer } from "./effect-authorizer.ts";
 export { denyAllEffects } from "./effect-authorizer.ts";
 
 export type {
+  StructuredMemoryReadRequest,
+  StructuredMemoryReadViewResolver,
+} from "./structured-memory-read-view.ts";
+export { noStructuredMemoryRead } from "./structured-memory-read-view.ts";
+
+export type {
   ConfirmationPolicy,
   ConfirmationPolicyRequest,
   ConfirmationRequirement,
@@ -127,6 +133,10 @@ export type {
   ModelActionTarget,
   ModelActionTargetKind,
 } from "../operations/action-target.ts";
+export type {
+  StructuredMemoryReadField,
+  StructuredMemoryReadView,
+} from "../execution/structured-memory-read.ts";
 export type { AgentObservationOutcome, AgentOperationObservation } from "../agent/observations.ts";
 export type {
   AgentModelObservation,

@@ -41,6 +41,7 @@ import type { ExecutionDefinition, DefinitionKind } from "../definitions/types.t
 import type { EffectProposal } from "../effects/types.ts";
 import type { DeliveredEvent, WakeCondition } from "../interaction/event-envelope.ts";
 import type { ControllerProgress, ExecutionView } from "../execution/context.ts";
+import type { StructuredMemoryReadView } from "../execution/structured-memory-read.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
 import type { ActivationId, ControllerResumptionId } from "../execution/ids.ts";
 import type { ControllerResumptionScope } from "./controller-resumption.ts";
@@ -74,6 +75,20 @@ export interface ActivationInput {
   readonly definition: ExecutionDefinition;
   /** Observations delivered since the previous Activation. Already consumed from the mailbox. */
   readonly events: readonly DeliveredEvent[];
+  /**
+   * The authorized read-only snapshot of this Execution's Structured Memory, or `null`.
+   *
+   * Plain delivered data, in the same category as `events` and `definition` - not a handle, not a
+   * resolver, not an authority reference, and nothing here looks a record up. The Harness resolved
+   * it before this Activation by applying the Execution's read grants (deny-by-default) to its bound
+   * Structured Memory view; a controller that compiles it into a model context is *selecting*
+   * already-authorized information. `null` when the Execution has no memory binding, no read
+   * resolver is wired, or no field is readable.
+   *
+   * It is on `ActivationInput` rather than an Agent-specific carrier deliberately: the snapshot is
+   * controller-neutral, and a later checkpoint hands the same value to a Workflow Stage.
+   */
+  readonly memory: StructuredMemoryReadView | null;
   readonly activation: ActivationMetadata;
 }
 

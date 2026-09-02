@@ -3,8 +3,10 @@
 > **Status:** F.0 runtime implemented on `slice-f-memory` and accepted by the F.0.1 architecture
 > review. The F.0.1 correction removed the reference Agent's direct `memoryWrite` model-exposure
 > path; the F.0.2 retrofit (§14) hardened the optional projection-narrowing parameter so the
-> restored subset invariant is enforced by construction. Model-directed memory-operation exposure
-> is deferred to F.1. Not merged; do not begin F.1.
+> restored subset invariant is enforced by construction. **Merged to `main` as `b56b631` (PR #9).**
+> Model-directed memory-operation exposure remains deferred: §13's "Future direction" chain is now
+> **F.1.1**, and F.1 became the memory *read* path instead — see
+> [`019`](019-slice-f1-structured-memory-read-context.md).
 > **Scope:** one schema-bound Execution-local Structured Memory write through the existing Effect
 > gateway.
 > **Canonical documentation change:** none.
@@ -266,7 +268,7 @@ Derived Semantic Memory or a provider seam/backend
 semantic extraction, graph/vector retrieval, or promotion
 Working Notes or note handoff
 Artifacts/files
-controller/model memory reads or memory context compilation
+controller/model memory reads or memory context compilation (added in F.1; see 019)
 memory search
 parallel Workflow branches
 shared cross-Execution writable memory
@@ -276,7 +278,7 @@ MCP/A2A memory/resource mappings
 Mem0/Graphiti
 automatic child view inheritance
 controller-authored authority/trust/provenance flags
-model-directed memory-operation exposure (removed in F.0.1; deferred to F.1)
+model-directed memory-operation exposure (removed in F.0.1; deferred — now F.1.1)
 ```
 
 No unresolved canonical contradiction was found during F.0.
@@ -334,7 +336,7 @@ the `memory.written` Event, the atomic RuntimeStore transaction, confirmation se
 Effect-barrier support, read-only Harness inspection, child non-inheritance, and the no-feature
 cost path. The generic runtime Event vocabulary keeps `memory.written`.
 
-### Future direction (F.1, not started here)
+### Future direction (now F.1.1, not started)
 
 ```text
 authorized memory interface / memory authority
@@ -345,8 +347,11 @@ authorized memory interface / memory authority
   ↓ fresh Harness authorization
 ```
 
-F.1 may establish the minimum honest shape for that path. F.0.1 only stops the premature bypass.
-No canonical document changed.
+This write-exposure chain is what F.0.1's premature bypass anticipated. It is now **F.1.1** and has
+not begun. F.1 instead implemented the memory *read* path — a controller-neutral, deny-by-default
+read-authority seam feeding context compilation, with no Active View and no Effect — recorded in
+[`019`](019-slice-f1-structured-memory-read-context.md). F.0.1 only stopped the premature bypass;
+no canonical document changed.
 
 ## 14. F.0.2 projection-integrity retrofit
 

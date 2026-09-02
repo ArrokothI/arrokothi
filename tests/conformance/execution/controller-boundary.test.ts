@@ -10,6 +10,10 @@
  * is the invariant a resumption field would have destroyed, and it is why the scope is a separate
  * argument. The scope itself is then checked on its own terms: exactly one method, and no route
  * from it to a store, a scheduler, a lifecycle, the Effect gateway, or a settlement path.
+ *
+ * Slice F.1 added `memory`: the authorized read-only Structured Memory snapshot. It is delivered
+ * data in the same category as `events` - a frozen value, no functions, no handle - so it widens
+ * the field list by one and changes nothing else the boundary protects.
  */
 
 import { test, describe } from "node:test";
@@ -62,7 +66,8 @@ describe("controller ownership boundary", () => {
 
     const input = controller.captured;
     assert.ok(input, "the controller ran");
-    assert.deepEqual(Object.keys(input!).sort(), ["activation", "definition", "events", "execution"]);
+    assert.deepEqual(Object.keys(input!).sort(), ["activation", "definition", "events", "execution", "memory"]);
+    assert.equal(input!.memory, null, "no memory binding, no read resolver: the snapshot is null, not a handle");
 
     const functions: string[] = [];
     findFunctions(input, "input", functions);
@@ -135,7 +140,10 @@ describe("controller ownership boundary", () => {
     }
 
     // And the input it accompanies is still exactly what it was: pure, frozen, function-free.
-    assert.deepEqual(Object.keys(controller.captured!).sort(), ["activation", "definition", "events", "execution"]);
+    assert.deepEqual(
+      Object.keys(controller.captured!).sort(),
+      ["activation", "definition", "events", "execution", "memory"],
+    );
     const functions: string[] = [];
     findFunctions(controller.captured, "input", functions);
     assert.deepEqual(functions, [], "the scope is a separate argument precisely so this stays true");

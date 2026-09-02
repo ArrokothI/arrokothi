@@ -245,6 +245,11 @@ export {
   structuredMemoryBindingIssues,
   structuredMemoryViewRef,
 } from "./execution/structured-memory.ts";
+export type {
+  StructuredMemoryReadField,
+  StructuredMemoryReadView,
+} from "./execution/structured-memory-read.ts";
+export { projectStructuredMemoryReadView } from "./execution/structured-memory-read.ts";
 /**
  * Controller-local resumptions are exported as *readable* shapes only.
  *

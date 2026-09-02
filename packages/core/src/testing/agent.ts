@@ -29,6 +29,7 @@ import type {
 import type { AgentObservationProjector } from "../agent/observation-projection.ts";
 import type { ExecutionDefinitionRef } from "../definitions/ids.ts";
 import type { ExecutionId } from "../execution/ids.ts";
+import type { StructuredMemoryBinding } from "../execution/structured-memory.ts";
 import type { OperationRef } from "../operations/refs.ts";
 import type { ActiveOperationViewResolver } from "../ports/active-operation-view.ts";
 import type { AgentExecutor } from "../ports/agent-executor.ts";
@@ -41,6 +42,8 @@ import { createReferenceAgentExecutor } from "../reference/agent-executor.ts";
 import { InMemoryRuntimeStore } from "../reference/in-memory-runtime-store.ts";
 import { ModelProviderRegistry } from "../reference/model-provider-registry.ts";
 import { createRuntimeOperationAuthoritySource } from "../reference/operation-authority.ts";
+import type { StructuredMemoryReadGrantRule } from "../reference/structured-memory-read-view-resolver.ts";
+import { createStructuredMemoryReadViewResolver } from "../reference/structured-memory-read-view-resolver.ts";
 import { createTestHarness } from "./execution-harness.ts";
 import type { TestHarnessBundle, TestHarnessOptions } from "./execution-harness.ts";
 
@@ -111,6 +114,14 @@ export interface AgentTestHarnessOptions extends Omit<TestHarnessOptions, "contr
   readonly store?: InMemoryRuntimeStore;
   readonly taskScope?: readonly string[];
   readonly trace?: AgentTrace;
+  /**
+   * Convenience: builds the reference Structured Memory read resolver against the shared store.
+   *
+   * Deny-by-default like the real thing - omitting it means no memory reaches the Agent's context
+   * even when the Execution has a binding. Independent of `authorizer`: this grants reads, never
+   * `WriteMemory`. A test that needs a custom resolver passes `structuredMemoryReadView` instead.
+   */
+  readonly memoryReadGrants?: StructuredMemoryReadGrantRule;
 }
 
 export interface CreateTestAgentInput {
@@ -122,6 +133,8 @@ export interface CreateTestAgentInput {
    * a conformance run needs to be able to produce deliberately.
    */
   readonly authority?: readonly OperationRef[];
+  /** One Execution-local Structured Memory binding. Grants no authority - reads and writes are separate. */
+  readonly memory?: StructuredMemoryBinding;
 }
 
 export interface AgentTestHarnessBundle extends TestHarnessBundle {
@@ -158,6 +171,12 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
     trace,
   });
 
+  const structuredMemoryReadView =
+    options.structuredMemoryReadView ??
+    (options.memoryReadGrants !== undefined
+      ? createStructuredMemoryReadViewResolver({ store, grants: options.memoryReadGrants })
+      : undefined);
+
   const bundle = createTestHarness({
     controllers: [controller],
     store,
@@ -166,6 +185,7 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
     ...(options.maxActivationsPerRun !== undefined ? { maxActivationsPerRun: options.maxActivationsPerRun } : {}),
     ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
     ...(options.confirmationPolicy !== undefined ? { confirmationPolicy: options.confirmationPolicy } : {}),
+    ...(structuredMemoryReadView !== undefined ? { structuredMemoryReadView } : {}),
     ...(options.capabilities !== undefined ? { capabilities: options.capabilities } : {}),
     ...(options.inlineWait !== undefined ? { inlineWait: options.inlineWait } : {}),
     ...(options.defaultEffectDeadlineMs !== undefined ? { defaultEffectDeadlineMs: options.defaultEffectDeadlineMs } : {}),
@@ -179,6 +199,7 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
       const handle = await bundle.harness.createExecution({
         definition: input.definition,
         ...(input.authority !== undefined ? { operationAuthority: { operations: [...input.authority] } } : {}),
+        ...(input.memory !== undefined ? { structuredMemory: input.memory } : {}),
       });
       return { executionId: handle.executionId };
     },

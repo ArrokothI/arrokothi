@@ -68,13 +68,22 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   baseline.
 
 018-slice-f0-structured-memory-write-foundation.md
-  the current Slice F.0 checkpoint: Execution-local schema-bound Structured Memory, runtime-owned
+  the Slice F.0 checkpoint: Execution-local schema-bound Structured Memory, runtime-owned
   view/state and revision, operational WriteMemory dispatch with authorization-before-view
   resolution, atomic memory.written settlement, exact-payload confirmation composition, read-only
   application inspection, and Workflow Effect-barrier continuation. The F.0.1 architecture review
   accepted that runtime and removed the reference Agent's direct memoryWrite model exposure, which
   bypassed the canonical Active/Exposed View chain; model-directed memory-operation exposure is
-  deferred to F.1. No canonical-doc change. Not merged; F.1 not started.
+  deferred. No canonical-doc change. Merged to main as b56b631 (PR #9).
+
+019-slice-f1-structured-memory-read-context.md
+  the current Slice F.1 checkpoint: the memory *read* path. A controller-neutral, deny-by-default
+  read-authority seam (StructuredMemoryReadViewResolver, a Harness dependency separate from
+  EffectAuthorizer), a plain read-only StructuredMemoryReadView snapshot the Harness resolves and
+  delivers on a new fifth ActivationInput field, and the reference Agent information branch
+  rendering readable committed fields into standing model context. Reads never become an Effect;
+  read authority is independent of WriteMemory authority. The write-exposure chain 018 §13 sketched
+  is renumbered F.1.1 and not begun. No canonical-doc change. Not merged; awaiting review.
 
 014-v1-efficiency-and-developer-ergonomics-validation.md
   cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
@@ -116,12 +125,18 @@ Slice E composition
   Slice E accepted + merged                       main @ e0ba59b
         ↓
 Slice F memory
-  F.0           Structured Memory + operational   runtime accepted
+  F.0           Structured Memory + operational   accepted, merged (main @ b56b631)
                 WriteMemory foundation
-  F.0.1         removed premature reference-Agent  current checkpoint (018);
-                memoryWrite model exposure;        stop before F.1
-                model-directed memory exposure
-                deferred to F.1
+  F.0.1         removed premature reference-Agent  accepted, merged
+                memoryWrite model exposure
+  F.0.2         projection-narrowing subset        accepted, merged
+                invariant enforced by construction
+  F.1           Structured Memory read path:       current checkpoint (019);
+                controller-neutral read-authority  not merged, awaiting review
+                seam + snapshot on ActivationInput
+                + reference Agent context render
+  F.1.1         model-directed WriteMemory         deferred (the 018 §13 chain)
+                exposure via memory Active View
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /
