@@ -15,6 +15,7 @@ export { createAllowListAuthorizer } from "./allow-list-authorizer.ts";
 export type {
   AllowListAuthorizerOptions,
   CapabilityGrantRule,
+  MemoryGrantRule,
   MessageGrantRule,
   SpawnGrantRule,
 } from "./allow-list-authorizer.ts";

@@ -79,14 +79,25 @@ interface BarrierEntryBase {
   readonly error: { readonly code: string; readonly message: string } | null;
 }
 
-/** One required capability operation. */
-export interface EffectBarrierEntry extends BarrierEntryBase {
+/** One required capability operation. Pre-F.0 persisted entries have this exact shape. */
+export interface CapabilityBarrierEntry extends BarrierEntryBase {
   readonly kind: "effect";
   readonly capability: string;
   readonly operation: string;
   readonly outcome: StageObservationOutcome | null;
   readonly observation: JsonValue | null;
 }
+
+/** One required Structured Memory write. */
+export interface MemoryWriteBarrierEntry extends BarrierEntryBase {
+  readonly kind: "effect";
+  readonly effectKind: "write_memory";
+  readonly memoryKey: string;
+  readonly outcome: StageObservationOutcome | null;
+  readonly observation: JsonValue | null;
+}
+
+export type EffectBarrierEntry = CapabilityBarrierEntry | MemoryWriteBarrierEntry;
 
 /** How a required child call settled. */
 export type ChildBarrierOutcome =
@@ -310,14 +321,25 @@ export function settleChildBarrierEntry(
 export function observationsOf(state: WorkflowControlState): readonly StageObservation[] {
   return state.barrier
     .filter((entry): entry is EffectBarrierEntry => entry.kind === "effect" && entry.settled && entry.outcome !== null)
-    .map((entry) => ({
-      key: entry.key,
-      outcome: entry.outcome as StageObservationOutcome,
-      capability: entry.capability,
-      operation: entry.operation,
-      ...(entry.observation !== null ? { observation: entry.observation } : {}),
-      ...(entry.error !== null ? { error: entry.error } : {}),
-    }));
+    .map((entry): StageObservation =>
+      "effectKind" in entry
+        ? {
+            key: entry.key,
+            outcome: entry.outcome as StageObservationOutcome,
+            effectKind: "write_memory",
+            memoryKey: entry.memoryKey,
+            ...(entry.observation !== null ? { observation: entry.observation } : {}),
+            ...(entry.error !== null ? { error: entry.error } : {}),
+          }
+        : {
+            key: entry.key,
+            outcome: entry.outcome as StageObservationOutcome,
+            capability: entry.capability,
+            operation: entry.operation,
+            ...(entry.observation !== null ? { observation: entry.observation } : {}),
+            ...(entry.error !== null ? { error: entry.error } : {}),
+          },
+    );
 }
 
 /** The single `child` barrier entry for the current visit, if this is an Agent/Workflow Stage. */

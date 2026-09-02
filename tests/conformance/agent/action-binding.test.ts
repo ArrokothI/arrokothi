@@ -56,15 +56,17 @@ function view(entries: readonly { readonly capability: string; readonly operatio
 }
 
 describe("a projection binding names a typed action target", () => {
-  test("v0.4 supports exactly one target kind, and says so", () => {
-    assert.deepEqual(MODEL_ACTION_TARGET_KINDS, ["capability_operation"]);
+  test("F.0 adds only the view-neutral memory-write target", () => {
+    assert.deepEqual(MODEL_ACTION_TARGET_KINDS, ["capability_operation", "write_memory"]);
     assert.equal(isModelActionTarget({ kind: "capability_operation", capability: "docs", operation: "search" }), true);
-    assert.equal(isModelActionTarget({ kind: "write_memory", scope: "session" }), false, "no other kind is accepted");
+    assert.equal(isModelActionTarget({ kind: "write_memory" }), true);
+    assert.equal(isModelActionTarget({ kind: "write_memory", scope: "session" }), false, "the target does not encode a future scope model");
     assert.equal(isModelActionTarget({ capability: "docs", operation: "search" }), false, "and an untagged pair is not one");
     assert.deepEqual(
       operationRefOfTarget({ kind: "capability_operation", capability: "docs", operation: "search" }),
       { capability: "docs", operation: "search" },
     );
+    assert.equal(operationRefOfTarget({ kind: "write_memory" }), null, "a memory write is not a capability operation");
   });
 
   test("the built snapshot carries the target, and an alias resolves to that exact one", () => {

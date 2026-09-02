@@ -188,10 +188,14 @@ describe("Agent architecture boundaries", () => {
     }
   });
 
-  test("the model action target is identity only, and v0.4 mints exactly one kind", async () => {
+  test("the model action target is identity only, including F.0's view-neutral memory write", async () => {
     const code = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
     const declared = [...code.matchAll(/readonly kind: "(\w+)"/g)].map((match) => match[1]!);
-    assert.deepEqual([...new Set(declared)], ["capability_operation"], "one target kind, and it is discriminated");
+    assert.deepEqual(
+      [...new Set(declared)],
+      ["capability_operation", "write_memory"],
+      "the two target kinds are discriminated and carry no future memory scope",
+    );
     for (const forbidden of ["grant", "authorize", "Harness", "Executor", "credential", "token"]) {
       assert.equal(code.includes(forbidden), false, `an action target must not carry "${forbidden}"`);
     }

@@ -64,6 +64,8 @@ describe("the Event vocabulary", () => {
         "effect.denied",
         "effect.rejected",
         "external.input",
+        // Slice F.0: a runtime-established successful Structured Memory commit.
+        "memory.written",
         // Slice E.1: the `SendMessage` runtime owns these, and child cancellation adds `child.cancelled`.
         "message.sent",
         "peer.message",
@@ -73,9 +75,10 @@ describe("the Event vocabulary", () => {
       ],
       "kinds for Effects that later slices own arrive with those Effects, not before them",
     );
-    for (const kind of ["tool.called", "memory.written", "message.received", "timer.fired"]) {
+    for (const kind of ["tool.called", "message.received", "timer.fired"]) {
       assert.equal(isEventKind(kind), false, `${kind} is not yet kernel vocabulary`);
     }
+    assert.equal(isEventKind("memory.written"), true, "F.0 owns the successful WriteMemory result");
     assert.ok(
       EFFECT_RESULT_EVENT_KINDS.every((kind) => EVENT_KINDS.includes(kind)),
       "every Effect-result kind is part of the same closed set",

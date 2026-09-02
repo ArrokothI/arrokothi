@@ -41,7 +41,8 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   the first Slice E checkpoint: SpawnExecution made operational through the
   Effect gateway - recursive child identity/lineage, lineage-scoped structural
   spawn budget, current-authority attenuation, spawn vs call, and child
-  terminal-result correlation through PendingOperation/Event. Not merged.
+  terminal-result correlation through PendingOperation/Event. Accepted and included in the merged
+  Slice E baseline.
 
 016-slice-e1-interleaving-peer-interaction.md
   the second Slice E checkpoint: controlled Event interleaving between
@@ -50,7 +51,8 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   operational as send / ask / reply with a runtime-owned PeerRequestLink;
   observable cross-Execution wait-for diagnostics; and the basic child
   cancellation hook (child.cancelled, PendingOperation outcome "cancelled",
-  trusted Harness.cancelExecution). No canonical-doc change. Not merged.
+  trusted Harness.cancelExecution). No canonical-doc change. Accepted and included in the merged
+  Slice E baseline.
 
 017-slice-e2-human-interaction-composition-surfaces.md
   the final Slice E checkpoint: RequestUserInput made dispatchable through the
@@ -62,7 +64,15 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   current-authority re-check on approval, confirmation.declined Event); and Agent
   Stage / Workflow Stage implemented as a child `call` with definition-kind
   integrity, explicit attenuated child authority, and the child arm of the
-  Workflow completion barrier. No canonical-doc change. Not merged.
+  Workflow completion barrier. No canonical-doc change. Accepted and merged in the Slice E
+  baseline.
+
+018-slice-f0-structured-memory-write-foundation.md
+  the current Slice F.0 checkpoint: Execution-local schema-bound Structured Memory, runtime-owned
+  view/state and revision, operational WriteMemory dispatch with authorization-before-view
+  resolution, atomic memory.written settlement, exact-payload confirmation composition, read-only
+  application inspection, and Agent/Workflow continuation. No canonical-doc change; current branch
+  is awaiting independent architecture review.
 
 014-v1-efficiency-and-developer-ergonomics-validation.md
   cross-cutting v0.4 -> v1.0 validation guidance: keep semantic richness from
@@ -96,11 +106,16 @@ MCP-1.1 post-proof semantic correction   done, recorded in 012
 MCP operation proof                      accepted
         ↓
 Slice E composition
-  E.0 / E.0.1   child Execution foundation        accepted (013), not merged
-  E.1 / E.1.1   interleaving + peer interaction   accepted (016), not merged
-  E.2           human interaction, mechanical     current / final Slice E
-                confirmation, Agent & Workflow    checkpoint (017), not merged;
-                Stage                             stop for independent review
+  E.0 / E.0.1   child Execution foundation        accepted
+  E.1 / E.1.1   interleaving + peer interaction   accepted
+  E.2 / E.2.1   human interaction, mechanical     accepted
+                confirmation, Agent & Workflow
+                Stage
+  Slice E accepted + merged                       main @ e0ba59b
+        ↓
+Slice F memory
+  F.0           Structured Memory + operational   current checkpoint (018);
+                WriteMemory foundation            stop for independent review
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

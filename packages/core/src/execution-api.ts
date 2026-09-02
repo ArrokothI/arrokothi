@@ -89,12 +89,14 @@ export { agentCallCorrelationId, agentModelResumptionKey } from "./agent/resumpt
 // -- operation identity, authority, exposure, and projection -----------------
 export type {
   CapabilityOperationTarget,
+  MemoryWriteTarget,
   ModelActionTarget,
   ModelActionTargetKind,
 } from "./operations/action-target.ts";
 export {
   MODEL_ACTION_TARGET_KINDS,
   capabilityOperationTarget,
+  memoryWriteTarget,
   formatModelActionTarget,
   isModelActionTarget,
   operationRefOfTarget,
@@ -172,7 +174,15 @@ export type { AdapterDeclaration, AdapterKind, FunctionAdapterDeclaration, LLMAd
 export { ADAPTER_KINDS, isAdapterKind } from "./workflow/adapters.ts";
 export type { StageResult } from "./workflow/stage-result.ts";
 export { describeStageResult, isStageResult } from "./workflow/stage-result.ts";
-export type { StageCapabilityRequest, StageObservation, StageObservationOutcome } from "./workflow/observations.ts";
+export type {
+  StageCapabilityObservation,
+  StageCapabilityRequest,
+  StageEffectRequest,
+  StageMemoryWriteObservation,
+  StageMemoryWriteRequest,
+  StageObservation,
+  StageObservationOutcome,
+} from "./workflow/observations.ts";
 export { findObservation, isSuccessfulObservation } from "./workflow/observations.ts";
 export type { WorkflowSpecIssue, WorkflowSpecIssueCode, WorkflowSpecValidation } from "./workflow/validation.ts";
 export { MAX_MODEL_PHASES, validateWorkflowSpec } from "./workflow/validation.ts";
@@ -186,9 +196,11 @@ export { MAX_MODEL_PHASES, validateWorkflowSpec } from "./workflow/validation.ts
 export type {
   BarrierEntry,
   BarrierEntryKind,
+  CapabilityBarrierEntry,
   ChildBarrierEntry,
   ChildBarrierOutcome,
   EffectBarrierEntry,
+  MemoryWriteBarrierEntry,
   WorkflowBoundaryState,
   WorkflowControlState,
 } from "./workflow/control-state.ts";
@@ -223,6 +235,18 @@ export type {
   ExecutionWait,
   MailboxRef,
 } from "./execution/context.ts";
+export type {
+  StructuredMemoryBinding,
+  StructuredMemoryBindingIssue,
+  StructuredMemoryCommittedValue,
+  StructuredMemoryFieldDefinition,
+  StructuredMemoryView,
+  StructuredMemoryViewRef,
+} from "./execution/structured-memory.ts";
+export {
+  structuredMemoryBindingIssues,
+  structuredMemoryViewRef,
+} from "./execution/structured-memory.ts";
 /**
  * Controller-local resumptions are exported as *readable* shapes only.
  *
@@ -328,6 +352,7 @@ export type {
   EventKind,
   ExternalInputBody,
   MessageSentBody,
+  MemoryWrittenBody,
   PeerMessageBody,
   UserInputBody,
 } from "./interaction/events.ts";
@@ -370,7 +395,16 @@ export type {
   WriteMemoryProposal,
 } from "./effects/types.ts";
 export type { UseCapabilityInput } from "./effects/types.ts";
-export { DISPATCHABLE_EFFECT_KINDS, EFFECT_KINDS, isEffectKind, isUseCapabilityProposal, useCapability } from "./effects/types.ts";
+export type { WriteMemoryInput } from "./effects/types.ts";
+export {
+  DISPATCHABLE_EFFECT_KINDS,
+  EFFECT_KINDS,
+  isEffectKind,
+  isUseCapabilityProposal,
+  isWriteMemoryProposal,
+  useCapability,
+  writeMemory,
+} from "./effects/types.ts";
 export type { ResourceAccessMode, ResourceBindingRef, SecurityProfile } from "./effects/capability.ts";
 export type { CapabilityError, CapabilityOutcome } from "./effects/outcome.ts";
 export type {
@@ -404,6 +438,7 @@ export {
   Harness,
   HarnessRunawayError,
   InvalidOperationAuthorityError,
+  InvalidStructuredMemoryBindingError,
   InvalidStructuralSpawnBudgetError,
   UnknownDefinitionError,
 } from "./runtime/harness.ts";

@@ -16,9 +16,9 @@
  * `forceConsequential: true` to promote handling beyond that baseline, never to relax it. There is
  * no way to write a rule that downgrades a descriptor-declared consequential operation.
  *
- * Operational `SpawnExecution` and `SendMessage` proposals have their own explicit rules below.
- * Other non-capability Effect kinds are denied because their owning runtime slices have not made
- * them dispatchable; an authorizer is public and must not answer "allow" for unsupported work.
+ * Operational `SpawnExecution`, `SendMessage`, `RequestUserInput`, and `WriteMemory` proposals have
+ * their own explicit rules below. Other non-capability Effect kinds are denied because an authorizer
+ * must not answer "allow" for unsupported work.
  */
 
 import type { AuthorizationDecision, EffectAuthorizationRequest } from "../effects/authorization.ts";
@@ -31,6 +31,7 @@ import {
   isSendMessageProposal,
   isSpawnExecutionProposal,
   isUseCapabilityProposal,
+  isWriteMemoryProposal,
 } from "../effects/types.ts";
 
 export interface CapabilityGrantRule {
@@ -74,6 +75,15 @@ export type SpawnGrantRule = boolean | { readonly definitions: readonly string[]
  */
 export type MessageGrantRule = boolean | { readonly destinations: readonly string[] };
 
+/**
+ * Whether this policy permits `WriteMemory`.
+ *
+ * `true` allows any key that the runtime view later declares; `{ writableKeys }` narrows the policy
+ * to named proposal keys. The policy does not resolve the view/schema, so a denial cannot reveal
+ * whether a guessed field exists.
+ */
+export type MemoryGrantRule = boolean | { readonly writableKeys: readonly string[] };
+
 export interface AllowListAuthorizerOptions {
   readonly grants: readonly CapabilityGrantRule[];
   /** Restricts the whole allow-list to named Executions. Omitted means every Execution. */
@@ -82,6 +92,8 @@ export interface AllowListAuthorizerOptions {
   readonly spawn?: SpawnGrantRule;
   /** Whether `SendMessage` is permitted, and to which destinations. Default: denied. */
   readonly message?: MessageGrantRule;
+  /** Whether Structured Memory writes are permitted, and optionally which keys. Default: denied. */
+  readonly memory?: MemoryGrantRule;
   /**
    * Whether `RequestUserInput` is permitted at all. Default: denied.
    *
@@ -159,6 +171,22 @@ export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): 
             `execution ${request.executionId} holds no user-interaction authority under this policy; ` +
             "asking the user a question is a runtime interaction and requires an explicit grant",
         };
+      }
+
+      if (isWriteMemoryProposal(request.proposal)) {
+        const rule = options.memory ?? false;
+        const allowed =
+          rule === true ||
+          (typeof rule === "object" && rule.writableKeys.includes(request.proposal.key));
+        if (!allowed) {
+          return {
+            decision: "deny",
+            code: "memory_write_not_authorized",
+            message: `execution ${request.executionId} is not authorized to write the requested Structured Memory key`,
+          };
+        }
+        issued += 1;
+        return { decision: "allow", grantId: `grant_${issued}` };
       }
 
       if (!isUseCapabilityProposal(request.proposal)) {

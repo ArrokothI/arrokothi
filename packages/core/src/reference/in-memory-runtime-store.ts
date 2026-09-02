@@ -25,6 +25,7 @@ import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
 import type { UserInputRequest } from "../execution/user-input-request.ts";
+import type { StructuredMemoryView } from "../execution/structured-memory.ts";
 import type { EffectiveOperationAuthority } from "../operations/authority.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
 import type {
@@ -36,6 +37,7 @@ import {
   ExecutionAlreadyExistsError,
   RuntimeConcurrencyError,
   SpawnBudgetConcurrencyError,
+  StructuredMemoryConcurrencyError,
   UnknownControllerResumptionError,
   UnknownPendingOperationError,
 } from "../ports/runtime-store.ts";
@@ -63,6 +65,7 @@ interface RuntimeState {
   cancellationRequests: Map<string, CancellationRequest>;
   userInputRequests: Map<string, UserInputRequest>;
   confirmationRequests: Map<string, ConfirmationRequest>;
+  structuredMemory: Map<string, StructuredMemoryView>;
 }
 
 function emptyState(): RuntimeState {
@@ -81,6 +84,7 @@ function emptyState(): RuntimeState {
     cancellationRequests: new Map(),
     userInputRequests: new Map(),
     confirmationRequests: new Map(),
+    structuredMemory: new Map(),
   };
 }
 
@@ -400,6 +404,27 @@ function makeTransaction(state: RuntimeState): RuntimeTransaction {
       },
     },
 
+    structuredMemory: {
+      async insert(view) {
+        if (state.structuredMemory.has(view.memoryViewId)) {
+          throw new Error(`Structured Memory view ${view.memoryViewId} already exists`);
+        }
+        state.structuredMemory.set(view.memoryViewId, structuredClone(view));
+      },
+      async get(memoryViewId) {
+        const stored = state.structuredMemory.get(memoryViewId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+      async update(view, expectedRevision) {
+        const stored = state.structuredMemory.get(view.memoryViewId);
+        if (!stored) throw new StructuredMemoryConcurrencyError(view.memoryViewId, expectedRevision, 0);
+        if (stored.revision !== expectedRevision) {
+          throw new StructuredMemoryConcurrencyError(view.memoryViewId, expectedRevision, stored.revision);
+        }
+        state.structuredMemory.set(view.memoryViewId, structuredClone(view));
+      },
+    },
+
     effectJournal: {
       async append(draft) {
         const list = state.effectJournal.get(draft.executionId) ?? [];
@@ -560,6 +585,11 @@ export class InMemoryRuntimeStore implements RuntimeStore {
 
   async listPendingConfirmations(): Promise<readonly ConfirmationRequest[]> {
     return structuredClone([...this.state.confirmationRequests.values()].filter((request) => request.state === "pending"));
+  }
+
+  async readStructuredMemoryView(memoryViewId: string): Promise<StructuredMemoryView | undefined> {
+    const stored = this.state.structuredMemory.get(memoryViewId);
+    return stored ? structuredClone(stored) : undefined;
   }
 
   /** Journal entries for one Effect, across Executions. Diagnostics and conformance assertions. */

@@ -29,6 +29,7 @@ import type { OperationAuthorityRef } from "../operations/authority.ts";
 import type { JsonObject } from "../util/json.ts";
 import type { ControllerResumptionId, ExecutionId } from "./ids.ts";
 import type { LifecycleState } from "./lifecycle.ts";
+import type { StructuredMemoryViewRef } from "./structured-memory.ts";
 import { assertTransition } from "./lifecycle.ts";
 import type { ExecutionFailure, TerminalResultEnvelope } from "./terminal-result.ts";
 
@@ -129,8 +130,8 @@ export interface DeferredSlots {
    * means no ceiling is configured, which reads as "nothing is authorized", never as "everything".
    */
   readonly authority: OperationAuthorityRef | null;
-  /** Slice F: delegated memory view. */
-  readonly memoryView: string | null;
+  /** Execution-local Structured Memory view. A typed address, never an authorization. */
+  readonly memoryView: StructuredMemoryViewRef | null;
   /** Slice F: Working Note frame/view. */
   readonly workingNotes: string | null;
   /** Slice H: effective runtime policy. */
@@ -206,6 +207,8 @@ export interface CreateExecutionContextInput {
    * nothing.
    */
   readonly authority?: OperationAuthorityRef;
+  /** Runtime-created Execution-local Structured Memory view, when one was configured. */
+  readonly memoryView?: StructuredMemoryViewRef;
 }
 
 export function createExecutionContext(input: CreateExecutionContextInput): ExecutionContext {
@@ -219,7 +222,14 @@ export function createExecutionContext(input: CreateExecutionContextInput): Exec
     control: initialControllerProgress(input.kind),
     waitingFor: null,
     mailbox: { mailboxId: input.mailboxId },
-    slots: input.authority ? { ...EMPTY_SLOTS, authority: input.authority } : EMPTY_SLOTS,
+    slots:
+      input.authority || input.memoryView
+        ? {
+            ...EMPTY_SLOTS,
+            ...(input.authority ? { authority: input.authority } : {}),
+            ...(input.memoryView ? { memoryView: input.memoryView } : {}),
+          }
+        : EMPTY_SLOTS,
     terminalResult: null,
     failure: null,
     createdAt: input.createdAt,

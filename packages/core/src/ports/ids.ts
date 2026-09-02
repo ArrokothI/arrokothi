@@ -26,4 +26,6 @@ export const ID_PREFIXES = {
   userInputRequest: "uir",
   /** One exact-payload mechanical-confirmation request. Not an authority token. */
   confirmationRequest: "cnf",
+  /** One runtime-owned Structured Memory view. An address, never an authorization credential. */
+  structuredMemoryView: "smv",
 } as const;

@@ -30,6 +30,7 @@ export type {
   PendingOperationFacet,
   RuntimeStore,
   RuntimeTransaction,
+  StructuredMemoryFacet,
   TransitionAuditFacet,
   UserInputRequestFacet,
 } from "./runtime-store.ts";
@@ -37,6 +38,7 @@ export {
   ExecutionAlreadyExistsError,
   RuntimeConcurrencyError,
   SpawnBudgetConcurrencyError,
+  StructuredMemoryConcurrencyError,
   UnknownControllerResumptionError,
   UnknownExecutionError,
   UnknownPendingOperationError,
@@ -122,6 +124,7 @@ export type {
 export type { ModelOperationBinding, ModelOperationProjection } from "../operations/projection.ts";
 export type {
   CapabilityOperationTarget,
+  MemoryWriteTarget,
   ModelActionTarget,
   ModelActionTargetKind,
 } from "../operations/action-target.ts";

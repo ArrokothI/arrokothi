@@ -33,7 +33,7 @@
 import type { JsonObject } from "../util/json.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
 import type { StageDefinition, StageId } from "../workflow/spec.ts";
-import type { StageCapabilityRequest, StageObservation } from "../workflow/observations.ts";
+import type { StageEffectRequest, StageObservation } from "../workflow/observations.ts";
 import type { StageResult } from "../workflow/stage-result.ts";
 import type { LocalResourceView } from "./local-resource.ts";
 
@@ -96,7 +96,7 @@ export type FunctionStageOutcome =
    */
   | {
       readonly status: "awaitEffects";
-      readonly effects: readonly StageCapabilityRequest[];
+      readonly effects: readonly StageEffectRequest[];
       readonly progress?: JsonObject;
       readonly emissions?: readonly EmissionProposal[];
     }
@@ -177,9 +177,24 @@ export function functionStageOutcomeIssues(
         } else {
           keys.add(key);
         }
-        for (const field of ["capability", "operation"] as const) {
-          if (typeof described[field] !== "string" || (described[field] as string).length === 0) {
-            issues.push({ path: `${path}.effects[${index}].${field}`, message: `expected a logical ${field} name` });
+        if (described["kind"] === "write_memory") {
+          if (typeof described["memoryKey"] !== "string" || (described["memoryKey"] as string).length === 0) {
+            issues.push({ path: `${path}.effects[${index}].memoryKey`, message: "expected a Structured Memory field key" });
+          }
+          if (!("value" in described)) {
+            issues.push({ path: `${path}.effects[${index}].value`, message: "expected a JSON value" });
+          }
+        } else {
+          if (described["kind"] !== undefined && described["kind"] !== "use_capability") {
+            issues.push({
+              path: `${path}.effects[${index}].kind`,
+              message: `unknown Stage Effect request kind ${JSON.stringify(described["kind"])}`,
+            });
+          }
+          for (const field of ["capability", "operation"] as const) {
+            if (typeof described[field] !== "string" || (described[field] as string).length === 0) {
+              issues.push({ path: `${path}.effects[${index}].${field}`, message: `expected a logical ${field} name` });
+            }
           }
         }
       }

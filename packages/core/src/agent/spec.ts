@@ -3,7 +3,7 @@
  *
  * Slice A left this as `JsonObject` so the substrate would not guess at this slice. This is the
  * replacement, and like the Workflow spec it is chosen by what it *cannot* contain. An Agent
- * definition names a logical model, its instructions, its bounds, and the operations it would like
+ * definition names a logical model, its instructions, its bounds, and the actions it would like
  * exposed. It holds no provider client, no API key, no executor, no store, no Harness, no capability
  * catalog, no authority grant, no Active View, no model projection, no provider tool schema, no
  * application principal, and no protocol type - `definitions/validation.ts` enforces the structural
@@ -14,9 +14,11 @@
  * runtime-owned ceiling; writing an operation here neither grants it nor makes it appear.
  *
  * ```text
- * spec.operations             what the author would like exposed
- * effective authority         what the runtime decided is legal
- * Active Operation View       the intersection, ordered and bounded
+ * spec.operations             requested capability-operation exposure
+ * effective operation authority
+ * Active Operation View       their intersection, ordered and bounded
+ * spec.memoryWrite            separate view-neutral WriteMemory exposure request
+ * Harness Effect authorization current permission for either proposed Effect
  * ```
  *
  * Bounds are runtime limits, not permissions. `maxModelCalls` says how much autonomous progression
@@ -65,6 +67,8 @@ export interface AgentSpec {
   readonly instructions: string;
   /** Which authorized operations to expose. Absent means none: exposure is never implicit. */
   readonly operations?: OperationExposureRequest;
+  /** Requests model exposure of generic `WriteMemory { key, value }`. Exposure is never authority. */
+  readonly memoryWrite?: { readonly description?: string };
   readonly limits?: AgentLimits;
   readonly completion?: AgentCompletionMode;
 }
@@ -74,6 +78,7 @@ export interface AgentSpecInput {
   readonly model: LogicalModelRequest;
   readonly instructions: string;
   readonly operations?: OperationExposureRequest;
+  readonly memoryWrite?: { readonly description?: string };
   readonly limits?: Partial<AgentLimits>;
   readonly completion?: AgentCompletionMode;
 }

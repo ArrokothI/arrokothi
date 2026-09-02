@@ -22,6 +22,7 @@
  *   peer.message           another Execution sent this one a message (fresh, or a correlated reply)
  *   user.input             a trusted response to a `RequestUserInput` Effect; runtime-established
  *   confirmation.declined  a human declined an exact-payload mechanical confirmation; nothing ran
+ *   memory.written         a Structured Memory write committed at a runtime-owned revision
  *   external.input         an observation delivered from outside the kernel
  *
  * The three capability outcomes are separate kinds rather than a status field so that a controller
@@ -56,8 +57,7 @@
  * make the fast and slow paths semantically distinguishable, which is precisely the property the
  * gateway must not have.
  *
- * Kinds for later slices - a timer firing, a `WriteMemory` result - are deliberately absent. They
- * arrive with the Effects that produce them.
+ * Timer kinds remain deliberately absent until the Effect/runtime work that establishes them.
  */
 
 import type { CapabilityError } from "../effects/outcome.ts";
@@ -80,6 +80,7 @@ export type EventKind =
   | "peer.message"
   | "user.input"
   | "confirmation.declined"
+  | "memory.written"
   | "external.input";
 
 export const EVENT_KINDS: readonly EventKind[] = [
@@ -96,6 +97,7 @@ export const EVENT_KINDS: readonly EventKind[] = [
   "peer.message",
   "user.input",
   "confirmation.declined",
+  "memory.written",
   "external.input",
 ];
 
@@ -120,6 +122,7 @@ export const EFFECT_RESULT_EVENT_KINDS: readonly EventKind[] = [
   "message.sent",
   "user.input",
   "confirmation.declined",
+  "memory.written",
 ];
 
 /**
@@ -282,6 +285,15 @@ export interface ConfirmationDeclinedBody extends EffectResultFields {
   readonly proposalDigest: string;
 }
 
+/** A runtime-established successful commit of one schema-bound Structured Memory field. */
+export interface MemoryWrittenBody extends EffectResultFields {
+  /** Non-null only when this write reused a confirmation-gated PendingOperation. */
+  readonly pendingOperationId: PendingOperationId | null;
+  readonly memoryViewId: string;
+  readonly key: string;
+  readonly revision: number;
+}
+
 /**
  * An observation from outside the kernel: application input, a user turn, a system signal.
  *
@@ -307,6 +319,7 @@ export interface EventBodies {
   readonly "peer.message": PeerMessageBody;
   readonly "user.input": UserInputBody;
   readonly "confirmation.declined": ConfirmationDeclinedBody;
+  readonly "memory.written": MemoryWrittenBody;
   readonly "external.input": ExternalInputBody;
 }
 
@@ -383,6 +396,17 @@ export function eventBodyIssues(kind: EventKind, body: unknown): readonly EventB
     requireString(value["pendingOperationId"], "body.pendingOperationId", issues);
     requireString(value["confirmationId"], "body.confirmationId", issues);
     requireString(value["proposalDigest"], "body.proposalDigest", issues);
+    return issues;
+  }
+  if (kind === "memory.written") {
+    if (value["pendingOperationId"] !== null && typeof value["pendingOperationId"] !== "string") {
+      issues.push({ path: "body.pendingOperationId", message: "expected a pending-operation id or null" });
+    }
+    requireString(value["memoryViewId"], "body.memoryViewId", issues);
+    requireString(value["key"], "body.key", issues);
+    if (typeof value["revision"] !== "number" || !Number.isInteger(value["revision"]) || value["revision"] < 1) {
+      issues.push({ path: "body.revision", message: "expected a positive integer revision" });
+    }
     return issues;
   }
 

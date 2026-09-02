@@ -34,6 +34,7 @@ import { createChildExecutionLink, markChildLinkSettled } from "../../execution/
 import { createPeerRequestLink, markPeerRequestLinkSettled } from "../../execution/peer-request-link.ts";
 import { createUserInputRequest, markUserInputResponded } from "../../execution/user-input-request.ts";
 import { createConfirmationRequest, markConfirmationApproved } from "../../execution/confirmation-request.ts";
+import { commitStructuredMemoryWrite, createStructuredMemoryView } from "../../execution/structured-memory.ts";
 import { consumeSpawnCredit, createLineageSpawnBudget } from "../../execution/structural-budget.ts";
 import { createEffectiveOperationAuthority } from "../../operations/authority.ts";
 import type { EventEnvelope, EventId } from "../../interaction/event-envelope.ts";
@@ -87,6 +88,15 @@ function pending(suffix = "1", key = "per_input:contract"): PendingOperation {
     idempotencyKey: key as IdempotencyKey,
     createdAt: "2026-01-01T00:00:02.000Z",
     deadline: "2026-01-01T00:00:32.000Z",
+  });
+}
+
+function memoryView() {
+  return createStructuredMemoryView({
+    memoryViewId: "smv_contract",
+    executionId: EXECUTION,
+    binding: { fields: [{ key: "count", schema: { kind: "number", integer: true } }] },
+    createdAt: "2026-01-01T00:00:00.000Z",
   });
 }
 
@@ -167,6 +177,56 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
         await store.transact(EXECUTION, async (tx) => {
           const queued = await tx.mailboxes.peek(MAILBOX);
           assertEqual(queued.length, 0, "no mailbox write survived the rollback");
+        });
+      },
+    },
+    {
+      name: "Structured Memory revision, write, and observation bookkeeping share store transactions",
+      async run() {
+        const store = factory();
+        const initial = memoryView();
+        await store.transact(EXECUTION, async (tx) => tx.structuredMemory.insert(initial));
+
+        const first = commitStructuredMemoryWrite(initial, {
+          key: "count",
+          value: 1,
+          writerExecutionId: EXECUTION,
+          effectId: "eff_memory_1" as EffectId,
+          activationId: "act_1" as ActivationId,
+          writtenAt: "2026-01-01T00:00:01.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.structuredMemory.update(first, initial.revision));
+        assertEqual((await store.readStructuredMemoryView(initial.memoryViewId))?.revision, 1, "the view revision advances");
+
+        await assertRejects(
+          () => store.transact(EXECUTION, async (tx) => tx.structuredMemory.update(first, initial.revision)),
+          "StructuredMemoryConcurrencyError",
+          "a stale memory writer cannot overwrite a newer view revision",
+        );
+
+        const second = commitStructuredMemoryWrite(first, {
+          key: "count",
+          value: 2,
+          writerExecutionId: EXECUTION,
+          effectId: "eff_memory_2" as EffectId,
+          activationId: "act_2" as ActivationId,
+          writtenAt: "2026-01-01T00:00:02.000Z",
+        });
+        await assertRejects(
+          () =>
+            store.transact(EXECUTION, async (tx) => {
+              await tx.structuredMemory.update(second, first.revision);
+              await tx.mailboxes.append(MAILBOX, event("evt_memory"), "2026-01-01T00:00:02.000Z");
+              throw new RollbackProbe();
+            }),
+          "RollbackProbe",
+          "the memory mutation participates in ordinary store rollback",
+        );
+        const retained = await store.readStructuredMemoryView(initial.memoryViewId);
+        assertEqual(retained?.revision, 1, "a rolled-back memory write is not visible");
+        assertEqual(retained?.values["count"]?.value, 1, "the prior committed value remains current");
+        await store.transact(EXECUTION, async (tx) => {
+          assertEqual((await tx.mailboxes.peek(MAILBOX)).length, 0, "the paired mailbox write rolled back too");
         });
       },
     },

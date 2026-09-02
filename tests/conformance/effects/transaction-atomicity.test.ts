@@ -76,6 +76,8 @@ class BreakableStore implements RuntimeStore {
   readConfirmationRequest: RuntimeStore["readConfirmationRequest"] = (id) => this.inner.readConfirmationRequest(id);
   listConfirmationRequests: RuntimeStore["listConfirmationRequests"] = (id) => this.inner.listConfirmationRequests(id);
   listPendingConfirmations: RuntimeStore["listPendingConfirmations"] = () => this.inner.listPendingConfirmations();
+  readStructuredMemoryView: RuntimeStore["readStructuredMemoryView"] = (id) =>
+    this.inner.readStructuredMemoryView(id);
 
   private wrap(tx: RuntimeTransaction): RuntimeTransaction {
     const guard = (facet: string, detail: string): void => {
@@ -133,7 +135,10 @@ function rig(): Rig {
     controllers: new ControllerRegistry([createScriptedAgentController()]),
     clock: createFixedClock(),
     ids: createDeterministicIds(),
-    authorizer: createAllowListAuthorizer({ grants: [{ capability: "mail.send", operations: ["send"] }] }),
+    authorizer: createAllowListAuthorizer({
+      grants: [{ capability: "mail.send", operations: ["send"] }],
+      memory: true,
+    }),
     capabilities: executor,
   });
   return { harness, store, executor, definitions };
@@ -149,6 +154,40 @@ const sender = () =>
   });
 
 describe("Effect gateway transaction atomicity", () => {
+  test("a Structured Memory update and memory.written delivery roll back together", async () => {
+    const { harness, store, definitions } = rig();
+    store.break = (facet, detail) =>
+      facet === "mailbox.append" && detail === "memory.written" ? "mailbox unavailable" : null;
+
+    const ref = await definitions.save(
+      scriptedAgentDefinition({
+        id: "memory-writer",
+        program: [
+          { do: "propose_effect", effect: { kind: "write_memory", key: "count", value: 1, requestKey: "w" } },
+          { do: "complete" },
+        ],
+      }),
+    );
+    const handle = await harness.createExecution({
+      definition: ref,
+      structuredMemory: {
+        fields: [{ key: "count", schema: { kind: "number", integer: true } }],
+      },
+    });
+    await harness.runUntilIdle();
+
+    const view = await harness.structuredMemoryOf(handle.executionId);
+    assert.equal(view?.revision, 0, "the state update rolled back with its undeliverable success result");
+    assert.deepEqual(view?.values, {});
+    assert.deepEqual(view?.writes, []);
+    assert.deepEqual(
+      (await harness.effectJournalOf(handle.executionId)).map((entry) => entry.phase),
+      ["requested"],
+      "authorized/started/completed records shared the rolled-back transaction",
+    );
+    assert.equal((await harness.inspect(handle.executionId))?.failure?.code, "effect_processing_failed");
+  });
+
   test("a failure while recording the dispatch leaves no pending operation and no dispatch", async () => {
     const { harness, store, executor, definitions } = rig();
     store.break = (facet, detail) => (facet === "journal.append" && detail === "dispatch_started" ? "store unavailable" : null);

@@ -87,6 +87,7 @@ export function testModelResolver(provider = "test", model = "model-a"): StaticM
 export interface AgentDefinitionInput {
   readonly id: string;
   readonly operations?: AgentSpecInput["operations"];
+  readonly memoryWrite?: AgentSpecInput["memoryWrite"];
   readonly limits?: AgentSpecInput["limits"];
   readonly completion?: AgentSpecInput["completion"];
   readonly instructions?: string;
@@ -101,6 +102,7 @@ export function testAgent(input: AgentDefinitionInput): AgentDefinition {
       model: { logicalRef: "primary", requirements: { text: true, capabilityCalls: "required" } },
       instructions: input.instructions ?? "Use the operations you were given, then answer.",
       ...(input.operations !== undefined ? { operations: input.operations } : {}),
+      ...(input.memoryWrite !== undefined ? { memoryWrite: input.memoryWrite } : {}),
       ...(input.limits !== undefined ? { limits: input.limits } : {}),
       ...(input.completion !== undefined ? { completion: input.completion } : {}),
     },

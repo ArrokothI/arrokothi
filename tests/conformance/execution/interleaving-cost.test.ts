@@ -77,6 +77,10 @@ class CountingRuntimeStore implements RuntimeStore {
   readConfirmationRequest: RuntimeStore["readConfirmationRequest"] = (id) => this.inner.readConfirmationRequest(id);
   listConfirmationRequests: RuntimeStore["listConfirmationRequests"] = (id) => this.inner.listConfirmationRequests(id);
   listPendingConfirmations: RuntimeStore["listPendingConfirmations"] = () => this.inner.listPendingConfirmations();
+  readStructuredMemoryView: RuntimeStore["readStructuredMemoryView"] = (id) => {
+    this.bump("readStructuredMemoryView");
+    return this.inner.readStructuredMemoryView(id);
+  };
 
   private wrap(tx: RuntimeTransaction): RuntimeTransaction {
     return {
