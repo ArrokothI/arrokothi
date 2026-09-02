@@ -2168,6 +2168,10 @@ export class EffectProcessor {
         effectId,
         activationId: input.activationId,
         writtenAt: at,
+        // Caller-supplied provenance (direct source refs, and/or promoted Derived claim ids) rides
+        // the exact proposal, so it is part of what confirmation digested and it is persisted with
+        // the committed record. It is not authority and it does not reach the model observation.
+        ...(proposal.provenance !== undefined ? { provenance: proposal.provenance } : {}),
       });
 
       await this.journal(tx, {

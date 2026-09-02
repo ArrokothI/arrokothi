@@ -42,6 +42,22 @@ export type {
   StructuredMemoryWriteExposureGrantRule,
   StructuredMemoryWriteViewResolverOptions,
 } from "./structured-memory-write-view-resolver.ts";
+export {
+  createInMemoryDerivedSemanticMemory,
+  DerivedSemanticMemoryAppendConflictError,
+  InvalidDerivedSemanticClaimError,
+} from "./in-memory-derived-semantic-memory.ts";
+export type { InMemoryDerivedSemanticMemory } from "./in-memory-derived-semantic-memory.ts";
+export {
+  createFakeDerivedMemoryExtractor,
+  createSchemaBoundDerivedMemoryExtractor,
+} from "./derived-memory-extractor.ts";
+export type { SchemaBoundExtractionRule } from "./derived-memory-extractor.ts";
+export { createDerivedSemanticMemoryReadResolver } from "./derived-semantic-memory-read-resolver.ts";
+export type {
+  DerivedSemanticMemoryReadGrantRule,
+  DerivedSemanticMemoryReadResolverOptions,
+} from "./derived-semantic-memory-read-resolver.ts";
 export { createReferenceAgentExecutor } from "./agent-executor.ts";
 export type { ReferenceAgentExecutorOptions } from "./agent-executor.ts";
 export { createNoInlineWaitBudget, createTimeoutInlineBudget } from "./inline-wait.ts";

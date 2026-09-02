@@ -65,6 +65,7 @@ const V04_OWNED_FILES = [
   "testing/scripted-controllers.ts",
   "testing/execution-harness.ts",
   "testing/structured-memory.ts",
+  "testing/derived-semantic-memory.ts",
 ];
 
 /**

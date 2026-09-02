@@ -17,6 +17,25 @@ export function canonicalJson(value: unknown): string {
   return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${canonicalJson(v)}`).join(",")}}`;
 }
 
+/**
+ * UTF-8 byte length of a string, computed purely so `core` stays runtime-neutral (no `Buffer`,
+ * no `TextEncoder` assumption). Used for deterministic byte budgets over canonical JSON.
+ */
+export function utf8ByteLength(input: string): number {
+  let bytes = 0;
+  for (let i = 0; i < input.length; i += 1) {
+    const code = input.charCodeAt(i);
+    if (code < 0x80) bytes += 1;
+    else if (code < 0x800) bytes += 2;
+    else if (code >= 0xd800 && code <= 0xdbff) {
+      // A surrogate pair encodes one code point in four UTF-8 bytes.
+      bytes += 4;
+      i += 1;
+    } else bytes += 3;
+  }
+  return bytes;
+}
+
 /** FNV-1a, 32-bit, with a configurable offset basis so we can cheaply build a wider digest. */
 function fnv1a(input: string, basis: number): number {
   let h = basis >>> 0;

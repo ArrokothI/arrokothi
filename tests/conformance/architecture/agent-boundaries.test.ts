@@ -148,6 +148,116 @@ describe("Agent architecture boundaries", () => {
     }
   });
 
+  test("the Agent controller holds only the narrow Derived Semantic Memory resolver, not the provider or extractor", async () => {
+    const controller = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8"));
+    assert.ok(controller.includes("DerivedSemanticMemoryReadResolver"), "the controller holds the read resolver port");
+    for (const forbidden of [
+      "DerivedSemanticMemoryProvider",
+      "DerivedMemoryExtractor",
+      "deriveClaims",
+      "createInMemoryDerivedSemanticMemory",
+      "groundDerivedClaimCandidate",
+    ]) {
+      assert.equal(controller.includes(forbidden), false, `the AgentController must not name ${forbidden}`);
+    }
+
+    // The read-view port reaches nothing operational, and the controller's whole import graph never
+    // reaches a provider, an extractor, or the reference implementations of either.
+    const portFiles = await walk(["ports/derived-semantic-memory-read-view.ts"]);
+    assert.deepEqual([...portFiles].filter((path) => OPERATIONAL_MACHINERY.includes(path)), []);
+
+    const controllerFiles = await walk(["controllers/agent/controller.ts"]);
+    for (const forbidden of [
+      "ports/derived-semantic-memory-provider.ts",
+      "ports/derived-memory-extractor.ts",
+      "reference/in-memory-derived-semantic-memory.ts",
+      "reference/derived-memory-extractor.ts",
+      "reference/derived-semantic-memory-read-resolver.ts",
+    ]) {
+      assert.equal(controllerFiles.has(forbidden), false, `the AgentController graph must not reach ${forbidden}`);
+    }
+  });
+
+  test("Derived Semantic Memory is a dependency-free execution leaf, and its ports reach nothing operational", async () => {
+    const leaf = await walk(["execution/derived-semantic-memory.ts"]);
+    for (const path of leaf) {
+      for (const specifier of specifiersIn(await readFile(resolve(CORE_SRC, path), "utf8"))) {
+        assert.ok(
+          specifier.startsWith("."),
+          `execution/derived-semantic-memory.ts graph imports only relative modules (${specifier})`,
+        );
+      }
+    }
+    const AUTHORITY_AND_RUNTIME = [
+      ...OPERATIONAL_MACHINERY,
+      "operations/authority.ts",
+      "operations/active-view.ts",
+      "operations/projection.ts",
+      "operations/model-action-view.ts",
+      "operations/local-model-control.ts",
+    ];
+    assert.deepEqual([...leaf].filter((path) => AUTHORITY_AND_RUNTIME.includes(path)), []);
+
+    for (const port of [
+      "ports/derived-memory-extractor.ts",
+      "ports/derived-semantic-memory-provider.ts",
+      "ports/derived-semantic-memory-read-view.ts",
+    ]) {
+      const files = await walk([port]);
+      assert.deepEqual(
+        [...files].filter((path) => AUTHORITY_AND_RUNTIME.includes(path)),
+        [],
+        `${port} reaches no runtime, authority, Active View, or Effect machinery`,
+      );
+    }
+
+    // deriveClaims is not called from any controller: extraction is an application concern.
+    for (const path of await filesUnder(["controllers/"])) {
+      const code = codeOf(await readFile(resolve(CORE_SRC, path), "utf8"));
+      assert.equal(code.includes("deriveClaims"), false, `${path} must not run extraction`);
+    }
+  });
+
+  test("the information compiler may read a Derived claim snapshot but cannot retrieve, write, or promote", async () => {
+    const files = await walk(["controllers/agent/information.ts"]);
+    for (const forbidden of [
+      "ports/derived-semantic-memory-read-view.ts",
+      "ports/derived-semantic-memory-provider.ts",
+      "ports/derived-memory-extractor.ts",
+      "reference/derived-semantic-memory-read-resolver.ts",
+    ]) {
+      assert.equal(files.has(forbidden), false, `the information compiler must not reach ${forbidden}`);
+    }
+    const code = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/information.ts"), "utf8"));
+    for (const forbidden of ["deriveClaims", "promoteDerivedClaim", ".retrieve(", "DerivedSemanticMemoryProvider"]) {
+      assert.equal(code.includes(forbidden), false, `an information compiler renders claims; it does not ${forbidden}`);
+    }
+  });
+
+  test("Derived Semantic Memory adds no Effect kind, no Event kind, and no model action / local control", async () => {
+    const effects = await readFile(resolve(CORE_SRC, "effects/types.ts"), "utf8");
+    const kinds = effects.slice(effects.indexOf("export const EFFECT_KINDS"));
+    assert.equal(/derived|semantic_memory|promote/i.test(kinds.slice(0, kinds.indexOf("]"))), false, "no Effect kind for Derived Memory");
+    // Promotion is an ordinary WriteMemory with an optional provenance datum - not a new proposal kind.
+    assert.ok(effects.includes("promoteDerivedClaim"), "the promotion helper builds a WriteMemory");
+    assert.ok(effects.includes('kind: "write_memory"'), "promoteDerivedClaim returns a write_memory proposal");
+
+    const events = codeOf(await readFile(resolve(CORE_SRC, "interaction/events.ts"), "utf8"));
+    assert.equal(/derived|promoted/i.test(events), false, "no derived.* Event kind");
+
+    const actionTarget = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
+    const localControl = codeOf(await readFile(resolve(CORE_SRC, "operations/local-model-control.ts"), "utf8"));
+    assert.equal(/derived/i.test(actionTarget), false, "Derived Memory is never a ModelActionTarget");
+    assert.equal(/derived/i.test(localControl), false, "Derived Memory is never a local model control");
+
+    // The SpawnExecution proposal gains no derived-memory field: there is no parent -> child handoff.
+    const spawnProposal = effects.slice(effects.indexOf("export interface SpawnExecutionProposal"));
+    assert.equal(/derived/i.test(spawnProposal.slice(0, spawnProposal.indexOf("\n}"))), false);
+
+    const pending = await readFile(resolve(CORE_SRC, "effects/pending.ts"), "utf8");
+    assert.equal(/derived/i.test(pending), false, "Derived retrieval is not a PendingOperation kind");
+  });
+
   test("no Agent module names a dispatcher, policy evaluator, store, scheduler, or settlement path", async () => {
     const files = await filesUnder(["controllers/agent/", "agent/", "operations/"]);
     for (const path of files) {

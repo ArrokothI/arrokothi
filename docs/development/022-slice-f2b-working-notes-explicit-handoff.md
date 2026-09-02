@@ -2,10 +2,12 @@
 
 > **Status:** implemented on the long-lived branch `slice-f-memory-completion` from the accepted
 > F.2a checkpoint `fe837f24ba853df7ab797bb64751c75c6be11fdd`, then corrected by one independent
-> review of F.2b HEAD `351c6e198e1ecab57d4b43385215b89c7ffd6e19` (§0 below). The core F.2b
-> architecture is accepted. **Not merged. Awaiting re-review.** F.3 (Derived Semantic Memory +
-> provenance/promotion) and the final Slice F integration corrections continue on this same branch
-> afterwards; the branch merges into `main` only after the whole of Slice F is independently accepted.
+> review of F.2b HEAD `351c6e198e1ecab57d4b43385215b89c7ffd6e19` (§0 below). **Independently
+> accepted at `d192f83279e6b996d70317150b6621b69bd52ef6` (behavioural) + `8b5e506` (doc-only
+> follow-up). Still on the branch, not yet merged with the rest of Slice F.** F.3 (Derived Semantic
+> Memory + provenance/promotion, doc [`023`](023-slice-f3-derived-semantic-memory-provenance-promotion.md))
+> is the current checkpoint and builds on it; the branch merges into `main` only after the whole of
+> Slice F is independently accepted in a final integrated review.
 >
 > **Scope:** the first explicit Working Notes composition transfer — a parent selects a subset of
 > its own Working Notes, that subset crosses one **child Execution** boundary as an immutable

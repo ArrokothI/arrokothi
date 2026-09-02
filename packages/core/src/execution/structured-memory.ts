@@ -19,6 +19,22 @@ export interface StructuredMemoryViewRef {
   readonly memoryViewId: string;
 }
 
+/**
+ * Optional plain-reference provenance for one explicit Structured Memory assertion.
+ *
+ * Records *why* a value was asserted - source refs a trusted caller verified, and/or Derived
+ * Semantic claim ids it deliberately promoted. It is **not** authority: not `AuthorizationEvidence`,
+ * not mechanical confirmation, and never a reason the Harness allows a write. It rides the
+ * `WriteMemory` proposal (so it is covered by the exact-payload confirmation digest) and is
+ * persisted with the committed record and its history. When present, at least one reference is
+ * given. F.1's model-facing read rendering is unchanged: promotion provenance is application/runtime
+ * inspection data, not something the model observation exposes.
+ */
+export interface MemoryWriteProvenance {
+  readonly sourceRefs?: readonly string[];
+  readonly derivedClaimIds?: readonly string[];
+}
+
 export function structuredMemoryViewRef(memoryViewId: string): StructuredMemoryViewRef {
   if (typeof memoryViewId !== "string" || memoryViewId.length === 0) {
     throw new TypeError("a Structured Memory view ref needs a non-empty id");
@@ -49,6 +65,15 @@ export interface StructuredMemoryCommittedValue {
   readonly writtenAt: string;
   /** The view revision established by this write. */
   readonly revision: number;
+  /**
+   * Caller-supplied provenance for this assertion, when the `WriteMemory` proposal carried any.
+   *
+   * Distinct from the runtime-established fields above: those are what the Harness observed; this is
+   * what the trusted caller declared this write was derived from. Retained on both the current value
+   * and the history entry so a promoted value can always be traced back to its source refs / derived
+   * claim ids. Never authority.
+   */
+  readonly provenance?: MemoryWriteProvenance;
 }
 
 /**
@@ -300,6 +325,8 @@ export interface CommitStructuredMemoryWriteInput {
   readonly effectId: EffectId;
   readonly activationId: ActivationId | null;
   readonly writtenAt: string;
+  /** Caller-supplied provenance from the `WriteMemory` proposal, if any. Retained verbatim. */
+  readonly provenance?: MemoryWriteProvenance;
 }
 
 /** Pure current-value replacement plus append-only attribution, advancing the view revision once. */
@@ -317,6 +344,9 @@ export function commitStructuredMemoryWrite(
     activationId: input.activationId,
     writtenAt: input.writtenAt,
     revision,
+    ...(input.provenance !== undefined
+      ? { provenance: structuredClone(input.provenance) as MemoryWriteProvenance }
+      : {}),
   };
   const values = Object.fromEntries([
     ...Object.entries(view.values).filter(([key]) => key !== input.key),

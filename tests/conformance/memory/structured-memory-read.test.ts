@@ -560,6 +560,7 @@ describe("consumer-visible memory information tracks authorized selected state, 
       maxMessages: 8,
       memory: projectStructuredMemoryReadView(view, readable),
       workingNotes: null,
+      derivedMemory: null,
     });
 
     assert.deepEqual(compileAgentInformation(input(hiddenChanged)), compileAgentInformation(input(base)));

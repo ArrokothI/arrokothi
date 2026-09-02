@@ -55,6 +55,13 @@ export interface AgentLimits {
   readonly maxWorkingNoteEntries: number;
   /** Ceiling on the canonical-JSON byte size of the whole Working Notes frame. Also a budget. */
   readonly maxWorkingNotesBytes: number;
+  /**
+   * How many Derived Semantic claims an authorized retrieval may put into one model context. A
+   * budget, never authority - and the effective ceiling on `derivedMemory.read.maxClaims`.
+   */
+  readonly maxDerivedMemoryClaims: number;
+  /** Ceiling on the canonical-JSON byte size of the Derived Semantic Memory snapshot. Also a budget. */
+  readonly maxDerivedMemoryBytes: number;
 }
 
 export const DEFAULT_AGENT_LIMITS: AgentLimits = Object.freeze({
@@ -63,6 +70,8 @@ export const DEFAULT_AGENT_LIMITS: AgentLimits = Object.freeze({
   maxContextMessages: 64,
   maxWorkingNoteEntries: 32,
   maxWorkingNotesBytes: 16384,
+  maxDerivedMemoryClaims: 16,
+  maxDerivedMemoryBytes: 8192,
 });
 
 /**
@@ -109,6 +118,36 @@ export interface AgentStructuredMemorySpec {
 }
 
 /**
+ * An authored request to retrieve Derived Semantic claims into the model's information context.
+ *
+ * ```text
+ * spec.derivedMemory.read.query    the explicit authored retrieval intent
+ * Derived read authority           deny-by-default; decided before the provider is consulted
+ * a replaceable provider           ranks and returns claims by its own mechanism
+ *          ↓ authorized + bounded
+ * inferred-claim snapshot          rendered as "inferred, may be wrong" - not authority, not state
+ * ```
+ *
+ * `query` is authored, not model-generated: F.3 does not solve dynamic/current-task retrieval, and
+ * a hidden LLM-formed query would make retrieval non-deterministic. Absent means no Derived Memory
+ * retrieval - no resolver call, no provider call, no context block, no extra model call.
+ */
+export interface AgentDerivedMemoryRead {
+  /** Non-empty authored retrieval intent. */
+  readonly query: string;
+  /**
+   * How many claims to retrieve. A positive finite integer, further clamped to
+   * `limits.maxDerivedMemoryClaims`. Absent uses the limit.
+   */
+  readonly maxClaims?: number;
+}
+
+/** Independent Derived Semantic Memory request. Retrieval only in F.3; not a memory-form union. */
+export interface AgentDerivedMemorySpec {
+  readonly read?: AgentDerivedMemoryRead;
+}
+
+/**
  * Authored enablement of the Agent's own local Working Notes.
  *
  * ```text
@@ -141,6 +180,8 @@ export interface AgentSpec {
   readonly structuredMemory?: AgentStructuredMemorySpec;
   /** Authored enablement of the Agent's local Working Notes. Absent means no notes work. */
   readonly workingNotes?: AgentWorkingNotesSpec;
+  /** Authored Derived Semantic Memory retrieval request. Absent means no retrieval. */
+  readonly derivedMemory?: AgentDerivedMemorySpec;
   readonly limits?: AgentLimits;
   readonly completion?: AgentCompletionMode;
 }
@@ -152,6 +193,7 @@ export interface AgentSpecInput {
   readonly operations?: OperationExposureRequest;
   readonly structuredMemory?: AgentStructuredMemorySpec;
   readonly workingNotes?: AgentWorkingNotesSpec;
+  readonly derivedMemory?: AgentDerivedMemorySpec;
   readonly limits?: Partial<AgentLimits>;
   readonly completion?: AgentCompletionMode;
 }
@@ -164,6 +206,11 @@ export function agentStructuredMemoryRead(spec: AgentSpec): AgentStructuredMemor
 /** The authored Structured Memory write-exposure request, or `null` when none was authored. */
 export function agentStructuredMemoryWrite(spec: AgentSpec): AgentStructuredMemoryWrite | null {
   return spec.structuredMemory?.write ?? null;
+}
+
+/** The authored Derived Semantic Memory retrieval request, or `null` when none was authored. */
+export function agentDerivedMemoryRead(spec: AgentSpec): AgentDerivedMemoryRead | null {
+  return spec.derivedMemory?.read ?? null;
 }
 
 /** Whether the model's information context may include the local Working Notes. */

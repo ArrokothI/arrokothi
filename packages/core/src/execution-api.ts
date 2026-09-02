@@ -46,6 +46,8 @@ export {
 // -- agent semantics ---------------------------------------------------------
 export type {
   AgentCompletionMode,
+  AgentDerivedMemoryRead,
+  AgentDerivedMemorySpec,
   AgentLimits,
   AgentSpec,
   AgentSpecInput,
@@ -58,6 +60,7 @@ export {
   AGENT_COMPLETION_MODES,
   DEFAULT_AGENT_LIMITS,
   agentCompletionMode,
+  agentDerivedMemoryRead,
   agentLimits,
   agentStructuredMemoryRead,
   agentStructuredMemoryWrite,
@@ -298,6 +301,7 @@ export type {
   MailboxRef,
 } from "./execution/context.ts";
 export type {
+  MemoryWriteProvenance,
   StructuredMemoryBinding,
   StructuredMemoryBindingIssue,
   StructuredMemoryCommittedValue,
@@ -314,6 +318,36 @@ export type {
   StructuredMemoryReadView,
 } from "./execution/structured-memory-read.ts";
 export { projectStructuredMemoryReadView } from "./execution/structured-memory-read.ts";
+/**
+ * Derived Semantic Memory: inferred, provenance-bearing claims. A *different memory form* from
+ * Structured Memory and Working Notes - inferred, retrieval-oriented, not authoritative by default,
+ * and never authority evidence. The reference v0.4 claim shape here is executable-slice scaffolding,
+ * not the frozen portable schema (`docs/future-plan.md` §3.1).
+ */
+export type {
+  DerivedMemoryClaimCandidate,
+  DerivedMemoryDerivation,
+  DerivedMemoryProvenance,
+  DerivedMemorySourceMaterial,
+  DerivedSemanticClaim,
+  DerivedSemanticMemoryClaimView,
+  DerivedSemanticMemoryReadBudget,
+  DerivedSemanticMemoryReadView,
+  GroundDerivedClaimResult,
+} from "./execution/derived-semantic-memory.ts";
+export {
+  cloneDerivedSemanticClaim,
+  derivedClaimId,
+  derivedMemorySourceMaterialIssues,
+  derivedSemanticClaimBytes,
+  derivedSemanticClaimIssues,
+  derivedSemanticMemoryReadViewBytes,
+  derivedSemanticMemoryReadViewIssue,
+  groundDerivedClaimCandidate,
+  isAcceptedDerivedAt,
+  isDerivedSemanticClaim,
+  projectDerivedSemanticMemoryReadView,
+} from "./execution/derived-semantic-memory.ts";
 export type {
   ActiveStructuredMemoryWriteEntry,
   ActiveStructuredMemoryWriteView,
@@ -491,6 +525,7 @@ export type {
   EffectKind,
   EffectProposal,
   EffectRequest,
+  PromoteDerivedClaimInput,
   RequestUserInputProposal,
   SendMessageProposal,
   SpawnExecutionProposal,
@@ -505,6 +540,8 @@ export {
   isEffectKind,
   isUseCapabilityProposal,
   isWriteMemoryProposal,
+  memoryWriteProvenanceIssues,
+  promoteDerivedClaim,
   useCapability,
   writeMemory,
 } from "./effects/types.ts";

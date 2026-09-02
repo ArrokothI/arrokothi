@@ -108,6 +108,7 @@ import type { AgentObservationOutcome, AgentActionObservation } from "../../agen
 import type { AgentSpec } from "../../agent/spec.ts";
 import {
   agentCompletionMode,
+  agentDerivedMemoryRead,
   agentLimits,
   agentStructuredMemoryRead,
   agentStructuredMemoryWrite,
@@ -123,6 +124,8 @@ import {
   createLocalModelControlView,
 } from "../../operations/local-model-control.ts";
 import { emptyActiveStructuredMemoryWriteView } from "../../execution/structured-memory-write-view.ts";
+import type { DerivedSemanticMemoryReadView } from "../../execution/derived-semantic-memory.ts";
+import { derivedSemanticMemoryReadViewIssue } from "../../execution/derived-semantic-memory.ts";
 import type { WorkingNotesFrame, WorkingNotesHandoff } from "../../execution/working-notes.ts";
 import {
   setWorkingNote,
@@ -146,6 +149,8 @@ import type { StructuredMemoryReadViewResolver } from "../../ports/structured-me
 import { noStructuredMemoryRead } from "../../ports/structured-memory-read-view.ts";
 import type { ActiveStructuredMemoryWriteViewResolver } from "../../ports/active-structured-memory-write-view.ts";
 import { noActiveStructuredMemoryWriteView } from "../../ports/active-structured-memory-write-view.ts";
+import type { DerivedSemanticMemoryReadResolver } from "../../ports/derived-semantic-memory-read-view.ts";
+import { noDerivedSemanticMemoryRead } from "../../ports/derived-semantic-memory-read-view.ts";
 import type { AgentExecutor, AgentExecutorOutcome } from "../../ports/agent-executor.ts";
 import { agentExecutorOutcomeIssues } from "../../ports/agent-executor.ts";
 import type { ActivationInput, ActivationOutcome, ExecutionController } from "../../ports/controller.ts";
@@ -208,6 +213,17 @@ export interface AgentControllerOptions {
    * `WriteMemory` authorization remains the Harness's independent, fresh decision.
    */
   readonly structuredMemoryWriteView?: ActiveStructuredMemoryWriteViewResolver;
+  /**
+   * Resolves the authorized, bounded Derived Semantic Memory snapshot for one new model invocation.
+   *
+   * Held the way `structuredMemoryReadView` is - a narrow read-only port, not runtime state, and
+   * NOT the `DerivedSemanticMemoryProvider` itself. It is consulted only when the Agent authored
+   * `spec.derivedMemory.read` and only when a *new* invocation is being built; a re-entering
+   * invocation replays its persisted information and never re-resolves. Absent means the fail-closed
+   * default: no Derived Semantic Memory reaches the model even for an Agent that requested it.
+   * Derived read authority is independent of Structured Memory read/write authority.
+   */
+  readonly derivedSemanticMemoryReadView?: DerivedSemanticMemoryReadResolver;
   /**
    * Application task scope: authored group labels to narrow to now.
    *
@@ -308,6 +324,7 @@ class AgentController implements ExecutionController {
   private readonly information: AgentInformationCompiler;
   private readonly structuredMemoryReadView: StructuredMemoryReadViewResolver;
   private readonly structuredMemoryWriteView: ActiveStructuredMemoryWriteViewResolver;
+  private readonly derivedSemanticMemoryReadView: DerivedSemanticMemoryReadResolver;
 
   constructor(options: AgentControllerOptions) {
     this.views = options.views ?? noActiveOperationView;
@@ -319,6 +336,7 @@ class AgentController implements ExecutionController {
     this.information = options.information ?? referenceAgentInformationCompiler;
     this.structuredMemoryReadView = options.structuredMemoryReadView ?? noStructuredMemoryRead;
     this.structuredMemoryWriteView = options.structuredMemoryWriteView ?? noActiveStructuredMemoryWriteView;
+    this.derivedSemanticMemoryReadView = options.derivedSemanticMemoryReadView ?? noDerivedSemanticMemoryRead;
   }
 
   async activate(input: ActivationInput, resumptions: ControllerResumptionScope): Promise<ActivationOutcome> {
@@ -627,6 +645,57 @@ class AgentController implements ExecutionController {
         : null;
       // A snapshot, frozen with the invocation. A note written this step reaches only a later step.
       const workingNotes = agentWorkingNotesRead(spec) ? state.workingNotes : null;
+      // Derived Semantic Memory retrieval, resolved here for this one new invocation and only if the
+      // Agent authored a query. The resolver checks authority *before* touching a provider, so a
+      // denied Agent causes zero provider retrieve calls. The result is compiled into
+      // `invocation.information` and frozen with it - re-entry replays that snapshot and never
+      // re-resolves, so a claim appended mid-step is seen only by the next new invocation.
+      const derivedRead = agentDerivedMemoryRead(spec);
+      let derivedMemory: DerivedSemanticMemoryReadView | null = null;
+      if (derivedRead) {
+        const limit = Math.min(
+          derivedRead.maxClaims ?? limits.maxDerivedMemoryClaims,
+          limits.maxDerivedMemoryClaims,
+        );
+        let resolved: DerivedSemanticMemoryReadView | null;
+        try {
+          resolved =
+            (await this.derivedSemanticMemoryReadView.resolve({
+              executionId: input.execution.executionId,
+              query: derivedRead.query,
+              limit,
+              maxBytes: limits.maxDerivedMemoryBytes,
+            })) ?? null;
+        } catch (error) {
+          // A configured retrieval provider that errors is a deterministic Agent failure - an error
+          // must never be silently indistinguishable from an empty (nothing-relevant) result.
+          return {
+            kind: "fail",
+            state,
+            emissions: [],
+            failure: {
+              code: "agent_derived_memory_retrieval_failed",
+              message: `Derived Semantic Memory retrieval failed: ${error instanceof Error ? error.message : String(error)}`,
+            },
+          };
+        }
+        if (resolved) {
+          const issue = derivedSemanticMemoryReadViewIssue(resolved, {
+            maxClaims: limit,
+            maxBytes: limits.maxDerivedMemoryBytes,
+          });
+          if (issue) {
+            // A resolver that returned a malformed or over-budget snapshot is refused, not trusted.
+            return {
+              kind: "fail",
+              state,
+              emissions: [],
+              failure: { code: "agent_derived_memory_snapshot_invalid", message: issue },
+            };
+          }
+          derivedMemory = resolved;
+        }
+      }
       invocation = {
         step,
         information: this.information.compile({
@@ -635,6 +704,7 @@ class AgentController implements ExecutionController {
           maxMessages: limits.maxContextMessages,
           memory,
           workingNotes,
+          derivedMemory,
         }),
         projection: projected.projection,
         localControls,

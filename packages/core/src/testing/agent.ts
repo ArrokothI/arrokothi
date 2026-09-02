@@ -34,6 +34,8 @@ import type { OperationRef } from "../operations/refs.ts";
 import type { ActiveOperationViewResolver } from "../ports/active-operation-view.ts";
 import type { StructuredMemoryReadViewResolver } from "../ports/structured-memory-read-view.ts";
 import type { ActiveStructuredMemoryWriteViewResolver } from "../ports/active-structured-memory-write-view.ts";
+import type { DerivedSemanticMemoryProvider } from "../ports/derived-semantic-memory-provider.ts";
+import type { DerivedSemanticMemoryReadResolver } from "../ports/derived-semantic-memory-read-view.ts";
 import type { AgentExecutor } from "../ports/agent-executor.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
@@ -49,6 +51,7 @@ import type { StructuredMemoryReadGrantRule } from "../reference/structured-memo
 import { createStructuredMemoryReadViewResolver } from "../reference/structured-memory-read-view-resolver.ts";
 import type { StructuredMemoryWriteExposureGrantRule } from "../reference/structured-memory-write-view-resolver.ts";
 import { createStructuredMemoryWriteViewResolver } from "../reference/structured-memory-write-view-resolver.ts";
+import { createDerivedSemanticMemoryReadResolver } from "../reference/derived-semantic-memory-read-resolver.ts";
 import { createTestHarness } from "./execution-harness.ts";
 import type { TestHarnessBundle, TestHarnessOptions } from "./execution-harness.ts";
 
@@ -145,6 +148,25 @@ export interface AgentTestHarnessOptions extends Omit<TestHarnessOptions, "contr
   readonly structuredMemoryWriteView?: ActiveStructuredMemoryWriteViewResolver;
   /** Convenience: builds the reference write-exposure resolver against the shared store. */
   readonly memoryWriteExposureGrants?: StructuredMemoryWriteExposureGrantRule;
+  /**
+   * The Derived Semantic Memory retrieval resolver handed to the `AgentController`.
+   *
+   * Held by the controller the way the exposure resolvers are - a narrow read-only port, and NOT
+   * the provider. Omitting it (and `derivedMemory`) means the fail-closed default: no Derived
+   * Semantic Memory reaches the model even for an Agent that authored a retrieval query.
+   */
+  readonly derivedSemanticMemoryReadView?: DerivedSemanticMemoryReadResolver;
+  /**
+   * Convenience: builds the reference Derived read resolver over a provider, deny-by-default.
+   *
+   * `grant` defaults to `false` (denied). `collectionFor` defaults to the Execution id. A test that
+   * needs finer control passes `derivedSemanticMemoryReadView` instead.
+   */
+  readonly derivedMemory?: {
+    readonly provider: DerivedSemanticMemoryProvider;
+    readonly grant?: boolean;
+    readonly collectionFor?: (executionId: string) => string | null;
+  };
 }
 
 export interface CreateTestAgentInput {
@@ -196,6 +218,18 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
       ? createStructuredMemoryWriteViewResolver({ store, grants: options.memoryWriteExposureGrants })
       : undefined);
 
+  const derivedSemanticMemoryReadView =
+    options.derivedSemanticMemoryReadView ??
+    (options.derivedMemory !== undefined
+      ? createDerivedSemanticMemoryReadResolver({
+          provider: options.derivedMemory.provider,
+          grant: options.derivedMemory.grant ?? false,
+          ...(options.derivedMemory.collectionFor !== undefined
+            ? { collectionFor: options.derivedMemory.collectionFor }
+            : {}),
+        })
+      : undefined);
+
   const controller = createAgentController({
     views,
     ...(options.models !== undefined ? { models: options.models } : {}),
@@ -204,6 +238,7 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
     ...(options.information !== undefined ? { information: options.information } : {}),
     ...(structuredMemoryReadView !== undefined ? { structuredMemoryReadView } : {}),
     ...(structuredMemoryWriteView !== undefined ? { structuredMemoryWriteView } : {}),
+    ...(derivedSemanticMemoryReadView !== undefined ? { derivedSemanticMemoryReadView } : {}),
     ...(options.taskScope !== undefined ? { taskScope: options.taskScope } : {}),
     trace,
   });

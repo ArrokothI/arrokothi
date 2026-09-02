@@ -592,17 +592,29 @@ inference, and do disabled features add approximately zero external round trips 
 Proposed measurement matrix (approximate; refine when the workloads exist):
 
 ```text
-A. minimal Agent            no operations, no Structured Memory, no Working Notes
+A. minimal Agent            no operations, no Structured Memory, no Working Notes, no Derived Memory
 B. small action surface     ~10 operations exposed / authorized
 C. larger action surface    ~100 operations
 D. Structured Memory        ~10 declared fields, read ~3, optional write exposure
 E. Working Notes            (i) empty  (ii) representative bounded frame  (iii) max/default bounded frame
-F. combined F workload      operations + Structured Memory read/write exposure + Working Notes
-G. suspended invocation     re-entry: verify no re-resolution of invocation snapshots
-   re-entry
+E2. Derived Semantic Memory (i) no derivedMemory request (verify zero resolver/provider/extractor calls,
+      (F.3, doc 023)          byte-identical provider request)
+                            (ii) retrieval only, small reference provider (~10 stored claims), ~5 retrieved
+                            (iii) extraction pipeline: deterministic fake extractor over ~5 source items
+                                  (candidate -> grounded claim -> provider.append) - measured separately,
+                                  it is NOT on the Agent hot path
+F. combined F workload      operations + Structured Memory read/write exposure + Working Notes + Derived
+                            Semantic retrieval
+G. suspended invocation     re-entry: verify no re-resolution of invocation snapshots (Structured read,
+   re-entry                 write exposure, local controls, AND the Derived Semantic snapshot)
 H. after Slice G            repeat representative cases with concurrency/conflict machinery
                             enabled vs disabled
 ```
+
+For E2, track specifically: `DerivedSemanticMemoryReadResolver` call count, provider `retrieve`
+call count, `DerivedMemoryExtractor` call count (must be 0 on any Agent path), optional extra
+model-call count (must stay 0 in the reference path), and Derived-block context bytes. Store /
+retrieve / extract are three separate concerns and each disabled one must add ~0.
 
 Measure where practical, per representative case:
 

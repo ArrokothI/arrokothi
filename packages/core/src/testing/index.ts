@@ -24,6 +24,7 @@ export type {
 export { createWorkflowTestHarness, modelAccess, recordingWorkflowTrace } from "./workflow.ts";
 export { seedStructuredMemory } from "./structured-memory.ts";
 export type { SeedStructuredMemoryWrite } from "./structured-memory.ts";
+export { seedDerivedSemanticMemory } from "./derived-semantic-memory.ts";
 export {
   agentModelAccess,
   createAgentTestHarness,
