@@ -42,6 +42,8 @@ import type { ChildExecutionLink } from "../execution/child-link.ts";
 import { markChildLinkAbandoned, markChildLinkSettled } from "../execution/child-link.ts";
 import type { PeerRequestLink } from "../execution/peer-request-link.ts";
 import { markPeerRequestLinkAbandoned } from "../execution/peer-request-link.ts";
+import type { UserInputRequest } from "../execution/user-input-request.ts";
+import { markUserInputAbandoned } from "../execution/user-input-request.ts";
 import type { WaitForEdge } from "../execution/wait-for.ts";
 import type { ExecutionContext, ExecutionWait } from "../execution/context.ts";
 import {
@@ -92,7 +94,13 @@ import type { JsonValue } from "../util/json.ts";
 import type { ActivationRecord, ActivationResultKind } from "./activation.ts";
 import { buildActivationInput, validateActivationOutcome } from "./activation.ts";
 import type { ControllerRegistry } from "./controller-registry.ts";
-import type { EffectDispatchRecord, SettleEffectInput, SettleEffectReceipt } from "./effect-processor.ts";
+import type {
+  EffectDispatchRecord,
+  SettleEffectInput,
+  SettleEffectReceipt,
+  SubmitUserInputInput,
+  SubmitUserInputReceipt,
+} from "./effect-processor.ts";
 import { EffectProcessor } from "./effect-processor.ts";
 import { routeEvent } from "./event-router.ts";
 import type { ActivationResumptions, ResumptionDependency } from "./resumption-processor.ts";
@@ -468,6 +476,34 @@ export class Harness {
    */
   async settleEffect(input: SettleEffectInput): Promise<SettleEffectReceipt> {
     return this.effects.settleEffect(input);
+  }
+
+  /**
+   * Delivers a trusted response to an open `RequestUserInput`.
+   *
+   * A trusted runtime entry point at the same level as `settleEffect`, `deliverExternalInput`, and
+   * `cancelExecution`. An internet-facing deployment authenticates the human/application *before* it
+   * reaches here; the `requestId` itself grants nothing. The runtime validates the value against the
+   * request's stored schema, settles the exact PendingOperation, marks the request responded, and
+   * routes one correlated `user.input` Event - which is *not* deliverable through the generic
+   * `external.input` path.
+   */
+  async submitUserInput(input: SubmitUserInputInput): Promise<SubmitUserInputReceipt> {
+    return this.effects.submitUserInput(input);
+  }
+
+  /** Every user-input request one Execution proposed. Read-only; a controller never receives one. */
+  async userInputRequestsOf(executionId: ExecutionId): Promise<readonly UserInputRequest[]> {
+    return this.options.store.listUserInputRequests(executionId);
+  }
+
+  async userInputRequest(requestId: string): Promise<UserInputRequest | undefined> {
+    return this.options.store.readUserInputRequest(requestId);
+  }
+
+  /** Every currently-open user-input request, so an application/UI can discover pending questions. */
+  async openUserInputRequests(): Promise<readonly UserInputRequest[]> {
+    return this.options.store.listOpenUserInputRequests();
   }
 
   /**
@@ -994,12 +1030,15 @@ export class Harness {
     at: string,
     reason: string,
   ): Promise<void> {
-    // Keep the no-composition terminal path cheap: if no live cross-Execution operation exists,
-    // do not touch either link facet. The pending-operation facet is the shared dependency index.
+    // Keep the no-feature terminal path cheap: if no live cross-Execution or user-input operation
+    // exists, do not touch any feature-specific facet. The pending-operation facet is the shared
+    // dependency index.
     const pendingDependencies = (await tx.pendingOperations.listByExecution(executionId)).filter(
       (operation) =>
         operation.status === "pending" &&
-        (operation.effectKind === "send_message" || operation.effectKind === "spawn_execution"),
+        (operation.effectKind === "send_message" ||
+          operation.effectKind === "spawn_execution" ||
+          operation.effectKind === "request_user_input"),
     );
     if (pendingDependencies.length === 0) return;
     const pendingById = new Map(pendingDependencies.map((operation) => [operation.pendingOperationId, operation]));
@@ -1043,6 +1082,29 @@ export class Harness {
           });
         }
         await tx.childExecutionLinks.update(markChildLinkAbandoned(link, at));
+      }
+    }
+
+    // An open `RequestUserInput` whose Execution terminalized can never be answered. The
+    // PendingOperation and the UserInputRequest are both abandoned; a later response wakes nothing.
+    if (pendingDependencies.some((operation) => operation.effectKind === "request_user_input")) {
+      for (const request of await tx.userInputRequests.listByExecution(executionId)) {
+        if (request.state !== "open") continue;
+        const pending = pendingById.get(request.pendingOperationId);
+        if (pending !== undefined) {
+          await tx.pendingOperations.update(markAbandoned(pending, at));
+          await tx.effectJournal.append({
+            effectId: request.effectId,
+            executionId,
+            effectKind: "request_user_input",
+            phase: "abandoned",
+            activationId: null,
+            pendingOperationId: pending.pendingOperationId,
+            at,
+            detail: { reason, requestId: request.requestId },
+          });
+        }
+        await tx.userInputRequests.update(markUserInputAbandoned(request, at));
       }
     }
   }

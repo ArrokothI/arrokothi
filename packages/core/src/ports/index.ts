@@ -31,6 +31,7 @@ export type {
   RuntimeStore,
   RuntimeTransaction,
   TransitionAuditFacet,
+  UserInputRequestFacet,
 } from "./runtime-store.ts";
 export {
   ExecutionAlreadyExistsError,

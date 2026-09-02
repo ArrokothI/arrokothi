@@ -16,6 +16,8 @@
 import type { EventId } from "../interaction/event-envelope.ts";
 import type { OperationRef, OperationRefInput } from "../operations/refs.ts";
 import { isOperationRef, operationRef } from "../operations/refs.ts";
+import type { ValueSchema } from "../schema/value-schema.ts";
+import { valueSchemaIssues } from "../schema/value-schema.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import { isJsonObject, jsonIssues } from "../util/json.ts";
 import type { EffectIdempotencyScope } from "./fingerprint.ts";
@@ -43,6 +45,7 @@ export const DISPATCHABLE_EFFECT_KINDS: readonly EffectKind[] = [
   "use_capability",
   "spawn_execution",
   "send_message",
+  "request_user_input",
 ];
 
 export function isEffectKind(value: unknown): value is EffectKind {
@@ -169,10 +172,22 @@ export interface SendMessageProposal extends ProposalBase {
   readonly inReplyToMessageId?: string;
 }
 
+/**
+ * Ask the human/application for a piece of semantic data through the Harness.
+ *
+ * This is *not* mechanical confirmation. `RequestUserInput` asks an open question ("Which
+ * environment?"); confirmation gates the execution of one already-concrete Effect payload and takes
+ * a trusted `approve`/`decline`, never free prose. The two never collapse into one another.
+ *
+ * `schema` is the existing serializable core value-schema vocabulary. Absent, the response is
+ * validated as ordinary text - `{ kind: "string" }` - so an unconstrained implicit object is never
+ * assumed and structured input is never silently stringified into a string field.
+ */
 export interface RequestUserInputProposal extends ProposalBase {
   readonly kind: "request_user_input";
   readonly prompt: string;
-  readonly schema?: JsonObject;
+  /** Absent means the response is validated as `{ kind: "string" }` - ordinary text. */
+  readonly schema?: ValueSchema;
 }
 
 /** What a controller returns. Data only - no handles, no callbacks, no executor. */
@@ -329,6 +344,13 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
       if (typeof candidate["prompt"] !== "string" || candidate["prompt"].length === 0) {
         issues.push(issue(`${path}.prompt`, "expected a prompt"));
       }
+      if (candidate["schema"] !== undefined) {
+        // A malformed response schema is refused as data here, exactly like a malformed proposal
+        // field - never carried into a UserInputRequest and discovered when a response arrives.
+        issues.push(
+          ...valueSchemaIssues(candidate["schema"], `${path}.schema`).map((i) => issue(i.path, i.message)),
+        );
+      }
       break;
     }
   }
@@ -347,6 +369,10 @@ export function isSpawnExecutionProposal(proposal: EffectProposal): proposal is 
 
 export function isSendMessageProposal(proposal: EffectProposal): proposal is SendMessageProposal {
   return proposal.kind === "send_message";
+}
+
+export function isRequestUserInputProposal(proposal: EffectProposal): proposal is RequestUserInputProposal {
+  return proposal.kind === "request_user_input";
 }
 
 export interface SendMessageInput {
@@ -467,6 +493,33 @@ export interface UseCapabilityInput {
   readonly deadlineMs?: number;
   readonly idempotency?: EffectIdempotencyScope;
   readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+export interface RequestUserInputInput {
+  readonly prompt: string;
+  /** Absent means the response is validated as ordinary text (`{ kind: "string" }`). */
+  readonly schema?: ValueSchema;
+  readonly requestKey?: string;
+  readonly authorizationEvidence?: AuthorizationEvidence;
+}
+
+/**
+ * `RequestUserInput`: ask the human/application a question and keep the sender's PendingOperation
+ * pending until a trusted response arrives.
+ *
+ * A request like every other proposal. The Harness authorizes it (deny-by-default; a narrow
+ * user-interaction grant is required), records a runtime-owned `UserInputRequest`, and settles the
+ * PendingOperation only when `Harness.submitUserInput` delivers a value that validates against the
+ * stored schema. There is no fabricated user Event at dispatch time - the user has not answered yet.
+ */
+export function requestUserInput(input: RequestUserInputInput): RequestUserInputProposal {
+  return {
+    kind: "request_user_input",
+    prompt: input.prompt,
+    ...(input.schema !== undefined ? { schema: input.schema } : {}),
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+  };
 }
 
 /**

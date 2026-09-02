@@ -26,7 +26,12 @@ import type { ResourceAccessMode, ResourceBindingRef } from "../effects/capabili
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
 import { resourceBindingId } from "../effects/ids.ts";
 import type { EffectAuthorizer } from "../ports/effect-authorizer.ts";
-import { isSendMessageProposal, isSpawnExecutionProposal, isUseCapabilityProposal } from "../effects/types.ts";
+import {
+  isRequestUserInputProposal,
+  isSendMessageProposal,
+  isSpawnExecutionProposal,
+  isUseCapabilityProposal,
+} from "../effects/types.ts";
 
 export interface CapabilityGrantRule {
   /** Plain strings: this is application configuration, so the factory brands and validates. */
@@ -77,6 +82,14 @@ export interface AllowListAuthorizerOptions {
   readonly spawn?: SpawnGrantRule;
   /** Whether `SendMessage` is permitted, and to which destinations. Default: denied. */
   readonly message?: MessageGrantRule;
+  /**
+   * Whether `RequestUserInput` is permitted at all. Default: denied.
+   *
+   * A narrow explicit user-interaction grant. "the model requested it", "the prompt says it is
+   * needed", "the user has interacted before", and "the Execution knows a user identity" are none of
+   * them permission - with no configured `userInput`, every `RequestUserInput` is denied.
+   */
+  readonly userInput?: boolean;
 }
 
 export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): EffectAuthorizer {
@@ -132,6 +145,20 @@ export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): 
         }
         issued += 1;
         return { decision: "allow", grantId: `grant_${issued}` };
+      }
+
+      if (isRequestUserInputProposal(request.proposal)) {
+        if (options.userInput === true) {
+          issued += 1;
+          return { decision: "allow", grantId: `grant_${issued}` };
+        }
+        return {
+          decision: "deny",
+          code: "user_input_not_authorized",
+          message:
+            `execution ${request.executionId} holds no user-interaction authority under this policy; ` +
+            "asking the user a question is a runtime interaction and requires an explicit grant",
+        };
       }
 
       if (!isUseCapabilityProposal(request.proposal)) {

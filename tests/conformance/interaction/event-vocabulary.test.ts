@@ -64,10 +64,13 @@ describe("the Event vocabulary", () => {
         // Slice E.1: the `SendMessage` runtime owns these, and child cancellation adds `child.cancelled`.
         "message.sent",
         "peer.message",
+        // Slice E.2: the `RequestUserInput` runtime owns this - a trusted, runtime-established
+        // response, distinct from the externally-mintable `external.input`.
+        "user.input",
       ],
       "kinds for Effects that later slices own arrive with those Effects, not before them",
     );
-    for (const kind of ["tool.called", "memory.written", "message.received", "timer.fired", "user.input"]) {
+    for (const kind of ["tool.called", "memory.written", "message.received", "timer.fired"]) {
       assert.equal(isEventKind(kind), false, `${kind} is not yet kernel vocabulary`);
     }
     assert.ok(

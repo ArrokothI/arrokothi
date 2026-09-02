@@ -20,6 +20,7 @@
  *   child.cancelled        a child this Execution called reached CANCELLED; distinct from failure
  *   message.sent           a `SendMessage` was admitted/persisted for its destination (not processed)
  *   peer.message           another Execution sent this one a message (fresh, or a correlated reply)
+ *   user.input             a trusted response to a `RequestUserInput` Effect; runtime-established
  *   external.input         an observation delivered from outside the kernel
  *
  * The three capability outcomes are separate kinds rather than a status field so that a controller
@@ -39,15 +40,21 @@
  * `message.sent` and `peer.message` arrive with Slice E.1's `SendMessage` runtime. `message.sent`
  * answers the *sender's* Effect - the runtime admitted the message for that destination. `peer.message`
  * is the *recipient's* observation; a reply to an `ask` is also a `peer.message`, carrying the
- * asker's original correlation so its exact PendingOperation settles. User input and timers remain
- * absent until E.2.
+ * asker's original correlation so its exact PendingOperation settles.
+ *
+ * `user.input` arrives with Slice E.2's `RequestUserInput` runtime. It is a *runtime-established*
+ * correlated result: it settles one exact pending `RequestUserInput` Effect and carries enough
+ * runtime truth to identify the request, the PendingOperation, and the validated value. It is
+ * deliberately distinct from `external.input`, which is an application observation and is externally
+ * mintable through the generic delivery path - a `user.input` is not deliverable that way. Timers
+ * remain absent.
  *
  * Nothing here records *how fast* an Effect completed. A body field like "was this inline?" would
  * make the fast and slow paths semantically distinguishable, which is precisely the property the
  * gateway must not have.
  *
- * Kinds for later slices - child completion, peer messages, user input, timers - are deliberately
- * absent. They arrive with the Effects that produce them.
+ * Kinds for later slices - a timer firing, a `WriteMemory` result - are deliberately absent. They
+ * arrive with the Effects that produce them.
  */
 
 import type { CapabilityError } from "../effects/outcome.ts";
@@ -68,6 +75,7 @@ export type EventKind =
   | "child.cancelled"
   | "message.sent"
   | "peer.message"
+  | "user.input"
   | "external.input";
 
 export const EVENT_KINDS: readonly EventKind[] = [
@@ -82,6 +90,7 @@ export const EVENT_KINDS: readonly EventKind[] = [
   "child.cancelled",
   "message.sent",
   "peer.message",
+  "user.input",
   "external.input",
 ];
 
@@ -104,6 +113,7 @@ export const EFFECT_RESULT_EVENT_KINDS: readonly EventKind[] = [
   "child.failed",
   "child.cancelled",
   "message.sent",
+  "user.input",
 ];
 
 /**
@@ -236,6 +246,22 @@ export interface PeerMessageBody {
 }
 
 /**
+ * A trusted response to a `RequestUserInput` Effect.
+ *
+ * Runtime-established, not application-minted: it is produced only by `Harness.submitUserInput`
+ * after the value validated against the request's stored schema, and it is *not* deliverable through
+ * the generic `external.input` path. The body carries enough runtime truth to identify the exact
+ * request and PendingOperation it settles.
+ */
+export interface UserInputBody extends EffectResultFields {
+  readonly pendingOperationId: PendingOperationId;
+  /** The runtime-owned `UserInputRequest` this answers. */
+  readonly requestId: string;
+  /** The validated response value. Validated against the request's stored schema before delivery. */
+  readonly value: JsonValue;
+}
+
+/**
  * An observation from outside the kernel: application input, a user turn, a system signal.
  *
  * `label` is application vocabulary, not kernel vocabulary. It lets an application distinguish its
@@ -258,6 +284,7 @@ export interface EventBodies {
   readonly "child.cancelled": ChildCancelledBody;
   readonly "message.sent": MessageSentBody;
   readonly "peer.message": PeerMessageBody;
+  readonly "user.input": UserInputBody;
   readonly "external.input": ExternalInputBody;
 }
 
@@ -320,6 +347,13 @@ export function eventBodyIssues(kind: EventKind, body: unknown): readonly EventB
     requireString(value["pendingOperationId"], "body.pendingOperationId", issues);
     requireString(value["messageId"], "body.messageId", issues);
     requireString(value["to"], "body.to", issues);
+    return issues;
+  }
+
+  if (kind === "user.input") {
+    requireString(value["pendingOperationId"], "body.pendingOperationId", issues);
+    requireString(value["requestId"], "body.requestId", issues);
+    if (!("value" in value)) issues.push({ path: "body.value", message: "expected a response value" });
     return issues;
   }
 

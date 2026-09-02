@@ -23,6 +23,7 @@ import type { PeerRequestLink } from "../execution/peer-request-link.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
+import type { UserInputRequest } from "../execution/user-input-request.ts";
 import type { EffectiveOperationAuthority } from "../operations/authority.ts";
 import type { DeliveredEvent, EventEnvelope } from "../interaction/event-envelope.ts";
 import type {
@@ -59,6 +60,7 @@ interface RuntimeState {
   childExecutionLinks: Map<string, ChildExecutionLink>;
   peerRequestLinks: Map<string, PeerRequestLink>;
   cancellationRequests: Map<string, CancellationRequest>;
+  userInputRequests: Map<string, UserInputRequest>;
 }
 
 function emptyState(): RuntimeState {
@@ -75,6 +77,7 @@ function emptyState(): RuntimeState {
     childExecutionLinks: new Map(),
     peerRequestLinks: new Map(),
     cancellationRequests: new Map(),
+    userInputRequests: new Map(),
   };
 }
 
@@ -346,6 +349,30 @@ function makeTransaction(state: RuntimeState): RuntimeTransaction {
       },
     },
 
+    userInputRequests: {
+      async insert(request) {
+        if (state.userInputRequests.has(request.requestId)) {
+          throw new Error(`user input request ${request.requestId} already exists`);
+        }
+        state.userInputRequests.set(request.requestId, structuredClone(request));
+      },
+      async get(requestId) {
+        const stored = state.userInputRequests.get(requestId);
+        return stored ? structuredClone(stored) : undefined;
+      },
+      async update(request) {
+        if (!state.userInputRequests.has(request.requestId)) {
+          throw new Error(`unknown user input request ${request.requestId}`);
+        }
+        state.userInputRequests.set(request.requestId, structuredClone(request));
+      },
+      async listByExecution(executionId) {
+        return structuredClone(
+          [...state.userInputRequests.values()].filter((request) => request.executionId === executionId),
+        );
+      },
+    },
+
     effectJournal: {
       async append(draft) {
         const list = state.effectJournal.get(draft.executionId) ?? [];
@@ -476,6 +503,21 @@ export class InMemoryRuntimeStore implements RuntimeStore {
   async readCancellationRequest(executionId: ExecutionId): Promise<CancellationRequest | undefined> {
     const stored = this.state.cancellationRequests.get(executionId);
     return stored ? structuredClone(stored) : undefined;
+  }
+
+  async readUserInputRequest(requestId: string): Promise<UserInputRequest | undefined> {
+    const stored = this.state.userInputRequests.get(requestId);
+    return stored ? structuredClone(stored) : undefined;
+  }
+
+  async listUserInputRequests(executionId: ExecutionId): Promise<readonly UserInputRequest[]> {
+    return structuredClone(
+      [...this.state.userInputRequests.values()].filter((request) => request.executionId === executionId),
+    );
+  }
+
+  async listOpenUserInputRequests(): Promise<readonly UserInputRequest[]> {
+    return structuredClone([...this.state.userInputRequests.values()].filter((request) => request.state === "open"));
   }
 
   /** Journal entries for one Effect, across Executions. Diagnostics and conformance assertions. */

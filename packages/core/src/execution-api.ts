@@ -271,6 +271,20 @@ export type { CancellationRequest, CancellationRequestState } from "./execution/
 export type { WaitForEdge, WaitForEdgeKind } from "./execution/wait-for.ts";
 export { WAIT_FOR_EDGE_KINDS } from "./execution/wait-for.ts";
 
+// -- human interaction and mechanical confirmation (Slice E.2) -----------
+/**
+ * `requestUserInput` builds a `RequestUserInput` proposal; a controller *proposes* one and the
+ * Harness mediates it - authorizing (deny-by-default), recording a runtime-owned `UserInputRequest`,
+ * and settling the PendingOperation only when `Harness.submitUserInput` delivers a value that
+ * validates against the stored schema. The request record is exported as a *readable* shape only.
+ * `submitUserInput` is a trusted runtime entry point, not a controller method.
+ */
+export type { RequestUserInputInput } from "./effects/types.ts";
+export { isRequestUserInputProposal, requestUserInput } from "./effects/types.ts";
+export type { UserInputRequest, UserInputRequestState } from "./execution/user-input-request.ts";
+export { isOpenUserInputRequest } from "./execution/user-input-request.ts";
+export type { SubmitUserInputInput, SubmitUserInputReceipt } from "./runtime/effect-processor.ts";
+
 // -- events ------------------------------------------------------------------
 export type {
   DeliveredEvent,
@@ -295,6 +309,7 @@ export type {
   ExternalInputBody,
   MessageSentBody,
   PeerMessageBody,
+  UserInputBody,
 } from "./interaction/events.ts";
 export {
   CHILD_RESULT_EVENT_KINDS,

@@ -22,4 +22,8 @@ export const ID_PREFIXES = {
   operationAuthority: "oau",
   /** One peer message. The identity a reply names; integrity data, never a capability. */
   message: "msg",
+  /** One open user-input request. Correlation/integrity data, never a bearer credential. */
+  userInputRequest: "uir",
+  /** One exact-payload mechanical-confirmation request. Not an authority token. */
+  confirmationRequest: "cnf",
 } as const;

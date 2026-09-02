@@ -237,6 +237,8 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
         "external.input",
         "message.sent",
         "peer.message",
+        // Slice E.2 added user.input for the RequestUserInput runtime; the MCP slice added nothing.
+        "user.input",
       ],
       "the Event vocabulary carries only kernel kinds - no MCP arm",
     );

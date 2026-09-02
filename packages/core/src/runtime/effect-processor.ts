@@ -72,6 +72,7 @@ import { createPendingOperation, markAbandoned, markDispatched, markSettled } fr
 import type {
   EffectKind,
   EffectProposal,
+  RequestUserInputProposal,
   SendMessageProposal,
   SpawnExecutionProposal,
   UseCapabilityProposal,
@@ -89,8 +90,11 @@ import { executionId as toExecutionId } from "../execution/ids.ts";
 import { isTerminalLifecycle } from "../execution/lifecycle.ts";
 import { createPeerRequestLink, markPeerRequestLinkSettled } from "../execution/peer-request-link.ts";
 import { canConsumeSpawnCredit, consumeSpawnCredit } from "../execution/structural-budget.ts";
+import { createUserInputRequest, markUserInputAbandoned, markUserInputResponded } from "../execution/user-input-request.ts";
 import type { EventEnvelope, EventId } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
+import type { ValueSchema } from "../schema/value-schema.ts";
+import { validateValue } from "../schema/value-schema.ts";
 import { attenuateChildOperations, authorizesOperation, createDelegatedOperationAuthority } from "../operations/authority.ts";
 import type { DefinitionStore } from "../ports/definition-store.ts";
 import type { Clock } from "../ports/clock.ts";
@@ -166,6 +170,34 @@ export interface SettleEffectInput {
   readonly effectId: EffectId;
   readonly outcome: CapabilityOutcome;
 }
+
+export interface SubmitUserInputInput {
+  /** The runtime-minted `UserInputRequest` id. Correlation/integrity data, not an authorization. */
+  readonly requestId: string;
+  /** Validated against the request's stored schema before it settles anything. */
+  readonly value: JsonValue;
+}
+
+export type SubmitUserInputReceipt =
+  | {
+      readonly status: "accepted";
+      readonly requestId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly eventId: EventId;
+      readonly wokeExecution: boolean;
+    }
+  /** A response already settled this request. No second Event, no second settlement. */
+  | { readonly status: "already_responded"; readonly requestId: string }
+  /** The requesting Execution terminalized first; this request can never be answered. */
+  | { readonly status: "abandoned"; readonly requestId: string }
+  | {
+      readonly status: "rejected";
+      readonly reason: "unknown_request" | "execution_unavailable" | "invalid_value";
+      readonly detail: string;
+      /** Present for `invalid_value`: the schema issues, so a UI can re-prompt. */
+      readonly issues?: readonly { readonly path: string; readonly message: string }[];
+    };
 
 export interface EffectProcessorDeps {
   readonly store: RuntimeStore;
@@ -252,6 +284,159 @@ export class EffectProcessor {
     return this.settle(input.pendingOperationId, input.effectId, this.normalize(input.outcome, consequential));
   }
 
+  /**
+   * Delivers a trusted response to an open `RequestUserInput`.
+   *
+   * The trust placement mirrors `settleEffect` / `deliverExternalInput` / `cancelExecution`: an
+   * internet-facing application authenticates the human/application *before* this method is reached.
+   * The `requestId` grants nothing - the runtime reads the exact `UserInputRequest`, checks that its
+   * source Execution can still observe it, validates the value against the *stored* schema, and only
+   * then settles the exact PendingOperation with one correlated `user.input` Event.
+   *
+   * ```text
+   * unknown / already responded / abandoned request  -> settles nothing
+   * value fails the stored schema                     -> explicit validation rejection; request open
+   * requesting Execution terminal / cancelling        -> request abandoned; no Event
+   * otherwise                                         -> PendingOperation settles success,
+   *                                                     UserInputRequest -> responded,
+   *                                                     one `user.input` Event, wake if it matched
+   * ```
+   *
+   * A duplicate response produces no second Event and does not settle twice.
+   */
+  async submitUserInput(input: SubmitUserInputInput): Promise<SubmitUserInputReceipt> {
+    const existing = await this.deps.store.readUserInputRequest(input.requestId);
+    if (!existing) {
+      return { status: "rejected", reason: "unknown_request", detail: `no user input request ${input.requestId}` };
+    }
+    if (existing.state === "responded") return { status: "already_responded", requestId: input.requestId };
+    if (existing.state === "abandoned") return { status: "abandoned", requestId: input.requestId };
+
+    // Validate against the STORED schema, strictly - a structured response to a text request is a
+    // rejection, never a silent stringify. An invalid value settles nothing and leaves the request
+    // open so a UI can re-prompt.
+    const validation = validateValue(existing.schema, input.value);
+    if (!validation.ok) {
+      return {
+        status: "rejected",
+        reason: "invalid_value",
+        detail: validation.issues.map((i) => (i.path ? `${i.path}: ${i.message}` : i.message)).join("; "),
+        issues: validation.issues.map((i) => ({ path: i.path, message: i.message })),
+      };
+    }
+    const value = validation.value as JsonValue;
+
+    const settledAt = nowIso(this.deps.clock);
+    const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
+
+    type SettleCommit =
+      | { readonly done: true; readonly receipt: SubmitUserInputReceipt }
+      | {
+          readonly done: false;
+          readonly executionId: ExecutionId;
+          readonly pendingOperationId: PendingOperationId;
+          readonly routed: EventRoutingResult;
+        };
+
+    const result = await this.deps.store.transact(existing.executionId, async (tx): Promise<SettleCommit> => {
+      // Re-read inside the transaction: the check and the write must see the same record, so a
+      // duplicate response cannot both pass "is it still open?".
+      const request = await tx.userInputRequests.get(input.requestId);
+      if (!request) {
+        return { done: true, receipt: { status: "rejected", reason: "unknown_request", detail: `no user input request ${input.requestId}` } };
+      }
+      if (request.state === "responded") return { done: true, receipt: { status: "already_responded", requestId: input.requestId } };
+      if (request.state === "abandoned") return { done: true, receipt: { status: "abandoned", requestId: input.requestId } };
+
+      const operation = await tx.pendingOperations.get(request.pendingOperationId);
+      if (!operation || operation.status !== "pending") {
+        await tx.userInputRequests.update(markUserInputAbandoned(request, settledAt));
+        return { done: true, receipt: { status: "abandoned", requestId: input.requestId } };
+      }
+
+      const context = await tx.executions.get(request.executionId);
+      const cancelRequest = await tx.cancellationRequests.get(request.executionId);
+      if (!context || isTerminalLifecycle(context.lifecycle) || cancelRequest?.state === "pending") {
+        await tx.pendingOperations.update(markAbandoned(operation, settledAt));
+        await tx.userInputRequests.update(markUserInputAbandoned(request, settledAt));
+        await this.journal(tx, {
+          effectId: request.effectId,
+          executionId: request.executionId,
+          effectKind: "request_user_input",
+          phase: "abandoned",
+          activationId: null,
+          pendingOperationId: operation.pendingOperationId,
+          at: settledAt,
+          detail: {
+            reason: !context
+              ? "execution missing"
+              : cancelRequest?.state === "pending"
+                ? "execution cancellation pending"
+                : `execution ${context.lifecycle}`,
+            requestId: input.requestId,
+          },
+        });
+        return {
+          done: true,
+          receipt: {
+            status: "rejected",
+            reason: "execution_unavailable",
+            detail: `execution ${request.executionId} cannot observe this response`,
+          },
+        };
+      }
+
+      await this.journal(tx, {
+        effectId: request.effectId,
+        executionId: request.executionId,
+        effectKind: "request_user_input",
+        phase: "completed",
+        activationId: null,
+        pendingOperationId: operation.pendingOperationId,
+        at: settledAt,
+        detail: { requestId: input.requestId, resultEventId: eventId },
+      });
+      await tx.pendingOperations.update(markSettled(operation, "success", eventId, settledAt));
+      await tx.userInputRequests.update(markUserInputResponded(request, settledAt));
+
+      const routed = await routeEvent({
+        tx,
+        envelope: {
+          eventId,
+          destination: { executionId: request.executionId },
+          kind: "user.input",
+          body: {
+            effectId: request.effectId,
+            effectKind: "request_user_input",
+            pendingOperationId: operation.pendingOperationId,
+            requestId: request.requestId,
+            value,
+          },
+          correlationId: request.correlationId,
+          causationId: request.effectId,
+          occurredAt: settledAt,
+        },
+        deliveredAt: settledAt,
+        recordTransition: async (executionId, from, to, at, reason) => {
+          await tx.transitions.append({ executionId, from, to, at, activationId: null, reason });
+        },
+      });
+      return { done: false, executionId: request.executionId, pendingOperationId: operation.pendingOperationId, routed };
+    });
+
+    if (result.done) return result.receipt;
+    const woke = result.routed.status === "delivered" && result.routed.wokeExecution;
+    if (woke) await this.deps.wake(result.executionId);
+    return {
+      status: "accepted",
+      requestId: input.requestId,
+      executionId: result.executionId,
+      pendingOperationId: result.pendingOperationId,
+      eventId,
+      wokeExecution: woke,
+    };
+  }
+
   // -- one proposal ----------------------------------------------------------
 
   private async processOne(input: ProcessEffectsInput, proposal: EffectProposal): Promise<EffectDispatchRecord> {
@@ -315,6 +500,10 @@ export class EffectProcessor {
 
     if (proposal.kind === "send_message") {
       return this.dispatchSendMessage(input, proposal, effectId, correlationId, requestedAt);
+    }
+
+    if (proposal.kind === "request_user_input") {
+      return this.dispatchRequestUserInput(input, proposal, effectId, correlationId, requestedAt);
     }
 
     // The ceiling, before policy. An operation outside the Execution's CURRENT effective authority
@@ -1079,6 +1268,136 @@ export class EffectProcessor {
       pendingOperationId: commit.pendingOperationId,
       phase: commit.settledNow ? "completed" : "dispatch_started",
       settledInline: commit.settledNow,
+    };
+  }
+
+  // -- user input ---------------------------------------------------------
+
+  /**
+   * Turns a `RequestUserInput` proposal into an open runtime-owned `UserInputRequest` - or refuses,
+   * and records nothing.
+   *
+   * ```text
+   * policy decision              deny -> effect.denied
+   * one transaction:
+   *   journal authorized + dispatch_started
+   *   sender PendingOperation (deadline null - a user may never answer)
+   *   UserInputRequest { state: open }, schema resolved (absent -> { kind: "string" })
+   *   NO result Event - the user has not answered yet
+   * ```
+   *
+   * A controller asking a question is still requesting a runtime interaction, so it crosses the
+   * `EffectAuthorizer` (deny-by-default; the reference policy requires a narrow `userInput` grant).
+   * "the model requested it", "the prompt says it is needed", "the user has interacted before", and
+   * "the Execution knows a user identity" are none of them permission.
+   */
+  private async dispatchRequestUserInput(
+    input: ProcessEffectsInput,
+    proposal: RequestUserInputProposal,
+    effectId: EffectId,
+    correlationId: string,
+    requestedAt: string,
+  ): Promise<EffectDispatchRecord> {
+    const executionId = input.context.executionId;
+
+    const decision = await this.decide(input, proposal, effectId, requestedAt);
+    if (decision.decision === "deny") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.denied", {
+        code: decision.code,
+        message: decision.message,
+        phase: "denied",
+      });
+    }
+    const grantId = decision.grantId;
+
+    // Absent schema resolves to ordinary text - never an unconstrained object, never a silent
+    // stringify of structured input.
+    const schema: ValueSchema = proposal.schema ?? { kind: "string" };
+
+    type Commit =
+      | { readonly kind: "abandoned" }
+      | { readonly kind: "opened"; readonly pendingOperationId: PendingOperationId; readonly requestId: string };
+
+    const commit = await this.deps.store.transact(executionId, async (tx): Promise<Commit> => {
+      const now = nowIso(this.deps.clock);
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, now)) {
+        return { kind: "abandoned" };
+      }
+      const pendingOperationId = this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId;
+      const requestId = this.deps.ids.next(ID_PREFIXES.userInputRequest);
+
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: "request_user_input",
+        phase: "authorized",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { grantId, requestId, prompt: proposal.prompt, schemaSupplied: proposal.schema !== undefined },
+      });
+
+      const pending = markDispatched(
+        createPendingOperation({
+          pendingOperationId,
+          executionId,
+          effectId,
+          effectKind: "request_user_input",
+          correlationId,
+          causationId: input.activationId,
+          idempotencyKey: `user_input:${effectId}` as IdempotencyKey,
+          createdAt: now,
+          // A user may take arbitrarily long, and may never answer at all.
+          deadline: null,
+        }),
+        now,
+      );
+      await tx.pendingOperations.insert(pending);
+      await this.journal(tx, {
+        effectId,
+        executionId,
+        effectKind: "request_user_input",
+        phase: "dispatch_started",
+        activationId: input.activationId,
+        pendingOperationId,
+        at: now,
+        detail: { requestId },
+      });
+
+      await tx.userInputRequests.insert(
+        createUserInputRequest({
+          requestId,
+          executionId,
+          effectId,
+          pendingOperationId,
+          correlationId,
+          prompt: proposal.prompt,
+          schema,
+          createdAt: now,
+        }),
+      );
+
+      return { kind: "opened", pendingOperationId, requestId };
+    });
+
+    if (commit.kind === "abandoned") {
+      return {
+        effectId,
+        effectKind: "request_user_input",
+        correlationId,
+        pendingOperationId: null,
+        phase: "abandoned",
+        settledInline: false,
+      };
+    }
+
+    return {
+      effectId,
+      effectKind: "request_user_input",
+      correlationId,
+      pendingOperationId: commit.pendingOperationId,
+      phase: "dispatch_started",
+      settledInline: false,
     };
   }
 

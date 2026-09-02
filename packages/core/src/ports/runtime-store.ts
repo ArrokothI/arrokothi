@@ -42,6 +42,7 @@ import type { PeerRequestLink } from "../execution/peer-request-link.ts";
 import type { ControllerResumption } from "../execution/resumption.ts";
 import type { LifecycleTransitionRecord } from "../execution/lifecycle.ts";
 import type { LineageSpawnBudget } from "../execution/structural-budget.ts";
+import type { UserInputRequest } from "../execution/user-input-request.ts";
 import type { EffectiveOperationAuthority } from "../operations/authority.ts";
 
 export interface ExecutionRecordFacet {
@@ -224,6 +225,22 @@ export interface CancellationRequestFacet {
   update(request: CancellationRequest): Promise<void>;
 }
 
+/**
+ * User-input requests (Slice E.2).
+ *
+ * The runtime-owned record of one open `RequestUserInput` Effect. A facet of the same transaction
+ * because "the request exists", "the sender's PendingOperation is pending", and the journal entries
+ * are one atomic admission - and because settling one (mark responded, settle the PendingOperation,
+ * route the `user.input` Event) must commit together or not at all. `get` is keyed by the
+ * runtime-minted `requestId`, which is correlation/integrity data, never a bearer credential.
+ */
+export interface UserInputRequestFacet {
+  insert(request: UserInputRequest): Promise<void>;
+  get(requestId: string): Promise<UserInputRequest | undefined>;
+  update(request: UserInputRequest): Promise<void>;
+  listByExecution(executionId: ExecutionId): Promise<readonly UserInputRequest[]>;
+}
+
 export interface RuntimeTransaction {
   readonly executions: ExecutionRecordFacet;
   readonly mailboxes: MailboxFacet;
@@ -237,6 +254,7 @@ export interface RuntimeTransaction {
   readonly childExecutionLinks: ChildExecutionLinkFacet;
   readonly peerRequestLinks: PeerRequestLinkFacet;
   readonly cancellationRequests: CancellationRequestFacet;
+  readonly userInputRequests: UserInputRequestFacet;
 }
 
 export interface RuntimeStore {
@@ -288,6 +306,12 @@ export interface RuntimeStore {
   listPeerRequestLinksByResponder(responderExecutionId: ExecutionId): Promise<readonly PeerRequestLink[]>;
   /** One Execution's pending cancellation request, if the runtime recorded one. Read-only. */
   readCancellationRequest(executionId: ExecutionId): Promise<CancellationRequest | undefined>;
+  /** One user-input request by its runtime-minted id. Read-only; a controller never receives one. */
+  readUserInputRequest(requestId: string): Promise<UserInputRequest | undefined>;
+  /** Every user-input request one Execution proposed. Read-only diagnostics. */
+  listUserInputRequests(executionId: ExecutionId): Promise<readonly UserInputRequest[]>;
+  /** Every currently-open user-input request, for an application/UI to discover. Read-only. */
+  listOpenUserInputRequests(): Promise<readonly UserInputRequest[]>;
 }
 
 export class UnknownControllerResumptionError extends Error {

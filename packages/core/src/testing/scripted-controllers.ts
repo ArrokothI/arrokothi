@@ -29,8 +29,9 @@ import { defineAgent, defineWorkflow } from "../definitions/validation.ts";
 import type { DefinitionKind } from "../definitions/types.ts";
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
 import type { EffectProposal } from "../effects/types.ts";
-import { ask, callExecution, reply, send, spawnExecution, useCapability } from "../effects/types.ts";
+import { ask, callExecution, reply, requestUserInput, send, spawnExecution, useCapability } from "../effects/types.ts";
 import type { OperationRefInput } from "../operations/refs.ts";
+import type { ValueSchema } from "../schema/value-schema.ts";
 import { eventSatisfiesWake } from "../interaction/event-envelope.ts";
 import type { WakeCondition } from "../interaction/event-envelope.ts";
 import type { EventKind } from "../interaction/events.ts";
@@ -81,6 +82,21 @@ export type ScriptedControllerStep =
     }
   /** Propose an Effect kind this slice does not dispatch, to prove it is refused rather than dropped. */
   | { readonly do: "propose_effect"; readonly effect: EffectProposal; readonly await?: boolean }
+  /**
+   * Propose a `RequestUserInput` and wait for the correlated `user.input` result.
+   *
+   * `schema` is the existing core `ValueSchema`; omitted, the response is validated as text. The
+   * step reports the same prospective dependency each Activation, so a resumed Activation re-checks
+   * whether the answer arrived.
+   */
+  | {
+      readonly do: "request_user_input";
+      readonly prompt: string;
+      readonly schema?: ValueSchema;
+      readonly requestKey?: string;
+      /** Report `continue` instead of awaiting, for scripts that do not need the answer yet. */
+      readonly await?: boolean;
+    }
   /**
    * Propose a `SpawnExecution` (`spawn` or `call`).
    *
@@ -393,6 +409,33 @@ class ScriptedController implements ExecutionController {
             // an unknown outcome are all answers, and a controller that only woke for success would
             // sleep forever on the ones that matter most.
             wake: { eventKinds: [...EFFECT_RESULT_EVENT_KINDS], correlationId: requestKey, description: `result of ${step.capability}` },
+          },
+          [],
+          [proposal],
+        );
+      }
+
+      case "request_user_input": {
+        progress.step += 1;
+        const requestKey = step.requestKey ?? `user_input:${progress.step}`;
+        const proposal = requestUserInput({
+          prompt: step.prompt,
+          ...(step.schema !== undefined ? { schema: step.schema } : {}),
+          requestKey,
+        });
+        if (step.await === false) {
+          return this.outcome(progress, { status: "continue" }, [], [proposal]);
+        }
+        progress.awaiting = true;
+        return this.outcome(
+          progress,
+          {
+            status: "await_event",
+            wake: {
+              eventKinds: ["user.input", "effect.denied", "effect.rejected"],
+              correlationId: requestKey,
+              description: `user response to "${step.prompt}"`,
+            },
           },
           [],
           [proposal],

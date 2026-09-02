@@ -32,6 +32,7 @@ import { createControllerResumption, settleControllerResumption } from "../../ex
 import { createCancellationRequest, markCancellationApplied } from "../../execution/cancellation-request.ts";
 import { createChildExecutionLink, markChildLinkSettled } from "../../execution/child-link.ts";
 import { createPeerRequestLink, markPeerRequestLinkSettled } from "../../execution/peer-request-link.ts";
+import { createUserInputRequest, markUserInputResponded } from "../../execution/user-input-request.ts";
 import { consumeSpawnCredit, createLineageSpawnBudget } from "../../execution/structural-budget.ts";
 import { createEffectiveOperationAuthority } from "../../operations/authority.ts";
 import type { EventEnvelope, EventId } from "../../interaction/event-envelope.ts";
@@ -581,6 +582,44 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
           await tx.cancellationRequests.update(markCancellationApplied(current!, "2026-01-01T00:00:03.000Z"));
         });
         assertEqual((await store.readCancellationRequest(EXECUTION))?.state, "applied", "moves to applied once");
+      },
+    },
+    {
+      name: "a user-input request is keyed by requestId, listable, and discoverable while open (Slice E.2)",
+      async run() {
+        const store = factory();
+        await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
+
+        assertEqual((await store.listOpenUserInputRequests()).length, 0, "none open by default");
+        const request = createUserInputRequest({
+          requestId: "uir_1",
+          executionId: EXECUTION,
+          effectId: "eff_ui" as EffectId,
+          pendingOperationId: "pop_ui" as PendingOperationId,
+          correlationId: "which-env",
+          prompt: "Which environment?",
+          schema: { kind: "string" },
+          createdAt: "2026-01-01T00:00:02.000Z",
+        });
+        await store.transact(EXECUTION, async (tx) => tx.userInputRequests.insert(request));
+
+        assertEqual((await store.readUserInputRequest("uir_1"))?.state, "open", "a fresh request is open");
+        assertEqual((await store.listUserInputRequests(EXECUTION)).length, 1, "listable by execution");
+        assertEqual((await store.listOpenUserInputRequests()).length, 1, "and discoverable while open");
+        assertEqual((await store.listEffectJournal(EXECUTION)).length, 0, "the record itself journals no Effect");
+
+        await assertRejects(
+          () => store.transact(EXECUTION, async (tx) => tx.userInputRequests.insert(request)),
+          "Error",
+          "one record per requestId, never a silent second",
+        );
+
+        await store.transact(EXECUTION, async (tx) => {
+          const current = await tx.userInputRequests.get("uir_1");
+          await tx.userInputRequests.update(markUserInputResponded(current!, "2026-01-01T00:00:03.000Z"));
+        });
+        assertEqual((await store.readUserInputRequest("uir_1"))?.state, "responded", "a response marks it responded");
+        assertEqual((await store.listOpenUserInputRequests()).length, 0, "and it leaves the open set");
       },
     },
     {

@@ -159,6 +159,9 @@ describe("child authority attenuation", () => {
       listPeerRequestLinksByResponder: RuntimeStore["listPeerRequestLinksByResponder"] = (id) =>
         this.inner.listPeerRequestLinksByResponder(id);
       readCancellationRequest: RuntimeStore["readCancellationRequest"] = (id) => this.inner.readCancellationRequest(id);
+      readUserInputRequest: RuntimeStore["readUserInputRequest"] = (id) => this.inner.readUserInputRequest(id);
+      listUserInputRequests: RuntimeStore["listUserInputRequests"] = (id) => this.inner.listUserInputRequests(id);
+      listOpenUserInputRequests: RuntimeStore["listOpenUserInputRequests"] = () => this.inner.listOpenUserInputRequests();
     }
 
     const store = new NarrowingStore();
