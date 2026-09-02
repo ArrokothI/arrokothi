@@ -13,22 +13,33 @@
  *
  * ## Identity / dedup rule (the one this slice chose; see the F.3 task §24)
  *
- * Within one collection, a `claimId` identifies one claim:
+ * Within one collection, a `claimId` identifies **one** record, checked against both the already
+ * stored claims and the earlier claims of the same incoming batch:
  *
- * - appending a claim whose id is not present stores it;
- * - appending a claim whose id is present **and whose canonical JSON is identical** is an
- *   idempotent no-op (reported as a duplicate);
- * - appending a *different* claim under an id that is already present is refused - no
- *   timing-dependent overwrite, no silent destructive replacement.
+ * - a `claimId` not seen before (stored or earlier in the batch) is stored once;
+ * - the same **canonical-JSON-identical** claim seen again (stored, or earlier in the batch) is an
+ *   idempotent no-op, reported once in `duplicates`;
+ * - a **different** claim under a `claimId` already seen (stored, or earlier in the batch) is
+ *   refused with `DerivedSemanticMemoryAppendConflictError` - no timing-dependent overwrite, no
+ *   last-entry-wins, no silent destructive replacement;
+ * - a batch that conflicts anywhere mutates **nothing** (the store is committed only after the
+ *   whole batch has been staged without conflict).
  *
  * Contradictory claims coexist naturally because they have different ids: `A` ("Alice is on Team
  * Red") and `B` ("Alice is on Team Blue") are two records, both stored, both retrievable. The
  * provider performs no truth arbitration and no supersession ranking.
+ *
+ * ## Ownership
+ *
+ * The provider **owns** its stored records. Every claim it stores is a validated deep copy
+ * (`cloneDerivedSemanticClaim`), and every claim it hands back through `retrieve` / `get` / `dump`
+ * is a fresh deep copy too - mutating a caller's append input, or a retrieved/inspected result,
+ * cannot reach provider state. Provenance arrays/objects are isolated by the same clone.
  */
 
 import { canonicalJson } from "../util/hash.ts";
 import type { DerivedSemanticClaim } from "../execution/derived-semantic-memory.ts";
-import { derivedSemanticClaimIssues } from "../execution/derived-semantic-memory.ts";
+import { cloneDerivedSemanticClaim, derivedSemanticClaimIssues } from "../execution/derived-semantic-memory.ts";
 import type {
   DerivedSemanticMemoryAppendRequest,
   DerivedSemanticMemoryAppendResult,
@@ -105,25 +116,31 @@ export function createInMemoryDerivedSemanticMemory(): InMemoryDerivedSemanticMe
         if (issues.length > 0) throw new InvalidDerivedSemanticClaimError(issues);
       });
       const claims = collectionOf(request.collection);
-      const appended: string[] = [];
-      const duplicates: string[] = [];
-      const pending: DerivedSemanticClaim[] = [];
+
+      // Stage the whole batch first. A `claimId` is checked against both the stored claims and the
+      // claims already staged from this batch, so two entries with the same id in one call cannot
+      // become a last-entry-wins overwrite. Nothing is committed to the store until the full batch
+      // has staged without a conflict.
+      const staged = new Map<string, DerivedSemanticClaim>();
+      const duplicates = new Set<string>();
       for (const claim of request.claims) {
-        const existing = claims.get(claim.claimId);
-        if (existing) {
-          if (canonicalJson(existing) === canonicalJson(claim)) {
-            duplicates.push(claim.claimId);
+        const prior = staged.get(claim.claimId) ?? claims.get(claim.claimId);
+        if (prior) {
+          if (canonicalJson(prior) === canonicalJson(claim)) {
+            duplicates.add(claim.claimId);
             continue;
           }
           throw new DerivedSemanticMemoryAppendConflictError(request.collection, claim.claimId);
         }
-        pending.push(claim);
+        staged.set(claim.claimId, cloneDerivedSemanticClaim(claim));
       }
-      for (const claim of pending) {
-        claims.set(claim.claimId, claim);
-        appended.push(claim.claimId);
+
+      const appended: string[] = [];
+      for (const [claimId, claim] of staged) {
+        claims.set(claimId, claim);
+        appended.push(claimId);
       }
-      return { appended, duplicates };
+      return { appended, duplicates: [...duplicates] };
     },
 
     retrieve(request: DerivedSemanticMemoryRetrieveRequest): readonly DerivedSemanticClaim[] {
@@ -136,15 +153,16 @@ export function createInMemoryDerivedSemanticMemory(): InMemoryDerivedSemanticMe
         .filter((entry) => entry.s > 0)
         .sort((a, b) => (b.s - a.s) || (a.claim.claimId < b.claim.claimId ? -1 : 1))
         .slice(0, Math.max(0, request.limit))
-        .map((entry) => entry.claim);
+        .map((entry) => cloneDerivedSemanticClaim(entry.claim));
     },
 
     get(collection: DerivedSemanticMemoryCollection, claimId: string): DerivedSemanticClaim | null {
-      return store.get(collection)?.get(claimId) ?? null;
+      const stored = store.get(collection)?.get(claimId);
+      return stored ? cloneDerivedSemanticClaim(stored) : null;
     },
 
     dump(collection: string): readonly DerivedSemanticClaim[] {
-      return [...(store.get(collection)?.values() ?? [])];
+      return [...(store.get(collection)?.values() ?? [])].map(cloneDerivedSemanticClaim);
     },
   };
 }

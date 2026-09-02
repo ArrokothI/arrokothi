@@ -37,6 +37,7 @@ import {
   derivedClaimId,
   derivedMemorySourceMaterialIssues,
   groundDerivedClaimCandidate,
+  isAcceptedDerivedAt,
 } from "../execution/derived-semantic-memory.ts";
 import type { JsonValue } from "../util/json.ts";
 
@@ -76,11 +77,15 @@ export type DeriveClaimsResult =
 /**
  * Runs one extraction and grounds every candidate into a validated `DerivedSemanticClaim`.
  *
- * The trusted half of the seam. It:
+ * The trusted half of the seam, and genuinely fail-closed on malformed runtime input:
  *
- * 1. validates the supplied material (fail-closed - a malformed item aborts the whole extraction);
- * 2. calls the extractor;
- * 3. for each candidate, checks its shape, checks every cited `sourceRef` is one that was supplied,
+ * 1. checks the request/`material` shape, then structurally validates **every** source-material
+ *    item - no field of any item is dereferenced until all items have passed, so a malformed item
+ *    returns `{ ok: false, issues }` rather than throwing from the duplicate-ref pass;
+ * 2. validates the pipeline-supplied `derivedAt` as an accepted Derived timestamp - an invalid one
+ *    calls the extractor **zero times** and never reaches a provider;
+ * 3. calls the extractor;
+ * 4. for each candidate, checks its shape, checks every cited `sourceRef` is one that was supplied,
  *    stamps the trusted `derivedAt`, and validates the assembled claim.
  *
  * Any failing candidate fails the whole call - a partially-grounded batch is never returned. This
@@ -92,20 +97,44 @@ export async function deriveClaims(
   request: DerivedMemoryExtractionRequest,
 ): Promise<DeriveClaimsResult> {
   const issues: string[] = [];
-  request.material.forEach((item, index) => {
-    issues.push(...derivedMemorySourceMaterialIssues(item, `material[${index}]`));
-  });
-  const seenRefs = new Set<string>();
-  for (const item of request.material) {
-    if (seenRefs.has(item.sourceRef)) {
-      issues.push(`material: sourceRef "${item.sourceRef}" is supplied more than once`);
-    }
-    seenRefs.add(item.sourceRef);
+
+  if (request === null || typeof request !== "object" || Array.isArray(request)) {
+    return { ok: false, issues: ["deriveClaims was given a malformed request object"] };
   }
+  const material = (request as DerivedMemoryExtractionRequest).material;
+  if (!Array.isArray(material)) {
+    return { ok: false, issues: ["`material` must be an array of source-material items"] };
+  }
+
+  // Structurally validate every item BEFORE touching any of its fields.
+  let structurallyValid = true;
+  material.forEach((item, index) => {
+    const itemIssues = derivedMemorySourceMaterialIssues(item, `material[${index}]`);
+    if (itemIssues.length > 0) {
+      structurallyValid = false;
+      issues.push(...itemIssues);
+    }
+  });
+  // Only if every item is well-formed is it safe to read `item.sourceRef`.
+  if (structurallyValid) {
+    const seenRefs = new Set<string>();
+    for (const item of material) {
+      if (seenRefs.has(item.sourceRef)) {
+        issues.push(`material: sourceRef "${item.sourceRef}" is supplied more than once`);
+      }
+      seenRefs.add(item.sourceRef);
+    }
+  }
+
+  if (!isAcceptedDerivedAt((request as DerivedMemoryExtractionRequest).derivedAt)) {
+    issues.push("derivedAt: the pipeline supplied a value that is not an accepted ISO-8601 instant");
+  }
+
+  // Nothing below runs - no extractor call, no provider contact - if prevalidation found anything.
   if (issues.length > 0) return { ok: false, issues };
 
-  const allowedSourceRefs = new Set(request.material.map((item) => item.sourceRef));
-  const candidates = await extractor.extract(request);
+  const allowedSourceRefs = new Set(material.map((item) => item.sourceRef));
+  const candidates = await extractor.extract(request as DerivedMemoryExtractionRequest);
   if (!Array.isArray(candidates)) {
     return { ok: false, issues: ["the extractor returned a non-array of candidates"] };
   }

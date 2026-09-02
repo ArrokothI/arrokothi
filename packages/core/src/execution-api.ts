@@ -341,6 +341,7 @@ export {
   derivedMemorySourceMaterialIssues,
   derivedSemanticClaimBytes,
   derivedSemanticClaimIssues,
+  derivedSemanticMemoryEmptyEnvelopeFits,
   derivedSemanticMemoryReadViewBytes,
   derivedSemanticMemoryReadViewIssue,
   groundDerivedClaimCandidate,

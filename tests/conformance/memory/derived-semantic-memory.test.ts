@@ -27,6 +27,7 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import type {
   DerivedSemanticClaim,
+  DerivedSemanticMemoryReadView,
   StructuredMemoryBinding,
   WriteMemoryProposal,
 } from "@agent-sdk/core/execution";
@@ -35,6 +36,8 @@ import {
   derivedClaimId,
   derivedMemorySourceMaterialIssues,
   derivedSemanticClaimIssues,
+  derivedSemanticMemoryEmptyEnvelopeFits,
+  derivedSemanticMemoryReadViewBytes,
   derivedSemanticMemoryReadViewIssue,
   effectRequestsIn,
   groundDerivedClaimCandidate,
@@ -233,6 +236,51 @@ describe("extraction: explicit material -> candidate -> grounded claim", () => {
     await deriveClaims(extractor, { material: [], derivedAt: AT });
     assert.equal(calls, 1);
   });
+
+  test("deriveClaims prevalidation is genuinely fail-closed: malformed material returns ok:false, no extraction", async () => {
+    let calls = 0;
+    const extractor = createFakeDerivedMemoryExtractor(() => {
+      calls += 1;
+      return [];
+    });
+    // A null item, and an item missing `sourceRef`, both smuggled in through an `unknown` cast.
+    const malformed = [
+      null,
+      { content: { note: "no sourceRef here" } },
+      { sourceRef: "ok", content: 1 },
+    ] as unknown as { sourceRef: string; content: unknown }[];
+    const result = await deriveClaims(extractor, { material: malformed as never, derivedAt: AT });
+    assert.equal(result.ok, false, "a malformed item does not throw from the duplicate-ref pass");
+    if (result.ok) return;
+    assert.ok(result.issues.length > 0);
+    assert.equal(calls, 0, "the extractor was not called");
+  });
+
+  test("deriveClaims rejects a non-array material without touching the extractor", async () => {
+    let calls = 0;
+    const extractor = createFakeDerivedMemoryExtractor(() => {
+      calls += 1;
+      return [];
+    });
+    const result = await deriveClaims(extractor, { material: "not an array" as never, derivedAt: AT });
+    assert.equal(result.ok, false);
+    assert.equal(calls, 0);
+  });
+
+  test("an invalid pipeline-supplied derivedAt: ok:false, zero extraction, never reaches a provider", async () => {
+    const provider = createInMemoryDerivedSemanticMemory();
+    let calls = 0;
+    const extractor = createFakeDerivedMemoryExtractor(() => {
+      calls += 1;
+      return [{ statement: "x", sourceRefs: ["message-18"], derivation: { method: "fake" } }];
+    });
+    for (const badDerivedAt of ["yesterday", "2026-01-01", "", 12345 as unknown as string, null as unknown as string]) {
+      const result = await deriveClaims(extractor, { material, derivedAt: badDerivedAt });
+      assert.equal(result.ok, false, `derivedAt ${JSON.stringify(badDerivedAt)} is refused`);
+    }
+    assert.equal(calls, 0, "the extractor was never invoked for an invalid derivedAt");
+    assert.deepEqual(provider.dump("c"), [], "nothing reached a provider");
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -295,6 +343,72 @@ describe("the reference in-memory provider: additive store, deterministic lexica
       InvalidDerivedSemanticClaimError,
     );
     assert.deepEqual(provider.dump("u"), [], "nothing from a rejected batch was stored");
+  });
+
+  test("claimId identity is enforced WITHIN one append batch: identical repeat is one idempotent append", () => {
+    const provider = createInMemoryDerivedSemanticMemory();
+    const c = claim({ claimId: "id-1", statement: "same" });
+    const result = provider.append({ collection: "u", claims: [c, { ...c, provenance: { ...c.provenance } }, c] });
+    assert.deepEqual(result, { appended: ["id-1"], duplicates: ["id-1"] }, "stored once; the repeats are duplicates, not extra appends");
+    assert.deepEqual(provider.dump("u").map((x) => x.claimId), ["id-1"]);
+  });
+
+  test("claimId identity WITHIN one batch: two different claims under one id conflict, and mutate nothing", () => {
+    const provider = createInMemoryDerivedSemanticMemory();
+    provider.append({ collection: "u", claims: [claim({ claimId: "kept", statement: "already here" })] });
+    assert.throws(
+      () =>
+        provider.append({
+          collection: "u",
+          claims: [
+            claim({ claimId: "fresh", statement: "fresh claim" }),
+            claim({ claimId: "dup", statement: "first version" }),
+            claim({ claimId: "dup", statement: "SECOND version - last-entry-wins must not happen" }),
+          ],
+        }),
+      DerivedSemanticMemoryAppendConflictError,
+    );
+    assert.deepEqual(
+      provider.dump("u").map((x) => x.claimId),
+      ["kept"],
+      "the conflicting batch committed NOTHING - not even the well-formed 'fresh' claim before the conflict",
+    );
+    assert.equal(provider.get("u", "fresh"), null);
+    assert.equal(provider.get("u", "dup"), null);
+  });
+
+  test("the provider owns its records: mutating the append input cannot mutate provider state", () => {
+    const provider = createInMemoryDerivedSemanticMemory();
+    const input = claim({ claimId: "own", statement: "original statement", provenance: { sourceRefs: ["m1"], derivedAt: AT, derivation: { method: "rule" } } });
+    provider.append({ collection: "u", claims: [input] });
+    // Mutate the caller's object and its provenance arrays after the append.
+    (input as { statement: string }).statement = "TAMPERED";
+    (input.provenance.sourceRefs as string[]).push("m2-injected");
+    (input.provenance.derivation as { method: string }).method = "tampered";
+
+    const stored = provider.get("u", "own")!;
+    assert.equal(stored.statement, "original statement");
+    assert.deepEqual(stored.provenance.sourceRefs, ["m1"]);
+    assert.equal(stored.provenance.derivation.method, "rule");
+  });
+
+  test("the provider owns its records: mutating retrieve / get / dump output cannot mutate provider state", () => {
+    const provider = createInMemoryDerivedSemanticMemory();
+    provider.append({ collection: "u", claims: [claim({ claimId: "r", statement: "hotels are preferred", provenance: { sourceRefs: ["m1"], derivedAt: AT, derivation: { method: "rule" } } })] });
+
+    const [fromRetrieve] = provider.retrieve({ collection: "u", query: "hotels", limit: 5 });
+    (fromRetrieve as { statement: string }).statement = "TAMPERED";
+    (fromRetrieve!.provenance.sourceRefs as string[]).push("evil");
+
+    const fromGet = provider.get("u", "r")!;
+    (fromGet as { statement: string }).statement = "ALSO TAMPERED";
+
+    const [fromDump] = provider.dump("u");
+    (fromDump!.provenance.sourceRefs as string[]).length = 0;
+
+    const stored = provider.get("u", "r")!;
+    assert.equal(stored.statement, "hotels are preferred", "no returned copy is a live handle into provider state");
+    assert.deepEqual(stored.provenance.sourceRefs, ["m1"]);
   });
 });
 
@@ -382,8 +496,124 @@ describe("the authorized retrieval resolver checks policy before touching a prov
     const view = projectDerivedSemanticMemoryReadView("hotels", claims, { maxClaims: 3, maxBytes: 100000 });
     assert.equal(view.claims.length, 3);
     for (const c of view.claims) assert.match(c.statement, /^claim number \d about hotels$/, "each statement is whole");
-    const tiny = projectDerivedSemanticMemoryReadView("hotels", claims, { maxClaims: 10, maxBytes: 200 });
-    assert.ok(tiny.claims.length < 10 && tiny.claims.length >= 1, "byte budget drops whole claims from the tail");
+  });
+
+  test("a later claim that would not fit the byte budget is dropped, and the result is valid", () => {
+    const claims = Array.from({ length: 6 }, (_, i) => claim({ claimId: `c${i}`, statement: `claim ${i} about hotels near water` }));
+    const budget = { maxClaims: 10, maxBytes: derivedSemanticMemoryReadViewBytes({ query: "hotels", claims: [] }) + 90 };
+    const view = projectDerivedSemanticMemoryReadView("hotels", claims, budget);
+    assert.ok(view.claims.length >= 1 && view.claims.length < 6, "some but not all claims fit");
+    assert.equal(derivedSemanticMemoryReadViewIssue(view, budget), null, "the bounded view is valid under the same budget");
+    for (const c of view.claims) assert.match(c.statement, /^claim \d about hotels near water$/, "no statement is cut");
+  });
+
+  test("an individually oversized first claim is dropped, not inserted to manufacture an over-budget view", () => {
+    const big = claim({ claimId: "big", statement: "x".repeat(400), provenance: { sourceRefs: ["m"], derivedAt: AT, derivation: { method: "r" } } });
+    const small = claim({ claimId: "small", statement: "hotels", provenance: { sourceRefs: ["m"], derivedAt: AT, derivation: { method: "r" } } });
+    // A budget that exactly holds the empty envelope plus `small`'s claim view, but not `big`'s.
+    const smallView = { claimId: "small", statement: "hotels", sourceRefs: ["m"] };
+    const budget = { maxClaims: 10, maxBytes: derivedSemanticMemoryReadViewBytes({ query: "q", claims: [smallView] }) };
+    assert.equal(derivedSemanticMemoryEmptyEnvelopeFits("q", budget.maxBytes), true);
+
+    const firstBig = projectDerivedSemanticMemoryReadView("q", [big, small], budget);
+    assert.deepEqual(firstBig.claims.map((c) => c.claimId), [], "the oversized first claim is dropped rather than truncated or forced in");
+    assert.equal(derivedSemanticMemoryReadViewIssue(firstBig, budget), null, "the empty result is a valid bounded view");
+
+    const smallFirst = projectDerivedSemanticMemoryReadView("q", [small, big], budget);
+    assert.deepEqual(smallFirst.claims.map((c) => c.claimId), ["small"], "a fitting first claim is kept; the oversized one after it stops selection");
+    assert.equal(derivedSemanticMemoryReadViewIssue(smallFirst, budget), null);
+  });
+
+  test("the reference resolver never returns an over-budget snapshot: an oversized first claim yields an empty selection", async () => {
+    const base = createInMemoryDerivedSemanticMemory();
+    base.append({ collection: "exec", claims: [claim({ claimId: "big", statement: `hotels ${"y".repeat(400)}` })] });
+    const counted = countingProvider(base);
+    const resolver = createDerivedSemanticMemoryReadResolver({ provider: counted.provider, grant: true, collectionFor: () => "exec" });
+    const maxBytes = derivedSemanticMemoryReadViewBytes({ query: "hotels", claims: [] }) + 60;
+    const view = await resolver.resolve({ executionId: "exec", query: "hotels", limit: 5, maxBytes });
+    assert.equal(counted.retrieveCalls, 1, "the empty envelope fit, so the provider was consulted");
+    assert.deepEqual(view, { query: "hotels", claims: [] }, "the oversized claim is dropped; no impossible snapshot");
+    assert.equal(derivedSemanticMemoryReadViewIssue(view, { maxClaims: 5, maxBytes }), null);
+  });
+
+  test("the impossible empty-envelope case is deterministic and makes NO provider call", async () => {
+    const base = createInMemoryDerivedSemanticMemory();
+    base.append({ collection: "exec", claims: [claim({ claimId: "k", statement: "boutique hotels are preferred" })] });
+    const counted = countingProvider(base);
+    const resolver = createDerivedSemanticMemoryReadResolver({ provider: counted.provider, grant: true, collectionFor: () => "exec" });
+    const query = "a rather long authored retrieval query about boutique hotels near the water";
+    // A byte budget too small to hold even { query, claims: [] }.
+    const maxBytes = derivedSemanticMemoryReadViewBytes({ query, claims: [] }) - 1;
+    assert.equal(derivedSemanticMemoryEmptyEnvelopeFits(query, maxBytes), false);
+    const view = await resolver.resolve({ executionId: "exec", query, limit: 5, maxBytes });
+    assert.equal(view, null, "no valid bounded snapshot exists; deterministically no snapshot");
+    assert.equal(counted.retrieveCalls, 0, "the provider was not consulted - the authored query is never truncated");
+  });
+
+  test("a valid empty/bounded resolver result is acceptable to the Agent (no block, no failure)", async () => {
+    const base = createInMemoryDerivedSemanticMemory();
+    base.append({ collection: "collection", claims: [claim({ claimId: "big", statement: `hotels ${"z".repeat(400)}` })] });
+    const model = new ScriptedModelProvider({ id: "test", steps: [{ output: { text: "answer" } }] });
+    const bundle = createAgentTestHarness({
+      models: agentModelAccess(testModelResolver()),
+      executor: referenceAgentExecutor([model]),
+      derivedMemory: { provider: base, grant: true, collectionFor: () => "collection" },
+    });
+    const ref = await bundle.definitions.save(
+      // maxDerivedMemoryBytes just above the empty envelope but far below the one big claim.
+      testAgent({ id: "empty-bounded", instructions: INSTRUCTIONS, derivedMemory: { read: { query: "hotels" } }, limits: { maxDerivedMemoryBytes: 80 } }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [] });
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "hi" });
+    await bundle.harness.runUntilIdle();
+    assert.equal((await bundle.harness.inspect(agent.executionId))?.lifecycle, "WAITING", "the Agent progressed normally");
+    assert.equal(model.requests[0]!.system, INSTRUCTIONS, "no Derived block, no failure");
+  });
+
+  test("a custom resolver that returns a structurally valid but over-budget view is still rejected by the controller", async () => {
+    const overBudget: DerivedSemanticMemoryReadView = {
+      query: "hotels",
+      claims: [
+        { claimId: "c1", statement: `hotels ${"w".repeat(300)}`, sourceRefs: ["m1"] },
+        { claimId: "c2", statement: `hotels ${"w".repeat(300)}`, sourceRefs: ["m2"] },
+      ],
+    };
+    const resolver: DerivedSemanticMemoryReadResolver = { resolve: () => overBudget };
+    const model = new ScriptedModelProvider({ id: "test", steps: [{ output: { text: "answer" } }] });
+    const bundle = createAgentTestHarness({
+      models: agentModelAccess(testModelResolver()),
+      executor: referenceAgentExecutor([model]),
+      derivedSemanticMemoryReadView: resolver,
+    });
+    const ref = await bundle.definitions.save(
+      testAgent({ id: "over-budget-resolver", instructions: INSTRUCTIONS, derivedMemory: { read: { query: "hotels" } }, limits: { maxDerivedMemoryBytes: 200 } }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [] });
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "hi" });
+    await bundle.harness.runUntilIdle();
+    assert.equal((await bundle.harness.inspect(agent.executionId))?.lifecycle, "FAILED", "the controller refused the over-budget snapshot");
+    assert.equal(model.requests.length, 0, "the model was never called with a bad context");
+  });
+
+  test("a custom resolver returning too many claims is rejected by the controller", async () => {
+    const tooMany: DerivedSemanticMemoryReadView = {
+      query: "hotels",
+      claims: Array.from({ length: 40 }, (_, i) => ({ claimId: `c${i}`, statement: `hotels ${i}`, sourceRefs: ["m"] })),
+    };
+    const resolver: DerivedSemanticMemoryReadResolver = { resolve: () => tooMany };
+    const model = new ScriptedModelProvider({ id: "test", steps: [{ output: { text: "answer" } }] });
+    const bundle = createAgentTestHarness({
+      models: agentModelAccess(testModelResolver()),
+      executor: referenceAgentExecutor([model]),
+      derivedSemanticMemoryReadView: resolver,
+    });
+    const ref = await bundle.definitions.save(
+      testAgent({ id: "too-many", instructions: INSTRUCTIONS, derivedMemory: { read: { query: "hotels", maxClaims: 4 } } }),
+    );
+    const agent = await bundle.createAgent({ definition: ref, authority: [] });
+    await bundle.harness.deliverExternalInput({ destination: agent.executionId, label: "ask", payload: "hi" });
+    await bundle.harness.runUntilIdle();
+    assert.equal((await bundle.harness.inspect(agent.executionId))?.lifecycle, "FAILED");
   });
 });
 

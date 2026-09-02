@@ -387,8 +387,8 @@ export interface DerivedSemanticMemoryClaimView {
  *
  * `query` is the authored retrieval intent this snapshot answers - correlation, never authority.
  * `claims` is a deterministically bounded *subset*: the resolver/compiler is explicitly selecting a
- * subset that fits the claim-count and byte budgets, dropping whole claims from the tail of the
- * provider's ranking rather than truncating any statement.
+ * subset that fits the claim-count and byte budgets, dropping whole claims (from the first that does
+ * not fit onward) rather than truncating any statement.
  */
 export interface DerivedSemanticMemoryReadView {
   readonly query: string;
@@ -417,10 +417,17 @@ export function derivedSemanticMemoryReadViewBytes(view: DerivedSemanticMemoryRe
  * Builds the bounded model-facing snapshot from a provider's ranked claims.
  *
  * Pure and total. Claims are taken in the order the provider returned them (its ranking is its
- * business) and added one at a time; selection stops when the next claim would exceed `maxClaims`
- * or push the canonical-JSON byte size over `maxBytes`. Whole claims are dropped - a statement is
- * never cut into a misleading fragment. The same inputs always produce the same snapshot, so a
- * resumed Activation replaying a persisted context and the Activation that produced it agree.
+ * business) and added one at a time; selection stops at the **first** claim that would push the
+ * result over `maxClaims` or over the canonical-JSON `maxBytes` - including the very first claim, if
+ * it does not fit on its own (it is dropped, never truncated, and never inserted to manufacture an
+ * over-budget snapshot). The same inputs always produce the same snapshot, so a resumed Activation
+ * replaying a persisted context and the Activation that produced it agree.
+ *
+ * **Precondition:** the empty `{ query, claims: [] }` envelope is itself within `maxBytes`. A caller
+ * that cannot guarantee that - an authored byte budget smaller than the query alone - must detect it
+ * *before* calling this (the reference `DerivedSemanticMemoryReadResolver` does, before any provider
+ * call). Given the precondition, every returned view passes `derivedSemanticMemoryReadViewIssue`
+ * under the same budget.
  */
 export function projectDerivedSemanticMemoryReadView(
   query: string,
@@ -431,12 +438,21 @@ export function projectDerivedSemanticMemoryReadView(
   for (const claim of rankedClaims) {
     if (claims.length >= budget.maxClaims) break;
     const candidate = [...claims, claimView(claim)];
-    const bytes = derivedSemanticMemoryReadViewBytes({ query, claims: candidate });
-    if (bytes > budget.maxBytes && claims.length > 0) break;
+    if (derivedSemanticMemoryReadViewBytes({ query, claims: candidate }) > budget.maxBytes) break;
     claims.push(claimView(claim));
-    if (bytes > budget.maxBytes) break; // a single claim already over budget: keep it, stop here
   }
   return { query, claims };
+}
+
+/**
+ * Whether even the empty `{ query, claims: [] }` envelope fits a byte budget.
+ *
+ * `false` means no valid bounded snapshot can be produced for this query under this budget - the
+ * authored query must never be truncated to make room. The reference resolver checks this before
+ * any provider call and returns no snapshot when it fails.
+ */
+export function derivedSemanticMemoryEmptyEnvelopeFits(query: string, maxBytes: number): boolean {
+  return derivedSemanticMemoryReadViewBytes({ query, claims: [] }) <= maxBytes;
 }
 
 /**

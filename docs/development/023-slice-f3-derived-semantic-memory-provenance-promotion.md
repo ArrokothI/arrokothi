@@ -1,9 +1,9 @@
 # Slice F.3 — Derived Semantic Memory + provenance + explicit promotion
 
 > **Status:** implemented on the long-lived branch `slice-f-memory-completion` from the accepted
-> F.2b tip (`d192f83` behavioural implementation + `8b5e506` doc-only follow-up). **Not merged.
-> Awaiting independent review.** After F.3 PASS the reviewer performs the final integrated Slice-F
-> review; the branch merges into `main` only then.
+> F.2b tip, first pushed at `21c636e`, then corrected by one independent review of `21c636e` (§0
+> below). **Not merged. Awaiting re-review.** After F.3 PASS the reviewer performs the final
+> integrated Slice-F review; the branch merges into `main` only then.
 >
 > **Scope:** the smallest honest Derived Semantic Memory vertical slice — a reference claim/
 > provenance shape, an explicit extraction seam, a replaceable provider port, an authorized
@@ -20,6 +20,54 @@ Memory: §4, §8–§10, §14, §16), `../authority.md` (§10 authorization evid
 `../security-guarantees.md` (§6). F.2a/F.2b are recorded in
 [`021`](021-slice-f2a-working-notes-local-scratch.md) /
 [`022`](022-slice-f2b-working-notes-explicit-handoff.md).
+
+## 0. Independent-review correction (of `21c636e`)
+
+The review accepted the F.3 architecture directionally and required four bounded reference-behaviour
+corrections. No redesign: no new Effect/Event/PendingOperation, no authority-model change, no
+dynamic model-generated retrieval, no canonical-doc change.
+
+### 0.1 `projectDerivedSemanticMemoryReadView` now genuinely honours its byte budget
+
+The first implementation inserted a claim that by itself did not fit ("keep it, stop here"),
+manufacturing an over-budget snapshot. It now stops at the **first** claim that would exceed
+`maxClaims` or `maxBytes` — including the very first, which is then simply dropped (never truncated,
+never forced in). Given its documented precondition (the empty `{ query, claims: [] }` envelope is
+itself within `maxBytes`), every returned view passes `derivedSemanticMemoryReadViewIssue` under the
+same budget. The **impossible empty-envelope** case (a byte budget smaller than the query alone) is
+detected by the reference resolver *before* any provider call, via the new pure
+`derivedSemanticMemoryEmptyEnvelopeFits(query, maxBytes)`, and returns no snapshot (`null`) — the
+authored query is never truncated. The controller's independent re-validation of resolver output
+(`derivedSemanticMemoryReadViewIssue` → `agent_derived_memory_snapshot_invalid`) is unchanged and
+still fails a custom/malformed resolver that returns an over-budget or over-count view.
+
+### 0.2 reference-provider `claimId` identity is enforced **within** one append batch
+
+The first implementation checked an incoming `claimId` only against already-stored claims, so two
+different claims with the same id in one `append` call became last-entry-wins. `append` now stages
+the whole batch first, checking each `claimId` against both the stored claims **and** the claims
+already staged from this batch: an identical repeat is one idempotent append (reported once in
+`duplicates`); a different claim under a seen id throws `DerivedSemanticMemoryAppendConflictError`;
+and a conflicting batch commits **nothing** (the store is written only after the full batch stages
+without conflict).
+
+### 0.3 the reference provider is alias-free
+
+It now stores a validated deep copy (`cloneDerivedSemanticClaim`) on `append` and returns a fresh
+deep copy from `retrieve` / `get` / `dump`. Mutating a caller's append input, or a
+retrieved/inspected result — statement, provenance arrays, derivation object — cannot reach provider
+state. No new persistence abstraction was introduced.
+
+### 0.4 `deriveClaims` prevalidation is genuinely fail-closed
+
+It no longer dereferences `item.sourceRef` before every source-material item has passed structural
+validation (a malformed item — `null`, missing `sourceRef` via an `unknown` cast — now returns
+`{ ok: false, issues }` instead of throwing from the duplicate-ref pass), and it now checks the
+request/`material` shape first. It also validates the pipeline-supplied `derivedAt` as an accepted
+Derived timestamp **before** invoking the extractor: an invalid `derivedAt` returns `ok: false`,
+calls the extractor zero times, and never reaches a provider.
+
+Everything below reflects the corrected implementation.
 
 ## 1. What F.3 proves
 
@@ -135,12 +183,20 @@ async function deriveClaims(extractor, request): Promise<
 >;
 ```
 
-`deriveClaims` is the trusted half: it validates the supplied material (fail-closed), calls the
-extractor, and for each candidate runs `groundDerivedClaimCandidate` — checking the shape, checking
-**every cited `sourceRef` is one the extractor was given**, stamping the trusted `derivedAt`, and
-validating the assembled claim. Any failing candidate fails the whole call; a partially-grounded
-batch is never returned. `deriveClaims` is **not called from any controller** (asserted in the
-architecture suite).
+`deriveClaims` is the trusted half, and genuinely fail-closed (§0.4):
+
+1. it checks the request/`material` shape, then structurally validates **every** source-material
+   item — no field of any item is read until all items have passed, so a malformed item (`null`,
+   missing `sourceRef`) returns `{ ok: false, issues }` rather than throwing;
+2. it validates the pipeline-supplied `derivedAt` as an accepted ISO-8601 instant — an invalid one
+   calls the extractor **zero** times and never reaches a provider;
+3. it calls the extractor;
+4. for each candidate it runs `groundDerivedClaimCandidate` — checking the shape, checking **every
+   cited `sourceRef` is one the extractor was given**, stamping the trusted `derivedAt`, and
+   validating the assembled claim.
+
+Any failing candidate fails the whole call; a partially-grounded batch is never returned.
+`deriveClaims` is **not called from any controller** (asserted in the architecture suite).
 
 Reference extractors (`packages/core/src/reference/derived-memory-extractor.ts`), all deterministic:
 `createFakeDerivedMemoryExtractor(candidates | (request) => candidates)` and
@@ -175,13 +231,20 @@ core.
 - **retrieval**: tokenize query + statement (lowercase, split on non-alphanumeric), score by shared
   distinct tokens, drop zero-overlap claims, tie-break by `claimId` ascending, truncate to `limit`.
   An empty query and an empty collection both retrieve `[]` (a legitimate answer, not an error).
-- **identity / dedup** (the rule this slice chose, per §24): within a collection a `claimId`
-  identifies one claim — a new id is stored, an **identical** record under an existing id is an
-  idempotent no-op, a **different** claim under an existing id is refused
-  (`DerivedSemanticMemoryAppendConflictError`). No timing-dependent overwrite, no silent destructive
-  replacement. Contradictory claims coexist because they have different ids.
-- **append** validates every claim at the boundary (`InvalidDerivedSemanticClaimError`) and is
-  all-or-nothing.
+- **identity / dedup** (the rule this slice chose, per §24; corrected in §0.2): a `claimId`
+  identifies one record, checked against **both** the stored claims and the earlier claims of the
+  same incoming batch — a new id is stored once, an **identical** record (stored or earlier in the
+  batch) is an idempotent no-op reported once in `duplicates`, a **different** claim under a seen id
+  is refused (`DerivedSemanticMemoryAppendConflictError`). No timing-dependent overwrite, no
+  last-entry-wins, no silent destructive replacement. Contradictory claims coexist because they
+  have different ids.
+- **append** validates every claim at the boundary (`InvalidDerivedSemanticClaimError`), stages the
+  whole batch, and commits to the store only after the full batch has staged without a conflict — a
+  conflicting batch mutates nothing.
+- **ownership** (§0.3): the provider stores a validated deep copy (`cloneDerivedSemanticClaim`) and
+  returns a fresh deep copy from `retrieve` / `get` / `dump`. Mutating a caller's append input, or
+  a retrieved/inspected result (statement, provenance arrays, derivation), cannot reach provider
+  state.
 
 > **The reference lexical ranking is not canonical Derived Semantic Memory semantics** — tests say
 > so explicitly. No embeddings, no network, no model call.
@@ -207,16 +270,20 @@ collectionFor?, maxClaims?, maxBytes? })` — deny-by-default (`grant` omitted/`
 its work as:
 
 ```text
-executions scoping        not in scope   -> null, provider NOT consulted
-grant check               not granted    -> null, provider NOT consulted
-collectionFor(executionId) -> null       -> null, provider NOT consulted
+executions scoping         not in scope   -> null, provider NOT consulted
+grant check                not granted    -> null, provider NOT consulted
+collectionFor(executionId) -> null        -> null, provider NOT consulted
+empty { query, claims: [] } envelope      -> null, provider NOT consulted
+  does not fit maxBytes?  (§0.1)              (no valid bounded snapshot; the authored query is
+                                              never truncated to make room)
 provider.retrieve(collection, query, limit)
-validate every returned claim            malformed -> throw (fail closed)
-projectDerivedSemanticMemoryReadView     -> bounded model-facing snapshot
+validate every returned claim             malformed -> throw (fail closed)
+projectDerivedSemanticMemoryReadView      -> bounded model-facing snapshot (empty if the first
+                                             ranked claim does not fit; never over budget)
 ```
 
-> **No-oracle rule, proven by a counting provider:** a denied read performs **zero** `retrieve`
-> calls.
+> **No-oracle rule, proven by a counting provider:** a denied read — and the impossible
+> empty-envelope case — performs **zero** `retrieve` calls.
 
 `DerivedSemanticMemoryReadView = { query, claims: DerivedSemanticMemoryClaimView[] }` where a claim
 view is `{ claimId, statement, sourceRefs }` — minimal provenance, no `derivedAt`/`derivation`/score.
@@ -245,9 +312,13 @@ clamps the retrieval `limit` to `min(read.maxClaims ?? maxDerivedMemoryClaims,
 maxDerivedMemoryClaims)` and passes `maxBytes = maxDerivedMemoryBytes`.
 
 `projectDerivedSemanticMemoryReadView` deterministically selects a **bounded subset** — whole claims
-taken in the provider's ranked order until the next would exceed the claim count or push the
-canonical-JSON byte size over budget. It never truncates a statement into a misleading fragment. The
-controller then re-validates the returned snapshot with `derivedSemanticMemoryReadViewIssue`
+taken in the provider's ranked order, stopping at the **first** claim that would exceed the claim
+count or push the canonical-JSON byte size over budget (including the very first claim, which is
+then dropped, never truncated or forced in — §0.1). Its precondition is that the empty
+`{ query, claims: [] }` envelope fits `maxBytes`; the reference resolver guarantees that with
+`derivedSemanticMemoryEmptyEnvelopeFits` before calling it. Given the precondition, every returned
+view passes `derivedSemanticMemoryReadViewIssue` under the same budget. The controller then
+re-validates the returned snapshot with `derivedSemanticMemoryReadViewIssue`
 (shape + count + bytes) and **refuses** a malformed or over-budget resolver result
 (`agent_derived_memory_snapshot_invalid`) rather than trusting it.
 
@@ -392,14 +463,17 @@ calls. The planned measurement is not a blocker for semantic F.3.
 
 ## 15. Provider failure semantics (chosen and documented)
 
-- malformed resolver/provider result → deterministic Agent failure
-  (`agent_derived_memory_snapshot_invalid`; the resolver throws on a malformed provider claim);
+- malformed / over-budget / over-count resolver result → deterministic Agent failure
+  (`agent_derived_memory_snapshot_invalid`; the reference resolver additionally throws on a
+  malformed provider claim, caught as `agent_derived_memory_retrieval_failed`);
 - a configured retrieval provider that errors → deterministic Agent failure
   (`agent_derived_memory_retrieval_failed`) — an error is never silently indistinguishable from an
   empty result;
 - authorization denial → no claim context, and the provider is not consulted;
-- a legitimately empty retrieval → an empty Derived Memory selection (view with `claims: []`, no
-  block), not a failure.
+- byte budget too small to hold even the empty `{ query, claims: [] }` envelope → no snapshot
+  (`null`), provider not consulted, the authored query never truncated (§0.1);
+- a legitimately empty retrieval, or a ranked first claim that does not fit the byte budget → an
+  empty Derived Memory selection (view with `claims: []`, no block), not a failure.
 
 No Event is created for an internal retrieval failure, and no `PendingOperation` is required for the
 synchronous reference retrieval.
@@ -414,7 +488,7 @@ optional and non-semantic.
 
 ## 17. Tests
 
-`tests/conformance/memory/derived-semantic-memory.test.ts` (49 cases across 10 groups):
+`tests/conformance/memory/derived-semantic-memory.test.ts` (63 cases across 10 groups):
 
 - **claim / provenance**: plain-JSON round-trip; malformed refused; source refs required / unique /
   non-empty; blank statement / id; `derivedAt` must be ISO-8601, not prose; non-JSON metadata
@@ -422,14 +496,28 @@ optional and non-semantic.
   contradictory claims coexist; `derivedClaimId` deterministic.
 - **extraction**: fake-extractor candidate → grounded stored claim; a candidate citing an ungiven
   ref is refused before any append; deterministic id minting; the schema-bound extractor reads typed
-  fields only; the extractor is inert until `deriveClaims` is called.
+  fields only; the extractor is inert until `deriveClaims` is called. **§0.4:** malformed material
+  (`null` item / missing `sourceRef` via `unknown` cast) → `{ ok: false }` without throwing and
+  **without calling the extractor**; a non-array `material` → `{ ok: false }`, extractor untouched;
+  an invalid `derivedAt` (`"yesterday"`, `"2026-01-01"`, `""`, a number, `null`) → `{ ok: false }`,
+  extractor called zero times, nothing reaches a provider.
 - **provider**: append/store; deterministic lexical ranking + zero-overlap drop; deterministic tie-
   break; empty query / empty collection → `[]`; idempotent identical append; conflict on a different
-  claim under an existing id; all-or-nothing boundary validation.
+  claim under an existing id; all-or-nothing boundary validation. **§0.2:** an identical repeat
+  **within one batch** is one idempotent append; two different claims under one id **in one batch**
+  conflict and the batch commits nothing (not even the well-formed claim before the conflict).
+  **§0.3:** mutating the append input, and separately mutating `retrieve` / `get` / `dump` output
+  (statement + provenance arrays), leaves the provider's stored claim unchanged.
 - **authorized retrieval**: denied → `null` + zero provider calls; allowed → one provider call +
   bounded snapshot; authorized-empty → `{ claims: [] }`, never fabricated; malformed provider result
   → resolver throws; `executions` scoping and a `null` collection deny without consulting the
-  provider; whole-claim byte-bounded selection.
+  provider. **§0.1:** `projectDerivedSemanticMemoryReadView` keeps whole statements and drops a
+  later non-fitting claim, and drops an individually oversized **first** claim to an empty selection
+  (both results pass `derivedSemanticMemoryReadViewIssue`); the reference resolver never returns an
+  over-budget snapshot; the impossible empty-envelope case returns `null` and makes **no** provider
+  call; a valid empty/bounded resolver result lets the Agent progress with no block and no failure;
+  a custom resolver returning a structurally valid but over-budget (or over-count) view still fails
+  the Agent (`FAILED`, model never called).
 - **Agent context**: the block reaches the real provider-facing system prompt, labeled inferred/
   not-authoritative, with claim id + sources and no hidden metadata; no query → no block + zero
   provider calls; denied → no block + zero provider calls; all three memory forms coexist with
@@ -461,11 +549,11 @@ field for Derived Memory. `tests/conformance/architecture/v04-boundaries.test.ts
 
 ## 18. Local validation
 
-Run at the F.3 review-ready branch tip (local, not CI):
+Run at the F.3 re-review branch tip after the §0 correction (local, not CI):
 
 ```text
-npm test                        1003 pass, 0 fail   (was 950 at F.2b)
-npm run test:conformance         752 pass, 0 fail   (was 699)
+npm test                        1017 pass, 0 fail   (was 950 at F.2b; 1003 before the §0 correction)
+npm run test:conformance         766 pass, 0 fail   (was 699; 752 before)
 npm run test:mcp                  68 pass, 0 fail
 npm run test:evals               12 pass, 0 fail    (unchanged: default wiring authors no derivedMemory)
 npm run test:benchmark-subjects   8 pass, 0 fail

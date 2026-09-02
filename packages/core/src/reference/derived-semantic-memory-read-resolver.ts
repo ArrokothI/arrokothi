@@ -6,11 +6,14 @@
  *
  * ```text
  * request
- *   ↓ is this Execution in scope?           no  -> null, provider NOT called
- *   ↓ does the grant permit a Derived read? no  -> null, provider NOT called
- *   ↓ resolve the opaque collection token   none -> null, provider NOT called
+ *   ↓ is this Execution in scope?            no  -> null, provider NOT called
+ *   ↓ does the grant permit a Derived read?  no  -> null, provider NOT called
+ *   ↓ resolve the opaque collection token    none -> null, provider NOT called
+ *   ↓ does the empty { query, claims: [] }        no  -> null, provider NOT called
+ *     envelope fit the byte budget?                     (no valid bounded snapshot exists; the
+ *                                                        authored query is never truncated)
  *   ↓ provider.retrieve(collection, query, limit)
- *   ↓ validate every returned claim         malformed -> throw (fail closed)
+ *   ↓ validate every returned claim          malformed -> throw (fail closed)
  *   ↓ project into a bounded model-facing snapshot
  * ```
  *
@@ -27,7 +30,10 @@ import type {
   DerivedSemanticMemoryReadBudget,
   DerivedSemanticMemoryReadView,
 } from "../execution/derived-semantic-memory.ts";
-import { projectDerivedSemanticMemoryReadView } from "../execution/derived-semantic-memory.ts";
+import {
+  derivedSemanticMemoryEmptyEnvelopeFits,
+  projectDerivedSemanticMemoryReadView,
+} from "../execution/derived-semantic-memory.ts";
 import type { DerivedSemanticMemoryProvider } from "../ports/derived-semantic-memory-provider.ts";
 import { derivedSemanticMemoryRetrieveResultIssues } from "../ports/derived-semantic-memory-provider.ts";
 import type {
@@ -78,6 +84,11 @@ export function createDerivedSemanticMemoryReadResolver(
         maxClaims: Math.max(0, Math.min(request.limit, options.maxClaims ?? request.limit)),
         maxBytes: Math.max(1, Math.min(request.maxBytes, options.maxBytes ?? request.maxBytes)),
       };
+
+      // If even the empty envelope cannot fit the byte budget, no valid bounded snapshot exists for
+      // this query. Detected here, before any provider call, and returned deterministically as "no
+      // snapshot" - the authored query is never truncated to make room.
+      if (!derivedSemanticMemoryEmptyEnvelopeFits(request.query, budget.maxBytes)) return null;
 
       const claims = await options.provider.retrieve({
         collection,
