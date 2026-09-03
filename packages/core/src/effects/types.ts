@@ -105,6 +105,22 @@ export interface WriteMemoryProposal extends ProposalBase {
   readonly value: JsonValue;
   /** Optional plain-reference provenance for this explicit assertion. Never authority. */
   readonly provenance?: MemoryWriteProvenance;
+  /**
+   * Optional optimistic-concurrency precondition (Slice G.0).
+   *
+   * Absent means the write is unconditional - the accepted F.0 last-writer-replaces behaviour, and
+   * the byte-identical model-facing path. Present means: commit only if the *whole* bound
+   * `StructuredMemoryView.revision` still equals this number at the moment the atomic memory
+   * transaction resolves. A stale versioned write does not silently become last-write-wins - it
+   * produces a distinct `memory.write_conflict` observation and mutates nothing.
+   *
+   * It is a non-negative integer referring to the entire bound view, never a per-field version and
+   * never a predicate. It is part of the exact proposal, so two otherwise-identical writes expecting
+   * different revisions have different exact-payload confirmation digests. G.0 is a
+   * trusted/programmatic primitive: the F.1.1 model-facing write callable never asks the model for
+   * it, and the model-facing read projection still carries no whole-view revision.
+   */
+  readonly expectedRevision?: number;
 }
 
 export interface SpawnExecutionProposal extends ProposalBase {
@@ -300,6 +316,23 @@ export function memoryWriteProvenanceIssues(value: unknown, path = "provenance")
 }
 
 /**
+ * Structural validation of an optional `WriteMemory` optimistic-concurrency precondition (G.0).
+ *
+ * Absent is fine (an unconditional write). Present means a non-negative integer: a `number` that
+ * `Number.isInteger` accepts and that is `>= 0`. This rejects a fractional value, `NaN`, `Infinity`,
+ * a string, `null`, and a negative number - each as *malformed data*, so a bad precondition is
+ * refused before any authorizer or Structured Memory view lookup, exactly like any other malformed
+ * proposal field.
+ */
+export function expectedRevisionIssues(value: unknown, path = "expectedRevision"): readonly EffectProposalIssue[] {
+  if (value === undefined) return [];
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+    return [issue(path, "expected a non-negative integer view revision when present")];
+  }
+  return [];
+}
+
+/**
  * Structural validation of one proposal.
  *
  * Runs before identity is assigned and before any authorization is consulted: a malformed request
@@ -369,6 +402,7 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
       }
       issues.push(...jsonIssues(candidate["value"], `${path}.value`).map((i) => issue(i.path, i.message)));
       issues.push(...memoryWriteProvenanceIssues(candidate["provenance"], `${path}.provenance`));
+      issues.push(...expectedRevisionIssues(candidate["expectedRevision"], `${path}.expectedRevision`));
       break;
     }
     case "spawn_execution": {
@@ -481,6 +515,12 @@ export interface WriteMemoryInput {
   readonly authorizationEvidence?: AuthorizationEvidence;
   /** Optional plain-reference provenance for this explicit assertion. Never authority. */
   readonly provenance?: MemoryWriteProvenance;
+  /**
+   * Optional optimistic-concurrency precondition (Slice G.0): commit only if the bound
+   * `StructuredMemoryView.revision` still equals this non-negative integer. Absent = unconditional.
+   * A trusted/programmatic caller supplies it; the model-facing write callable never does.
+   */
+  readonly expectedRevision?: number;
 }
 
 /** Builds a schema-bound Structured Memory write proposal. The Harness still authorizes it. */
@@ -492,6 +532,7 @@ export function writeMemory(input: WriteMemoryInput): WriteMemoryProposal {
     ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
     ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
     ...(input.provenance !== undefined ? { provenance: input.provenance } : {}),
+    ...(input.expectedRevision !== undefined ? { expectedRevision: input.expectedRevision } : {}),
   };
 }
 
@@ -503,6 +544,13 @@ export interface PromoteDerivedClaimInput {
   /** The value the caller is asserting. Explicit - never parsed out of `claim.statement`. */
   readonly value: JsonValue;
   readonly requestKey?: string;
+  /**
+   * Optional optimistic-concurrency precondition (Slice G.0), forwarded verbatim onto the ordinary
+   * `WriteMemory` proposal this helper builds. Promotion has no special concurrency mechanism: a
+   * trusted caller that wants a compare-and-set promotion supplies the expected view revision here
+   * and gets the same `memory.write_conflict` outcome an ordinary versioned write would.
+   */
+  readonly expectedRevision?: number;
 }
 
 /**
@@ -517,6 +565,7 @@ export interface PromoteDerivedClaimInput {
  * - validates the claim (fail-closed - throws on a malformed claim);
  * - attaches `{ derivedClaimIds: [claim.claimId], sourceRefs: [...claim.provenance.sourceRefs] }`
  *   as provenance;
+ * - forwards an optional G.0 `expectedRevision` precondition unchanged;
  * - returns a plain `WriteMemoryProposal`.
  *
  * It does **not** parse `claim.statement`. The Harness still authorizes the concrete write from
@@ -533,6 +582,7 @@ export function promoteDerivedClaim(input: PromoteDerivedClaimInput): WriteMemor
     key: input.structuredKey,
     value: input.value,
     ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    ...(input.expectedRevision !== undefined ? { expectedRevision: input.expectedRevision } : {}),
     provenance: {
       derivedClaimIds: [input.claim.claimId],
       sourceRefs: [...input.claim.provenance.sourceRefs],

@@ -188,6 +188,19 @@ function outcomeOf(event: DeliveredEvent): {
           revision: event.body.revision,
         },
       };
+    case "memory.write_conflict":
+      // Slice G.0: a valid, authorized versioned WriteMemory whose optimistic precondition was stale.
+      // The barrier settles `conflicted` - distinct from `rejected` / `denied` / `failed` - so the
+      // Stage does not wait forever and Stage logic can re-read and decide.
+      return {
+        outcome: "conflicted",
+        error: {
+          code: "structured_memory_write_conflict",
+          message:
+            `the Structured Memory view is at revision ${event.body.actualRevision}, not the expected ` +
+            `${event.body.expectedRevision}; the versioned write did not commit`,
+        },
+      };
     case "capability.failed":
       return { outcome: "failed", error: { code: event.body.error.code, message: event.body.error.message } };
     case "capability.unknown":
@@ -504,7 +517,14 @@ class WorkflowController implements ExecutionController {
             observation: null,
             error: null,
           });
-          proposals.push(writeMemory({ key: request.memoryKey, value: request.value, requestKey: correlationId }));
+          proposals.push(
+            writeMemory({
+              key: request.memoryKey,
+              value: request.value,
+              requestKey: correlationId,
+              ...(request.expectedRevision !== undefined ? { expectedRevision: request.expectedRevision } : {}),
+            }),
+          );
         } else {
           barrier.push({
             key: request.key,

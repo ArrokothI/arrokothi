@@ -117,6 +117,15 @@ provider-defined conflict semantics
 
 Prefer the weakest mechanism that preserves the resource's correctness contract. Do not impose a universal global mutex.
 
+Slice G.0 (`development/024-slice-g0-structured-memory-optimistic-conflict.md`) implemented one narrow
+reference primitive: an optional whole-view `WriteMemoryProposal.expectedRevision` compare-and-set on
+Structured Memory and a distinct `memory.write_conflict` runtime observation (its own Event kind, a
+`conflicted` journal phase, a `conflicted` PendingOperation outcome). It is reference-implementation
+evidence for the "optimistic versions / preconditions" line above, not an answer to it: commutative
+/ reducer updates, transactions, leases/permits, fencing tokens, provider-defined conflict semantics,
+and field-level (rather than whole-view) preconditions all remain open, and G.0 deliberately does not
+freeze the API.
+
 ### 1.5 Recursive expansion, supervision, and deadlock diagnostics
 
 Still to validate:
@@ -361,6 +370,13 @@ provenance-preserving merge
 Derived Memory concurrent extraction/dedup/supersession
 Working Note branch handoff/commit
 ```
+
+Slice G.0 (`development/024-slice-g0-structured-memory-optimistic-conflict.md`) implemented the first
+item as a reference primitive - an optional whole-view `WriteMemoryProposal.expectedRevision`
+compare-and-set with a distinct `memory.write_conflict` observation and a tested lost-update proof.
+It is evidence, not the frozen API: field-level conflict/merge, transactional multi-field writes,
+provenance-preserving merge, and the Derived/Working-Note items all remain open, and G.0's whole-view
+granularity is deliberately coarse.
 
 ### 3.5 Memory backends
 

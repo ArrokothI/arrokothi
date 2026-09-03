@@ -506,14 +506,29 @@ class AgentController implements ExecutionController {
     for (const event of events) {
       if (isEffectResultEventKind(event.kind) && event.correlationId !== null) {
         const pending = next.pending.find((call) => call.correlationId === event.correlationId);
-        // `memory.written` carries runtime view metadata, but the pending projection binding already
-        // owns the exact key. Project only that binding-owned fact and accept the Event only for the
-        // action family that could have produced it.
-        const mapped: ReturnType<typeof outcomeOf> = event.kind === "memory.written"
-          ? pending?.target.kind === "structured_memory_write"
-            ? { outcome: "completed" as const, observation: { key: pending.target.key, written: true } }
-            : null
-          : outcomeOf(event);
+        // `memory.written` / `memory.write_conflict` carry runtime view metadata (a view id, a
+        // whole-view revision), but the pending projection binding already owns the exact key, and
+        // whole-view revision must not reach the model. Project only the binding-owned key plus the
+        // distinct outcome, and accept the Event only for the action family that could have produced
+        // it. `memory.write_conflict` renders as `conflicted`, never as a capability failure.
+        const mapped: ReturnType<typeof outcomeOf> =
+          event.kind === "memory.written"
+            ? pending?.target.kind === "structured_memory_write"
+              ? { outcome: "completed" as const, observation: { key: pending.target.key, written: true } }
+              : null
+            : event.kind === "memory.write_conflict"
+              ? pending?.target.kind === "structured_memory_write"
+                ? {
+                    outcome: "conflicted" as const,
+                    observation: { key: pending.target.key, written: false },
+                    error: {
+                      code: "structured_memory_write_conflict",
+                      message:
+                        "the Structured Memory view changed since the expected revision; the versioned write did not commit",
+                    },
+                  }
+                : null
+              : outcomeOf(event);
         if (!mapped) continue;
         next = settleAgentCall(next, event.correlationId, mapped.outcome, {
           ...(mapped.observation !== undefined ? { observation: mapped.observation } : {}),

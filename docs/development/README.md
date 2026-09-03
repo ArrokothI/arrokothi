@@ -96,9 +96,28 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   observation. Agent-only consumer, controller-neutral resolver, no caching or Workflow LLM change.
   No canonical-doc change. Merged to main (PR #11); part of the merged `main` F.2a baseline.
 
+024-slice-g0-structured-memory-optimistic-conflict.md
+  the current Slice G.0 checkpoint, on the long-lived branch `slice-g-structured-concurrency` from
+  the merged Slice-F baseline (`cadf1f1`, PR #12). The first honest optimistic Structured Memory
+  write precondition: an optional whole-view `WriteMemoryProposal.expectedRevision` compare-and-set
+  (absent = the accepted F.0 unconditional write; never exposed to the model) and one distinct
+  `memory.write_conflict` runtime observation - its own Event kind (in `EFFECT_RESULT_EVENT_KINDS`,
+  not externally mintable), a terminal `conflicted` journal phase, a `conflicted` PendingOperation
+  outcome with `dispatch` still `not_dispatched`, a `conflicted` `resolveConfirmation` receipt, and
+  `conflicted` Workflow Stage + Agent action observation outcomes - never collapsed into
+  `effect.rejected`. Authorization still runs before any view lookup (a denied versioned write reads
+  the view zero times and reveals no revision); the semantic check and the commit linearize in one
+  RuntimeStore transaction; the confirmation digest covers `expectedRevision`; an approved-but-stale
+  write conflicts rather than forcing; the physical `StructuredMemoryFacet.update` CAS stays the
+  final guard and fails closed to the same conflict semantics. Whole-view (not field-level) conflict
+  is deliberately coarse and tested as intentional. The five Effect kinds are unchanged; no parallel
+  Workflow / fork-join / branch state / reducer / field-level revision / lease - all deferred to
+  G.1+. No canonical-doc change (`future-plan.md` §1.4 / §3.4 gain a pointer only). Not merged;
+  awaiting independent review.
+
 023-slice-f3-derived-semantic-memory-provenance-promotion.md
-  the current F.3 checkpoint, on the long-lived branch `slice-f-memory-completion` from the accepted
-  F.2b tip. The smallest honest Derived Semantic Memory vertical slice: a reference v0.4
+  the accepted and merged F.3 checkpoint (part of `main` @ `cadf1f1`, PR #12). The smallest honest
+  Derived Semantic Memory vertical slice: a reference v0.4
   claim/provenance shape (dependency-free `execution/` leaf; explicitly NOT the frozen portable
   schema - `future-plan.md` §3.1 stays open); an explicit `DerivedMemoryExtractor` seam + trusted
   `deriveClaims` grounding (a candidate may cite only supplied sourceRefs; `derivedAt` is pipeline-
@@ -115,7 +134,8 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   confirmation digest, retained on the committed record + history); zero-cost disabled path.
   Malicious "user approves all payments" claim grants nothing. No parent->child Derived handoff; no
   `SpawnExecution` field. **No canonical-doc change** (`future-plan.md` §3.1/§3.2 gain a pointer,
-  lose no question). Not merged; awaiting independent review, then the final integrated Slice-F review.
+  lose no question). Independently reviewed and merged with the rest of Slice F (`main` @ `cadf1f1`,
+  PR #12).
 
 022-slice-f2b-working-notes-explicit-handoff.md
   the accepted F.2b checkpoint, on the long-lived branch `slice-f-memory-completion` from the accepted
@@ -209,49 +229,66 @@ Slice F memory
   F.1.1         model-directed WriteMemory         accepted, merged (020, PR #11)
                 exposure via authorized memory
                 view + heterogeneous action view
-  F.2a          Working Notes local scratch:       accepted (021), review-corrected; on branch
-                controller-owned frame in          slice-f-memory-completion, unmerged with the
-                AgentControlState, authored         rest of Slice F. working_notes_set is a
-                read/write enablement, local        controller-local model CONTROL (not a model
-                working_notes_set control with no   action / Active View member); one minimal
-                Effect/Event, bounded persistence,  authority.md §3/§14 clarification
+  F.2a          Working Notes local scratch:       accepted (021), review-corrected; merged with
+                controller-owned frame in          the rest of Slice F. working_notes_set is a
+                AgentControlState, authored         controller-local model CONTROL (not a model
+                read/write enablement, local       action / Active View member); one minimal
+                working_notes_set control with no  authority.md §3/§14 clarification
+                Effect/Event, bounded persistence,
                 control-state version 2 -> 3 +
                 fail-closed frame validation
-  F.2b          Working Notes explicit handoff:    accepted (022, review-corrected §0.1-0.5); on
-                selectWorkingNotesHandoff (pure,   branch slice-f-memory-completion, unmerged with
-                fail-closed) -> immutable          the rest of Slice F. First explicit Working Notes
-                WorkingNotesHandoff snapshot on an composition transfer, across ONE child Execution
-                already-authorized SpawnExecution  boundary. No new gateway / Effect / Event /
-                -> Effect gateway envelope-checks  PendingOperation kind. TWO artifacts per canonical
-                + rejects oversize atomically ->   composition.md §15 / memory.md §5: immutable
-                TWO artifacts: immutable inherited inherited read-only snapshot + child-local
-                snapshot on ExecutionContext +     WRITABLE frame seeded once (never re-overlaid).
-                child-local writable frame seeded  Not an authority mechanism, but the concrete
-                once from a deep copy of it.       proposal reaches EffectAuthorizer/confirmation so
-                Workflow Stage handoff, parallel   policy may deny the concrete transfer. No
-                notes, child->parent return all    canonical-doc change.
-                deferred.
-  F.3           Derived Semantic Memory +         current checkpoint (023); on branch
-                provenance + explicit promotion:  slice-f-memory-completion, not merged, awaiting
-                reference claim/provenance leaf   independent review. Derived Semantic Memory is a
-                (NOT the frozen portable schema); DIFFERENT memory form: inferred, provenance-
-                DerivedMemoryExtractor seam +     bearing, retrieval-oriented, NOT authoritative by
-                trusted deriveClaims grounding;   default. Extraction (deriveClaims) is an
-                replaceable provider port +       application concern, never called from a
-                reference in-memory provider      controller; a candidate may cite only supplied
-                (deterministic lexical ranking,   sourceRefs; derivedAt is pipeline-stamped.
-                NOT canonical); authorized deny-  Authorized retrieval resolver checks policy BEFORE
-                by-default read resolver held by  the provider (denied -> zero retrieve calls),
-                the AgentController; authored     mirrors F.1. Promotion is the EXISTING WriteMemory
-                AgentSpec.derivedMemory.read +    Effect + an optional plain MemoryWriteProvenance
-                two AgentLimits budgets; labeled  (NOT AuthorizationEvidence; covered by the
-                "# Derived Semantic Memory"       confirmation digest; retained on the committed
-                information block; per-invocation record + history) - no sixth Effect, no
-                snapshot/re-entry; explicit       derived.promoted Event, statement never parsed.
-                promoteDerivedClaim into          Malicious "user approves all payments" claim grants
-                WriteMemory. Zero-cost disabled   nothing. No parent->child Derived handoff. No
-                path. No canonical-doc change     canonical-doc change (future-plan.md §3.1/§3.2 gain
-                (future-plan pointer only).       a pointer, lose no question).
+  F.2b          Working Notes explicit handoff:    accepted (022, review-corrected §0.1-0.5);
+                selectWorkingNotesHandoff (pure,   merged with the rest of Slice F. First explicit
+                fail-closed) -> immutable          Working Notes composition transfer, across ONE
+                WorkingNotesHandoff snapshot on an child Execution boundary. No new gateway / Effect
+                already-authorized SpawnExecution  / Event / PendingOperation kind. TWO artifacts per
+                -> Effect gateway envelope-checks  canonical composition.md §15 / memory.md §5:
+                + rejects oversize atomically ->   immutable inherited read-only snapshot +
+                TWO artifacts: immutable inherited child-local WRITABLE frame seeded once (never
+                snapshot on ExecutionContext +     re-overlaid). No canonical-doc change.
+                child-local writable frame seeded
+                once from a deep copy of it.
+  F.3           Derived Semantic Memory +         accepted (023), independently reviewed;
+                provenance + explicit promotion.  a DIFFERENT memory form: inferred, provenance-
+                Reference claim/provenance leaf   bearing, retrieval-oriented, NOT authoritative by
+                (NOT the frozen portable schema); default. Authorized retrieval resolver checks
+                DerivedMemoryExtractor seam +     policy BEFORE the provider (denied -> zero retrieve
+                trusted deriveClaims grounding;   calls), mirrors F.1. Promotion is the EXISTING
+                replaceable provider port;        WriteMemory Effect + an optional plain
+                authored AgentSpec.derivedMemory  MemoryWriteProvenance - no sixth Effect, no
+                .read + two AgentLimits budgets;  derived.promoted Event, statement never parsed.
+                explicit promoteDerivedClaim into future-plan.md §3.1/§3.2 gain a pointer only.
+                WriteMemory. Zero-cost disabled
+                path.
+  Slice F accepted + reviewed + MERGED             main @ cadf1f1 (PR #12)
+        ↓
+Slice G structured concurrency
+  G.0           Structured Memory optimistic       current checkpoint (024); on branch
+                write preconditions + explicit    slice-g-structured-concurrency from the merged
+                conflict observations.            Slice-F baseline, not merged, awaiting independent
+                Optional whole-view               review. Optional WriteMemoryProposal.expectedRevision
+                WriteMemoryProposal               (a non-negative integer on the WHOLE bound view
+                .expectedRevision compare-and-set revision; absent = the accepted F.0 unconditional
+                (never exposed to the model);     write; NEVER exposed to the model - the F.1.1 write
+                one distinct memory.write_conflict callable input schema stays exactly { value }).
+                Event kind (in                    A stale versioned write is a DISTINCT outcome, not
+                EFFECT_RESULT_EVENT_KINDS, not    a flavour of effect.rejected: memory.write_conflict
+                externally mintable), a terminal  Event, `conflicted` journal phase, `conflicted`
+                `conflicted` journal phase, a     PendingOutcomeState (dispatch stays
+                `conflicted` PendingOperation     not_dispatched), `conflicted` resolveConfirmation
+                outcome, `conflicted` Stage +     receipt, `conflicted` Stage + Agent action
+                Agent action observation          observation outcomes. Authorization runs BEFORE any
+                outcomes. The semantic check +    view lookup (a denied versioned write reads the
+                the commit linearize in one       view zero times); the confirmation digest covers
+                RuntimeStore transaction; the     expectedRevision; an approved-but-stale write
+                physical StructuredMemoryFacet    conflicts rather than forcing; the physical
+                .update CAS stays the final       StructuredMemoryFacet.update CAS fails closed to the
+                guard. Whole-view (not field-     same conflict semantics. The five Effect kinds are
+                level) conflict is deliberately   unchanged. No parallel Workflow / fork-join / branch
+                coarse and tested as intentional. state / reducer / field-level revision / lease -
+                No canonical-doc change           all deferred to G.1+. No canonical-doc change
+                (future-plan.md §1.4 / §3.4       (future-plan.md §1.4 / §3.4 gain a pointer only).
+                pointer only).
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

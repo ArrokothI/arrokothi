@@ -53,6 +53,13 @@ export interface StageMemoryWriteRequest {
   readonly key: string;
   readonly memoryKey: string;
   readonly value: JsonValue;
+  /**
+   * Optional optimistic-concurrency precondition (Slice G.0): a non-negative integer bound-view
+   * revision. Absent = unconditional (the accepted F.0 behaviour). Present and stale ⇒ the barrier
+   * settles `conflicted` and nothing is written. This lets deterministic Workflow code exercise G.0
+   * through the ordinary Effect path.
+   */
+  readonly expectedRevision?: number;
 }
 
 export type StageEffectRequest = StageCapabilityRequest | StageMemoryWriteRequest;
@@ -62,11 +69,20 @@ export type StageEffectRequest = StageCapabilityRequest | StageMemoryWriteReques
  *
  * Mirrors the Event vocabulary rather than compressing it: `denied` is policy refusing, `rejected`
  * is a request that was never answerable, `failed` is a definite non-event, `unknown` is the
- * ambiguous case where the operation may well have happened, and `declined` (Slice E.2.1) is a human
- * declining an exact-payload mechanical confirmation - nothing dispatched, policy did not deny.
- * Collapsing any pair of these would make a Stage confidently wrong about the world.
+ * ambiguous case where the operation may well have happened, `declined` (Slice E.2.1) is a human
+ * declining an exact-payload mechanical confirmation - nothing dispatched, policy did not deny - and
+ * `conflicted` (Slice G.0) is a valid, authorized versioned `WriteMemory` whose optimistic
+ * precondition was stale, so nothing was written. Collapsing any pair of these would make a Stage
+ * confidently wrong about the world.
  */
-export type StageObservationOutcome = "completed" | "failed" | "unknown" | "denied" | "rejected" | "declined";
+export type StageObservationOutcome =
+  | "completed"
+  | "failed"
+  | "unknown"
+  | "denied"
+  | "rejected"
+  | "declined"
+  | "conflicted";
 
 export interface StageCapabilityObservation {
   /** The Stage-local key this answers. */

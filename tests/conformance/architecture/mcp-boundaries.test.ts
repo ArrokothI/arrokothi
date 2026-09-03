@@ -238,7 +238,9 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
         "effect.denied",
         "effect.rejected",
         "external.input",
-        // Slice F.0 added this kernel-owned Structured Memory result; MCP still added nothing.
+        // Slice F.0 added memory.written and Slice G.0 added memory.write_conflict; both are
+        // kernel-owned Structured Memory results and MCP still added nothing.
+        "memory.write_conflict",
         "memory.written",
         "message.sent",
         "peer.message",

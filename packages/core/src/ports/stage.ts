@@ -184,6 +184,16 @@ export function functionStageOutcomeIssues(
           if (!("value" in described)) {
             issues.push({ path: `${path}.effects[${index}].value`, message: "expected a JSON value" });
           }
+          const expectedRevision = described["expectedRevision"];
+          if (
+            expectedRevision !== undefined &&
+            (typeof expectedRevision !== "number" || !Number.isInteger(expectedRevision) || expectedRevision < 0)
+          ) {
+            issues.push({
+              path: `${path}.effects[${index}].expectedRevision`,
+              message: "expected a non-negative integer view revision when present",
+            });
+          }
         } else {
           if (described["kind"] !== undefined && described["kind"] !== "use_capability") {
             issues.push({

@@ -64,6 +64,9 @@ describe("the Event vocabulary", () => {
         "effect.denied",
         "effect.rejected",
         "external.input",
+        // Slice G.0: a runtime-established optimistic-concurrency conflict for a versioned
+        // `WriteMemory`. A distinct observation, not a reuse of `effect.rejected`.
+        "memory.write_conflict",
         // Slice F.0: a runtime-established successful Structured Memory commit.
         "memory.written",
         // Slice E.1: the `SendMessage` runtime owns these, and child cancellation adds `child.cancelled`.

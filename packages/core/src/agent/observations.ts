@@ -31,7 +31,17 @@ export type AgentObservationOutcome =
    * Agent settles the pending call and makes its next model decision; the projector must render this
    * truthfully rather than as `denied` / `failed` / `cancelled`.
    */
-  | "declined";
+  | "declined"
+  /**
+   * A versioned Structured Memory write lost an optimistic compare-and-set on the bound view
+   * revision (Slice G.0). The request was valid, authorized, and (where gated) confirmed - nothing
+   * was written. Distinct from `denied` / `rejected` / `failed`: the write definitely did not
+   * commit, and the controller may re-read and retry. The reference Agent's model-directed write
+   * callable never supplies `expectedRevision`, so this outcome is reachable only for a
+   * trusted/programmatic versioned write; the vocabulary and mapping exist so a `memory.write_conflict`
+   * Event is never rendered as a capability failure.
+   */
+  | "conflicted";
 
 export const AGENT_OBSERVATION_OUTCOMES: readonly AgentObservationOutcome[] = [
   "completed",
@@ -40,6 +50,7 @@ export const AGENT_OBSERVATION_OUTCOMES: readonly AgentObservationOutcome[] = [
   "denied",
   "rejected",
   "declined",
+  "conflicted",
 ];
 
 /**

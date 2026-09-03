@@ -491,6 +491,7 @@ export type {
   ExternalInputBody,
   MessageSentBody,
   MemoryWrittenBody,
+  MemoryWriteConflictBody,
   PeerMessageBody,
   UserInputBody,
 } from "./interaction/events.ts";
@@ -539,6 +540,8 @@ export {
   DISPATCHABLE_EFFECT_KINDS,
   EFFECT_KINDS,
   isEffectKind,
+  effectProposalIssues,
+  expectedRevisionIssues,
   isUseCapabilityProposal,
   isWriteMemoryProposal,
   memoryWriteProvenanceIssues,
