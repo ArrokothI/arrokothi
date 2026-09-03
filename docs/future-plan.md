@@ -115,10 +115,19 @@ staying a branch of one Workflow Execution. It adds a runtime dependency-set (un
 (`ControllerNext` `await_dependencies`, `ExecutionWait` `dependencies`) that is deliberately *not*
 `interleave` (sibling branch progress is explicitly separate, so no stale-continuation
 invalidation), branch-qualified Effect correlation and ControllerResumption keys, atomic
-multi-registration commit, and a `parallel_branch_memory_write_deferred` fail-closed. Both records
-are reference-implementation evidence, not a frozen API: multi-Stage branches, nested forks, branch
-loops, branch Adapters, branch emissions, reducers, merge, cancellation propagation, concurrent
-Structured Memory branch writes, and branch Working Notes all remain open (G.3+).
+multi-registration commit, and a `parallel_branch_memory_write_deferred` fail-closed.
+
+Slice G.3 (`development/027-slice-g3-parallel-structured-memory-conflicts.md`) removes that last
+fail-closed: a parallel branch may use the ordinary `WriteMemory` Effect, but a branch write **must**
+carry an explicit `expectedRevision` (an unversioned branch write fails closed with
+`parallel_branch_memory_write_requires_revision` before the proposal reaches the Harness). A versioned
+branch write reuses the ordinary path; a stale one settles the branch barrier `conflicted` (an
+observation, not an automatic branch/fork/Workflow failure); simultaneously-ungated branch writes are
+arbitrated by authored branch order, not wall-clock. No reducer, no merge, no automatic retry.
+
+All four records are reference-implementation evidence, not a frozen API: multi-Stage branches,
+nested forks, branch loops, branch Adapters, branch emissions, reducers, merge, cancellation
+propagation, field-level memory conflict handling, and branch Working Notes all remain open (G.4+).
 
 ### 1.4 Shared mutable resources
 
@@ -139,11 +148,14 @@ Prefer the weakest mechanism that preserves the resource's correctness contract.
 Slice G.0 (`development/024-slice-g0-structured-memory-optimistic-conflict.md`) implemented one narrow
 reference primitive: an optional whole-view `WriteMemoryProposal.expectedRevision` compare-and-set on
 Structured Memory and a distinct `memory.write_conflict` runtime observation (its own Event kind, a
-`conflicted` journal phase, a `conflicted` PendingOperation outcome). It is reference-implementation
+`conflicted` journal phase, a `conflicted` PendingOperation outcome). Slice G.3
+(`development/027-slice-g3-parallel-structured-memory-conflicts.md`) is the first consumer inside a
+parallel Workflow branch: a branch `WriteMemory` must carry an `expectedRevision`, and a stale one
+becomes an observable branch conflict rather than a silent overwrite — arbitrated by authored branch
+order, with the whole-view revision still deliberately coarse. Both are reference-implementation
 evidence for the "optimistic versions / preconditions" line above, not an answer to it: commutative
 / reducer updates, transactions, leases/permits, fencing tokens, provider-defined conflict semantics,
-and field-level (rather than whole-view) preconditions all remain open, and G.0 deliberately does not
-freeze the API.
+and field-level (rather than whole-view) preconditions all remain open, and the API is not frozen.
 
 ### 1.5 Recursive expansion, supervision, and deadlock diagnostics
 
@@ -393,9 +405,11 @@ Working Note branch handoff/commit
 Slice G.0 (`development/024-slice-g0-structured-memory-optimistic-conflict.md`) implemented the first
 item as a reference primitive - an optional whole-view `WriteMemoryProposal.expectedRevision`
 compare-and-set with a distinct `memory.write_conflict` observation and a tested lost-update proof.
-It is evidence, not the frozen API: field-level conflict/merge, transactional multi-field writes,
-provenance-preserving merge, and the Derived/Working-Note items all remain open, and G.0's whole-view
-granularity is deliberately coarse.
+Slice G.3 (`development/027-slice-g3-parallel-structured-memory-conflicts.md`) exercises it across
+concurrent parallel Workflow branches (a branch write must be versioned; a stale one is an observable
+conflict, deterministically arbitrated by authored branch order). Both are evidence, not the frozen
+API: field-level conflict/merge, transactional multi-field writes, provenance-preserving merge, and
+the Derived/Working-Note items all remain open, and the whole-view granularity is deliberately coarse.
 
 ### 3.5 Memory backends
 

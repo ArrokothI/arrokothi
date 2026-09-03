@@ -21,14 +21,15 @@
  * controller-state mutation stays serialized (one commit after the branches settle)
  * the explicit join is a distinct semantic step, not "whichever branch finished last"
  * deterministic result / failure ordering by authored branch order, never completion timing
- * a branch that requests a Structured Memory write fails closed (deferred to G.3)
+ * an UNVERSIONED branch Structured Memory write fails closed (a versioned one is G.3, see
+ *   parallel-branch-structured-memory.test.ts)
  * closed Stage / Effect vocabularies stay closed
  * ```
  *
- * Slice G.2 keeps this file as the fork/join *regression* suite (branch dependencies, Effects, and
- * async resumptions get their own focused files). The only G.2 edits here are: the branch body may
- * now be any adapter-free Stage kind, the persisted control-state version is 4, and a branch
- * `WriteMemory` is the fail-closed case (branch Effects are now supported).
+ * Slices G.2 / G.3 keep this file as the fork/join *regression* suite (branch dependencies, Effects,
+ * async resumptions, and concurrent Structured Memory writes get their own focused files). The edits
+ * here are: the branch body may now be any adapter-free Stage kind, the persisted control-state
+ * version is 4, and an unversioned branch `WriteMemory` is the fail-closed case.
  */
 
 import { test, describe } from "node:test";
@@ -328,11 +329,13 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
     assert.equal(finalState.join, null, "the join snapshot is cleared when the Workflow leaves D");
   });
 
-  test("a branch that requests a Structured Memory write fails closed (deferred to G.3), no Effect", async () => {
+  test("a branch that requests an UNVERSIONED Structured Memory write fails closed (G.3), no Effect", async () => {
     const { harness, definitions } = createWorkflowTestHarness({
+      authorizer: createAllowListAuthorizer({ grants: [], memory: true }),
       functions: createFunctionStageRegistry({
         a: () => ({ status: "completed", result: "seed" }),
         b: () => ({
+          // No expectedRevision: a parallel branch write must be optimistic (G.3).
           status: "awaitEffects",
           effects: [{ kind: "write_memory", key: "w", memoryKey: "note", value: "from B" }],
         }),
@@ -340,7 +343,7 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
         d: () => ({ status: "completed", result: "done" }),
       }),
     });
-    const ref = await definitions.save(defineWorkflow({ id: "g2-branch-memory-write", spec: forkJoinSpec() }));
+    const ref = await definitions.save(defineWorkflow({ id: "g3-branch-unversioned-write", spec: forkJoinSpec() }));
     const handle = await harness.createExecution({
       definition: ref,
       structuredMemory: { fields: [{ key: "note", description: "a note", schema: { kind: "string" } }] },
@@ -349,7 +352,7 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
 
     const context = await harness.inspect(handle.executionId);
     assert.equal(context?.lifecycle, "FAILED");
-    assert.equal(context?.failure?.code, "parallel_branch_memory_write_deferred");
+    assert.equal(context?.failure?.code, "parallel_branch_memory_write_requires_revision");
     assert.match(context!.failure!.message, /fork "p" branch "b"/);
     // Nothing was proposed to the Harness: no Effect journal entry, no PendingOperation, no mutation.
     assert.deepEqual(await harness.effectJournalOf(handle.executionId), []);

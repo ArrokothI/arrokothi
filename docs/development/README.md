@@ -96,6 +96,27 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   observation. Agent-only consumer, controller-neutral resolver, no caching or Workflow LLM change.
   No canonical-doc change. Merged to main (PR #11); part of the merged `main` F.2a baseline.
 
+027-slice-g3-parallel-structured-memory-conflicts.md
+  the current Slice G.3 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
+  continuing from G.2. A parallel Workflow branch may now use the ordinary `WriteMemory` Effect, but
+  only *optimistically*: a branch write must carry an explicit `expectedRevision`. The G.2 blanket
+  `parallel_branch_memory_write_deferred` is replaced by a `parallel_branch_memory_write_requires_revision`
+  fail-closed for an *unversioned* branch write (before the proposal reaches the Harness - no journal
+  entry, no PendingOperation, no revision advance); a versioned branch write falls through to the
+  same `buildEffectBarrier` path every other branch Effect uses (branch-qualified correlation,
+  ordinary authority / confirmation / whole-view revision CAS, `memory.written` / `memory.write_conflict`).
+  A stale versioned branch write settles its branch barrier `conflicted` (never overwriting a
+  sibling's commit) and does **not** automatically fail the branch / fork / Workflow - the Stage
+  re-enters and decides. Simultaneously-ungated branch writes are arbitrated by authored branch
+  order (the G.2 proposal fold + sequential Effect processing), independent of wall-clock branch
+  completion; the whole-view revision stays deliberately coarse (disjoint keys still conflict);
+  confirmation-time revision recheck stays authoritative (an approved-but-stale gated branch write
+  conflicts). No new Stage / Effect / Event / wait vocabulary; no `BranchMemory`; no reducer / merge
+  / automatic retry; no model-facing `expectedRevision`. `WORKFLOW_CONTROL_STATE_VERSION` stays 4
+  (the G.2 branch `BarrierEntry` already represents `write_memory`). One production change
+  (`attemptBranch`'s `awaitEffects` arm). No canonical-doc change (`future-plan.md` §1.3 / §1.4 /
+  §3.4 pointers only). Not merged; awaiting independent review.
+
 026-slice-g2-parallel-branch-dependencies.md
   the current Slice G.2 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
   continuing from G.1. A parallel branch may now be any *adapter-free* Stage kind
@@ -404,6 +425,37 @@ Slice G structured concurrency
                 fail-closed + race-safe boundary.  transaction re-reads Event + recovered-resumption
                                                   truth and chooses READY if either is satisfied.
                                                   New registrations commit/attach on both paths.
+
+  G.3           concurrent Structured Memory      current checkpoint (027); same branch, continuing
+                branch writes + explicit          from G.2. Not merged, awaiting independent review.
+                optimistic conflict handling.     A parallel branch may use the ordinary WriteMemory
+                A branch write must carry an      Effect, but a branch write MUST carry an explicit
+                explicit expectedRevision; a      expectedRevision. The G.2 blanket
+                stale one becomes an observable   parallel_branch_memory_write_deferred is replaced
+                conflict, never a silent          by parallel_branch_memory_write_requires_revision
+                overwrite.                        (unversioned branch write, fails closed before the
+                                                  Harness). A versioned branch write reuses the same
+                                                  buildEffectBarrier path (branch-qualified
+                                                  correlation, ordinary authority / confirmation /
+                                                  whole-view revision CAS, memory.written /
+                                                  memory.write_conflict). A stale branch write settles
+                                                  its barrier "conflicted" and does NOT auto-fail the
+                                                  branch / fork / Workflow. Simultaneously-ungated
+                                                  branch writes are arbitrated by AUTHORED branch
+                                                  order (G.2 proposal fold + sequential Effect
+                                                  processing), not wall-clock completion; whole-view
+                                                  revision stays coarse (disjoint keys still
+                                                  conflict); confirmation-time revision recheck stays
+                                                  authoritative. No new Stage / Effect / Event / wait
+                                                  kind; no BranchMemory; no reducer / merge / retry;
+                                                  no model-facing expectedRevision.
+                                                  WORKFLOW_CONTROL_STATE_VERSION stays 4. One
+                                                  production change (attemptBranch's awaitEffects
+                                                  arm). No canonical-doc change (future-plan.md §1.3
+                                                  / §1.4 / §3.4 pointers only). Automatic retry, join
+                                                  reducers, memory merge, field-level / per-key
+                                                  revisions, multi-key transactions, locks / leases /
+                                                  fencing, Working Notes branch merge - all deferred.
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

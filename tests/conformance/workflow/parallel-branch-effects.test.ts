@@ -13,7 +13,8 @@
  * the explicit join fires only when every branch has completed - never on completion timing
  * an Agent / Workflow branch Stage creates its child through the ordinary SpawnExecution path;
  *   the branch itself is never an Execution
- * a branch WriteMemory fails closed (parallel_branch_memory_write_deferred) - that is G.3
+ * an UNVERSIONED branch WriteMemory fails closed (parallel_branch_memory_write_requires_revision);
+ *   a versioned branch write is proved in parallel-branch-structured-memory.test.ts (G.3)
  * a branch emission / transition label / Adapter / multi-Stage subgraph stays unsupported
  * ```
  */
@@ -390,8 +391,9 @@ describe("Slice G.2: Agent / Workflow branch Stages", () => {
 describe("Slice G.2: fail-closed deferred branch semantics", () => {
   const forkSpec = branchForkSpec(["b", "c"]);
 
-  test("(42)+(43) a branch WriteMemory fails closed with the G.3-deferred code; the Effect journal stays empty", async () => {
+  test("(42)+(43) an unversioned branch WriteMemory fails closed (G.3 requires expectedRevision); the Effect journal stays empty", async () => {
     const { harness, definitions } = createWorkflowTestHarness({
+      authorizer: createAllowListAuthorizer({ grants: [], memory: true }),
       functions: createFunctionStageRegistry({
         a: () => ({ status: "completed", result: "seed" }),
         b: () => ({ status: "awaitEffects", effects: [{ kind: "write_memory", key: "w", memoryKey: "note", value: "B was here" }] }),
@@ -399,7 +401,7 @@ describe("Slice G.2: fail-closed deferred branch semantics", () => {
         d: () => ({ status: "completed", result: "done" }),
       }),
     });
-    const ref = await definitions.save(defineWorkflow({ id: "g2-branch-mem", spec: forkSpec }));
+    const ref = await definitions.save(defineWorkflow({ id: "g3-branch-mem-unversioned", spec: forkSpec }));
     const handle = await harness.createExecution({
       definition: ref,
       structuredMemory: { fields: [{ key: "note", description: "n", schema: { kind: "string" } }] },
@@ -408,8 +410,8 @@ describe("Slice G.2: fail-closed deferred branch semantics", () => {
 
     const context = await harness.inspect(handle.executionId);
     assert.equal(context?.lifecycle, "FAILED");
-    assert.equal(context?.failure?.code, "parallel_branch_memory_write_deferred");
-    assert.match(context!.failure!.message, /G\.3/);
+    assert.equal(context?.failure?.code, "parallel_branch_memory_write_requires_revision");
+    assert.match(context!.failure!.message, /expectedRevision/);
     assert.deepEqual(await harness.effectJournalOf(handle.executionId), [], "nothing was proposed to the Harness");
     assert.deepEqual(await harness.pendingOperationsOf(handle.executionId), []);
     assert.equal((await harness.structuredMemoryOf(handle.executionId))?.revision, 0);

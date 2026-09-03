@@ -65,7 +65,7 @@
  * Stage body already ran, which Adapter to run next, and which transition the body chose, so
  * resuming re-runs exactly the work that did not finish and nothing else.
  *
- * ## Parallel branches (Slice G.1)
+ * ## Parallel branches (Slices G.1 / G.2 / G.3)
  *
  * A Stage transition may resolve to `{ to: "fork" }`. The controller then installs an active fork in
  * `WorkflowControlState.parallel` - one branch-local record per authored branch, each with its own
@@ -74,19 +74,23 @@
  *
  * ```text
  * Activation N     Stage A completes -> install the fork -> persist -> continue
- * Activation N+1   run every branch Function body, overlapping in wall-clock time,
- *                  then fold results in authored order -> persist joinReady -> continue
- *                  (Stage D has not run)
+ * Activation N+1   advance every runnable branch (any adapter-free Stage kind), overlapping in
+ *                  wall-clock time; a branch may complete, or acquire an Effect / child-call /
+ *                  slow-model dependency. Fold outcomes in authored order -> persist -> continue
+ *                  or wait on the dependency-set union. (Stage D has not run)
  * Activation N+2   explicit join: enter Stage D with the fork input as its ordinary input
  *                  and the immutable branch results as context.join -> clear the fork
  * ```
  *
- * The branch bodies run concurrently inside one Activation via `Promise.all`, but the controller
- * mutates no shared state while they run: each computes from its own immutable snapshot and returns
- * data, and the single serialized commit happens afterwards. Completion timing never decides
- * ordering - branch results and the primary failure are always taken in authored branch order. A
- * branch that returns `awaitEffects` fails the Workflow with a G.1-specific unsupported-semantics
- * code; branch Effects, branch resumptions, and multi-Stage branches are G.2/G.3 work.
+ * The runnable branch steps run concurrently inside one Activation, but the controller mutates no
+ * shared state while they run: each computes from its own immutable snapshot and returns data, and
+ * the single serialized commit happens afterwards. Completion timing never decides ordering - branch
+ * results, the primary failure, and simultaneously-proposed Effects are all taken in authored branch
+ * order. A branch `WriteMemory` (G.3) must carry an explicit `expectedRevision`: a stale versioned
+ * write settles the branch barrier `conflicted` (never overwriting a sibling's commit), and an
+ * unversioned one fails closed (`parallel_branch_memory_write_requires_revision`). Branch emissions,
+ * branch transition labels, branch Adapters, multi-Stage branch subgraphs, and nested forks stay
+ * unsupported.
  */
 
 import type { DefinitionKind } from "../../definitions/types.ts";
@@ -1384,9 +1388,9 @@ class WorkflowController implements ExecutionController {
    *
    * Reuses the ordinary Stage-body machinery (`runStageBodyFor`, `buildEffectBarrier`, the child
    * barrier) with a branch-qualified coordinate: branch-local visit, input, progress, observations,
-   * a `null` join, and a branch-qualified resumption scope. The branch wrapper adds only the G.2
-   * fail-closed rules - no branch `WriteMemory` (deferred to G.3), no branch emissions, no branch
-   * transition label.
+   * a `null` join, and a branch-qualified resumption scope. The branch wrapper adds only the
+   * fail-closed rules - a branch `WriteMemory` must carry `expectedRevision` (G.3), no branch
+   * emissions, no branch transition label.
    */
   private async attemptBranch(
     spec: WorkflowSpec,
@@ -1476,15 +1480,24 @@ class WorkflowController implements ExecutionController {
     }
 
     if (outcome.status === "awaitEffects") {
-      // G.3 fail-closed: a parallel branch must not perform a Structured Memory write in G.2.
-      const memoryWrite = outcome.effects.find((request) => request.kind === "write_memory");
-      if (memoryWrite !== undefined) {
+      // G.3: a parallel branch MAY perform a Structured Memory write, but only an *optimistic* one.
+      // An unversioned branch `WriteMemory` (no `expectedRevision`) could silently overwrite state a
+      // sibling branch committed during the same Activation, which is exactly the timing-dependent
+      // last-writer-wins the structured-concurrency rule forbids. It fails closed here - before the
+      // proposal reaches the Harness, so no Effect journal entry, no PendingOperation, no revision
+      // advance. The ordinary non-parallel unconditional `WriteMemory` (G.0/F.0) is unchanged; this
+      // constraint is scoped to writes emitted from a parallel branch Stage.
+      const unversioned = outcome.effects.find(
+        (request) => request.kind === "write_memory" && request.expectedRevision === undefined,
+      );
+      if (unversioned !== undefined) {
         return {
           kind: "fail",
-          code: "parallel_branch_memory_write_deferred",
+          code: "parallel_branch_memory_write_requires_revision",
           message:
-            `${where} requested a Structured Memory write ("${(memoryWrite as { memoryKey: string }).memoryKey}"); ` +
-            `concurrent branch WriteMemory and deterministic conflict handling are Slice G.3`,
+            `${where} requested an unversioned Structured Memory write ("${(unversioned as { memoryKey: string }).memoryKey}"); ` +
+            `a parallel branch WriteMemory must carry an explicit expectedRevision so a stale write becomes an ` +
+            `observable conflict instead of silently overwriting a sibling's commit (Slice G.3)`,
         };
       }
       const { barrier, proposals } = buildEffectBarrier(outcome.effects, (key) =>
