@@ -1,7 +1,7 @@
 # Application-builder ergonomics findings
 
 > **Status:** engineering findings recorded while writing
-> [`../guides/agent-workflow-composition.md`](../guides/agent-workflow-composition.md) and
+> [`../guides/agent-workflow-composition/`](../guides/agent-workflow-composition/README.md) and
 > corrected after an independent audit of it.
 > **Role:** observations and candidate work items. **Not canonical architecture, and not a plan of
 > record.** Nothing here is implemented by the change that recorded it.

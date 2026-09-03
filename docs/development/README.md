@@ -18,7 +18,7 @@ architecture semantics.
 | What friction does an application builder hit on the current kernel? | [`007-application-builder-ergonomics-findings.md`](007-application-builder-ergonomics-findings.md) |
 
 To build an application **on** the kernel rather than change the kernel, start from
-[`../guides/agent-workflow-composition.md`](../guides/agent-workflow-composition.md).
+[`../guides/agent-workflow-composition/README.md`](../guides/agent-workflow-composition/README.md).
 
 For ordinary coding or review work:
 

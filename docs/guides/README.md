@@ -7,7 +7,7 @@ coding agent) can follow.
 
 | Guide | Use it when |
 |---|---|
-| [`agent-workflow-composition.md`](agent-workflow-composition.md) | turning an application specification into an Agent/Workflow composition: Workflow vs Agent, Stage kinds, memory forms, context, capabilities, Effects, authority, budgets, and evaluation |
+| [`agent-workflow-composition/`](agent-workflow-composition/README.md) | turning an application specification into an Agent/Workflow composition. Its `README.md` is the front door: principles, the requirements mapping, the end-to-end procedure, and a router to seven topic pages — requirements and control, Workflow/Agent/Stage choice, the current authoring surface, state and memory, capabilities and authority, composition and concurrency, evaluation and diagnosis, plus worked examples |
 
 ## Precedence
 

@@ -79,5 +79,7 @@ developer surface is genuinely low-level, and this example shows that honestly r
 
 For deciding *what* to build — Workflow or Agent, which Stage kind, what belongs in Structured
 Memory, when an action needs confirmation — see
-[`docs/guides/agent-workflow-composition.md`](../../docs/guides/agent-workflow-composition.md), and
-in particular its §2.4 matrix of what each stock surface can actually emit today.
+[`docs/guides/agent-workflow-composition/`](../../docs/guides/agent-workflow-composition/README.md),
+and in particular
+[`current-authoring-surface.md`](../../docs/guides/agent-workflow-composition/current-authoring-surface.md),
+which records what each stock surface can actually emit today.

@@ -21,7 +21,7 @@
  * makes, and the two most important ones are deny-by-default: with no `EffectAuthorizer` the
  * Harness refuses every Effect, and with no operation authority an Execution can expose nothing.
  *
- * See `docs/guides/agent-workflow-composition.md` for how to decide *what* to build; this file is
+ * See `docs/guides/agent-workflow-composition/` for how to decide *what* to build; this file is
  * only about how to wire it.
  */
 

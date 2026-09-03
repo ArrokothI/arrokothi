@@ -57,7 +57,7 @@ Then return to the canonical concept owner before changing kernel semantics.
 Start from the application decision procedure, then descend into the canonical owners it cites:
 
 ```text
-guides/agent-workflow-composition
+guides/agent-workflow-composition/README
         ↓
 mental-model → composition → memory → authority
         ↓
