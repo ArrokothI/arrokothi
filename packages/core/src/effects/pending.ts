@@ -51,6 +51,13 @@ export type PendingDispatchState = "not_dispatched" | "dispatched";
  * Effect never dispatched, nothing reached the external world, and the runtime must not relabel the
  * outcome as a capability failure, a decline, a denial, or a cancellation - they mean different
  * things.
+ *
+ * `conflicted` (Slice G.0) is a confirmation-gated `WriteMemory` whose optimistic `expectedRevision`
+ * precondition was no longer true when its approved dispatch resolved. Nothing reached Structured
+ * Memory: `dispatch` stays `not_dispatched`, no value changed, no revision advanced. It is distinct
+ * from `denied` (authorization), `declined` (a human), `rejected` (never dispatchable), and
+ * `failure` (a dispatched operation that did not happen) - a conflict means the write *definitely
+ * did not commit* and the controller may re-read and retry.
  */
 export type PendingOutcomeState =
   | "success"
@@ -60,6 +67,7 @@ export type PendingOutcomeState =
   | "declined"
   | "denied"
   | "rejected"
+  | "conflicted"
   | null;
 
 export interface PendingOperation {

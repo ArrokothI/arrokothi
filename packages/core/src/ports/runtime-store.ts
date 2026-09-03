@@ -264,8 +264,16 @@ export interface ConfirmationRequestFacet {
  *
  * A view is a facet of the same transaction as the Effect journal and mailbox so a committed field
  * value and its `memory.written` observation can never become visible separately. The view has its
- * own monotonic revision; F.0 uses it for attribution and future persistence compatibility, not as
- * a public compare-and-set Effect API.
+ * own monotonic revision.
+ *
+ * `update`'s `expectedRevision` is the *physical persistence CAS* - an implementation guard that a
+ * backend cannot silently accept a stale writer, and it throws `StructuredMemoryConcurrencyError`
+ * when it does not match. It is a different concern from the *semantic* optimistic precondition
+ * Slice G.0 added to the `WriteMemory` proposal (`WriteMemoryProposal.expectedRevision`): the
+ * proposal precondition is an application-level compare-and-set that produces a distinct
+ * `memory.write_conflict` observation, and the Effect gateway checks it inside this same transaction
+ * before calling `update`. If the physical CAS still fails after the semantic check matched, the
+ * gateway fails closed and surfaces the same conflict semantics rather than retrying.
  */
 export interface StructuredMemoryFacet {
   insert(view: StructuredMemoryView): Promise<void>;
@@ -406,11 +414,17 @@ export class SpawnBudgetConcurrencyError extends Error {
 }
 
 export class StructuredMemoryConcurrencyError extends Error {
+  readonly memoryViewId: string;
+  readonly expectedRevision: number;
+  readonly actualRevision: number;
   constructor(memoryViewId: string, expectedRevision: number, actualRevision: number) {
     super(
       `Structured Memory view ${memoryViewId} changed underneath this writer ` +
         `(expected revision ${expectedRevision}, found ${actualRevision})`,
     );
     this.name = "StructuredMemoryConcurrencyError";
+    this.memoryViewId = memoryViewId;
+    this.expectedRevision = expectedRevision;
+    this.actualRevision = actualRevision;
   }
 }

@@ -12,6 +12,8 @@
  *   dispatch_started      the runtime is about to do something it cannot take back
  *   completed             the world said it worked
  *   failed                the world said it definitely did not
+ *   conflicted            a valid, authorized versioned Structured Memory write whose optimistic
+ *                         precondition was no longer true; nothing was mutated (Slice G.0)
  *   unknown_outcome       the world did not say
  *   replayed              a duplicate request was answered from the prior authoritative outcome
  *   abandoned             the Execution went terminal before the result could be delivered
@@ -45,6 +47,13 @@ export type EffectJournalPhase =
   | "failed"
   /** Slice E.1: a `call` child reached `CANCELLED`. Distinct from `failed`. */
   | "cancelled"
+  /**
+   * Slice G.0: a valid, authorized `WriteMemory` whose optimistic `expectedRevision` precondition no
+   * longer matched the bound view. Nothing was mutated, no revision advanced, no write history
+   * appended. Distinct from `denied` (policy), `rejected` (never dispatchable), and `failed` (a
+   * dispatched operation the world said did not happen).
+   */
+  | "conflicted"
   | "unknown_outcome"
   | "replayed"
   | "abandoned";
@@ -60,6 +69,7 @@ export const EFFECT_JOURNAL_PHASES: readonly EffectJournalPhase[] = [
   "completed",
   "failed",
   "cancelled",
+  "conflicted",
   "unknown_outcome",
   "replayed",
   "abandoned",
@@ -73,6 +83,7 @@ export const TERMINAL_EFFECT_PHASES: readonly EffectJournalPhase[] = [
   "completed",
   "failed",
   "cancelled",
+  "conflicted",
   "unknown_outcome",
   "replayed",
   "abandoned",

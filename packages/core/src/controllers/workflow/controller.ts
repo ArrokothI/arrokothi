@@ -64,6 +64,33 @@
  * The persisted position is what makes the second Activation cheap and correct. It records that the
  * Stage body already ran, which Adapter to run next, and which transition the body chose, so
  * resuming re-runs exactly the work that did not finish and nothing else.
+ *
+ * ## Parallel branches (Slices G.1 / G.2 / G.3)
+ *
+ * A Stage transition may resolve to `{ to: "fork" }`. The controller then installs an active fork in
+ * `WorkflowControlState.parallel` - one branch-local record per authored branch, each with its own
+ * visit, its own snapshot of the fork input, and its own progress - and yields. Nothing about a
+ * branch is an Execution: no id, no lifecycle, no mailbox, no authority, no child link.
+ *
+ * ```text
+ * Activation N     Stage A completes -> install the fork -> persist -> continue
+ * Activation N+1   advance every runnable branch (any adapter-free Stage kind), overlapping in
+ *                  wall-clock time; a branch may complete, or acquire an Effect / child-call /
+ *                  slow-model dependency. Fold outcomes in authored order -> persist -> continue
+ *                  or wait on the dependency-set union. (Stage D has not run)
+ * Activation N+2   explicit join: enter Stage D with the fork input as its ordinary input
+ *                  and the immutable branch results as context.join -> clear the fork
+ * ```
+ *
+ * The runnable branch steps run concurrently inside one Activation, but the controller mutates no
+ * shared state while they run: each computes from its own immutable snapshot and returns data, and
+ * the single serialized commit happens afterwards. Completion timing never decides ordering - branch
+ * results, the primary failure, and simultaneously-proposed Effects are all taken in authored branch
+ * order. A branch `WriteMemory` (G.3) must carry an explicit `expectedRevision`: a stale versioned
+ * write settles the branch barrier `conflicted` (never overwriting a sibling's commit), and an
+ * unversioned one fails closed (`parallel_branch_memory_write_requires_revision`). Branch emissions,
+ * branch transition labels, branch Adapters, multi-Stage branch subgraphs, and nested forks stay
+ * unsupported.
  */
 
 import type { DefinitionKind } from "../../definitions/types.ts";
@@ -89,27 +116,41 @@ import type {
   ChildBarrierOutcome,
   WorkflowBoundaryState,
   WorkflowControlState,
+  WorkflowParallelBranchState,
+  WorkflowParallelState,
 } from "../../workflow/control-state.ts";
+import type { StageEffectRequest, StageObservation, WorkflowJoinContext } from "../../workflow/observations.ts";
 import {
+  branchStageCorrelationId,
   childBarrierEntry,
+  childBarrierEntryOf,
   initialWorkflowControlState,
+  installFork,
+  joinContextOf,
   observationsOf,
+  observationsOfBarrier,
   readWorkflowControlState,
+  settleBarrier,
   settleBarrierEntry,
+  settleChildBarrier,
   settleChildBarrierEntry,
   stageCorrelationId,
   toControllerProgress,
+  unsettledBarrierEntries,
   unsettledEntries,
 } from "../../workflow/control-state.ts";
+import { branchStageResumptionScope, stageResumptionScope } from "../../workflow/resumption-keys.ts";
 import type { StageObservationOutcome } from "../../workflow/observations.ts";
 import type {
   AgentStageDefinition,
   StageDefinition,
   StageId,
   TransitionTarget,
+  WorkflowForkDefinition,
   WorkflowSpec,
   WorkflowStageDefinition,
 } from "../../workflow/spec.ts";
+import { findFork } from "../../workflow/spec.ts";
 import type { StageResult } from "../../workflow/stage-result.ts";
 import { validateWorkflowSpec } from "../../workflow/validation.ts";
 import { runAdapterChain } from "./adapters.ts";
@@ -140,10 +181,136 @@ interface Failure {
   readonly details?: JsonValue;
 }
 
+/**
+ * One Stage invocation's coordinates, as `runStageBodyFor` needs them (Slice G.2).
+ *
+ * The ordinary path fills this from the top-level `WorkflowControlState`; a parallel branch fills it
+ * from that branch's own `WorkflowParallelBranchState`. The Stage kind's meaning does not change -
+ * only which visit / input / progress / observations / resumption scope it runs against.
+ */
+interface BodyCoordinate {
+  readonly visit: number;
+  readonly input: StageResult;
+  readonly progress: JsonObject;
+  readonly observations: readonly StageObservation[];
+  readonly join: WorkflowJoinContext | null;
+  /** The resumption-key scope for a slow model call: `wf/<stage>#<visit>` or the branch-qualified form. */
+  readonly resumptionScope: string;
+}
+
+/** Activation facts a Stage body may react to. Identical for an ordinary Stage and a branch Stage. */
+function activationFacts(input: ActivationInput): StageExecutionContext["activation"] {
+  return {
+    cancelled: input.activation.cancellation.cancelled,
+    cancellationReason: input.activation.cancellation.reason,
+    deadline: input.activation.budget.deadline,
+  };
+}
+
+/**
+ * Turns one Stage body's `awaitEffects` requests into barrier entries and Effect proposals.
+ *
+ * Shared by an ordinary Stage visit and a parallel branch Stage visit (Slice G.2): only
+ * `correlationFor` differs - `stageCorrelationId(stage, visit, key)` for the ordinary path, the
+ * branch-qualified `branchStageCorrelationId(...)` for a branch - so the same barrier shape,
+ * `write_memory` / `use_capability` mapping, and idempotency-key plumbing apply either way. The
+ * proposals are returned in the request order the Stage body chose.
+ */
+function buildEffectBarrier(
+  effects: readonly StageEffectRequest[],
+  correlationFor: (key: string) => string,
+): { readonly barrier: readonly BarrierEntry[]; readonly proposals: readonly EffectProposal[] } {
+  const barrier: BarrierEntry[] = [];
+  const proposals: EffectProposal[] = [];
+  for (const request of effects) {
+    const correlationId = correlationFor(request.key);
+    if (request.kind === "write_memory") {
+      barrier.push({
+        key: request.key,
+        correlationId,
+        kind: "effect",
+        effectKind: "write_memory",
+        memoryKey: request.memoryKey,
+        settled: false,
+        outcome: null,
+        observation: null,
+        error: null,
+      });
+      proposals.push(
+        writeMemory({
+          key: request.memoryKey,
+          value: request.value,
+          requestKey: correlationId,
+          ...(request.expectedRevision !== undefined ? { expectedRevision: request.expectedRevision } : {}),
+        }),
+      );
+    } else {
+      barrier.push({
+        key: request.key,
+        correlationId,
+        kind: "effect",
+        capability: request.capability,
+        operation: request.operation,
+        settled: false,
+        outcome: null,
+        observation: null,
+        error: null,
+      });
+      proposals.push(
+        useCapability({
+          capability: request.capability,
+          operation: request.operation,
+          ...(request.input !== undefined ? { input: request.input } : {}),
+          requestKey: correlationId,
+          ...(request.resources !== undefined ? { resources: [...request.resources] } : {}),
+          ...(request.deadlineMs !== undefined ? { deadlineMs: request.deadlineMs } : {}),
+          ...(request.idempotency !== undefined ? { idempotency: request.idempotency } : {}),
+        }),
+      );
+    }
+  }
+  return { barrier, proposals };
+}
+
+/**
+ * How one parallel branch's Stage body settled during one Activation, in controller-local terms.
+ *
+ * `idle` = the branch was not runnable this Activation (already `completed`, or `awaiting_effects`
+ * with an outstanding branch barrier). The other arms mirror the ordinary Stage-body outcomes,
+ * branch-scoped: `completed` carries the branch result + progress; `awaiting_effects` carries the
+ * branch's own barrier and the Effect proposals to flatten; `awaiting_resumption` carries the stable
+ * resumption id for a slow branch model call; `fail` is the earliest-authored-branch Workflow
+ * failure candidate.
+ */
+type BranchAttempt =
+  | { readonly kind: "idle" }
+  | { readonly kind: "completed"; readonly result: StageResult; readonly progress: JsonObject }
+  | {
+      readonly kind: "awaiting_effects";
+      readonly barrier: readonly BarrierEntry[];
+      readonly progress: JsonObject;
+      readonly proposals: readonly EffectProposal[];
+    }
+  | { readonly kind: "awaiting_resumption"; readonly resumptionId: ControllerResumptionId; readonly progress: JsonObject }
+  | { readonly kind: "fail"; readonly code: string; readonly message: string };
+
 type StepOutcome =
   | { readonly kind: "awaitEffects"; readonly state: WorkflowControlState; readonly proposals: readonly EffectProposal[]; readonly emissions: readonly EmissionProposal[] }
   /** A model call outlived this Activation. The state carries enough to re-enter where it stopped. */
   | { readonly kind: "suspend"; readonly state: WorkflowControlState; readonly resumptionId: ControllerResumptionId; readonly emissions: readonly EmissionProposal[] }
+  /**
+   * Several parallel branches hold independent asynchronous dependencies (Slice G.2). The Execution
+   * waits on the *union*: an Event dependency (for branches awaiting Effect/child results) plus a set
+   * of ControllerResumption ids (for branches mid slow model call). Any one settling re-enters.
+   */
+  | {
+      readonly kind: "awaitDependencies";
+      readonly state: WorkflowControlState;
+      readonly proposals: readonly EffectProposal[];
+      readonly event: WakeCondition | null;
+      readonly resumptions: readonly ControllerResumptionId[];
+      readonly emissions: readonly EmissionProposal[];
+    }
   | { readonly kind: "continue"; readonly state: WorkflowControlState; readonly emissions: readonly EmissionProposal[] }
   | { readonly kind: "complete"; readonly state: WorkflowControlState; readonly terminal: JsonValue | undefined; readonly hasTerminal: boolean; readonly emissions: readonly EmissionProposal[] }
   | { readonly kind: "fail"; readonly state: WorkflowControlState; readonly failure: Failure; readonly emissions: readonly EmissionProposal[] };
@@ -186,6 +353,19 @@ function outcomeOf(event: DeliveredEvent): {
           memoryViewId: event.body.memoryViewId,
           key: event.body.key,
           revision: event.body.revision,
+        },
+      };
+    case "memory.write_conflict":
+      // Slice G.0: a valid, authorized versioned WriteMemory whose optimistic precondition was stale.
+      // The barrier settles `conflicted` - distinct from `rejected` / `denied` / `failed` - so the
+      // Stage does not wait forever and Stage logic can re-read and decide.
+      return {
+        outcome: "conflicted",
+        error: {
+          code: "structured_memory_write_conflict",
+          message:
+            `the Structured Memory view is at revision ${event.body.actualRevision}, not the expected ` +
+            `${event.body.expectedRevision}; the versioned write did not commit`,
         },
       };
     case "capability.failed":
@@ -267,6 +447,92 @@ function childOutcomeOf(event: DeliveredEvent): {
   }
 }
 
+/**
+ * Folds delivered Effect/child result Events into the matching *branch* barriers (Slice G.2).
+ *
+ * Only an `awaiting_effects` branch whose barrier holds an entry with the Event's exact correlation
+ * settles - and the correlation is branch-qualified (`branchStageCorrelationId`), so branch B's
+ * result can never settle branch C's barrier, a stale/duplicate Event finds its entry already
+ * settled and changes nothing, and a result from an earlier fork invocation matches no entry.
+ */
+function collectBranchEvents(
+  parallel: WorkflowParallelState,
+  events: readonly DeliveredEvent[],
+): WorkflowParallelState {
+  let branches = parallel.branches;
+  for (const event of events) {
+    if (!isEffectResultEventKind(event.kind) || event.correlationId === null) continue;
+    const correlationId = event.correlationId;
+    branches = branches.map((branch) => {
+      if (branch.status !== "awaiting_effects") return branch;
+      const target = branch.barrier.find((entry) => entry.correlationId === correlationId);
+      if (target === undefined) return branch;
+      if (target.kind === "child") {
+        const mapped = childOutcomeOf(event);
+        if (!mapped) return branch;
+        const settled = settleChildBarrier(branch.barrier, correlationId, {
+          outcome: mapped.outcome,
+          ...(mapped.childResult !== undefined ? { childResult: mapped.childResult } : {}),
+          ...(mapped.error !== undefined ? { error: mapped.error } : {}),
+        });
+        return settled.settled ? { ...branch, barrier: settled.barrier } : branch;
+      }
+      const mapped = outcomeOf(event);
+      if (!mapped) return branch;
+      const settled = settleBarrier(branch.barrier, correlationId, mapped.outcome, {
+        ...(mapped.observation !== undefined ? { observation: mapped.observation } : {}),
+        ...(mapped.error !== undefined ? { error: mapped.error } : {}),
+      });
+      return settled.settled ? { ...branch, barrier: settled.barrier } : branch;
+    });
+  }
+  return { ...parallel, branches };
+}
+
+/**
+ * Maps a settled child barrier entry to a Stage failure, or `null` when the child `completed`.
+ *
+ * Shared by an ordinary Agent/Workflow Stage (`finishChildStage`) and an Agent/Workflow *branch*
+ * Stage (`attemptBranch`): each non-`completed` child outcome keeps its own `<kind>_stage_*` code
+ * so a policy denial, a runtime rejection, a declined confirmation, a child failure, and a child
+ * cancellation are never read for one another.
+ */
+function childBarrierFailure(stage: StageDefinition, entry: ChildBarrierEntry): Failure | null {
+  const child = `child ${entry.childDefinitionId}@${entry.childDefinitionVersion}`;
+  switch (entry.outcome) {
+    case "completed":
+      return null;
+    case "failed":
+      return {
+        code: `${stage.kind}_stage_child_failed`,
+        message: `stage "${stage.id}" ${child} failed: ${entry.error?.code ?? "child_failed"}: ${entry.error?.message ?? ""}`,
+      };
+    case "cancelled":
+      return {
+        code: `${stage.kind}_stage_child_cancelled`,
+        message: `stage "${stage.id}" ${child} was cancelled: ${entry.error?.message ?? "the child Execution was cancelled"}`,
+      };
+    case "spawn_denied":
+      return {
+        code: `${stage.kind}_stage_spawn_denied`,
+        message: `stage "${stage.id}" could not start its ${child}: ${entry.error?.code ?? "spawn_denied"}: ${entry.error?.message ?? ""}`,
+      };
+    case "spawn_declined":
+      return {
+        code: `${stage.kind}_stage_spawn_declined`,
+        message:
+          `stage "${stage.id}" ${child} was not started: a human declined its mechanical confirmation` +
+          (entry.error?.message ? ` (${entry.error.message})` : ""),
+      };
+    case "spawn_rejected":
+    default:
+      return {
+        code: `${stage.kind}_stage_spawn_rejected`,
+        message: `stage "${stage.id}" could not start its ${child}: ${entry.error?.code ?? "spawn_rejected"}: ${entry.error?.message ?? ""}`,
+      };
+  }
+}
+
 class WorkflowController implements ExecutionController {
   readonly kind: DefinitionKind = "workflow";
 
@@ -299,13 +565,20 @@ class WorkflowController implements ExecutionController {
     const spec = validation.spec;
 
     const persisted = readWorkflowControlState(input.execution.control.progress);
+
+    // An active fork routes before anything else: what the Workflow is doing lives in its
+    // branch-local `parallel` state, not in `currentStage`, `barrier`, or `boundary`.
+    if (persisted && persisted.parallel !== null) {
+      return this.finish(await this.advanceParallel(spec, persisted, input, resumptions));
+    }
+
     let state: WorkflowControlState;
     if (persisted) {
       state = this.collect(persisted, input.events);
     } else {
       // First Activation: install the entry Stage, which runs its input Adapters. An Adapter that
       // rejects here resolves through the same predefined policy as one anywhere else.
-      const entered = await this.enterStage(spec, spec.entryStage, startInput(input.events), 1, 0, resumptions);
+      const entered = await this.enterStage(spec, spec.entryStage, startInput(input.events), 0, 0, 0, resumptions);
       if (entered.kind !== "continue") return this.finish(entered);
       state = entered.state;
     }
@@ -488,48 +761,9 @@ class WorkflowController implements ExecutionController {
     }
 
     if (body.outcome.status === "awaitEffects") {
-      const barrier: BarrierEntry[] = [];
-      const proposals: EffectProposal[] = [];
-      for (const request of body.outcome.effects) {
-        const correlationId = stageCorrelationId(state.currentStage, state.visit, request.key);
-        if (request.kind === "write_memory") {
-          barrier.push({
-            key: request.key,
-            correlationId,
-            kind: "effect",
-            effectKind: "write_memory",
-            memoryKey: request.memoryKey,
-            settled: false,
-            outcome: null,
-            observation: null,
-            error: null,
-          });
-          proposals.push(writeMemory({ key: request.memoryKey, value: request.value, requestKey: correlationId }));
-        } else {
-          barrier.push({
-            key: request.key,
-            correlationId,
-            kind: "effect",
-            capability: request.capability,
-            operation: request.operation,
-            settled: false,
-            outcome: null,
-            observation: null,
-            error: null,
-          });
-          proposals.push(
-            useCapability({
-              capability: request.capability,
-              operation: request.operation,
-              ...(request.input !== undefined ? { input: request.input } : {}),
-              requestKey: correlationId,
-              ...(request.resources !== undefined ? { resources: [...request.resources] } : {}),
-              ...(request.deadlineMs !== undefined ? { deadlineMs: request.deadlineMs } : {}),
-              ...(request.idempotency !== undefined ? { idempotency: request.idempotency } : {}),
-            }),
-          );
-        }
-      }
+      const { barrier, proposals } = buildEffectBarrier(body.outcome.effects, (key) =>
+        stageCorrelationId(state.currentStage, state.visit, key),
+      );
       return { kind: "awaitEffects", state: { ...advanced, barrier }, proposals, emissions };
     }
 
@@ -622,46 +856,9 @@ class WorkflowController implements ExecutionController {
     resumptions: ControllerResumptionScope,
   ): Promise<StepOutcome> {
     const cleared: WorkflowControlState = { ...state, barrier: [] };
-    const failure = (code: string, message: string): StepOutcome => ({ kind: "fail", state: cleared, emissions: [], failure: { code, message } });
-
-    switch (entry.outcome) {
-      case "completed":
-        return this.finishStage(spec, stage, cleared, entry.childResult, null, [], 0, resumptions);
-      case "failed":
-        return failure(
-          `${stage.kind}_stage_child_failed`,
-          `stage "${stage.id}" child ${entry.childDefinitionId}@${entry.childDefinitionVersion} failed: ` +
-            `${entry.error?.code ?? "child_failed"}: ${entry.error?.message ?? ""}`,
-        );
-      case "cancelled":
-        return failure(
-          `${stage.kind}_stage_child_cancelled`,
-          `stage "${stage.id}" child ${entry.childDefinitionId}@${entry.childDefinitionVersion} was cancelled: ` +
-            `${entry.error?.message ?? "the child Execution was cancelled"}`,
-        );
-      case "spawn_denied":
-        return failure(
-          `${stage.kind}_stage_spawn_denied`,
-          `stage "${stage.id}" could not start its child ${entry.childDefinitionId}@${entry.childDefinitionVersion}: ` +
-            `${entry.error?.code ?? "spawn_denied"}: ${entry.error?.message ?? ""}`,
-        );
-      case "spawn_declined":
-        // A human declined the exact-payload confirmation for the child call. No child exists; this
-        // is not a policy denial and not a runtime rejection, and it gets its own failure code.
-        return failure(
-          `${stage.kind}_stage_spawn_declined`,
-          `stage "${stage.id}" child ${entry.childDefinitionId}@${entry.childDefinitionVersion} was not started: ` +
-            `a human declined its mechanical confirmation` +
-            (entry.error?.message ? ` (${entry.error.message})` : ""),
-        );
-      case "spawn_rejected":
-      default:
-        return failure(
-          `${stage.kind}_stage_spawn_rejected`,
-          `stage "${stage.id}" could not start its child ${entry.childDefinitionId}@${entry.childDefinitionVersion}: ` +
-            `${entry.error?.code ?? "spawn_rejected"}: ${entry.error?.message ?? ""}`,
-        );
-    }
+    const failure = childBarrierFailure(stage, entry);
+    if (failure !== null) return { kind: "fail", state: cleared, emissions: [], failure };
+    return this.finishStage(spec, stage, cleared, entry.childResult, null, [], 0, resumptions);
   }
 
   /**
@@ -696,12 +893,21 @@ class WorkflowController implements ExecutionController {
     };
   }
 
-  /** Runs the Stage body for its kind, or returns the child call an Agent/Workflow Stage requires. */
-  private async runBody(
+  /**
+   * Runs the Stage body for its kind, or returns the child call an Agent/Workflow Stage requires.
+   *
+   * The one path both an ordinary Stage invocation and a parallel branch Stage invocation take
+   * (Slice G.2). The caller supplies a `BodyCoordinate` - the invocation's visit, input, progress,
+   * observations, join snapshot, and resumption-key scope - so the *same* Function/LLM outcome
+   * validation, child-call construction, and model-call resumption apply whether the coordinate is
+   * `wf/<stage>#<visit>` or `wf/fork/<fork>#<forkVisit>/branch/<branch>/stage/<stage>#<visit>`. The
+   * branch wrapper changes the coordinate, never the meaning of the Stage kind.
+   */
+  private async runStageBodyFor(
     stage: StageDefinition,
-    state: WorkflowControlState,
+    coord: BodyCoordinate,
     view: LocalResourceView,
-    input: ActivationInput,
+    activation: StageExecutionContext["activation"],
     resumptions: ControllerResumptionScope,
   ): Promise<
     | { readonly kind: "ok"; readonly outcome: LLMStageOutcome }
@@ -711,17 +917,14 @@ class WorkflowController implements ExecutionController {
     const context: StageExecutionContext = {
       stage,
       stageId: stage.id,
-      visit: state.visit,
-      input: state.stageInput,
+      visit: coord.visit,
+      input: coord.input,
       config: stage.kind === "function" ? (stage.config ?? {}) : {},
-      progress: state.stageProgress,
-      observations: observationsOf(state),
+      progress: coord.progress,
+      observations: coord.observations,
       resources: view,
-      activation: {
-        cancelled: input.activation.cancellation.cancelled,
-        cancellationReason: input.activation.cancellation.reason,
-        deadline: input.activation.budget.deadline,
-      },
+      activation,
+      join: coord.join,
     };
 
     try {
@@ -751,13 +954,16 @@ class WorkflowController implements ExecutionController {
           return { kind: "ok", outcome };
         }
         case "llm":
-          return { kind: "ok", outcome: await runLLMStage(stage, context, this.models, this.trace, resumptions) };
+          return {
+            kind: "ok",
+            outcome: await runLLMStage(stage, context, this.models, this.trace, resumptions, coord.resumptionScope),
+          };
         case "agent":
         case "workflow":
           // One Workflow Stage boundary implemented by a child `call`. The controller *proposes* the
           // spawn - it never creates a child, fabricates a result, flattens the child's topology into
           // this graph, or runs the child definition as a local function.
-          return this.childCall(stage, state.stageInput);
+          return this.childCall(stage, coord.input);
       }
     } catch (error) {
       return {
@@ -765,6 +971,32 @@ class WorkflowController implements ExecutionController {
         failure: { code: "stage_error", message: error instanceof Error ? error.message : String(error) },
       };
     }
+  }
+
+  /** The linear-Stage body run: the ordinary `wf/<stage>#<visit>` coordinate over the top-level state. */
+  private runBody(
+    stage: StageDefinition,
+    state: WorkflowControlState,
+    view: LocalResourceView,
+    input: ActivationInput,
+    resumptions: ControllerResumptionScope,
+  ): ReturnType<WorkflowController["runStageBodyFor"]> {
+    return this.runStageBodyFor(
+      stage,
+      {
+        visit: state.visit,
+        input: state.stageInput,
+        progress: state.stageProgress,
+        observations: observationsOf(state),
+        // Non-null only on the visit a fork's join created (Slice G.1); cleared once this Stage
+        // transitions away.
+        join: state.join,
+        resumptionScope: stageResumptionScope(stage.id, state.visit),
+      },
+      view,
+      activationFacts(input),
+      resumptions,
+    );
   }
 
   // -- transitions -----------------------------------------------------------
@@ -801,15 +1033,51 @@ class WorkflowController implements ExecutionController {
       const hasTerminal = terminal !== undefined && terminal.kind === "value";
       return {
         kind: "complete",
-        state: { ...state, provisionalResult: result, transitions },
+        // Leaving a Stage clears its join snapshot: a completed Workflow carries no fork state.
+        state: { ...state, provisionalResult: result, transitions, join: null },
         terminal: hasTerminal ? (terminal as { kind: "value"; value: JsonValue }).value : undefined,
         hasTerminal,
         emissions,
       };
     }
 
+    if (target.to === "fork") {
+      // A fork is a graph edge, not a Stage body or an Effect. Install the branch-local state and
+      // yield: the branch Function bodies run on the next Activation, never inside whichever
+      // Activation happened to resolve this transition.
+      const fork = findFork(spec, target.fork);
+      if (!fork) {
+        return {
+          kind: "fail",
+          state,
+          emissions,
+          failure: {
+            code: "workflow_fork_missing",
+            message: `stage "${from.id}" transitions to fork "${target.fork}", which the pinned definition does not declare`,
+          },
+        };
+      }
+      // The single `stageTransitioned` trace for a fork/join is emitted by the join step (from the
+      // forking Stage to the join successor); the intermediate fork node has no `StageId` to name.
+      return { kind: "continue", state: { ...installFork(state, fork, result), transitions }, emissions };
+    }
+
+    if (target.to === "join") {
+      // Unreachable through this path: only a branch Stage transitions to a join, branch Stages are
+      // run inside `advanceParallel`, and validation rejects a `{ to: "join" }` edge anywhere else.
+      return {
+        kind: "fail",
+        state,
+        emissions,
+        failure: {
+          code: "workflow_unexpected_join",
+          message: `stage "${from.id}" resolved to a join transition outside an active fork`,
+        },
+      };
+    }
+
     this.trace?.stageTransitioned?.({ from: from.id, visit: state.visit, label, to: target.stage });
-    const entered = await this.enterStage(spec, target.stage, result, state.visit + 1, transitions, resumptions);
+    const entered = await this.enterStage(spec, target.stage, result, state.visits, transitions, state.forks, resumptions);
     // The predecessor's emissions travel with whatever entering produced, including a suspension:
     // they are persisted by this Activation, and the one that resumes proposes none of its own.
     return { ...entered, emissions };
@@ -821,18 +1089,27 @@ class WorkflowController implements ExecutionController {
    * A new visit means a new `visit` number, empty Stage-local progress, and an empty barrier. That
    * is what makes a loop safe: correlations from the previous visit of this same Stage can never
    * match anything in the new one.
+   *
+   * `priorVisits` is the caller's current visit high-water; the new Stage is allocated `visit =
+   * priorVisits + 1`, and `visits` advances to match. Allocating from the high-water rather than
+   * from `state.visit + 1` is what keeps Stage visits monotone and non-colliding across a fork
+   * (whose branches already consumed numbers past `state.visit`) or a loop back through one.
    */
   private async enterStage(
     spec: WorkflowSpec,
     stageId: StageId,
     incoming: StageResult,
-    visit: number,
+    priorVisits: number,
     transitions: number,
+    forks: number,
     resumptions: ControllerResumptionScope,
   ): Promise<StepOutcome> {
     const stage = spec.stages.find((candidate) => candidate.id === stageId);
     const base = initialWorkflowControlState(stageId, incoming);
-    const state: WorkflowControlState = { ...base, visit, transitions };
+    const visit = priorVisits + 1;
+    // `forks` (the fork-invocation counter) is threaded through like `transitions`: entering an
+    // ordinary Stage clears `parallel`/`join` but never rewinds how many forks have run.
+    const state: WorkflowControlState = { ...base, visit, visits: visit, transitions, forks };
     if (!stage) {
       return {
         kind: "fail",
@@ -929,6 +1206,320 @@ class WorkflowController implements ExecutionController {
     return this.applyTransition(spec, stage, state, stage.onAdapterReject, reason, null, emissions, resumptions);
   }
 
+  // -- parallel branches (Slice G.1 / G.2) --------------------------------
+
+  /**
+   * Advances an Execution whose `parallel` state is non-null.
+   *
+   * ```text
+   * !joinReady   fold delivered result Events into the matching branch barriers, then advance every
+   *              runnable branch (overlapping in wall-clock time). A branch may complete, or acquire
+   *              its own asynchronous dependency - an Effect / child call (`awaiting_effects`) or a
+   *              slow model call (`awaiting_resumption`). Fold outcomes in authored order into one
+   *              new WorkflowParallelState; yield once. Stage D has NOT run.
+   * joinReady    the explicit join: enter Stage D with the fork input as its ordinary input and the
+   *              immutable branch results as its `join` context, then clear the fork
+   * ```
+   *
+   * When branches hold dependencies the Execution waits on the *union* of them - an Event dependency
+   * plus a set of ControllerResumption ids - and any one settling re-enters here. This is not
+   * `interleave`: sibling branch state is explicitly separate, so progress in one branch never
+   * invalidates another's still-pending resumption.
+   */
+  private async advanceParallel(
+    spec: WorkflowSpec,
+    state: WorkflowControlState,
+    input: ActivationInput,
+    resumptions: ControllerResumptionScope,
+  ): Promise<StepOutcome> {
+    const parallel = state.parallel!;
+    const fork = findFork(spec, parallel.forkId);
+    if (!fork) {
+      return {
+        kind: "fail",
+        state,
+        emissions: [],
+        failure: {
+          code: "workflow_fork_missing",
+          message: `Workflow control state names fork "${parallel.forkId}", which the pinned definition does not declare`,
+        },
+      };
+    }
+
+    if (!parallel.joinReady) {
+      // Fold delivered Effect/child result Events into branch-local barriers before advancing.
+      const collected = collectBranchEvents(parallel, input.events);
+      return this.runParallelBranches(spec, state, fork, collected, input, resumptions);
+    }
+
+    // The explicit join is its own transition: completing the branches did not enter Stage D.
+    const transitions = state.transitions + 1;
+    if (transitions > this.maxTransitions) {
+      return {
+        kind: "fail",
+        state,
+        emissions: [],
+        failure: {
+          code: "workflow_transition_limit",
+          message: `this Workflow resolved ${transitions} transitions without reaching a completion target`,
+        },
+      };
+    }
+    const joinContext = joinContextOf(parallel);
+    // The forking Stage invocation, truthfully: `currentStage` + `visit` were left unchanged when
+    // the fork was installed, so this is `A visit 1`, not `A visit <branch high-water>`.
+    this.trace?.stageTransitioned?.({ from: state.currentStage, visit: state.visit, label: null, to: fork.join.next });
+    const entered = await this.enterStage(
+      spec,
+      fork.join.next,
+      parallel.input,
+      state.visits,
+      transitions,
+      state.forks,
+      resumptions,
+    );
+    // Splice the join snapshot onto whatever entering produced (continue, suspend, or fail) and
+    // clear the active fork. Stage D's ordinary `stageInput` stays the fork's original input.
+    return { ...entered, state: { ...entered.state, parallel: null, join: joinContext } };
+  }
+
+  /**
+   * Advances every runnable branch concurrently, then commits once.
+   *
+   * A branch is *runnable* this Activation when its status is `ready`, or `awaiting_resumption`
+   * (its model call may have settled), or `awaiting_effects` with a fully-settled branch barrier.
+   * The runnable attempts overlap in wall-clock time - each is started before any is awaited - but
+   * no controller state is mutated while they run: a branch computes from its own immutable snapshot
+   * and returns data. Outcomes, Effect proposals, and the primary failure are folded in authored
+   * branch order, never completion order.
+   */
+  private async runParallelBranches(
+    spec: WorkflowSpec,
+    state: WorkflowControlState,
+    fork: WorkflowForkDefinition,
+    parallel: WorkflowParallelState,
+    input: ActivationInput,
+    resumptions: ControllerResumptionScope,
+  ): Promise<StepOutcome> {
+    const runnable = (branch: WorkflowParallelBranchState): boolean => {
+      if (branch.status === "completed") return false;
+      if (branch.status === "awaiting_effects") return unsettledBarrierEntries(branch.barrier).length === 0;
+      return true; // ready | awaiting_resumption
+    };
+
+    const started = parallel.branches.map((branch) => ({
+      branch,
+      // Invoke now so siblings overlap; each attempt catches its own throw.
+      run: runnable(branch)
+        ? (async (): Promise<BranchAttempt> => this.attemptBranch(spec, fork, parallel, branch, input, resumptions))()
+        : Promise.resolve<BranchAttempt>({ kind: "idle" }),
+    }));
+
+    const attempts = await Promise.all(started.map((entry) => entry.run));
+
+    const nextBranches: WorkflowParallelBranchState[] = [];
+    const proposals: EffectProposal[] = [];
+    const resumptionIds: ControllerResumptionId[] = [];
+    let anyAwaitingEffects = false;
+    let failure: Failure | null = null;
+
+    for (let index = 0; index < attempts.length; index += 1) {
+      const attempt = attempts[index]!;
+      const branch = started[index]!.branch;
+      switch (attempt.kind) {
+        case "idle":
+          nextBranches.push(branch);
+          if (branch.status === "awaiting_effects") anyAwaitingEffects = true;
+          break;
+        case "completed":
+          nextBranches.push({ ...branch, status: "completed", barrier: [], result: attempt.result, progress: attempt.progress });
+          break;
+        case "awaiting_effects":
+          nextBranches.push({ ...branch, status: "awaiting_effects", barrier: attempt.barrier, progress: attempt.progress });
+          proposals.push(...attempt.proposals);
+          anyAwaitingEffects = true;
+          break;
+        case "awaiting_resumption":
+          nextBranches.push({ ...branch, status: "awaiting_resumption", barrier: [], progress: attempt.progress });
+          resumptionIds.push(attempt.resumptionId);
+          break;
+        case "fail":
+          if (failure === null) failure = { code: attempt.code, message: attempt.message };
+          nextBranches.push(branch);
+          break;
+      }
+    }
+
+    const updated: WorkflowParallelState = { ...parallel, branches: nextBranches };
+
+    // Failure atomicity: the earliest authored failing branch fails the Workflow now, and every
+    // Effect proposal and resumption registration this Activation produced is discarded - unreported
+    // resumptions are abandoned by never being attached, and proposals are simply not returned.
+    if (failure !== null) {
+      return { kind: "fail", state: { ...state, parallel: updated }, emissions: [], failure };
+    }
+
+    if (nextBranches.every((branch) => branch.status === "completed")) {
+      // Every branch reached a local terminal result: persist join-ready and yield. Stage D still
+      // has not run - the join is the next Activation.
+      return { kind: "continue", state: { ...state, parallel: { ...updated, joinReady: true } }, emissions: [] };
+    }
+
+    const outstanding = nextBranches.filter((branch) => branch.status !== "completed").length;
+    const event: WakeCondition | null = anyAwaitingEffects
+      ? {
+          eventKinds: [...EFFECT_RESULT_EVENT_KINDS],
+          correlationId: null,
+          description: `fork ${parallel.forkId}#${parallel.forkVisit}: ${outstanding} branch(es) with outstanding dependencies`,
+        }
+      : null;
+    return {
+      kind: "awaitDependencies",
+      state: { ...state, parallel: updated },
+      proposals,
+      event,
+      resumptions: resumptionIds,
+      emissions: [],
+    };
+  }
+
+  /**
+   * Advances one runnable branch by one step, from that branch's own immutable snapshot.
+   *
+   * Reuses the ordinary Stage-body machinery (`runStageBodyFor`, `buildEffectBarrier`, the child
+   * barrier) with a branch-qualified coordinate: branch-local visit, input, progress, observations,
+   * a `null` join, and a branch-qualified resumption scope. The branch wrapper adds only the
+   * fail-closed rules - a branch `WriteMemory` must carry `expectedRevision` (G.3), no branch
+   * emissions, no branch transition label.
+   */
+  private async attemptBranch(
+    spec: WorkflowSpec,
+    fork: WorkflowForkDefinition,
+    parallel: WorkflowParallelState,
+    branch: WorkflowParallelBranchState,
+    input: ActivationInput,
+    resumptions: ControllerResumptionScope,
+  ): Promise<BranchAttempt> {
+    const where = `fork "${fork.id}" branch "${branch.branchId}" (stage "${branch.stageId}")`;
+
+    // A settled branch child barrier: the Agent/Workflow branch Stage's one call has returned.
+    const settledChild = childBarrierEntryOf(branch.barrier);
+    if (settledChild !== undefined && settledChild.settled) {
+      const stageDef = spec.stages.find((candidate) => candidate.id === branch.stageId);
+      const failure = stageDef ? childBarrierFailure(stageDef, settledChild) : null;
+      if (!stageDef) {
+        return { kind: "fail", code: "parallel_branch_stage_invalid", message: `${where}: stage "${branch.stageId}" is not a declared Stage` };
+      }
+      if (failure) return { kind: "fail", code: failure.code, message: `${where}: ${failure.message}` };
+      return { kind: "completed", result: settledChild.childResult, progress: branch.progress };
+    }
+
+    const stageDef = spec.stages.find((candidate) => candidate.id === branch.stageId);
+    if (!stageDef) {
+      return { kind: "fail", code: "parallel_branch_stage_invalid", message: `${where}: stage "${branch.stageId}" is not a declared Stage` };
+    }
+
+    const coord: BodyCoordinate = {
+      visit: branch.visit,
+      input: branch.input,
+      progress: branch.progress,
+      observations: observationsOfBarrier(branch.barrier),
+      join: null,
+      resumptionScope: branchStageResumptionScope(fork.id, parallel.forkVisit, branch.branchId, stageDef.id, branch.visit),
+    };
+
+    let body: Awaited<ReturnType<WorkflowController["runStageBodyFor"]>>;
+    try {
+      body = await this.runStageBodyFor(stageDef, coord, this.viewFor(stageDef), activationFacts(input), resumptions);
+    } catch (error) {
+      return { kind: "fail", code: "parallel_branch_error", message: `${where} threw: ${error instanceof Error ? error.message : String(error)}` };
+    }
+
+    if (body.kind === "fail") return { kind: "fail", code: body.failure.code, message: `${where}: ${body.failure.message}` };
+
+    if (body.kind === "child") {
+      // First entry of an Agent/Workflow branch Stage: propose exactly one child `call` with a
+      // branch-qualified correlation, and record one branch-local child barrier entry.
+      const correlationId = branchStageCorrelationId(fork.id, parallel.forkVisit, branch.branchId, stageDef.id, branch.visit, "child");
+      const entry: ChildBarrierEntry = {
+        kind: "child",
+        key: "child",
+        correlationId,
+        childDefinitionId: body.child.definitionId,
+        childDefinitionVersion: body.child.definitionVersion,
+        childKind: body.child.childKind,
+        requestedOperations: body.child.requestedOperations.map((ref) => ({ capability: ref.capability, operation: ref.operation })),
+        settled: false,
+        outcome: null,
+        childResult: null,
+        error: null,
+      };
+      const proposal: EffectProposal = callExecution({
+        definitionId: body.child.definitionId,
+        definitionVersion: body.child.definitionVersion,
+        ...(body.child.input !== null ? { input: body.child.input } : {}),
+        requestedOperations: body.child.requestedOperations,
+        expectedChildKind: body.child.childKind,
+        requestKey: correlationId,
+      });
+      return { kind: "awaiting_effects", barrier: [entry], progress: branch.progress, proposals: [proposal] };
+    }
+
+    const outcome = body.outcome;
+    if (outcome.status === "suspended") {
+      return { kind: "awaiting_resumption", resumptionId: outcome.resumptionId, progress: outcome.progress };
+    }
+
+    const issues = functionStageOutcomeIssues(outcome);
+    if (issues.length > 0) {
+      return { kind: "fail", code: "invalid_function_stage_outcome", message: `${where}: ${issues.map((i) => `${i.path}: ${i.message}`).join("; ")}` };
+    }
+
+    if (outcome.status === "failed") {
+      return { kind: "fail", code: `parallel_branch_failed:${outcome.code}`, message: `${where}: ${outcome.message}` };
+    }
+
+    if (outcome.status === "awaitEffects") {
+      // G.3: a parallel branch MAY perform a Structured Memory write, but only an *optimistic* one.
+      // An unversioned branch `WriteMemory` (no `expectedRevision`) could silently overwrite state a
+      // sibling branch committed during the same Activation, which is exactly the timing-dependent
+      // last-writer-wins the structured-concurrency rule forbids. It fails closed here - before the
+      // proposal reaches the Harness, so no Effect journal entry, no PendingOperation, no revision
+      // advance. The ordinary non-parallel unconditional `WriteMemory` (G.0/F.0) is unchanged; this
+      // constraint is scoped to writes emitted from a parallel branch Stage.
+      const unversioned = outcome.effects.find(
+        (request) => request.kind === "write_memory" && request.expectedRevision === undefined,
+      );
+      if (unversioned !== undefined) {
+        return {
+          kind: "fail",
+          code: "parallel_branch_memory_write_requires_revision",
+          message:
+            `${where} requested an unversioned Structured Memory write ("${(unversioned as { memoryKey: string }).memoryKey}"); ` +
+            `a parallel branch WriteMemory must carry an explicit expectedRevision so a stale write becomes an ` +
+            `observable conflict instead of silently overwriting a sibling's commit (Slice G.3)`,
+        };
+      }
+      const { barrier, proposals } = buildEffectBarrier(outcome.effects, (key) =>
+        branchStageCorrelationId(fork.id, parallel.forkVisit, branch.branchId, stageDef.id, branch.visit, key),
+      );
+      return { kind: "awaiting_effects", barrier, progress: outcome.progress ?? branch.progress, proposals };
+    }
+
+    // completed
+    if (outcome.emissions !== undefined && outcome.emissions.length > 0) {
+      return { kind: "fail", code: "parallel_branch_emissions_unsupported", message: `${where} produced emissions; branch emission ordering is deferred past G.2` };
+    }
+    if (outcome.transition !== undefined) {
+      return {
+        kind: "fail",
+        code: "parallel_branch_transition_unsupported",
+        message: `${where} returned transition ${JSON.stringify(outcome.transition)}; a branch Stage's transition is fixed to its fork's join`,
+      };
+    }
+    return { kind: "completed", result: outcome.result ?? null, progress: outcome.progress ?? branch.progress };
+  }
+
   // -- helpers ---------------------------------------------------------------
 
   /**
@@ -959,6 +1550,21 @@ class WorkflowController implements ExecutionController {
         // registered the work, commits the progress and the resumption record together, and derives
         // WAITING itself - the same division of labour as `await_event`.
         return { control, ...emissions, next: { status: "await_resumption", resumptionId: step.resumptionId } };
+      case "awaitDependencies":
+        // The parallel-branch union wait (Slice G.2): any one of an Event dependency and a set of
+        // ControllerResumption ids settling re-enters. The Harness validates every reported id,
+        // commits controller progress and every newly-registered resumption record in one
+        // transaction, and derives WAITING (or stays runnable if the Event is already in the mailbox).
+        return {
+          control,
+          ...emissions,
+          ...(step.proposals.length > 0 ? { effects: step.proposals } : {}),
+          next: {
+            status: "await_dependencies",
+            ...(step.event !== null ? { event: step.event } : {}),
+            ...(step.resumptions.length > 0 ? { resumptions: [...step.resumptions] } : {}),
+          },
+        };
       case "continue":
         return { control, ...emissions, next: { status: "continue" } };
       case "complete":

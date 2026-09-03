@@ -57,6 +57,7 @@ import type { ExecutionContext, ExecutionWait } from "../execution/context.ts";
 import {
   controllerResumptionWait,
   createExecutionContext,
+  dependenciesWait,
   eventWait,
   toExecutionView,
   transitionContext,
@@ -115,7 +116,7 @@ import type {
 } from "./effect-processor.ts";
 import { EffectProcessor } from "./effect-processor.ts";
 import { routeEvent } from "./event-router.ts";
-import type { ActivationResumptions, ResumptionDependency } from "./resumption-processor.ts";
+import type { ActivationResumptions, ResumptionDependency, ResumptionDependencySet } from "./resumption-processor.ts";
 import { ControllerResumptionProcessor } from "./resumption-processor.ts";
 
 /** Thirty seconds. Long enough that an inline wait budget is obviously a different concept. */
@@ -865,7 +866,28 @@ export class Harness {
     const executionId = running.executionId;
     const next: ControllerNext = outcome.next;
 
-    // Effects are processed before the lifecycle is derived, and this ordering is load-bearing. A
+    // A G.2 dependency set is authority-bearing input: validate every member before any proposed
+    // Effect can be authorized, journaled, dispatched, or turned into a PendingOperation. Recovery
+    // is legal only for persisted ids this Activation actually observed pending through scope.run().
+    let dependencySet: ResumptionDependencySet | null = null;
+    if (next.status === "await_dependencies") {
+      try {
+        dependencySet = await resumptions.resolveMany(next.resumptions ?? [], nowIso(this.options.clock));
+      } catch (error) {
+        return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
+          code: "resumption_dependency_unresolvable",
+          message: error instanceof Error ? error.message : String(error),
+        });
+      }
+      if (dependencySet.status === "invalid") {
+        return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
+          code: "invalid_controller_outcome:invalid_resumption",
+          message: `controller resumption ${dependencySet.detail}`,
+        });
+      }
+    }
+
+    // Effects are processed only after dependency-set preflight and before lifecycle is derived. A
     // result that settled inline is already in the mailbox when the wake dependency is checked
     // below, so the Execution stays runnable; one that did not leaves a pending operation and the
     // Execution waits for the identical Event. Neither the controller nor the Event body can tell
@@ -925,6 +947,7 @@ export class Harness {
       let requeue = false;
       let cancellationReason: string | null = null;
       let attachResumption = false;
+      let attachDependencyResumptions = false;
       let emissionIds: readonly string[] = [];
 
       // A cancellation request that arrived while this Activation was running is applied at this
@@ -1002,6 +1025,61 @@ export class Harness {
           result = "waiting";
           attachResumption = true;
         }
+      } else if (!cancelling && next.status === "await_dependencies") {
+        // The parallel-branch union wait (Slice G.2). One transaction inserts every new record,
+        // re-reads every legitimately recovered record, checks the Event mailbox, and persists
+        // controller progress plus READY/WAITING. Thus a recovery that settles after preflight
+        // cannot be overwritten by a stale RUNNING -> WAITING decision. New siblings are committed
+        // and followed on both the READY and WAITING paths.
+        for (const record of dependencySet!.newRecords) {
+          await tx.controllerResumptions.insert(record);
+        }
+
+        const reportedEvent = next.event ?? null;
+        const pending = reportedEvent !== null ? await tx.mailboxes.peek(running.mailbox.mailboxId) : [];
+        const eventSatisfied =
+          reportedEvent !== null && pending.some((event) => eventSatisfiesWake(event, reportedEvent));
+
+        let resumptionSatisfied = false;
+        let invalidResumption: string | null = null;
+        for (const resumptionId of dependencySet!.recoveredIds) {
+          const current = await tx.controllerResumptions.get(resumptionId);
+          if (current === undefined || current.executionId !== executionId) {
+            invalidResumption = `${resumptionId} disappeared or changed ownership after preflight`;
+            break;
+          }
+          if (current.state === "invalidated") {
+            invalidResumption = `${resumptionId} became invalidated after preflight`;
+            break;
+          }
+          if (current.state === "settled") resumptionSatisfied = true;
+        }
+        if (dependencySet!.alreadySatisfied && !resumptionSatisfied && invalidResumption === null) {
+          invalidResumption = "a resumption observed settled during preflight was no longer settled";
+        }
+
+        const resumptionMembers = next.resumptions ?? [];
+        if (invalidResumption !== null) {
+          to = "FAILED";
+          result = "failed";
+          rejection = `invalid_resumption: ${invalidResumption}`;
+          failure = {
+            code: "invalid_controller_outcome:invalid_resumption",
+            message: `controller resumption ${invalidResumption}`,
+            failedByActivationId: activationId,
+            failedAt: finishedAt,
+          };
+        } else if (eventSatisfied || resumptionSatisfied) {
+          to = "READY";
+          result = "continued";
+          requeue = true;
+          attachDependencyResumptions = true;
+        } else {
+          to = "WAITING";
+          waitingFor = dependenciesWait(reportedEvent, resumptionMembers);
+          result = "waiting";
+          attachDependencyResumptions = true;
+        }
       } else if (!cancelling && next.status === "complete") {
         const validation = validateTerminalResult(definition.terminalResult, next.result, {
           activationId,
@@ -1050,7 +1128,18 @@ export class Harness {
         await this.abandonOutgoingDependencies(tx, executionId, finishedAt, `execution ${to}`);
       }
 
-      return { emissionIds, to, result, rejection, requeue, terminalResult, failure, cancellationReason, attachResumption };
+      return {
+        emissionIds,
+        to,
+        result,
+        rejection,
+        requeue,
+        terminalResult,
+        failure,
+        cancellationReason,
+        attachResumption,
+        attachDependencyResumptions,
+      };
     });
 
     setRequeue(applied.requeue);
@@ -1074,6 +1163,14 @@ export class Harness {
     // registered is abandoned by never being attached, and can no longer wake anything. A cancelled
     // Execution is terminal, so nothing is followed.
     if (next.status === "await_resumption" && applied.attachResumption) resumptions.attach(next.resumptionId);
+
+    // Every newly-registered resumption in a G.2 union wait is followed post-commit - whether the
+    // Execution is WAITING on the set or was kept runnable by an already-present Event. A recovered
+    // member is already being followed from the Activation that first reported it; `attach` is a
+    // no-op for it. A member the controller did not report is abandoned by never being attached.
+    if (next.status === "await_dependencies" && applied.attachDependencyResumptions) {
+      for (const record of dependencySet!.newRecords) resumptions.attach(record.resumptionId);
+    }
 
     return {
       activationId,

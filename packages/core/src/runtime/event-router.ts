@@ -20,6 +20,11 @@
  * mailbox is not closed - and absent an interleave condition no Event makes it READY; only that
  * resumption settling does.
  *
+ * Slice G.2 adds a `dependencies` arm - the parallel-branch union wait. Its `event` member is a
+ * primary wake routable here: a match makes the Execution READY and, unlike `interleave`, does not
+ * invalidate any ControllerResumption in the set. A `dependencies` wait with `event === null` (only
+ * resumption members) is not woken by an ordinary Event, exactly like the plain resumption arm.
+ *
  * ## Controlled interleaving (Slice E.1)
  *
  * A wait may carry a second, separate `interleave` wake condition. An Event that matches it makes
@@ -125,8 +130,22 @@ export async function routeEvent(input: RouteEventInput): Promise<EventRoutingRe
       return { status: "delivered", eventId: envelope.eventId, wokeExecution: true };
     }
 
-    // Controlled interleaving: an explicitly opted-in Event overtakes the wait.
-    if (wait.interleave !== undefined && eventSatisfiesWake(envelope, wait.interleave)) {
+    // The parallel-branch union wait (Slice G.2): the `event` member wakes the Execution and does
+    // NOT invalidate any sibling ControllerResumption in the set - branch progress is explicitly
+    // separate, so the E.1 stale-continuation rule deliberately does not apply. A resumption-only
+    // union wait (`event === null`) is not woken by an ordinary Event at all; it falls through to
+    // "mailbox only" below, exactly like the plain `controller_resumption` arm.
+    if (wait.kind === "dependencies" && wait.event !== null && eventSatisfiesWake(envelope, wait.event)) {
+      const ready = transitionContext(context, "READY", deliveredAt);
+      await tx.executions.update(ready, context.revision);
+      await input.recordTransition(destination, "WAITING", "READY", deliveredAt, `dependency event ${envelope.eventId}`);
+      return { status: "delivered", eventId: envelope.eventId, wokeExecution: true };
+    }
+
+    // Controlled interleaving (Slice E.1): an explicitly opted-in Event overtakes the wait. Only the
+    // `event` / `controller_resumption` arms carry an `interleave`; the G.2 `dependencies` union
+    // wait deliberately does not.
+    if (wait.kind !== "dependencies" && wait.interleave !== undefined && eventSatisfiesWake(envelope, wait.interleave)) {
       if (wait.kind === "controller_resumption") {
         // The resumption's continuation was computed from a now-superseded state. Invalidate it in
         // this same transaction so its late result cannot wake the Execution or be reused by key.

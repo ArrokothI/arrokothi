@@ -23,6 +23,8 @@
  *   user.input             a trusted response to a `RequestUserInput` Effect; runtime-established
  *   confirmation.declined  a human declined an exact-payload mechanical confirmation; nothing ran
  *   memory.written         a Structured Memory write committed at a runtime-owned revision
+ *   memory.write_conflict  a valid, authorized versioned Structured Memory write whose optimistic
+ *                          precondition was no longer true; nothing was mutated (Slice G.0)
  *   external.input         an observation delivered from outside the kernel
  *
  * The three capability outcomes are separate kinds rather than a status field so that a controller
@@ -43,6 +45,14 @@
  * answers the *sender's* Effect - the runtime admitted the message for that destination. `peer.message`
  * is the *recipient's* observation; a reply to an `ask` is also a `peer.message`, carrying the
  * asker's original correlation so its exact PendingOperation settles.
+ *
+ * `memory.write_conflict` arrives with Slice G.0. It is a *distinct* runtime observation, not a
+ * reuse of `effect.rejected`: the request was structurally valid, inside the effective authority
+ * ceiling, authorized by policy, and (where gated) confirmed - it simply lost an optimistic
+ * compare-and-set on the bound Structured Memory view revision. A controller that receives it knows
+ * the write definitely did not commit and may re-read, merge, retry, or deliberately fail. It is
+ * runtime-established like `memory.written` and cannot be delivered through the `external.input`
+ * path.
  *
  * `user.input` and `confirmation.declined` arrive with Slice E.2. `user.input` is a
  * *runtime-established* correlated result: it settles one exact pending `RequestUserInput` Effect and
@@ -81,6 +91,7 @@ export type EventKind =
   | "user.input"
   | "confirmation.declined"
   | "memory.written"
+  | "memory.write_conflict"
   | "external.input";
 
 export const EVENT_KINDS: readonly EventKind[] = [
@@ -98,6 +109,7 @@ export const EVENT_KINDS: readonly EventKind[] = [
   "user.input",
   "confirmation.declined",
   "memory.written",
+  "memory.write_conflict",
   "external.input",
 ];
 
@@ -123,6 +135,7 @@ export const EFFECT_RESULT_EVENT_KINDS: readonly EventKind[] = [
   "user.input",
   "confirmation.declined",
   "memory.written",
+  "memory.write_conflict",
 ];
 
 /**
@@ -295,6 +308,26 @@ export interface MemoryWrittenBody extends EffectResultFields {
 }
 
 /**
+ * A runtime-established optimistic-concurrency conflict for one versioned `WriteMemory` (Slice G.0).
+ *
+ * The request was valid and authorized (and, where gated, confirmed), but its `expectedRevision`
+ * precondition no longer matched the bound view at the moment the atomic memory transaction
+ * resolved, so nothing was mutated: no value changed, the revision did not advance, and no write
+ * history was appended. The body carries only the runtime facts a controller needs to understand
+ * and recover from the conflict - not the proposed value and not its provenance.
+ */
+export interface MemoryWriteConflictBody extends EffectResultFields {
+  /** Non-null only when this write reused a confirmation-gated PendingOperation. */
+  readonly pendingOperationId: PendingOperationId | null;
+  readonly memoryViewId: string;
+  readonly key: string;
+  /** The precondition the write carried. */
+  readonly expectedRevision: number;
+  /** The bound view's actual revision when the conflict was detected. */
+  readonly actualRevision: number;
+}
+
+/**
  * An observation from outside the kernel: application input, a user turn, a system signal.
  *
  * `label` is application vocabulary, not kernel vocabulary. It lets an application distinguish its
@@ -320,6 +353,7 @@ export interface EventBodies {
   readonly "user.input": UserInputBody;
   readonly "confirmation.declined": ConfirmationDeclinedBody;
   readonly "memory.written": MemoryWrittenBody;
+  readonly "memory.write_conflict": MemoryWriteConflictBody;
   readonly "external.input": ExternalInputBody;
 }
 
@@ -406,6 +440,20 @@ export function eventBodyIssues(kind: EventKind, body: unknown): readonly EventB
     requireString(value["key"], "body.key", issues);
     if (typeof value["revision"] !== "number" || !Number.isInteger(value["revision"]) || value["revision"] < 1) {
       issues.push({ path: "body.revision", message: "expected a positive integer revision" });
+    }
+    return issues;
+  }
+  if (kind === "memory.write_conflict") {
+    if (value["pendingOperationId"] !== null && typeof value["pendingOperationId"] !== "string") {
+      issues.push({ path: "body.pendingOperationId", message: "expected a pending-operation id or null" });
+    }
+    requireString(value["memoryViewId"], "body.memoryViewId", issues);
+    requireString(value["key"], "body.key", issues);
+    for (const field of ["expectedRevision", "actualRevision"] as const) {
+      const revision = value[field];
+      if (typeof revision !== "number" || !Number.isInteger(revision) || revision < 0) {
+        issues.push({ path: `body.${field}`, message: "expected a non-negative integer revision" });
+      }
     }
     return issues;
   }

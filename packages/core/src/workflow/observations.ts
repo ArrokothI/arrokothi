@@ -20,6 +20,8 @@
 
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
+import type { BranchId, ForkId, StageId } from "./spec.ts";
+import type { StageResult } from "./stage-result.ts";
 
 /**
  * A capability request a Stage body wants performed.
@@ -53,6 +55,13 @@ export interface StageMemoryWriteRequest {
   readonly key: string;
   readonly memoryKey: string;
   readonly value: JsonValue;
+  /**
+   * Optional optimistic-concurrency precondition (Slice G.0): a non-negative integer bound-view
+   * revision. Absent = unconditional (the accepted F.0 behaviour). Present and stale ⇒ the barrier
+   * settles `conflicted` and nothing is written. This lets deterministic Workflow code exercise G.0
+   * through the ordinary Effect path.
+   */
+  readonly expectedRevision?: number;
 }
 
 export type StageEffectRequest = StageCapabilityRequest | StageMemoryWriteRequest;
@@ -62,11 +71,20 @@ export type StageEffectRequest = StageCapabilityRequest | StageMemoryWriteReques
  *
  * Mirrors the Event vocabulary rather than compressing it: `denied` is policy refusing, `rejected`
  * is a request that was never answerable, `failed` is a definite non-event, `unknown` is the
- * ambiguous case where the operation may well have happened, and `declined` (Slice E.2.1) is a human
- * declining an exact-payload mechanical confirmation - nothing dispatched, policy did not deny.
- * Collapsing any pair of these would make a Stage confidently wrong about the world.
+ * ambiguous case where the operation may well have happened, `declined` (Slice E.2.1) is a human
+ * declining an exact-payload mechanical confirmation - nothing dispatched, policy did not deny - and
+ * `conflicted` (Slice G.0) is a valid, authorized versioned `WriteMemory` whose optimistic
+ * precondition was stale, so nothing was written. Collapsing any pair of these would make a Stage
+ * confidently wrong about the world.
  */
-export type StageObservationOutcome = "completed" | "failed" | "unknown" | "denied" | "rejected" | "declined";
+export type StageObservationOutcome =
+  | "completed"
+  | "failed"
+  | "unknown"
+  | "denied"
+  | "rejected"
+  | "declined"
+  | "conflicted";
 
 export interface StageCapabilityObservation {
   /** The Stage-local key this answers. */
@@ -93,6 +111,33 @@ export type StageObservation = StageCapabilityObservation | StageMemoryWriteObse
 
 export function isSuccessfulObservation(observation: StageObservation): boolean {
   return observation.outcome === "completed";
+}
+
+// -- explicit join surface (Slice G.1) ------------------------------------------
+
+/**
+ * One branch's final result, as the downstream Stage sees it at the join.
+ *
+ * This is a *value*, not a handle: the downstream Stage receives each branch's final `text | none`
+ * result plus its authored identity, and never a reference to branch progress or branch internals.
+ */
+export interface WorkflowJoinedBranchResult {
+  readonly branchId: BranchId;
+  readonly stageId: StageId;
+  readonly result: StageResult;
+}
+
+/**
+ * The read-only snapshot a fork's explicit join hands to its immediate downstream Function Stage.
+ *
+ * `branches` is in authored branch order - never completion order. It is `null` for every ordinary
+ * Stage visit and present only on the visit a join created. The downstream Stage's ordinary `input`
+ * is still the fork's original incoming `StageResult`; this carries the parallel results alongside
+ * it without changing the `text | none` cross-Stage contract.
+ */
+export interface WorkflowJoinContext {
+  readonly forkId: ForkId;
+  readonly branches: readonly WorkflowJoinedBranchResult[];
 }
 
 /** The observation for one Stage-local key, if it settled during this visit. */

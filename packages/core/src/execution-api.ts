@@ -214,8 +214,10 @@ export { createActiveModelActionView, targetOfActiveModelAction } from "./operat
 // -- workflow topology -------------------------------------------------------
 export type {
   AgentStageDefinition,
+  BranchId,
   ChildDefinitionRef,
   ChildOperationRef,
+  ForkId,
   FunctionStageDefinition,
   ImplementationRef,
   LLMStageDefinition,
@@ -231,10 +233,13 @@ export type {
   TerminalProposal,
   TransitionTarget,
   TransitionTargetInput,
+  WorkflowForkBranch,
+  WorkflowForkDefinition,
+  WorkflowForkDefinitionInput,
   WorkflowSpecInput,
   WorkflowStageDefinition,
 } from "./workflow/spec.ts";
-export { STAGE_KINDS, findStage, isImplementationRef, isStageId, isStageKind, stageId, transitionLabels } from "./workflow/spec.ts";
+export { STAGE_KINDS, findFork, findStage, isBranchId, isForkId, isImplementationRef, isStageId, isStageKind, stageId, transitionLabels } from "./workflow/spec.ts";
 export type { AdapterDeclaration, AdapterKind, FunctionAdapterDeclaration, LLMAdapterDeclaration } from "./workflow/adapters.ts";
 export { ADAPTER_KINDS, isAdapterKind } from "./workflow/adapters.ts";
 export type { StageResult } from "./workflow/stage-result.ts";
@@ -247,6 +252,8 @@ export type {
   StageMemoryWriteRequest,
   StageObservation,
   StageObservationOutcome,
+  WorkflowJoinContext,
+  WorkflowJoinedBranchResult,
 } from "./workflow/observations.ts";
 export { findObservation, isSuccessfulObservation } from "./workflow/observations.ts";
 export type { WorkflowSpecIssue, WorkflowSpecIssueCode, WorkflowSpecValidation } from "./workflow/validation.ts";
@@ -268,6 +275,8 @@ export type {
   MemoryWriteBarrierEntry,
   WorkflowBoundaryState,
   WorkflowControlState,
+  WorkflowParallelBranchState,
+  WorkflowParallelState,
 } from "./workflow/control-state.ts";
 export { childBarrierEntry, readWorkflowControlState, stageCorrelationId, WORKFLOW_CONTROL_STATE_VERSION } from "./workflow/control-state.ts";
 export { stageAdapterResumptionKey, stageModelResumptionKey } from "./workflow/resumption-keys.ts";
@@ -491,6 +500,7 @@ export type {
   ExternalInputBody,
   MessageSentBody,
   MemoryWrittenBody,
+  MemoryWriteConflictBody,
   PeerMessageBody,
   UserInputBody,
 } from "./interaction/events.ts";
@@ -539,6 +549,8 @@ export {
   DISPATCHABLE_EFFECT_KINDS,
   EFFECT_KINDS,
   isEffectKind,
+  effectProposalIssues,
+  expectedRevisionIssues,
   isUseCapabilityProposal,
   isWriteMemoryProposal,
   memoryWriteProvenanceIssues,

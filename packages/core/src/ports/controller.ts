@@ -108,6 +108,39 @@ export type ControllerNext =
       readonly resumptionId: ControllerResumptionId;
       readonly interleave?: WakeCondition;
     }
+  /**
+   * No branch has runnable local work now; this Execution depends on a *set* of dependencies, and
+   * any one of them settling should re-enter the controller (Slice G.2).
+   *
+   * The parallel-Workflow union wait. One Workflow Execution can legitimately hold several
+   * independent branch dependencies at once - one branch waiting on an Effect result Event, another
+   * mid slow model call - without turning branches into Executions and without conflating the two
+   * kinds of waiting. `event` is a single primary Event `WakeCondition` (an Effect/child result can
+   * make some branch runnable); `resumptions` is a set of controller-local `ControllerResumptionId`s
+   * (any one settling can make some branch runnable).
+   *
+   * ```text
+   * at least one of `event` / a non-empty `resumptions` is present
+   * `resumptions` ids are unique and all belong to this Execution and are unresolved
+   * an `event` match wakes the Execution WITHOUT invalidating any sibling resumption
+   * a resumption settling wakes the Execution WITHOUT the `event` dependency being satisfied
+   * a resumption that settles while the Execution is already runnable records its outcome and
+   *   causes no second wake
+   * ```
+   *
+   * This is deliberately *not* `interleave`: E.1's stale-continuation rule invalidates an overtaken
+   * resumption because an unrelated semantic continuation changed the assumptions under it. Sibling
+   * parallel branches are explicitly separate progress, so that rule does not apply here and there
+   * is no `interleave` field on this arm.
+   *
+   * `effects` may accompany this arm only when `event` is present - their results are what the
+   * `event` dependency is for.
+   */
+  | {
+      readonly status: "await_dependencies";
+      readonly event?: WakeCondition;
+      readonly resumptions?: readonly ControllerResumptionId[];
+    }
   /** Semantic completion. The Harness validates the result before anything becomes COMPLETED. */
   | { readonly status: "complete"; readonly result?: TerminalResultProposal }
   /** Semantic failure. Distinct from one failed operation, which is only an observation. */

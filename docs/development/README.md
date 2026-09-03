@@ -96,9 +96,97 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   observation. Agent-only consumer, controller-neutral resolver, no caching or Workflow LLM change.
   No canonical-doc change. Merged to main (PR #11); part of the merged `main` F.2a baseline.
 
+027-slice-g3-parallel-structured-memory-conflicts.md
+  the current Slice G.3 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
+  continuing from G.2. A parallel Workflow branch may now use the ordinary `WriteMemory` Effect, but
+  only *optimistically*: a branch write must carry an explicit `expectedRevision`. The G.2 blanket
+  `parallel_branch_memory_write_deferred` is replaced by a `parallel_branch_memory_write_requires_revision`
+  fail-closed for an *unversioned* branch write (before the proposal reaches the Harness - no journal
+  entry, no PendingOperation, no revision advance); a versioned branch write falls through to the
+  same `buildEffectBarrier` path every other branch Effect uses (branch-qualified correlation,
+  ordinary authority / confirmation / whole-view revision CAS, `memory.written` / `memory.write_conflict`).
+  A stale versioned branch write settles its branch barrier `conflicted` (never overwriting a
+  sibling's commit) and does **not** automatically fail the branch / fork / Workflow - the Stage
+  re-enters and decides. Simultaneously-ungated branch writes are arbitrated by authored branch
+  order (the G.2 proposal fold + sequential Effect processing), independent of wall-clock branch
+  completion; the whole-view revision stays deliberately coarse (disjoint keys still conflict);
+  confirmation-time revision recheck stays authoritative (an approved-but-stale gated branch write
+  conflicts). No new Stage / Effect / Event / wait vocabulary; no `BranchMemory`; no reducer / merge
+  / automatic retry; no model-facing `expectedRevision`. `WORKFLOW_CONTROL_STATE_VERSION` stays 4
+  (the G.2 branch `BarrierEntry` already represents `write_memory`). One production change
+  (`attemptBranch`'s `awaitEffects` arm). No canonical-doc change (`future-plan.md` §1.3 / §1.4 /
+  §3.4 pointers only). Not merged; awaiting independent review.
+
+026-slice-g2-parallel-branch-dependencies.md
+  the current Slice G.2 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
+  continuing from G.1. A parallel branch may now be any *adapter-free* Stage kind
+  (`function` / `llm` / `agent` / `workflow` - adds no Stage kind) and may hold a real asynchronous
+  dependency while staying a branch of one Workflow Execution: a `UseCapability` Effect, an
+  Agent/Workflow child `call` (branch != child Execution), or a slow model call. Central runtime
+  change: a dependency-set (union) wait - `ControllerNext` `await_dependencies { event?, resumptions? }`
+  and `ExecutionWait` `dependencies { event, resumptions }` (`dependenciesWait`) - where any one
+  member settling re-enters, the `event` member waking does NOT invalidate any `resumptions` member
+  and vice versa (deliberately NOT `interleave`; no `interleave` field on this arm), and the Harness
+  preflights `resolveMany` before any Effect boundary (one illegal / foreign / duplicate id fails
+  with no Effect consequence), then commits every newly-registered resumption record with controller
+  progress in one transaction. That final transaction re-reads every legitimately recovered
+  resumption and chooses READY when either the Event or a resumption is already satisfied, closing
+  both during-Activation settlement races. Branch-qualified
+  Effect correlation (`branchStageCorrelationId`) and ControllerResumption keys
+  (`branchStageResumptionScope` + `modelPhaseResumptionKey`) - two sibling branches may share a
+  Stage-local request key and still receive only their own observations. `WORKFLOW_CONTROL_STATE_VERSION`
+  3 -> 4 (`WorkflowParallelBranchState` gains its own `barrier` + `awaiting_effects` /
+  `awaiting_resumption` statuses; v3 records read unchanged). `runStageBodyFor` is the one path both
+  an ordinary Stage step and a branch step take. Fail-closed: a branch `WriteMemory`
+  (`parallel_branch_memory_write_deferred` - that is G.3), branch emissions / transition labels /
+  Adapters, multi-Stage branch topology. `dependencies` is a *wait* kind, never a Stage/Effect/Event
+  kind; no branch Execution, no new RuntimeStore / Harness facet. No canonical-doc change
+  (`future-plan.md` §1.3 pointer only). Concurrent Structured Memory branch writes, multi-Stage
+  branches, nested forks, reducers/merge, cancellation propagation, and branch Working Notes remain
+  G.3+. Not merged; awaiting independent re-review after the `a9ad428` correction.
+
+025-slice-g1-minimal-workflow-fork-join.md
+  the Slice G.1 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
+  continuing from the independently-accepted G.0. The narrowest honest proof of system-defined
+  parallel Workflow branches: authored `{ to: "fork" }` / `{ to: "join" }` topology
+  (`WorkflowSpec.forks?`, `ForkId` / `BranchId` - no new Stage/Effect/Event kind); branch-local
+  `WorkflowParallelState` (own branch-local visit / input snapshot / progress / result per branch) at
+  `WORKFLOW_CONTROL_STATE_VERSION` 2 -> 3, with `currentStage` + `visit` kept as one truthful Stage
+  invocation coordinate even during a fork and a separate `visits` high-water owning visit allocation
+  (independent-review correction, 025 §0); branch bodies that are exactly one Function Stage, run
+  overlapping via `Promise.all` over immutable snapshots with one serialized commit afterwards; an
+  explicit join as a distinct controller step (a persisted state where both branches are done and
+  Stage D has not run) that exposes an immutable authored-order `WorkflowJoinContext` to one
+  downstream Function Stage (D's ordinary input stays the fork input); deterministic result / failure
+  ordering by authored branch order; `parallel_branch_effects_unsupported` fail-closed for a branch
+  that returns `awaitEffects`. Exactly one Execution - no child Executions, no new RuntimeStore /
+  Harness facet, no branch Effects / resumptions. No canonical-doc change (`future-plan.md` §1.3
+  gains a pointer only). LLM/Agent/Workflow branches, branch Effects, nested forks, reducers, merge,
+  and Working Notes branch handling are all deferred to G.2/G.3. Not merged; awaiting independent
+  review.
+
+024-slice-g0-structured-memory-optimistic-conflict.md
+  the independently-accepted Slice G.0 checkpoint, on the long-lived branch `slice-g-structured-concurrency` from
+  the merged Slice-F baseline (`cadf1f1`, PR #12). The first honest optimistic Structured Memory
+  write precondition: an optional whole-view `WriteMemoryProposal.expectedRevision` compare-and-set
+  (absent = the accepted F.0 unconditional write; never exposed to the model) and one distinct
+  `memory.write_conflict` runtime observation - its own Event kind (in `EFFECT_RESULT_EVENT_KINDS`,
+  not externally mintable), a terminal `conflicted` journal phase, a `conflicted` PendingOperation
+  outcome with `dispatch` still `not_dispatched`, a `conflicted` `resolveConfirmation` receipt, and
+  `conflicted` Workflow Stage + Agent action observation outcomes - never collapsed into
+  `effect.rejected`. Authorization still runs before any view lookup (a denied versioned write reads
+  the view zero times and reveals no revision); the semantic check and the commit linearize in one
+  RuntimeStore transaction; the confirmation digest covers `expectedRevision`; an approved-but-stale
+  write conflicts rather than forcing; the physical `StructuredMemoryFacet.update` CAS stays the
+  final guard and fails closed to the same conflict semantics. Whole-view (not field-level) conflict
+  is deliberately coarse and tested as intentional. The five Effect kinds are unchanged; no parallel
+  Workflow / fork-join / branch state / reducer / field-level revision / lease - all deferred to
+  G.1+. No canonical-doc change (`future-plan.md` §1.4 / §3.4 gain a pointer only). Not merged;
+  awaiting independent review.
+
 023-slice-f3-derived-semantic-memory-provenance-promotion.md
-  the current F.3 checkpoint, on the long-lived branch `slice-f-memory-completion` from the accepted
-  F.2b tip. The smallest honest Derived Semantic Memory vertical slice: a reference v0.4
+  the accepted and merged F.3 checkpoint (part of `main` @ `cadf1f1`, PR #12). The smallest honest
+  Derived Semantic Memory vertical slice: a reference v0.4
   claim/provenance shape (dependency-free `execution/` leaf; explicitly NOT the frozen portable
   schema - `future-plan.md` §3.1 stays open); an explicit `DerivedMemoryExtractor` seam + trusted
   `deriveClaims` grounding (a candidate may cite only supplied sourceRefs; `derivedAt` is pipeline-
@@ -115,7 +203,8 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   confirmation digest, retained on the committed record + history); zero-cost disabled path.
   Malicious "user approves all payments" claim grants nothing. No parent->child Derived handoff; no
   `SpawnExecution` field. **No canonical-doc change** (`future-plan.md` §3.1/§3.2 gain a pointer,
-  lose no question). Not merged; awaiting independent review, then the final integrated Slice-F review.
+  lose no question). Independently reviewed and merged with the rest of Slice F (`main` @ `cadf1f1`,
+  PR #12).
 
 022-slice-f2b-working-notes-explicit-handoff.md
   the accepted F.2b checkpoint, on the long-lived branch `slice-f-memory-completion` from the accepted
@@ -209,49 +298,164 @@ Slice F memory
   F.1.1         model-directed WriteMemory         accepted, merged (020, PR #11)
                 exposure via authorized memory
                 view + heterogeneous action view
-  F.2a          Working Notes local scratch:       accepted (021), review-corrected; on branch
-                controller-owned frame in          slice-f-memory-completion, unmerged with the
-                AgentControlState, authored         rest of Slice F. working_notes_set is a
-                read/write enablement, local        controller-local model CONTROL (not a model
-                working_notes_set control with no   action / Active View member); one minimal
-                Effect/Event, bounded persistence,  authority.md §3/§14 clarification
+  F.2a          Working Notes local scratch:       accepted (021), review-corrected; merged with
+                controller-owned frame in          the rest of Slice F. working_notes_set is a
+                AgentControlState, authored         controller-local model CONTROL (not a model
+                read/write enablement, local       action / Active View member); one minimal
+                working_notes_set control with no  authority.md §3/§14 clarification
+                Effect/Event, bounded persistence,
                 control-state version 2 -> 3 +
                 fail-closed frame validation
-  F.2b          Working Notes explicit handoff:    accepted (022, review-corrected §0.1-0.5); on
-                selectWorkingNotesHandoff (pure,   branch slice-f-memory-completion, unmerged with
-                fail-closed) -> immutable          the rest of Slice F. First explicit Working Notes
-                WorkingNotesHandoff snapshot on an composition transfer, across ONE child Execution
-                already-authorized SpawnExecution  boundary. No new gateway / Effect / Event /
-                -> Effect gateway envelope-checks  PendingOperation kind. TWO artifacts per canonical
-                + rejects oversize atomically ->   composition.md §15 / memory.md §5: immutable
-                TWO artifacts: immutable inherited inherited read-only snapshot + child-local
-                snapshot on ExecutionContext +     WRITABLE frame seeded once (never re-overlaid).
-                child-local writable frame seeded  Not an authority mechanism, but the concrete
-                once from a deep copy of it.       proposal reaches EffectAuthorizer/confirmation so
-                Workflow Stage handoff, parallel   policy may deny the concrete transfer. No
-                notes, child->parent return all    canonical-doc change.
-                deferred.
-  F.3           Derived Semantic Memory +         current checkpoint (023); on branch
-                provenance + explicit promotion:  slice-f-memory-completion, not merged, awaiting
-                reference claim/provenance leaf   independent review. Derived Semantic Memory is a
-                (NOT the frozen portable schema); DIFFERENT memory form: inferred, provenance-
-                DerivedMemoryExtractor seam +     bearing, retrieval-oriented, NOT authoritative by
-                trusted deriveClaims grounding;   default. Extraction (deriveClaims) is an
-                replaceable provider port +       application concern, never called from a
-                reference in-memory provider      controller; a candidate may cite only supplied
-                (deterministic lexical ranking,   sourceRefs; derivedAt is pipeline-stamped.
-                NOT canonical); authorized deny-  Authorized retrieval resolver checks policy BEFORE
-                by-default read resolver held by  the provider (denied -> zero retrieve calls),
-                the AgentController; authored     mirrors F.1. Promotion is the EXISTING WriteMemory
-                AgentSpec.derivedMemory.read +    Effect + an optional plain MemoryWriteProvenance
-                two AgentLimits budgets; labeled  (NOT AuthorizationEvidence; covered by the
-                "# Derived Semantic Memory"       confirmation digest; retained on the committed
-                information block; per-invocation record + history) - no sixth Effect, no
-                snapshot/re-entry; explicit       derived.promoted Event, statement never parsed.
-                promoteDerivedClaim into          Malicious "user approves all payments" claim grants
-                WriteMemory. Zero-cost disabled   nothing. No parent->child Derived handoff. No
-                path. No canonical-doc change     canonical-doc change (future-plan.md §3.1/§3.2 gain
-                (future-plan pointer only).       a pointer, lose no question).
+  F.2b          Working Notes explicit handoff:    accepted (022, review-corrected §0.1-0.5);
+                selectWorkingNotesHandoff (pure,   merged with the rest of Slice F. First explicit
+                fail-closed) -> immutable          Working Notes composition transfer, across ONE
+                WorkingNotesHandoff snapshot on an child Execution boundary. No new gateway / Effect
+                already-authorized SpawnExecution  / Event / PendingOperation kind. TWO artifacts per
+                -> Effect gateway envelope-checks  canonical composition.md §15 / memory.md §5:
+                + rejects oversize atomically ->   immutable inherited read-only snapshot +
+                TWO artifacts: immutable inherited child-local WRITABLE frame seeded once (never
+                snapshot on ExecutionContext +     re-overlaid). No canonical-doc change.
+                child-local writable frame seeded
+                once from a deep copy of it.
+  F.3           Derived Semantic Memory +         accepted (023), independently reviewed;
+                provenance + explicit promotion.  a DIFFERENT memory form: inferred, provenance-
+                Reference claim/provenance leaf   bearing, retrieval-oriented, NOT authoritative by
+                (NOT the frozen portable schema); default. Authorized retrieval resolver checks
+                DerivedMemoryExtractor seam +     policy BEFORE the provider (denied -> zero retrieve
+                trusted deriveClaims grounding;   calls), mirrors F.1. Promotion is the EXISTING
+                replaceable provider port;        WriteMemory Effect + an optional plain
+                authored AgentSpec.derivedMemory  MemoryWriteProvenance - no sixth Effect, no
+                .read + two AgentLimits budgets;  derived.promoted Event, statement never parsed.
+                explicit promoteDerivedClaim into future-plan.md §3.1/§3.2 gain a pointer only.
+                WriteMemory. Zero-cost disabled
+                path.
+  Slice F accepted + reviewed + MERGED             main @ cadf1f1 (PR #12)
+        ↓
+Slice G structured concurrency
+  G.0           Structured Memory optimistic       independently accepted (024); on branch
+                write preconditions + explicit    slice-g-structured-concurrency from the merged
+                conflict observations.            Slice-F baseline, on the branch, not merged.
+                Optional whole-view               Optional WriteMemoryProposal.expectedRevision
+                WriteMemoryProposal               (a non-negative integer on the WHOLE bound view
+                .expectedRevision compare-and-set revision; absent = the accepted F.0 unconditional
+                (never exposed to the model);     write; NEVER exposed to the model - the F.1.1 write
+                one distinct memory.write_conflict callable input schema stays exactly { value }).
+                Event kind (in                    A stale versioned write is a DISTINCT outcome, not
+                EFFECT_RESULT_EVENT_KINDS, not    a flavour of effect.rejected: memory.write_conflict
+                externally mintable), a terminal  Event, `conflicted` journal phase, `conflicted`
+                `conflicted` journal phase, a     PendingOutcomeState (dispatch stays
+                `conflicted` PendingOperation     not_dispatched), `conflicted` resolveConfirmation
+                outcome, `conflicted` Stage +     receipt, `conflicted` Stage + Agent action
+                Agent action observation          observation outcomes. Authorization runs BEFORE any
+                outcomes. The semantic check +    view lookup (a denied versioned write reads the
+                the commit linearize in one       view zero times); the confirmation digest covers
+                RuntimeStore transaction; the     expectedRevision; an approved-but-stale write
+                physical StructuredMemoryFacet    conflicts rather than forcing; the physical
+                .update CAS stays the final       StructuredMemoryFacet.update CAS fails closed to the
+                guard. Whole-view (not field-     same conflict semantics. The five Effect kinds are
+                level) conflict is deliberately   unchanged. No parallel Workflow / fork-join / branch
+                coarse and tested as intentional. state / reducer / field-level revision / lease -
+                No canonical-doc change           all deferred to G.1+. No canonical-doc change
+                (future-plan.md §1.4 / §3.4       (future-plan.md §1.4 / §3.4 gain a pointer only).
+                pointer only).
+
+  G.1           minimal system-defined Workflow   checkpoint (025); same branch, continuing
+                fork/join.                        from G.0. Not merged, awaiting independent review.
+                Authored { to: "fork" } /         TransitionTarget gains { to: "fork", fork } and
+                { to: "join" } topology on        { to: "join", fork }; WorkflowForkDefinition
+                WorkflowSpec.forks?; ForkId /     { id, branches[>=2], join: { next } }. fork/join are
+                BranchId brands. No new Stage /   topology graph edges - not a Stage kind, not an
+                Effect / Event kind.              Effect, not an Event. WORKFLOW_CONTROL_STATE_VERSION
+                WorkflowParallelState (per-branch 2 -> 3: WorkflowParallelState + per-branch
+                branch-local visit / input /      WorkflowParallelBranchState; new .visits (visit-
+                progress / result) v2 -> v3;      allocation high-water) / .forks / .parallel / .join
+                currentStage + visit stay one     fields; plain JSON only. currentStage + visit stay
+                truthful Stage coordinate even    truthful during a fork; the join allocates from
+                during a fork (025 s0 review      `visits`, monotone across forks/loops (025 s0
+                correction).                      review correction). A G.1 branch body is exactly
+                Branch bodies = exactly one       one adapter-free Function Stage; static
+                Function Stage, run overlapping   validation rejects everything wider. Branch work
+                via Promise.all over immutable    overlaps in one Activation; one serialized commit
+                snapshots, one serialized commit  afterwards. The explicit join is a distinct step
+                afterwards. Explicit join is a    (a persisted joinReady state where D has not run)
+                distinct controller step exposing exposing an immutable authored-order
+                an authored-order                 WorkflowJoinContext to one downstream Function
+                WorkflowJoinContext to D          Stage; D's ordinary input stays the fork input.
+                (D.input stays the fork input).   Deterministic result / failure ordering by authored
+                Deterministic ordering; a branch  branch order. A branch returning awaitEffects fails
+                awaitEffects fails closed         closed (parallel_branch_effects_unsupported) - no
+                (parallel_branch_effects_         Effect, no half-built G.2. Exactly one Execution:
+                unsupported). Exactly one         no child Execution / link / spawn budget / new
+                Execution. No canonical-doc       RuntimeStore or Harness facet. LLM/Agent/Workflow
+                change (future-plan.md §1.3       branches, branch Effects/resumptions, nested forks,
+                pointer only). LLM/Agent branch,  reducers, merge, Working Notes branch handling all
+                branch Effects, nested forks,     deferred to G.2/G.3. No canonical-doc change
+                reducers, merge - all G.2/G.3.    (future-plan.md §1.3 gains a pointer only).
+
+  G.2           parallel branch dependencies,     current checkpoint (026); same branch, continuing
+                Effects, async resumptions.       from G.1. Not merged, awaiting independent re-review.
+                A branch may be any adapter-free  Branch body widened function -> function / llm /
+                Stage kind and may hold a real    agent / workflow (adds no Stage kind); a branch
+                async dependency while staying a  may request UseCapability Effect(s), call an
+                branch of ONE Workflow Execution. Agent/Workflow child (branch != child Execution),
+                Runtime dependency-set (union)    or make a slow model call. ControllerNext gains
+                wait: any one member settling     await_dependencies { event?, resumptions? };
+                re-enters; the event member      ExecutionWait gains dependencies { event,
+                waking does NOT invalidate any    resumptions } (dependenciesWait). Deliberately NOT
+                resumptions member and vice       interleave - sibling branch progress is explicitly
+                versa. Harness commits every new  separate, so no stale-continuation invalidation; no
+                resumption record + controller    interleave field on this arm. resolveMany commits
+                progress in ONE transaction.      all new resumption records atomically; one illegal
+                branch-qualified Effect           / foreign / duplicate id fails the Activation
+                correlation + resumption keys     cleanly. branchStageCorrelationId / branch model-
+                (two siblings may share a Stage-  resumption keys from persisted coordinates only.
+                local request key).               WORKFLOW_CONTROL_STATE_VERSION 3 -> 4:
+                Fail-closed: a branch WriteMemory WorkflowParallelBranchState gains its own barrier +
+                (parallel_branch_memory_write_    awaiting_effects / awaiting_resumption statuses; v3
+                deferred - that is G.3), branch   records read unchanged. runStageBodyFor is the one
+                emissions / labels / Adapters,    path both an ordinary Stage step and a branch step
+                multi-Stage branch topology.      take. dependencies is a WAIT kind, never a Stage /
+                No branch Execution, no new       Effect / Event kind. No canonical-doc change
+                RuntimeStore / Harness facet.     (future-plan.md §1.3 pointer only). Concurrent
+                                                  Structured Memory branch writes, multi-Stage
+                                                  branches, nested forks, reducers/merge,
+                                                  cancellation propagation, Working Notes branch
+                                                  merge - all G.3+.
+                Review correction after a9ad428:    dependency ids preflight BEFORE Effects; final
+                fail-closed + race-safe boundary.  transaction re-reads Event + recovered-resumption
+                                                  truth and chooses READY if either is satisfied.
+                                                  New registrations commit/attach on both paths.
+
+  G.3           concurrent Structured Memory      current checkpoint (027); same branch, continuing
+                branch writes + explicit          from G.2. Not merged, awaiting independent review.
+                optimistic conflict handling.     A parallel branch may use the ordinary WriteMemory
+                A branch write must carry an      Effect, but a branch write MUST carry an explicit
+                explicit expectedRevision; a      expectedRevision. The G.2 blanket
+                stale one becomes an observable   parallel_branch_memory_write_deferred is replaced
+                conflict, never a silent          by parallel_branch_memory_write_requires_revision
+                overwrite.                        (unversioned branch write, fails closed before the
+                                                  Harness). A versioned branch write reuses the same
+                                                  buildEffectBarrier path (branch-qualified
+                                                  correlation, ordinary authority / confirmation /
+                                                  whole-view revision CAS, memory.written /
+                                                  memory.write_conflict). A stale branch write settles
+                                                  its barrier "conflicted" and does NOT auto-fail the
+                                                  branch / fork / Workflow. Simultaneously-ungated
+                                                  branch writes are arbitrated by AUTHORED branch
+                                                  order (G.2 proposal fold + sequential Effect
+                                                  processing), not wall-clock completion; whole-view
+                                                  revision stays coarse (disjoint keys still
+                                                  conflict); confirmation-time revision recheck stays
+                                                  authoritative. No new Stage / Effect / Event / wait
+                                                  kind; no BranchMemory; no reducer / merge / retry;
+                                                  no model-facing expectedRevision.
+                                                  WORKFLOW_CONTROL_STATE_VERSION stays 4. One
+                                                  production change (attemptBranch's awaitEffects
+                                                  arm). No canonical-doc change (future-plan.md §1.3
+                                                  / §1.4 / §3.4 pointers only). Automatic retry, join
+                                                  reducers, memory merge, field-level / per-key
+                                                  revisions, multi-key transactions, locks / leases /
+                                                  fencing, Working Notes branch merge - all deferred.
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

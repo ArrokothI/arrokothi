@@ -124,7 +124,7 @@ import type { IdGenerator } from "../ports/ids.ts";
 import { ID_PREFIXES } from "../ports/ids.ts";
 import type { InlineWaitBudget } from "../ports/inline-wait.ts";
 import type { RuntimeStore, RuntimeTransaction } from "../ports/runtime-store.ts";
-import { SpawnBudgetConcurrencyError } from "../ports/runtime-store.ts";
+import { SpawnBudgetConcurrencyError, StructuredMemoryConcurrencyError } from "../ports/runtime-store.ts";
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import type { EventRoutingResult } from "./event-router.ts";
 import { routeEvent } from "./event-router.ts";
@@ -158,13 +158,17 @@ export interface EffectDispatchRecord {
   /** True when the result Event was already in the mailbox before the Activation finished. */
   readonly settledInline: boolean;
   /**
-   * Set only on the confirmed-dispatch (`resume`) path when an approved Effect was refused before it
-   * dispatched: the gated PendingOperation was settled `denied` / `rejected` and one correlated
-   * Event routed. `resolveConfirmation` maps this to its receipt; it is never persisted in an
-   * Activation record because the ordinary proposal path never sets it.
+   * Set only on the confirmed-dispatch (`resume`) path when an approved Effect did not dispatch: the
+   * gated PendingOperation was settled `denied` / `rejected` / `conflicted` and one correlated Event
+   * routed. `resolveConfirmation` maps this to its receipt; it is never persisted in an Activation
+   * record because the ordinary proposal path never sets it.
+   *
+   * `memory.write_conflict` (Slice G.0) is a distinct outcome, not a flavour of `effect.rejected`: an
+   * approved versioned `WriteMemory` whose optimistic precondition was no longer true when its
+   * dispatch resolved. Nothing reached Structured Memory.
    */
   readonly refusal?: {
-    readonly kind: Extract<EventKind, "effect.denied" | "effect.rejected">;
+    readonly kind: Extract<EventKind, "effect.denied" | "effect.rejected" | "memory.write_conflict">;
     readonly code: string;
     readonly message: string;
   };
@@ -261,6 +265,21 @@ export type ResolveConfirmationReceipt =
    */
   | {
       readonly status: "rejected";
+      readonly confirmationId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly code: string;
+      readonly message: string;
+    }
+  /**
+   * Approved and still authorized, but an approved versioned `WriteMemory`'s optimistic
+   * `expectedRevision` precondition was no longer true when its dispatch resolved (Slice G.0).
+   * Nothing reached Structured Memory: the gated PendingOperation settled `conflicted`
+   * (`dispatch: not_dispatched`) and one correlated `memory.write_conflict` Event routed. Distinct
+   * from `denied` (authorization), `rejected` (never dispatchable), and `declined` (human).
+   */
+  | {
+      readonly status: "conflicted";
       readonly confirmationId: string;
       readonly executionId: ExecutionId;
       readonly pendingOperationId: PendingOperationId;
@@ -1024,11 +1043,11 @@ export class EffectProcessor {
   /**
    * Maps the record a resumed dispatch returned to a `resolveConfirmation` receipt.
    *
-   * A refusal record (`refusal` set by `refuse` on the resume path, or by `dispatchCapability`'s
-   * in-transaction authority recheck) means the gated PendingOperation was already settled
-   * `denied` / `rejected` and one correlated Event routed - the receipt just reports which. An
-   * `abandoned` phase means the requester terminalized mid-resume. Otherwise the stored payload
-   * dispatched.
+   * A refusal record (`refusal` set by `refuse` on the resume path, by `dispatchCapability`'s
+   * in-transaction authority recheck, or by `dispatchWriteMemory`'s optimistic conflict path) means
+   * the gated PendingOperation was already settled `denied` / `rejected` / `conflicted` and one
+   * correlated Event routed - the receipt just reports which. An `abandoned` phase means the
+   * requester terminalized mid-resume. Otherwise the stored payload dispatched.
    */
   private receiptForResumedRecord(
     request: ConfirmationRequest,
@@ -1043,9 +1062,9 @@ export class EffectProcessor {
         code: record.refusal.code,
         message: record.refusal.message,
       } as const;
-      return record.refusal.kind === "effect.denied"
-        ? { status: "denied", ...shared }
-        : { status: "rejected", ...shared };
+      if (record.refusal.kind === "effect.denied") return { status: "denied", ...shared };
+      if (record.refusal.kind === "memory.write_conflict") return { status: "conflicted", ...shared };
+      return { status: "rejected", ...shared };
     }
     if (record.phase === "abandoned") {
       return { status: "abandoned", confirmationId: request.confirmationId };
@@ -2055,6 +2074,13 @@ export class EffectProcessor {
           readonly routed: EventRoutingResult;
         }
       | {
+          readonly kind: "conflicted";
+          readonly memoryViewId: string;
+          readonly expectedRevision: number;
+          readonly actualRevision: number;
+          readonly routed: EventRoutingResult;
+        }
+      | {
           readonly kind: "written";
           readonly memoryViewId: string;
           readonly revision: number;
@@ -2158,8 +2184,80 @@ export class EffectProcessor {
         );
       }
 
+      /**
+       * The optimistic-concurrency conflict path (Slice G.0).
+       *
+       * A conflict is a *distinct* runtime observation, never a flavour of `effect.rejected`: the
+       * request was valid, inside the effective-authority ceiling, authorized, and (where gated)
+       * confirmed - it just lost a compare-and-set on the whole bound view revision. Nothing is
+       * mutated: no value change, no `commitStructuredMemoryWrite`, no `structuredMemory.update`, no
+       * revision advance, no write-history append. One `memory.write_conflict` Event, one terminal
+       * `conflicted` journal phase, and - when gated - the exact PendingOperation settles
+       * `conflicted` with `dispatch` still `not_dispatched`.
+       */
+      const conflict = async (
+        expectedRevision: number,
+        actualRevision: number,
+        opts: { readonly reason?: string } = {},
+      ): Promise<Commit> => {
+        await this.journal(tx, {
+          effectId,
+          executionId,
+          effectKind: "write_memory",
+          phase: "conflicted",
+          activationId: input.activationId,
+          pendingOperationId: resume?.pendingOperationId ?? null,
+          at,
+          detail: {
+            code: "structured_memory_write_conflict",
+            memoryViewId: view.memoryViewId,
+            key: proposal.key,
+            expectedRevision,
+            actualRevision,
+            resultEventId: eventId,
+            ...(opts.reason ? { reason: opts.reason } : {}),
+          },
+        });
+        if (gatedOperation) {
+          // Nothing reached Structured Memory: `dispatch` stays `not_dispatched`.
+          await tx.pendingOperations.update(markSettled(gatedOperation, "conflicted", eventId, at));
+        }
+        const routed = await routeEvent({
+          tx,
+          envelope: {
+            eventId,
+            destination: { executionId },
+            kind: "memory.write_conflict",
+            body: {
+              effectId,
+              effectKind: "write_memory",
+              pendingOperationId: resume?.pendingOperationId ?? null,
+              memoryViewId: view.memoryViewId,
+              key: proposal.key,
+              expectedRevision,
+              actualRevision,
+            },
+            correlationId,
+            causationId: effectId,
+            occurredAt: at,
+          },
+          deliveredAt: at,
+          recordTransition: async (id, from, to, when, why) => {
+            await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
+          },
+        });
+        return { kind: "conflicted", memoryViewId: view.memoryViewId, expectedRevision, actualRevision, routed };
+      };
+
       const validation = validateStructuredMemoryWrite(view, proposal.key, proposal.value);
       if (!validation.ok) return reject(validation.code, validation.message);
+
+      // The semantic optimistic precondition. Absent -> the accepted F.0 unconditional write. Present
+      // -> the whole bound view revision must still equal it, checked inside this same transaction as
+      // the commit so the check and the write linearize together and the race cannot simply move.
+      if (proposal.expectedRevision !== undefined && view.revision !== proposal.expectedRevision) {
+        return conflict(proposal.expectedRevision, view.revision);
+      }
 
       const written = commitStructuredMemoryWrite(view, {
         key: proposal.key,
@@ -2185,7 +2283,21 @@ export class EffectProcessor {
         detail: { memoryViewId: view.memoryViewId, key: proposal.key },
       });
 
-      await tx.structuredMemory.update(written, view.revision);
+      try {
+        await tx.structuredMemory.update(written, view.revision);
+      } catch (error) {
+        if (error instanceof StructuredMemoryConcurrencyError) {
+          // The physical persistence CAS refused *after* the semantic precondition matched (or was
+          // absent). Fail closed: surface the SAME conflict semantics rather than retrying or letting
+          // a stale write become last-write-wins. `structuredMemory.update` checks the revision before
+          // it mutates, so the draft carries no committed value / advanced revision to roll back, and
+          // the conflict journal + Event still commit with this transaction.
+          return conflict(proposal.expectedRevision ?? error.expectedRevision, error.actualRevision, {
+            reason: "physical persistence CAS refused after the semantic precondition matched",
+          });
+        }
+        throw error;
+      }
       await this.journal(tx, {
         effectId,
         executionId,
@@ -2260,6 +2372,27 @@ export class EffectProcessor {
         settledInline: true,
         ...(resume
           ? { refusal: { kind: "effect.rejected", code: commit.code, message: commit.message } as const }
+          : {}),
+      };
+    }
+    if (commit.kind === "conflicted") {
+      return {
+        effectId,
+        effectKind: "write_memory",
+        correlationId,
+        pendingOperationId: resume?.pendingOperationId ?? null,
+        phase: "conflicted",
+        settledInline: true,
+        ...(resume
+          ? {
+              refusal: {
+                kind: "memory.write_conflict",
+                code: "structured_memory_write_conflict",
+                message:
+                  `the Structured Memory view ${commit.memoryViewId} is at revision ${commit.actualRevision}, ` +
+                  `not the expected ${commit.expectedRevision}; the versioned write did not commit`,
+              } as const,
+            }
           : {}),
       };
     }
