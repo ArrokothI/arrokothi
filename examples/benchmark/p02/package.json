@@ -6,7 +6,11 @@
   "exports": {
     ".": "./subject.ts",
     "./agent": "./agent.ts",
+    "./app": "./app.ts",
     "./catalog": "./catalog.ts",
+    "./properties": "./properties.ts",
+    "./lead": "./lead.ts",
+    "./email": "./email.ts",
     "./protocol": "./protocol.ts"
   },
   "dependencies": {

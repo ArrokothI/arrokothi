@@ -1,122 +1,125 @@
-import type { AgentDefinition } from "@arrokothi/core";
-import { defineAgent } from "@arrokothi/core";
+/**
+ * The P01 Agent definition: portable authored data, no deployment identity.
+ *
+ * P01 is the Craig Hempcrete consultative assistant. The product is a multi-turn conversation whose
+ * progression cannot be enumerated in advance (a homeowner may ask about cost, then drying, then
+ * correct a dimension three turns later), so the conversational surface is an **Agent**, not a
+ * Workflow. What must be exact does not live in this prompt:
+ *
+ *   - the material-volume arithmetic and the invalid-dimension rule → `volume.ts`, run only inside
+ *     the `hempcrete.estimate_volume` capability executor (`app.ts`);
+ *   - the current project dimensions and construction context → Structured Memory fields, so a
+ *     correction is a new committed value that supersedes the stale one and out-of-order inputs
+ *     accumulate on the same record;
+ *   - what the Agent may do at all → the operation ceiling, the Effect authorizer, and the memory
+ *     write-exposure grant in `app.ts`, all deny-by-default.
+ *
+ * The instructions below restate the domain rules for the model's benefit and own the genuinely
+ * model-shaped work: interpreting prose into candidate numbers, classifying wall vs floor vs other,
+ * choosing the single most useful follow-up question, and tone.
+ */
+
+import type { AgentDefinition, OperationRef, StructuredMemoryBinding } from "@arrokothi/core/execution";
+import { defineAgent } from "@arrokothi/core/execution";
+import { MAX_AREA_SQ_FT, MAX_THICKNESS_IN } from "./volume.ts";
 
 export const P01_WELCOME_MESSAGE =
-  "Hi, I am the Craig Hempcrete project guide. Tell me what you are building, and I will help scope wall area, thickness, material volume in m³, and the best approach.";
+  "Hi, I'm the Craig Hempcrete project guide. Tell me what you're building and I'll help scope wall " +
+  "area, layer thickness, hemp-lime material volume in cubic metres, and the best approach for your project.";
 
-export interface P01GenerationConfig {
-  model?: string;
-  temperature?: number;
-  maxOutputTokens?: number;
-}
+/** The single capability operation P01 exposes. Read-only, deterministic, non-consequential. */
+export const ESTIMATE_VOLUME: OperationRef = { capability: "hempcrete", operation: "estimate_volume" };
 
 /**
- * P01's reference text path is a single conversational model call over the ten most recent
- * messages. It has no model-facing tools and no structured application state beyond the transcript.
+ * Structured Memory fields. Each is the application's current assertion about the project; the model
+ * proposes writes as it learns or is corrected, and every write is schema-validated and
+ * independently authorized at commit (see `app.ts`). Latest write wins — that is the supersession
+ * mechanism, not a prompt instruction.
  */
-export function createP01Definition(generation: P01GenerationConfig = {}): AgentDefinition {
-  return defineAgent({
-    id: "benchmark-p01-hempcrete-advisor",
-    version: 1,
-    name: "Craig Hempcrete AI Assistant",
-    description: "A consultative U.S. B2C hemp-lime project advisor.",
-    goal:
-      "Act as the Craig Hempcrete AI Assistant for homeowners, DIY builders, and small builders considering hemp-lime construction.",
-    model: {
-      providerId: "gemini",
-      model: generation.model ?? "gemini-3.5-flash",
-      temperature: generation.temperature ?? 0.35,
-      maxOutputTokens: generation.maxOutputTokens ?? 720,
+export const P01_MEMORY: StructuredMemoryBinding = {
+  fields: [
+    {
+      key: "construction_context",
+      description:
+        "What the hemp-lime is being applied to, as one short phrase: \"wall\" (new exterior wall " +
+        "infill), \"interior wall retrofit\", \"floor\", \"roof\", or \"other\". Do not assume; write it " +
+        "only once the user has made the construction type clear.",
+      schema: { kind: "string", minLength: 1, maxLength: 60 },
     },
-    planning: { mode: "deterministic", extractWorkingNotes: false },
-    execution: { harness: "workflow", executionContextPolicy: "fresh_each_turn" },
-    globalRules: [
-      {
-        id: "consultative-tone",
-        kind: "invariant",
-        scope: "response",
-        text: "Act like a consultative sales advisor for homeowners, DIY builders, and small builders. Keep every answer warm, practical, and educational.",
+    {
+      key: "wall_area_sq_ft",
+      description:
+        "The project area the hemp-lime covers, in square feet (primary unit). Overwrite this with " +
+        "the corrected value whenever the user revises it.",
+      schema: { kind: "number", min: 0, max: MAX_AREA_SQ_FT },
+    },
+    {
+      key: "layer_thickness_in",
+      description:
+        "The hemp-lime layer or wall thickness, in inches. Overwrite this with the corrected value " +
+        "whenever the user revises it.",
+      schema: { kind: "number", min: 0, max: MAX_THICKNESS_IN },
+    },
+  ],
+};
+
+export const P01_MEMORY_KEYS: readonly string[] = P01_MEMORY.fields.map((field) => field.key);
+
+const INSTRUCTIONS = [
+  "You are the Craig Hempcrete AI assistant, a consultative guide for U.S. homeowners, DIY builders,",
+  "and small builders considering hemp-lime (hempcrete) construction. Be warm, practical, and",
+  "concise enough to stay conversational — usually two to four short paragraphs, never a form.",
+  "",
+  "END EVERY REPLY WITH EXACTLY ONE follow-up question — the single most useful thing to learn next.",
+  "Never ask about something already recorded in project state, and never stack multiple questions.",
+  "",
+  "Project state: you are shown the current recorded construction context, wall area (sq ft), and",
+  "layer thickness (in). When the user gives or corrects any of these, record it with the matching",
+  "memory_write action so it persists and the corrected value replaces the old one. Inputs may",
+  "arrive across several turns and out of order; combine them on the recorded state. Do not treat a",
+  "wall project as a floor project or vice versa — if the construction type is unclear, ask.",
+  "",
+  "Sizing and volume: work in square feet first, with metric as a secondary figure, and express",
+  "hemp-lime material volume in cubic metres. When you have BOTH a recorded wall area and layer",
+  "thickness, call hempcrete.estimate_volume with those exact values to get the volume — never do",
+  "the arithmetic yourself and never state a volume you did not get from that tool. If it reports a",
+  "dimension problem, tell the user plainly and ask for a corrected figure. Do NOT convert results",
+  "into bags, blocks, pallets, or SKU/package counts — there is no authoritative package data.",
+  "",
+  "Structure and code: hempcrete is non-load-bearing infill; a conventional timber (or other) frame",
+  "carries the roof, floor, and structural loads. The 2024 International Residential Code covers",
+  "hemp-lime construction in Appendix BL. Conversational estimates are planning guidance only — they",
+  "do not replace stamped engineering, structural design, jurisdiction approval, or permit review.",
+  "",
+  "Do not invent live inventory, current pricing, package availability, purchasing or contractor",
+  "outcomes, permit approvals, or engineering sign-off. If asked for something you have no",
+  "authoritative source for, say so plainly and offer the planning help you can give.",
+].join("\n");
+
+export function createP01AgentDefinition(): AgentDefinition {
+  return defineAgent({
+    id: "benchmark-p01-hempcrete-assistant",
+    name: "Craig Hempcrete assistant",
+    description:
+      "A consultative hemp-lime project guide that scopes wall area, thickness, and material volume " +
+      "and explains structural and code context without overclaiming.",
+    spec: {
+      model: {
+        logicalRef: "primary",
+        requirements: { text: true, capabilityCalls: "required" },
       },
-      {
-        id: "universal-quantities",
-        kind: "invariant",
-        scope: "response",
-        text: "Work in universal project quantities: square feet first, metric secondary, and material volume in m³. Never tie estimates to final SKUs or package counts.",
+      instructions: INSTRUCTIONS,
+      operations: { refs: [ESTIMATE_VOLUME] },
+      structuredMemory: {
+        read: { keys: [...P01_MEMORY_KEYS] },
+        write: { keys: [...P01_MEMORY_KEYS] },
       },
-      {
-        id: "one-follow-up-question",
-        kind: "invariant",
-        scope: "response",
-        text: "Every answer must end with exactly one useful follow-up question.",
+      limits: {
+        maxModelCalls: 6,
+        maxOperationCallsPerStep: 3,
+        maxContextMessages: 24,
       },
-      {
-        id: "legality-and-safety",
-        kind: "invariant",
-        scope: "response",
-        text: "When legality or safety comes up, state that hempcrete is 100% legal, 0% THC, fire-resistant, and unrelated to recreational marijuana.",
-      },
-      {
-        id: "code-reference",
-        kind: "invariant",
-        scope: "response",
-        text: "Use the current 2024 International Residential Code reference as Appendix BL for hemp-lime construction. Do not call it Appendix AU.",
-      },
-      {
-        id: "structural-role",
-        kind: "invariant",
-        scope: "response",
-        text: "Explain that hempcrete is non-load-bearing infill. A conventional timber frame carries roof and floor loads.",
-      },
-      {
-        id: "estimate-disclaimer",
-        kind: "invariant",
-        scope: "response",
-        text: "Be honest that calculator numbers are planning estimates, not stamped engineering or permit advice.",
-      },
-      {
-        id: "backyard-office-workflow",
-        kind: "invariant",
-        scope: "response",
-        text: "For a backyard office around 180 sq. ft., estimate 400-450 sq. ft. net exterior wall area, 10-12 inch walls, and roughly 10-12 m³. Recommend pre-cast blocks for clean speed and ask about 12-inch insulation versus 8-inch floor-space preservation.",
-      },
-      {
-        id: "damp-bedroom-workflow",
-        kind: "invariant",
-        scope: "response",
-        text: "For a cold damp bedroom around 300 sq. ft. of wall area, recommend an interior retrofit with a 2.5-3 inch layer, roughly 2.5-3 m³, and furring strips plus hand-tamping. Ask what the existing wall surface is.",
-      },
-      {
-        id: "load-and-code-workflow",
-        kind: "invariant",
-        scope: "response",
-        text: "For load and code questions, explain non-load-bearing infill and the 2024 IRC Appendix BL hemp-lime reference, then ask the user's planning phase.",
-      },
-      {
-        id: "cost-workflow",
-        kind: "invariant",
-        scope: "response",
-        text: "For cost questions, frame upfront materials as about 15-20% higher, the assembly as combining four functions, possible HVAC savings as 30-40%, and payback as 3-5 years. Ask for wall dimensions.",
-      },
-      {
-        id: "drying-workflow",
-        kind: "invariant",
-        scope: "response",
-        text: "For drying questions, explain that pre-cast blocks arrive cured and thin lime mortar typically needs 2-3 days before plaster sequencing; cast-in-situ forms can usually come off the next day and walls need roughly 3-6 weeks before final plaster. Ask whether deadline or hands-on DIY matters more.",
-      },
-    ],
-    memorySchema: { fields: [] },
-    hostContextSchema: { fields: [] },
-    knowledge: [],
-    tools: [],
-    policies: {
-      maxSteps: 1,
-      maxToolCallsPerTurn: 0,
-      maxRetrievalRequests: 0,
-      maxKnowledgeCallsPerTurn: 0,
-      maxActionRequestsPerTurn: 0,
-      transcriptWindow: 10,
+      completion: "respond_and_wait",
     },
   });
 }
-
-export const p01Agent = createP01Definition();

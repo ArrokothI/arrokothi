@@ -1,105 +1,120 @@
-import type {
-  AgentDefinition,
-  Clock,
-  IdGenerator,
-  ModelProvider,
-  RunTurnResult,
-  SessionState,
-  SessionStore,
-} from "@arrokothi/core";
-import { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
-import {
-  AgentHarness,
-  AgentRuntime,
-  InMemorySessionStore,
-  ToolRegistry,
-  definitionRef,
-} from "@arrokothi/core";
-import { P01_WELCOME_MESSAGE, createP01Definition } from "./agent.ts";
+/**
+ * The P01 session runner: drive one Agent Execution across an ordered list of user turns and
+ * collect the benchmark-shaped result.
+ *
+ * Each turn is host orchestration — `deliverExternalInput`, drain, read the newest text emission.
+ * Between turns nothing special happens: the Agent's own Structured Memory read view gives the
+ * model the current project state on the next turn, which is what makes corrections and
+ * out-of-order inputs behave deterministically (latest committed write wins).
+ */
 
-export interface P01SubjectOptions {
-  model: ModelProvider;
-  definition?: AgentDefinition;
-  sessions?: SessionStore;
-  ids?: IdGenerator;
-  clock?: Clock;
+import type { ExecutionId, StructuredMemoryView } from "@arrokothi/core/execution";
+import { effectRequestsIn } from "@arrokothi/core/execution";
+import type { P01App } from "./app.ts";
+import { P01_WELCOME_MESSAGE } from "./agent.ts";
+
+export interface P01Turn {
+  readonly message: string;
 }
 
-export interface P01Subject {
-  definition: AgentDefinition;
-  runtime: AgentRuntime;
-  sessions: SessionStore;
-  tools: ToolRegistry;
+export interface P01ConversationEntry {
+  readonly role: "user" | "assistant";
+  readonly content: string;
 }
 
-export interface P01BatchTurn {
-  message: string;
+export interface P01TurnResult {
+  readonly turn: number;
+  readonly user: string;
+  readonly assistant: string;
+  readonly lifecycle: string;
+  /** Effect proposals made during this turn (kind only), for tests and diagnostics. */
+  readonly effects: readonly string[];
 }
 
-export interface P01BatchResult {
-  protocolVersion: "1";
-  subject: "p01";
-  agent: ReturnType<typeof definitionRef>;
-  sessionId: string;
-  initialMessage: string;
-  conversation: Array<{ turn: number; role: "user" | "assistant"; content: string }>;
-  turns: Array<{ input: P01BatchTurn; result: RunTurnResult }>;
-  state: SessionState;
+export interface P01SessionResult {
+  readonly protocolVersion: "1";
+  readonly subject: "p01";
+  readonly sessionId: string;
+  readonly initialMessage: string;
+  readonly conversation: readonly P01ConversationEntry[];
+  readonly turns: readonly P01TurnResult[];
+  /** Final committed project state: field key -> value. */
+  readonly projectState: Record<string, unknown>;
 }
 
-export function createP01Subject(options: P01SubjectOptions): P01Subject {
-  const definition = options.definition ?? createP01Definition();
-  const sessions = options.sessions ?? new InMemorySessionStore();
-  const tools = new ToolRegistry(definition.tools);
-  const runtime = new AgentRuntime({
-    definition,
-    sessions,
-    model: options.model,
-    tools,
-    knowledge: new KnowledgeIndex(definition.knowledge),
-    harness: new AgentHarness({ strategy: "workflow" }),
-    ids: options.ids,
-    clock: options.clock,
-  });
-  return { definition, runtime, sessions, tools };
+const MAX_DRAIN_ROUNDS = 32;
+
+async function settle(app: P01App, executionId: ExecutionId): Promise<string> {
+  for (let round = 0; round < MAX_DRAIN_ROUNDS; round++) {
+    await app.harness.runUntilIdle();
+    await app.harness.drainResumptions();
+    const context = await app.harness.inspect(executionId);
+    if (!context) return "GONE";
+    const done =
+      context.lifecycle === "COMPLETED" ||
+      context.lifecycle === "FAILED" ||
+      context.lifecycle === "CANCELLED" ||
+      (context.lifecycle === "WAITING" && context.waitingFor?.kind === "event");
+    if (done) return context.lifecycle;
+  }
+  return (await app.harness.inspect(executionId))?.lifecycle ?? "UNKNOWN";
 }
 
-export async function runP01Batch(
-  subject: P01Subject,
-  turns: P01BatchTurn[],
-  sessionId?: string,
-): Promise<P01BatchResult> {
+function newestText(emissions: readonly { body: { kind: string; text?: string } }[], from: number): string {
+  for (let i = emissions.length - 1; i >= from; i--) {
+    const body = emissions[i]!.body;
+    if (body.kind === "text" && typeof body.text === "string" && body.text.trim()) return body.text;
+  }
+  return "";
+}
+
+function stateOf(view: StructuredMemoryView | undefined): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, committed] of Object.entries(view?.values ?? {})) {
+    out[key] = (committed as { value: unknown }).value;
+  }
+  return out;
+}
+
+export async function runP01Session(
+  app: P01App,
+  turns: readonly P01Turn[],
+  sessionId = "p01-session",
+): Promise<P01SessionResult> {
   if (!turns.length) throw new Error("P01 requires at least one user turn.");
-  const normalized = turns.map((turn, index) => {
-    if (!turn || typeof turn.message !== "string" || !turn.message.trim()) {
-      throw new Error(`P01 turn ${index + 1} requires a non-empty message.`);
-    }
-    return { message: turn.message };
-  });
 
-  const createdSessionId = await subject.runtime.createSession(sessionId);
-  const results: P01BatchResult["turns"] = [];
-  const conversation: P01BatchResult["conversation"] = [
-    { turn: 0, role: "assistant", content: P01_WELCOME_MESSAGE },
-  ];
+  const executionId = await app.createSession();
+  // `conversation` is the strict user/assistant alternation the harness compares against. The
+  // opening welcome line is product copy, surfaced separately as `initialMessage`.
+  const conversation: P01ConversationEntry[] = [];
+  const turnResults: P01TurnResult[] = [];
 
-  for (const [index, input] of normalized.entries()) {
-    const result = await subject.runtime.runTurn({ sessionId: createdSessionId, message: input.message });
-    results.push({ input, result });
-    conversation.push(
-      { turn: index + 1, role: "user", content: input.message },
-      { turn: index + 1, role: "assistant", content: result.reply },
-    );
+  for (const [index, turn] of turns.entries()) {
+    const message = turn.message?.trim();
+    if (!message) throw new Error(`P01 turn ${index + 1} requires a non-empty message.`);
+
+    const emissionsBefore = (await app.harness.emissionsOf(executionId)).length;
+    const journalBefore = (await app.harness.effectJournalOf(executionId)).length;
+
+    await app.harness.deliverExternalInput({ destination: executionId, label: "user", payload: message });
+    const lifecycle = await settle(app, executionId);
+
+    const emissions = await app.harness.emissionsOf(executionId);
+    const assistant = newestText(emissions, emissionsBefore);
+    const journal = await app.harness.effectJournalOf(executionId);
+    const effects = effectRequestsIn(journal.slice(journalBefore)).map((entry) => entry.proposal.kind);
+
+    conversation.push({ role: "user", content: message }, { role: "assistant", content: assistant });
+    turnResults.push({ turn: index + 1, user: message, assistant, lifecycle, effects });
   }
 
   return {
     protocolVersion: "1",
     subject: "p01",
-    agent: definitionRef(subject.definition),
-    sessionId: createdSessionId,
+    sessionId,
     initialMessage: P01_WELCOME_MESSAGE,
     conversation,
-    turns: results,
-    state: await subject.runtime.loadState(createdSessionId),
+    turns: turnResults,
+    projectState: stateOf(await app.harness.structuredMemoryOf(executionId)),
   };
 }

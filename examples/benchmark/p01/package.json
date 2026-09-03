@@ -6,6 +6,8 @@
   "exports": {
     ".": "./subject.ts",
     "./agent": "./agent.ts",
+    "./app": "./app.ts",
+    "./volume": "./volume.ts",
     "./protocol": "./protocol.ts"
   },
   "dependencies": {
