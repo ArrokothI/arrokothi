@@ -17,8 +17,8 @@
  * knowledge ownership. The legacy shape is structurally compatible and still works.
  */
 
-import type { Result, ValueSchema } from "@agent-sdk/core";
-import { describeIssues, err, ok, validateValue } from "@agent-sdk/core";
+import type { Result, ValueSchema } from "@arrokothi/core";
+import { describeIssues, err, ok, validateValue } from "@arrokothi/core";
 
 /** Provider-neutral, JSON-serializable semantics owned by the record source author. */
 export interface RecordFieldMetadata {

@@ -5,21 +5,21 @@ import type {
   ModelResponse,
   ModelToolCall,
   ModelToolSpec,
-} from "@agent-sdk/core";
-import { ModelProviderError, toJsonSchema } from "@agent-sdk/core";
-import type { ObjectSchema, ValueSchema } from "@agent-sdk/core";
+} from "@arrokothi/core";
+import { ModelProviderError, toJsonSchema } from "@arrokothi/core";
+import type { ObjectSchema, ValueSchema } from "@arrokothi/core";
 import type {
   ModelCapabilityCall as PortableModelCapabilityCall,
   ModelMessage as PortableModelMessage,
   ModelProvider as PortableModelProvider,
   ModelProviderRequest as PortableModelProviderRequest,
   ModelProviderResponse as PortableModelProviderResponse,
-} from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
 import {
   ModelInvocationError,
   assertModelProviderRequest,
   validateModelProviderResponse,
-} from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
 
 /**
  * Gemini adapter.

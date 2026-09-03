@@ -4,9 +4,9 @@ import {
   ToolRegistry,
   createDeterministicIds,
   createFixedClock,
-} from "@agent-sdk/core";
-import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
-import { ScriptedModelProvider } from "@agent-sdk/core/testing";
+} from "@arrokothi/core";
+import { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
+import { ScriptedModelProvider } from "@arrokothi/core/testing";
 import { minimalAgent } from "./agent.ts";
 
 /**

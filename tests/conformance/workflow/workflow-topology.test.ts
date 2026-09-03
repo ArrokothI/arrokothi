@@ -14,10 +14,10 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow, readWorkflowControlState } from "@agent-sdk/core/execution";
-import type { FunctionStageOutcome, StageExecutionContext } from "@agent-sdk/core/ports";
-import { createFunctionStageRegistry } from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness } from "@agent-sdk/core/testing";
+import { defineWorkflow, readWorkflowControlState } from "@arrokothi/core/execution";
+import type { FunctionStageOutcome, StageExecutionContext } from "@arrokothi/core/ports";
+import { createFunctionStageRegistry } from "@arrokothi/core/reference";
+import { createWorkflowTestHarness } from "@arrokothi/core/testing";
 
 /** Returns whatever transition label its config names, so a test can aim it anywhere. */
 function labelled(context: StageExecutionContext): FunctionStageOutcome {

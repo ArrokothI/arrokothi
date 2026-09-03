@@ -1,6 +1,6 @@
 # Composition Model
 
-> **Status: current v0.4 composition semantics.**
+> **Status: current 0.8.x composition semantics.**
 >
 > Read [`mental-model.md`](mental-model.md) first. This document owns how work composes inside and across Executions: Workflow Stages, Agent composition, local computation, structured parallelism, Effects as composition primitives, child Executions, peer interaction, Adapters, retrieval patterns, completion boundaries, and Skill packaging.
 >
@@ -21,7 +21,7 @@ memory/resource access
 result collection
 ```
 
-When composition introduces a new Execution boundary in v0.4, it does so by creating or calling a child Agent or Workflow Execution. Existing Executions may also interact across boundaries through **messaging**, without forming a parent/child composition relationship.
+When composition introduces a new Execution boundary in 0.8.x, it does so by creating or calling a child Agent or Workflow Execution. Existing Executions may also interact across boundaries through **messaging**, without forming a parent/child composition relationship.
 
 The important distinction is:
 
@@ -96,7 +96,7 @@ collect → evaluate → revise ┘
 
 An LLM may choose `revise` versus `publish` if those are predefined transitions. The construct remains a Workflow because the application defined the allowed control space.
 
-Dynamic model-driven mutation of Workflow topology is out of scope for v0.4. Prefer model-driven changes to data over model-driven changes to the graph.
+Dynamic model-driven mutation of Workflow topology is out of scope for 0.8.x. Prefer model-driven changes to data over model-driven changes to the graph.
 
 For example:
 
@@ -113,7 +113,7 @@ The program can adapt without allowing the model to rewrite the Workflow topolog
 
 ## 4. Stage transition contract
 
-The current v0.4 proposal keeps direct Stage-to-Stage transfer deliberately small:
+The current 0.8.x proposal keeps direct Stage-to-Stage transfer deliberately small:
 
 ```text
 StageResult = text | none
@@ -148,7 +148,7 @@ Stage transition values are a Workflow-level interface. They do **not** constrai
 
 ## 5. Stage types
 
-v0.4 uses four semantic Stage types:
+0.8.x uses four semantic Stage types:
 
 ```text
 Stage
@@ -245,7 +245,7 @@ An LLM Stage may suspend while its provider request is in flight. That does not 
 
 An Agent Stage uses a child Agent Execution behind one Workflow Stage boundary.
 
-The normal v0.4 form is a child `call`, because the Stage depends on the Agent's terminal result:
+The normal 0.8.x form is a child `call`, because the Stage depends on the Agent's terminal result:
 
 ```text
 Workflow Execution
@@ -267,7 +267,7 @@ The child Agent may internally perform many model/Effect/Event cycles. The paren
 
 From the Workflow's perspective, the Agent remains an abstraction used to implement one Stage.
 
-A detached `spawn` whose result is not required for Stage completion is a different asynchronous pattern; its semantics remain intentionally conservative in v0.4.
+A detached `spawn` whose result is not required for Stage completion is a different asynchronous pattern; its semantics remain intentionally conservative in 0.8.x.
 
 ### 5.4 Workflow Stage
 
@@ -502,7 +502,7 @@ rather than both branches freely overwriting the same controller field.
 
 > **Parallel execution is allowed; ambiguous shared-state mutation is not silently resolved by timing.**
 
-The exact branch snapshot/delta/reducer API is not frozen in v0.4 and belongs in [`future-plan.md`](future-plan.md) until validated against real parallel Workflow programs.
+The exact branch snapshot/delta/reducer API is not frozen in 0.8.x and belongs in [`future-plan.md`](future-plan.md) until validated against real parallel Workflow programs.
 
 > **Not every computation deserves a Stage, just as not every computation deserves an Execution.**
 
@@ -512,7 +512,7 @@ The exact branch snapshot/delta/reducer API is not frozen in v0.4 and belongs in
 
 A Workflow transition should occur only after the current Stage reaches a stable semantic boundary.
 
-For v0.4:
+For 0.8.x:
 
 1. required local computation is complete;
 2. all Effects required for this Stage to complete have resolved;
@@ -558,7 +558,7 @@ The graph says `A → B`; semantically required work from A should therefore not
 
 For a parallel branch join, the analogous rule is that all branch work required by the join must settle and any defined merge/reducer must complete before downstream topology observes the joined state.
 
-Truly detached/non-blocking work needs explicit semantics and is not assumed by default in v0.4.
+Truly detached/non-blocking work needs explicit semantics and is not assumed by default in 0.8.x.
 
 ---
 
@@ -644,7 +644,7 @@ Use `call` when the current semantic operation depends on the child's completion
 
 `spawn` creates the child without inherently defining that the current semantic boundary must wait for terminal completion.
 
-For v0.4, detached/background child semantics should be used conservatively. A Stage that semantically depends on a child should use `call` or otherwise mark the child's completion as required before Stage transition.
+For 0.8.x, detached/background child semantics should be used conservatively. A Stage that semantically depends on a child should use `call` or otherwise mark the child's completion as required before Stage transition.
 
 ### Recursive Definition graphs are allowed
 
@@ -826,7 +826,7 @@ Output Adapter
 Agent controller interprets result
 ```
 
-v0.4 allows:
+0.8.x allows:
 
 ```text
 Function Adapter
@@ -875,7 +875,7 @@ selected inherited read-only view
 
 ### Across sequential Workflow Stages
 
-Sequential Stages are not parent/child Executions. The current v0.4 proposal is:
+Sequential Stages are not parent/child Executions. The current 0.8.x proposal is:
 
 ```text
 default:

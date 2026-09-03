@@ -8,19 +8,19 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow } from "@agent-sdk/core/execution";
-import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
+import { defineWorkflow } from "@arrokothi/core/execution";
+import type { WorkflowSpecInput } from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   createCapabilityConfirmationPolicy,
   createFunctionStageRegistry,
   createScriptedCapabilityExecutor,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 import {
   createScriptedAgentController,
   createWorkflowTestHarness,
   scriptedAgentDefinition,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 
 const STRING = { schemaId: "answer", schemaVersion: 1, schema: { kind: "string" } } as const;
 

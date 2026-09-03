@@ -8,7 +8,7 @@ import type { SessionSnapshot } from "../src/session/state.ts";
 import type { ToolDefinition, ToolResult } from "../src/tools/types.ts";
 import { AgentRuntime, InMemorySessionStore, SessionConcurrencyConflictError } from "../src/index.ts";
 import { defineAgent } from "../src/definition/definition.ts";
-import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
+import { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
 import { ToolRegistry } from "../src/tools/registry.ts";
 import { attemptToolCall, grantKey, resolvePendingConfirmation } from "../src/tools/authorize.ts";
 import { RecordingExecutor } from "../src/testing/fake-executors.ts";

@@ -8,10 +8,10 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { createAllowListAuthorizer } from "@agent-sdk/core/reference";
-import type { ExecutionId } from "@agent-sdk/core/execution";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
-import type { ScriptedControllerStep } from "@agent-sdk/core/testing";
+import { createAllowListAuthorizer } from "@arrokothi/core/reference";
+import type { ExecutionId } from "@arrokothi/core/execution";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
+import type { ScriptedControllerStep } from "@arrokothi/core/testing";
 
 function rig(message: Parameters<typeof createAllowListAuthorizer>[0]["message"] = true) {
   return createTestHarness({ authorizer: createAllowListAuthorizer({ grants: [], message }) });

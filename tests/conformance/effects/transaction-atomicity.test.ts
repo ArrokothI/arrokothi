@@ -16,9 +16,9 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { ExecutionId } from "@agent-sdk/core/execution";
-import { ControllerRegistry, Harness } from "@agent-sdk/core/execution";
-import type { RuntimeStore, RuntimeTransaction } from "@agent-sdk/core/ports";
+import type { ExecutionId } from "@arrokothi/core/execution";
+import { ControllerRegistry, Harness } from "@arrokothi/core/execution";
+import type { RuntimeStore, RuntimeTransaction } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeterministicIds,
@@ -27,8 +27,8 @@ import {
   FifoScheduler,
   InMemoryDefinitionStore,
   InMemoryRuntimeStore,
-} from "@agent-sdk/core/reference";
-import { createScriptedAgentController, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createScriptedAgentController, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

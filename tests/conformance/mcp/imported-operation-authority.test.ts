@@ -2,10 +2,10 @@
  * Protocol interoperability cannot weaken Slice D.
  *
  * Every case here asks the same question from a different angle: can an MCP server, or a bug on the
- * Arrokoth side, cause a `tools/call` that the Execution's current effective authority does not
+ * ArrokothI side, cause a `tools/call` that the Execution's current effective authority does not
  * permit? The measurement is always the same and always on the far side of the protocol - the real
  * MCP server's own record of what it was asked - because "the executor was not called" is an
- * Arrokoth-side claim while "the server received nothing" is an observable fact about a peer.
+ * ArrokothI-side claim while "the server received nothing" is an observable fact about a peer.
  *
  * ```text
  * A  discovered and in the catalog, but outside authority   -> the real Active View never exposes it
@@ -21,15 +21,15 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { OperationRef } from "@agent-sdk/core/execution";
-import type { ActiveOperationView, ActiveOperationViewResolver, EffectAuthorizer, ObjectSchema } from "@agent-sdk/core/ports";
+import type { OperationRef } from "@arrokothi/core/execution";
+import type { ActiveOperationView, ActiveOperationViewResolver, EffectAuthorizer, ObjectSchema } from "@arrokothi/core/ports";
 import {
   createActiveOperationViewResolver,
   createRuntimeOperationAuthoritySource,
   InMemoryRuntimeStore,
-} from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
-import { importMcpTools } from "@agent-sdk/integration-mcp";
+} from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
+import { importMcpTools } from "@arrokothi/integration-mcp";
 import {
   LOOKUP_TOOL,
   connect,

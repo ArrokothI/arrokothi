@@ -14,9 +14,9 @@ const FORBIDDEN_SOURCE_ROOTS = [
   "apps",
 ];
 const FORBIDDEN_PACKAGES = [
-  "@agent-sdk/integration-strands",
-  "@agent-sdk/provider-gemini",
-  "@agent-sdk/storage-sqlite",
+  "@arrokothi/integration-strands",
+  "@arrokothi/provider-gemini",
+  "@arrokothi/storage-sqlite",
   "@strands-agents/sdk",
   "@google/genai",
 ];

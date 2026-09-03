@@ -27,15 +27,15 @@ import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, test } from "node:test";
-import type { StructuredMemoryReadView, StructuredMemoryReadViewResolver } from "@agent-sdk/core/ports";
+import type { StructuredMemoryReadView, StructuredMemoryReadViewResolver } from "@arrokothi/core/ports";
 import {
   agentInformationSelectionId,
   compileAgentInformation,
   projectStructuredMemoryReadView,
   validateAgentSpec,
-} from "@agent-sdk/core/execution";
-import type { StructuredMemoryBinding, StructuredMemoryView } from "@agent-sdk/core/execution";
-import type { StructuredMemoryReadGrantRule } from "@agent-sdk/core/reference";
+} from "@arrokothi/core/execution";
+import type { StructuredMemoryBinding, StructuredMemoryView } from "@arrokothi/core/execution";
+import type { StructuredMemoryReadGrantRule } from "@arrokothi/core/reference";
 import {
   createAllowListAuthorizer,
   createDeferredModelProvider,
@@ -43,7 +43,7 @@ import {
   createStructuredMemoryReadViewResolver,
   InMemoryRuntimeStore,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 import {
   agentModelAccess,
   createAgentTestHarness,
@@ -52,7 +52,7 @@ import {
   scriptedAgentDefinition,
   scriptedWorkflowDefinition,
   seedStructuredMemory,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 import { testAgent, testModelResolver } from "../agent/fixtures.ts";
 
 const CORE_SRC = resolve(dirname(fileURLToPath(import.meta.url)), "../../../packages/core/src");

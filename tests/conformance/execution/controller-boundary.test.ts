@@ -25,8 +25,8 @@ import type {
   ActivationOutcome,
   ControllerResumptionScope,
   ExecutionController,
-} from "@agent-sdk/core/ports";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/ports";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 

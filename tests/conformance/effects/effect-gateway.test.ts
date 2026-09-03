@@ -12,10 +12,10 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { effectRequestsIn, isTerminalEffectPhase, latestPhase, useCapability } from "@agent-sdk/core/execution";
-import type { ActivationInput, ActivationOutcome, ExecutionController } from "@agent-sdk/core/ports";
-import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import { effectRequestsIn, isTerminalEffectPhase, latestPhase, useCapability } from "@arrokothi/core/execution";
+import type { ActivationInput, ActivationOutcome, ExecutionController } from "@arrokothi/core/ports";
+import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@arrokothi/core/reference";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

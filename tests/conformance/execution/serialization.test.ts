@@ -8,8 +8,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { validateDefinition } from "@agent-sdk/core/execution";
-import { createTestHarness, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@agent-sdk/core/testing";
+import { validateDefinition } from "@arrokothi/core/execution";
+import { createTestHarness, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@arrokothi/core/testing";
 
 function nonDataPaths(value: unknown, path: string, found: string[], seen = new Set<object>()): void {
   if (value === null) return;

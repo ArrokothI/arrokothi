@@ -73,7 +73,7 @@ export interface AgentLoopMetrics {
 }
 
 export interface AgentLoopInput {
-  /** Initial authoritative Agent_SDK projection. It is not durable storage or engine history. */
+  /** Initial authoritative ArrokothI projection. It is not durable storage or engine history. */
   context: CompiledContext;
   /**
    * Recompile authoritative state immediately before a model iteration. Engines must prefer this
@@ -106,7 +106,7 @@ export interface AgentLoopResult {
   providerStopReason?: string;
 }
 
-/** Agent_SDK-owned seam protecting core semantics from any particular loop framework. */
+/** ArrokothI-owned seam protecting core semantics from any particular loop framework. */
 export interface AgentLoopEngine {
   readonly name: string;
   run(input: AgentLoopInput): Promise<AgentLoopResult>;

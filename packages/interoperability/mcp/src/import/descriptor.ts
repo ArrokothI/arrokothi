@@ -1,7 +1,7 @@
 /**
  * MCP Tool -> the *existing* `CapabilityOperationDescriptor`. No second ontology.
  *
- * There is deliberately no `McpToolDescriptor` type in Arrokoth, no protocol tool registry, and no
+ * There is deliberately no `McpToolDescriptor` type in ArrokothI, no protocol tool registry, and no
  * parallel catalog. A discovered MCP Tool becomes the same descriptor a natively declared operation
  * becomes, which is what makes the rest of the system unable to tell them apart - the Active View
  * resolver, the model projection, the action target, the Effect gateway and the observation
@@ -35,7 +35,7 @@
  */
 
 import type { Tool } from "@modelcontextprotocol/client";
-import type { CapabilityOperationDescriptorInput } from "@agent-sdk/core/reference";
+import type { CapabilityOperationDescriptorInput } from "@arrokothi/core/reference";
 import type { McpSchemaIssue } from "../schema/from-json-schema.ts";
 import { objectSchemaFromJsonSchema } from "../schema/from-json-schema.ts";
 import type { McpToolBinding } from "./identity.ts";
@@ -46,10 +46,10 @@ import { resolveImportedOperationId } from "./identity.ts";
  *
  * Kept because throwing it away would make a policy author unable to see what a server claimed, and
  * kept *outside* the descriptor because anything on the descriptor is consumed by the exposure and
- * dispatch path. Nothing in Arrokoth reads this; it is evidence, not input.
+ * dispatch path. Nothing in ArrokothI reads this; it is evidence, not input.
  */
 export interface McpAdvisoryToolMetadata {
-  /** The remote tool name, verbatim. The adapter's routing key, never an Arrokoth identity. */
+  /** The remote tool name, verbatim. The adapter's routing key, never an ArrokothI identity. */
   readonly tool: string;
   /** Whatever the server put in `annotations`. Claims, not grants. */
   readonly annotations?: Readonly<Record<string, unknown>>;
@@ -127,7 +127,7 @@ export function translateTool(input: TranslateToolInput): TranslateToolResult {
         tool: input.binding.tool,
         reason: "input_schema_not_translatable",
         message:
-          "the published inputSchema uses constructs the current Arrokoth value-schema vocabulary cannot hold " +
+          "the published inputSchema uses constructs the current ArrokothI value-schema vocabulary cannot hold " +
           "losslessly; it is refused rather than weakened",
         schemaIssues: translated.issues,
       },

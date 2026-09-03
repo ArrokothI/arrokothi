@@ -14,9 +14,9 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { ActivationOutcome, ExecutionController } from "@agent-sdk/core/ports";
-import { createAllowListAuthorizer, createDeferredCapabilityExecutor } from "@agent-sdk/core/reference";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import type { ActivationOutcome, ExecutionController } from "@arrokothi/core/ports";
+import { createAllowListAuthorizer, createDeferredCapabilityExecutor } from "@arrokothi/core/reference";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

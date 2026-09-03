@@ -17,8 +17,8 @@
 
 export { createStrandsAgentExecutor } from "./agent-executor.ts";
 export type { StrandsAgentExecutorOptions } from "./agent-executor.ts";
-export { ArrokothStrandsModel } from "./model.ts";
-export type { ArrokothModelOptions } from "./model.ts";
+export { ArrokothIStrandsModel } from "./model.ts";
+export type { ArrokothIModelOptions } from "./model.ts";
 
 import type {
   AgentLoopCapabilityRequest,
@@ -30,8 +30,8 @@ import type {
   CapabilityDefinition,
   ModelPolicy,
   RuntimeDecision,
-} from "@agent-sdk/core";
-import { toJsonSchema } from "@agent-sdk/core";
+} from "@arrokothi/core";
+import { toJsonSchema } from "@arrokothi/core";
 import {
   Agent,
   AfterInvocationEvent,
@@ -53,7 +53,7 @@ import {
 } from "@strands-agents/sdk";
 import { GoogleModel, type GoogleModelOptions } from "@strands-agents/sdk/models/google";
 
-export const STRANDS_INTEGRATION_VERSION = "0.37.0";
+export const STRANDS_INTEGRATION_VERSION = "0.8.0";
 export const SUPPORTED_STRANDS_SDK_VERSION = "1.14.0";
 
 const STATE_KEY = "agentSdk";
@@ -318,7 +318,7 @@ class AgentSdkEvaluationIntervention extends InterventionHandler {
   }
 }
 
-/** Second pass: the sole bridge to Agent_SDK CapabilityGateway/ToolExecutor authority. */
+/** Second pass: the sole bridge to ArrokothI CapabilityGateway/ToolExecutor authority. */
 class AgentSdkGatewayIntervention extends InterventionHandler {
   readonly name = "agent-sdk:gateway";
   private readonly input: AgentLoopInput;
@@ -331,7 +331,7 @@ class AgentSdkGatewayIntervention extends InterventionHandler {
     const data = stateData(event.invocationState);
     const preliminary = data.preliminary.get(event.toolUse.toolUseId);
     if (preliminary && preliminary.kind !== "proceed" && preliminary.kind !== "transform") {
-      return InterventionActions.proceed({ reason: "Agent_SDK preliminary intervention already resolved this request" });
+      return InterventionActions.proceed({ reason: "ArrokothI preliminary intervention already resolved this request" });
     }
     const request = requestFromEvent(event, data.currentIteration);
     data.toolRequests++;
@@ -463,7 +463,7 @@ function requestFromEvent(event: BeforeToolCallEvent, iteration: number): AgentL
 
 function stateData(state: InvocationState): AgentSdkInvocationData {
   const data = state[STATE_KEY];
-  if (!data || typeof data !== "object") throw new Error("Agent_SDK InvocationState was not initialized");
+  if (!data || typeof data !== "object") throw new Error("ArrokothI InvocationState was not initialized");
   return data as AgentSdkInvocationData;
 }
 

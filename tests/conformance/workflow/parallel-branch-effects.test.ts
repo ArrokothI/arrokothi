@@ -25,19 +25,19 @@ import {
   defineWorkflow,
   readWorkflowControlState,
   validateWorkflowSpec,
-} from "@agent-sdk/core/execution";
-import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
-import type { FunctionStageOutcome, StageExecutionContext } from "@agent-sdk/core/ports";
+} from "@arrokothi/core/execution";
+import type { WorkflowSpecInput } from "@arrokothi/core/execution";
+import type { FunctionStageOutcome, StageExecutionContext } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeferredCapabilityExecutor,
   createFunctionStageRegistry,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 import {
   createScriptedAgentController,
   createWorkflowTestHarness,
   scriptedAgentDefinition,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 
 const SEARCH = { capability: "knowledge.retrieval", operation: "search" } as const;
 const AUTHORITY = { operations: [SEARCH] };

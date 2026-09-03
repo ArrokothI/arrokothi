@@ -16,15 +16,15 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow, definitionIntegrity, readWorkflowControlState } from "@agent-sdk/core/execution";
-import type { WorkflowDefinition, WorkflowSpecInput } from "@agent-sdk/core/execution";
-import { ModelResolutionError } from "@agent-sdk/core/ports";
+import { defineWorkflow, definitionIntegrity, readWorkflowControlState } from "@arrokothi/core/execution";
+import type { WorkflowDefinition, WorkflowSpecInput } from "@arrokothi/core/execution";
+import { ModelResolutionError } from "@arrokothi/core/ports";
 import {
   ScriptedModelProvider,
   StaticModelResolver,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness, modelAccess } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness, modelAccess } from "@arrokothi/core/testing";
 
 /** Draft, then review. Authored once; never edited between deployments. */
 const twoLLMWorkflow: WorkflowSpecInput = {

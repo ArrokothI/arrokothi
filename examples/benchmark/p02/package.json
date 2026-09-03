@@ -1,6 +1,6 @@
 {
-  "name": "@agent-sdk/example-benchmark-p02",
-  "version": "0.37.0",
+  "name": "@arrokothi/example-benchmark-p02",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "exports": {
@@ -10,7 +10,7 @@
     "./protocol": "./protocol.ts"
   },
   "dependencies": {
-    "@agent-sdk/core": "*",
-    "@agent-sdk/provider-gemini": "*"
+    "@arrokothi/core": "*",
+    "@arrokothi/provider-gemini": "*"
   }
 }

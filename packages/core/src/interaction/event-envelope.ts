@@ -68,7 +68,7 @@ export type DeliveredEvent = EventEnvelope & {
  * application-defined `label`, so an Execution waiting for one kind of application input still wakes
  * for every other one addressed to it - at worst a spurious Activation, never an incorrect semantic
  * result, since the controller can simply report the same prospective condition again. Selective
- * input matching is accepted future work (see `docs/development/005-slice-b-decisions.md`, DEC-B01)
+ * input matching is accepted future work (see `docs/development/legacy/005-slice-b-decisions.md`, DEC-B01)
  * and is deliberately deferred rather than solved here with an arbitrary predicate: a wake condition
  * must stay declarative, serializable runtime data, not a callback or a query language.
  */

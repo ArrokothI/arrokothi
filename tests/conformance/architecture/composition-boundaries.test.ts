@@ -18,7 +18,7 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { callExecution, spawnExecution } from "@agent-sdk/core/execution";
+import { callExecution, spawnExecution } from "@arrokothi/core/execution";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const CORE_SRC = resolve(REPO_ROOT, "packages/core/src");
@@ -135,7 +135,7 @@ describe("Slice E.0 composition boundaries", () => {
       "runtime/effect-processor.ts",
       "runtime/harness.ts",
     ]);
-    const forbidden = ["@modelcontextprotocol", "@agent-sdk/integration-mcp", "@agent-sdk/provider-gemini", "@agent-sdk/storage-sqlite", "mcp", "Mcp", "MCP", "A2A"];
+    const forbidden = ["@modelcontextprotocol", "@arrokothi/integration-mcp", "@arrokothi/provider-gemini", "@arrokothi/storage-sqlite", "mcp", "Mcp", "MCP", "A2A"];
     for (const path of files) {
       const source = await readFile(resolve(CORE_SRC, path), "utf8");
       for (const name of forbidden) {

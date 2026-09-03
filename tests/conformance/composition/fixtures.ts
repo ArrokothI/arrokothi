@@ -6,11 +6,11 @@
  * constructs a child runtime record directly, and there is no second spawn path.
  */
 
-import type { DefinitionStore, EffectAuthorizer, RuntimeStore } from "@agent-sdk/core/ports";
-import { createAllowListAuthorizer, InMemoryRuntimeStore } from "@agent-sdk/core/reference";
-import { createTestHarness } from "@agent-sdk/core/testing";
-import type { ScriptedControllerStep } from "@agent-sdk/core/testing";
-import { scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import type { DefinitionStore, EffectAuthorizer, RuntimeStore } from "@arrokothi/core/ports";
+import { createAllowListAuthorizer, InMemoryRuntimeStore } from "@arrokothi/core/reference";
+import { createTestHarness } from "@arrokothi/core/testing";
+import type { ScriptedControllerStep } from "@arrokothi/core/testing";
+import { scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 export const STRING_RESULT = { schemaId: "answer", schemaVersion: 1, schema: { kind: "string" } } as const;
 

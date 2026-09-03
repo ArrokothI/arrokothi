@@ -1,6 +1,6 @@
 {
-  "name": "@agent-sdk/integration-mcp",
-  "version": "0.37.0",
+  "name": "@arrokothi/integration-mcp",
+  "version": "0.8.0",
   "description": "Model Context Protocol adapter. Imports one synchronous MCP Tool as an ordinary capability operation and exports one explicitly selected capability operation as an MCP Tool. MCP SDK and wire types live here and nowhere else.",
   "type": "module",
   "exports": {
@@ -11,7 +11,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@agent-sdk/core": "*",
+    "@arrokothi/core": "*",
     "@modelcontextprotocol/client": "2.0.0",
     "@modelcontextprotocol/server": "2.0.0"
   }

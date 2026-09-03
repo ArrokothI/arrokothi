@@ -15,23 +15,23 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow, referenceAgentObservationProjector } from "@agent-sdk/core/execution";
-import type { AgentObservationOutcome } from "@agent-sdk/core/execution";
-import type { FunctionStageOutcome, StageExecutionContext } from "@agent-sdk/core/ports";
+import { defineWorkflow, referenceAgentObservationProjector } from "@arrokothi/core/execution";
+import type { AgentObservationOutcome } from "@arrokothi/core/execution";
+import type { FunctionStageOutcome, StageExecutionContext } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createCapabilityConfirmationPolicy,
   createFunctionStageRegistry,
   createScriptedCapabilityExecutor,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
-import type { RecordingCapabilityExecutor } from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
+import type { RecordingCapabilityExecutor } from "@arrokothi/core/reference";
 import {
   agentModelAccess,
   createAgentTestHarness,
   createWorkflowTestHarness,
   referenceAgentExecutor,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 import { DOCS_SEARCH, testAgent, testCatalog, testModelResolver } from "../agent/fixtures.ts";
 
 describe("a confirmation decline settles the reference Agent's pending call", () => {

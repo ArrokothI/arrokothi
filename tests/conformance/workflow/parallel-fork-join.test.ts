@@ -44,15 +44,15 @@ import {
   defineWorkflow,
   readWorkflowControlState,
   validateWorkflowSpec,
-} from "@agent-sdk/core/execution";
-import type { ExecutionId, WorkflowSpecInput } from "@agent-sdk/core/execution";
-import type { FunctionStageOutcome, StageExecutionContext } from "@agent-sdk/core/ports";
+} from "@arrokothi/core/execution";
+import type { ExecutionId, WorkflowSpecInput } from "@arrokothi/core/execution";
+import type { FunctionStageOutcome, StageExecutionContext } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createFunctionStageRegistry,
   createScriptedCapabilityExecutor,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness } from "@arrokothi/core/testing";
 
 const AUTHORITY = { operations: [{ capability: "knowledge.retrieval", operation: "search" }] };
 

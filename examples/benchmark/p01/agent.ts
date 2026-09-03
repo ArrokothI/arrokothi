@@ -1,5 +1,5 @@
-import type { AgentDefinition } from "@agent-sdk/core";
-import { defineAgent } from "@agent-sdk/core";
+import type { AgentDefinition } from "@arrokothi/core";
+import { defineAgent } from "@arrokothi/core";
 
 export const P01_WELCOME_MESSAGE =
   "Hi, I am the Craig Hempcrete project guide. Tell me what you are building, and I will help scope wall area, thickness, material volume in m³, and the best approach.";

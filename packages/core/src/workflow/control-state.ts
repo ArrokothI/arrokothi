@@ -257,7 +257,7 @@ export interface WorkflowParallelBranchState {
  * slow capability while a sibling is `awaiting_resumption` on a slow model call and a third has
  * already `completed` - all at once, all inside this one Workflow Execution. The enclosing Execution
  * waits on the union of those dependencies (an Event dependency plus a set of ControllerResumption
- * ids); see `docs/development/026-slice-g2-parallel-branch-dependencies.md`.
+ * ids); see `docs/development/legacy/026-slice-g2-parallel-branch-dependencies.md`.
  */
 export interface WorkflowParallelState {
   readonly forkId: ForkId;

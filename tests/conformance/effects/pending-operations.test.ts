@@ -13,9 +13,9 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { EffectId, ExecutionContext, PendingOperationId, WakeCondition } from "@agent-sdk/core/execution";
-import { createPendingOperation, isExpired, isUnresolved, isUnresolvedDispatch } from "@agent-sdk/core/execution";
-import { ControllerRegistry, Harness } from "@agent-sdk/core/execution";
+import type { EffectId, ExecutionContext, PendingOperationId, WakeCondition } from "@arrokothi/core/execution";
+import { createPendingOperation, isExpired, isUnresolved, isUnresolvedDispatch } from "@arrokothi/core/execution";
+import { ControllerRegistry, Harness } from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   createDeferredCapabilityExecutor,
@@ -25,13 +25,13 @@ import {
   FifoScheduler,
   InMemoryDefinitionStore,
   InMemoryRuntimeStore,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 import {
   createScriptedAgentController,
   createTestHarness,
   readScriptedProgress,
   scriptedAgentDefinition,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

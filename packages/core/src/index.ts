@@ -1,5 +1,5 @@
 /**
- * @agent-sdk/core - an importable agent kernel.
+ * @arrokothi/core - an importable agent kernel.
  *
  * Narrow LangChain document dependencies; no database, web routes, or provider credentials.
  * Everything environment-specific is injected: a `ModelProvider`, a `SessionStore`, and a
@@ -74,7 +74,7 @@ export type {
 
 // -- knowledge ---------------------------------------------------------------
 // The local implementation (lexical retrieval, the record-set evaluator, and the legacy
-// `KnowledgeIndex`) moved to `@agent-sdk/retrieval-local`, taking the LangChain dependency with it.
+// `KnowledgeIndex`) moved to `@arrokothi/retrieval-local`, taking the LangChain dependency with it.
 // Core keeps only the generic contracts.
 export { recordFieldDescription, recordFieldExamples, recordFieldSchema } from "./knowledge/types.ts";
 export type {

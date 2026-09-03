@@ -20,13 +20,13 @@
  * uninvocable through this server.
  *
  * External MCP vocabulary is likewise a projection. `toolName` may differ from the operation id -
- * the protocol's namespace is not Arrokoth's - and the internal `(capability, operation)` identity
+ * the protocol's namespace is not ArrokothI's - and the internal `(capability, operation)` identity
  * never appears on the wire as something a caller addresses.
  *
  * ## Why no Execution and no authority are fabricated
  *
- * An inbound `tools/call` is a request from outside. It is not an Arrokoth Execution, it carries no
- * Arrokoth authority, and MCP-level authentication is not Execution authority. This module therefore
+ * An inbound `tools/call` is a request from outside. It is not an ArrokothI Execution, it carries no
+ * ArrokothI authority, and MCP-level authentication is not Execution authority. This module therefore
  * does **not**:
  *
  * ```text
@@ -48,8 +48,8 @@
 
 import type { McpServer } from "@modelcontextprotocol/server";
 import { fromJsonSchema } from "@modelcontextprotocol/server";
-import type { CapabilityCatalog, CapabilityOperationDescriptor, JsonObject, JsonValue, OperationRef } from "@agent-sdk/core/ports";
-import { capabilityId, operationId, toJsonSchema } from "@agent-sdk/core/execution";
+import type { CapabilityCatalog, CapabilityOperationDescriptor, JsonObject, JsonValue, OperationRef } from "@arrokothi/core/ports";
+import { capabilityId, operationId, toJsonSchema } from "@arrokothi/core/execution";
 
 /**
  * Ambient facts a handler is told about one inbound external call.
@@ -58,7 +58,7 @@ import { capabilityId, operationId, toJsonSchema } from "@agent-sdk/core/executi
  * because none of those exist for an inbound protocol request and manufacturing one would be a lie.
  */
 export interface McpExportInvocation {
-  /** The Arrokoth operation identity this external name projects. */
+  /** The ArrokothI operation identity this external name projects. */
   readonly ref: OperationRef;
   /** The external MCP tool name the caller used. */
   readonly toolName: string;
@@ -127,7 +127,7 @@ function describedOrThrow(catalog: CapabilityCatalog, ref: OperationRef): Capabi
 /**
  * Registers each named operation on an `McpServer` as an MCP Tool.
  *
- * The input schema is the *existing* Arrokoth projection - `toJsonSchema` of the descriptor's own
+ * The input schema is the *existing* ArrokothI projection - `toJsonSchema` of the descriptor's own
  * `ObjectSchema` - rather than a second translation written for MCP. One operation therefore
  * publishes exactly the contract it already declares, and the wire schema and the model-facing
  * schema cannot drift apart.
@@ -166,7 +166,7 @@ export function exportCapabilityOperationsAsMcpTools(
           return {
             content: [{ type: "text" as const, text: text ?? "null" }],
             // MCP 2026 permits every JSON top-level kind here. The handler already returns the
-            // Arrokoth JsonValue domain, so preserve it instead of forcing arrays/scalars to text.
+            // ArrokothI JsonValue domain, so preserve it instead of forcing arrays/scalars to text.
             structuredContent: produced,
           };
         } catch (error) {

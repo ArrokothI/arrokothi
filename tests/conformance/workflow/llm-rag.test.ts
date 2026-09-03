@@ -23,8 +23,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow, readWorkflowControlState } from "@agent-sdk/core/execution";
-import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
+import { defineWorkflow, readWorkflowControlState } from "@arrokothi/core/execution";
+import type { WorkflowSpecInput } from "@arrokothi/core/execution";
 import {
   ScriptedModelProvider,
   StaticModelResolver,
@@ -32,13 +32,13 @@ import {
   createDeferredCapabilityExecutor,
   createFunctionStageRegistry,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness, modelAccess } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness, modelAccess } from "@arrokothi/core/testing";
 import {
   LOCAL_RETRIEVAL_CAPABILITY,
   LOCAL_RETRIEVAL_OPERATIONS,
   createLocalRetrievalExecutor,
-} from "@agent-sdk/retrieval-local";
+} from "@arrokothi/retrieval-local";
 
 /**
  * What this Execution is permitted to use at all.

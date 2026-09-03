@@ -18,8 +18,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow } from "@agent-sdk/core/execution";
-import type { AdapterContext, AdapterResult } from "@agent-sdk/core/ports";
+import { defineWorkflow } from "@arrokothi/core/execution";
+import type { AdapterContext, AdapterResult } from "@arrokothi/core/ports";
 import {
   ScriptedModelProvider,
   StaticModelResolver,
@@ -29,8 +29,8 @@ import {
   createScriptedCapabilityExecutor,
   createAllowListAuthorizer,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness, modelAccess } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness, modelAccess } from "@arrokothi/core/testing";
 
 const seenContexts: AdapterContext[] = [];
 

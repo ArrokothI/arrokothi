@@ -32,7 +32,7 @@
  * never accounted for.
  */
 
-import { toJsonSchema } from "@agent-sdk/core/execution";
+import { toJsonSchema } from "@arrokothi/core/execution";
 import type {
   AgentExecutor,
   AgentExecutorRequest,
@@ -40,13 +40,13 @@ import type {
   AgentModelInvocationMetadata,
   ModelActionCall,
   ModelProviderLookup,
-} from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
 import { Agent, BeforeToolCallEvent, FunctionTool, InterruptResponseContent } from "@strands-agents/sdk";
 import type { AgentResult, JSONValue, MessageData, Snapshot } from "@strands-agents/sdk";
-import { ArrokothStrandsModel } from "./model.ts";
+import { ArrokothIStrandsModel } from "./model.ts";
 
 /** One interrupt name for the whole bridge, so an interrupt id is reconstructible from a tool-use id. */
-const INTERRUPT_NAME = "arrokoth_operation";
+const INTERRUPT_NAME = "arrokothi_operation";
 
 export interface StrandsAgentExecutorOptions {
   /** Resolves the provider that ArrokothI's own model resolution named. Never a vendor guess. */
@@ -143,7 +143,7 @@ export function createStrandsAgentExecutor(options: StrandsAgentExecutorOptions)
         };
       }
 
-      const model = new ArrokothStrandsModel({
+      const model = new ArrokothIStrandsModel({
         provider: options.providers.providerFor(request.model),
         resolved: request.model,
         requirements: request.requirements,

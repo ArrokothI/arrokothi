@@ -13,8 +13,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { ActivationOutcome, ExecutionController } from "@agent-sdk/core/ports";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import type { ActivationOutcome, ExecutionController } from "@arrokothi/core/ports";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 function deferred(): { readonly promise: Promise<void>; readonly resolve: () => void } {
   let resolve!: () => void;

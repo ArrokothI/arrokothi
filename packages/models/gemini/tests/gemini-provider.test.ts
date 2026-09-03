@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { preflightPlanSchema } from "@agent-sdk/core";
+import { preflightPlanSchema } from "@arrokothi/core";
 import { GeminiProvider, projectGeminiStructuredOutput } from "../src/index.ts";
 
 describe("GeminiProvider structured output", () => {

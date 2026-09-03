@@ -8,8 +8,8 @@ import type {
   SessionStore,
   ToolExecutor,
   WebSearchProvider,
-} from "@agent-sdk/core";
-import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
+} from "@arrokothi/core";
+import { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
 import {
   AgentHarness,
   AgentRuntime,
@@ -17,7 +17,7 @@ import {
   ToolRegistry,
   definitionRef,
   recordQueryTools,
-} from "@agent-sdk/core";
+} from "@arrokothi/core";
 import { P02_WELCOME_MESSAGE, createP02Definition } from "./agent.ts";
 
 export interface P02SubjectOptions {

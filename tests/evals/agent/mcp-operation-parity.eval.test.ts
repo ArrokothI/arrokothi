@@ -24,9 +24,9 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { Client } from "@modelcontextprotocol/client";
 import { fromJsonSchema, InMemoryTransport, McpServer } from "@modelcontextprotocol/server";
-import type { AgentSpecInput, ExecutionId, JsonObject, OperationRef } from "@agent-sdk/core/execution";
-import { defineAgent } from "@agent-sdk/core/execution";
-import type { CapabilityExecutor } from "@agent-sdk/core/ports";
+import type { AgentSpecInput, ExecutionId, JsonObject, OperationRef } from "@arrokothi/core/execution";
+import { defineAgent } from "@arrokothi/core/execution";
+import type { CapabilityExecutor } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createCapabilityCatalog,
@@ -34,10 +34,10 @@ import {
   portableModelFeatures,
   ScriptedModelProvider,
   StaticModelResolver,
-} from "@agent-sdk/core/reference";
-import type { CapabilityCatalog } from "@agent-sdk/core/ports";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
-import { importMcpTools } from "@agent-sdk/integration-mcp";
+} from "@arrokothi/core/reference";
+import type { CapabilityCatalog } from "@arrokothi/core/ports";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
+import { importMcpTools } from "@arrokothi/integration-mcp";
 
 const OPERATION: OperationRef = { capability: "docs", operation: "lookup" };
 const ALIAS = "docs_lookup";

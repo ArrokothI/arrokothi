@@ -2,8 +2,8 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { ObjectSchema } from "@agent-sdk/core/ports";
-import { toJsonSchema } from "@agent-sdk/core/execution";
+import type { ObjectSchema } from "@arrokothi/core/ports";
+import { toJsonSchema } from "@arrokothi/core/execution";
 
 describe("ObjectSchema additionalProperties projection", () => {
   test("strict default and explicit false project false; explicit true projects true", () => {

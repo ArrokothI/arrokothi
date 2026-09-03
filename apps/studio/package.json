@@ -1,6 +1,6 @@
 {
-  "name": "@agent-sdk/studio",
-  "version": "0.37.0",
+  "name": "@arrokothi/studio",
+  "version": "0.8.0",
   "private": true,
   "description": "Development Studio: configure, persist, and test experimental agent definitions. Outside core.",
   "type": "module",
@@ -8,11 +8,11 @@
     "start": "node --experimental-strip-types --experimental-sqlite src/server.ts"
   },
   "dependencies": {
-    "@agent-sdk/core": "*",
-    "@agent-sdk/storage-sqlite": "*",
-    "@agent-sdk/provider-gemini": "*",
-    "@agent-sdk/integration-strands": "*",
-    "@agent-sdk/example-minimal-agent": "*",
-    "@agent-sdk/example-estate-like": "*"
+    "@arrokothi/core": "*",
+    "@arrokothi/storage-sqlite": "*",
+    "@arrokothi/provider-gemini": "*",
+    "@arrokothi/integration-strands": "*",
+    "@arrokothi/example-minimal-agent": "*",
+    "@arrokothi/example-estate-like": "*"
   }
 }

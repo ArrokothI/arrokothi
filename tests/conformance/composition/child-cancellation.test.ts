@@ -9,8 +9,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { ControllerRegistry, Harness } from "@agent-sdk/core/execution";
-import type { ActivationOutcome, ExecutionController } from "@agent-sdk/core/ports";
+import { ControllerRegistry, Harness } from "@arrokothi/core/execution";
+import type { ActivationOutcome, ExecutionController } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeterministicIds,
@@ -18,8 +18,8 @@ import {
   FifoScheduler,
   InMemoryDefinitionStore,
   InMemoryRuntimeStore,
-} from "@agent-sdk/core/reference";
-import { readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 import { agent, resultAgent, rig } from "./fixtures.ts";
 
 describe("child cancellation - parent settlement", () => {

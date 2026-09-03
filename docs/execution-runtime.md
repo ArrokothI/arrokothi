@@ -1,6 +1,6 @@
 # Execution Runtime
 
-> **Status: canonical runtime semantics for ArrokothI v0.4.**
+> **Status: canonical runtime semantics for ArrokothI 0.8.x.**
 >
 > Read [`mental-model.md`](mental-model.md) first. This document owns `Execution`, `Harness`, lifecycle, Activation, Events, Effects, pending work, controller resumption, scheduling, concurrency, wake-up, structural bounds, cancellation, supervision, durability, recovery, settlement, and runtime causation.
 >
@@ -8,7 +8,7 @@
 
 ## 1. One logical Harness
 
-Arrokoth has one logical **Harness** managing many Executions.
+ArrokothI has one logical **Harness** managing many Executions.
 
 ```text
                  Harness
@@ -145,7 +145,7 @@ This separation also allows the runtime to wake or recover an Execution before i
 
 ## 4. Four levels of concurrency
 
-Arrokoth should reason about concurrency at four different boundaries.
+ArrokothI should reason about concurrency at four different boundaries.
 
 ### 4.1 Across Executions
 
@@ -194,7 +194,7 @@ That conflict is not solved by serializing each Execution internally. The resour
 
 ## 5. Lifecycle, runnable work, and Activation
 
-The basic v0.4 lifecycle is:
+The basic 0.8.x lifecycle is:
 
 ```text
 CREATED
@@ -294,9 +294,9 @@ No worker needs to remain occupied merely because the work is semantically local
 
 ### Controller-local resumption is not automatically an Event
 
-A controller-internal asynchronous result does not automatically become a public Arrokoth Event merely because the runtime suspended while waiting for it.
+A controller-internal asynchronous result does not automatically become a public ArrokothI Event merely because the runtime suspended while waiting for it.
 
-For v0.4, the preferred semantic direction is to keep a separate controller-local resumption record/mechanism—conceptually a **ControllerResumption**—for work such as a model-provider invocation:
+For 0.8.x, the preferred semantic direction is to keep a separate controller-local resumption record/mechanism—conceptually a **ControllerResumption**—for work such as a model-provider invocation:
 
 ```text
 ControllerResumption
@@ -379,7 +379,7 @@ Harness
 executor / resource / child / peer / user
 ```
 
-The v0.4 Effect vocabulary is:
+The 0.8.x Effect vocabulary is:
 
 ```text
 UseCapability
@@ -484,7 +484,7 @@ internal settlement
 controller continuation becomes runnable
 ```
 
-For v0.4, keep these semantic roles separate even if an implementation shares lower-level storage, queues, correlation utilities, or scheduling machinery between them.
+For 0.8.x, keep these semantic roles separate even if an implementation shares lower-level storage, queues, correlation utilities, or scheduling machinery between them.
 
 ```text
 PendingOperation
@@ -502,7 +502,7 @@ A PendingOperation is not necessarily the work itself.
 
 ```text
 external provider job: job-123
-Arrokoth waiting record: pending-77
+ArrokothI waiting record: pending-77
 ```
 
 Likewise:
@@ -614,7 +614,7 @@ provider-defined
   external service defines its own conflict semantics
 ```
 
-Arrokoth should not impose one global mutex strategy over all resources.
+ArrokothI should not impose one global mutex strategy over all resources.
 
 ### Prefer explicit conflict semantics over timing-dependent last-write-wins
 
@@ -875,7 +875,7 @@ Some external operations cannot be reliably cancelled after dispatch. The Execut
 
 ### Supervision
 
-Ownership provides a natural supervision relationship, but v0.4 does not assume one universal child-failure policy.
+Ownership provides a natural supervision relationship, but 0.8.x does not assume one universal child-failure policy.
 
 Possible policies include:
 
@@ -914,7 +914,7 @@ A child may receive narrower authority and narrower budgets independently.
 
 The Harness must be able to enforce these limits even when an Agent would prefer to continue.
 
-A long-lived Execution may intentionally wait indefinitely for external input. Therefore Arrokoth does not require every PendingOperation to have a short timeout. Deadlock safety comes from explicit dependencies, bounded autonomous work, absence of hidden cross-wait locks, diagnostics, and configured deadlines where the application requires liveness.
+A long-lived Execution may intentionally wait indefinitely for external input. Therefore ArrokothI does not require every PendingOperation to have a short timeout. Deadlock safety comes from explicit dependencies, bounded autonomous work, absence of hidden cross-wait locks, diagnostics, and configured deadlines where the application requires liveness.
 
 ---
 
@@ -982,7 +982,7 @@ mechanical confirmation
 unknown-outcome reporting
 ```
 
-Existing durable execution systems may later implement runtime ports, but their own Workflow/object models must not redefine Arrokoth's Execution semantics. Backend selection is future work in [`future-plan.md`](future-plan.md).
+Existing durable execution systems may later implement runtime ports, but their own Workflow/object models must not redefine ArrokothI's Execution semantics. Backend selection is future work in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -1023,7 +1023,7 @@ remote provider job
 HTTP job handle
 ```
 
-may correlate to an Arrokoth Execution, PendingOperation, external job, or another runtime object.
+may correlate to an ArrokothI Execution, PendingOperation, external job, or another runtime object.
 
 ```text
 external handle ≠ Execution ≠ PendingOperation
@@ -1072,7 +1072,7 @@ And these positive rules summarize the runtime:
 
 > **Semantically local asynchronous work may suspend an Activation without becoming another Execution or semantic Event.**
 
-> **For v0.4, runtime-mediated semantic waits use PendingOperation, while controller-local async waits use a separate resumption path even if implementations share low-level machinery.**
+> **For 0.8.x, runtime-mediated semantic waits use PendingOperation, while controller-local async waits use a separate resumption path even if implementations share low-level machinery.**
 
 > **Asynchronous completion makes an Execution READY; the scheduler separately decides when it becomes RUNNING.**
 

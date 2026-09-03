@@ -24,13 +24,13 @@ import {
   createWorkflowController,
   defineWorkflow,
   readWorkflowControlState,
-} from "@agent-sdk/core/execution";
-import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
+import type { WorkflowSpecInput } from "@arrokothi/core/execution";
 import type {
   CapabilityExecutor,
   EffectAuthorizer,
   StageExecutionContext,
-} from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeferredCapabilityExecutor,
@@ -44,8 +44,8 @@ import {
   InMemoryRuntimeStore,
   StaticModelResolver,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness, modelAccess } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness, modelAccess } from "@arrokothi/core/testing";
 
 const SEARCH = { capability: "knowledge.retrieval", operation: "search" } as const;
 

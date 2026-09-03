@@ -6,13 +6,13 @@ import type {
   EventEnvelope,
   StructuredMemoryBinding,
   WriteMemoryProposal,
-} from "@agent-sdk/core/execution";
-import { defineWorkflow, effectRequestsIn } from "@agent-sdk/core/execution";
-import type { ConfirmationPolicy, EffectAuthorizer, FunctionStageOutcome } from "@agent-sdk/core/ports";
+} from "@arrokothi/core/execution";
+import { defineWorkflow, effectRequestsIn } from "@arrokothi/core/execution";
+import type { ConfirmationPolicy, EffectAuthorizer, FunctionStageOutcome } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createFunctionStageRegistry,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 import {
   agentModelAccess,
   createAgentTestHarness,
@@ -20,7 +20,7 @@ import {
   createWorkflowTestHarness,
   readScriptedProgress,
   scriptedAgentDefinition,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 import { scriptedAgentExecutor, testAgent, testModelResolver } from "../agent/fixtures.ts";
 
 const MEMORY = {

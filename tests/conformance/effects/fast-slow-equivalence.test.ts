@@ -18,17 +18,17 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { LifecycleState } from "@agent-sdk/core/execution";
+import type { LifecycleState } from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   createDeferredCapabilityExecutor,
   createNoInlineWaitBudget,
   createScriptedCapabilityExecutor,
   createTimeoutInlineBudget,
-} from "@agent-sdk/core/reference";
-import { microtaskInlineWaitBudget } from "@agent-sdk/core/ports";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
-import type { JsonValue } from "@agent-sdk/core/execution";
+} from "@arrokothi/core/reference";
+import { microtaskInlineWaitBudget } from "@arrokothi/core/ports";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
+import type { JsonValue } from "@arrokothi/core/execution";
 
 /**
  * What this Execution is permitted to use at all.

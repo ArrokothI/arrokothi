@@ -8,8 +8,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { TerminalResultSchema } from "@agent-sdk/core/execution";
-import { createTestHarness, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@agent-sdk/core/testing";
+import type { TerminalResultSchema } from "@arrokothi/core/execution";
+import { createTestHarness, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@arrokothi/core/testing";
 
 const REPORT_SCHEMA: TerminalResultSchema = {
   schemaId: "research.report",

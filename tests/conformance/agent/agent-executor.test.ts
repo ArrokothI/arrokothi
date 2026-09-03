@@ -13,18 +13,18 @@ import { describe, test } from "node:test";
 import { readFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { agentExecutorOutcomeIssues } from "@agent-sdk/core/ports";
-import { formatModelActionTarget } from "@agent-sdk/core/execution";
-import type { AgentExecutorRequest } from "@agent-sdk/core/ports";
+import { agentExecutorOutcomeIssues } from "@arrokothi/core/ports";
+import { formatModelActionTarget } from "@arrokothi/core/execution";
+import type { AgentExecutorRequest } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createScriptedCapabilityExecutor,
   portableModelFeatures,
   ScriptedModelProvider,
   StaticModelResolver,
-} from "@agent-sdk/core/reference";
-import type { RecordingCapabilityExecutor } from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import type { RecordingCapabilityExecutor } from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
 import { DOCS_SEARCH, scriptedAgentExecutor, testAgent, testCatalog, testModelResolver } from "./fixtures.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");

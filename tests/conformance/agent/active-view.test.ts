@@ -16,7 +16,7 @@ import {
   createActiveOperationViewResolver,
   createCapabilityCatalog,
   createStaticOperationAuthoritySource,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 import { DOCS_SEARCH, LEDGER_POST, MAIL_SEND, SEARCH_INPUT, testCatalog } from "./fixtures.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");

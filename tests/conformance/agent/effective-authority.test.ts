@@ -14,13 +14,13 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { ExecutionId } from "@agent-sdk/core/execution";
-import { authorizesOperation } from "@agent-sdk/core/execution";
+import type { ExecutionId } from "@arrokothi/core/execution";
+import { authorizesOperation } from "@arrokothi/core/execution";
 import {
   createActiveOperationViewResolver,
   createRuntimeOperationAuthoritySource,
-} from "@agent-sdk/core/reference";
-import { createAgentTestHarness } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createAgentTestHarness } from "@arrokothi/core/testing";
 import { DOCS_SEARCH, MAIL_SEND, testAgent, testCatalog } from "./fixtures.ts";
 
 /** Creates one Agent Execution with a ceiling, and returns its resolved exposure. */

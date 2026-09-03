@@ -1,10 +1,12 @@
 # Future Plan
 
-> **Status: unresolved and post-v0.4 work only. Not canonical current semantics.**
+> **Status: unresolved/future questions only. Not canonical current semantics or an active roadmap.**
 >
 > Read the canonical documents first: [`mental-model.md`](mental-model.md), [`execution-runtime.md`](execution-runtime.md), [`composition.md`](composition.md), [`authority.md`](authority.md), [`memory.md`](memory.md), [`interoperability.md`](interoperability.md), and [`security-guarantees.md`](security-guarantees.md).
 >
-> Current implementation/slice decisions belong under [`development/`](development/). The research basis and external-system survey remain in [`architecture-research-dossier.md`](architecture-research-dossier.md).
+> Current implementation evidence and the post-Slice-G roadmap belong under
+> [`development/`](development/). The research basis and external-system survey remain in
+> [`architecture-research-dossier.md`](architecture-research-dossier.md).
 
 This file records questions that are deliberately **not frozen** into the current architecture.
 
@@ -28,7 +30,7 @@ Do not promote an engineering technique into canonical architecture merely becau
 
 ### 1.1 `ControllerResumption` vs a more general suspension record
 
-Current v0.4 semantics keep:
+Current 0.8.x semantics keep:
 
 ```text
 PendingOperation
@@ -101,15 +103,14 @@ Invariant to preserve:
 
 > **Ambiguous shared-state writes must not silently become timing-dependent last-write-wins.**
 
-Slice G.1 (`development/025-slice-g1-minimal-workflow-fork-join.md`) implemented the narrowest honest
-proof of the first three items: authored `{ to: "fork" }` / `{ to: "join" }` topology, one
+The implemented kernel baseline ([`development/002`](development/002-implemented-kernel-baseline.md))
+includes authored `{ to: "fork" }` / `{ to: "join" }` topology, one
 branch-local `WorkflowParallelState` record per branch (its own visit, input snapshot, progress, and
 result), an explicit join as a distinct controller step that exposes an immutable authored-order
-`WorkflowJoinContext` to one downstream Function Stage, deterministic result/failure ordering, and a
-`parallel_branch_effects_unsupported` fail-closed for a branch that returns `awaitEffects`.
+`WorkflowJoinContext` to one downstream Function Stage, and deterministic result/failure ordering.
 
-Slice G.2 (`development/026-slice-g2-parallel-branch-dependencies.md`) extends that proof: a branch
-may be any adapter-free Stage kind (`function` / `llm` / `agent` / `workflow`) and may hold a real
+An implemented branch may be any adapter-free Stage kind (`function` / `llm` / `agent` / `workflow`)
+and may hold a real
 asynchronous dependency — a `UseCapability` Effect, a child `call`, or a slow model call — while
 staying a branch of one Workflow Execution. It adds a runtime dependency-set (union) wait
 (`ControllerNext` `await_dependencies`, `ExecutionWait` `dependencies`) that is deliberately *not*
@@ -117,17 +118,16 @@ staying a branch of one Workflow Execution. It adds a runtime dependency-set (un
 invalidation), branch-qualified Effect correlation and ControllerResumption keys, atomic
 multi-registration commit, and a `parallel_branch_memory_write_deferred` fail-closed.
 
-Slice G.3 (`development/027-slice-g3-parallel-structured-memory-conflicts.md`) removes that last
-fail-closed: a parallel branch may use the ordinary `WriteMemory` Effect, but a branch write **must**
+It also permits a parallel branch to use the ordinary `WriteMemory` Effect, but a branch write **must**
 carry an explicit `expectedRevision` (an unversioned branch write fails closed with
 `parallel_branch_memory_write_requires_revision` before the proposal reaches the Harness). A versioned
 branch write reuses the ordinary path; a stale one settles the branch barrier `conflicted` (an
 observation, not an automatic branch/fork/Workflow failure); simultaneously-ungated branch writes are
 arbitrated by authored branch order, not wall-clock. No reducer, no merge, no automatic retry.
 
-All four records are reference-implementation evidence, not a frozen API: multi-Stage branches,
+These capabilities are reference-implementation evidence, not a frozen API: multi-Stage branches,
 nested forks, branch loops, branch Adapters, branch emissions, reducers, merge, cancellation
-propagation, field-level memory conflict handling, and branch Working Notes all remain open (G.4+).
+propagation, field-level memory conflict handling, and branch Working Notes all remain open.
 
 ### 1.4 Shared mutable resources
 
@@ -145,12 +145,11 @@ provider-defined conflict semantics
 
 Prefer the weakest mechanism that preserves the resource's correctness contract. Do not impose a universal global mutex.
 
-Slice G.0 (`development/024-slice-g0-structured-memory-optimistic-conflict.md`) implemented one narrow
+The current baseline ([`development/002`](development/002-implemented-kernel-baseline.md)) implements one narrow
 reference primitive: an optional whole-view `WriteMemoryProposal.expectedRevision` compare-and-set on
 Structured Memory and a distinct `memory.write_conflict` runtime observation (its own Event kind, a
-`conflicted` journal phase, a `conflicted` PendingOperation outcome). Slice G.3
-(`development/027-slice-g3-parallel-structured-memory-conflicts.md`) is the first consumer inside a
-parallel Workflow branch: a branch `WriteMemory` must carry an `expectedRevision`, and a stale one
+`conflicted` journal phase, a `conflicted` PendingOperation outcome). The parallel Workflow path is
+its first concurrent consumer: a branch `WriteMemory` must carry an `expectedRevision`, and a stale one
 becomes an observable branch conflict rather than a silent overwrite — arbitrated by authored branch
 order, with the whole-view revision still deliberately coarse. Both are reference-implementation
 evidence for the "optimistic versions / preconditions" line above, not an answer to it: commutative
@@ -293,7 +292,7 @@ optional filterAllowed
 optional enumerateAllowed
 ```
 
-Evaluate Cedar, OpenFGA, and application-native implementations only after concrete policy workloads exist. Backend entity models must not redefine Arrokoth authority.
+Evaluate Cedar, OpenFGA, and application-native implementations only after concrete policy workloads exist. Backend entity models must not redefine ArrokothI authority.
 
 ### 2.3 Progressive descriptor discovery mechanics
 
@@ -345,7 +344,7 @@ source indexing/materialization
 
 Do not require a graph representation in the kernel.
 
-Slice F.3 (`development/023-slice-f3-derived-semantic-memory-provenance-promotion.md`) implemented a
+The current baseline ([`development/002`](development/002-implemented-kernel-baseline.md)) implements a
 **reference** `DerivedSemanticClaim` shape (`{ claimId, statement, provenance { sourceRefs≥1 unique,
 derivedAt ISO-8601, derivation { method, version? } } }`), a replaceable `DerivedSemanticMemoryProvider`
 port, and an explicit `DerivedMemoryExtractor` seam, sufficient to make the vertical slice executable.
@@ -402,10 +401,10 @@ Derived Memory concurrent extraction/dedup/supersession
 Working Note branch handoff/commit
 ```
 
-Slice G.0 (`development/024-slice-g0-structured-memory-optimistic-conflict.md`) implemented the first
+The current baseline ([`development/002`](development/002-implemented-kernel-baseline.md)) implements the first
 item as a reference primitive - an optional whole-view `WriteMemoryProposal.expectedRevision`
 compare-and-set with a distinct `memory.write_conflict` observation and a tested lost-update proof.
-Slice G.3 (`development/027-slice-g3-parallel-structured-memory-conflicts.md`) exercises it across
+The parallel Workflow path exercises it across
 concurrent parallel Workflow branches (a branch write must be versioned; a stale one is an observable
 conflict, deterministically arbitrated by authored branch order). Both are evidence, not the frozen
 API: field-level conflict/merge, transactional multi-field writes, provenance-preserving merge, and
@@ -542,7 +541,7 @@ Temporal
 other durable service/workflow runtimes
 ```
 
-The selection criterion is Arrokoth semantic conformance, not feature count.
+The selection criterion is ArrokothI semantic conformance, not feature count.
 
 ### Distributed Harness
 
@@ -638,7 +637,7 @@ message/result policy checks
 resource-derived trust labels
 ```
 
-This is beyond v0.4's explicit view/authority guarantees.
+This is beyond 0.8.x's explicit view/authority guarantees.
 
 ---
 
@@ -692,7 +691,7 @@ Telemetry
   OpenTelemetry GenAI projection
 ```
 
-These are mechanisms behind Arrokoth-owned ports.
+These are mechanisms behind ArrokothI-owned ports.
 
 No backend should define Agent/Workflow progression, authority, memory epistemic status, Event/Effect meaning, or lifecycle semantics.
 
@@ -1021,7 +1020,7 @@ The same Agent/Workflow semantic Definition should remain portable where possibl
 
 ### 10.12 Harness/scaffold simplification as models improve
 
-External literature often calls the whole model scaffold an "agent harness"; Arrokoth's canonical `Harness` is narrower and should not absorb every scaffold strategy.
+External literature often calls the whole model scaffold an "agent harness"; ArrokothI's canonical `Harness` is narrower and should not absorb every scaffold strategy.
 
 Actively test whether previously useful scaffolding can be removed when newer models improve.
 
@@ -1165,7 +1164,7 @@ Questions to evaluate for each term:
 ```text
 Does the name accurately imply the canonical semantic boundary?
 Does common software/AI usage give the same term a materially different meaning?
-Is it easy to distinguish from neighboring Arrokoth concepts?
+Is it easy to distinguish from neighboring ArrokothI concepts?
 Can a new developer predict its role before reading several pages of qualification?
 Does it produce misleading expectations in generated docs, prompts, or model reasoning?
 Is a more explicit name worth the additional verbosity?
@@ -1173,7 +1172,7 @@ Would a rename reduce or increase ambiguity in MCP/A2A/API mappings?
 What migration cost would the rename create in public APIs, persisted records, examples, and docs?
 ```
 
-Do not optimize terminology by popularity alone. For example, external literature may use `agent harness` for a much broader scaffold than Arrokoth's current `Harness`; replacing the name with `Runtime` may or may not improve things because `Runtime` also has several established meanings.
+Do not optimize terminology by popularity alone. For example, external literature may use `agent harness` for a much broader scaffold than ArrokothI's current `Harness`; replacing the name with `Runtime` may or may not improve things because `Runtime` also has several established meanings.
 
 ### 13.1 Separate four naming layers
 
@@ -1197,7 +1196,7 @@ These may intentionally differ when translation is explicit and stable.
 
 For example, keeping an internal/runtime concept named `Effect` does not imply that a model should see a tool called `UseCapability` or `SendMessage`. The model-facing ACI should normally expose domain-meaningful operations, and those operations may compile to Effects internally.
 
-Likewise, protocol terms such as MCP `Tool`, A2A `Task`, or another ecosystem's `Session` should not rename stronger Arrokoth concepts merely to avoid adapters having vocabulary mappings.
+Likewise, protocol terms such as MCP `Tool`, A2A `Task`, or another ecosystem's `Session` should not rename stronger ArrokothI concepts merely to avoid adapters having vocabulary mappings.
 
 ### 13.2 Review method
 
@@ -1227,7 +1226,8 @@ migration scope generated from code/docs search
 
 ### 13.3 Timing
 
-Do not interrupt v0.4 merely to rename coherent concepts.
+After the coordinated 0.8.0 project/package identity reset, do not repeatedly interrupt the 0.8.x
+line merely to rename otherwise coherent concepts.
 
 Target the broad review after enough of the architecture has been exercised together to expose real confusion, but before v1 API stabilization—ideally during the v0.8 integration / v0.9 stabilization period.
 

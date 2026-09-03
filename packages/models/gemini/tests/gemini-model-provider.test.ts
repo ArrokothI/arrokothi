@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { ModelInvocationError, type ResolvedModel } from "@agent-sdk/core/ports";
-import { portableModelFeatures } from "@agent-sdk/core/reference";
-import { modelProviderContract, type ModelProviderContractScenario } from "@agent-sdk/core/testing";
+import { ModelInvocationError, type ResolvedModel } from "@arrokothi/core/ports";
+import { portableModelFeatures } from "@arrokothi/core/reference";
+import { modelProviderContract, type ModelProviderContractScenario } from "@arrokothi/core/testing";
 import { GeminiModelProvider } from "../src/index.ts";
 
 const MODEL: ResolvedModel = {

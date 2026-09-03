@@ -25,11 +25,11 @@ import type {
   ModelProvider,
   ModelRequirements,
   ResolvedModel,
-} from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
 import { Model, type BaseModelConfig, type StreamOptions } from "@strands-agents/sdk";
 import type { Message, ModelStreamEvent } from "@strands-agents/sdk";
 
-export interface ArrokothModelOptions {
+export interface ArrokothIModelOptions {
   readonly provider: ModelProvider;
   /** Already resolved by the controller. This class performs no application routing. */
   readonly resolved: ResolvedModel;
@@ -87,11 +87,11 @@ function toPortableMessages(messages: readonly Message[]): readonly ModelMessage
   return portable;
 }
 
-export class ArrokothStrandsModel extends Model<BaseModelConfig> {
-  private readonly options: ArrokothModelOptions;
+export class ArrokothIStrandsModel extends Model<BaseModelConfig> {
+  private readonly options: ArrokothIModelOptions;
   private config: BaseModelConfig;
 
-  constructor(options: ArrokothModelOptions) {
+  constructor(options: ArrokothIModelOptions) {
     super();
     this.options = options;
     this.config = { modelId: options.resolved.model };

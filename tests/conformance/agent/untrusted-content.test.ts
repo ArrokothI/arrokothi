@@ -9,17 +9,17 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { agentCallCorrelationId, effectRequestsIn, readAgentControlState } from "@agent-sdk/core/execution";
-import type { AgentControlState } from "@agent-sdk/core/execution";
+import { agentCallCorrelationId, effectRequestsIn, readAgentControlState } from "@arrokothi/core/execution";
+import type { AgentControlState } from "@arrokothi/core/execution";
 import {
   createActiveOperationViewResolver,
   createAllowListAuthorizer,
   createRuntimeOperationAuthoritySource,
   createScriptedCapabilityExecutor,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
-import type { RecordingCapabilityExecutor } from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import type { RecordingCapabilityExecutor } from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
 import { DOCS_SEARCH, MAIL_SEND, scriptedAgentExecutor, testAgent, testCatalog, testModelResolver } from "./fixtures.ts";
 
 const INJECTION =

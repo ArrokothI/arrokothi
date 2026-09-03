@@ -9,10 +9,10 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { ExecutionId } from "@agent-sdk/core/execution";
-import type { RuntimeStore, RuntimeTransaction } from "@agent-sdk/core/ports";
-import { createAllowListAuthorizer, InMemoryRuntimeStore } from "@agent-sdk/core/reference";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import type { ExecutionId } from "@arrokothi/core/execution";
+import type { RuntimeStore, RuntimeTransaction } from "@arrokothi/core/ports";
+import { createAllowListAuthorizer, InMemoryRuntimeStore } from "@arrokothi/core/reference";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 /** Counts `readExecution` calls, so "zero destination lookup before policy" is measurable. */
 class LookupCountingStore extends InMemoryRuntimeStore {

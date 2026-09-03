@@ -26,17 +26,17 @@ import type {
   ModelActionProjection,
   ObjectSchema,
   ResolvedModel,
-} from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
 import {
   ModelProviderRegistry,
   portableModelFeatures,
   ScriptedModelProvider,
   StaticModelResolver,
-} from "@agent-sdk/core/reference";
-import { defineAgent, effectRequestsIn, referenceAgentObservationProjector } from "@agent-sdk/core/execution";
-import { createAllowListAuthorizer, createCapabilityCatalog, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
-import type { RecordingCapabilityExecutor } from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { defineAgent, effectRequestsIn, referenceAgentObservationProjector } from "@arrokothi/core/execution";
+import { createAllowListAuthorizer, createCapabilityCatalog, createScriptedCapabilityExecutor } from "@arrokothi/core/reference";
+import type { RecordingCapabilityExecutor } from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness } from "@arrokothi/core/testing";
 import { createStrandsAgentExecutor } from "../src/index.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -297,10 +297,10 @@ describe("the Strands AgentExecutor satisfies the same semantic contract", () =>
     // nothing. Anything else from core would be a route into semantics this package must not have.
     assert.deepEqual(
       [...new Set(imported)].sort(),
-      ["./model.ts", "@agent-sdk/core/execution", "@agent-sdk/core/ports", "@strands-agents/sdk"],
+      ["./model.ts", "@arrokothi/core/execution", "@arrokothi/core/ports", "@strands-agents/sdk"],
     );
     const executorSource = await readFile(resolve(HERE, "../src/agent-executor.ts"), "utf8");
-    const fromExecution = /import\s*\{([^}]*)\}\s*from\s*"@agent-sdk\/core\/execution"/.exec(executorSource);
+    const fromExecution = /import\s*\{([^}]*)\}\s*from\s*"@arrokothi\/core\/execution"/.exec(executorSource);
     assert.deepEqual(fromExecution?.[1]?.split(",").map((name) => name.trim()), ["toJsonSchema"]);
   });
 

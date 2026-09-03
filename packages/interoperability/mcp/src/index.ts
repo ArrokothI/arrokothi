@@ -1,7 +1,7 @@
 /**
- * `@agent-sdk/integration-mcp` - the Model Context Protocol adapter.
+ * `@arrokothi/integration-mcp` - the Model Context Protocol adapter.
  *
- * This package exists so that MCP SDK and wire types live in exactly one place. `@agent-sdk/core`
+ * This package exists so that MCP SDK and wire types live in exactly one place. `@arrokothi/core`
  * has no MCP dependency and no MCP import; the dependency direction is one-way:
  *
  * ```text
@@ -9,7 +9,7 @@
  *        v
  * this adapter
  *        v
- * @agent-sdk/core   portable descriptors, CapabilityExecutor, value schema
+ * @arrokothi/core   portable descriptors, CapabilityExecutor, value schema
  * ```
  *
  * Two narrow, synchronous directions are implemented and nothing else:

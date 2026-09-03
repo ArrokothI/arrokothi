@@ -26,7 +26,7 @@ import type {
   CapabilityExecutionEnvironment,
   CapabilityExecutor,
   CapabilityOutcome,
-} from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
 import { LexicalIndex } from "./lexical.ts";
 import type { LexicalSourceInput } from "./lexical.ts";
 import { queryRecords } from "./records.ts";

@@ -14,15 +14,15 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { AgentObservationProjector, JsonValue } from "@agent-sdk/core/execution";
-import { referenceAgentObservationProjector } from "@agent-sdk/core/execution";
+import type { AgentObservationProjector, JsonValue } from "@arrokothi/core/execution";
+import { referenceAgentObservationProjector } from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   createScriptedCapabilityExecutor,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
-import type { RecordingCapabilityExecutor } from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import type { RecordingCapabilityExecutor } from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
 import { DOCS_SEARCH, testAgent, testCatalog, testModelResolver } from "./fixtures.ts";
 
 /** One line, no payload. The kind of thing a long-horizon strategy would want. */

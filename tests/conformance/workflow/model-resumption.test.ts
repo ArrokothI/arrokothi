@@ -25,8 +25,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow, readWorkflowControlState } from "@agent-sdk/core/execution";
-import type { ExecutionContext, WorkflowSpecInput } from "@agent-sdk/core/execution";
+import { defineWorkflow, readWorkflowControlState } from "@arrokothi/core/execution";
+import type { ExecutionContext, WorkflowSpecInput } from "@arrokothi/core/execution";
 import {
   createAdapterRegistry,
   createDeferredModelProvider,
@@ -34,10 +34,10 @@ import {
   ScriptedModelProvider,
   StaticModelResolver,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
-import type { AdapterHandler, FunctionStageHandler } from "@agent-sdk/core/reference";
-import { ModelInvocationError } from "@agent-sdk/core/ports";
-import { createWorkflowTestHarness, modelAccess } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import type { AdapterHandler, FunctionStageHandler } from "@arrokothi/core/reference";
+import { ModelInvocationError } from "@arrokothi/core/ports";
+import { createWorkflowTestHarness, modelAccess } from "@arrokothi/core/testing";
 
 const resolver = () =>
   new StaticModelResolver({

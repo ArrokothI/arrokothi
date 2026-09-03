@@ -6,17 +6,17 @@
  * byte identity is neither expected nor sufficient.
  *
  * Second, and more important, everything else is refused rather than weakened. A translator that
- * turned `oneOf` into an unvalidated value would publish a contract Arrokoth does not enforce, and
+ * turned `oneOf` into an unvalidated value would publish a contract ArrokothI does not enforce, and
  * an operation would look validated when it was not.
  */
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { validateObject } from "@agent-sdk/core";
-import type { ObjectSchema } from "@agent-sdk/core/ports";
-import { toJsonSchema } from "@agent-sdk/core/execution";
-import { objectSchemaFromJsonSchema } from "@agent-sdk/integration-mcp";
-import type { McpSchemaIssueCode } from "@agent-sdk/integration-mcp";
+import { validateObject } from "@arrokothi/core";
+import type { ObjectSchema } from "@arrokothi/core/ports";
+import { toJsonSchema } from "@arrokothi/core/execution";
+import { objectSchemaFromJsonSchema } from "@arrokothi/integration-mcp";
+import type { McpSchemaIssueCode } from "@arrokothi/integration-mcp";
 
 function translated(schema: unknown): ObjectSchema {
   const result = objectSchemaFromJsonSchema(schema);
@@ -70,7 +70,7 @@ describe("MCP JSON Schema translates with semantic fidelity or not at all", () =
     assert.equal(validateObject(imported, { query: "docs", mode: "fast", filter: { since: "today", extra: 1 } }).ok, true);
   });
 
-  test("required, descriptions, and nesting land where Arrokoth keeps them", () => {
+  test("required, descriptions, and nesting land where ArrokothI keeps them", () => {
     const schema = translated({
       type: "object",
       properties: {
@@ -179,7 +179,7 @@ describe("MCP JSON Schema translates with semantic fidelity or not at all", () =
     );
   });
 
-  test("constraints Arrokoth cannot express are refused rather than dropped", () => {
+  test("constraints ArrokothI cannot express are refused rather than dropped", () => {
     // Each of these would have to be silently discarded to accept the schema, and a discarded
     // constraint is a contract the importing side stops enforcing without saying so.
     for (const [keyword, node] of [

@@ -9,7 +9,7 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { createTestHarness, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import { createTestHarness, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 describe("response is not a terminal result", () => {
   test("an Execution that emits repeatedly stays alive and uncompleted", async () => {

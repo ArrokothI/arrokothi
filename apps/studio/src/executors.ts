@@ -1,6 +1,6 @@
-import type { AgentDefinition, ToolExecutor, ToolRegistry } from "@agent-sdk/core";
-import { recordQueryTools } from "@agent-sdk/core";
-import type { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
+import type { AgentDefinition, ToolExecutor, ToolRegistry } from "@arrokothi/core";
+import { recordQueryTools } from "@arrokothi/core";
+import type { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
 
 /**
  * Studio tool executors.

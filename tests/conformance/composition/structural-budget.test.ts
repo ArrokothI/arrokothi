@@ -8,7 +8,7 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { spawnBudgetRemaining } from "@agent-sdk/core/execution";
+import { spawnBudgetRemaining } from "@arrokothi/core/execution";
 import { agent, executionCount, rig } from "./fixtures.ts";
 
 describe("structural spawn budget", () => {

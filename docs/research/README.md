@@ -24,7 +24,7 @@ listed in [`../README.md`](../README.md); accepted implementation decisions rema
 
 | Note | Scope |
 |---|---|
-| [`mcp-arrokoth-semantic-mapping.md`](mcp-arrokoth-semantic-mapping.md) | MCP 2026-07-28 protocol-surface inventory and provisional mapping in both import and export directions. |
+| [`mcp-arrokothi-semantic-mapping.md`](mcp-arrokothi-semantic-mapping.md) | MCP 2026-07-28 protocol-surface inventory and provisional mapping in both import and export directions. |
 | [`agent-caching-semantics-and-strategy.md`](agent-caching-semantics-and-strategy.md) | Agent caching survey across OpenClaw, Hermes Agent, Dify, LangGraph, and model providers; distinguishes optional caches, deterministic derived views, and invocation/recovery snapshots, then maps cache candidates and invalidation requirements onto ArrokothI. |
 
 ## Promotion rule
@@ -35,4 +35,3 @@ If research produces an accepted change:
 2. update code and conformance evidence when semantics change;
 3. record slice-specific implementation decisions under `docs/development/`;
 4. leave this note as research history or mark the superseding decision explicitly.
-

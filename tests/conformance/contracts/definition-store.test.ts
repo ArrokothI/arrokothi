@@ -4,8 +4,8 @@
  */
 
 import { test, describe } from "node:test";
-import { InMemoryDefinitionStore } from "@agent-sdk/core/reference";
-import { definitionStoreContract } from "@agent-sdk/core/testing";
+import { InMemoryDefinitionStore } from "@arrokothi/core/reference";
+import { definitionStoreContract } from "@arrokothi/core/testing";
 
 describe("DefinitionStore contract: InMemoryDefinitionStore", () => {
   for (const contractCase of definitionStoreContract(() => new InMemoryDefinitionStore())) {

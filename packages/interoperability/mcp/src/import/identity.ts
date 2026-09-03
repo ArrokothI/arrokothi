@@ -2,7 +2,7 @@
  * Local identity for an imported MCP Tool, and why the remote server has no say in it.
  *
  * An MCP server publishes a tool *name*. That name is a string in the server's own namespace: it is
- * not an Arrokoth capability, not an operation identity, and above all not a claim about where the
+ * not an ArrokothI capability, not an operation identity, and above all not a claim about where the
  * operation belongs in the importing application's authority model. So the identity of an imported
  * operation is composed here, from two sources with very different trust:
  *
@@ -21,7 +21,7 @@
  * ```text
  * local capability   "external.lookup"
  * remote tool        "lookup_code"
- * Arrokoth identity   external.lookup / lookup_code
+ * ArrokothI identity   external.lookup / lookup_code
  * ```
  *
  * That pair - and only that pair - is what an `EffectiveOperationAuthority` grants, what an Active
@@ -30,7 +30,7 @@
  * identity anything else can see.
  */
 
-import { isOperationId } from "@agent-sdk/core/execution";
+import { isOperationId } from "@arrokothi/core/execution";
 
 /** How one remote tool is bound to a local operation. Written by the importing application. */
 export interface McpToolBinding {

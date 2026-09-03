@@ -21,29 +21,29 @@
  * So the boundary that matters is exposure, and it is observable: a corpus the Stage's definition
  * did not declare is unreachable, not merely unmentioned. These cases prove that by asking for one.
  *
- * Both paths run against `@agent-sdk/retrieval-local`, which is where the local retrieval
+ * Both paths run against `@arrokothi/retrieval-local`, which is where the local retrieval
  * implementation and its LangChain dependency now live. Core owns the contracts; this package
  * implements them.
  */
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow, readWorkflowControlState } from "@agent-sdk/core/execution";
-import type { FunctionStageOutcome, StageExecutionContext } from "@agent-sdk/core/ports";
-import { UnexposedLocalResourceError } from "@agent-sdk/core/ports";
+import { defineWorkflow, readWorkflowControlState } from "@arrokothi/core/execution";
+import type { FunctionStageOutcome, StageExecutionContext } from "@arrokothi/core/ports";
+import { UnexposedLocalResourceError } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeferredCapabilityExecutor,
   createFunctionStageRegistry,
   createLocalResourceEnvironment,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness } from "@arrokothi/core/testing";
 import {
   LOCAL_RETRIEVAL_CAPABILITY,
   LOCAL_RETRIEVAL_OPERATIONS,
   createLocalCorpusResource,
   createLocalRetrievalExecutor,
-} from "@agent-sdk/retrieval-local";
+} from "@arrokothi/retrieval-local";
 
 /**
  * What this Execution is permitted to use at all.

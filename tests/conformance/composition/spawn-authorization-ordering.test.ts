@@ -11,9 +11,9 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { DefinitionId, ExecutionDefinition, ExecutionDefinitionRef } from "@agent-sdk/core/execution";
-import type { DefinitionStore } from "@agent-sdk/core/ports";
-import { InMemoryDefinitionStore } from "@agent-sdk/core/reference";
+import type { DefinitionId, ExecutionDefinition, ExecutionDefinitionRef } from "@arrokothi/core/execution";
+import type { DefinitionStore } from "@arrokothi/core/ports";
+import { InMemoryDefinitionStore } from "@arrokothi/core/reference";
 import { agent, executionCount, noSpawn, permissive, rig } from "./fixtures.ts";
 
 /** Delegates every read/write to a real store while counting resolution reads. */

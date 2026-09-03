@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { SessionConcurrencyConflictError } from "@agent-sdk/core";
+import { SessionConcurrencyConflictError } from "@arrokothi/core";
 import type {
   AgentDefinition,
   AppendEventsOptions,
@@ -10,7 +10,7 @@ import type {
   SessionRecord,
   SessionSnapshot,
   SessionStore,
-} from "@agent-sdk/core";
+} from "@arrokothi/core";
 
 /**
  * SQLite persistence for the core SessionStore and DefinitionStore contracts.

@@ -23,7 +23,7 @@
  *   `createLocalRetrievalExecutor`
  *     the mediated path; a Stage must request a UseCapability Effect and observe the result Event
  *
- * The legacy pre-v0.4 `KnowledgeIndex` moved here too, under `@agent-sdk/retrieval-local/legacy`.
+ * The legacy pre-v0.4 `KnowledgeIndex` moved here too, under `@arrokothi/retrieval-local/legacy`.
  * It is isolated compatibility for consumers that have not migrated, not part of this surface.
  */
 

@@ -1,8 +1,8 @@
 /** Optional live canary for the v0.4 resolver/provider boundary. Never part of the CI suite. */
 
-import { ModelInvocationError, type ModelProviderRequest, type ModelRequirements } from "@agent-sdk/core/ports";
-import { StaticModelResolver, portableModelFeatures } from "@agent-sdk/core/reference";
-import { GeminiModelProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";
+import { ModelInvocationError, type ModelProviderRequest, type ModelRequirements } from "@arrokothi/core/ports";
+import { StaticModelResolver, portableModelFeatures } from "@arrokothi/core/reference";
+import { GeminiModelProvider, geminiApiKeyFromEnv } from "@arrokothi/provider-gemini";
 
 type CheckStatus = "passed" | "failed";
 

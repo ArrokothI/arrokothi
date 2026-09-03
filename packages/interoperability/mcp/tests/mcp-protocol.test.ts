@@ -16,10 +16,10 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { createMcpHandler, fromJsonSchema, InMemoryTransport, McpServer } from "@modelcontextprotocol/server";
-import type { AuthorizedCapabilityRequest, CapabilityExecutionEnvironment, JsonValue } from "@agent-sdk/core/ports";
-import { toJsonSchema } from "@agent-sdk/core/execution";
-import { createCapabilityCatalog } from "@agent-sdk/core/reference";
-import { exportCapabilityOperationsAsMcpTools, importMcpTools, McpExportError } from "@agent-sdk/integration-mcp";
+import type { AuthorizedCapabilityRequest, CapabilityExecutionEnvironment, JsonValue } from "@arrokothi/core/ports";
+import { toJsonSchema } from "@arrokothi/core/execution";
+import { createCapabilityCatalog } from "@arrokothi/core/reference";
+import { exportCapabilityOperationsAsMcpTools, importMcpTools, McpExportError } from "@arrokothi/integration-mcp";
 
 const ENVIRONMENT: CapabilityExecutionEnvironment = { profile: "trusted-local", dispatchedAt: "2026-09-01T00:00:00.000Z" };
 
@@ -59,11 +59,11 @@ async function connectedPair(register: (server: McpServer) => void): Promise<{
   readonly server: McpServer;
   close(): Promise<void>;
 }> {
-  const server = new McpServer({ name: "arrokoth-test-server", version: "0.0.1" });
+  const server = new McpServer({ name: "arrokothi-test-server", version: "0.0.1" });
   register(server);
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
-  const client = new Client({ name: "arrokoth-test-client", version: "0.0.1" });
+  const client = new Client({ name: "arrokothi-test-client", version: "0.0.1" });
   await client.connect(clientTransport);
   return {
     client,
@@ -81,7 +81,7 @@ async function modernPair(register: (server: McpServer) => void): Promise<{
   close(): Promise<void>;
 }> {
   const handler = createMcpHandler(() => {
-    const server = new McpServer({ name: "arrokoth-modern-test-server", version: "0.0.1" });
+    const server = new McpServer({ name: "arrokothi-modern-test-server", version: "0.0.1" });
     register(server);
     return server;
   }, { legacy: "reject", responseMode: "json" });
@@ -89,7 +89,7 @@ async function modernPair(register: (server: McpServer) => void): Promise<{
     fetch: async (url, init) => handler.fetch(new Request(url, init)),
   });
   const client = new Client(
-    { name: "arrokoth-modern-test-client", version: "0.0.1" },
+    { name: "arrokothi-modern-test-client", version: "0.0.1" },
     { versionNegotiation: { mode: { pin: "2026-07-28" } } },
   );
   await client.connect(transport);
@@ -249,11 +249,11 @@ describe("export: one explicitly named operation becomes one MCP Tool", () => {
       assert.deepEqual(listed.tools[0]!.inputSchema, toJsonSchema(catalog.describe("docs" as never, "search" as never)!.input!));
       assert.equal(listed.tools[0]!.description, "Search the project corpus and return matching passages.");
 
-      const called = await pair.client.callTool({ name: "search_documents", arguments: { query: "arrokoth" } });
-      assert.deepEqual((called as { structuredContent?: unknown }).structuredContent, { passages: ["hit for arrokoth"] });
+      const called = await pair.client.callTool({ name: "search_documents", arguments: { query: "arrokothi" } });
+      assert.deepEqual((called as { structuredContent?: unknown }).structuredContent, { passages: ["hit for arrokothi"] });
       assert.deepEqual(handled, [
         {
-          input: { query: "arrokoth" },
+          input: { query: "arrokothi" },
           invocation: { ref: { capability: "docs", operation: "search" }, toolName: "search_documents" },
         },
       ]);
@@ -313,7 +313,7 @@ describe("export: one explicitly named operation becomes one MCP Tool", () => {
 
   test("exporting an operation the catalog cannot describe is refused at registration", () => {
     const thin = createCapabilityCatalog([{ capability: "ledger", operation: "post", consequential: true }]);
-    const server = new McpServer({ name: "arrokoth-test-server", version: "0.0.1" });
+    const server = new McpServer({ name: "arrokothi-test-server", version: "0.0.1" });
     assert.throws(
       () =>
         exportCapabilityOperationsAsMcpTools(server, {
@@ -486,12 +486,12 @@ describe("round trip: an exported operation can be imported back unchanged", () 
         authorized({
           capability: "remote.docs",
           operation: "search",
-          input: { query: "arrokoth", scopes: ["docs"] },
+          input: { query: "arrokothi", scopes: ["docs"] },
           consequential: false,
         }),
         ENVIRONMENT,
       );
-      assert.deepEqual(received, [{ query: "arrokoth", scopes: ["docs"] }], "the arguments arrive exactly as sent");
+      assert.deepEqual(received, [{ query: "arrokothi", scopes: ["docs"] }], "the arguments arrive exactly as sent");
       assert.deepEqual(outcome, { status: "success", observation: { passages: ["one"] } });
     } finally {
       await pair.close();

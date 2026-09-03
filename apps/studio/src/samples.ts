@@ -1,6 +1,6 @@
-import type { AgentDefinition } from "@agent-sdk/core";
-import { minimalAgent } from "@agent-sdk/example-minimal-agent";
-import { estateAgent } from "@agent-sdk/example-estate-like";
+import type { AgentDefinition } from "@arrokothi/core";
+import { minimalAgent } from "@arrokothi/example-minimal-agent";
+import { estateAgent } from "@arrokothi/example-estate-like";
 
 /**
  * Definitions the Studio can seed itself with.

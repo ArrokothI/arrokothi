@@ -15,9 +15,9 @@ import {
   isTerminalLifecycle,
   LIFECYCLE_STATES,
   TERMINAL_LIFECYCLE_STATES,
-} from "@agent-sdk/core/execution";
-import type { LifecycleState } from "@agent-sdk/core/execution";
-import { createTestHarness, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/execution";
+import type { LifecycleState } from "@arrokothi/core/execution";
+import { createTestHarness, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 describe("lifecycle", () => {
   test("the canonical path is allowed", () => {

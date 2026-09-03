@@ -19,14 +19,14 @@ The canonical documents intentionally have **non-overlapping ownership**:
 | [`memory.md`](memory.md) | Structured/Derived/Working/Artifact memory forms, scopes/views, provenance, promotion, retrieval, context compilation |
 | [`interoperability.md`](interoperability.md) | portable Operations/Resources/services/Skills/templates/handles and MCP/A2A/Agent Skills/API/protocol bindings |
 | [`security-guarantees.md`](security-guarantees.md) | security guarantees, trust assumptions, deployment profiles, control-plane vs runtime authority, containment boundary |
-| [`future-plan.md`](future-plan.md) | unresolved or post-v0.4 questions only |
+| [`future-plan.md`](future-plan.md) | unresolved/future questions only; not the active roadmap |
 
 Supporting material:
 
 | Path | Role |
 |---|---|
 | [`product-vision.md`](product-vision.md) | cross-repository ArrokothI product direction: heterogeneous Agent application composition, Studio/Cloud direction, ecosystem/adoption/business posture; **not canonical kernel architecture** |
-| [`development/`](development/) | current implementation plans, audits, slice decisions, reviews, migration notes |
+| [`development/`](development/) | current implementation synthesis, active roadmap, and specialized engineering guidance; historical records are routed through `development/legacy/` |
 | [`architecture-research-dossier.md`](architecture-research-dossier.md) | retained non-canonical research/source dossier; useful evidence and external-system survey |
 | [`research/`](research/) | focused, non-canonical protocol/system comparisons and experiment directions outside the active implementation sequence; includes MCP semantic mapping and Agent caching research |
 
@@ -417,7 +417,7 @@ hosted declarative
 isolated hostile-code
 ```
 
-A trusted-local deployment provides Arrokoth-mediated semantic enforcement but does not contain the owner of the host process. A hostile-code profile additionally requires real filesystem/network/secret/resource isolation.
+A trusted-local deployment provides ArrokothI-mediated semantic enforcement but does not contain the owner of the host process. A hostile-code profile additionally requires real filesystem/network/secret/resource isolation.
 
 See [`security-guarantees.md`](security-guarantees.md).
 
@@ -457,7 +457,9 @@ Before changing architecture or implementing a slice:
 
 1. Find the canonical concept owner above.
 2. List the invariants the change must preserve.
-3. Inspect the relevant files under [`development/`](development/) for current implementation decisions/history.
+3. Read [`development/002-implemented-kernel-baseline.md`](development/002-implemented-kernel-baseline.md)
+   for current evidence and [`development/001-current-status-and-roadmap.md`](development/001-current-status-and-roadmap.md)
+   for next work; load specialized or legacy evidence only when relevant.
 4. Separate semantic changes from package/naming/backend changes.
 5. For external standards, decide whether the idea belongs in kernel semantics, portable interoperability semantics, or only an adapter/backend.
 6. Test the smallest vertical slice that proves the semantic boundary.

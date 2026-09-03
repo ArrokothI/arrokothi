@@ -325,7 +325,7 @@ type StepOutcome =
  *
  * Deliberately narrow. Later application input is not consumed here - an Execution that is already
  * running is answering its own topology, and selective, correlated user/application input is Slice G
- * work (see `docs/development/005-slice-b-decisions.md`, DEC-B01). An application that needs its
+ * work (see `docs/development/legacy/005-slice-b-decisions.md`, DEC-B01). An application that needs its
  * input to be seen should deliver it before the first Activation is scheduled.
  */
 function startInput(events: readonly DeliveredEvent[]): StageResult {

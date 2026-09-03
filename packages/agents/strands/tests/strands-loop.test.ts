@@ -7,8 +7,8 @@ import type {
   AgentLoopTraceEvent,
   CapabilityDefinition,
   CompiledContext,
-} from "@agent-sdk/core";
-import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
+} from "@arrokothi/core";
+import { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
 import {
   AgentHarness,
   AgentRuntime,
@@ -19,7 +19,7 @@ import {
   defineAgent,
   knowledgeCapabilityName,
   type KnowledgeRetriever,
-} from "@agent-sdk/core";
+} from "@arrokothi/core";
 import {
   Model,
   type BaseModelConfig,
@@ -27,7 +27,7 @@ import {
   type ModelStreamEvent,
   type StreamOptions,
 } from "@strands-agents/sdk";
-import { ScriptedModelProvider } from "@agent-sdk/core/testing";
+import { ScriptedModelProvider } from "@arrokothi/core/testing";
 import { StrandsLoopEngine } from "../src/index.ts";
 
 type ScriptStep =
@@ -333,7 +333,7 @@ describe("StrandsLoopEngine", () => {
     assert.equal(result.metrics.modelCalls, 3);
   });
 
-  it("transforms before Gateway validation and pauses on Agent_SDK confirmation truth", async () => {
+  it("transforms before Gateway validation and pauses on ArrokothI confirmation truth", async () => {
     const model = new ScriptedStrandsModel([{ kind: "tool", name: "lookup", input: { query: "raw" }, id: "confirm-1" }]);
     let gatewayInput: Record<string, unknown> | undefined;
     const built = loopInput(model, {

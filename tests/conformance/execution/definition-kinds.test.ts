@@ -8,8 +8,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { validateDefinition } from "@agent-sdk/core/execution";
-import { createTestHarness, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@agent-sdk/core/testing";
+import { validateDefinition } from "@arrokothi/core/execution";
+import { createTestHarness, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@arrokothi/core/testing";
 
 describe("definition kinds", () => {
   test("an AgentDefinition creates an Agent Execution advanced by the Agent controller", async () => {

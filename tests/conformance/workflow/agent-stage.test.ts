@@ -10,13 +10,13 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow } from "@agent-sdk/core/execution";
-import { createAllowListAuthorizer, createFunctionStageRegistry } from "@agent-sdk/core/reference";
+import { defineWorkflow } from "@arrokothi/core/execution";
+import { createAllowListAuthorizer, createFunctionStageRegistry } from "@arrokothi/core/reference";
 import {
   createScriptedAgentController,
   createWorkflowTestHarness,
   scriptedAgentDefinition,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 
 const STRING = { schemaId: "answer", schemaVersion: 1, schema: { kind: "string" } } as const;
 const KNOW = { capability: "knowledge.query", operation: "search" } as const;

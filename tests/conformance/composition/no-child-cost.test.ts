@@ -1,7 +1,7 @@
 /**
  * A no-feature Activation performs no feature-specific RuntimeStore work (014 simple-path cost check).
  *
- * `docs/development/014-v1-efficiency-and-developer-ergonomics-validation.md` §9's review discipline
+ * `docs/development/004-efficiency-and-developer-ergonomics.md` review discipline
  * for a slice that adds a new semantic guarantee: state what physical work the simple path that does
  * not use the new guarantee now pays for, and prove it stays zero. Child composition's guarantee is
  * recursive delegation under a bounded lineage budget; E.2 adds user-input requests and exact-payload
@@ -12,9 +12,9 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { ControllerRegistry, Harness } from "@agent-sdk/core/execution";
-import type { ExecutionId } from "@agent-sdk/core/execution";
-import type { RuntimeStore, RuntimeTransaction } from "@agent-sdk/core/ports";
+import { ControllerRegistry, Harness } from "@arrokothi/core/execution";
+import type { ExecutionId } from "@arrokothi/core/execution";
+import type { RuntimeStore, RuntimeTransaction } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeterministicIds,
@@ -23,8 +23,8 @@ import {
   FifoScheduler,
   InMemoryDefinitionStore,
   InMemoryRuntimeStore,
-} from "@agent-sdk/core/reference";
-import { createScriptedAgentController } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createScriptedAgentController } from "@arrokothi/core/testing";
 import { agent } from "./fixtures.ts";
 
 /** Counts calls per RuntimeTransaction facet method, without changing any behaviour. */

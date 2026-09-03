@@ -20,10 +20,10 @@ import {
   createAllowListAuthorizer,
   createCapabilityConfirmationPolicy,
   createScriptedCapabilityExecutor,
-} from "@agent-sdk/core/reference";
-import type { ConfirmationPolicyRequest, EffectAuthorizer } from "@agent-sdk/core/ports";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
-import type { ScriptedControllerStep } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import type { ConfirmationPolicyRequest, EffectAuthorizer } from "@arrokothi/core/ports";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
+import type { ScriptedControllerStep } from "@arrokothi/core/testing";
 
 const AUTHORITY = { operations: [{ capability: "world.trade", operation: "execute" }] };
 const TRADE: ScriptedControllerStep = {

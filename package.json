@@ -1,8 +1,8 @@
 {
-  "name": "agent-sdk-workspace",
+  "name": "arrokothi-agent-kernel",
   "private": true,
-  "version": "0.37.0",
-  "description": "Provider-neutral agent control plane with a consolidated Harness and Strands execution engine.",
+  "version": "0.8.0",
+  "description": "ArrokothI provider-neutral execution kernel workspace for long-lived Agents and Workflows.",
   "type": "module",
   "workspaces": [
     "packages/core",

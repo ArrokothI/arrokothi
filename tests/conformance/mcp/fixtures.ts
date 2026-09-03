@@ -6,7 +6,7 @@
  * `tools/call` round trips with no socket, no child process, and no timing, so "the server received
  * zero calls" is a fact about a protocol peer rather than about a mock.
  *
- * Note which side of the Arrokoth boundary each piece lands on, because several cases pass or fail
+ * Note which side of the ArrokothI boundary each piece lands on, because several cases pass or fail
  * for the wrong reason otherwise. The imported *catalog* is descriptive and reaches the exposure
  * resolver. The imported *executor* reaches the Harness, and only the Harness. Nothing here hands a
  * controller an MCP client.
@@ -20,10 +20,10 @@ import type {
   CapabilityExecutor,
   CapabilityOutcome,
   JsonObject,
-} from "@agent-sdk/core/ports";
-import type { AgentDefinition, AgentSpecInput } from "@agent-sdk/core/execution";
-import { defineAgent } from "@agent-sdk/core/execution";
-import { portableModelFeatures, ScriptedModelProvider, StaticModelResolver } from "@agent-sdk/core/reference";
+} from "@arrokothi/core/ports";
+import type { AgentDefinition, AgentSpecInput } from "@arrokothi/core/execution";
+import { defineAgent } from "@arrokothi/core/execution";
+import { portableModelFeatures, ScriptedModelProvider, StaticModelResolver } from "@arrokothi/core/reference";
 
 /** The one deterministic fact only the MCP server knows. An Agent cannot answer without calling it. */
 export const PROOF_CODE = "ZULU-7";
@@ -70,7 +70,7 @@ export interface LookupServerOptions {
  * cannot reach by thinking, so that "the Agent produced the code" is evidence the tool ran.
  */
 export function lookupServer(options: LookupServerOptions = {}): McpTestServer {
-  const server = new McpServer({ name: "arrokoth-conformance-server", version: "0.0.1" });
+  const server = new McpServer({ name: "arrokothi-conformance-server", version: "0.0.1" });
   const calls: RegisteredCall[] = [];
 
   const register = (tool: string): void => {
@@ -108,7 +108,7 @@ export function lookupServer(options: LookupServerOptions = {}): McpTestServer {
 export async function connect(made: McpTestServer): Promise<McpTestPair> {
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await made.server.connect(serverTransport);
-  const client = new Client({ name: "arrokoth-conformance-client", version: "0.0.1" });
+  const client = new Client({ name: "arrokothi-conformance-client", version: "0.0.1" });
   await client.connect(clientTransport);
   return {
     ...made,

@@ -6,10 +6,10 @@ import {
   send,
   spawnExecution,
   useCapability,
-} from "@agent-sdk/core/execution";
-import type { ActivationOutcome, ExecutionController, InlineWaitBudget } from "@agent-sdk/core/ports";
-import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
-import { createTestHarness, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/execution";
+import type { ActivationOutcome, ExecutionController, InlineWaitBudget } from "@arrokothi/core/ports";
+import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@arrokothi/core/reference";
+import { createTestHarness, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 function deferred() {
   let resolve!: () => void;

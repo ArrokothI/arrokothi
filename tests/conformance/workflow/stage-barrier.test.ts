@@ -22,17 +22,17 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow, readWorkflowControlState, stageCorrelationId, stageId } from "@agent-sdk/core/execution";
-import type { ExecutionId, LifecycleState } from "@agent-sdk/core/execution";
-import type { FunctionStageOutcome, StageExecutionContext } from "@agent-sdk/core/ports";
+import { defineWorkflow, readWorkflowControlState, stageCorrelationId, stageId } from "@arrokothi/core/execution";
+import type { ExecutionId, LifecycleState } from "@arrokothi/core/execution";
+import type { FunctionStageOutcome, StageExecutionContext } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeferredCapabilityExecutor,
   createFunctionStageRegistry,
   createNoInlineWaitBudget,
   createScriptedCapabilityExecutor,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness } from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

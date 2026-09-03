@@ -25,7 +25,7 @@
  * observedRevision` equality to detect staleness: `ExecutionContext.revision` also advances for
  * ordinary lifecycle bookkeeping (`READY -> RUNNING`, `RUNNING -> WAITING`, `WAITING -> READY`), so
  * that comparison would classify a normal suspension as an intervening semantic mutation. See
- * [`../../../../docs/development/016-slice-e1-interleaving-peer-interaction.md`](../../../../docs/development/016-slice-e1-interleaving-peer-interaction.md).
+ * [`../../../../docs/development/legacy/016-slice-e1-interleaving-peer-interaction.md`](../../../../docs/development/legacy/016-slice-e1-interleaving-peer-interaction.md).
  *
  * ## `invalidated` (Slice E.1 / E.1.1)
  *

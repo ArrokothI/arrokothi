@@ -8,7 +8,7 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@agent-sdk/core/testing";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@arrokothi/core/testing";
 
 describe("one Harness, many ExecutionContexts", () => {
   test("a single Harness advances an Agent and a Workflow Execution independently", async () => {

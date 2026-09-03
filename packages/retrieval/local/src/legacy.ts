@@ -32,8 +32,8 @@ import type {
   WebKnowledgeResult,
   WebSearchProvider,
   WebSearchRequest,
-} from "@agent-sdk/core";
-import { err, recordFieldDescription, recordFieldExamples, recordFieldSchema } from "@agent-sdk/core";
+} from "@arrokothi/core";
+import { err, recordFieldDescription, recordFieldExamples, recordFieldSchema } from "@arrokothi/core";
 import { DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, tokenize } from "./lexical.ts";
 import { RECORD_FILTER_OPERATORS, queryRecords as executeRecordQuery } from "./records.ts";
 

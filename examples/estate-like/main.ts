@@ -5,9 +5,9 @@ import {
   createDeterministicIds,
   createFixedClock,
   recordQueryTools,
-} from "@agent-sdk/core";
-import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
-import { ScriptedModelProvider, emailDryRun } from "@agent-sdk/core/testing";
+} from "@arrokothi/core";
+import { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
+import { ScriptedModelProvider, emailDryRun } from "@arrokothi/core/testing";
 import { estateAgent } from "./agent.ts";
 
 /**

@@ -14,15 +14,15 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { authorizesOperation } from "@agent-sdk/core/execution";
-import type { RuntimeStore, RuntimeTransaction } from "@agent-sdk/core/ports";
+import { authorizesOperation } from "@arrokothi/core/execution";
+import type { RuntimeStore, RuntimeTransaction } from "@arrokothi/core/ports";
 import {
   createActiveOperationViewResolver,
   createCapabilityCatalog,
   createRuntimeOperationAuthoritySource,
   InMemoryRuntimeStore,
-} from "@agent-sdk/core/reference";
-import { createTestHarness } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createTestHarness } from "@arrokothi/core/testing";
 import { agent, permissive, rig } from "./fixtures.ts";
 
 const A = { capability: "knowledge.query", operation: "search" };

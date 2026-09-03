@@ -40,17 +40,17 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { OperationRef } from "@agent-sdk/core/execution";
+import type { OperationRef } from "@arrokothi/core/execution";
 import {
   createActiveModelActionView,
   createActiveStructuredMemoryWriteView,
   EVENT_KINDS,
   effectRequestsIn,
-} from "@agent-sdk/core/execution";
-import type { EffectAuthorizer } from "@agent-sdk/core/ports";
-import { createActiveOperationViewResolver, createAllowListAuthorizer, createRuntimeOperationAuthoritySource, InMemoryRuntimeStore } from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
-import { importMcpTools } from "@agent-sdk/integration-mcp";
+} from "@arrokothi/core/execution";
+import type { EffectAuthorizer } from "@arrokothi/core/ports";
+import { createActiveOperationViewResolver, createAllowListAuthorizer, createRuntimeOperationAuthoritySource, InMemoryRuntimeStore } from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
+import { importMcpTools } from "@arrokothi/integration-mcp";
 import {
   LOOKUP_INPUT_SCHEMA,
   LOOKUP_TOOL,
@@ -79,7 +79,7 @@ describe("an imported MCP Tool travels the ordinary Agent path", () => {
       assert.deepEqual(snapshot.issues, []);
 
       // The result is the existing descriptor type. There is no MCP-shaped descriptor anywhere in
-      // Arrokoth for it to have become instead.
+      // ArrokothI for it to have become instead.
       const descriptor = snapshot.catalog.describe(IMPORTED.capability as never, IMPORTED.operation as never);
       assert.ok(descriptor, "the imported tool is an ordinary catalog descriptor");
       assert.deepEqual(Object.keys(descriptor).sort(), [
