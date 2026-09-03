@@ -8,11 +8,11 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { Client } from "@modelcontextprotocol/client";
 import { fromJsonSchema, InMemoryTransport, McpServer } from "@modelcontextprotocol/server";
-import type { AgentActionObservation, AgentObservationProjector, OperationRef } from "@agent-sdk/core/execution";
-import { referenceAgentObservationProjector } from "@agent-sdk/core/execution";
-import { createAllowListAuthorizer } from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
-import { importMcpTools } from "@agent-sdk/integration-mcp";
+import type { AgentActionObservation, AgentObservationProjector, OperationRef } from "@arrokothi/core/execution";
+import { referenceAgentObservationProjector } from "@arrokothi/core/execution";
+import { createAllowListAuthorizer } from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
+import { importMcpTools } from "@arrokothi/integration-mcp";
 import {
   counting,
   mcpAgent,
@@ -47,7 +47,7 @@ async function runOutcomeCase(input: {
 }> {
   let serverCalls = 0;
   let sideEffects = 0;
-  const server = new McpServer({ name: "arrokoth-outcome-server", version: "0.0.1" });
+  const server = new McpServer({ name: "arrokothi-outcome-server", version: "0.0.1" });
   server.registerTool(
     IMPORTED.operation,
     {
@@ -62,7 +62,7 @@ async function runOutcomeCase(input: {
   );
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await server.connect(serverTransport);
-  const client = new Client({ name: "arrokoth-outcome-client", version: "0.0.1" });
+  const client = new Client({ name: "arrokothi-outcome-client", version: "0.0.1" });
   await client.connect(clientTransport);
 
   try {

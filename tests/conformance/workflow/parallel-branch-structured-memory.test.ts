@@ -44,17 +44,17 @@ import {
   createWorkflowController,
   defineWorkflow,
   readWorkflowControlState,
-} from "@agent-sdk/core/execution";
-import type { JsonValue, WorkflowSpecInput } from "@agent-sdk/core/execution";
-import type { ConfirmationPolicy, FunctionStageOutcome, StageExecutionContext } from "@agent-sdk/core/ports";
+} from "@arrokothi/core/execution";
+import type { JsonValue, WorkflowSpecInput } from "@arrokothi/core/execution";
+import type { ConfirmationPolicy, FunctionStageOutcome, StageExecutionContext } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeferredModelProvider,
   createFunctionStageRegistry,
   StaticModelResolver,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness, modelAccess, seedStructuredMemory } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness, modelAccess, seedStructuredMemory } from "@arrokothi/core/testing";
 
 const MEMORY = {
   fields: [

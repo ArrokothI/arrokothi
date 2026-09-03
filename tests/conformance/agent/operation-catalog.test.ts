@@ -17,8 +17,8 @@ import { describe, test } from "node:test";
 import { readFile, readdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { CapabilityId, OperationId } from "@agent-sdk/core/execution";
-import { createCapabilityCatalog } from "@agent-sdk/core/reference";
+import type { CapabilityId, OperationId } from "@arrokothi/core/execution";
+import { createCapabilityCatalog } from "@arrokothi/core/reference";
 import { SEARCH_INPUT, testCatalog } from "./fixtures.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");

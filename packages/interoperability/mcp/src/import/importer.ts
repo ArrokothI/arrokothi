@@ -39,9 +39,9 @@ import type {
   CapabilityExecutor,
   CapabilityOutcome,
   OperationRef,
-} from "@agent-sdk/core/ports";
-import { capabilityId } from "@agent-sdk/core/execution";
-import { createCapabilityCatalog } from "@agent-sdk/core/reference";
+} from "@arrokothi/core/ports";
+import { capabilityId } from "@arrokothi/core/execution";
+import { createCapabilityCatalog } from "@arrokothi/core/reference";
 import type { McpImportIssue, McpImportedOperation } from "./descriptor.ts";
 import { translateTool } from "./descriptor.ts";
 import type { McpToolBinding } from "./identity.ts";
@@ -58,7 +58,7 @@ export type McpToolClient = Pick<Client, "listTools" | "callTool">;
 
 export interface McpImportOptions {
   /**
-   * The local Arrokoth capability namespace every imported tool lands in.
+   * The local ArrokothI capability namespace every imported tool lands in.
    *
    * Required, and supplied by the importing application. The remote server cannot choose it,
    * influence it, or overwrite it - which is what keeps `external.lookup/lookup_code` an identity

@@ -39,7 +39,7 @@
 
 import type { CallToolResult } from "@modelcontextprotocol/client";
 import { ProtocolError } from "@modelcontextprotocol/client";
-import type { CapabilityOutcome, JsonValue } from "@agent-sdk/core/ports";
+import type { CapabilityOutcome, JsonValue } from "@arrokothi/core/ports";
 
 /** JSON-RPC codes that mean the server rejected the request before a tool handler could run. */
 const PRE_DISPATCH_JSONRPC_CODES = new Set([-32700, -32600, -32601, -32602]);
@@ -210,7 +210,7 @@ export function normalizeCallToolResult(input: NormalizeResultInput): Capability
         input.consequential,
         "mcp_invalid_structured_content",
         `tool "${input.tool}" returned after remote execution, but its ${cloned.path} cannot be safely ` +
-          `represented as Arrokoth JSON: ${cloned.reason}`,
+          `represented as ArrokothI JSON: ${cloned.reason}`,
       );
     }
     return { status: "success", observation: cloned.value };

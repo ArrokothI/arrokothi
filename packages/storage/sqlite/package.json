@@ -1,7 +1,7 @@
 {
-  "name": "@agent-sdk/storage-sqlite",
-  "version": "0.37.0",
-  "description": "SQLite implementations of the Agent SDK session and definition store contracts.",
+  "name": "@arrokothi/storage-sqlite",
+  "version": "0.8.0",
+  "description": "SQLite implementations of ArrokothI legacy Session and Definition store contracts.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -11,6 +11,6 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@agent-sdk/core": "*"
+    "@arrokothi/core": "*"
   }
 }

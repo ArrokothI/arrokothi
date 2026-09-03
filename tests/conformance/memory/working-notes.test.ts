@@ -10,7 +10,7 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { AgentControlState } from "@agent-sdk/core/execution";
+import type { AgentControlState } from "@arrokothi/core/execution";
 import {
   createLocalModelControlProjection,
   createLocalModelControlView,
@@ -30,8 +30,8 @@ import {
   workingNotesBudgetIssue,
   workingNotesFrameBytes,
   workingNotesFrameIssues,
-} from "@agent-sdk/core/execution";
-import type { OperationRef } from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
+import type { OperationRef } from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   createCapabilityCatalog,
@@ -39,14 +39,14 @@ import {
   createNoInlineWaitBudget,
   createScriptedCapabilityExecutor,
   InMemoryRuntimeStore,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 import {
   agentModelAccess,
   createAgentTestHarness,
   referenceAgentExecutor,
   seedStructuredMemory,
-} from "@agent-sdk/core/testing";
-import type { StructuredMemoryBinding } from "@agent-sdk/core/execution";
+} from "@arrokothi/core/testing";
+import type { StructuredMemoryBinding } from "@arrokothi/core/execution";
 import {
   DOCS_SEARCH,
   scriptedAgentExecutor,

@@ -1,5 +1,5 @@
-import type { AgentDefinition, ToolDefinition } from "@agent-sdk/core";
-import { defineAgent } from "@agent-sdk/core";
+import type { AgentDefinition, ToolDefinition } from "@arrokothi/core";
+import { defineAgent } from "@arrokothi/core";
 import { P02_PROPERTIES } from "./catalog.ts";
 
 export const P02_WELCOME_MESSAGE =

@@ -39,7 +39,7 @@ export interface AgentHarnessOptions {
 }
 
 /**
- * Agent_SDK's one primary control-plane Harness for an external user turn.
+ * ArrokothI's one primary control-plane Harness for an external user turn.
  *
  * It owns PendingAction resolution, semantic Preflight, state/Phase coordination, context
  * compilation, the CapabilityGateway boundary, and terminal accounting. An injected

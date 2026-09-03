@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { WebSearchProvider } from "@agent-sdk/core";
-import { createDeterministicIds, createFixedClock, validateDefinition } from "@agent-sdk/core";
-import { RecordingExecutor, ScriptedModelProvider } from "@agent-sdk/core/testing";
+import type { WebSearchProvider } from "@arrokothi/core";
+import { createDeterministicIds, createFixedClock, validateDefinition } from "@arrokothi/core";
+import { RecordingExecutor, ScriptedModelProvider } from "@arrokothi/core/testing";
 import { createP02Definition, sendEmailTool } from "./agent.ts";
 import { parseP02CliRequest } from "./protocol.ts";
 import { createP02Subject, runP02Batch } from "./subject.ts";

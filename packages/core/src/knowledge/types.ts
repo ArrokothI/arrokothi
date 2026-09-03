@@ -5,7 +5,7 @@ import type { Result } from "../util/result.ts";
  * Legacy knowledge contracts.
  *
  * These are the pre-v0.4 retrieval contracts the legacy Session/Flow runtime still speaks. The
- * *implementation* moved to `@agent-sdk/retrieval-local`; only these dependency-free contracts stay
+ * *implementation* moved to `@arrokothi/retrieval-local`; only these dependency-free contracts stay
  * in core, and nothing here is a v0.4 target contract - the target path uses generic capability and
  * local-resource semantics (`effects/capability.ts`, `ports/local-resource.ts`) instead.
  */

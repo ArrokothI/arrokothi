@@ -17,8 +17,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { AuthorizedCapabilityRequest, CapabilityExecutionEnvironment } from "@agent-sdk/core/ports";
-import { capabilityExecutorContract } from "@agent-sdk/core/testing";
+import type { AuthorizedCapabilityRequest, CapabilityExecutionEnvironment } from "@arrokothi/core/ports";
+import { capabilityExecutorContract } from "@arrokothi/core/testing";
 import {
   DEFAULT_CHUNK_OVERLAP,
   DEFAULT_CHUNK_SIZE,

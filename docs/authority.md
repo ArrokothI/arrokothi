@@ -1,6 +1,6 @@
 # Authority Model
 
-> **Status: canonical authority and exposure semantics for ArrokothI v0.4.**
+> **Status: canonical authority and exposure semantics for ArrokothI 0.8.x.**
 >
 > Read [`mental-model.md`](mental-model.md) first. This document owns authority, delegation, application-policy inputs, Effective Authority, Active/Exposed View, model projection, authorization evidence, confirmation, revocation, and authorized discovery.
 >
@@ -24,7 +24,7 @@ A request does not prove permission:
 Effect proposal ≠ authority ≠ authorization result
 ```
 
-The Harness is the decisive runtime enforcement point. Application/world/platform policy may decide what should be allowed; the Harness represents and enforces the resulting Arrokoth authority boundary.
+The Harness is the decisive runtime enforcement point. Application/world/platform policy may decide what should be allowed; the Harness represents and enforces the resulting ArrokothI authority boundary.
 
 ---
 
@@ -38,7 +38,7 @@ A policy decision may receive authenticated application facts such as:
 Execution: exec-17
 Agent/service principal: agent:research-assistant
 acting on behalf of: user:rex
-tenant/application/world: org:arrokoth
+tenant/application/world: org:arrokothi
 current task/session: task:paper-review
 resource owner / relationship facts: ...
 ```
@@ -55,7 +55,7 @@ Ownership is similarly distinct. Parent/child ownership is a runtime relation fo
 
 ## 3. Authority and exposure are separate
 
-Arrokoth distinguishes four layers:
+ArrokothI distinguishes four layers:
 
 ```text
 1. Catalog
@@ -237,9 +237,9 @@ A call-count, token limit, or spawn credit should not automatically become an au
 
 ---
 
-## 7. Policy backends decide application relationships; they do not define Arrokoth authority
+## 7. Policy backends decide application relationships; they do not define ArrokothI authority
 
-Arrokoth may use different policy implementations behind an application/runtime policy boundary.
+ArrokothI may use different policy implementations behind an application/runtime policy boundary.
 
 A useful abstract capability is:
 
@@ -254,7 +254,7 @@ enumerateAllowed(kind, scope)  # optional optimization
 A simple application can implement these operations directly. More complex deployments may use systems such as Cedar or OpenFGA.
 
 ```text
-Arrokoth authority semantics
+ArrokothI authority semantics
         ↓ policy port
 application policy / Cedar / OpenFGA / other backend
 ```
@@ -331,7 +331,7 @@ manifest says "allowed"
 authority automatically granted
 ```
 
-This applies to external formats such as Agent Skills `allowed-tools` as well as Arrokoth-native package metadata. Skill semantics are in [`composition.md`](composition.md); external Skill mapping is in [`interoperability.md`](interoperability.md).
+This applies to external formats such as Agent Skills `allowed-tools` as well as ArrokothI-native package metadata. Skill semantics are in [`composition.md`](composition.md); external Skill mapping is in [`interoperability.md`](interoperability.md).
 
 ---
 
@@ -429,23 +429,23 @@ Memory scope/view rules are defined in [`memory.md`](memory.md); composition and
 
 ---
 
-## 13. External authentication and Arrokoth authority are separate
+## 13. External authentication and ArrokothI authority are separate
 
 A remote service may require OAuth, API credentials, user sign-in, or other authentication before it can continue.
 
-That external state is not itself an Arrokoth authority grant.
+That external state is not itself an ArrokothI authority grant.
 
 ```text
 remote auth required
   ≠ Harness authority denied
 
 remote authentication succeeds
-  ≠ Execution gains new Arrokoth authority automatically
+  ≠ Execution gains new ArrokothI authority automatically
 ```
 
 An adapter may surface an external continuation requirement to the application/user, then continue the already-authorized operation once the external prerequisite is satisfied. Portable continuation/input-requirement semantics belong in [`interoperability.md`](interoperability.md).
 
-Similarly, control-plane authentication answers who may operate the Arrokoth service; Execution authority answers what the Execution itself may do. `ExecutionId`, session IDs, trace IDs, and routing handles are not bearer authorization unless an application deliberately designs them as protected capability tokens. The deployment/security guarantee is defined in [`security-guarantees.md`](security-guarantees.md).
+Similarly, control-plane authentication answers who may operate the ArrokothI service; Execution authority answers what the Execution itself may do. `ExecutionId`, session IDs, trace IDs, and routing handles are not bearer authorization unless an application deliberately designs them as protected capability tokens. The deployment/security guarantee is defined in [`security-guarantees.md`](security-guarantees.md).
 
 ---
 
@@ -486,6 +486,6 @@ And these positive rules summarize the model:
 
 > **Large catalogs may use authorized progressive discovery without putting the entire authorized universe into model context.**
 
-> **Policy engines are replaceable mechanisms behind Arrokoth-owned authority semantics.**
+> **Policy engines are replaceable mechanisms behind ArrokothI-owned authority semantics.**
 
 This document owns these authority/exposure meanings. Use [`README.md`](README.md) to locate adjacent canonical owners instead of redefining them here.

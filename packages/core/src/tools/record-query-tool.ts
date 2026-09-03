@@ -15,7 +15,7 @@ import type { Result } from "../util/result.ts";
  * The narrow record-set surface this tool needs.
  *
  * Declared structurally rather than importing a concrete provider, because the local retrieval
- * implementation now lives in `@agent-sdk/retrieval-local` and core must not depend outward on it.
+ * implementation now lives in `@arrokothi/retrieval-local` and core must not depend outward on it.
  * The legacy `KnowledgeIndex` satisfies this shape unchanged.
  */
 export interface RecordQueryKnowledge {

@@ -4,7 +4,7 @@
 >
 > This document should be enough to understand the shape of the system. It defines the major concepts and the boundaries between them, but deliberately leaves tricky semantics to the dedicated concept documents. It does not define TypeScript APIs, storage layouts, scheduler algorithms, provider SDK behavior, or protocol wire formats.
 >
-> Go deeper in [`execution-runtime.md`](execution-runtime.md) for runtime/lifecycle/concurrency, [`composition.md`](composition.md) for Agent/Workflow composition and Skill, [`authority.md`](authority.md) for permission/delegation/exposure, [`memory.md`](memory.md) for retained information/context/provenance, [`interoperability.md`](interoperability.md) for portable interfaces/protocols, and [`security-guarantees.md`](security-guarantees.md) for trust/deployment guarantees. Unresolved/post-v0.4 questions belong in [`future-plan.md`](future-plan.md). The document map and ownership rules are in [`README.md`](README.md).
+> Go deeper in [`execution-runtime.md`](execution-runtime.md) for runtime/lifecycle/concurrency, [`composition.md`](composition.md) for Agent/Workflow composition and Skill, [`authority.md`](authority.md) for permission/delegation/exposure, [`memory.md`](memory.md) for retained information/context/provenance, [`interoperability.md`](interoperability.md) for portable interfaces/protocols, and [`security-guarantees.md`](security-guarantees.md) for trust/deployment guarantees. Unresolved/future questions belong in [`future-plan.md`](future-plan.md). The document map and ownership rules are in [`README.md`](README.md).
 
 ## 1. The core idea
 
@@ -14,7 +14,7 @@ The central runtime entity is an **Execution**:
 
 > **An Execution is a logically independent unit of runtime work with its own identity, lifecycle, authority, state/memory view, pending work, and runtime management.**
 
-In v0.4, the primary Execution kinds are:
+In 0.8.x, the primary Execution kinds are:
 
 ```text
 ExecutionDefinition
@@ -111,7 +111,7 @@ An **Event** says something was observed by an Execution.
 
 Examples include user input, a capability result, a child result, a peer message, a timer, or cancellation.
 
-An **Effect** is a request for runtime-mediated interaction. The v0.4 vocabulary is intentionally small:
+An **Effect** is a request for runtime-mediated interaction. The 0.8.x vocabulary is intentionally small:
 
 ```text
 UseCapability
@@ -245,7 +245,7 @@ Model Invocation Projection
 
 Each step may narrow the previous one. None of the later layers may enlarge authority.
 
-This is important when an application knows about thousands of tools, resources, memory interfaces, Skills, or Agent/Workflow services. Arrokoth should discover and expose a small relevant subset instead of placing the whole catalog into model context.
+This is important when an application knows about thousands of tools, resources, memory interfaces, Skills, or Agent/Workflow services. ArrokothI should discover and expose a small relevant subset instead of placing the whole catalog into model context.
 
 > **Discovery, description, or model exposure never grants permission.**
 
@@ -275,7 +275,7 @@ memory / Events / resources / instructions
           current model context
 ```
 
-Arrokoth distinguishes different forms of retained information because they have different trust and lifecycle semantics:
+ArrokothI distinguishes different forms of retained information because they have different trust and lifecycle semantics:
 
 ```text
 Structured Memory
@@ -342,7 +342,7 @@ This distinction also matters for child composition: a peer or child may send me
 
 ## 9. Interoperability is a projection boundary
 
-Arrokoth's kernel semantics should remain independent of any one external protocol while mapping naturally to standard interfaces.
+ArrokothI's kernel semantics should remain independent of any one external protocol while mapping naturally to standard interfaces.
 
 ```text
 kernel semantics
@@ -372,7 +372,7 @@ exported Agent/Workflow service
   → ordinary API
 
 Skill
-  → native Arrokoth composition package
+  → native ArrokothI composition package
   → Agent Skills-compatible profile where possible
 ```
 
@@ -385,9 +385,9 @@ Execution        ≠ external task/job
 PendingOperation ≠ external async handle
 ```
 
-And protocol discovery/authentication does not grant Arrokoth authority.
+And protocol discovery/authentication does not grant ArrokothI authority.
 
-External standards are design references, not masters of the kernel. When they reveal a genuinely more general concept, Arrokoth should adopt the concept at the correct layer without making the wire format core truth.
+External standards are design references, not masters of the kernel. When they reveal a genuinely more general concept, ArrokothI should adopt the concept at the correct layer without making the wire format core truth.
 
 Detailed portable semantics/mappings belong in [`interoperability.md`](interoperability.md). Authority filtering before exposure belongs in [`authority.md`](authority.md); protocol/control-plane security consequences belong in [`security-guarantees.md`](security-guarantees.md).
 

@@ -16,15 +16,15 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow, readWorkflowControlState } from "@agent-sdk/core/execution";
-import type { StageExecutionContext, FunctionStageOutcome } from "@agent-sdk/core/ports";
+import { defineWorkflow, readWorkflowControlState } from "@arrokothi/core/execution";
+import type { StageExecutionContext, FunctionStageOutcome } from "@arrokothi/core/ports";
 import {
   ScriptedModelProvider,
   StaticModelResolver,
   createFunctionStageRegistry,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness, modelAccess } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness, modelAccess } from "@arrokothi/core/testing";
 
 const seen: StageExecutionContext[] = [];
 

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { SessionConcurrencyConflictError, type DraftEvent, type SessionEventInput } from "@agent-sdk/core";
+import { SessionConcurrencyConflictError, type DraftEvent, type SessionEventInput } from "@arrokothi/core";
 import { openDatabase, SqliteSessionStore } from "../src/index.ts";
 
 describe("SqliteSessionStore expected-sequence contract", () => {

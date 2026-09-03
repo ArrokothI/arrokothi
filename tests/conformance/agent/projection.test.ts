@@ -2,7 +2,7 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { ActiveOperationEntry, ObjectSchema } from "@agent-sdk/core/execution";
+import type { ActiveOperationEntry, ObjectSchema } from "@arrokothi/core/execution";
 import {
   createActiveModelActionView,
   createActiveStructuredMemoryWriteView,
@@ -10,7 +10,7 @@ import {
   modelActionSpecs,
   modelOperationAlias,
   resolveProjectedAlias,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 
 const INPUT: ObjectSchema = { kind: "object", fields: { query: { required: true, schema: { kind: "string" } } } };
 

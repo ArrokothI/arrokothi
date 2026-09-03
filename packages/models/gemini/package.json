@@ -1,12 +1,12 @@
 {
-  "name": "@agent-sdk/provider-gemini",
-  "version": "0.37.0",
+  "name": "@arrokothi/provider-gemini",
+  "version": "0.8.0",
   "description": "Gemini adapter for the provider-neutral ModelProvider interface. Lives outside core; reads its own credentials.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@agent-sdk/core": "*"
+    "@arrokothi/core": "*"
   }
 }

@@ -18,8 +18,8 @@
  * way to reach a source that was not materialized into this object.
  */
 
-import type { JsonObject, JsonValue } from "@agent-sdk/core/execution";
-import type { LocalResource } from "@agent-sdk/core/ports";
+import type { JsonObject, JsonValue } from "@arrokothi/core/execution";
+import type { LocalResource } from "@arrokothi/core/ports";
 import { LexicalIndex } from "./lexical.ts";
 import type { LexicalSourceInput, LexicalChunk } from "./lexical.ts";
 import { queryRecords } from "./records.ts";

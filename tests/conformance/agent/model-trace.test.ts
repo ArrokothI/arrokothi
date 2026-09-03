@@ -22,16 +22,16 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { AgentModelInvocation } from "@agent-sdk/core/execution";
+import type { AgentModelInvocation } from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   createDeferredModelProvider,
   createNoInlineWaitBudget,
   createScriptedCapabilityExecutor,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
-import type { AgentTestHarnessBundle } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
+import type { AgentTestHarnessBundle } from "@arrokothi/core/testing";
 import { DOCS_SEARCH, testAgent, testCatalog, testModelResolver } from "./fixtures.ts";
 
 const REPORTING_PROVIDER = () =>

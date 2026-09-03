@@ -21,14 +21,14 @@ import {
   createWorkflowController,
   defineWorkflow,
   readWorkflowControlState,
-} from "@agent-sdk/core/execution";
-import type { FunctionStageOutcome, StageExecutionContext } from "@agent-sdk/core/ports";
+} from "@arrokothi/core/execution";
+import type { FunctionStageOutcome, StageExecutionContext } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeferredCapabilityExecutor,
   createFunctionStageRegistry,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness } from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

@@ -2,7 +2,7 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { AgentControlState } from "@agent-sdk/core/execution";
+import type { AgentControlState } from "@arrokothi/core/execution";
 import {
   createActiveModelActionView,
   createActiveStructuredMemoryWriteView,
@@ -12,14 +12,14 @@ import {
   operationRefOfTarget,
   readAgentControlState,
   resolveProjectedAlias,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   createDeferredModelProvider,
   createNoInlineWaitBudget,
   createScriptedCapabilityExecutor,
-} from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
 import { DOCS_SEARCH, SEARCH_INPUT, testAgent, testCatalog, testModelResolver } from "./fixtures.ts";
 
 function view(entries: readonly { readonly capability: string; readonly operation: string }[]) {

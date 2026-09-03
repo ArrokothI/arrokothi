@@ -1,7 +1,7 @@
 {
-  "name": "@agent-sdk/core",
-  "version": "0.37.0",
-  "description": "Provider-neutral agent control plane with one primary Harness and pluggable loop engines.",
+  "name": "@arrokothi/core",
+  "version": "0.8.0",
+  "description": "ArrokothI provider-neutral execution kernel with one primary Harness and pluggable controllers.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -15,6 +15,6 @@
   ],
   "sideEffects": false,
   "devDependencies": {
-    "@agent-sdk/retrieval-local": "*"
+    "@arrokothi/retrieval-local": "*"
   }
 }

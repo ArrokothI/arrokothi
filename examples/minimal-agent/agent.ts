@@ -1,5 +1,5 @@
-import type { AgentDefinition } from "@agent-sdk/core";
-import { defineAgent } from "@agent-sdk/core";
+import type { AgentDefinition } from "@arrokothi/core";
+import { defineAgent } from "@arrokothi/core";
 
 /**
  * The smallest agent that is still a real agent.

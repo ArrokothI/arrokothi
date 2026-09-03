@@ -1,7 +1,7 @@
 /**
- * MCP JSON Schema -> Arrokoth `ObjectSchema`, for the subset whose acceptance set can be preserved.
+ * MCP JSON Schema -> ArrokothI `ObjectSchema`, for the subset whose acceptance set can be preserved.
  *
- * This is deliberately not a JSON Schema implementation. Arrokoth's value-schema language is small
+ * This is deliberately not a JSON Schema implementation. ArrokothI's value-schema language is small
  * on purpose (see `schema/value-schema.ts` in core), and the canonical interoperability document
  * already says a richer portable JSON Schema boundary is a *later* project. So this translator does
  * one thing: it accepts the forms the current vocabulary can hold **losslessly**, and it refuses
@@ -14,20 +14,20 @@
  * ```
  *
  * Refusal is the whole point. A translator that turned `oneOf` into `{ kind: "any" }` would let a
- * remote server publish a contract Arrokoth silently does not enforce, and the operation would look
+ * remote server publish a contract ArrokothI silently does not enforce, and the operation would look
  * validated when it was not. An operation whose schema cannot be represented is simply not imported,
  * so it never reaches a catalog, an Active View, a projection, or a dispatch.
  *
  * One default mismatch must be normalized explicitly. JSON Schema's default for
- * `additionalProperties` is permissive; Arrokoth's is strict. An absent JSON Schema keyword
- * therefore becomes `additionalProperties: true` in Arrokoth. Re-projecting it writes the keyword
+ * `additionalProperties` is permissive; ArrokothI's is strict. An absent JSON Schema keyword
+ * therefore becomes `additionalProperties: true` in ArrokothI. Re-projecting it writes the keyword
  * explicitly, which is syntactically different and semantically identical.
  *
  * Nothing here reads authority, identity, credentials, or a transport. It is a pure function over
  * two data shapes.
  */
 
-import type { FieldSpec, ObjectSchema, ValueSchema } from "@agent-sdk/core/ports";
+import type { FieldSpec, ObjectSchema, ValueSchema } from "@arrokothi/core/ports";
 
 export type McpSchemaIssueCode =
   /** The node is not a JSON object, so there is nothing to translate. */
@@ -68,7 +68,7 @@ export type McpSchemaTranslation =
  * Keywords that carry no validation semantics.
  *
  * Dropping one changes which values are accepted by exactly nothing, so ignoring them is not a
- * weakening. `description` is additionally *preserved* wherever Arrokoth has somewhere to put it -
+ * weakening. `description` is additionally *preserved* wherever ArrokothI has somewhere to put it -
  * a property's `FieldSpec` - and dropped only at a root, which has no such slot.
  */
 const ANNOTATION_KEYWORDS = new Set(["title", "description", "$comment", "examples", "$schema", "deprecated"]);

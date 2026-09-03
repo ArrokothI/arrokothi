@@ -1,7 +1,7 @@
 import { describe, test } from "node:test";
-import { ScriptedModelProvider, portableModelFeatures } from "@agent-sdk/core/reference";
-import { modelProviderContract, type ModelProviderContractScenario } from "@agent-sdk/core/testing";
-import type { ResolvedModel } from "@agent-sdk/core/ports";
+import { ScriptedModelProvider, portableModelFeatures } from "@arrokothi/core/reference";
+import { modelProviderContract, type ModelProviderContractScenario } from "@arrokothi/core/testing";
+import type { ResolvedModel } from "@arrokothi/core/ports";
 
 const MODEL: ResolvedModel = {
   logicalRef: "primary",

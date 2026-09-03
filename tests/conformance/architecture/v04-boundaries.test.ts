@@ -109,10 +109,10 @@ const FORBIDDEN_VENDOR = [
   "@google/genai",
   "node:sqlite",
   "better-sqlite3",
-  "@agent-sdk/integration-strands",
-  "@agent-sdk/provider-gemini",
-  "@agent-sdk/storage-sqlite",
-  "@agent-sdk/studio",
+  "@arrokothi/integration-strands",
+  "@arrokothi/provider-gemini",
+  "@arrokothi/storage-sqlite",
+  "@arrokothi/studio",
 ];
 
 function specifiersIn(source: string): string[] {
@@ -220,18 +220,18 @@ describe("v0.4 architecture boundaries", () => {
   test("conformance tests use the target surface, not legacy compatibility APIs", async () => {
     const conformanceRoot = resolve(REPO_ROOT, "tests/conformance");
     const allowed = new Set([
-      "@agent-sdk/core/execution",
-      "@agent-sdk/core/ports",
-      "@agent-sdk/core/reference",
-      "@agent-sdk/core/testing",
+      "@arrokothi/core/execution",
+      "@arrokothi/core/ports",
+      "@arrokothi/core/reference",
+      "@arrokothi/core/testing",
       // The retrieval conformance cases must exercise a real implementation of the capability and
       // local-resource ports, and proving the extraction is part of what they assert.
-      "@agent-sdk/retrieval-local",
+      "@arrokothi/retrieval-local",
       // The MCP conformance cases must exercise a real protocol adapter against a real MCP
       // client/server pair. "the server received zero calls" is only evidence when the server is
       // genuine, so the SDK is imported here deliberately - and nowhere else outside the adapter,
       // which `architecture/mcp-boundaries.test.ts` asserts repo-wide.
-      "@agent-sdk/integration-mcp",
+      "@arrokothi/integration-mcp",
       "@modelcontextprotocol/client",
       "@modelcontextprotocol/server",
     ]);
@@ -280,7 +280,7 @@ describe("v0.4 architecture boundaries", () => {
 
   test("no controller-reachable module mentions settlement ingress", async () => {
     // Belt and suspenders alongside the import-graph check above: `settleEffect` is trusted
-    // runtime/integration ingress (see docs/development/005-slice-b-decisions.md, DEC-B02), never
+    // runtime/integration ingress (see docs/development/legacy/005-slice-b-decisions.md, DEC-B02), never
     // an Agent/Workflow/Stage capability. This greps text, not just imports, so the rule survives
     // even a future refactor that moves `settleEffect` somewhere the import-graph check does not
     // yet name - and it is written against `ports/controller.ts` specifically so it keeps
@@ -366,12 +366,12 @@ describe("v0.4 architecture boundaries", () => {
 
   test("Gemini implements the core port and core never imports Gemini", async () => {
     const geminiSource = await readFile(resolve(REPO_ROOT, "packages/models/gemini/src/index.ts"), "utf8");
-    assert.equal(geminiSource.includes("@agent-sdk/core/ports"), true);
+    assert.equal(geminiSource.includes("@arrokothi/core/ports"), true);
     const reverseImports: string[] = [];
     for (const path of await coreSourceFiles()) {
       const source = await readFile(resolve(CORE_SRC, path), "utf8");
       if (specifiersIn(source).some((specifier) =>
-        specifier === "@agent-sdk/provider-gemini" || specifier.includes("packages/models/gemini"))) {
+        specifier === "@arrokothi/provider-gemini" || specifier.includes("packages/models/gemini"))) {
         reverseImports.push(path);
       }
     }

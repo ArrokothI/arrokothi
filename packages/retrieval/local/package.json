@@ -1,6 +1,6 @@
 {
-  "name": "@agent-sdk/retrieval-local",
-  "version": "0.37.0",
+  "name": "@arrokothi/retrieval-local",
+  "version": "0.8.0",
   "description": "Local retrieval implementations behind the kernel's capability and local-resource ports. Owns the LangChain dependency that used to sit inside core.",
   "type": "module",
   "exports": {
@@ -12,7 +12,7 @@
   ],
   "sideEffects": false,
   "dependencies": {
-    "@agent-sdk/core": "*",
+    "@arrokothi/core": "*",
     "@langchain/core": "^1.2.9",
     "@langchain/textsplitters": "^1.0.1"
   }

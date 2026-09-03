@@ -21,7 +21,7 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { JsonObject, ObjectSchema } from "@agent-sdk/core/execution";
+import type { JsonObject, ObjectSchema } from "@arrokothi/core/execution";
 import type { EvalWorld, TrialSpec } from "./harness.ts";
 import { answers, callsOperation, measure, runTrial, runTrials, selectedTargets } from "./harness.ts";
 

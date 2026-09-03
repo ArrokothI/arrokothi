@@ -21,7 +21,7 @@ import type {
   EventEnvelope,
   StructuredMemoryBinding,
   WriteMemoryProposal,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 import {
   defineWorkflow,
   effectRequestsIn,
@@ -29,7 +29,7 @@ import {
   effectProposalIssues,
   proposalDigest,
   writeMemory,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 import type {
   ActivationOutcome,
   ConfirmationPolicy,
@@ -37,9 +37,9 @@ import type {
   ExecutionController,
   FunctionStageOutcome,
   RuntimeTransaction,
-} from "@agent-sdk/core/ports";
-import { StructuredMemoryConcurrencyError } from "@agent-sdk/core/ports";
-import { createAllowListAuthorizer, createFunctionStageRegistry, InMemoryRuntimeStore } from "@agent-sdk/core/reference";
+} from "@arrokothi/core/ports";
+import { StructuredMemoryConcurrencyError } from "@arrokothi/core/ports";
+import { createAllowListAuthorizer, createFunctionStageRegistry, InMemoryRuntimeStore } from "@arrokothi/core/reference";
 import {
   agentModelAccess,
   createAgentTestHarness,
@@ -48,7 +48,7 @@ import {
   readScriptedProgress,
   scriptedAgentDefinition,
   seedStructuredMemory,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 import { scriptedAgentExecutor, testAgent, testModelResolver } from "../agent/fixtures.ts";
 
 const MEMORY = {

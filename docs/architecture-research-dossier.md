@@ -41,7 +41,7 @@ Question:
 
 > Is this a useful general interface, packaging, discovery, or projection concept that should be explicit in ArrokothI, but is not kernel runtime truth?
 
-If yes, define an **Arrokoth-owned intermediate concept** and map external standards to/from it.
+If yes, define an **ArrokothI-owned intermediate concept** and map external standards to/from it.
 
 Examples:
 
@@ -60,7 +60,7 @@ Question:
 
 > Is the semantic boundary already clear, while the remaining problem is provider transport, storage, policy evaluation, retrieval, durability, isolation, observability, etc.?
 
-If yes, define a narrow Arrokoth port and reuse a good implementation where license, maintenance, security, and operational fit are acceptable.
+If yes, define a narrow ArrokothI port and reuse a good implementation where license, maintenance, security, and operational fit are acceptable.
 
 Examples:
 
@@ -88,13 +88,13 @@ For every external concept, ask in this order:
    yes → Layer 3
 ```
 
-Do not promote a wire-format detail into the kernel simply because a popular protocol has it. Conversely, do not keep an Arrokoth-specific concept merely because it existed first if a mature external concept reveals a more general distinction.
+Do not promote a wire-format detail into the kernel simply because a popular protocol has it. Conversely, do not keep an ArrokothI-specific concept merely because it existed first if a mature external concept reveals a more general distinction.
 
 ---
 
 ## 2. High-level survey result
 
-| Area | Primary lesson | Likely Arrokoth treatment |
+| Area | Primary lesson | Likely ArrokothI treatment |
 |---|---|---|
 | A2A | Opaque remote Agent service, Task/Message/Artifact/context separation, interrupted states | Layer 2 first-class Agent-to-Agent binding; small Layer-1 lessons only |
 | MCP | Tool/resource/template/task/input/change interoperability | Already Layer 2 first-class target |
@@ -106,7 +106,7 @@ Do not promote a wire-format detail into the kernel simply because a popular pro
 | AP2 Agent Authorization | Open constrained mandates vs exact closed authorization + signed receipts | Strong conceptual reference for confirmation/evidence semantics |
 | Mem0 | Multi-scope memory, ADD-only fact extraction, hybrid retrieval, entity linking | Layer-1 memory distinctions + Layer-3 backend candidate |
 | Graphiti | Episode provenance, temporal facts, learned/prescribed ontology, graph/hybrid retrieval | Strong Layer-1 memory influence + Layer-3 backend candidate |
-| Agent Skills | Portable instruction/resource/script package with progressive disclosure | Layer 2 profile; broader Arrokoth Skill can be composition-backed |
+| Agent Skills | Portable instruction/resource/script package with progressive disclosure | Layer 2 profile; broader ArrokothI Skill can be composition-backed |
 | AG-UI | Agent-runtime ↔ frontend event protocol | Layer 2/3 Studio/hosted UI binding |
 | A2UI / MCP Apps | Structured interactive/generative UI surfaces | Layer 2/3 watch/adapt where useful |
 | ACP | Coding-agent ↔ editor protocol | Layer 2/3 optional binding for coding agents |
@@ -170,7 +170,7 @@ Primary source:
 
 ### 3.2 A2A Task is not a better internal Execution
 
-Arrokoth `Execution` is an **internal independently managed runtime entity**. It carries semantics A2A intentionally does not require a remote caller to know:
+ArrokothI `Execution` is an **internal independently managed runtime entity**. It carries semantics A2A intentionally does not require a remote caller to know:
 
 ```text
 identity
@@ -191,23 +191,23 @@ A2A Task is an external service work abstraction. It is intentionally a weaker a
 Therefore:
 
 ```text
-A2A Task ≠ Arrokoth Execution
+A2A Task ≠ ArrokothI Execution
 ```
 
 A Task may correlate to:
 
 ```text
-one exported Arrokoth Execution
+one exported ArrokothI Execution
 one external capability job
-a wrapper around several Arrokoth Executions
+a wrapper around several ArrokothI Executions
 another remote runtime object
 ```
 
 This validates rather than weakens the existing “external async handle ≠ Execution” design.
 
-### 3.3 A2A Message vs Arrokoth messaging
+### 3.3 A2A Message vs ArrokothI messaging
 
-A2A `Message` is protocol communication. Arrokoth `SendMessage` is a requested runtime-mediated interaction between known Execution endpoints under Message Authority.
+A2A `Message` is protocol communication. ArrokothI `SendMessage` is a requested runtime-mediated interaction between known Execution endpoints under Message Authority.
 
 So:
 
@@ -215,7 +215,7 @@ So:
 A2A Message ≠ SendMessage Effect
 ```
 
-When an Arrokoth Execution talks to a remote A2A Agent, a portable service/communication adapter can translate an authorized operation or message into A2A traffic. A local peer message between two Arrokoth Executions does not need to become A2A merely for uniformity.
+When an ArrokothI Execution talks to a remote A2A Agent, a portable service/communication adapter can translate an authorized operation or message into A2A traffic. A local peer message between two ArrokothI Executions does not need to become A2A merely for uniformity.
 
 ### 3.4 `contextId` is conceptually interesting
 
@@ -228,11 +228,11 @@ context C
   └── Task 3
 ```
 
-This raises a useful question for Arrokoth:
+This raises a useful question for ArrokothI:
 
 > Is there sometimes a durable interaction/conversation identity that groups several independently managed units of work without itself being an Execution?
 
-Do **not** add a kernel type merely because A2A has `contextId`. For a persistent conversational Arrokoth Agent, the Execution itself may already be the durable conversation identity. For other service shapes, a portable interaction/session handle may group multiple child Executions.
+Do **not** add a kernel type merely because A2A has `contextId`. For a persistent conversational ArrokothI Agent, the Execution itself may already be the durable conversation identity. For other service shapes, a portable interaction/session handle may group multiple child Executions.
 
 Likely placement: interoperability/service layer, unless future applications prove a runtime-level identity is necessary.
 
@@ -250,7 +250,7 @@ The A2A specification explicitly warns that `auth-required` by itself is not aut
 Source:
 - https://a2a-protocol.org/dev/specification/
 
-This is a useful distinction for Arrokoth interoperability.
+This is a useful distinction for ArrokothI interoperability.
 
 Current portable concept:
 
@@ -271,7 +271,7 @@ Important separations:
 
 ```text
 external authentication required ≠ Harness authority denied
-external authentication obtained ≠ new Arrokoth authority grant
+external authentication obtained ≠ new ArrokothI authority grant
 user input required ≠ mechanical confirmation
 ```
 
@@ -289,7 +289,7 @@ Do not adopt:
 - A2A Task as internal `Execution`.
 - A2A Message as kernel Event/Effect.
 - A2A `contextId` as a mandatory new runtime object.
-- A2A authentication state as Arrokoth authority semantics.
+- A2A authentication state as ArrokothI authority semantics.
 
 Likely canonical home after rewrite: `interoperability.md`, with one short reference from `mental-model.md`.
 
@@ -297,7 +297,7 @@ Likely canonical home after rewrite: `interoperability.md`, with one short refer
 
 ## 4. Large catalogs: OpenClaw, Hermes, and the actual Active View problem
 
-### 4.1 The Arrokoth problem is larger than “tool search”
+### 4.1 The ArrokothI problem is larger than “tool search”
 
 The target problem is:
 
@@ -349,7 +349,7 @@ Key behavior:
 Source:
 - https://docs.openclaw.ai/tools/tool-search
 
-The capability directory is bounded and generated from the already-policy-filtered catalog, which is exactly the correct ordering for Arrokoth:
+The capability directory is bounded and generated from the already-policy-filtered catalog, which is exactly the correct ordering for ArrokothI:
 
 ```text
 policy / authority first
@@ -418,7 +418,7 @@ Hermes uses BM25 and loads schemas on demand. The most useful implementation les
 - preserve enough domain/server summary information that the model knows what is reachable;
 - treat retrieval quality as measurable because small/weak models may fail to search well.
 
-### 4.5 What to adopt as an Arrokoth concept
+### 4.5 What to adopt as an ArrokothI concept
 
 Do **not** define a kernel `ToolSearch` primitive.
 
@@ -529,13 +529,13 @@ For Slice D specifically: keep the current deterministic Active Operation View s
 
 ## 5. Authority: Cedar, OpenFGA/Zanzibar, UCAN, and AP2
 
-The current Arrokoth rule is strong:
+The current ArrokothI rule is strong:
 
 ```text
 application/world/platform policy
   decides what should be allowed
         ↓
-Arrokoth kernel
+ArrokothI kernel
   represents/enforces Execution authority
         ↓
 isolation
@@ -577,7 +577,7 @@ Agent appears as viaAgent context
 
 depending on which identity should dominate the policy decision.
 
-This exposes an important Arrokoth distinction:
+This exposes an important ArrokothI distinction:
 
 ```text
 ExecutionId ≠ application security principal
@@ -589,7 +589,7 @@ A runtime Execution may have policy facts such as:
 Execution: exec-17
 application agent principal: agent:research-assistant
 acting on behalf of: user:rex
-tenant/world: org:arrokoth
+tenant/world: org:arrokothi
 current task: task:paper-review
 ```
 
@@ -623,7 +623,7 @@ Task grants tool use only for that workspace
 resource shared from another workspace
 ```
 
-Arrokoth ownership remains a runtime relation for supervision/delegation. Application resource/person relationships belong to application policy.
+ArrokothI ownership remains a runtime relation for supervision/delegation. Application resource/person relationships belong to application policy.
 
 ### 5.3 Reverse queries matter for Active View performance
 
@@ -693,14 +693,14 @@ Sources:
 The useful conceptual correspondence is:
 
 ```text
-Arrokoth child authority must be attenuated
+ArrokothI child authority must be attenuated
         ↕
 UCAN delegated capability must be equal/narrower than delegator authority
 ```
 
-Arrokoth should **not** require DIDs, public-key UCAN tokens, or cryptographic capability chains inside a trusted single-Harness deployment. The current Harness is already the trust anchor.
+ArrokothI should **not** require DIDs, public-key UCAN tokens, or cryptographic capability chains inside a trusted single-Harness deployment. The current Harness is already the trust anchor.
 
-But UCAN is a strong future reference if Arrokoth authority must cross administrative/runtime trust boundaries, for example remote workers or federated Agent platforms.
+But UCAN is a strong future reference if ArrokothI authority must cross administrative/runtime trust boundaries, for example remote workers or federated Agent platforms.
 
 ### 5.6 AP2 Agent Authorization: a strong model for autonomous authorization evidence
 
@@ -732,7 +732,7 @@ Verifiers return signed Receipts, and the mandate chain plus receipt creates dur
 Source:
 - https://ap2-protocol.org/ap2/agent_authorization/
 
-This is highly relevant to Arrokoth's distinction between semantic authorization evidence and exact mechanical confirmation.
+This is highly relevant to ArrokothI's distinction between semantic authorization evidence and exact mechanical confirmation.
 
 A useful future conceptual model may be:
 
@@ -789,7 +789,7 @@ Likely canonical home: new `authority.md`; deployment security implications in `
 
 This area deserves more refinement than the earlier simple “Derived Semantic Memory” proposal.
 
-Current Arrokoth canonical forms are:
+Current ArrokothI canonical forms are:
 
 ```text
 Structured Memory
@@ -826,15 +826,15 @@ It also relates these to classic short/long-term categories such as working, fac
 Source:
 - https://docs.mem0.ai/core-concepts/memory-types
 
-Important observation for Arrokoth: these categories mix **form**, **lifetime**, and **scope**. We should not copy them literally.
+Important observation for ArrokothI: these categories mix **form**, **lifetime**, and **scope**. We should not copy them literally.
 
 For example:
 
-- Mem0 “conversation memory” is close to current context/history, which Arrokoth deliberately does not want to call durable semantic memory.
+- Mem0 “conversation memory” is close to current context/history, which ArrokothI deliberately does not want to call durable semantic memory.
 - “User memory” describes scope/ownership/lifetime more than a memory representation.
 - “Organizational memory” is a sharing scope, not a storage algorithm.
 
-This suggests Arrokoth should make two axes explicit:
+This suggests ArrokothI should make two axes explicit:
 
 ```text
 Memory Form
@@ -878,7 +878,7 @@ This is conceptually useful. If a user says:
 
 an inferred-memory system should not necessarily erase the first observation. The old statement may remain historically true while being superseded as current state.
 
-For Arrokoth this supports:
+For ArrokothI this supports:
 
 > Derived/inferred memory should prefer additive observations + temporal/supersession relations over destructive rewriting of source history.
 
@@ -897,7 +897,7 @@ temporal reasoning/ranking
 
 The implementation details can change; the conceptual lesson is that memory retrieval is a ranking problem rather than a simple “vector database lookup.”
 
-Arrokoth should keep retrieval strategy behind a memory/retrieval provider boundary.
+ArrokothI should keep retrieval strategy behind a memory/retrieval provider boundary.
 
 ### 6.4 Mem0 scoping
 
@@ -912,7 +912,7 @@ metadata/application scope
 
 This strongly supports separating memory **scope** from memory **kind**.
 
-Possible Arrokoth scopes may eventually include:
+Possible ArrokothI scopes may eventually include:
 
 ```text
 Execution-local
@@ -924,7 +924,7 @@ tenant/organization
 explicit shared group
 ```
 
-But those scopes must not silently bypass Arrokoth memory visibility/authority. A storage namespace is not itself an authorization rule.
+But those scopes must not silently bypass ArrokothI memory visibility/authority. A storage namespace is not itself an authorization rule.
 
 ### 6.5 Graphiti: source Episodes vs derived graph
 
@@ -967,13 +967,13 @@ This makes a useful **bi-temporal** distinction:
 
 ```text
 observed/ingested time
-  when Arrokoth learned/stored the claim
+  when ArrokothI learned/stored the claim
 
 subject/reference time
   when the claim is asserted to be true in the represented world
 ```
 
-Not every Arrokoth memory needs full bitemporal machinery. But Derived Semantic Memory should be able to express supersession/validity when a backend/application needs it.
+Not every ArrokothI memory needs full bitemporal machinery. But Derived Semantic Memory should be able to express supersession/validity when a backend/application needs it.
 
 Example:
 
@@ -991,7 +991,7 @@ Both can remain in provenance history while current retrieval prefers B.
 
 Graphiti supports both prescribed/custom entity types and more emergent/learned graph structure.
 
-The lesson is **not** that Arrokoth needs a knowledge graph ontology in the kernel.
+The lesson is **not** that ArrokothI needs a knowledge graph ontology in the kernel.
 
 Instead:
 
@@ -1008,7 +1008,7 @@ Source code/reference:
 
 This reinforces the same conclusion as Mem0: semantic-memory retrieval should be a replaceable provider strategy.
 
-### 6.9 Proposed Arrokoth memory conceptual split
+### 6.9 Proposed ArrokothI memory conceptual split
 
 A better future mental model appears to be:
 
@@ -1140,7 +1140,7 @@ Licenses observed during survey:
 Potential architecture:
 
 ```text
-Arrokoth Memory semantics
+ArrokothI Memory semantics
         ↓
 SemanticMemoryProvider port
         ├── simple reference implementation
@@ -1155,7 +1155,7 @@ Likely canonical home: new `memory.md`.
 
 ---
 
-## 7. Agent Skills and the broader Arrokoth Skill concept
+## 7. Agent Skills and the broader ArrokothI Skill concept
 
 ### 7.1 What Agent Skills standardizes
 
@@ -1188,9 +1188,9 @@ Source:
 
 This is valuable interoperability and validates the same “do not dump everything into context” design direction as Active View.
 
-### 7.2 Why Arrokoth Skill should be broader
+### 7.2 Why ArrokothI Skill should be broader
 
-Arrokoth has a unique composition advantage:
+ArrokothI has a unique composition advantage:
 
 ```text
 Workflow may contain Agent Stages
@@ -1199,7 +1199,7 @@ Agent/Workflow can call/spawn child Executions
 
 Therefore a reusable Skill need not be only “instructions injected into the current Agent.”
 
-A richer Arrokoth Skill can be conceptualized as:
+A richer ArrokothI Skill can be conceptualized as:
 
 ```text
 Skill Package
@@ -1252,7 +1252,7 @@ An instruction-only Skill may simply alter the current Agent's context/resources
 Conceptually:
 
 ```text
-Arrokoth Skill
+ArrokothI Skill
 
 Instruction profile
   metadata + instructions + refs/assets/scripts
@@ -1265,7 +1265,7 @@ Composition-backed profile
 
 Some composition-backed Skills may export to standard Agent Skills only lossily. A conventional client could instead be given instructions to invoke the Skill's exported MCP/A2A/API service operation.
 
-This is acceptable: interoperability does not require every richer Arrokoth concept to collapse into the lowest-common-denominator format.
+This is acceptable: interoperability does not require every richer ArrokothI concept to collapse into the lowest-common-denominator format.
 
 ### 7.5 `allowed-tools` must not grant authority
 
@@ -1310,7 +1310,7 @@ Likely canonical home: `composition.md` for Skill semantics; `interoperability.m
 
 ## 8. Actor/virtual-actor runtimes: Erlang/OTP and Orleans
 
-These are not Agent protocols, but they are valuable cross-checks because Arrokoth Executions resemble logical actors in some ways.
+These are not Agent protocols, but they are valuable cross-checks because ArrokothI Executions resemble logical actors in some ways.
 
 ### 8.1 Erlang/OTP supervision
 
@@ -1320,7 +1320,7 @@ Sources:
 - https://www.erlang.org/docs/27/system/design_principles.html
 - https://www.erlang.org/doc/apps/stdlib/supervisor.html
 
-This validates several Arrokoth distinctions:
+This validates several ArrokothI distinctions:
 
 ```text
 ownership/supervision tree ≠ communication graph
@@ -1334,7 +1334,7 @@ Potential lesson for Slice E and later:
 - parent/owner relation should not automatically imply one universal “child failed → parent failed” rule;
 - restart policy, if introduced, is operational runtime policy rather than Agent semantic reasoning.
 
-Do not import OTP's process identity or crash model wholesale. Arrokoth Executions can be durable, typed, authority-carrying service/runtime entities whose semantics differ from Erlang processes.
+Do not import OTP's process identity or crash model wholesale. ArrokothI Executions can be durable, typed, authority-carrying service/runtime entities whose semantics differ from Erlang processes.
 
 ### 8.2 Orleans: logical identity vs physical activation
 
@@ -1345,7 +1345,7 @@ Sources:
 - https://learn.microsoft.com/en-us/dotnet/orleans/host/configuration-guide/activation-collection
 - https://learn.microsoft.com/en-us/dotnet/orleans/grains/timers-and-reminders
 
-This strongly validates the Arrokoth model:
+This strongly validates the ArrokothI model:
 
 ```text
 Execution identity
@@ -1366,7 +1366,7 @@ physical activation disappears
 logical Execution remains
 ```
 
-This is not a reason to rename Arrokoth `Activation` to Orleans activation or adopt Orleans. It is independent evidence that the semantic/physical separation is sound.
+This is not a reason to rename ArrokothI `Activation` to Orleans activation or adopt Orleans. It is independent evidence that the semantic/physical separation is sound.
 
 ### 8.3 Actor-model conclusion
 
@@ -1412,7 +1412,7 @@ The new survey adds A2A/Agent Skills/UI standards around MCP rather than replaci
 
 ## 10. A useful external protocol stack
 
-The ecosystem is increasingly separating concerns rather than converging on one “universal Agent protocol.” That aligns with Arrokoth's layered design.
+The ecosystem is increasingly separating concerns rather than converging on one “universal Agent protocol.” That aligns with ArrokothI's layered design.
 
 Conceptually:
 
@@ -1427,7 +1427,7 @@ Message-driven API description   AsyncAPI
 Portable external event envelope CloudEvents
 ```
 
-Arrokoth should resist inventing one giant protocol that competes with all of these.
+ArrokothI should resist inventing one giant protocol that competes with all of these.
 
 ---
 
@@ -1451,7 +1451,7 @@ Source:
 Possible future flow:
 
 ```text
-Arrokoth Execution/Harness
+ArrokothI Execution/Harness
   Events / Effects / traces / projected state
         ↓
 AG-UI adapter
@@ -1462,12 +1462,12 @@ Studio / React / mobile / external frontend
 Non-equivalences:
 
 ```text
-AG-UI event ≠ Arrokoth Event
+AG-UI event ≠ ArrokothI Event
 AG-UI runId ≠ ExecutionId by definition
 AG-UI tool-call event ≠ Effect
 ```
 
-AG-UI is primarily a presentation/interaction projection. It may save Arrokoth from inventing and maintaining a proprietary Studio WebSocket/run-stream protocol.
+AG-UI is primarily a presentation/interaction projection. It may save ArrokothI from inventing and maintaining a proprietary Studio WebSocket/run-stream protocol.
 
 Likely Layer 2/3, later than core Slice D.
 
@@ -1500,7 +1500,7 @@ ACP targets coding-Agent ↔ editor/client integration. It allows Agents and IDE
 Source:
 - https://zed.dev/acp
 
-If Arrokoth later powers coding Agents, ACP is a better external client target than inventing an Arrokoth-specific editor protocol.
+If ArrokothI later powers coding Agents, ACP is a better external client target than inventing an ArrokothI-specific editor protocol.
 
 It should not influence general Execution semantics unless later versions reveal a genuinely reusable concept.
 
@@ -1518,7 +1518,7 @@ Source:
 Potential use:
 
 ```text
-explicit exported Arrokoth message/change/event service interface
+explicit exported ArrokothI message/change/event service interface
         ↓
 AsyncAPI descriptor
         ↓
@@ -1537,7 +1537,7 @@ Source:
 Potential use:
 
 ```text
-selected external Arrokoth observation/change signal
+selected external ArrokothI observation/change signal
         ↓
 CloudEvent envelope
 ```
@@ -1545,7 +1545,7 @@ CloudEvent envelope
 Non-equivalence:
 
 ```text
-CloudEvent ≠ Arrokoth Event
+CloudEvent ≠ ArrokothI Event
 ```
 
 A CloudEvent can represent exported data that originated from an Event, Effect outcome, lifecycle change, or application-level domain event.
@@ -1617,7 +1617,7 @@ Observed license: Apache-2.0.
 Recommended use:
 
 ```text
-Arrokoth ModelProvider port
+ArrokothI ModelProvider port
       ├── native Gemini reference adapter
       └── AI-SDK-backed adapter
              ↓
@@ -1646,7 +1646,7 @@ The SDK should own provider protocol normalization, not authority or runtime pro
 
 OpenTelemetry's GenAI semantic conventions increasingly cover inference, tools, Agents/workflows, retrieval, and memory-related operations.
 
-The GenAI conventions are still evolving/developmental, so Arrokoth should treat them as an exporter vocabulary rather than a kernel contract.
+The GenAI conventions are still evolving/developmental, so ArrokothI should treat them as an exporter vocabulary rather than a kernel contract.
 
 Sources:
 - https://opentelemetry.io/docs/specs/semconv/gen-ai/
@@ -1655,14 +1655,14 @@ Sources:
 Recommended relationship:
 
 ```text
-Arrokoth journal / trace / Event / Effect truth
+ArrokothI journal / trace / Event / Effect truth
         ↓ projection
 OpenTelemetry spans/metrics/logs
 ```
 
 Do not store arbitrary OTel attribute names as the canonical internal representation.
 
-Tool arguments/results may contain secrets or sensitive user data; OTel itself treats some payload capture as opt-in. Arrokoth exporters should default to metadata/redaction-conscious behavior.
+Tool arguments/results may contain secrets or sensitive user data; OTel itself treats some payload capture as opt-in. ArrokothI exporters should default to metadata/redaction-conscious behavior.
 
 ---
 
@@ -1689,10 +1689,10 @@ Why it is interesting:
 Caution:
 
 ```text
-DBOS Workflow ≠ Arrokoth Workflow
+DBOS Workflow ≠ ArrokothI Workflow
 ```
 
-Arrokoth should not translate its semantic Workflow Stages one-to-one into DBOS workflow steps unless that mapping proves correct. DBOS may instead back durable scheduling/workers/effect execution or selected runtime operations.
+ArrokothI should not translate its semantic Workflow Stages one-to-one into DBOS workflow steps unless that mapping proves correct. DBOS may instead back durable scheduling/workers/effect execution or selected runtime operations.
 
 ### 19.2 Temporal
 
@@ -1711,11 +1711,11 @@ Strengths:
 - broad operational ecosystem.
 
 Cautions:
-- Temporal Workflow deterministic-replay constraints are not the same as Arrokoth Workflow semantics;
+- Temporal Workflow deterministic-replay constraints are not the same as ArrokothI Workflow semantics;
 - model calls and arbitrary side effects must remain outside deterministic workflow code/inside Activities or equivalent boundaries;
-- adopting Temporal too early could force Arrokoth concepts to fit its programming model.
+- adopting Temporal too early could force ArrokothI concepts to fit its programming model.
 
-Use only after Arrokoth persistence/scheduler/pending-operation semantics are stable enough to define a clean adapter.
+Use only after ArrokothI persistence/scheduler/pending-operation semantics are stable enough to define a clean adapter.
 
 ### 19.3 Restate
 
@@ -1726,7 +1726,7 @@ Source:
 
 Conceptually it is interesting because its **durable service/object** model may align with long-lived addressable Agent services more naturally than a workflow-only engine.
 
-However, the Restate server currently uses Business Source License 1.1 with an additional-use grant and later Apache conversion. This is not a plain permissive open-source dependency and must be reviewed carefully for Arrokoth product/service plans.
+However, the Restate server currently uses Business Source License 1.1 with an additional-use grant and later Apache conversion. This is not a plain permissive open-source dependency and must be reviewed carefully for ArrokothI product/service plans.
 
 Source:
 - https://github.com/restatedev/restate/blob/main/LICENSE
@@ -1747,7 +1747,7 @@ EffectJournal
 SchedulerQueue
 ```
 
-Then benchmark/validate a backend against Arrokoth conformance rather than changing semantics to match the backend.
+Then benchmark/validate a backend against ArrokothI conformance rather than changing semantics to match the backend.
 
 ---
 
@@ -1767,7 +1767,7 @@ isolated guest process/runtime
 
 The sandbox can restrict workspace access, network, capabilities, and mounts. Tool calls return to the trusted host execution path rather than handing all credentials to the guest.
 
-This closely matches the intended Arrokoth hostile-code profile:
+This closely matches the intended ArrokothI hostile-code profile:
 
 ```text
 untrusted Stage/Agent code
@@ -1791,7 +1791,7 @@ Sources:
 
 Potential use:
 - reference backend or implementation study for a narrow code-execution profile;
-- not sufficient by itself for the complete Arrokoth threat model (network, filesystem, credentials, mounts, quotas, tenant boundaries, effect bridge all still matter).
+- not sufficient by itself for the complete ArrokothI threat model (network, filesystem, credentials, mounts, quotas, tenant boundaries, effect bridge all still matter).
 
 ### 20.3 Dify main repository licensing
 
@@ -1802,7 +1802,7 @@ Source:
 
 Therefore:
 - study Dify workflow/HITL/plugin/security designs;
-- do not casually embed/copy main Dify product code into a future hosted multi-tenant Arrokoth product;
+- do not casually embed/copy main Dify product code into a future hosted multi-tenant ArrokothI product;
 - Dify Sandbox has a separate permissive license and should be evaluated independently.
 
 ---
@@ -1822,7 +1822,7 @@ separate SSRF/network protection
 runtime status/progress projection to UI
 ```
 
-Arrokoth already has stronger conceptual distinctions for:
+ArrokothI already has stronger conceptual distinctions for:
 
 ```text
 Workflow vs Agent
@@ -1841,11 +1841,11 @@ One portable lesson: a plugin/Skill manifest may declare **requested requirement
 
 ## 22. Capability-based security as a conceptual cross-check
 
-Arrokoth uses the word **authority** intentionally. Capability-security literature makes a useful distinction between possessing permission and the effects a component can cause through direct and indirect interactions.
+ArrokothI uses the word **authority** intentionally. Capability-security literature makes a useful distinction between possessing permission and the effects a component can cause through direct and indirect interactions.
 
 UCAN's specification explicitly frames authority as the total effects enabled by delegated capabilities and requires attenuation on delegation.
 
-This validates several Arrokoth principles:
+This validates several ArrokothI principles:
 
 ```text
 child authority must narrow
@@ -1929,13 +1929,13 @@ ACP
   coding-Agent ↔ editor integration
 ```
 
-Arrokoth should define internal state/trace/interactions once and project them to the client protocol required by the product surface.
+ArrokothI should define internal state/trace/interactions once and project them to the client protocol required by the product surface.
 
 ---
 
 ## 26. Commerce/transaction protocols as stress tests
 
-AP2 and related commerce protocols are useful even if Arrokoth never owns payment semantics, because autonomous financial actions stress the exact boundaries we care about:
+AP2 and related commerce protocols are useful even if ArrokothI never owns payment semantics, because autonomous financial actions stress the exact boundaries we care about:
 
 ```text
 user intent
@@ -2086,7 +2086,7 @@ instruction-only
 composition-backed (root Agent/Workflow)
 ```
 
-Agent Skills `SKILL.md` is an important compatibility profile, not the definition of all Arrokoth Skills.
+Agent Skills `SKILL.md` is an important compatibility profile, not the definition of all ArrokothI Skills.
 
 Likely owner: `composition.md`; external format mapping in `interoperability.md`.
 
@@ -2131,13 +2131,13 @@ They are replaceable discovery/retrieval strategies.
 
 ### Do not make Cedar/OpenFGA the authority model
 
-They are policy engines/backends. Arrokoth must remain usable with a tiny local policy implementation.
+They are policy engines/backends. ArrokothI must remain usable with a tiny local policy implementation.
 
 ### Do not make Graphiti's graph ontology the memory model
 
 Graph is one representation/backend for derived knowledge.
 
-### Do not make Mem0's conversation/session/user/org categories the fundamental Arrokoth memory taxonomy
+### Do not make Mem0's conversation/session/user/org categories the fundamental ArrokothI memory taxonomy
 
 They mix lifetime, context, and scope. Adopt the useful distinctions, not the exact taxonomy.
 
@@ -2145,7 +2145,7 @@ They mix lifetime, context, and scope. Adopt the useful distinctions, not the ex
 
 Skill is packaging/composition; activation may or may not create a child Execution.
 
-### Do not make Temporal/DBOS/Restate Workflow equal Arrokoth Workflow
+### Do not make Temporal/DBOS/Restate Workflow equal ArrokothI Workflow
 
 They are durable runtime programming/execution models with different semantics.
 
@@ -2153,7 +2153,7 @@ They are durable runtime programming/execution models with different semantics.
 
 OTel is an export vocabulary.
 
-### Do not make AG-UI/CloudEvents protocol events equal Arrokoth Events
+### Do not make AG-UI/CloudEvents protocol events equal ArrokothI Events
 
 External representation does not redefine runtime observation semantics.
 
@@ -2440,7 +2440,7 @@ License status must be rechecked at the exact version before copying/linking cod
 
 ## 46. Primary source index
 
-### Arrokoth current architecture
+### ArrokothI current architecture
 - `docs/mental-model.md`
 - `docs/composition.md`
 - `docs/runtime-architecture.md`
@@ -2448,7 +2448,7 @@ License status must be rechecked at the exact version before copying/linking cod
 - `docs/security-guarantees.md`
 - `docs/implementation-guide.md`
 - `docs/future-plan.md`
-- `docs/development/007-interoperability-decisions-before-agent-slice.md`
+- `docs/development/legacy/007-interoperability-decisions-before-agent-slice.md`
 
 ### A2A
 - https://a2a-protocol.org/latest/topics/key-concepts/
@@ -2578,7 +2578,7 @@ These are the most useful prompts to revisit while rewriting, rather than answer
 ### Memory
 
 16. Exact name: `Derived Semantic Memory`, `Semantic Memory`, `Knowledge Memory`, or another term?
-17. Is a source Episode a portable Arrokoth concept, or are Event/Artifact/Message/resource provenance refs enough?
+17. Is a source Episode a portable ArrokothI concept, or are Event/Artifact/Message/resource provenance refs enough?
 18. Which temporal metadata is universally meaningful vs provider-specific?
 19. How is a derived claim corrected/superseded without deleting provenance?
 20. What can promote a derived claim into authoritative Structured Memory?
@@ -2615,12 +2615,12 @@ The survey does **not** suggest replacing ArrokothI with another Agent framework
 It suggests a more disciplined architecture:
 
 ```text
-Arrokoth-owned semantic kernel
+ArrokothI-owned semantic kernel
   Execution / Event / Effect / authority / memory / lifecycle
 
         ↓
 
-Arrokoth-owned portable/composition layer
+ArrokothI-owned portable/composition layer
   Operation / Resource / service / Skill / discovery / schemas / handles
 
         ↓
@@ -2636,7 +2636,7 @@ replaceable implementation backends
 
 The middle remains ours, but “ours” should mean **the smallest general semantics that survive multiple external implementations**, not proprietary reinvention.
 
-The most valuable external ideas are the ones that force a cleaner distinction inside Arrokoth:
+The most valuable external ideas are the ones that force a cleaner distinction inside ArrokothI:
 
 ```text
 runtime identity ≠ application principal

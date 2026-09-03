@@ -25,15 +25,15 @@ import {
   defineWorkflow,
   readWorkflowControlState,
   useCapability,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 import type {
   ActivationOutcome,
   CapabilityExecutor,
   EffectAuthorizer,
   ExecutionController,
-} from "@agent-sdk/core/ports";
-import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
-import type { StageExecutionContext } from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
+import type { WorkflowSpecInput } from "@arrokothi/core/execution";
+import type { StageExecutionContext } from "@arrokothi/core/ports";
 import {
   FifoScheduler,
   InMemoryDefinitionStore,
@@ -47,8 +47,8 @@ import {
   createNoInlineWaitBudget,
   StaticModelResolver,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness, modelAccess, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createWorkflowTestHarness, modelAccess, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 const SEARCH = { capability: "knowledge.retrieval", operation: "search" } as const;
 
@@ -491,7 +491,7 @@ describe("Slice G.2: G.1 fork/join still holds under G.2, and the vocabularies s
   });
 
   test("(67) no new Stage / Effect / Event kind; 'dependencies' is a wait kind, never an Event kind", async () => {
-    const { STAGE_KINDS, EFFECT_KINDS, EVENT_KINDS } = await import("@agent-sdk/core/execution");
+    const { STAGE_KINDS, EFFECT_KINDS, EVENT_KINDS } = await import("@arrokothi/core/execution");
     assert.deepEqual([...STAGE_KINDS], ["function", "llm", "agent", "workflow"]);
     assert.deepEqual([...EFFECT_KINDS], ["use_capability", "write_memory", "spawn_execution", "send_message", "request_user_input"]);
     for (const invented of ["dependencies", "await_dependencies", "branch", "fork", "join"]) {

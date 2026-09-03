@@ -14,8 +14,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { createAllowListAuthorizer } from "@agent-sdk/core/reference";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import { createAllowListAuthorizer } from "@arrokothi/core/reference";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 const PEER_INTERLEAVE = { eventKinds: ["peer.message"] as const };
 

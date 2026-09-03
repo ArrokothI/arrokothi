@@ -30,7 +30,7 @@ import type {
   DerivedSemanticMemoryReadView,
   StructuredMemoryBinding,
   WriteMemoryProposal,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 import {
   cloneDerivedSemanticClaim,
   derivedClaimId,
@@ -46,14 +46,14 @@ import {
   memoryWriteProvenanceIssues,
   projectDerivedSemanticMemoryReadView,
   promoteDerivedClaim,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 import type {
   ConfirmationPolicy,
   DerivedSemanticMemoryProvider,
   DerivedSemanticMemoryReadResolver,
   EffectAuthorizer,
-} from "@agent-sdk/core/ports";
-import { deriveClaims } from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
+import { deriveClaims } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeferredModelProvider,
@@ -65,7 +65,7 @@ import {
   DerivedSemanticMemoryAppendConflictError,
   InvalidDerivedSemanticClaimError,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 import {
   agentModelAccess,
   createAgentTestHarness,
@@ -75,7 +75,7 @@ import {
   scriptedAgentDefinition,
   scriptedWorkflowDefinition,
   seedDerivedSemanticMemory,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 import { testAgent, testCatalog, testModelResolver } from "../agent/fixtures.ts";
 
 const AT = "2026-01-01T00:00:00.000Z";

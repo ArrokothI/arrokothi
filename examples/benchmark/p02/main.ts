@@ -1,6 +1,6 @@
-import type { ModelProvider } from "@agent-sdk/core";
-import { validateDefinition } from "@agent-sdk/core";
-import { createGeminiProviderFromEnv } from "@agent-sdk/provider-gemini";
+import type { ModelProvider } from "@arrokothi/core";
+import { validateDefinition } from "@arrokothi/core";
+import { createGeminiProviderFromEnv } from "@arrokothi/provider-gemini";
 import { createP02Definition } from "./agent.ts";
 import { parseP02CliRequest } from "./protocol.ts";
 import { createP02Subject, runP02Batch } from "./subject.ts";

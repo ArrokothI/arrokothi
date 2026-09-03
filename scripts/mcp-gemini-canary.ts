@@ -28,19 +28,19 @@
  */
 
 import { randomUUID } from "node:crypto";
-import type { EffectAuthorizer, OperationRef } from "@agent-sdk/core/ports";
-import type { AgentSpecInput } from "@agent-sdk/core/execution";
-import { defineAgent } from "@agent-sdk/core/execution";
+import type { EffectAuthorizer, OperationRef } from "@arrokothi/core/ports";
+import type { AgentSpecInput } from "@arrokothi/core/execution";
+import { defineAgent } from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   portableModelFeatures,
   StaticModelResolver,
-} from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
-import { GeminiModelProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";
+} from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
+import { GeminiModelProvider, geminiApiKeyFromEnv } from "@arrokothi/provider-gemini";
 import { Client } from "@modelcontextprotocol/client";
 import { fromJsonSchema, InMemoryTransport, McpServer } from "@modelcontextprotocol/server";
-import { importMcpTools } from "@agent-sdk/integration-mcp";
+import { importMcpTools } from "@arrokothi/integration-mcp";
 
 const requestedModel = process.env["GEMINI_MODEL"];
 const apiKey = geminiApiKeyFromEnv();
@@ -82,7 +82,7 @@ if (!requestedModel) {
 // -- the MCP server ----------------------------------------------------------
 
 const toolCalls: { readonly key: unknown }[] = [];
-const server = new McpServer({ name: "arrokoth-canary-server", version: "0.0.1" });
+const server = new McpServer({ name: "arrokothi-canary-server", version: "0.0.1" });
 server.registerTool(
   "lookup_code",
   {
@@ -107,7 +107,7 @@ server.registerTool(
 
 const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
 await server.connect(serverTransport);
-const client = new Client({ name: "arrokoth-canary-client", version: "0.0.1" });
+const client = new Client({ name: "arrokothi-canary-client", version: "0.0.1" });
 await client.connect(clientTransport);
 
 // -- import through the real adapter -----------------------------------------

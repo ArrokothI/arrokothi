@@ -8,8 +8,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import * as executionApi from "@agent-sdk/core/execution";
-import { createTestHarness, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@agent-sdk/core/testing";
+import * as executionApi from "@arrokothi/core/execution";
+import { createTestHarness, scriptedAgentDefinition, scriptedWorkflowDefinition } from "@arrokothi/core/testing";
 
 describe("ownership and root identity", () => {
   test("a root Execution owns nothing above it and is its own root", async () => {

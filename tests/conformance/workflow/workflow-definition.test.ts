@@ -22,8 +22,8 @@ import {
   serializeDefinition,
   STAGE_KINDS,
   validateWorkflowSpec,
-} from "@agent-sdk/core/execution";
-import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
+import type { WorkflowSpecInput } from "@arrokothi/core/execution";
 
 /** One Workflow using all four canonical Stage kinds and both transition forms. */
 const everyStageKind: WorkflowSpecInput = {

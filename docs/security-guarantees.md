@@ -1,6 +1,6 @@
 # Security Model and Guarantees
 
-> **Status: canonical security guarantees for ArrokothI v0.4.**
+> **Status: canonical security guarantees for ArrokothI 0.8.x.**
 >
 > Read [`mental-model.md`](mental-model.md) first. This document owns the security guarantees, trust assumptions, deployment profiles, and containment boundary. It does **not** redefine authority, memory, runtime, composition, or interoperability semantics.
 >
@@ -14,13 +14,13 @@ The central rule is:
 
 ## 1. Security is layered
 
-Arrokoth separates three responsibilities:
+ArrokothI separates three responsibilities:
 
 ```text
 application / world / platform policy
   decides what should be allowed
         ↓
-Arrokoth Harness / kernel
+ArrokothI Harness / kernel
   enforces authority, visibility,
   messaging, Effect, and lifecycle boundaries
         ↓
@@ -50,7 +50,7 @@ A strong deployment needs the guarantees appropriate to its threat model from al
 
 ## 2. Semantic enforcement and physical containment are different
 
-Arrokoth's **semantic guarantees** apply to actions mediated by the Harness:
+ArrokothI's **semantic guarantees** apply to actions mediated by the Harness:
 
 ```text
 Effect authorization
@@ -119,13 +119,13 @@ remote-worker authentication
 
 Compromise of the trusted substrate can invalidate the corresponding guarantee.
 
-Arrokoth v0.4 does not claim complete information-flow control. If an Execution is legitimately allowed to learn a secret, it may intentionally include that information in an otherwise authorized output/message unless application policy adds stronger declassification/taint rules.
+ArrokothI 0.8.x does not claim complete information-flow control. If an Execution is legitimately allowed to learn a secret, it may intentionally include that information in an otherwise authorized output/message unless application policy adds stronger declassification/taint rules.
 
 ---
 
 ## 4. Kernel-mediated security guarantees
 
-For operations that go through the Arrokoth boundary, preserve these non-equivalences:
+For operations that go through the ArrokothI boundary, preserve these non-equivalences:
 
 ```text
 Effect request       ≠ authorization
@@ -279,14 +279,14 @@ The same semantic kernel can run under different trust assumptions. Security cla
 ```text
 developer-owned process
   ↓
-Arrokoth Harness
+ArrokothI Harness
   ↓
 trusted in-process Agent/Workflow code
 ```
 
 Guarantee:
 
-> Arrokoth-mediated operations obey its authority, memory, messaging, Effect, and lifecycle semantics.
+> ArrokothI-mediated operations obey its authority, memory, messaging, Effect, and lifecycle semantics.
 
 Non-guarantee:
 
@@ -514,7 +514,7 @@ Correlation IDs are not settlement credentials.
 
 ## 14. Protocol interoperability preserves all security boundaries
 
-External protocols add transport identities and authentication, but they do not replace Arrokoth authority.
+External protocols add transport identities and authentication, but they do not replace ArrokothI authority.
 
 ```text
 protocol authentication
@@ -573,7 +573,7 @@ authority
 
 A valid signature does not automatically grant Effect authority.
 
-Arrokoth does not require per-Execution public/private keypairs in the trusted-local profile. Future distributed/federated mechanisms may use mTLS, workload identity, signed/MACed capability tokens, or other standard mechanisms without changing the semantic authority model.
+ArrokothI does not require per-Execution public/private keypairs in the trusted-local profile. Future distributed/federated mechanisms may use mTLS, workload identity, signed/MACed capability tokens, or other standard mechanisms without changing the semantic authority model.
 
 ---
 
@@ -600,7 +600,7 @@ They do not automatically grant the package authority to perform Effects.
 trusted/signed package ≠ authorized action
 ```
 
-The current v0.4 kernel does not require a full public package trust system. See [`future-plan.md`](future-plan.md).
+The current 0.8.x kernel does not require a full public package trust system. See [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -646,7 +646,7 @@ No single layer provides the complete hostile multi-tenant security story.
 
 ## 18. Replaceable security mechanisms
 
-Arrokoth should define its security contract and reuse mature mechanisms behind narrow ports where appropriate.
+ArrokothI should define its security contract and reuse mature mechanisms behind narrow ports where appropriate.
 
 Examples identified in the research dossier include:
 
@@ -664,11 +664,11 @@ workload identity
 
 Projects such as OpenClaw, Hermes, and Dify are useful implementation references for sandbox/tool bridges, path/network controls, approval UX, and security diagnostics.
 
-They do not define Arrokoth's authority or Execution semantics. Backend selection requires independent threat-model, maintenance, configuration, security-history, and license review.
+They do not define ArrokothI's authority or Execution semantics. Backend selection requires independent threat-model, maintenance, configuration, security-history, and license review.
 
 ---
 
-## 19. What Arrokoth cannot guarantee
+## 19. What ArrokothI cannot guarantee
 
 A deployment cannot claim strong containment if it deliberately bypasses the security boundary, for example by:
 
@@ -684,7 +684,7 @@ intentionally granting excessive authority
 accepting control-plane operations without authenticating caller
 ```
 
-Arrokoth also does not currently guarantee complete prevention of information leakage by an Execution that is legitimately allowed to read information and legitimately allowed to send some output. Stronger information-flow/declassification policy is future work.
+ArrokothI also does not currently guarantee complete prevention of information leakage by an Execution that is legitimately allowed to read information and legitimately allowed to send some output. Stronger information-flow/declassification policy is future work.
 
 Security documentation/diagnostics should report the active deployment profile and avoid implying stronger guarantees than the configured mechanisms provide.
 
@@ -762,6 +762,6 @@ And these positive rules summarize the security model:
 
 > **Secrets and privileged transports belong in trusted adapters, not ambient hostile execution state.**
 
-> **Protocol, cryptographic, policy, and isolation implementations remain replaceable mechanisms behind Arrokoth-owned semantics.**
+> **Protocol, cryptographic, policy, and isolation implementations remain replaceable mechanisms behind ArrokothI-owned semantics.**
 
 This document owns the security guarantees. Other canonical documents should reference it for trust/deployment/security claims rather than restating them.

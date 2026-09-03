@@ -346,7 +346,7 @@ export function toJsonSchema(schema: ValueSchema): Record<string, unknown> {
       const out: Record<string, unknown> = { type: "object", properties };
       if (required.length) out["required"] = required;
       // JSON Schema defaults this keyword to `true`, while ObjectSchema defaults it to `false`.
-      // Always project the Arrokoth value explicitly so the acceptance set survives the boundary.
+      // Always project the ArrokothI value explicitly so the acceptance set survives the boundary.
       out["additionalProperties"] = schema.additionalProperties === true;
       return out;
     }

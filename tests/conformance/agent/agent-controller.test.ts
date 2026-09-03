@@ -16,18 +16,18 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { AgentControlState } from "@agent-sdk/core/execution";
-import { effectRequestsIn, readAgentControlState } from "@agent-sdk/core/execution";
+import type { AgentControlState } from "@arrokothi/core/execution";
+import { effectRequestsIn, readAgentControlState } from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   createNoInlineWaitBudget,
   createScriptedCapabilityExecutor,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
-import type { RecordingCapabilityExecutor } from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
-import type { AgentTestHarnessBundle } from "@agent-sdk/core/testing";
-import type { InlineWaitBudget } from "@agent-sdk/core/ports";
+} from "@arrokothi/core/reference";
+import type { RecordingCapabilityExecutor } from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
+import type { AgentTestHarnessBundle } from "@arrokothi/core/testing";
+import type { InlineWaitBudget } from "@arrokothi/core/ports";
 import { DOCS_SEARCH, scriptedAgentExecutor, testAgent, testCatalog, testModelResolver } from "./fixtures.ts";
 
 interface Rig {

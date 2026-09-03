@@ -3,7 +3,7 @@
  *
  * This is the curated semantic surface - what an application needs to define an Agent or Workflow,
  * create Executions, deliver Events, and observe results. It is published as
- * `@agent-sdk/core/execution` rather than at the package root only because the root still carries
+ * `@arrokothi/core/execution` rather than at the package root only because the root still carries
  * the v0 Session/Flow API during migration, and the two occupy several of the same names. When the
  * legacy surface is removed, this becomes the root.
  *

@@ -2,9 +2,9 @@
 
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { createAllowListAuthorizer } from "@agent-sdk/core/reference";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
-import type { ScriptedControllerStep } from "@agent-sdk/core/testing";
+import { createAllowListAuthorizer } from "@arrokothi/core/reference";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
+import type { ScriptedControllerStep } from "@arrokothi/core/testing";
 
 type TerminalMode = "COMPLETED" | "FAILED" | "CANCELLED";
 

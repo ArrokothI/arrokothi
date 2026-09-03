@@ -1,8 +1,8 @@
 /** Runs the published CapabilityExecutor contract against the dependency-free reference executors. */
 
 import { test, describe } from "node:test";
-import { createDeferredCapabilityExecutor, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
-import { capabilityExecutorContract } from "@agent-sdk/core/testing";
+import { createDeferredCapabilityExecutor, createScriptedCapabilityExecutor } from "@arrokothi/core/reference";
+import { capabilityExecutorContract } from "@arrokothi/core/testing";
 
 describe("CapabilityExecutor contract: scripted executor", () => {
   for (const contractCase of capabilityExecutorContract(() => ({

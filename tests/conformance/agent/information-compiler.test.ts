@@ -19,14 +19,14 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { AgentInformationCompiler } from "@agent-sdk/core/execution";
-import { agentInformationSelectionId, compileAgentInformation, referenceAgentInformationCompiler } from "@agent-sdk/core/execution";
+import type { AgentInformationCompiler } from "@arrokothi/core/execution";
+import { agentInformationSelectionId, compileAgentInformation, referenceAgentInformationCompiler } from "@arrokothi/core/execution";
 import {
   createAllowListAuthorizer,
   createScriptedCapabilityExecutor,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
 import { DOCS_SEARCH, testAgent, testCatalog, testModelResolver } from "./fixtures.ts";
 
 /** Only the newest message reaches the model, under a rewritten system prompt. */

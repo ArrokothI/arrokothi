@@ -15,8 +15,8 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import type { Tool } from "@modelcontextprotocol/client";
-import { importMcpTools, McpImportRefusedError, importMcpToolsStrict, resolveImportedOperationId, translateTool } from "@agent-sdk/integration-mcp";
-import type { McpToolClient } from "@agent-sdk/integration-mcp";
+import { importMcpTools, McpImportRefusedError, importMcpToolsStrict, resolveImportedOperationId, translateTool } from "@arrokothi/integration-mcp";
+import type { McpToolClient } from "@arrokothi/integration-mcp";
 
 const OK_SCHEMA = { type: "object", properties: { key: { type: "string" } }, required: ["key"] };
 
@@ -117,7 +117,7 @@ describe("remote metadata is information, never permission", () => {
     assert.equal(
       imported.descriptor.consequential,
       true,
-      "a server claiming its tool is harmless cannot weaken Arrokoth retry semantics",
+      "a server claiming its tool is harmless cannot weaken ArrokothI retry semantics",
     );
     assert.deepEqual(imported.advisory, {
       tool: "lookup_code",

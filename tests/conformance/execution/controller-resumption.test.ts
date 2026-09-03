@@ -19,15 +19,15 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { ControllerResumption } from "@agent-sdk/core/execution";
-import { createNoInlineWaitBudget } from "@agent-sdk/core/reference";
+import type { ControllerResumption } from "@arrokothi/core/execution";
+import { createNoInlineWaitBudget } from "@arrokothi/core/reference";
 import {
   createScriptedAgentController,
   createTestHarness,
   readScriptedProgress,
   scriptedAgentDefinition,
-} from "@agent-sdk/core/testing";
-import type { ScriptedControllerStep } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
+import type { ScriptedControllerStep } from "@arrokothi/core/testing";
 
 /**
  * A hold a test can keep open across Activations.

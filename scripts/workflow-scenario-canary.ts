@@ -34,8 +34,8 @@ import {
   createWorkflowController,
   defineWorkflow,
   readWorkflowControlState,
-} from "@agent-sdk/core/execution";
-import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
+import type { WorkflowSpecInput } from "@arrokothi/core/execution";
 import {
   FifoScheduler,
   InMemoryDefinitionStore,
@@ -47,13 +47,13 @@ import {
   createSystemClock,
   ModelProviderRegistry,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
-import { GeminiModelProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";
+} from "@arrokothi/core/reference";
+import { GeminiModelProvider, geminiApiKeyFromEnv } from "@arrokothi/provider-gemini";
 import {
   LOCAL_RETRIEVAL_CAPABILITY,
   LOCAL_RETRIEVAL_OPERATIONS,
   createLocalRetrievalExecutor,
-} from "@agent-sdk/retrieval-local";
+} from "@arrokothi/retrieval-local";
 
 const requestedModel = process.env["GEMINI_MODEL"] ?? "gemini-3.5-flash-lite";
 const apiKey = geminiApiKeyFromEnv();

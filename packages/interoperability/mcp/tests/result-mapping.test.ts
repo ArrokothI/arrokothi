@@ -12,7 +12,7 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import type { CallToolResult } from "@modelcontextprotocol/client";
 import { ProtocolError } from "@modelcontextprotocol/client";
-import { normalizeCallToolError, normalizeCallToolResult } from "@agent-sdk/integration-mcp";
+import { normalizeCallToolError, normalizeCallToolResult } from "@arrokothi/integration-mcp";
 
 const result = (value: unknown): CallToolResult => value as CallToolResult;
 

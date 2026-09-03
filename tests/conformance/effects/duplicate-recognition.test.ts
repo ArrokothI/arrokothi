@@ -23,10 +23,10 @@ import {
   markDispatched,
   markSettled,
   useCapability,
-} from "@agent-sdk/core/execution";
-import type { EffectId, EventId, IdempotencyKey, PendingOperationId } from "@agent-sdk/core/execution";
-import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/execution";
+import type { EffectId, EventId, IdempotencyKey, PendingOperationId } from "@arrokothi/core/execution";
+import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@arrokothi/core/reference";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

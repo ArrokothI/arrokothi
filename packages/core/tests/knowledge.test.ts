@@ -1,10 +1,10 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import type { RecordSetSource } from "../src/knowledge/types.ts";
-// The local retrieval implementation moved to `@agent-sdk/retrieval-local` in Slice C. These remain
+// The local retrieval implementation moved to `@arrokothi/retrieval-local` in Slice C. These remain
 // legacy tests of legacy behaviour; they now reach the implementation through its new home.
-import { queryRecords } from "@agent-sdk/retrieval-local";
-import { DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, KnowledgeIndex, chunkDocument } from "@agent-sdk/retrieval-local/legacy";
+import { queryRecords } from "@arrokothi/retrieval-local";
+import { DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, KnowledgeIndex, chunkDocument } from "@arrokothi/retrieval-local/legacy";
 import { defineAgent, validateDefinition } from "../src/definition/definition.ts";
 import { parseRecordQueryArgs, recordQueryTools } from "../src/tools/record-query-tool.ts";
 import { ScriptedModelProvider } from "../src/testing/scripted-provider.ts";

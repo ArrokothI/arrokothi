@@ -17,7 +17,7 @@ import {
   serializeDefinition,
   validateAgentSpec,
   validateDefinition,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 
 describe("Agent definitions declare real, portable Agent semantics", () => {
   test("a well-formed spec validates and keeps exactly what was authored", () => {

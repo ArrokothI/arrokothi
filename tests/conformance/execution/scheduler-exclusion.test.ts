@@ -8,8 +8,8 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { ActivationInput, ActivationOutcome, ExecutionController } from "@agent-sdk/core/ports";
-import { createTestHarness, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import type { ActivationInput, ActivationOutcome, ExecutionController } from "@arrokothi/core/ports";
+import { createTestHarness, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 /**
  * A controller that parks inside its Activation until the test lets it finish.

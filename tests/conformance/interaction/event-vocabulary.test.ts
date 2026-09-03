@@ -13,9 +13,9 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { EVENT_KINDS, EFFECT_RESULT_EVENT_KINDS, isEventKind } from "@agent-sdk/core/execution";
-import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import { EVENT_KINDS, EFFECT_RESULT_EVENT_KINDS, isEventKind } from "@arrokothi/core/execution";
+import { createAllowListAuthorizer, createScriptedCapabilityExecutor } from "@arrokothi/core/reference";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

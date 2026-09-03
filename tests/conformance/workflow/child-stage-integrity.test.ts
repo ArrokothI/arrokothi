@@ -11,10 +11,10 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineAgent, defineWorkflow } from "@agent-sdk/core/execution";
-import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
-import { createAllowListAuthorizer } from "@agent-sdk/core/reference";
-import { createScriptedAgentController, createWorkflowTestHarness, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import { defineAgent, defineWorkflow } from "@arrokothi/core/execution";
+import type { WorkflowSpecInput } from "@arrokothi/core/execution";
+import { createAllowListAuthorizer } from "@arrokothi/core/reference";
+import { createScriptedAgentController, createWorkflowTestHarness, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 const STRING_RESULT = { schemaId: "answer", schemaVersion: 1, schema: { kind: "string" } } as const;
 

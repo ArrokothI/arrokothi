@@ -20,7 +20,7 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { AgentControlState } from "@agent-sdk/core/execution";
+import type { AgentControlState } from "@arrokothi/core/execution";
 import {
   cloneWorkingNotesHandoff,
   effectRequestsIn,
@@ -36,16 +36,16 @@ import {
   workingNotesHandoffBudgetIssue,
   workingNotesHandoffIssues,
   workingNotesHandoffSelectionIssues,
-} from "@agent-sdk/core/execution";
-import type { WorkingNotesFrame, WorkingNotesHandoff } from "@agent-sdk/core/execution";
-import { createAllowListAuthorizer } from "@agent-sdk/core/reference";
+} from "@arrokothi/core/execution";
+import type { WorkingNotesFrame, WorkingNotesHandoff } from "@arrokothi/core/execution";
+import { createAllowListAuthorizer } from "@arrokothi/core/reference";
 import {
   agentModelAccess,
   createAgentTestHarness,
   createScriptedWorkflowController,
   scriptedWorkflowDefinition,
-} from "@agent-sdk/core/testing";
-import type { AgentExecutorOutcome, EffectAuthorizer } from "@agent-sdk/core/ports";
+} from "@arrokothi/core/testing";
+import type { AgentExecutorOutcome, EffectAuthorizer } from "@arrokothi/core/ports";
 import type { AgentDefinitionInput } from "../agent/fixtures.ts";
 import { scriptedAgentExecutor, testAgent, testCatalog, testModelResolver } from "../agent/fixtures.ts";
 

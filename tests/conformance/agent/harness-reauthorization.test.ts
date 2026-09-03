@@ -15,15 +15,15 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { effectRequestsIn, formatModelActionTarget } from "@agent-sdk/core/execution";
-import type { EffectAuthorizer } from "@agent-sdk/core/ports";
+import { effectRequestsIn, formatModelActionTarget } from "@arrokothi/core/execution";
+import type { EffectAuthorizer } from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createScriptedCapabilityExecutor,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
-import type { RecordingCapabilityExecutor } from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import type { RecordingCapabilityExecutor } from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
 import { MAIL_SEND, testAgent, testCatalog, testModelResolver } from "./fixtures.ts";
 
 /**

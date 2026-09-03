@@ -1,14 +1,14 @@
 # Interoperability Model
 
-> **Status: canonical interoperability semantics for ArrokothI v0.4.**
+> **Status: canonical interoperability semantics for ArrokothI 0.8.x.**
 >
-> Read [`mental-model.md`](mental-model.md) first. This document owns the portable service/interface layer and the mappings between Arrokoth semantics and external protocols such as MCP, A2A, Agent Skills, HTTP/OpenAPI, SDKs, and future standards.
+> Read [`mental-model.md`](mental-model.md) first. This document owns the portable service/interface layer and the mappings between ArrokothI semantics and external protocols such as MCP, A2A, Agent Skills, HTTP/OpenAPI, SDKs, and future standards.
 >
 > Agent/Workflow/Skill composition belongs in [`composition.md`](composition.md). Runtime Event/Effect/lifecycle/PendingOperation/ControllerResumption semantics belong in [`execution-runtime.md`](execution-runtime.md). Authority/Active View/model projection belongs in [`authority.md`](authority.md). Memory/context/provenance belongs in [`memory.md`](memory.md). Protocol/control-plane/trust/containment guarantees belong in [`security-guarantees.md`](security-guarantees.md). Unresolved binding/schema/protocol work belongs in [`future-plan.md`](future-plan.md).
 
 ## 1. Kernel semantics and interoperability semantics are separate but mappable
 
-Arrokoth uses three layers:
+ArrokothI uses three layers:
 
 ```text
 1. Kernel Semantic Interface
@@ -40,7 +40,7 @@ same semantic service is redefined separately for
 model tools, MCP, HTTP, SDKs, Studio, and Agent-to-Agent APIs
 ```
 
-The portable layer is Arrokoth-owned. External standards bind to it; they do not define it.
+The portable layer is ArrokothI-owned. External standards bind to it; they do not define it.
 
 ---
 
@@ -73,7 +73,7 @@ change signal               ↔ notification/subscription mechanism
 Skill instruction profile   ↔ Agent Skills package
 ```
 
-A binding must preserve the stronger Arrokoth semantics instead of flattening them into protocol terminology.
+A binding must preserve the stronger ArrokothI semantics instead of flattening them into protocol terminology.
 
 ---
 
@@ -159,7 +159,7 @@ Resource description is not Resource Authority.
 knowing resource ref ≠ permission to read/write it
 ```
 
-A bound Arrokoth resource may be exported as a portable Resource. An imported protocol Resource may become:
+A bound ArrokothI resource may be exported as a portable Resource. An imported protocol Resource may become:
 
 ```text
 materialized local view
@@ -205,7 +205,7 @@ authority envelope
 This supports:
 
 ```text
-Arrokoth Definition
+ArrokothI Definition
       ↓ explicit exported service
 portable service descriptor
       ↓
@@ -245,8 +245,8 @@ External protocols often represent long-running work with a Task/job/handle.
 That handle may correlate to:
 
 ```text
-an Arrokoth Execution
-an Arrokoth PendingOperation
+an ArrokothI Execution
+an ArrokothI PendingOperation
 an external provider job
 another remote runtime object
 ```
@@ -267,7 +267,7 @@ cancellation
 progress
 ```
 
-into the appropriate Arrokoth runtime/service behavior.
+into the appropriate ArrokothI runtime/service behavior.
 
 An exported long-running Agent service may map one external Task/handle to one long-lived Execution. A capability adapter may instead map it to one PendingOperation. Both are valid.
 
@@ -291,7 +291,7 @@ These should not be collapsed into authority denial.
 
 ```text
 external auth required ≠ Harness authority denied
-external auth succeeds  ≠ new Arrokoth authority grant
+external auth succeeds  ≠ new ArrokothI authority grant
 user input required     ≠ exact mechanical confirmation
 ```
 
@@ -313,7 +313,7 @@ remote task status changed
 service availability changed
 ```
 
-A protocol notification is not automatically an Arrokoth Event.
+A protocol notification is not automatically an ArrokothI Event.
 
 It may only:
 
@@ -487,13 +487,13 @@ Imported MCP metadata never grants authority by itself.
 ### Export
 
 ```text
-explicit Arrokoth service/resource/template interface
+explicit ArrokothI service/resource/template interface
   ↓
 portable descriptor layer
   ↓
 MCP server adapter
   ↓
-non-Arrokoth client
+non-ArrokothI client
 ```
 
 The export is explicit. Private memory, private peer topology, undeclared Effects, and internal capabilities are not automatically published.
@@ -531,7 +531,7 @@ A2A contextId
 Important non-equivalences:
 
 ```text
-A2A Task       ≠ Arrokoth Execution
+A2A Task       ≠ ArrokothI Execution
 A2A Message    ≠ SendMessage Effect
 A2A Agent Card ≠ Agent/Workflow Definition
 A2A contextId  ≠ mandatory runtime identity
@@ -539,7 +539,7 @@ A2A contextId  ≠ mandatory runtime identity
 
 A remote A2A Agent is intentionally opaque. Its internal tools, memory, topology, and runtime are not part of the local kernel model.
 
-A local Arrokoth `call/spawn/send/ask` remains stronger because it may carry ownership, delegation, supervision, memory visibility, cancellation, and runtime correlation semantics unavailable to a generic remote protocol.
+A local ArrokothI `call/spawn/send/ask` remains stronger because it may carry ownership, delegation, supervision, memory visibility, cancellation, and runtime correlation semantics unavailable to a generic remote protocol.
 
 Use A2A when crossing a service/implementation boundary; do not replace internal composition with A2A merely for uniformity. Internal composition belongs in [`composition.md`](composition.md).
 
@@ -547,14 +547,14 @@ Use A2A when crossing a service/implementation boundary; do not replace internal
 
 ## 15. Agent Skills binding
 
-Arrokoth `Skill` is defined in [`composition.md`](composition.md) as a reusable package/composition abstraction, not an Execution kind.
+ArrokothI `Skill` is defined in [`composition.md`](composition.md) as a reusable package/composition abstraction, not an Execution kind.
 
 The Agent Skills standard is an important compatibility profile for instruction-oriented Skills.
 
 Conceptually:
 
 ```text
-Arrokoth Skill
+ArrokothI Skill
   ├── instruction-only profile
   │      ↕ Agent Skills SKILL.md + refs/assets/scripts
   │
@@ -584,7 +584,7 @@ SKILL.md says allowed
 authority granted
 ```
 
-Progressive disclosure of Skill metadata/instructions/resources is compatible with Arrokoth's broader descriptor/context-discovery principles.
+Progressive disclosure of Skill metadata/instructions/resources is compatible with ArrokothI's broader descriptor/context-discovery principles.
 
 Native Skill packaging questions remain in [`future-plan.md`](future-plan.md).
 
@@ -667,7 +667,7 @@ agent.send(handle, message)
 agent.status(handle)
 ```
 
-The external handle resolves through application policy to an Arrokoth service/Execution.
+The external handle resolves through application policy to an ArrokothI service/Execution.
 
 It is not implicit authorization. Hosted control-plane authorization is defined in [`security-guarantees.md`](security-guarantees.md).
 
@@ -725,17 +725,17 @@ OpenTelemetry GenAI
 
 may be useful projections for UI, editor, message, event, or telemetry surfaces.
 
-They do not define Arrokoth runtime truth.
+They do not define ArrokothI runtime truth.
 
 Examples:
 
 ```text
-CloudEvent ≠ Arrokoth Event
+CloudEvent ≠ ArrokothI Event
 OTel span  ≠ Execution lifecycle record
 AG-UI event ≠ automatic mailbox Event
 ```
 
-Arrokoth should define semantic/runtime truth once and export the projection needed by the product surface. Which optional bindings to implement is tracked in [`future-plan.md`](future-plan.md).
+ArrokothI should define semantic/runtime truth once and export the projection needed by the product surface. Which optional bindings to implement is tracked in [`future-plan.md`](future-plan.md).
 
 ---
 
@@ -754,7 +754,7 @@ Is it transport/provider/storage machinery?
   → adapter/backend only
 ```
 
-Do not preserve a proprietary Arrokoth abstraction merely because it existed first if an external standard reveals a more general semantic distinction.
+Do not preserve a proprietary ArrokothI abstraction merely because it existed first if an external standard reveals a more general semantic distinction.
 
 Conversely, do not promote a wire feature into the kernel merely because a popular protocol exposes it.
 
@@ -776,20 +776,20 @@ external handle        ≠ bearer authorization
 MCP Tool               ≠ Capability
 A2A Task               ≠ Execution
 A2A Message            ≠ SendMessage Effect
-Agent Skills package   ≠ all Arrokoth Skill semantics
-CloudEvent             ≠ Arrokoth Event
+Agent Skills package   ≠ all ArrokothI Skill semantics
+CloudEvent             ≠ ArrokothI Event
 provider schema subset ≠ portable schema language
 ```
 
 And these positive rules summarize the model:
 
-> **Arrokoth owns a portable interoperability layer between kernel semantics and protocol bindings.**
+> **ArrokothI owns a portable interoperability layer between kernel semantics and protocol bindings.**
 
 > **MCP is a first-class operation/resource/template interoperability target, not a kernel dependency.**
 
 > **A2A is a first-class opaque Agent/service interoperability target, not a replacement for internal Execution composition.**
 
-> **Agent Skills is an important instruction-oriented Skill compatibility profile, while Arrokoth Skills may also be composition-backed.**
+> **Agent Skills is an important instruction-oriented Skill compatibility profile, while ArrokothI Skills may also be composition-backed.**
 
 > **Large descriptor universes may be discovered progressively after authority filtering and lazily hydrated into Active Views/projections.**
 

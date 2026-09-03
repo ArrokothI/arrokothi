@@ -8,10 +8,10 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { defineWorkflow } from "@agent-sdk/core/execution";
-import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
-import { createAllowListAuthorizer, createFunctionStageRegistry } from "@agent-sdk/core/reference";
-import { createWorkflowTestHarness } from "@agent-sdk/core/testing";
+import { defineWorkflow } from "@arrokothi/core/execution";
+import type { WorkflowSpecInput } from "@arrokothi/core/execution";
+import { createAllowListAuthorizer, createFunctionStageRegistry } from "@arrokothi/core/reference";
+import { createWorkflowTestHarness } from "@arrokothi/core/testing";
 
 const STRING = { schemaId: "answer", schemaVersion: 1, schema: { kind: "string" } } as const;
 

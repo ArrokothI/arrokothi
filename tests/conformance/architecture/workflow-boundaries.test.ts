@@ -201,13 +201,13 @@ describe("Workflow architecture boundaries", () => {
     const retrievalManifest = JSON.parse(await readFile(resolve(REPO_ROOT, "packages/retrieval/local/package.json"), "utf8")) as {
       dependencies: Record<string, string>;
     };
-    assert.ok(retrievalManifest.dependencies["@agent-sdk/core"], "the implementation depends on the kernel");
+    assert.ok(retrievalManifest.dependencies["@arrokothi/core"], "the implementation depends on the kernel");
     assert.ok(retrievalManifest.dependencies["@langchain/core"], "and owns the retrieval framework dependency");
 
     let importsCore = false;
     for (const path of await filesUnder(RETRIEVAL_SRC)) {
       const source = await readFile(resolve(RETRIEVAL_SRC, path), "utf8");
-      if (specifiersIn(source).some((specifier) => specifier.startsWith("@agent-sdk/core"))) importsCore = true;
+      if (specifiersIn(source).some((specifier) => specifier.startsWith("@arrokothi/core"))) importsCore = true;
     }
     assert.equal(importsCore, true);
 
@@ -222,7 +222,7 @@ describe("Workflow architecture boundaries", () => {
   });
 
   test("a WorkflowDefinition can only contain serializable data", async () => {
-    const { validateWorkflowSpec } = await import("@agent-sdk/core/execution");
+    const { validateWorkflowSpec } = await import("@arrokothi/core/execution");
     const result = validateWorkflowSpec({
       entryStage: "a",
       stages: [

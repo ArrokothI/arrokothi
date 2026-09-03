@@ -2,8 +2,7 @@
 
 ArrokothI is a **provider-neutral execution kernel** for long-lived Agents and Workflows with
 bounded authority, explicit memory, durable waiting, composable communication, and
-protocol-neutral service interoperability. Workspace packages use the `@agent-sdk/*` scope in
-code (some prose still calls it `@arrokoth/*`).
+protocol-neutral service interoperability. Workspace packages use the `@arrokothi/*` scope.
 
 ## Authoritative documentation
 
@@ -14,9 +13,10 @@ document and defines precedence.
 - Concept owners: `docs/execution-runtime.md`, `docs/composition.md`, `docs/authority.md`,
   `docs/memory.md`, `docs/interoperability.md`, `docs/security-guarantees.md`
 - Unresolved/future questions only: `docs/future-plan.md`
-- `docs/development/` holds implementation plans, slice decisions, audits, and reviews. These are
-  engineering working documents, **not** architecture truth. Start from `docs/development/README.md`
-  for the current slice sequence.
+- `docs/development/` holds the current implementation synthesis, active roadmap, and specialized
+  engineering guidance. These are **not** architecture truth. Start from
+  `docs/development/README.md`; historical Slice A-G records live under
+  `docs/development/legacy/` and are not default reading.
 - `docs/architecture-research-dossier.md` is retained research evidence, never canonical.
 
 When documents disagree, resolve by concept ownership in `docs/README.md`, not by recency or
@@ -52,7 +52,7 @@ evaluate the consequences explicitly, and synchronize every accepted change as d
 
 Kernel semantics must stay neutral across model providers, retrieval frameworks, storage engines,
 policy backends, tool transports, and wire protocols. Provider-specific behavior belongs in the
-adapter or boundary package that implements the current Arrokoth-owned contract. External
+adapter or boundary package that implements the current ArrokothI-owned contract. External
 protocols and frameworks may be compatibility targets and design references, but they do not own
 kernel semantics. Do not promote a provider's or protocol's native concept into core semantics
 without an explicit architectural decision recorded in `docs/`.
@@ -64,7 +64,9 @@ current contracts, and conformance tests before modifying it.
 ## Before an architectural or semantic change
 
 1. Find the canonical concept owner in `docs/README.md`.
-2. Read that document first, then relevant `docs/development/` history.
+2. Read that document first, then `docs/development/002-implemented-kernel-baseline.md` and
+   `docs/development/001-current-status-and-roadmap.md`; load specialized active or legacy evidence
+   only when the task requires it.
 3. Inspect the affected implementation under `packages/` and its conformance tests under
    `tests/conformance/` (and `packages/*/tests/`).
 4. State the existing invariant before editing it.

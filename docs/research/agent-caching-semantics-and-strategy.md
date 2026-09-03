@@ -56,7 +56,7 @@ For ArrokothI this leads to a strong default direction:
 6. **Authority and memory-read caches must fail closed on uncertainty.** A stale Active View can leak existence even if final Effect authorization later denies execution; a stale memory view can leak data directly.
 7. **Instrument first.** Cache hit rate, saved work, invalidation causes, provider cached tokens, and cold-path cost should justify each cache.
 
-This fits the existing v0.4 -> v1.0 efficiency guidance in [`../development/014-v1-efficiency-and-developer-ergonomics-validation.md`](../development/014-v1-efficiency-and-developer-ergonomics-validation.md): optimize the mechanism at the owning layer, preserve semantic equivalence, and do not collapse architectural distinctions merely because one implementation is expensive.
+This fits the active 0.8.x efficiency guidance in [`../development/004-efficiency-and-developer-ergonomics.md`](../development/004-efficiency-and-developer-ergonomics.md): optimize the mechanism at the owning layer, preserve semantic equivalence, and do not collapse architectural distinctions merely because one implementation is expensive.
 
 ---
 
@@ -575,7 +575,7 @@ Authority filtering still belongs before ranking where feasible. A shared unfilt
 
 ## 5.4 Provider prompt-cache optimization
 
-Provider prompt caching should probably be the first cache-related optimization to implement broadly because it can save substantial model input processing without changing Arrokoth semantics.
+Provider prompt caching should probably be the first cache-related optimization to implement broadly because it can save substantial model input processing without changing ArrokothI semantics.
 
 Provider adapter responsibilities can include:
 

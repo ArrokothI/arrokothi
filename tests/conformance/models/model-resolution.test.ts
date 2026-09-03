@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { defineAgent, serializeDefinition } from "@agent-sdk/core/execution";
-import { ModelResolutionError, type LogicalModelRequest } from "@agent-sdk/core/ports";
+import { defineAgent, serializeDefinition } from "@arrokothi/core/execution";
+import { ModelResolutionError, type LogicalModelRequest } from "@arrokothi/core/ports";
 import {
   ModelProviderRegistry,
   ScriptedModelProvider,
   StaticModelResolver,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 
 describe("logical model resolution", () => {
   test("resolves a logical ref to observable provider/model deployment data", async () => {

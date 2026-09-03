@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createDeterministicIds, createFixedClock, validateDefinition } from "@agent-sdk/core";
-import { ScriptedModelProvider } from "@agent-sdk/core/testing";
+import { createDeterministicIds, createFixedClock, validateDefinition } from "@arrokothi/core";
+import { ScriptedModelProvider } from "@arrokothi/core/testing";
 import { createP01Definition } from "./agent.ts";
 import { parseP01CliRequest } from "./protocol.ts";
 import { createP01Subject, runP01Batch } from "./subject.ts";

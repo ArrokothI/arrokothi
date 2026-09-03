@@ -20,8 +20,8 @@ import {
   createAllowListAuthorizer,
   createCapabilityCatalog,
   createScriptedCapabilityExecutor,
-} from "@agent-sdk/core/reference";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+} from "@arrokothi/core/reference";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

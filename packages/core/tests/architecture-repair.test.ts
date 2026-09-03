@@ -10,7 +10,7 @@ import {
   defineAgent,
   knowledgeCapabilityName,
 } from "../src/index.ts";
-import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
+import { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
 import { ScriptedModelProvider } from "../src/testing/scripted-provider.ts";
 import { RecordingExecutor } from "../src/testing/fake-executors.ts";
 import { buildRuntime } from "./helpers.ts";

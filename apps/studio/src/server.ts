@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { mkdirSync } from "node:fs";
 import { dirname, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AgentDefinition, CompiledContext, ModelProvider, WebSearchProvider } from "@agent-sdk/core";
+import type { AgentDefinition, CompiledContext, ModelProvider, WebSearchProvider } from "@arrokothi/core";
 import {
   AgentRuntime,
   AgentHarness,
@@ -17,12 +17,12 @@ import {
   deserializeDefinition,
   nextVersion,
   validateDefinition,
-} from "@agent-sdk/core";
-import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
-import { StaticModelProvider } from "@agent-sdk/core/testing";
-import { GeminiProvider, geminiApiKeyFromEnv } from "@agent-sdk/provider-gemini";
-import { createStrandsGeminiEngine } from "@agent-sdk/integration-strands";
-import { SqliteDefinitionStore, SqliteSessionStore, openDatabase } from "@agent-sdk/storage-sqlite";
+} from "@arrokothi/core";
+import { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
+import { StaticModelProvider } from "@arrokothi/core/testing";
+import { GeminiProvider, geminiApiKeyFromEnv } from "@arrokothi/provider-gemini";
+import { createStrandsGeminiEngine } from "@arrokothi/integration-strands";
+import { SqliteDefinitionStore, SqliteSessionStore, openDatabase } from "@arrokothi/storage-sqlite";
 import { DryRunRegistry, registerStudioExecutors } from "./executors.ts";
 import { SAMPLE_DEFINITIONS } from "./samples.ts";
 
@@ -391,7 +391,7 @@ const server = createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`\n  Agent SDK Studio`);
+  console.log(`\n  ArrokothI Studio`);
   console.log(`  ----------------`);
   console.log(`  url       http://localhost:${PORT}`);
   console.log(`  database  ${DB_PATH}`);

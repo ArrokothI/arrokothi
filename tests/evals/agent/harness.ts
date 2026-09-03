@@ -38,19 +38,19 @@ import type {
   ExecutionId,
   JsonObject,
   OperationRef,
-} from "@agent-sdk/core/execution";
-import { defineAgent, formatModelActionTarget } from "@agent-sdk/core/execution";
-import type { CapabilityExecutor, CapabilityOutcome } from "@agent-sdk/core/ports";
-import type { ScriptedModelStep } from "@agent-sdk/core/reference";
+} from "@arrokothi/core/execution";
+import { defineAgent, formatModelActionTarget } from "@arrokothi/core/execution";
+import type { CapabilityExecutor, CapabilityOutcome } from "@arrokothi/core/ports";
+import type { ScriptedModelStep } from "@arrokothi/core/reference";
 import {
   createAllowListAuthorizer,
   createCapabilityCatalog,
   createScriptedCapabilityExecutor,
   ScriptedModelProvider,
-} from "@agent-sdk/core/reference";
-import type { CapabilityOperationDescriptorInput } from "@agent-sdk/core/reference";
-import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@agent-sdk/core/testing";
-import { StaticModelResolver, portableModelFeatures } from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
+import type { CapabilityOperationDescriptorInput } from "@arrokothi/core/reference";
+import { agentModelAccess, createAgentTestHarness, referenceAgentExecutor } from "@arrokothi/core/testing";
+import { StaticModelResolver, portableModelFeatures } from "@arrokothi/core/reference";
 
 /** One capability operation the world implements, with the handler that changes it. */
 export interface WorldOperation extends CapabilityOperationDescriptorInput {

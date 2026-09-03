@@ -1,5 +1,5 @@
-import type { AgentDefinition, ToolDefinition } from "@agent-sdk/core";
-import { defineAgent } from "@agent-sdk/core";
+import type { AgentDefinition, ToolDefinition } from "@arrokothi/core";
+import { defineAgent } from "@arrokothi/core";
 
 /**
  * An estate-like agent: the shape that exercises everything v0 has.

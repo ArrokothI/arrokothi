@@ -6,15 +6,15 @@ import type {
   RunTurnResult,
   SessionState,
   SessionStore,
-} from "@agent-sdk/core";
-import { KnowledgeIndex } from "@agent-sdk/retrieval-local/legacy";
+} from "@arrokothi/core";
+import { KnowledgeIndex } from "@arrokothi/retrieval-local/legacy";
 import {
   AgentHarness,
   AgentRuntime,
   InMemorySessionStore,
   ToolRegistry,
   definitionRef,
-} from "@agent-sdk/core";
+} from "@arrokothi/core";
 import { P01_WELCOME_MESSAGE, createP01Definition } from "./agent.ts";
 
 export interface P01SubjectOptions {

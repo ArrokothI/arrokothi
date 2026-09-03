@@ -1,12 +1,12 @@
 {
-  "name": "@agent-sdk/example-strands-gemini",
-  "version": "0.37.0",
+  "name": "@arrokothi/example-strands-gemini",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "dependencies": {
-    "@agent-sdk/core": "*",
-    "@agent-sdk/integration-strands": "*",
-    "@agent-sdk/provider-gemini": "*",
+    "@arrokothi/core": "*",
+    "@arrokothi/integration-strands": "*",
+    "@arrokothi/provider-gemini": "*",
     "@strands-agents/sdk": "1.14.0"
   }
 }

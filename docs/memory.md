@@ -1,6 +1,6 @@
 # Memory Model
 
-> **Status: canonical memory semantics for ArrokothI v0.4.**
+> **Status: canonical memory semantics for ArrokothI 0.8.x.**
 >
 > Read [`mental-model.md`](mental-model.md) first. This document owns Structured Memory, Derived Semantic Memory, Working Notes, Artifacts / Files, memory scope/view, provenance, promotion, retrieval, context compilation, and memory consistency consequences.
 >
@@ -8,7 +8,7 @@
 
 ## 1. Memory is retained information, not current prompt context
 
-Arrokoth distinguishes durable/retained information from the material assembled for one model invocation.
+ArrokothI distinguishes durable/retained information from the material assembled for one model invocation.
 
 ```text
 memory / retained information
@@ -32,7 +32,7 @@ Context compilation is an information-selection problem. It does not choose oper
 
 ## 2. Memory forms
 
-Arrokoth uses four primary memory forms:
+ArrokothI uses four primary memory forms:
 
 ```text
 Memory / retained information
@@ -179,7 +179,7 @@ Portable Resource/export mappings belong in [`interoperability.md`](interoperabi
 
 ## 7. Source observations are provenance, not automatically semantic memory
 
-Arrokoth runtime/application history may contain source material such as:
+ArrokothI runtime/application history may contain source material such as:
 
 ```text
 Events
@@ -362,7 +362,7 @@ This differs from a Structured Memory field such as `current_shipping_address`, 
 
 Do not treat labels such as “user memory” or “organizational memory” as fundamental memory forms.
 
-Arrokoth separates two axes:
+ArrokothI separates two axes:
 
 ```text
 Memory Form
@@ -509,7 +509,7 @@ The kernel should own memory provenance/visibility/epistemic distinctions, while
 Conceptually:
 
 ```text
-Arrokoth memory semantics
+ArrokothI memory semantics
         ↓ provider port
 simple implementation / Mem0 / Graphiti / application backend / other
 ```
@@ -606,6 +606,6 @@ And these positive rules summarize the model:
 
 > **Context is compiled from authorized information; it is not identical to memory.**
 
-> **Retrieval engines are replaceable mechanisms behind Arrokoth-owned memory semantics.**
+> **Retrieval engines are replaceable mechanisms behind ArrokothI-owned memory semantics.**
 
 This document owns these memory meanings. Use [`README.md`](README.md) to locate adjacent canonical owners instead of redefining them here.

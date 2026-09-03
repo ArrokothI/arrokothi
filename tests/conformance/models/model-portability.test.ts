@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import type { LogicalModelRequest, ModelProviderRequest } from "@agent-sdk/core/ports";
+import type { LogicalModelRequest, ModelProviderRequest } from "@arrokothi/core/ports";
 import {
   ModelProviderRegistry,
   ScriptedModelProvider,
   StaticModelResolver,
   portableModelFeatures,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 
 describe("portable model execution", () => {
   test("runs one semantic request against two providers without changing its logical ref", async () => {

@@ -6,18 +6,18 @@ import type {
   AgentControlState,
   StructuredMemoryBinding,
   StructuredMemoryView,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 import {
   createActiveStructuredMemoryWriteView,
   effectRequestsIn,
   readAgentControlState,
   validateAgentSpec,
-} from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
 import type {
   ActiveStructuredMemoryWriteViewResolver,
   ConfirmationPolicy,
   EffectAuthorizer,
-} from "@agent-sdk/core/ports";
+} from "@arrokothi/core/ports";
 import {
   createAllowListAuthorizer,
   createDeferredModelProvider,
@@ -25,7 +25,7 @@ import {
   createScriptedCapabilityExecutor,
   createStructuredMemoryWriteViewResolver,
   InMemoryRuntimeStore,
-} from "@agent-sdk/core/reference";
+} from "@arrokothi/core/reference";
 import {
   agentModelAccess,
   createAgentTestHarness,
@@ -33,7 +33,7 @@ import {
   referenceAgentExecutor,
   scriptedAgentDefinition,
   seedStructuredMemory,
-} from "@agent-sdk/core/testing";
+} from "@arrokothi/core/testing";
 import {
   DOCS_SEARCH,
   scriptedAgentExecutor,

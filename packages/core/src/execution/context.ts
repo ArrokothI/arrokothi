@@ -98,7 +98,7 @@ export function initialControllerProgress(kind: DefinitionKind): ControllerProgr
  * Interleaving *eligibility* is not mandatory immediate execution - the runtime stays free to be
  * conservative about scheduling, and repeated matching Events do not each force a fresh expensive
  * re-invocation (see [`../runtime/event-router.ts`](../runtime/event-router.ts) and
- * [`../../../../docs/development/016-slice-e1-interleaving-peer-interaction.md`](../../../../docs/development/016-slice-e1-interleaving-peer-interaction.md)).
+ * [`../../../../docs/development/legacy/016-slice-e1-interleaving-peer-interaction.md`](../../../../docs/development/legacy/016-slice-e1-interleaving-peer-interaction.md)).
  *
  * Absent `interleave`, the `controller_resumption` arm still suspends *exclusively*, exactly as in
  * v0.4: Events reach the mailbox but none produces an intervening Activation while the continuation

@@ -16,9 +16,9 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import type { AuthorizationDecision, EffectAuthorizationRequest } from "@agent-sdk/core/ports";
-import { createAllowListAuthorizer, createCapabilityCatalog, createScriptedCapabilityExecutor } from "@agent-sdk/core/reference";
-import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@agent-sdk/core/testing";
+import type { AuthorizationDecision, EffectAuthorizationRequest } from "@arrokothi/core/ports";
+import { createAllowListAuthorizer, createCapabilityCatalog, createScriptedCapabilityExecutor } from "@arrokothi/core/reference";
+import { createTestHarness, readScriptedProgress, scriptedAgentDefinition } from "@arrokothi/core/testing";
 
 /**
  * What this Execution is permitted to use at all.

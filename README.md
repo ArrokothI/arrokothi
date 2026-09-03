@@ -1,4 +1,4 @@
-# Arrokoth Agent Kernel
+# ArrokothI Agent Kernel
 
 A provider-neutral execution kernel for building long-lived Agents and Workflows with bounded authority, explicit memory, durable waiting, composable communication, and protocol-neutral service interoperability.
 
@@ -116,7 +116,7 @@ Active View ⊆ Authority Envelope
 
 ### Memory and context
 
-Arrokoth distinguishes retained information from current model context.
+ArrokothI distinguishes retained information from current model context.
 
 ```text
 Memory
@@ -152,10 +152,10 @@ Messaging permission does not imply ownership, cancellation rights, or memory ac
 
 ### Interoperability
 
-Arrokoth deliberately separates kernel semantics from portable service-interface semantics and protocol bindings:
+ArrokothI deliberately separates kernel semantics from portable service-interface semantics and protocol bindings:
 
 ```text
-Arrokoth kernel
+ArrokothI kernel
   Execution / Event / Effect / authority / memory / lifecycle
         ↓
 portable interoperability surface
@@ -167,7 +167,7 @@ MCP / HTTP+OpenAPI / local SDK / future protocols
 
 MCP is a **first-class compatibility target and design reference**, not the owner of ArrokothI kernel semantics.
 
-This means an Arrokoth capability, Agent, Workflow, resource, or interaction template can eventually be projected into MCP or another service protocol, while an imported MCP service can be adapted into Arrokoth portable descriptors and Effects.
+This means an ArrokothI capability, Agent, Workflow, resource, or interaction template can eventually be projected into MCP or another service protocol, while an imported MCP service can be adapted into ArrokothI portable descriptors and Effects.
 
 The critical distinction is:
 
@@ -178,15 +178,26 @@ Execution         ≠ external task/job handle
 protocol exposure ≠ authority grant
 ```
 
-The kernel remains protocol-independent so a maturing MCP or future protocol can improve the appropriate Arrokoth abstraction without forcing wire-level concepts into core semantic contracts. See [`docs/interoperability.md`](docs/interoperability.md).
+The kernel remains protocol-independent so a maturing MCP or future protocol can improve the appropriate ArrokothI abstraction without forcing wire-level concepts into core semantic contracts. See [`docs/interoperability.md`](docs/interoperability.md).
 
 ## Current implementation
 
-The repository is being migrated toward the architecture documented above. Existing components such as Agent execution, model-provider boundaries, capability gateways, memory, context compilation, durability, and storage should be preserved where their responsibilities still match the target semantics.
+The merged post-Slice-G kernel implements the execution, authority/exposure, Agent, Workflow,
+recursive composition, interaction, three-form memory, optimistic conflict, and structured-parallel
+baselines summarized in
+[`docs/development/002-implemented-kernel-baseline.md`](docs/development/002-implemented-kernel-baseline.md).
+The narrow MCP proof imports and exports synchronous Tools without moving protocol objects into core
+semantics.
 
-Older code may still encode previous assumptions. In particular, historical documents and implementation structures may treat LLM/Function invocations as Executions or use older Flow/Phase/AgentHarness semantics. New work should follow the active documents rather than infer the architecture from legacy class names.
+The current experimental project/package line is **ArrokothI agent-kernel 0.8.0**. This version does
+not claim the former “v0.8 architecture-complete” release gate; portable service contracts,
+expanded interoperability, progressive discovery, hosted isolation, durable restart, and integrated
+release evidence remain. See
+[`docs/development/001-current-status-and-roadmap.md`](docs/development/001-current-status-and-roadmap.md).
 
-The current primary Agent executor is Strands, while model inference remains behind a provider-neutral boundary.
+Older Session/Flow/AgentHarness surfaces remain for compatibility. New work should follow the active
+documents rather than infer current architecture from those legacy class names. The current primary
+Agent executor is Strands, while model inference remains behind a provider-neutral boundary.
 
 ## Commands
 
@@ -197,12 +208,12 @@ npm run example:strands          # add -- --live for Gemini
 npm run example:benchmark:p01 -- --check
 npm run example:benchmark:p02 -- --check
 npm run canary:gemini            # optional live provider check
-npm run canary:workflow          # optional live v0.4 Workflow scenario
+npm run canary:workflow          # optional live 0.8.x Workflow scenario
 npm run canary:mcp:gemini        # optional live Agent -> MCP Tool check
 npm run studio
 ```
 
-Cross-framework P01/P02 evaluation and retained historical evidence live in the standalone `ArrokothI/benchmark` repository. This repository owns Arrokoth framework code, examples, and architecture documentation.
+Cross-framework P01/P02 evaluation and retained historical evidence live in the standalone `ArrokothI/benchmark` repository. This repository owns ArrokothI framework code, examples, and architecture documentation.
 
 ## Repository layout
 
@@ -226,15 +237,15 @@ applications / presets
         ↓
 implementation / protocol-adapter packages
         ↓
-@arrokoth/core
+@arrokothi/core
 ```
 
 Concrete Agent frameworks, model SDKs, retrieval frameworks, databases, tool transports, MCP SDKs, HTTP frameworks, and other protocol implementations may be first-class supported packages without defining kernel semantics.
 
 ## One-minute explanation
 
-Arrokoth treats an Agent or Workflow as a potentially long-lived, addressable **Execution**. The Harness manages many Executions and owns operational concerns such as scheduling, authorization, waiting, routing, and recovery. Events are observations delivered into an Execution; Effects are requests to interact with capabilities, memory, users, or other Executions.
+ArrokothI treats an Agent or Workflow as a potentially long-lived, addressable **Execution**. The Harness manages many Executions and owns operational concerns such as scheduling, authorization, waiting, routing, and recovery. Events are observations delivered into an Execution; Effects are requests to interact with capabilities, memory, users, or other Executions.
 
 A Workflow uses system-defined semantic topology made from Stages. An Agent uses a model-directed semantic loop. Functions, LLM calls, and Adapters normally remain local computation inside those Executions rather than receiving independent runtime identity.
 
-Outside the kernel, Arrokoth defines portable service/interface semantics that can be projected into MCP, HTTP/OpenAPI, SDK functions, model tool calling, and future protocols. This lets Arrokoth Agents and Workflows be packaged as services without making those protocols part of the kernel ontology.
+Outside the kernel, ArrokothI defines portable service/interface semantics that can be projected into MCP, HTTP/OpenAPI, SDK functions, model tool calling, and future protocols. This lets ArrokothI Agents and Workflows be packaged as services without making those protocols part of the kernel ontology.

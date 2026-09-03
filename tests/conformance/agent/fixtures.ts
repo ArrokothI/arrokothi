@@ -12,8 +12,8 @@ import type {
   AgentDefinition,
   ObjectSchema,
   OperationRef,
-} from "@agent-sdk/core/execution";
-import { defineAgent } from "@agent-sdk/core/execution";
+} from "@arrokothi/core/execution";
+import { defineAgent } from "@arrokothi/core/execution";
 import type {
   AgentExecutor,
   AgentExecutorOutcome,
@@ -21,8 +21,8 @@ import type {
   AgentExecutorStepResult,
   AgentModelInvocationMetadata,
   CapabilityCatalog,
-} from "@agent-sdk/core/ports";
-import { createCapabilityCatalog, portableModelFeatures, StaticModelResolver } from "@agent-sdk/core/reference";
+} from "@arrokothi/core/ports";
+import { createCapabilityCatalog, portableModelFeatures, StaticModelResolver } from "@arrokothi/core/reference";
 
 export const SEARCH_INPUT: ObjectSchema = {
   kind: "object",

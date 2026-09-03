@@ -1,7 +1,7 @@
 # Strands + Gemini
 
-This example wires an Agent_SDK `AgentDefinition`, durable Session, semantic Preflight,
-Agent_SDK document Knowledge, `CapabilityGateway`, and the canonical `StrandsLoopEngine` together.
+This example wires an ArrokothI `AgentDefinition`, durable Session, semantic Preflight,
+ArrokothI document Knowledge, `CapabilityGateway`, and the canonical `StrandsLoopEngine` together.
 
 The default command is deterministic and makes no network request:
 

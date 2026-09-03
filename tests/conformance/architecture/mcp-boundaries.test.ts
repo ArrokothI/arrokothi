@@ -6,7 +6,7 @@
  * manifests:
  *
  * ```text
- * @modelcontextprotocol/*  ->  packages/interoperability/mcp  ->  @agent-sdk/core
+ * @modelcontextprotocol/*  ->  packages/interoperability/mcp  ->  @arrokothi/core
  * ```
  *
  * and never the reverse. They also check the two ways a protocol can leak into a kernel without a
@@ -111,9 +111,9 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
 
   test("the adapter depends inward, and is the only workspace package that declares MCP", async () => {
     const adapter = await manifest("packages/interoperability/mcp/package.json");
-    assert.equal(adapter["name"], "@agent-sdk/integration-mcp");
+    assert.equal(adapter["name"], "@arrokothi/integration-mcp");
     const dependencies = adapter["dependencies"] as Record<string, string>;
-    assert.equal(dependencies["@agent-sdk/core"], "*", "the adapter depends on the kernel");
+    assert.equal(dependencies["@arrokothi/core"], "*", "the adapter depends on the kernel");
     assert.equal(dependencies["@modelcontextprotocol/client"], "2.0.0");
     assert.equal(dependencies["@modelcontextprotocol/server"], "2.0.0");
     assert.equal(
@@ -145,9 +145,9 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
     assert.deepEqual(
       [...bare.keys()].sort(),
       [
-        "@agent-sdk/core/execution",
-        "@agent-sdk/core/ports",
-        "@agent-sdk/core/reference",
+        "@arrokothi/core/execution",
+        "@arrokothi/core/ports",
+        "@arrokothi/core/reference",
         "@modelcontextprotocol/client",
         "@modelcontextprotocol/server",
       ],
@@ -160,7 +160,7 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
     for (const path of await tsFilesUnder(MCP_SRC)) {
       const source = await readFile(resolve(MCP_SRC, path), "utf8");
       for (const specifier of specifiersIn(source)) {
-        if (specifier.startsWith("@agent-sdk/core") || specifier.startsWith(".") || specifier.startsWith("@modelcontextprotocol")) {
+        if (specifier.startsWith("@arrokothi/core") || specifier.startsWith(".") || specifier.startsWith("@modelcontextprotocol")) {
           continue;
         }
         violations.push(`${path} imports ${specifier}`);
@@ -171,7 +171,7 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
   });
 
   test("the export path holds no dispatcher, policy evaluator, grant, store, or Harness", async () => {
-    // An inbound external call must not be able to become an authorized Arrokoth Effect. The
+    // An inbound external call must not be able to become an authorized ArrokothI Effect. The
     // strongest form of that claim is that the module has nothing to make one with.
     const code = codeOf(await readFile(resolve(MCP_SRC, "export/tools.ts"), "utf8"));
     for (const forbidden of [

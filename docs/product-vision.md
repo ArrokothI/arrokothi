@@ -45,12 +45,12 @@ A realistic application may contain:
 ```text
 customer request
       ↓
-Arrokoth Workflow
+ArrokothI Workflow
       │
       ├── Dify support application
       ├── Hermes research Agent
       ├── custom fraud Agent
-      ├── Arrokoth-native analysis Agent
+      ├── ArrokothI-native analysis Agent
       ├── internal policy Workflow
       ├── MCP / HTTP services
       └── human approval
@@ -101,7 +101,7 @@ external/native Agent implementation
              ↓
 well-defined composition boundary
              ↓
-Arrokoth application execution
+ArrokothI application execution
 ```
 
 ArrokothI should standardize the boundary needed for reliable composition, not homogenize all Agent
@@ -116,8 +116,8 @@ Can it wait or resume?
 Can it be cancelled?
 Can its actions be intercepted before execution?
 Which Operations/Resources does it require?
-What lifecycle state can Arrokoth observe or own?
-What guarantees can Arrokoth actually enforce?
+What lifecycle state can ArrokothI observe or own?
+What guarantees can ArrokothI actually enforce?
 ```
 
 The portable service/interface layer in [`interoperability.md`](interoperability.md) is the canonical
@@ -127,18 +127,18 @@ home for protocol-neutral mappings that support this direction.
 
 ## 4. Integration depth is a spectrum
 
-An external Agent can participate in an Arrokoth application at different depths. The product must
+An external Agent can participate in an ArrokothI application at different depths. The product must
 make the difference explicit instead of pretending all integrations provide the same guarantees.
 
 ### 4.1 External service
 
 ```text
-Arrokoth Execution
+ArrokothI Execution
       ↓ HTTP / A2A / other protocol
 external Agent runtime
 ```
 
-Arrokoth can ordinarily govern the invocation boundary, correlation, outer waiting/timeout policy,
+ArrokothI can ordinarily govern the invocation boundary, correlation, outer waiting/timeout policy,
 and surrounding Workflow. It cannot claim control over the external runtime's internal tool calls,
 memory, side effects, or recovery unless the external contract proves those properties.
 
@@ -147,22 +147,22 @@ This is the easiest compatibility mode and should be useful for existing systems
 ### 4.2 Wrapped / managed external task
 
 ```text
-Arrokoth child/service boundary
+ArrokothI child/service boundary
              ↓
 external Agent task/runtime
 ```
 
-Arrokoth represents the external work explicitly inside its application lifecycle and may gain better
+ArrokothI represents the external work explicitly inside its application lifecycle and may gain better
 cancellation, progress, input-required, and terminal-result correlation through portable async/service
 interfaces.
 
-Operational truth remains shared: Arrokoth owns the surrounding Execution semantics while the
+Operational truth remains shared: ArrokothI owns the surrounding Execution semantics while the
 external runtime owns its internal execution.
 
 ### 4.3 Adapted executor
 
 ```text
-Arrokoth Execution
+ArrokothI Execution
       ↓
 AgentController
       ↓
@@ -174,7 +174,7 @@ external framework cognition/model loop
 This is the deepest interoperability target for an existing Agent framework.
 
 The external framework may retain reasoning, ACI, context, Skills, and model-interaction behavior,
-while Arrokoth owns operational truth:
+while ArrokothI owns operational truth:
 
 ```text
 Execution identity and lifecycle
@@ -186,27 +186,27 @@ recovery semantics
 ```
 
 For action-producing frameworks, native tool execution should be intercepted **before** the external
-framework performs the side effect, then returned to Arrokoth as a semantic action request. The
+framework performs the side effect, then returned to ArrokothI as a semantic action request. The
 existing Strands bridge is the first concrete example of this pattern.
 
-### 4.4 Native Arrokoth Definition
+### 4.4 Native ArrokothI Definition
 
 ```text
-Arrokoth Agent/Workflow Definition
+ArrokothI Agent/Workflow Definition
               ↓
-Arrokoth Execution
+ArrokothI Execution
 ```
 
-This provides the strongest ability to preserve the full current Arrokoth semantic model.
+This provides the strongest ability to preserve the full current ArrokothI semantic model.
 
 ### 4.5 Import/translation
 
-Some external definitions may be translated into Arrokoth-native definitions:
+Some external definitions may be translated into ArrokothI-native definitions:
 
 ```text
 external DSL/profile/config
           ↓ importer
-Arrokoth Definition
+ArrokothI Definition
 ```
 
 Translation must never silently claim semantic equivalence when the source and destination models
@@ -222,26 +222,26 @@ The exact labels are not fixed, but a useful conceptual scale is:
 
 ```text
 Native
-  Arrokoth owns the relevant execution semantics end to end.
+  ArrokothI owns the relevant execution semantics end to end.
 
 Managed / Adapted
-  external cognition runs behind an Arrokoth-owned operational boundary.
+  external cognition runs behind an ArrokothI-owned operational boundary.
 
 Wrapped
-  Arrokoth owns the surrounding task/service lifecycle but not the external runtime internals.
+  ArrokothI owns the surrounding task/service lifecycle but not the external runtime internals.
 
 External
-  Arrokoth invokes a black-box service and can guarantee only the invocation boundary and
+  ArrokothI invokes a black-box service and can guarantee only the invocation boundary and
   surrounding application semantics.
 ```
 
-Do not present a black-box HTTP Agent as though Arrokoth can guarantee its internal authorization,
+Do not present a black-box HTTP Agent as though ArrokothI can guarantee its internal authorization,
 memory provenance, exactly-once side effects, or recovery.
 
 A central trust rule is:
 
-> **Product UI and documentation must distinguish what Arrokoth observes, what Arrokoth controls,
-> and what Arrokoth can actually guarantee.**
+> **Product UI and documentation must distinguish what ArrokothI observes, what ArrokothI controls,
+> and what ArrokothI can actually guarantee.**
 
 ---
 
@@ -285,8 +285,8 @@ runtime responsibility.
 The Workflow product surface should be able to compose heterogeneous components such as:
 
 ```text
-Arrokoth-native Agent
-Arrokoth-native Workflow
+ArrokothI-native Agent
+ArrokothI-native Workflow
 external Agent service
 adapted framework Agent
 MCP/A2A/HTTP service
@@ -310,11 +310,11 @@ The Studio should visualize both without collapsing them.
 
 ---
 
-## 8. Arrokoth's native runtime must remain strong
+## 8. ArrokothI's native runtime must remain strong
 
 Interoperability must not reduce ArrokothI to "Zapier for Agents."
 
-Arrokoth-native Agents and Workflows should remain first-class and should eventually offer strong
+ArrokothI-native Agents and Workflows should remain first-class and should eventually offer strong
 reference implementations for:
 
 ```text
@@ -340,15 +340,15 @@ or, most realistically, a heterogeneous mix
 A likely real-world application is:
 
 ```text
-Arrokoth Workflow
-  ├── Arrokoth-native routing Agent
+ArrokothI Workflow
+  ├── ArrokothI-native routing Agent
   ├── Hermes coding/research Agent
   ├── Dify support application
   ├── internal Workflow
   └── human approval
 ```
 
-Arrokoth's competitive value is the coherent application execution system around those components,
+ArrokothI's competitive value is the coherent application execution system around those components,
 not a requirement that every component use the same Agent engine.
 
 ---
@@ -365,7 +365,7 @@ operable.
 A future "Add Agent / Service" experience may accept sources such as:
 
 ```text
-Arrokoth Definition
+ArrokothI Definition
 Hermes profile/distribution
 OpenClaw Agent/workspace/config
 Dify DSL or App endpoint
@@ -482,7 +482,7 @@ show provenance/supersession where applicable.
 
 ## 10. Cross-repository product structure
 
-This repository should not become the monorepo for every eventual Arrokoth product.
+This repository should not become the monorepo for every eventual ArrokothI product.
 
 A plausible future organization is:
 
@@ -528,20 +528,20 @@ Agent frameworks.
 A stronger ecosystem outcome is:
 
 ```text
-Hermes on/through Arrokoth
-OpenClaw connected to Arrokoth
-Dify authored application connected to Arrokoth
-custom Agents governed by Arrokoth
+Hermes on/through ArrokothI
+OpenClaw connected to ArrokothI
+Dify authored application connected to ArrokothI
+custom Agents governed by ArrokothI
 ```
 
 Different products may specialize at different layers:
 
 ```text
-Agent effectiveness / cognition      external framework or native Arrokoth
+Agent effectiveness / cognition      external framework or native ArrokothI
 visual/no-code authoring              Dify-like surface or Studio
 messaging/channel experience          OpenClaw-like surface
 specialized research/coding Agent     Hermes-like executor
-application execution/governance      Arrokoth
+application execution/governance      ArrokothI
 ```
 
 The preferred interoperability path is open and protocol-neutral where possible:
@@ -553,7 +553,7 @@ HTTP         boring, broad compatibility
 native adapter deepest integration and strongest runtime control
 ```
 
-This lowers partnership friction and keeps Arrokoth from depending on proprietary bilateral
+This lowers partnership friction and keeps ArrokothI from depending on proprietary bilateral
 integrations for ordinary compatibility.
 
 ---
@@ -587,7 +587,7 @@ without the corresponding written authorization.
 
 Third-party source code, SDKs, protocols, names, and logos each have their own license/terms. Before
 shipping or marketing an integration, run the current checklist in
-[`development/015-ecosystem-integration-brand-and-license-checklist.md`](development/015-ecosystem-integration-brand-and-license-checklist.md).
+[`development/006-ecosystem-integration-brand-and-license-checklist.md`](development/006-ecosystem-integration-brand-and-license-checklist.md).
 
 The ecosystem strategy should prefer technical interoperability that does not require a bilateral
 contract, while remaining open to formal partnerships when co-marketing, certification, private APIs,
@@ -602,7 +602,7 @@ The most natural business model is compatible with an open kernel.
 A plausible structure is:
 
 ```text
-Arrokoth OSS
+ArrokothI OSS
   kernel
   SDKs
   reference runtime
@@ -610,7 +610,7 @@ Arrokoth OSS
   interoperability adapters
   useful local Studio
 
-Arrokoth Cloud
+ArrokothI Cloud
   managed durable runtime
   managed scheduling/storage/workers
   hosted Studio
@@ -666,19 +666,19 @@ integration with internal systems.
 
 ### Agent-framework authors
 
-They may want their Agent engine to run as an Arrokoth `AgentExecutor` rather than implementing a
+They may want their Agent engine to run as an ArrokothI `AgentExecutor` rather than implementing a
 complete durable multi-tenant runtime themselves.
 
 ### SaaS teams
 
-They embed Arrokoth behind their own product UI. Their end users may never need to know Arrokoth is
+They embed ArrokothI behind their own product UI. Their end users may never need to know ArrokothI is
 present.
 
 ---
 
 ## 15. Initial adoption wedge
 
-Arrokoth should not target every personal Agent use case first.
+ArrokothI should not target every personal Agent use case first.
 
 The strongest early user is likely a developer/team whose Agent system has begun to encounter
 production runtime problems:
@@ -697,7 +697,7 @@ many dormant executions
 ```
 
 For a single local personal Agent with no durable/business-process requirements, a specialized Agent
-product may be the better solution. Arrokoth's value should increase as an Agentic system begins to
+product may be the better solution. ArrokothI's value should increase as an Agentic system begins to
 look like a real distributed application.
 
 ---
@@ -720,7 +720,7 @@ best prompt marketplace
 
 Those capabilities can integrate with the execution system.
 
-Arrokoth should become exceptional at:
+ArrokothI should become exceptional at:
 
 ```text
 heterogeneous composition
@@ -738,17 +738,17 @@ application-level governance
 
 ## 17. Product success test
 
-A strong future Arrokoth deployment might look like:
+A strong future ArrokothI deployment might look like:
 
 ```text
 customer apps / Slack / web / voice / internal APIs
                     │
                     ▼
-          Arrokoth execution plane
+          ArrokothI execution plane
                     │
        ┌────────────┼────────────┐
        ▼            ▼            ▼
-   Hermes Agent   Dify App   Arrokoth Agent
+   Hermes Agent   Dify App   ArrokothI Agent
        │            │            │
        ├──── MCP / HTTP / A2A ───┤
        │            │            │
@@ -774,5 +774,5 @@ control plane.
 
 A particularly strong ecosystem success signal would be:
 
-> **Developers keep using the Agent frameworks they like, but choose Arrokoth as the place where
+> **Developers keep using the Agent frameworks they like, but choose ArrokothI as the place where
 > heterogeneous Agentic applications are composed, executed, and governed in production.**

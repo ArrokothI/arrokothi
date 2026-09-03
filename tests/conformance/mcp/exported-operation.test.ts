@@ -15,7 +15,7 @@
  * MCP client can list and invoke the operation, and that the schema it sees is the descriptor's own
  * projection rather than a second translation written for the wire. The negative one is larger: an
  * operation nobody exported is invisible and uninvocable, raw Effect vocabulary is never published,
- * and the inbound call fabricates no Arrokoth Execution, grant, or authority to make itself work.
+ * and the inbound call fabricates no ArrokothI Execution, grant, or authority to make itself work.
  *
  * That last point is what keeps the export honest. An inbound `tools/call` is a request from
  * outside. Manufacturing an `AuthorizedGrant` for it - or an Execution, or a `CapabilityExecutor`
@@ -28,12 +28,12 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { Client } from "@modelcontextprotocol/client";
 import { InMemoryTransport, McpServer } from "@modelcontextprotocol/server";
-import type { JsonObject } from "@agent-sdk/core/ports";
-import { toJsonSchema } from "@agent-sdk/core/execution";
-import { createCapabilityCatalog } from "@agent-sdk/core/reference";
-import { createTestHarness } from "@agent-sdk/core/testing";
-import { exportCapabilityOperationsAsMcpTools } from "@agent-sdk/integration-mcp";
-import type { McpExportInvocation } from "@agent-sdk/integration-mcp";
+import type { JsonObject } from "@arrokothi/core/ports";
+import { toJsonSchema } from "@arrokothi/core/execution";
+import { createCapabilityCatalog } from "@arrokothi/core/reference";
+import { createTestHarness } from "@arrokothi/core/testing";
+import { exportCapabilityOperationsAsMcpTools } from "@arrokothi/integration-mcp";
+import type { McpExportInvocation } from "@arrokothi/integration-mcp";
 
 /**
  * A native catalog with one publishable operation and two that must never be published.
@@ -84,7 +84,7 @@ interface ExportPair {
 
 async function exportedServer(): Promise<ExportPair> {
   const handled: { input: JsonObject; invocation: McpExportInvocation }[] = [];
-  const server = new McpServer({ name: "arrokoth-export-server", version: "0.0.1" });
+  const server = new McpServer({ name: "arrokothi-export-server", version: "0.0.1" });
 
   // The allowlist. One entry, named explicitly. `CATALOG.list()` is never called.
   exportCapabilityOperationsAsMcpTools(server, {
@@ -130,16 +130,16 @@ describe("an explicitly exported capability operation is a real MCP Tool", () =>
         "the wire schema is the existing projection of the descriptor, not a second translation",
       );
 
-      const called = await pair.client.callTool({ name: "search_documents", arguments: { query: "arrokoth", limit: 3 } });
+      const called = await pair.client.callTool({ name: "search_documents", arguments: { query: "arrokothi", limit: 3 } });
       assert.deepEqual((called as { structuredContent?: unknown }).structuredContent, {
-        passages: ["match for arrokoth"],
+        passages: ["match for arrokothi"],
         truncated: false,
       });
       assert.equal((called as { isError?: boolean }).isError, undefined);
 
       assert.deepEqual(pair.handled, [
         {
-          input: { query: "arrokoth", limit: 3 },
+          input: { query: "arrokothi", limit: 3 },
           invocation: { ref: { capability: "docs", operation: "search" }, toolName: "search_documents" },
         },
       ]);
@@ -211,7 +211,7 @@ describe("everything not explicitly exported stays invisible and uninvocable", (
   });
 });
 
-describe("the export fabricates no Arrokoth Execution or authority", () => {
+describe("the export fabricates no ArrokothI Execution or authority", () => {
   test("the handler is told what it needs and nothing that would be invented", async () => {
     const pair = await exportedServer();
     try {
@@ -264,7 +264,7 @@ describe("the export fabricates no Arrokoth Execution or authority", () => {
 
   test("invalid arguments are refused by the published schema before the handler runs", async () => {
     let handlerCalls = 0;
-    const server = new McpServer({ name: "arrokoth-export-server", version: "0.0.1" });
+    const server = new McpServer({ name: "arrokothi-export-server", version: "0.0.1" });
     exportCapabilityOperationsAsMcpTools(server, {
       catalog: CATALOG,
       exports: [
