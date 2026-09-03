@@ -110,6 +110,28 @@ export type ExecutionWait =
       readonly kind: "controller_resumption";
       readonly resumptionId: ControllerResumptionId;
       readonly interleave?: WakeCondition;
+    }
+  /**
+   * A *set* of dependencies, any one of which settling makes this Execution READY (Slice G.2).
+   *
+   * The durable form of a controller's `await_dependencies` report. It carries the two dependency
+   * kinds explicitly and keeps them distinct:
+   *
+   * ```text
+   * event         a WakeCondition matched through the mailbox / Event router (or null)
+   * resumptions   ControllerResumption ids settled through the ControllerResumptionProcessor
+   * ```
+   *
+   * An arriving Event that matches `event` wakes it and does **not** invalidate any member of
+   * `resumptions`; a member of `resumptions` settling wakes it and leaves `event` outstanding. This
+   * is the parallel-branch union wait, and it is deliberately different from `interleave` on the two
+   * arms above - there is no stale-continuation invalidation here, because sibling branch progress is
+   * explicitly separate. There is no `interleave` field.
+   */
+  | {
+      readonly kind: "dependencies";
+      readonly event: WakeCondition | null;
+      readonly resumptions: readonly ControllerResumptionId[];
     };
 
 export function eventWait(wake: WakeCondition, interleave?: WakeCondition): ExecutionWait {
@@ -123,6 +145,13 @@ export function controllerResumptionWait(
   return interleave
     ? { kind: "controller_resumption", resumptionId, interleave }
     : { kind: "controller_resumption", resumptionId };
+}
+
+export function dependenciesWait(
+  event: WakeCondition | null,
+  resumptions: readonly ControllerResumptionId[],
+): ExecutionWait {
+  return { kind: "dependencies", event, resumptions: [...resumptions] };
 }
 
 /** Where this Execution's addressed Events accumulate. */

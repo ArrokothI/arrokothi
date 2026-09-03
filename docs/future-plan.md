@@ -106,10 +106,19 @@ proof of the first three items: authored `{ to: "fork" }` / `{ to: "join" }` top
 branch-local `WorkflowParallelState` record per branch (its own visit, input snapshot, progress, and
 result), an explicit join as a distinct controller step that exposes an immutable authored-order
 `WorkflowJoinContext` to one downstream Function Stage, deterministic result/failure ordering, and a
-`parallel_branch_effects_unsupported` fail-closed for a branch that returns `awaitEffects`. It is
-reference-implementation evidence, not a frozen API: a G.1 branch body is exactly one Function Stage,
-and branch Effects/resumptions, multi-Stage branches, nested forks, branch loops, reducers, merge,
-cancellation propagation, and branch Working Notes all remain open (G.2/G.3).
+`parallel_branch_effects_unsupported` fail-closed for a branch that returns `awaitEffects`.
+
+Slice G.2 (`development/026-slice-g2-parallel-branch-dependencies.md`) extends that proof: a branch
+may be any adapter-free Stage kind (`function` / `llm` / `agent` / `workflow`) and may hold a real
+asynchronous dependency — a `UseCapability` Effect, a child `call`, or a slow model call — while
+staying a branch of one Workflow Execution. It adds a runtime dependency-set (union) wait
+(`ControllerNext` `await_dependencies`, `ExecutionWait` `dependencies`) that is deliberately *not*
+`interleave` (sibling branch progress is explicitly separate, so no stale-continuation
+invalidation), branch-qualified Effect correlation and ControllerResumption keys, atomic
+multi-registration commit, and a `parallel_branch_memory_write_deferred` fail-closed. Both records
+are reference-implementation evidence, not a frozen API: multi-Stage branches, nested forks, branch
+loops, branch Adapters, branch emissions, reducers, merge, cancellation propagation, concurrent
+Structured Memory branch writes, and branch Working Notes all remain open (G.3+).
 
 ### 1.4 Shared mutable resources
 

@@ -73,20 +73,26 @@ import type { StageResult } from "./stage-result.ts";
  * 2  the re-enterable Stage boundary
  * 3  active-fork branch-local state + the persisted explicit-join snapshot + the `visits`
  *    allocation coordinate (Slice G.1)
+ * 4  each active-fork branch carries its own completion barrier and its own local wait status
+ *    (`awaiting_effects` / `awaiting_resumption`), so a branch may hold a real asynchronous
+ *    dependency - an Effect or a slow model call - while remaining a branch of one Workflow
+ *    Execution (Slice G.2)
  * ```
  *
  * Bumped rather than back-fitted each time: a shape that cannot represent "two branches are active,
- * each with its own progress and result" would have to fake it by mutating one current Stage's
- * fields, which is exactly the ambiguity structured parallelism forbids.
+ * each with its own progress, its own barrier, and its own wait state" would have to fake it by
+ * mutating one current Stage's fields, which is exactly the ambiguity structured parallelism forbids.
  *
  * G.1's first (unaccepted) form overloaded top-level `visit` as the allocation high-water mark
  * during an active fork, which made `currentStage` + `visit` name a Stage invocation that never
  * happened. The independent-review correction split allocation into `visits` and kept `visit`
- * truthful. Because G.1 is unmerged and no version-3 record exists outside this branch's test runs,
- * that correction revised the version-3 shape in place rather than bumping to 4 to memorialise an
- * intermediate representation that was never accepted.
+ * truthful. Because G.1 is unmerged and no version-3 record existed outside its own branch, that
+ * correction revised the version-3 shape in place. G.1 is now the accepted version-3 checkpoint, so
+ * G.2's genuine per-branch-barrier shape evolution is version **4**, and `readWorkflowControlState`
+ * reads a version-3 active fork unchanged (a branch with no `barrier` field defaults to `[]`, and
+ * `ready` / `completed` are unchanged branch statuses).
  */
-export const WORKFLOW_CONTROL_STATE_VERSION = 3;
+export const WORKFLOW_CONTROL_STATE_VERSION = 4;
 
 /** What a barrier entry is waiting for. */
 export type BarrierEntryKind = "effect" | "child";
@@ -186,16 +192,37 @@ export interface WorkflowBoundaryState {
 // -- active fork state (Slice G.1) --------------------------------------------
 
 /**
+ * How one active-fork branch is currently blocked, or that it is done (Slice G.2).
+ *
+ * ```text
+ * ready               installed, its Stage body has not run (or is runnable again now)
+ * awaiting_effects    its Stage body proposed Effects / a child call; `barrier` is outstanding
+ * awaiting_resumption its Stage body is mid slow model call; re-entry reconstructs it by stable key
+ * completed           its Stage body reached a local `text | none` result
+ * ```
+ *
+ * A branch whose Stage body *fails* does not persist a status - the earliest authored failing branch
+ * fails the whole Workflow Execution before any new branch state is written.
+ */
+export type WorkflowParallelBranchStatus =
+  | "ready"
+  | "awaiting_effects"
+  | "awaiting_resumption"
+  | "completed";
+
+/**
  * One branch of an active fork, as serializable controller progress.
  *
- * Every branch owns its own `visit`, its own `input` snapshot, its own `progress`, its own status,
- * and its own final `result`. There is no ambient branch-shared progress object: a branch cannot
- * read or write another branch's fields, and a JSON round trip of the enclosing state preserves each
- * branch's data exactly.
+ * Every branch owns its own `visit`, its own `input` snapshot, its own `progress`, its own
+ * completion `barrier`, its own wait `status`, and its own final `result`. There is no ambient
+ * branch-shared progress object, no branch-shared barrier, and no branch-shared boundary: a branch
+ * cannot read or write another branch's fields, and a JSON round trip of the enclosing state
+ * preserves each branch's data exactly.
  *
- * `status` is only ever `ready` (installed, not yet run) or `completed` (its Function body reached a
- * local terminal outcome). A branch whose Function fails does not persist a status - it fails the
- * whole Workflow Execution before any join-ready state is written.
+ * `barrier` is this branch's Stage completion barrier - the same `BarrierEntry` shape an ordinary
+ * Stage uses, with branch-qualified correlation ids (`branchStageCorrelationId`) so a delivered
+ * result Event settles only the branch that requested it. It is `[]` for a `ready` or `completed`
+ * branch, and for a version-3 record that predates G.2.
  */
 export interface WorkflowParallelBranchState {
   readonly branchId: BranchId;
@@ -207,11 +234,13 @@ export interface WorkflowParallelBranchState {
    * It never changes the meaning of the top-level `currentStage` + `visit`.
    */
   readonly visit: number;
-  /** The fork input, snapshotted per branch. Both branches receive the same immutable value. */
+  /** The fork input, snapshotted per branch. Every branch receives the same immutable value. */
   readonly input: StageResult;
-  /** Branch-local Stage progress, owned by the branch Function body, opaque to the controller. */
+  /** Branch-local Stage progress, owned by the branch Stage body, opaque to the controller. */
   readonly progress: JsonObject;
-  readonly status: "ready" | "completed";
+  readonly status: WorkflowParallelBranchStatus;
+  /** This branch's own Stage completion barrier. `[]` unless `status` is `awaiting_effects`. */
+  readonly barrier: readonly BarrierEntry[];
   /** The branch's final `text | none` result, present once `status` is `completed`. */
   readonly result: StageResult | null;
 }
@@ -223,6 +252,12 @@ export interface WorkflowParallelBranchState {
  * explicit join. While it is present the Workflow is *not* "in" `currentStage` - it is between the
  * Stage that forked and the fork's join - and the controller routes on `parallel` before it looks at
  * `currentStage`, `barrier`, or `boundary`.
+ *
+ * Slice G.2: the branches may be *independently blocked*. One branch can be `awaiting_effects` on a
+ * slow capability while a sibling is `awaiting_resumption` on a slow model call and a third has
+ * already `completed` - all at once, all inside this one Workflow Execution. The enclosing Execution
+ * waits on the union of those dependencies (an Event dependency plus a set of ControllerResumption
+ * ids); see `docs/development/026-slice-g2-parallel-branch-dependencies.md`.
  */
 export interface WorkflowParallelState {
   readonly forkId: ForkId;
@@ -334,6 +369,39 @@ export function stageCorrelationId(stage: StageId, visit: number, key: string): 
   return `wf/${stage}#${visit}/${key}`;
 }
 
+/**
+ * The correlation identifier for one required operation of a *parallel branch* Stage (Slice G.2).
+ *
+ * ```text
+ * fork = p, forkVisit = 2, branch = research, stage = b, visit = 7, request = search
+ *   -> "wf/fork/p#2/branch/research/stage/b#7/request/search"
+ * ```
+ *
+ * It is `stageCorrelationId` with the fork invocation and the branch identity spliced in front, and
+ * it has the same three properties plus one more:
+ *
+ * ```text
+ * stable across Activation reconstruction   built only from persisted branch coordinates
+ * unique between sibling branches           the branch id is in the string
+ * unique between repeated fork invocations  the forkVisit is in the string
+ * unique between a branch's own requests    the Stage-local request key is in the string
+ * ```
+ *
+ * So two sibling branches may both use the Stage-local request key `"search"` and still receive
+ * only their own observations. It is not a credential, not authority, and not a runtime owner -
+ * exactly like every other identifier in the runtime.
+ */
+export function branchStageCorrelationId(
+  forkId: ForkId,
+  forkVisit: number,
+  branchId: BranchId,
+  stage: StageId,
+  visit: number,
+  requestKey: string,
+): string {
+  return `wf/fork/${forkId}#${forkVisit}/branch/${branchId}/stage/${stage}#${visit}/request/${requestKey}`;
+}
+
 export function isWorkflowControlState(value: unknown): value is WorkflowControlState {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
   const candidate = value as Record<string, unknown>;
@@ -366,8 +434,22 @@ export function readWorkflowControlState(progress: JsonObject): WorkflowControlS
     transitions: state.transitions ?? 0,
     forks: state.forks ?? 0,
     boundary: state.boundary ?? null,
-    parallel: state.parallel ?? null,
+    parallel: normalizeParallel(state.parallel ?? null),
     join: state.join ?? null,
+  };
+}
+
+/**
+ * Backfills the per-branch `barrier` a version-3 active-fork record predates (Slice G.2).
+ *
+ * A version-3 branch is only ever `ready` or `completed` and carried no barrier, so a missing
+ * `barrier` field reads as `[]` - which is exactly its meaning for those two statuses.
+ */
+function normalizeParallel(parallel: WorkflowParallelState | null): WorkflowParallelState | null {
+  if (parallel === null) return null;
+  return {
+    ...parallel,
+    branches: parallel.branches.map((branch) => ({ ...branch, barrier: branch.barrier ?? [] })),
   };
 }
 
@@ -377,25 +459,30 @@ export function toControllerProgress(state: WorkflowControlState): JsonObject {
 }
 
 export function unsettledEntries(state: WorkflowControlState): readonly BarrierEntry[] {
-  return state.barrier.filter((entry) => !entry.settled);
+  return unsettledBarrierEntries(state.barrier);
+}
+
+/** The unsettled entries of any barrier - the top-level Stage's or a parallel branch's (Slice G.2). */
+export function unsettledBarrierEntries(barrier: readonly BarrierEntry[]): readonly BarrierEntry[] {
+  return barrier.filter((entry) => !entry.settled);
 }
 
 /**
- * Applies one settled capability outcome to an `effect` barrier entry.
+ * Applies one settled capability outcome to an `effect` entry of a barrier (Slice G.2 generalized).
  *
  * Idempotent by construction: an entry that has already settled is left exactly as it was, so a
  * duplicate result Event cannot settle the same requirement twice or overwrite the authoritative
- * first answer. An outcome whose correlation matches no `effect` entry of this visit changes
- * nothing, which is what makes a stale result from a previous loop iteration harmless.
+ * first answer. An outcome whose correlation matches no `effect` entry changes nothing, which is
+ * what makes a stale result from a previous loop iteration - or from a sibling branch - harmless.
  */
-export function settleBarrierEntry(
-  state: WorkflowControlState,
+export function settleBarrier(
+  barrier: readonly BarrierEntry[],
   correlationId: string,
   outcome: StageObservationOutcome,
   detail: { readonly observation?: JsonValue; readonly error?: { readonly code: string; readonly message: string } },
-): { readonly state: WorkflowControlState; readonly settled: boolean } {
+): { readonly barrier: readonly BarrierEntry[]; readonly settled: boolean } {
   let settled = false;
-  const barrier = state.barrier.map((entry) => {
+  const next = barrier.map((entry) => {
     if (entry.kind !== "effect" || entry.correlationId !== correlationId || entry.settled) return entry;
     settled = true;
     return {
@@ -406,21 +493,21 @@ export function settleBarrierEntry(
       error: detail.error ?? null,
     };
   });
-  return settled ? { state: { ...state, barrier }, settled } : { state, settled };
+  return settled ? { barrier: next, settled } : { barrier, settled };
 }
 
-/** Applies one settled child-call outcome to a `child` barrier entry. Idempotent, correlation-exact. */
-export function settleChildBarrierEntry(
-  state: WorkflowControlState,
+/** Applies one settled child-call outcome to a `child` entry of a barrier. Idempotent, correlation-exact. */
+export function settleChildBarrier(
+  barrier: readonly BarrierEntry[],
   correlationId: string,
   detail: {
     readonly outcome: ChildBarrierOutcome;
     readonly childResult?: StageResult;
     readonly error?: { readonly code: string; readonly message: string };
   },
-): { readonly state: WorkflowControlState; readonly settled: boolean } {
+): { readonly barrier: readonly BarrierEntry[]; readonly settled: boolean } {
   let settled = false;
-  const barrier = state.barrier.map((entry) => {
+  const next = barrier.map((entry) => {
     if (entry.kind !== "child" || entry.correlationId !== correlationId || entry.settled) return entry;
     settled = true;
     return {
@@ -431,12 +518,37 @@ export function settleChildBarrierEntry(
       error: detail.error ?? null,
     };
   });
-  return settled ? { state: { ...state, barrier }, settled } : { state, settled };
+  return settled ? { barrier: next, settled } : { barrier, settled };
 }
 
-/** The settled `effect` barrier entries as Stage-facing observations. Child entries are not these. */
-export function observationsOf(state: WorkflowControlState): readonly StageObservation[] {
-  return state.barrier
+/** Applies one settled capability outcome to the top-level Stage barrier. */
+export function settleBarrierEntry(
+  state: WorkflowControlState,
+  correlationId: string,
+  outcome: StageObservationOutcome,
+  detail: { readonly observation?: JsonValue; readonly error?: { readonly code: string; readonly message: string } },
+): { readonly state: WorkflowControlState; readonly settled: boolean } {
+  const applied = settleBarrier(state.barrier, correlationId, outcome, detail);
+  return applied.settled ? { state: { ...state, barrier: applied.barrier }, settled: true } : { state, settled: false };
+}
+
+/** Applies one settled child-call outcome to the top-level Stage barrier. */
+export function settleChildBarrierEntry(
+  state: WorkflowControlState,
+  correlationId: string,
+  detail: {
+    readonly outcome: ChildBarrierOutcome;
+    readonly childResult?: StageResult;
+    readonly error?: { readonly code: string; readonly message: string };
+  },
+): { readonly state: WorkflowControlState; readonly settled: boolean } {
+  const applied = settleChildBarrier(state.barrier, correlationId, detail);
+  return applied.settled ? { state: { ...state, barrier: applied.barrier }, settled: true } : { state, settled: false };
+}
+
+/** The settled `effect` entries of a barrier as Stage-facing observations. Child entries are not these. */
+export function observationsOfBarrier(barrier: readonly BarrierEntry[]): readonly StageObservation[] {
+  return barrier
     .filter((entry): entry is EffectBarrierEntry => entry.kind === "effect" && entry.settled && entry.outcome !== null)
     .map((entry): StageObservation =>
       "effectKind" in entry
@@ -459,9 +571,19 @@ export function observationsOf(state: WorkflowControlState): readonly StageObser
     );
 }
 
-/** The single `child` barrier entry for the current visit, if this is an Agent/Workflow Stage. */
+/** The settled `effect` barrier entries of the top-level Stage as observations. */
+export function observationsOf(state: WorkflowControlState): readonly StageObservation[] {
+  return observationsOfBarrier(state.barrier);
+}
+
+/** The single `child` entry of a barrier, if this Stage is an Agent/Workflow Stage / branch. */
+export function childBarrierEntryOf(barrier: readonly BarrierEntry[]): ChildBarrierEntry | undefined {
+  return barrier.find((entry): entry is ChildBarrierEntry => entry.kind === "child");
+}
+
+/** The single `child` barrier entry for the current top-level Stage visit. */
 export function childBarrierEntry(state: WorkflowControlState): ChildBarrierEntry | undefined {
-  return state.barrier.find((entry): entry is ChildBarrierEntry => entry.kind === "child");
+  return childBarrierEntryOf(state.barrier);
 }
 
 // -- fork/join (Slice G.1) -----------------------------------------------------
@@ -491,6 +613,7 @@ export function installFork(
     input: forkInput,
     progress: {},
     status: "ready",
+    barrier: [],
     result: null,
   }));
   return {

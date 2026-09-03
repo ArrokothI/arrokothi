@@ -42,7 +42,7 @@ import type { ObjectSchema } from "../../schema/value-schema.ts";
 import type { JsonObject, JsonValue } from "../../util/json.ts";
 import type { LLMStageDefinition, ModelCallableDeclaration } from "../../workflow/spec.ts";
 import { transitionLabels } from "../../workflow/spec.ts";
-import { stageModelResumptionKey } from "../../workflow/resumption-keys.ts";
+import { modelPhaseResumptionKey } from "../../workflow/resumption-keys.ts";
 import type { StageCapabilityRequest } from "../../workflow/observations.ts";
 import { describeStageResult } from "../../workflow/stage-result.ts";
 import type { WorkflowModelAccess, WorkflowTrace } from "./model-access.ts";
@@ -163,6 +163,12 @@ export async function runLLMStage(
   models: WorkflowModelAccess | undefined,
   trace: WorkflowTrace | undefined,
   resumptions: ControllerResumptionScope,
+  /**
+   * The resumption-key scope for this Stage invocation (Slice G.2). `wf/<stage>#<visit>` for an
+   * ordinary Stage, or the branch-qualified `wf/fork/<fork>#<forkVisit>/branch/<branch>/stage/...`
+   * for a parallel branch, so two sibling branches' phase-1 model calls never collide by key.
+   */
+  resumptionScope: string,
 ): Promise<LLMStageOutcome> {
   const maxPhases = stage.maxModelPhases ?? 1;
   const labels = transitionLabels(stage.transitions);
@@ -218,7 +224,7 @@ export async function runLLMStage(
       resumptions,
       // Derived from persisted coordinates only, so the Activation that resumes rebuilds this exact
       // key and recovers the stored response rather than asking the provider a second time.
-      stageModelResumptionKey(stage.id, context.visit, progress.phase + 1),
+      modelPhaseResumptionKey(resumptionScope, progress.phase + 1),
       models,
       stage.model,
       {

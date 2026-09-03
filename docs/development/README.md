@@ -96,8 +96,33 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   observation. Agent-only consumer, controller-neutral resolver, no caching or Workflow LLM change.
   No canonical-doc change. Merged to main (PR #11); part of the merged `main` F.2a baseline.
 
+026-slice-g2-parallel-branch-dependencies.md
+  the current Slice G.2 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
+  continuing from G.1. A parallel branch may now be any *adapter-free* Stage kind
+  (`function` / `llm` / `agent` / `workflow` - adds no Stage kind) and may hold a real asynchronous
+  dependency while staying a branch of one Workflow Execution: a `UseCapability` Effect, an
+  Agent/Workflow child `call` (branch != child Execution), or a slow model call. Central runtime
+  change: a dependency-set (union) wait - `ControllerNext` `await_dependencies { event?, resumptions? }`
+  and `ExecutionWait` `dependencies { event, resumptions }` (`dependenciesWait`) - where any one
+  member settling re-enters, the `event` member waking does NOT invalidate any `resumptions` member
+  and vice versa (deliberately NOT `interleave`; no `interleave` field on this arm), and the Harness
+  commits every newly-registered resumption record with controller progress in one transaction
+  (`resolveMany`; one illegal / foreign / duplicate id fails the Activation cleanly). Branch-qualified
+  Effect correlation (`branchStageCorrelationId`) and ControllerResumption keys
+  (`branchStageResumptionScope` + `modelPhaseResumptionKey`) - two sibling branches may share a
+  Stage-local request key and still receive only their own observations. `WORKFLOW_CONTROL_STATE_VERSION`
+  3 -> 4 (`WorkflowParallelBranchState` gains its own `barrier` + `awaiting_effects` /
+  `awaiting_resumption` statuses; v3 records read unchanged). `runStageBodyFor` is the one path both
+  an ordinary Stage step and a branch step take. Fail-closed: a branch `WriteMemory`
+  (`parallel_branch_memory_write_deferred` - that is G.3), branch emissions / transition labels /
+  Adapters, multi-Stage branch topology. `dependencies` is a *wait* kind, never a Stage/Effect/Event
+  kind; no branch Execution, no new RuntimeStore / Harness facet. No canonical-doc change
+  (`future-plan.md` §1.3 pointer only). Concurrent Structured Memory branch writes, multi-Stage
+  branches, nested forks, reducers/merge, cancellation propagation, and branch Working Notes remain
+  G.3+. Not merged; awaiting independent review.
+
 025-slice-g1-minimal-workflow-fork-join.md
-  the current Slice G.1 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
+  the Slice G.1 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
   continuing from the independently-accepted G.0. The narrowest honest proof of system-defined
   parallel Workflow branches: authored `{ to: "fork" }` / `{ to: "join" }` topology
   (`WorkflowSpec.forks?`, `ForkId` / `BranchId` - no new Stage/Effect/Event kind); branch-local
@@ -310,7 +335,7 @@ Slice G structured concurrency
                 (future-plan.md §1.4 / §3.4       (future-plan.md §1.4 / §3.4 gain a pointer only).
                 pointer only).
 
-  G.1           minimal system-defined Workflow   current checkpoint (025); same branch, continuing
+  G.1           minimal system-defined Workflow   checkpoint (025); same branch, continuing
                 fork/join.                        from G.0. Not merged, awaiting independent review.
                 Authored { to: "fork" } /         TransitionTarget gains { to: "fork", fork } and
                 { to: "join" } topology on        { to: "join", fork }; WorkflowForkDefinition
@@ -342,6 +367,36 @@ Slice G structured concurrency
                 pointer only). LLM/Agent branch,  reducers, merge, Working Notes branch handling all
                 branch Effects, nested forks,     deferred to G.2/G.3. No canonical-doc change
                 reducers, merge - all G.2/G.3.    (future-plan.md §1.3 gains a pointer only).
+
+  G.2           parallel branch dependencies,     current checkpoint (026); same branch, continuing
+                Effects, async resumptions.       from G.1. Not merged, awaiting independent review.
+                A branch may be any adapter-free  Branch body widened function -> function / llm /
+                Stage kind and may hold a real    agent / workflow (adds no Stage kind); a branch
+                async dependency while staying a  may request UseCapability Effect(s), call an
+                branch of ONE Workflow Execution. Agent/Workflow child (branch != child Execution),
+                Runtime dependency-set (union)    or make a slow model call. ControllerNext gains
+                wait: any one member settling     await_dependencies { event?, resumptions? };
+                re-enters; the event member      ExecutionWait gains dependencies { event,
+                waking does NOT invalidate any    resumptions } (dependenciesWait). Deliberately NOT
+                resumptions member and vice       interleave - sibling branch progress is explicitly
+                versa. Harness commits every new  separate, so no stale-continuation invalidation; no
+                resumption record + controller    interleave field on this arm. resolveMany commits
+                progress in ONE transaction.      all new resumption records atomically; one illegal
+                branch-qualified Effect           / foreign / duplicate id fails the Activation
+                correlation + resumption keys     cleanly. branchStageCorrelationId / branch model-
+                (two siblings may share a Stage-  resumption keys from persisted coordinates only.
+                local request key).               WORKFLOW_CONTROL_STATE_VERSION 3 -> 4:
+                Fail-closed: a branch WriteMemory WorkflowParallelBranchState gains its own barrier +
+                (parallel_branch_memory_write_    awaiting_effects / awaiting_resumption statuses; v3
+                deferred - that is G.3), branch   records read unchanged. runStageBodyFor is the one
+                emissions / labels / Adapters,    path both an ordinary Stage step and a branch step
+                multi-Stage branch topology.      take. dependencies is a WAIT kind, never a Stage /
+                No branch Execution, no new       Effect / Event kind. No canonical-doc change
+                RuntimeStore / Harness facet.     (future-plan.md §1.3 pointer only). Concurrent
+                                                  Structured Memory branch writes, multi-Stage
+                                                  branches, nested forks, reducers/merge,
+                                                  cancellation propagation, Working Notes branch
+                                                  merge - all G.3+.
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

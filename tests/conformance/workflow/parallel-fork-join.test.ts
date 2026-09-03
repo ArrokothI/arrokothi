@@ -21,9 +21,14 @@
  * controller-state mutation stays serialized (one commit after the branches settle)
  * the explicit join is a distinct semantic step, not "whichever branch finished last"
  * deterministic result / failure ordering by authored branch order, never completion timing
- * a branch that returns awaitEffects fails closed - no Effect, no half-built G.2
+ * a branch that requests a Structured Memory write fails closed (deferred to G.3)
  * closed Stage / Effect vocabularies stay closed
  * ```
+ *
+ * Slice G.2 keeps this file as the fork/join *regression* suite (branch dependencies, Effects, and
+ * async resumptions get their own focused files). The only G.2 edits here are: the branch body may
+ * now be any adapter-free Stage kind, the persisted control-state version is 4, and a branch
+ * `WriteMemory` is the fail-closed case (branch Effects are now supported).
  */
 
 import { test, describe } from "node:test";
@@ -323,33 +328,34 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
     assert.equal(finalState.join, null, "the join snapshot is cleared when the Workflow leaves D");
   });
 
-  test("a branch that returns awaitEffects fails closed with a G.1-specific code and no Effect", async () => {
+  test("a branch that requests a Structured Memory write fails closed (deferred to G.3), no Effect", async () => {
     const { harness, definitions } = createWorkflowTestHarness({
-      authorizer: createAllowListAuthorizer({ grants: [{ capability: "knowledge.retrieval" }] }),
-      capabilities: createScriptedCapabilityExecutor({
-        handlers: { "knowledge.retrieval:search": () => ({ status: "success", observation: {} }) },
-      }),
       functions: createFunctionStageRegistry({
         a: () => ({ status: "completed", result: "seed" }),
         b: () => ({
           status: "awaitEffects",
-          effects: [{ key: "x", capability: "knowledge.retrieval", operation: "search", input: {} }],
+          effects: [{ kind: "write_memory", key: "w", memoryKey: "note", value: "from B" }],
         }),
         c: () => ({ status: "completed", result: "C" }),
         d: () => ({ status: "completed", result: "done" }),
       }),
     });
-    const ref = await definitions.save(defineWorkflow({ id: "g1-branch-effects", spec: forkJoinSpec() }));
-    const handle = await harness.createExecution({ definition: ref, operationAuthority: AUTHORITY });
+    const ref = await definitions.save(defineWorkflow({ id: "g2-branch-memory-write", spec: forkJoinSpec() }));
+    const handle = await harness.createExecution({
+      definition: ref,
+      structuredMemory: { fields: [{ key: "note", description: "a note", schema: { kind: "string" } }] },
+    });
     await harness.runUntilIdle();
 
     const context = await harness.inspect(handle.executionId);
     assert.equal(context?.lifecycle, "FAILED");
-    assert.equal(context?.failure?.code, "parallel_branch_effects_unsupported");
+    assert.equal(context?.failure?.code, "parallel_branch_memory_write_deferred");
     assert.match(context!.failure!.message, /fork "p" branch "b"/);
-    // (12) Nothing reached the Effect journal - no half-built G.2.
+    // Nothing was proposed to the Harness: no Effect journal entry, no PendingOperation, no mutation.
     assert.deepEqual(await harness.effectJournalOf(handle.executionId), []);
     assert.deepEqual(await harness.pendingOperationsOf(handle.executionId), []);
+    const memory = await harness.structuredMemoryOf(handle.executionId);
+    assert.equal(memory?.revision, 0, "the memory view never advanced");
   });
 
   test("a branch failure prevents the join and downstream execution", async () => {
@@ -472,20 +478,19 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
       /not a declared Stage/,
     );
 
-    // non-Function branch Stage
+    // a branch Stage whose declared kind is outside the closed STAGE_KINDS set
     expectIssue(
       {
         entryStage: "a",
         forks: [{ id: "p", branches: [{ id: "b", stage: "b" }, { id: "c", stage: "c" }], join: { next: "d" } }],
         stages: [
           fn("a", { to: "fork", fork: "p" }),
-          { id: "b", kind: "llm", model: { logicalRef: "m", requirements: { text: true } }, system: "s", prompt: "p", transitions: { kind: "always", next: toJoin } },
+          { id: "b", kind: "aggregator", implementationRef: "b", transitions: { kind: "always", next: toJoin } },
           fn("c", toJoin),
           fn("d", { to: "complete" }),
         ],
       },
-      "invalid_branch",
-      /function Stage/,
+      "invalid_stage_kind",
     );
 
     // one Stage claimed by two forks
@@ -618,7 +623,8 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
       assert.equal((STAGE_KINDS as readonly string[]).includes(invented), false);
       assert.equal((EFFECT_KINDS as readonly string[]).includes(invented), false);
     }
-    assert.equal(WORKFLOW_CONTROL_STATE_VERSION, 3);
+    // Slice G.2 bumped the persisted control-state shape to 4 (per-branch barrier + wait status).
+    assert.equal(WORKFLOW_CONTROL_STATE_VERSION, 4);
 
     // (16) a Workflow with no forks validates and runs exactly as before.
     const linear: WorkflowSpecInput = {

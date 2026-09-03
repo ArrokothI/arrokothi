@@ -118,6 +118,44 @@ function validateNext(next: unknown): OutcomeRejection | null {
       }
       return interleaveRejection((next as { interleave?: unknown }).interleave);
     }
+    case "await_dependencies": {
+      // The parallel-branch union wait (Slice G.2). Structural checks only - whether each id names
+      // work this Execution is actually waiting on is a runtime fact the Harness establishes.
+      const event = (next as { event?: unknown }).event;
+      const resumptions = (next as { resumptions?: unknown }).resumptions;
+      if (event !== undefined) {
+        if (event === null || typeof event !== "object" || Array.isArray(event)) {
+          return { code: "invalid_wake", message: "await_dependencies.event must be a wake condition when present" };
+        }
+        const issues = wakeConditionIssues(event as never);
+        if (issues.length > 0) {
+          return { code: "invalid_wake", message: `event: ${issues.map((i) => `${i.path}: ${i.message}`).join("; ")}` };
+        }
+      }
+      if (resumptions !== undefined) {
+        if (!Array.isArray(resumptions)) {
+          return { code: "invalid_resumption", message: "await_dependencies.resumptions must be an array when present" };
+        }
+        for (const [index, id] of resumptions.entries()) {
+          if (!isControllerResumptionId(id)) {
+            return { code: "invalid_resumption", message: `await_dependencies.resumptions[${index}] is not a controller resumption id` };
+          }
+        }
+        if (new Set(resumptions as readonly string[]).size !== resumptions.length) {
+          return { code: "invalid_resumption", message: "await_dependencies.resumptions contains a duplicate id" };
+        }
+      }
+      const hasEvent = event !== undefined;
+      const hasResumptions = Array.isArray(resumptions) && resumptions.length > 0;
+      if (!hasEvent && !hasResumptions) {
+        return { code: "invalid_next", message: "await_dependencies requires at least one of event / a non-empty resumptions set" };
+      }
+      // `interleave` has no meaning on a union wait - sibling branch progress is explicitly separate.
+      if ((next as { interleave?: unknown }).interleave !== undefined) {
+        return { code: "invalid_next", message: "await_dependencies does not take an interleave condition" };
+      }
+      return null;
+    }
     case "complete": {
       const result = (next as { result?: unknown }).result;
       if (result === undefined) return null;
@@ -228,6 +266,14 @@ export function validateActivationOutcome(outcome: unknown, kind: DefinitionKind
       return reject(
         "invalid_effect",
         "an Activation suspending on controller-local work cannot also propose Effects; nothing would be waiting on their results",
+      );
+    }
+    // A union wait (Slice G.2) may carry Effects, but only when it also carries the Event dependency
+    // that their result Events answer - a resumption-only union wait would strand them like above.
+    if (effects.length > 0 && status === "await_dependencies" && (candidate.next as { event?: unknown }).event === undefined) {
+      return reject(
+        "invalid_effect",
+        "an Activation proposing Effects with await_dependencies must also report an event dependency; otherwise nothing waits on their results",
       );
     }
     const keys = (effects as readonly EffectProposal[])

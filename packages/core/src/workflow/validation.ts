@@ -20,12 +20,14 @@
  * positive integer, and a Stage that exposes callables must allow at least two phases, because the
  * final phase never exposes callables. There is no authored value that produces an open-ended loop.
  *
- * **A parallel fork is a narrow, statically-checked shape (Slice G.1).** `forkTopologyIssues`
- * rejects everything statically knowable about the deliberately small G.1 topology: fork/branch id
- * validity and uniqueness, at least two branches, single-Function-Stage Adapter-free branch bodies,
- * a branch Stage reached only through its fork, a branch Stage whose only transition is to its own
- * fork's join, and a join with one existing Function successor that is not itself a branch Stage.
- * These are the only new graph rules; nothing here does broader reachability analysis.
+ * **A parallel fork is a narrow, statically-checked shape (Slice G.1 / G.2).** `forkTopologyIssues`
+ * rejects everything statically knowable about the deliberately small fork topology: fork/branch id
+ * validity and uniqueness, at least two branches, single-Stage Adapter-free branch bodies, a branch
+ * Stage reached only through its fork, a branch Stage whose only transition is to its own fork's
+ * join, and a join with one existing Function successor that is not itself a branch Stage. Slice G.2
+ * widens the *branch Stage body* from Function-only to any adapter-free Stage kind
+ * (`function` / `llm` / `agent` / `workflow`) - it adds no Stage kind and no graph rule; branch
+ * Adapters, multi-Stage branch subgraphs, branch loops, and nested forks stay rejected here.
  */
 
 import { objectSchemaIssues } from "../schema/value-schema.ts";
@@ -383,11 +385,21 @@ function forkTopologyIssues(
           branchStageToFork.set(stage, forkId);
         }
         const stageDef = stagesById.get(stage);
-        if (stageDef !== undefined && stageDef["kind"] !== "function") {
-          issues.push(issue(`${bat}.stage`, "invalid_branch", `a G.1 branch Stage is a function Stage; "${stage}" is "${String(stageDef["kind"])}"`));
+        // Slice G.2: a branch Stage body is any adapter-free Stage kind. `stageIssues` still validates
+        // the Stage's own `kind` against the closed `STAGE_KINDS` set - this only enforces that a
+        // branch is not something outside that set masquerading as one.
+        if (stageDef !== undefined && !isStageKind(stageDef["kind"])) {
+          issues.push(issue(`${bat}.stage`, "invalid_branch", `a branch Stage is one of the declared Stage kinds; "${stage}" is "${String(stageDef["kind"])}"`));
         }
         if (hasAdapters(stageDef)) {
-          issues.push(issue(`${bat}.stage`, "invalid_branch", `a G.1 branch Stage ("${stage}") cannot declare input or output Adapters`));
+          issues.push(issue(`${bat}.stage`, "invalid_branch", `a parallel branch Stage ("${stage}") cannot declare input or output Adapters (deferred past G.2)`));
+        }
+        // Adapters declared on the branch entry itself are equally unsupported.
+        if (
+          (Array.isArray(branch["inputAdapters"]) && branch["inputAdapters"].length > 0) ||
+          (Array.isArray(branch["outputAdapters"]) && branch["outputAdapters"].length > 0)
+        ) {
+          issues.push(issue(`${bat}`, "invalid_branch", `a parallel branch declares no Adapters (deferred past G.2)`));
         }
       });
     }

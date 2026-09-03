@@ -119,6 +119,17 @@ export type ResumptionDependency =
   | { readonly status: "invalid"; readonly detail: string };
 
 /**
+ * The resolved form of a *set* of reported resumption dependencies (Slice G.2).
+ *
+ * Legal only when every id is legal - work belonging to this Execution that has not settled, either
+ * registered by this Activation (`newRecords`) or recovered as an unresolved record - and no id is
+ * repeated. One illegal id rejects the whole set, so a partial dependency set can never be committed.
+ */
+export type ResumptionDependencySet =
+  | { readonly status: "ok"; readonly newRecords: readonly ControllerResumption[] }
+  | { readonly status: "invalid"; readonly detail: string };
+
+/**
  * What an Activation's scope produced, handed back to the Harness.
  *
  * The Harness never touches the promises directly: it asks whether the id the controller reported
@@ -134,6 +145,14 @@ export interface ActivationResumptions {
    * can never be parked on work nothing is following.
    */
   resolve(resumptionId: ControllerResumptionId, at: string): Promise<ResumptionDependency>;
+  /**
+   * Checks a whole *set* of reported ids (Slice G.2).
+   *
+   * Rejects the entire set if any id is illegal or repeated, so the Harness never commits a partial
+   * dependency set. On success it returns the records for the ids that are `new` this Activation;
+   * the Harness inserts every one of them in the same transaction as the controller progress.
+   */
+  resolveMany(resumptionIds: readonly ControllerResumptionId[], at: string): Promise<ResumptionDependencySet>;
   /**
    * Starts following a registration this Activation created. Call only after the WAITING commit.
    *
@@ -205,36 +224,53 @@ export class ControllerResumptionProcessor {
       },
     };
 
+    const resolveOne = async (resumptionId: ControllerResumptionId, at: string): Promise<ResumptionDependency> => {
+      const registration = registrations.get(resumptionId);
+      if (registration) {
+        return {
+          status: "new",
+          record: createControllerResumption({
+            resumptionId,
+            executionId,
+            key: registration.key,
+            activationId,
+            observedRevision,
+            createdAt: at,
+          }),
+        };
+      }
+      // Not started here. It is still a legal dependency if it is this Execution's own unresolved
+      // work - the case where a controller re-derived a key whose record has not settled.
+      const stored = await this.deps.store.readControllerResumption(resumptionId);
+      if (!stored || stored.executionId !== executionId) {
+        return { status: "invalid", detail: `${resumptionId} was not registered by this Activation` };
+      }
+      if (isResumptionTerminal(stored)) {
+        return {
+          status: "invalid",
+          detail: `${resumptionId} is already ${stored.state}; re-derive the key to start fresh work`,
+        };
+      }
+      return { status: "recovered" };
+    };
+
     return {
       scope,
-      resolve: async (resumptionId: ControllerResumptionId, at: string): Promise<ResumptionDependency> => {
-        const registration = registrations.get(resumptionId);
-        if (registration) {
-          return {
-            status: "new",
-            record: createControllerResumption({
-              resumptionId,
-              executionId,
-              key: registration.key,
-              activationId,
-              observedRevision,
-              createdAt: at,
-            }),
-          };
+      resolve: resolveOne,
+      resolveMany: async (
+        resumptionIds: readonly ControllerResumptionId[],
+        at: string,
+      ): Promise<ResumptionDependencySet> => {
+        if (new Set(resumptionIds).size !== resumptionIds.length) {
+          return { status: "invalid", detail: "the dependency set contains a duplicate resumption id" };
         }
-        // Not started here. It is still a legal dependency if it is this Execution's own unresolved
-        // work - the case where a controller re-derived a key whose record has not settled.
-        const stored = await this.deps.store.readControllerResumption(resumptionId);
-        if (!stored || stored.executionId !== executionId) {
-          return { status: "invalid", detail: `${resumptionId} was not registered by this Activation` };
+        const newRecords: ControllerResumption[] = [];
+        for (const id of resumptionIds) {
+          const dependency = await resolveOne(id, at);
+          if (dependency.status === "invalid") return { status: "invalid", detail: dependency.detail };
+          if (dependency.status === "new") newRecords.push(dependency.record);
         }
-        if (isResumptionTerminal(stored)) {
-          return {
-            status: "invalid",
-            detail: `${resumptionId} is already ${stored.state}; re-derive the key to start fresh work`,
-          };
-        }
-        return { status: "recovered" };
+        return { status: "ok", newRecords };
       },
       attach: (resumptionId: ControllerResumptionId) => {
         const registration = registrations.get(resumptionId);
@@ -334,11 +370,16 @@ export class ControllerResumptionProcessor {
         if (isTerminalLifecycle(context.lifecycle)) return null;
 
         const waiting = context.waitingFor;
+        // A settled resumption wakes the Execution only when it is genuinely the dependency being
+        // waited on - the single `controller_resumption` arm, or a member of a G.2 `dependencies`
+        // union wait. In every other case (already READY / RUNNING, or WAITING on something else)
+        // the outcome is still recorded above; it simply causes no second READY transition, which is
+        // exactly the "R2 settles while already READY" rule.
         const dependsOnThis =
           context.lifecycle === "WAITING" &&
           waiting !== null &&
-          waiting.kind === "controller_resumption" &&
-          waiting.resumptionId === resumptionId;
+          ((waiting.kind === "controller_resumption" && waiting.resumptionId === resumptionId) ||
+            (waiting.kind === "dependencies" && waiting.resumptions.includes(resumptionId)));
         if (!dependsOnThis) return null;
 
         const ready = transitionContext(context, "READY", settledAt);
