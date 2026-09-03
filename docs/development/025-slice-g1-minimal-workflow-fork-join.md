@@ -31,7 +31,7 @@ stays the Stage that forked, `currentStage` + `visit` then read as e.g. `A visit
 that was actually visit 1 — a semantically false coordinate that also leaked into the explicit
 join's `stageTransitioned` trace.
 
-The reviewed form (commit **`3dff9db`**) splits the two roles:
+The reviewed form (commit **`e0f3592`**) splits the two roles:
 
 ```text
 currentStage + visit          one truthful ordinary Stage invocation coordinate, always -
