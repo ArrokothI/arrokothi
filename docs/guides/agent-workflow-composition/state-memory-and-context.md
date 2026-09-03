@@ -87,7 +87,7 @@ where large durable work products and any cross-Execution shared state actually 
 
 ### Storing memory is not the same as anyone being able to read it
 
-Structured Memory has seven distinct steps between "the application has a fact" and "a model acts on
+Structured Memory has eight distinct steps between "the application has a fact" and "a model acts on
 it", and each one fails closed:
 
 ```text

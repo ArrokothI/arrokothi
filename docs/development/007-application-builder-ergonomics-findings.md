@@ -327,6 +327,15 @@ string convention.
 separates them and says not to pack routing into the
 result text.
 
+## 15. `docs/agent-engineering/` was unregistered in the documentation map — `documentation`
+
+**Observation.** The directory existed and is referenced by name in task material, but
+[`../README.md`](../README.md)'s supporting-material table did not list it, so a reader following the
+canonical map could not find it or tell whether it was canonical.
+
+**Fixed** alongside the builder guide: `agent-engineering/` and `guides/` are both registered, with
+their non-canonical status stated.
+
 ## 16. Agent Structured Memory needs application-supplied view resolvers — `ergonomics / API`
 
 **Observation.** An Agent's authored `spec.structuredMemory.read.keys` / `.write.keys` are
@@ -379,15 +388,6 @@ ergonomics and documentation problem. The SDK-level version of it is tracked in
 **Documentation fix applied.** [`../guides/agent-workflow-composition/current-authoring-surface.md`](../guides/agent-workflow-composition/current-authoring-surface.md)
 §3 now carries the full read chain, write chain, and reader table; the state, requirements, README,
 worked-examples, and skill pages were corrected to match.
-
-## 15. `docs/agent-engineering/` was unregistered in the documentation map — `documentation`
-
-**Observation.** The directory existed and is referenced by name in task material, but
-[`../README.md`](../README.md)'s supporting-material table did not list it, so a reader following the
-canonical map could not find it or tell whether it was canonical.
-
-**Fixed** alongside the builder guide: `agent-engineering/` and `guides/` are both registered, with
-their non-canonical status stated.
 
 ---
 
