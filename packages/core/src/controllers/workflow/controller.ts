@@ -360,7 +360,7 @@ class WorkflowController implements ExecutionController {
     } else {
       // First Activation: install the entry Stage, which runs its input Adapters. An Adapter that
       // rejects here resolves through the same predefined policy as one anywhere else.
-      const entered = await this.enterStage(spec, spec.entryStage, startInput(input.events), 1, 0, 0, resumptions);
+      const entered = await this.enterStage(spec, spec.entryStage, startInput(input.events), 0, 0, 0, resumptions);
       if (entered.kind !== "continue") return this.finish(entered);
       state = entered.state;
     }
@@ -910,7 +910,7 @@ class WorkflowController implements ExecutionController {
     }
 
     this.trace?.stageTransitioned?.({ from: from.id, visit: state.visit, label, to: target.stage });
-    const entered = await this.enterStage(spec, target.stage, result, state.visit + 1, transitions, state.forks, resumptions);
+    const entered = await this.enterStage(spec, target.stage, result, state.visits, transitions, state.forks, resumptions);
     // The predecessor's emissions travel with whatever entering produced, including a suspension:
     // they are persisted by this Activation, and the one that resumes proposes none of its own.
     return { ...entered, emissions };
@@ -922,21 +922,27 @@ class WorkflowController implements ExecutionController {
    * A new visit means a new `visit` number, empty Stage-local progress, and an empty barrier. That
    * is what makes a loop safe: correlations from the previous visit of this same Stage can never
    * match anything in the new one.
+   *
+   * `priorVisits` is the caller's current visit high-water; the new Stage is allocated `visit =
+   * priorVisits + 1`, and `visits` advances to match. Allocating from the high-water rather than
+   * from `state.visit + 1` is what keeps Stage visits monotone and non-colliding across a fork
+   * (whose branches already consumed numbers past `state.visit`) or a loop back through one.
    */
   private async enterStage(
     spec: WorkflowSpec,
     stageId: StageId,
     incoming: StageResult,
-    visit: number,
+    priorVisits: number,
     transitions: number,
     forks: number,
     resumptions: ControllerResumptionScope,
   ): Promise<StepOutcome> {
     const stage = spec.stages.find((candidate) => candidate.id === stageId);
     const base = initialWorkflowControlState(stageId, incoming);
+    const visit = priorVisits + 1;
     // `forks` (the fork-invocation counter) is threaded through like `transitions`: entering an
     // ordinary Stage clears `parallel`/`join` but never rewinds how many forks have run.
-    const state: WorkflowControlState = { ...base, visit, transitions, forks };
+    const state: WorkflowControlState = { ...base, visit, visits: visit, transitions, forks };
     if (!stage) {
       return {
         kind: "fail",
@@ -1085,12 +1091,14 @@ class WorkflowController implements ExecutionController {
       };
     }
     const joinContext = joinContextOf(parallel);
+    // The forking Stage invocation, truthfully: `currentStage` + `visit` were left unchanged when
+    // the fork was installed, so this is `A visit 1`, not `A visit <branch high-water>`.
     this.trace?.stageTransitioned?.({ from: state.currentStage, visit: state.visit, label: null, to: fork.join.next });
     const entered = await this.enterStage(
       spec,
       fork.join.next,
       parallel.input,
-      state.visit + 1,
+      state.visits,
       transitions,
       state.forks,
       resumptions,

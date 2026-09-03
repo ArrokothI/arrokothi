@@ -101,8 +101,10 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   continuing from the independently-accepted G.0. The narrowest honest proof of system-defined
   parallel Workflow branches: authored `{ to: "fork" }` / `{ to: "join" }` topology
   (`WorkflowSpec.forks?`, `ForkId` / `BranchId` - no new Stage/Effect/Event kind); branch-local
-  `WorkflowParallelState` (own visit / input snapshot / progress / result per branch) at
-  `WORKFLOW_CONTROL_STATE_VERSION` 2 -> 3; branch bodies that are exactly one Function Stage, run
+  `WorkflowParallelState` (own branch-local visit / input snapshot / progress / result per branch) at
+  `WORKFLOW_CONTROL_STATE_VERSION` 2 -> 3, with `currentStage` + `visit` kept as one truthful Stage
+  invocation coordinate even during a fork and a separate `visits` high-water owning visit allocation
+  (independent-review correction, 025 §0); branch bodies that are exactly one Function Stage, run
   overlapping via `Promise.all` over immutable snapshots with one serialized commit afterwards; an
   explicit join as a distinct controller step (a persisted state where both branches are done and
   Stage D has not run) that exposes an immutable authored-order `WorkflowJoinContext` to one
@@ -316,9 +318,13 @@ Slice G structured concurrency
                 BranchId brands. No new Stage /   topology graph edges - not a Stage kind, not an
                 Effect / Event kind.              Effect, not an Event. WORKFLOW_CONTROL_STATE_VERSION
                 WorkflowParallelState (per-branch 2 -> 3: WorkflowParallelState + per-branch
-                visit / input snapshot /          WorkflowParallelBranchState; new .forks / .parallel
-                progress / result) v2 -> v3.      / .join fields; plain JSON only. A G.1 branch body
-                Branch bodies = exactly one       is exactly one adapter-free Function Stage; static
+                branch-local visit / input /      WorkflowParallelBranchState; new .visits (visit-
+                progress / result) v2 -> v3;      allocation high-water) / .forks / .parallel / .join
+                currentStage + visit stay one     fields; plain JSON only. currentStage + visit stay
+                truthful Stage coordinate even    truthful during a fork; the join allocates from
+                during a fork (025 s0 review      `visits`, monotone across forks/loops (025 s0
+                correction).                      review correction). A G.1 branch body is exactly
+                Branch bodies = exactly one       one adapter-free Function Stage; static
                 Function Stage, run overlapping   validation rejects everything wider. Branch work
                 via Promise.all over immutable    overlaps in one Activation; one serialized commit
                 snapshots, one serialized commit  afterwards. The explicit join is a distinct step

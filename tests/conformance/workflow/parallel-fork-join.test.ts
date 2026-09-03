@@ -247,12 +247,20 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
     assert.equal(state.parallel?.forkId, "p");
     assert.equal(state.parallel?.joinReady, false);
     assert.deepEqual(state.parallel?.branches.map((b) => b.status), ["ready", "ready"]);
+    // currentStage + visit still name the Stage that forked (A, visit 1), not a branch high-water.
+    assert.equal(state.currentStage, "a");
+    assert.equal(state.visit, 1);
+    assert.equal(state.visits, 3, "the two branch visits were allocated from the high-water");
+    // Branch invocation coordinates are branch-local, in authored order.
+    assert.deepEqual(state.parallel?.branches.map((b) => [b.stageId, b.visit]), [["b", 2], ["c", 3]]);
     assert.equal(dRuns, 0);
 
     await harness.runOnce(); // Activation N+1: branch bodies run, joinReady persisted, D has NOT run
     state = await at();
     assert.equal(state.parallel?.joinReady, true, "there is a persisted state where both branches are done and D has not executed");
     assert.deepEqual(state.parallel?.branches.map((b) => b.status), ["completed", "completed"]);
+    assert.equal(state.currentStage, "a", "currentStage is still truthful while joinReady");
+    assert.equal(state.visit, 1, "and visit is still A's real invocation number");
     assert.equal(state.join, null, "no join snapshot yet - the join step has not run");
     assert.equal(dRuns, 0, "completing the branches did not run Stage D");
 
@@ -260,6 +268,8 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
     state = await at();
     assert.equal(state.parallel, null, "the active fork is cleared by the join");
     assert.equal(state.currentStage, "d");
+    assert.equal(state.visit, 4, "the join allocated D's visit from the high-water, not from A's visit + 1");
+    assert.equal(state.visits, 4);
     assert.ok(state.join, "the join snapshot is persisted with D's visit");
     assert.equal(dRuns, 0, "entering D and running D's body are still separate Activations");
 
@@ -702,5 +712,192 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
       }),
       "the join resumed from persisted branch results under the fresh controller",
     );
+  });
+});
+
+describe("Slice G.1: Stage-visit coordinates stay truthful across a fork (independent-review correction)", () => {
+  const at = async (harness: ReturnType<typeof createWorkflowTestHarness>["harness"], id: ExecutionId) =>
+    readWorkflowControlState((await harness.inspect(id))!.control.progress)!;
+
+  test("currentStage + visit name the forking Stage; branch and join visits are allocated from the high-water", async () => {
+    const trace: string[] = [];
+    const { harness, definitions, trace: recorder } = createWorkflowTestHarness({
+      functions: createFunctionStageRegistry({
+        // e follows d, to prove allocation stays monotone past the join.
+        pre: () => ({ status: "completed", result: "p" }),
+        a: () => ({ status: "completed", result: "seed" }),
+        b: () => ({ status: "completed", result: "B" }),
+        c: () => ({ status: "completed", result: "C" }),
+        d: (ctx) => {
+          trace.push(`d@${ctx.visit}`);
+          return { status: "completed", result: "d" };
+        },
+        e: (ctx) => {
+          trace.push(`e@${ctx.visit}`);
+          return { status: "completed", result: "e" };
+        },
+      }),
+    });
+    // pre (visit 1) -> a (visit 2) -> fork(b,c) -> d -> e, so the forking Stage is NOT the entry Stage.
+    const spec: WorkflowSpecInput = {
+      entryStage: "pre",
+      forks: [{ id: "p", branches: [{ id: "b", stage: "b" }, { id: "c", stage: "c" }], join: { next: "d" } }],
+      stages: [
+        { id: "pre", kind: "function", implementationRef: "pre", transitions: { kind: "always", next: { to: "stage", stage: "a" } } },
+        { id: "a", kind: "function", implementationRef: "a", transitions: { kind: "always", next: { to: "fork", fork: "p" } } },
+        { id: "b", kind: "function", implementationRef: "b", transitions: { kind: "always", next: { to: "join", fork: "p" } } },
+        { id: "c", kind: "function", implementationRef: "c", transitions: { kind: "always", next: { to: "join", fork: "p" } } },
+        { id: "d", kind: "function", implementationRef: "d", transitions: { kind: "always", next: { to: "stage", stage: "e" } } },
+        { id: "e", kind: "function", implementationRef: "e", transitions: { kind: "always", next: { to: "complete" } } },
+      ],
+    };
+    const ref = await definitions.save(defineWorkflow({ id: "g1-visit-truthful", spec }));
+    const handle = await harness.createExecution({ definition: ref });
+
+    await harness.runOnce(); // pre body (visit 1) + enter a
+    await harness.runOnce(); // a body (visit 2) -> install fork
+    let state = await at(harness, handle.executionId);
+    assert.equal(state.currentStage, "a");
+    assert.equal(state.visit, 2, "A really is visit 2 (pre was visit 1)");
+    assert.equal(state.visits, 4, "the branches consumed visits 3 and 4 from the high-water");
+    assert.equal(state.parallel?.joinReady, false);
+    assert.deepEqual(state.parallel?.branches.map((b) => [b.branchId, b.visit]), [["b", 3], ["c", 4]]);
+
+    await harness.runOnce(); // run branches -> joinReady
+    state = await at(harness, handle.executionId);
+    assert.equal(state.parallel?.joinReady, true);
+    assert.equal(state.currentStage, "a", "currentStage + visit unchanged while joinReady");
+    assert.equal(state.visit, 2);
+    assert.equal(state.visits, 4);
+
+    await harness.runOnce(); // explicit join -> enter d
+    state = await at(harness, handle.executionId);
+    assert.equal(state.currentStage, "d");
+    assert.equal(state.visit, 5, "D's visit is high-water + 1 = 5, not A's visit + 1");
+    assert.equal(state.visits, 5);
+
+    await harness.runUntilIdle();
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "COMPLETED");
+
+    // D ran at visit 5, E at visit 6 - allocation stayed monotone past the join.
+    assert.deepEqual(trace, ["d@5", "e@6"]);
+    const finalState = await at(harness, handle.executionId);
+    assert.equal(finalState.currentStage, "e");
+    assert.equal(finalState.visit, 6);
+    assert.equal(finalState.visits, 6);
+
+    // The explicit join's transition trace names the real forking Stage invocation (a, visit 2).
+    const joinTrace = recorder.transitions.find((t) => t.to === "d");
+    assert.ok(joinTrace, "the join emitted a stageTransitioned trace");
+    assert.equal(joinTrace!.from, "a");
+    assert.equal(joinTrace!.visit, 2, "not the branch-allocation high-water (4)");
+  });
+
+  test("looping back through the same fork keeps visits unique/monotone while forkVisit increments independently", async () => {
+    let pass = 0;
+    const forkVisitsSeen: number[] = [];
+    const branchVisits: number[] = [];
+    const { harness, definitions } = createWorkflowTestHarness({
+      functions: createFunctionStageRegistry({
+        a: () => ({ status: "completed", result: "seed" }),
+        b: (ctx) => {
+          branchVisits.push(ctx.visit);
+          return { status: "completed", result: "B" };
+        },
+        c: (ctx) => {
+          branchVisits.push(ctx.visit);
+          return { status: "completed", result: "C" };
+        },
+        d: () => {
+          pass += 1;
+          return { status: "completed", result: "d", transition: pass < 2 ? "again" : "stop" };
+        },
+      }),
+    });
+    const spec: WorkflowSpecInput = {
+      entryStage: "a",
+      forks: [{ id: "p", branches: [{ id: "b", stage: "b" }, { id: "c", stage: "c" }], join: { next: "d" } }],
+      stages: [
+        { id: "a", kind: "function", implementationRef: "a", transitions: { kind: "always", next: { to: "fork", fork: "p" } } },
+        { id: "b", kind: "function", implementationRef: "b", transitions: { kind: "always", next: { to: "join", fork: "p" } } },
+        { id: "c", kind: "function", implementationRef: "c", transitions: { kind: "always", next: { to: "join", fork: "p" } } },
+        {
+          id: "d",
+          kind: "function",
+          implementationRef: "d",
+          transitions: {
+            kind: "labeled",
+            cases: [
+              { label: "again", next: { to: "fork", fork: "p" } },
+              { label: "stop", next: { to: "complete" } },
+            ],
+          },
+        },
+      ],
+    };
+    const ref = await definitions.save(defineWorkflow({ id: "g1-fork-loop", spec }));
+    const handle = await harness.createExecution({ definition: ref });
+
+    // Drive activation-by-activation, sampling forkVisit whenever a fork is active.
+    for (let i = 0; i < 40; i += 1) {
+      const ctx = await harness.inspect(handle.executionId);
+      if (!ctx || ctx.lifecycle === "COMPLETED" || ctx.lifecycle === "FAILED") break;
+      const s = readWorkflowControlState(ctx.control.progress);
+      if (s?.parallel && !forkVisitsSeen.includes(s.parallel.forkVisit)) forkVisitsSeen.push(s.parallel.forkVisit);
+      await harness.runOnce();
+    }
+
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "COMPLETED");
+    // Two fork invocations: forkVisit 1 then 2, independent of Stage-visit allocation.
+    assert.deepEqual(forkVisitsSeen, [1, 2]);
+    // Branch Stage visits across both passes: pass 1 -> 2,3 ; pass 2 -> 5,6 (D took visit 4).
+    assert.deepEqual(branchVisits, [2, 3, 5, 6], "Stage visits stay globally unique and monotone across the loop");
+  });
+
+  test("a corrected active-fork state survives a JSON round trip", async () => {
+    const { harness, definitions } = createWorkflowTestHarness({
+      functions: createFunctionStageRegistry({
+        a: () => ({ status: "completed", result: "seed" }),
+        b: () => ({ status: "completed", result: "B", progress: { k: 1 } }),
+        c: () => ({ status: "completed", result: "C", progress: { k: 2 } }),
+        d: () => ({ status: "completed", result: "done" }),
+      }),
+    });
+    const ref = await definitions.save(defineWorkflow({ id: "g1-visit-roundtrip", spec: forkJoinSpec() }));
+    const handle = await harness.createExecution({ definition: ref });
+    await harness.runOnce();
+    await harness.runOnce();
+    const progress = (await harness.inspect(handle.executionId))!.control.progress;
+    const state = readWorkflowControlState(progress)!;
+    assert.equal(state.visit, 1);
+    assert.equal(state.visits, 3);
+    assert.equal(state.parallel?.joinReady, true);
+    assert.deepEqual(JSON.parse(JSON.stringify(progress)), progress);
+  });
+
+  test("a version-2 linear progress record still reads (visits falls back to visit)", async () => {
+    const { harness, definitions } = createWorkflowTestHarness({
+      functions: createFunctionStageRegistry({
+        one: () => ({ status: "completed", result: "1" }),
+        two: () => ({ status: "completed", result: "2" }),
+      }),
+    });
+    const spec: WorkflowSpecInput = {
+      entryStage: "one",
+      stages: [
+        { id: "one", kind: "function", implementationRef: "one", transitions: { kind: "always", next: { to: "stage", stage: "two" } } },
+        { id: "two", kind: "function", implementationRef: "two", transitions: { kind: "always", next: { to: "complete" } } },
+      ],
+    };
+    const ref = await definitions.save(defineWorkflow({ id: "g1-v2-read", spec }));
+    const handle = await harness.createExecution({ definition: ref });
+    await harness.runUntilIdle();
+    const state = readWorkflowControlState((await harness.inspect(handle.executionId))!.control.progress)!;
+    // A synthesised version-2 record: no `visits` field at all.
+    const v2: Record<string, unknown> = { ...(state as unknown as Record<string, unknown>), version: 2 };
+    delete v2["visits"];
+    const read = readWorkflowControlState(v2 as never)!;
+    assert.equal(read.visits, read.visit, "a linear Workflow's high-water equals its current visit");
+    assert.equal(read.visit, state.visit);
   });
 });

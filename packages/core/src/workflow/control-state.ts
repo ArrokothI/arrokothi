@@ -15,13 +15,20 @@
  * ## Stage visits
  *
  * A Workflow may loop, so a Stage id identifies a *StageDefinition* and cannot identify one
- * invocation of it. `visit` is a monotone counter over Stage entries for the whole Execution: the
- * first Stage entered is visit 1, and coming back to `evaluate` a second time is a different visit
- * from the first. Correlations are scoped to it, which is what makes a stale result from an earlier
- * loop iteration unable to settle a barrier in a later one.
+ * invocation of it. `visit` identifies *this* Stage invocation, and `currentStage` + `visit`
+ * together are one truthful ordinary Stage invocation coordinate - the first Stage entered is
+ * `currentStage = entry`, `visit = 1`, and coming back to `evaluate` a second time is a different
+ * `visit` from the first. Correlations are scoped to `visit`, which is what makes a stale result
+ * from an earlier loop iteration unable to settle a barrier in a later one.
  *
- * `visit` is Workflow controller progress and nothing more. It is not an ExecutionId, it does not
- * appear in a mailbox, nothing is addressed to it, and no lifecycle attaches to it.
+ * `visits` is the separate allocation coordinate: the highest Stage visit number handed out so far.
+ * In a linear Workflow it equals `visit` at every step. They diverge only while a fork is active -
+ * two branches are two more Stage invocations, but `currentStage` + `visit` still name the single
+ * Stage that forked (Slice G.1). The join then allocates its successor from `visits`, so Stage visit
+ * numbers stay globally unique and monotone even across a fork or a loop back through one.
+ *
+ * `visit`/`visits` are Workflow controller progress and nothing more. Neither is an ExecutionId,
+ * neither appears in a mailbox, nothing is addressed to them, and no lifecycle attaches to them.
  *
  * ## The barrier
  *
@@ -64,12 +71,20 @@ import type { StageResult } from "./stage-result.ts";
  *
  * ```text
  * 2  the re-enterable Stage boundary
- * 3  active-fork branch-local state + the persisted explicit-join snapshot (Slice G.1)
+ * 3  active-fork branch-local state + the persisted explicit-join snapshot + the `visits`
+ *    allocation coordinate (Slice G.1)
  * ```
  *
  * Bumped rather than back-fitted each time: a shape that cannot represent "two branches are active,
  * each with its own progress and result" would have to fake it by mutating one current Stage's
  * fields, which is exactly the ambiguity structured parallelism forbids.
+ *
+ * G.1's first (unaccepted) form overloaded top-level `visit` as the allocation high-water mark
+ * during an active fork, which made `currentStage` + `visit` name a Stage invocation that never
+ * happened. The independent-review correction split allocation into `visits` and kept `visit`
+ * truthful. Because G.1 is unmerged and no version-3 record exists outside this branch's test runs,
+ * that correction revised the version-3 shape in place rather than bumping to 4 to memorialise an
+ * intermediate representation that was never accepted.
  */
 export const WORKFLOW_CONTROL_STATE_VERSION = 3;
 
@@ -185,7 +200,12 @@ export interface WorkflowBoundaryState {
 export interface WorkflowParallelBranchState {
   readonly branchId: BranchId;
   readonly stageId: StageId;
-  /** This branch's own Stage visit. Distinct from every other branch and from the join successor. */
+  /**
+   * This branch's own Stage invocation number - `stageId` + `visit` is the branch's Stage
+   * invocation coordinate. Allocated from the enclosing state's `visits` high-water at fork entry,
+   * so it is distinct from every other branch, from the forking Stage, and from the join successor.
+   * It never changes the meaning of the top-level `currentStage` + `visit`.
+   */
   readonly visit: number;
   /** The fork input, snapshotted per branch. Both branches receive the same immutable value. */
   readonly input: StageResult;
@@ -225,12 +245,24 @@ export interface WorkflowControlState {
    * The Stage the Workflow is at.
    *
    * While `parallel` is non-null this names the Stage whose transition entered the active fork - the
-   * Workflow is between that Stage and the fork's join, not executing `currentStage`. Read `parallel`
-   * first.
+   * Workflow is between that Stage and the fork's join, not executing `currentStage`. `currentStage`
+   * + `visit` still name that one Stage invocation truthfully; the branches' invocation coordinates
+   * live in `parallel.branches[].stageId` / `.visit`. Read `parallel` first.
    */
   readonly currentStage: StageId;
-  /** Monotone Stage-entry counter. Identifies this invocation, never an Execution. */
+  /**
+   * This Stage invocation's number. `currentStage` + `visit` is one truthful ordinary Stage
+   * invocation coordinate, including while a fork is active. Correlations are scoped to it.
+   */
   readonly visit: number;
+  /**
+   * The highest Stage visit number allocated so far - allocation bookkeeping, not a Stage
+   * coordinate. Equals `visit` in a linear Workflow; larger than `visit` while a fork is active
+   * (its branches consumed visit numbers that `visit` did not advance to). The join and every later
+   * Stage entry allocate from here, so Stage visits stay globally unique and monotone across forks
+   * and loops.
+   */
+  readonly visits: number;
   /** What this Stage was given, after its input Adapters ran. */
   readonly stageInput: StageResult;
   /** Stage-local progress, owned by the Stage body, opaque to the controller. */
@@ -268,6 +300,7 @@ export function initialWorkflowControlState(entryStage: StageId, stageInput: Sta
     version: WORKFLOW_CONTROL_STATE_VERSION,
     currentStage: entryStage,
     visit: 1,
+    visits: 1,
     stageInput,
     stageProgress: {},
     barrier: [],
@@ -324,6 +357,8 @@ export function readWorkflowControlState(progress: JsonObject): WorkflowControlS
     version: state.version ?? WORKFLOW_CONTROL_STATE_VERSION,
     currentStage: state.currentStage,
     visit: state.visit,
+    // Absent in a version-2 record: a linear Workflow's high-water equals its current visit.
+    visits: state.visits ?? state.visit ?? 1,
     stageInput: state.stageInput ?? null,
     stageProgress: state.stageProgress ?? {},
     barrier: state.barrier ?? [],
@@ -435,9 +470,13 @@ export function childBarrierEntry(state: WorkflowControlState): ChildBarrierEntr
  * Installs an active fork: a fresh `WorkflowParallelState` with one `ready` branch per authored
  * branch, each branch handed the same immutable fork-input snapshot and its own Stage visit.
  *
- * Branch visits are assigned in authored order starting one past the forking Stage's visit, so every
- * branch, and the eventual join successor, occupies a distinct visit number. The caller owns the
- * `transitions` counter (a fork entry is one transition, like any other edge).
+ * The top-level `currentStage` and `visit` are left **unchanged** - the Workflow is still at the
+ * Stage that forked, and `currentStage` + `visit` stay a truthful invocation coordinate. Branch
+ * visits are allocated from `visits` (the high-water) in authored order, and `visits` advances by
+ * the branch count so the join successor and every later Stage get fresh, monotone numbers. The
+ * caller owns the `transitions` counter (a fork entry is one transition, like any other edge);
+ * `forkVisit` comes from `forks` and identifies this fork invocation, independent of visit
+ * allocation.
  */
 export function installFork(
   state: WorkflowControlState,
@@ -448,7 +487,7 @@ export function installFork(
   const branches: WorkflowParallelBranchState[] = fork.branches.map((branch, index) => ({
     branchId: branch.id,
     stageId: branch.stage,
-    visit: state.visit + 1 + index,
+    visit: state.visits + 1 + index,
     input: forkInput,
     progress: {},
     status: "ready",
@@ -456,10 +495,14 @@ export function installFork(
   }));
   return {
     ...state,
-    visit: state.visit + fork.branches.length,
+    // currentStage and visit unchanged: the Workflow is still at the Stage that forked.
+    visits: state.visits + fork.branches.length,
     forks: forkVisit,
     barrier: [],
     boundary: null,
+    // The forking Stage's body is done; its Stage-local scratch is not part of the fork, and each
+    // branch carries its own `progress`.
+    stageProgress: {},
     provisionalResult: forkInput,
     join: null,
     parallel: { forkId: fork.id, forkVisit, input: forkInput, branches, joinReady: false },

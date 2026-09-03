@@ -21,6 +21,37 @@
 This is an engineering record, not a new owner of runtime or composition semantics. The canonical
 documents named by [`../README.md`](../README.md) remain authoritative.
 
+## 0. Independent-review correction — the Stage-visit coordinate
+
+The first (unaccepted) G.1 commit (`d7fa60c`) overloaded the top-level
+`WorkflowControlState.visit` as the visit **allocation high-water mark** while a fork was active:
+`installFork` advanced `visit` by the branch count (`state.visit + fork.branches.length`) while the
+branch records independently took `state.visit + 1 + index`. Since `currentStage` intentionally
+stays the Stage that forked, `currentStage` + `visit` then read as e.g. `A visit 3` for a Stage A
+that was actually visit 1 — a semantically false coordinate that also leaked into the explicit
+join's `stageTransitioned` trace.
+
+The reviewed form (commit **`3dff9db`**) splits the two roles:
+
+```text
+currentStage + visit          one truthful ordinary Stage invocation coordinate, always -
+                              including while parallel !== null (it names the Stage that forked)
+branch.stageId + branch.visit  the branch's own Stage invocation coordinate, branch-local
+visits                        NEW - "highest Stage visit number allocated so far"; allocation
+                              bookkeeping only. Equals `visit` in a linear Workflow.
+forkVisit                     unchanged - identifies this fork invocation, independent of visit
+                              allocation
+```
+
+`installFork` now leaves `currentStage` and `visit` untouched, allocates the branch visits from
+`visits`, and advances `visits` by the branch count. `enterStage` takes the caller's `visits`
+high-water and allocates `visit = priorVisits + 1` (so the join and every later Stage stay monotone
+and non-colliding across a fork or a loop back through one). `WORKFLOW_CONTROL_STATE_VERSION` stays
+**3**: G.1 is unmerged, no version-3 record exists outside this branch's test runs, and bumping to 4
+would only memorialise a representation that was never accepted. `readWorkflowControlState` reads a
+version-2 record unchanged (`visits` falls back to `visit`). The rest of §2–§16 below describes the
+**corrected** form; the only substantive change from the first commit is this section.
+
 ## 1. Why G.1 exists
 
 The v0.6 Structured Concurrency target is:
@@ -97,7 +128,8 @@ kinds. There is no fork/join Effect and no fork/join `PendingOperation`.
 
 ## 3. WorkflowControlState evolution
 
-`WORKFLOW_CONTROL_STATE_VERSION` **2 → 3** (`packages/core/src/workflow/control-state.ts`).
+`WORKFLOW_CONTROL_STATE_VERSION` **2 → 3** (`packages/core/src/workflow/control-state.ts`); see §0
+for why the reviewed version-3 shape was revised in place rather than bumped to 4.
 
 New persisted shapes (plain JSON only — no `Promise`, `AbortController`, executor, closure, Harness,
 or store handle anywhere; `JSON.parse(JSON.stringify(progress))` preserves an active fork exactly):
@@ -106,7 +138,8 @@ or store handle anywhere; `JSON.parse(JSON.stringify(progress))` preserves an ac
 interface WorkflowParallelBranchState {
   readonly branchId: BranchId;
   readonly stageId: StageId;
-  readonly visit: number;               // this branch's own Stage visit, distinct per branch
+  readonly visit: number;               // this branch's own Stage invocation number (stageId + visit),
+                                        //   allocated from `visits` at fork entry, branch-local
   readonly input: StageResult;          // the fork-input snapshot, per branch
   readonly progress: JsonObject;        // branch-local, owned by the branch Function body
   readonly status: "ready" | "completed";
@@ -115,7 +148,7 @@ interface WorkflowParallelBranchState {
 
 interface WorkflowParallelState {
   readonly forkId: ForkId;
-  readonly forkVisit: number;           // fork-invocation coordinate (see §5)
+  readonly forkVisit: number;           // fork-invocation coordinate (see §4), NOT visit allocation
   readonly input: StageResult;          // the post-Stage-A result that entered this fork
   readonly branches: readonly WorkflowParallelBranchState[];   // authored order, never completion order
   readonly joinReady: boolean;
@@ -123,21 +156,41 @@ interface WorkflowParallelState {
 
 interface WorkflowControlState {
   // ... existing fields unchanged ...
+  readonly visit: number;                        // THIS Stage invocation's number; currentStage + visit
+                                                 //   is one truthful coordinate, even while parallel != null
+  readonly visits: number;                       // NEW - highest Stage visit allocated so far
+                                                 //   (allocation bookkeeping; == visit in a linear Workflow)
   readonly forks: number;                        // monotone fork-entry counter (like `transitions`)
   readonly parallel: WorkflowParallelState | null;   // the active fork, between entry and join
   readonly join: WorkflowJoinContext | null;         // the join snapshot for the current Stage visit
 }
 ```
 
-While `parallel !== null`, `currentStage` names the Stage whose transition entered the fork — the
-Workflow is **between** that Stage and the join, not executing `currentStage`. The controller routes
-on `parallel` before it looks at `currentStage`, `barrier`, or `boundary`. There is no ambient
-branch-shared `stageProgress`: every branch owns its own `progress`, `visit`, `status`, and
-`result`.
+While `parallel !== null`, `currentStage` + `visit` name the Stage whose transition entered the fork
+(truthfully — its real invocation number), and the Workflow is **between** that Stage and the join.
+The controller routes on `parallel` before it looks at `currentStage`, `barrier`, or `boundary`.
+There is no ambient branch-shared `stageProgress` (it is cleared on fork install): every branch owns
+its own `progress`, `visit`, `status`, and `result`.
 
-`initialWorkflowControlState` seeds `forks: 0, parallel: null, join: null`; `readWorkflowControlState`
-tolerates their absence in a pre-v3 record; `enterStage` threads `forks` forward exactly like
-`transitions` (entering an ordinary Stage clears `parallel`/`join` but never rewinds the fork count).
+`initialWorkflowControlState` seeds `visit: 1, visits: 1, forks: 0, parallel: null, join: null`;
+`readWorkflowControlState` tolerates their absence in a pre-v3 record (`visits` falls back to
+`visit`); `enterStage` threads `forks` forward like `transitions` and allocates
+`visit = priorVisits + 1` from the caller's `visits` high-water.
+
+### Stage-visit allocation rule
+
+```text
+entry Stage           visit 1,  visits 1
+enter Stage (linear)  visit = state.visits + 1,  visits = visit
+install fork          currentStage / visit unchanged;
+                      branch i gets visit = state.visits + 1 + i (authored order);
+                      visits += branch count
+explicit join         enter the join successor with visit = state.visits + 1
+loop back into a fork  same rule - visits keeps climbing, so Stage visits never collide
+```
+
+Example: `A(1) → fork P → B(2) C(3) → join → D(4) → …`, with `currentStage = A, visit = 1` for the
+whole active-fork window and `visits = 3` while B/C run.
 
 ## 4. Branch identity and fork invocation identity
 
@@ -145,8 +198,10 @@ tolerates their absence in a pre-v3 record; `enterStage` threads `forks` forward
   every `WorkflowJoinedBranchResult`. Array index is never used as semantic identity — G.2 will need
   branch identity in Effect/resumption correlation, so it is explicit now.
 - **Fork invocation identity** is `WorkflowParallelState.forkVisit`, taken from
-  `WorkflowControlState.forks + 1` at fork entry. `forks` is monotone over the whole Execution and
-  survives loops, so a future revisit of the same authored `ForkId` gets a distinct `forkVisit`.
+  `WorkflowControlState.forks + 1` at fork entry — **independent of Stage-visit allocation**. `forks`
+  is monotone over the whole Execution and survives loops, so a revisit of the same authored
+  `ForkId` gets a distinct `forkVisit` (`1`, then `2`, …) while Stage visits continue their own
+  monotone climb. `forkVisit` is not replaced by, derived from, or coupled to `visit`/`visits`.
   G.1 does **not** implement the G.2 correlation changes; it only refuses to make branch/fork
   identity implicit.
 
@@ -226,11 +281,17 @@ fork  !=  branch completion  !=  join  !=  downstream Stage execution
 ```
 
 - There is a persisted state (`parallel.joinReady === true`, both branches `completed`,
-  `state.join === null`, `currentStage` still the forking Stage) in which the branches are done and
-  Stage D has not executed. A conformance case inspects exactly this state.
-- The join enters Stage D through the ordinary `enterStage` path, counts as one `transitions`
-  increment (subject to `maxTransitions`), and is the only place `parallel` is cleared.
+  `state.join === null`, `currentStage` + `visit` still the forking Stage's real coordinate) in
+  which the branches are done and Stage D has not executed. A conformance case inspects exactly this
+  state.
+- The join enters Stage D through the ordinary `enterStage` path (allocating `D.visit = state.visits
+  + 1`), counts as one `transitions` increment (subject to `maxTransitions`), and is the only place
+  `parallel` is cleared.
 - D is never executed inside whichever branch finished last — timing is not the join mechanism.
+- The join's `stageTransitioned` trace names the **real forking Stage invocation**: `{ from:
+  currentStage, visit: state.visit, to: fork.join.next }`, i.e. `A visit 1 → D`, not `A visit
+  <branch high-water>`. (This is the defect §0 corrects; a conformance case pins it.) No branch or
+  runtime Event is invented for the fork or the join.
 
 ### Join-result surface
 
@@ -305,12 +366,14 @@ Core:
   when `forks` is absent).
 - `workflow/observations.ts` — `WorkflowJoinedBranchResult`, `WorkflowJoinContext`.
 - `workflow/control-state.ts` — version 2 → 3; `WorkflowParallelBranchState`, `WorkflowParallelState`;
-  `WorkflowControlState.forks` / `.parallel` / `.join`; `installFork`, `joinContextOf`.
+  `WorkflowControlState.visits` / `.forks` / `.parallel` / `.join`; `installFork` (leaves
+  `currentStage`/`visit` unchanged, allocates branch visits + clears `stageProgress`),
+  `joinContextOf`; `readWorkflowControlState` `visits ?? visit` fallback.
 - `ports/stage.ts` — `StageExecutionContext.join`.
 - `controllers/workflow/controller.ts` — `advanceParallel` / `runParallelBranches` /
   `classifyBranchOutcome`; `applyTransition` handles `{ to: "fork" }` (+ defensive `{ to: "join" }`);
-  `enterStage` threads `forks`; `runBody` context carries `state.join`; the `complete` transition
-  clears `join`.
+  `enterStage` takes the `visits` high-water and allocates `visit = priorVisits + 1`, threads
+  `forks`; `runBody` context carries `state.join`; the `complete` transition clears `join`.
 - `execution-api.ts` — exports the new read-only shapes and guards.
 
 Docs/tests:
@@ -319,11 +382,11 @@ Docs/tests:
 - `docs/future-plan.md` §1.3 — one-line pointer.
 - `docs/development/008-v0.4-to-v1.0-development-roadmap.md`, `docs/development/README.md` — narrow
   status updates (G.0 independently accepted; G.1 implemented, awaiting review).
-- `tests/conformance/workflow/parallel-fork-join.test.ts` — new (12 cases, §13).
+- `tests/conformance/workflow/parallel-fork-join.test.ts` — new (16 cases, §13).
 
 ## 13. Regression / conformance tests
 
-`tests/conformance/workflow/parallel-fork-join.test.ts`:
+`tests/conformance/workflow/parallel-fork-join.test.ts` — first `describe` (12 cases):
 
 1. `A → fork(B,C) → join → D` succeeds — four Function Stages, one Execution.
 2. No child Execution / no child link.
@@ -349,15 +412,32 @@ Docs/tests:
 18. Parallel control progress is plain serializable data.
 19. Branch-local state reconstructs under a fresh `WorkflowController` over the same store.
 
+Second `describe` — "Stage-visit coordinates stay truthful across a fork (independent-review
+correction)" (4 cases):
+
+20. `currentStage` + `visit` name the forking Stage's real invocation (a graph `pre(1) → a(2) →
+    fork(b,c) → d → e`, so the forking Stage is not the entry Stage): `currentStage === "a"`,
+    `visit === 2` at both `joinReady === false` and `true`; branch visits `b@3, c@4`; join successor
+    `d@5`; later Stage `e@6` — allocation stays monotone past the join; and the join's
+    `stageTransitioned` trace reports `from: "a", visit: 2`, not the branch high-water `4`.
+21. Looping back through the same fork (`d` labelled `again → { to: "fork", fork: "p" }`): branch
+    Stage visits across two passes are `[2, 3, 5, 6]` (unique, monotone) while `forkVisit` goes
+    `[1, 2]` independently.
+22. A corrected active-fork state survives a JSON round trip (`visit === 1`, `visits === 3`).
+23. A synthesised version-2 linear progress record (no `visits` field) still reads — `visits` falls
+    back to `visit`.
+
 Existing suites unchanged and still green — the full pre-G.1 Workflow topology / barrier /
 resumption / adapter / stage / child-stage suites are the byte/behaviour-compatibility evidence for
 "a Workflow with no `forks` is exactly as before".
 
 ## 14. Local validation (local, not CI)
 
+At the corrected HEAD:
+
 ```text
-npm test                        1045 pass, 0 fail   (was 1033 at G.0)
-npm run test:conformance         794 pass, 0 fail   (was 782)
+npm test                        1049 pass, 0 fail   (was 1033 at G.0; 1045 at the first G.1 commit)
+npm run test:conformance         798 pass, 0 fail   (was 782 / 794)
 npm run test:mcp                  68 pass, 0 fail
 npm run test:evals               12 pass, 0 fail    (unchanged)
 npm run test:benchmark-subjects   8 pass, 0 fail
@@ -385,13 +465,13 @@ branch emission ordering semantics
 Slice-H / I durability machinery for the active-fork record
 ```
 
-## 16. Scope check (diff inspected before commit)
+## 16. Scope check (diff inspected before each commit)
 
 ```text
 no new Stage kind / Effect kind / Event kind
 no child Execution for branch B or C
 no new RuntimeStore / Harness facet
-no branch Effects / branch ControllerResumptions
+no branch Effects / branch ControllerResumptions / branch-qualified correlation ids
 no LLM / Agent / Workflow branch support
 no nested fork
 no reducer / merge framework
@@ -401,7 +481,13 @@ no locks / leases / semaphores / fencing
 one small canonical pointer only (future-plan.md §1.3), no canonical rewrite
 ```
 
+The independent-review correction (§0) is confined to the Stage-visit coordinate: it changes no
+G.1 semantics beyond splitting `visit` allocation into `visits`, keeping `currentStage` + `visit`
+truthful, and clearing the (already unused) `stageProgress` on fork install. No item in the deferred
+list (§15) was started.
+
 ## 17. Status
 
-Implemented, committed, and pushed to `slice-g-structured-concurrency`. **Not merged. Not
-self-approved.** Awaiting independent architecture review before any G.2 work begins.
+Implemented, corrected per independent review, committed, and pushed to
+`slice-g-structured-concurrency`. **Not merged. Not self-approved.** Awaiting independent G.1
+re-review before any G.2 work begins.
