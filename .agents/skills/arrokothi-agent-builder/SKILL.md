@@ -14,119 +14,90 @@ description: >-
 
 # Building an application on ArrokothI
 
-This skill builds **applications on top of** the kernel. It never changes kernel semantics. If the
-task turns out to require a new Stage kind, Effect kind, Event kind, memory form, Execution kind, or
-any other contract change, stop and switch to `arrokothi-architecture` — do not add it here.
+This skill builds **applications on top of** the kernel; it never changes kernel semantics.
 
-The full decision procedure is
-`docs/guides/agent-workflow-composition.md`.
-This skill is the entry point and the discipline; the guide is the manual. Do not restate the guide
-here.
+**The procedure lives in `docs/guides/agent-workflow-composition.md`.** Load it and follow its
+13-step builder procedure (§13). This file is the entry point: what to load, what traps to avoid,
+when to escalate. It is not a second copy of the manual.
 
-## Source of truth
+## What to load
 
 ```text
-canonical concept owner        docs/README.md table → the owning document
-what is actually implemented   docs/development/002-implemented-kernel-baseline.md
-what is only planned           docs/development/001-current-status-and-roadmap.md
-how to decide (this task)      docs/guides/agent-workflow-composition.md
-external engineering guidance  docs/agent-engineering/   (framework-neutral; NOT ArrokothI truth)
+docs/guides/agent-workflow-composition.md        the decision procedure — read this
+docs/development/002-implemented-kernel-baseline.md   what is actually implemented
+docs/README.md → the owning canonical doc        semantic truth for a concept in play
+docs/development/001-current-status-and-roadmap.md    what is only planned (tranches H–N)
+docs/agent-engineering/                          external, framework-neutral engineering guidance;
+                                                 a design reference, never ArrokothI semantics
+examples/execution-kernel-minimal/               a runnable, offline, production-surface assembly
 ```
 
-This skill defines workflow, not architecture. The canonical owner overrides stale skill or guide
-text. Using this skill does not justify editing it or the guide; update either only when an accepted
-change makes it materially false, obsolete, or incomplete.
+Read the guide before designing; read the canonical owner before asserting what a concept means.
+The canonical owner overrides both the guide and this skill. Using either does not justify editing
+it.
 
-**Import surface.** Application code for the current kernel imports from `@arrokothi/core/execution`,
-`@arrokothi/core/ports`, and `@arrokothi/core/reference`. The package root `@arrokothi/core` still
-carries the legacy Session/Flow/`AgentRuntime` API and exports a *different* `defineAgent` and
-`AgentDefinition`. Every example under `examples/` currently targets that legacy surface. Never
-import `@arrokothi/core/testing` into application code.
+## Guardrails to preserve
 
-## Procedure
+```text
+observable requirements before abstractions
+hard requirement → code / schema / state / gate / authority, never merely prompt text
+known semantic topology → Workflow;  unpredictable progression → Agent
+exact deterministic transform → deterministic code
+model interpretation ≠ environmental truth;  schema validity ≠ factual truth
+memory ≠ context;  Working Notes ≠ authority;  Derived Semantic Memory ≠ asserted truth
+exposure ≠ permission;  model selection ≠ authorization
+consequential external action → Harness-authorized Effect
+eval/benchmark failure ≠ justification for a kernel change
+```
 
-1. **Extract observable requirements.** For each requirement in the specification, record what must
-   be true, what in the world proves it, who establishes it, and how failure becomes visible. Name
-   every requirement that has no observable. Do not begin naming ArrokothI abstractions yet.
+## Traps that cost the most
 
-2. **Separate hard requirements from qualitative ones.** Classify each requirement (deterministic
-   state / calculation / fixed progression / open-ended reasoning / grounded lookup / external side
-   effect / human interaction / style / long-horizon state / temporary state / evaluation-only).
-   For every hard requirement, name the exact mechanism — field schema, transition, gate, authorizer
-   rule, confirmation rule, idempotency scope, budget. **Do not enforce a checkable requirement with
-   prompt text.** A giant system prompt built from the specification is the failure mode this step
-   exists to prevent.
+1. **Kernel Effect vocabulary ≠ what your chosen surface can emit.** Read the guide's §2.4 matrix
+   *before* sketching a composition. In particular: an LLM Stage cannot write Structured Memory; a
+   stock Agent cannot spawn, message, or request user input; Agent/Workflow Stages express only a
+   child `call`; and a stock Workflow consumes `external.input` only once, so it is not multi-turn.
+2. **No controller-side code can read Structured Memory.** Not Stage code, not a
+   `CapabilityExecutor`. Committed values reach the model via an Agent's read keys, and reach code
+   only via host `Harness.structuredMemoryOf`. Deterministic gates over committed facts are host
+   work.
+3. **Import surface.** Application code uses `@arrokothi/core/execution`, `/ports`, `/reference`.
+   The package root `@arrokothi/core` is the legacy Session/Flow API and exports a *different*
+   `defineAgent` and `AgentDefinition`; every example except `examples/execution-kernel-minimal/`
+   targets it. `@arrokothi/core/testing` is right for tests, prototypes, benchmark subjects, and
+   eval harnesses — not for application runtime code.
+4. **Canonical ≠ implemented.** `Artifact/File` has no 0.8.x mechanism. Derived claims carry no
+   supersession field. Deadlines and idempotency scopes are `UseCapability` properties, not
+   universal ones. Cancellation does not cascade. There is no crash durability and no progressive
+   action discovery.
+5. **Deny-by-default defaults are load-bearing.** No authorizer denies every Effect; no operation
+   ceiling exposes nothing; an unclassified operation is consequential. Several distinct
+   misconfigurations all present as "nothing happened".
 
-3. **Identify environmental sources of truth.** List what can report reality rather than assert it:
-   record stores, validators, schema validation, committed memory values, capability outcomes,
-   tests. These become the stopping conditions and the graders. A model's claim is never evidence.
+## Workflow
 
-4. **Establish current repository truth before designing.** Read the canonical owner for each
-   concept in play, then `002-implemented-kernel-baseline.md`. Confirm each mechanism you intend to
-   use exists today. Progressive heterogeneous action discovery, portable service descriptors,
-   expanded MCP/A2A, hosted or isolated security profiles, and durable crash restart are roadmap
-   tranches H–N — never design an application that assumes them.
+1. Extract observable requirements; classify each as deterministic or qualitative.
+2. Establish current repository truth for every mechanism you intend to use.
+3. Decide Workflow/Agent boundaries and the surface for each part — then check §2.4 that the
+   surface can emit what the design needs. If it cannot, work down the guide's §2.5 ladder:
+   another existing composition, host orchestration, or an application-supplied port. A custom
+   controller is the last option, not the first.
+4. Assign state to memory forms; design capabilities, Effects, authority, exposure, confirmation,
+   budgets, and context per the guide.
+5. Implement the smallest working composition against a deterministic offline provider.
+6. Write deterministic tests first, then behavioural evals that grade the world, not the transcript.
+7. Classify every failure — composition, prompt/context, tool interface, model, ergonomics,
+   missing kernel contract, or grader — and fix at that layer.
 
-5. **Decide Workflow vs Agent boundaries.** Workflow = system-defined semantic topology; Agent =
-   model-directed open-ended progression. The number of LLM calls decides nothing; a model choosing
-   among *declared* transition labels is still a Workflow. Prefer the smallest composition that can
-   satisfy the requirements, and prefer a Workflow with one Agent Stage over an Agent wrapping a
-   knowable process. Justify every additional Execution and every parallel fork explicitly.
+## Escalation
 
-6. **Define state and memory ownership.** Run the guide's decision tree per piece of information.
-   Preserve `memory ≠ context`, `Working Notes ≠ authority`, `Derived Semantic Memory ≠ asserted
-   truth`. Structured Memory is Execution-local and schema-bound; children do not inherit it;
-   Working Notes hand off parent→child explicitly and never return automatically. State the child
-   return path (terminal result, shared state, or Artifact) explicitly.
-
-7. **Design capabilities and Effects.** Design the model-facing surface as an interface, not as an
-   API mirror: distinct purposes, descriptions written as prompts, bounded input schemas,
-   high-signal filtered outputs, actionable errors, grounding separated from action. Classify
-   consequentiality in the catalog — unclassified is treated as consequential. Anything crossing the
-   Execution boundary is an Effect the Harness authorizes, including one a Function Stage decided
-   deterministically.
-
-8. **Set authority, exposure, confirmation, and budgets.** For every action answer: may it be
-   exposed, may it be authorized, does it need exact-payload confirmation, should it be
-   deterministic instead, and does it belong outside model control entirely. Keep exposure the
-   narrowest useful request and authority deny-by-default. Attenuate `requestedOperations` per
-   child. Set `AgentLimits`, deadlines, and the lineage `structuralSpawnBudget`; budgets are not
-   permissions, and exhaustion must be a reported failure.
-
-9. **Design context deliberately.** Aim for the smallest high-signal working set sufficient for the
-   next decision. Every context lever is absent by default; add one only when you can say what it
-   buys. Prefer reference-then-detail capability pairs over bulk loading. Keep information selection
-   and action exposure separate — a context compiler never chooses callables.
-
-10. **Implement the smallest working composition.** Author definitions as portable data (no provider
-    ids, clients, or keys). Wire the application side explicitly. Get one end-to-end path working
-    against a deterministic scripted provider before adding the second requirement.
-
-11. **Build deterministic tests first.** Cover schema rejection, transitions, gates, exact
-    calculations, denial, confirmation decline, memory conflict, unknown outcomes, idempotency, and
-    budget exhaustion. These, not the prompt, are what enforce the specification.
-
-12. **Then evaluate behaviour, grading the world.** Keep application evals separate from kernel
-    conformance (`npm test` asks whether the runtime kept its contract; `npm run test:evals` asks
-    whether a configuration accomplished the task). Own a small deterministic world and grade its
-    final state, not the transcript. Record task success, hard-requirement failures, grounding
-    failures, state correctness, tool/effect correctness, model calls, tool calls, turns, and
-    context/token use. Include denial, decline, failure, unknown, and conflict paths. Keep held-out
-    cases.
-
-13. **Classify every failure before adding complexity.** Assign exactly one class — application
-    composition, prompt/context, tool/interface, model limitation, framework ergonomics, genuine
-    missing kernel contract, or evaluation/grader — and fix at that layer. Resist the two standard
-    reflexes: adding an Agent where a Stage would do, and adding instructions where a gate would do.
-
-14. **Escalate gaps; never smuggle them.** A failing eval or benchmark does not justify changing
-    kernel semantics. If a genuine missing contract appears, document it as a candidate architecture
-    issue against the owning canonical document (see
-    `docs/development/007-application-builder-ergonomics-findings.md` for the format) and stop.
+A missing capability is documented, not implemented. Record it in
+`docs/development/007-application-builder-ergonomics-findings.md` at the correct classification
+(documentation / ergonomics-API / effectiveness strategy / possible semantic gap) and stop. Changing
+a kernel contract is `arrokothi-architecture` work, and needs its own authorization.
 
 ## Validation
 
-Match validation to what changed. Application code: the application's own deterministic tests, then
-`npm run typecheck`; add `npm test` when anything under `packages/` or `tests/conformance/` was
-touched, and `npm run test:evals` when Agent behaviour is in scope. Documentation-only work
-validates its own artifacts and links. Local runs are not CI; do not report them as such.
+Application code: its own deterministic tests, then `npm run typecheck`. Add `npm test` when
+anything under `packages/` or `tests/conformance/` was touched, and `npm run test:evals` only when
+Agent behaviour is in scope. Documentation-only work validates its own artifacts and links. Local
+runs are not CI; do not report them as such.

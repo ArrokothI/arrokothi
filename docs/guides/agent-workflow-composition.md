@@ -32,7 +32,7 @@ implementation
 evaluation
 ```
 
-Two rules govern everything below.
+Three rules govern everything below.
 
 > **Build the smallest composition that can satisfy the observable requirements, then let evidence
 > justify each increment.**
@@ -40,15 +40,20 @@ Two rules govern everything below.
 > **Enforce a hard requirement in code, state, schema, or a gate. A prompt sentence is a
 > preference, not an enforcement mechanism.**
 
+> **Design against the surface you chose, not against the kernel's vocabulary.** The kernel
+> understands more than any stock Agent or Stage can emit. **Read §2.4 before sketching a
+> composition** — it is the table that decides whether a design is buildable at all.
+
 ### Reading order
 
 ```text
-this guide §0–§3        decide the shape
-../mental-model.md      the invariants you must not route around
-../composition.md       Stage / child / branch truth
-../memory.md            memory-form truth
-../authority.md         authority / exposure truth
-../development/002-…    what is actually implemented today
+this guide §0–§3          decide the shape — §2.4 decides what is buildable
+../mental-model.md        the invariants you must not route around
+../composition.md         Stage / child / branch truth
+../memory.md              memory-form truth
+../authority.md           authority / exposure truth
+../development/002-…      what is actually implemented today
+examples/execution-kernel-minimal/   a runnable, offline assembly on the production surfaces
 ```
 
 Read [`../agent-engineering/01-agent-vs-workflow.md`](../agent-engineering/01-agent-vs-workflow.md)
@@ -95,8 +100,8 @@ Sort each requirement into exactly one class. The class, not the wording, decide
 | grounded factual lookup | an answer that must come from a record, not the model | retrieval capability / Derived Memory (§5, §6) |
 | external side effect | something that changes the world outside the Execution | Effect through the Harness (§7) |
 | human interaction | input, choice, or approval from a person | `RequestUserInput` / mechanical confirmation (§7, §10) |
-| style / response behaviour | tone, format, length, register | instructions + evaluation rubric (§3.3) |
-| long-horizon retained state | must survive context resets and Activations | Structured Memory / Artifacts (§9) |
+| style / response behaviour | tone, format, length, register | instructions + evaluation rubric (§3.4) |
+| long-horizon retained state | must survive context resets and Activations | Structured Memory + application-owned storage (§9) |
 | temporary working state | useful within one Execution's current work, then discardable | Working Notes (§4) |
 | evaluation-only requirement | how you will know the application works | eval suite, not runtime (§11) |
 
@@ -125,7 +130,7 @@ schema validation, committed Structured Memory values, capability outcomes, test
 Harness's own Event vocabulary. These are what your stopping conditions and your graders will read.
 
 > A model saying it did something is not evidence that it happened. Prefer an observation the
-> runtime or the environment established. See §7.4 and §11.
+> runtime or the environment established. See §7.5 and §11.
 
 ---
 
@@ -170,7 +175,7 @@ Run this per requirement cluster, not once per product.
    → **Workflow** whose one Stage is an **Agent Stage** (a child Agent call). This is the default
    hybrid and it is usually the right answer for a real product.
 6. **Would you struggle to write the stopping condition?** That is a signal the boundary is wrong.
-   A Workflow's stopping condition is its topology; an Agent needs an explicit one (§10.4, §2.6).
+   A Workflow's stopping condition is its topology; an Agent needs an explicit one (§10.4, §2.8).
 
 ### 2.3 Choosing the body for a Workflow Stage
 
@@ -196,31 +201,106 @@ Notes that matter in practice:
   proposes them and the Harness performs them. This is the same rule as everywhere else: propose,
   do not perform.
 - Agent and Workflow Stages take a `ChildDefinitionRef` plus `requestedOperations`. Requested is
-  not granted: the child's authority is the request intersected with the parent's *current*
-  authority. Absent means the child gets nothing — never "inherit everything".
+  not granted: the child's capability-operation authority is the request intersected with the
+  parent's *current* effective operation authority. See §8.2 for exactly what that does and does
+  not cover.
 
-### 2.4 Hybrid shapes that work
+### 2.4 What each stock surface can actually emit today
+
+**This is the most important table in the guide.** The kernel understands a five-Effect vocabulary.
+That is *not* the same as what each stock authoring surface can emit. Designing against the kernel
+vocabulary instead of against your chosen surface is the most expensive mistake available here,
+because the design looks correct until `defineWorkflow` rejects it or the controller simply never
+proposes the Effect.
 
 ```text
-deterministic funnel with conversational surfaces
-  Workflow: LLM Stage (converse) → Function Stage (validate/compute)
-            → labelled transitions → Function Stage (external Effect)
+kernel semantic vocabulary
+        ≠
+stock application authoring surface
+```
+
+Verified against `packages/core/src/controllers/`, `workflow/spec.ts`, `ports/stage.ts`, and
+`effects/types.ts` at the current baseline:
+
+| Surface | UseCapability | WriteMemory | child call / spawn | SendMessage | RequestUserInput |
+|---|---|---|---|---|---|
+| generic `ExecutionController` port | yes | yes | yes | yes | yes |
+| reference **Agent** controller | yes — model selects from the Active View | yes — model selects a declared write interface | **no** | **no** | **no** |
+| **Function Stage** | yes — `StageCapabilityRequest` | yes — `StageMemoryWriteRequest` (optional `expectedRevision`) | **no** | **no** | **no** |
+| **LLM Stage** | yes — only via declared `callables`, which resolve to a capability/operation | **no** | **no** | **no** | **no** |
+| **Agent Stage** | no | no | **`call` only**, to a child Agent | **no** | **no** |
+| **Workflow Stage** | no | no | **`call` only**, to a child Workflow | **no** | **no** |
+
+Two further rows a builder needs just as much:
+
+| Surface | What it adds |
+|---|---|
+| **host / application code** (trusted runtime entry points, not Effects) | `createExecution`, `deliverExternalInput`, `submitUserInput`, `resolveConfirmation`, `settleEffect`, `cancelExecution`, and — the one most often missed — `structuredMemoryOf(executionId)` to **read** committed Structured Memory |
+| **application-supplied ports** | `EffectAuthorizer`, `ConfirmationPolicy`, `CapabilityExecutor`, `FunctionStageRegistry`, `LocalResourceEnvironment` — ordinary application code, and where most deterministic gating actually lives |
+
+Consequences worth stating explicitly, because each one has bitten a design:
+
+- **An LLM Stage cannot write Structured Memory.** Its `callables` are capability operations. If a
+  model-interpreted value must be retained, the LLM Stage returns it as its `StageResult` text and a
+  following **Function Stage** parses it and requests the write.
+- **No controller-side code can read Structured Memory.** `StageExecutionContext` has no memory
+  handle, and `CapabilityExecutor` is given no store or ExecutionContext. Committed values reach
+  only (a) an Agent's *model* information context via `spec.structuredMemory.read.keys`, and
+  (b) host code via `Harness.structuredMemoryOf`. Deterministic computation over committed state is
+  therefore host work, or work over data reached through a resource view or capability.
+- **A stock Workflow is not multi-turn.** It consumes `external.input` exactly once, before its
+  first Activation, as the entry Stage's input; later application input is not consumed by the
+  Workflow controller. A conversation across turns is **Agent** shape, or host orchestration that
+  runs a fresh Workflow Execution per turn.
+- **Neither Agent Stage nor Workflow Stage hands off Working Notes**, and neither passes a child
+  deadline. The Workflow controller builds its child `call` from the Stage definition only (§8.3).
+- **A `spawn`/`call` child receives no Structured Memory view.** Only `createExecution` binds one.
+
+### 2.5 Reading the matrix when your requirement is not directly authorable
+
+Work down this list. **Do not jump to a custom controller** — it is the last option, not the first.
+
+1. **Directly authorable** on the chosen surface → use it.
+2. **Another existing ArrokothI composition** expresses it → e.g. an Agent instead of a Workflow for
+   multi-turn conversation; a Function Stage after an LLM Stage for a memory write; an Agent Stage
+   for a bounded open-ended sub-problem.
+3. **Host/application orchestration** → the host reads committed memory, applies an exact rule,
+   creates or feeds an Execution, submits user input, or resolves a confirmation. This is a
+   first-class and fully supported design, not a workaround.
+4. **An application-supplied port** → put the rule in the `EffectAuthorizer`, `ConfirmationPolicy`,
+   or the capability implementation, where it is deterministic and Harness-enforced.
+5. **A custom controller** implementing `ExecutionController` → unlocks the full Effect vocabulary,
+   and costs you every semantic guarantee the reference controllers give you for free. Reach for it
+   only when 1–4 genuinely cannot express the requirement, and say so in your design notes.
+6. **Not currently implemented** → record it and choose a different shape. Do not build it into the
+   kernel (§16).
+
+### 2.6 Hybrid shapes that work
+
+```text
+multi-turn conversation with exact gating
+  Agent Execution (root, Structured Memory bound at creation)
+  + read-only grounding capability
+  + host code between turns reading structuredMemoryOf and applying the exact rule
+  + EffectAuthorizer / ConfirmationPolicy gating the consequential capability
 
 knowable process with one genuinely open sub-problem
   Workflow: Function Stage (prepare) → Agent Stage (investigate)
-            → Function Stage (verify the child's claim) → complete
+            → Function Stage (verify the child's terminal result) → complete
+
+model interpretation that must become retained state
+  Workflow: LLM Stage (interpret → text) → Function Stage (parse, validate, request WriteMemory)
 
 open-ended work with reusable exact sub-processes
-  Agent whose capabilities include a Workflow-backed operation,
-  or which `call`s a child Workflow Execution
+  Agent whose capabilities include a Workflow-backed operation implemented by the application
 ```
 
-### 2.5 When to choose parallel Workflow branches
+### 2.7 When to choose parallel Workflow branches
 
 Only when the branches are genuinely independent and the latency is worth the coordination cost.
 The current fork topology is deliberately narrow (see §8.4) — check it before designing around it.
 
-### 2.6 When *not* to reach for an Agent
+### 2.8 When *not* to reach for an Agent
 
 - The path is knowable and you are choosing an Agent for flexibility you cannot name.
 - You cannot state a stopping condition or a budget.
@@ -239,23 +319,73 @@ this?" — it is "**is there a mechanism that establishes the exact truth, and a
 | Requirement | Mechanism in ArrokothI |
 |---|---|
 | numeric calculation, totals, thresholds, unit conversion | Function Stage / host code |
-| required-field completeness | Structured Memory field schemas + a Function Stage gate + declared transitions |
+| required-field *presence* | Structured Memory field schemas + an exact gate (host code reading `structuredMemoryOf`, a Function Stage over its own inputs, or the `EffectAuthorizer`) |
 | known stage progression, ordering, prerequisites | Workflow topology and declared transitions |
 | record filtering, sorting, pagination, budget/eligibility limits | Function Stage before the result enters model context, or inside the capability implementation |
-| schema validation of any value that becomes state | Structured Memory schema-bound `WriteMemory`; the runtime validates and can reject |
+| *structural* validity of any value that becomes state | Structured Memory schema-bound `WriteMemory`; the runtime validates the shape and rejects a malformed one (see §3.2 for what this does **not** establish) |
 | authority checks | `EffectAuthorizer` at the Harness; deny-by-default |
 | approval of a consequential payload | `ConfirmationPolicy` (exact-payload mechanical confirmation) |
-| idempotency of an external action | `EffectIdempotencyScope` on the request; the Effect journal |
+| duplicate suppression of a capability call | `EffectIdempotencyScope` on a `UseCapability` request (§7.4 — not a universal Effect property, and not crash-safe) |
 | concurrent-write correctness | `expectedRevision` on `WriteMemory`; a stale write conflicts, it never silently overwrites |
-| terminal conditions and budgets | Workflow topology; `AgentLimits`; deadlines; lineage structural spawn budget |
+| terminal conditions and budgets | Workflow topology; `AgentLimits`; the `UseCapability` operation deadline; lineage structural spawn budget |
 | "this must never happen" | absence of authority, plus absence of exposure — not an instruction |
 
 Concretely: if the specification says *"never hand off without a phone number"*, the enforcement is
-a `phone` field with a schema and a Function Stage that will not take the handoff transition until
-the field is committed. The instruction telling the model to collect a phone number is a helpful
-restatement; it is not the requirement's implementation.
+a `phone` field with a schema **plus an exact gate that reads the committed value**. Note where that
+gate can live today: no controller-side code can read Structured Memory (§2.4), so the gate is host
+code reading `Harness.structuredMemoryOf`, or an `EffectAuthorizer`/`ConfirmationPolicy` that
+refuses the handoff Effect until the host's gate has passed. The instruction telling the model to
+collect a phone number is a helpful restatement; it is not the requirement's implementation.
 
-### 3.2 Delegate these to a model
+### 3.2 Schema validation is not factual acceptance
+
+Structured Memory validates a written value against its `ValueSchema`. That establishes real,
+useful things:
+
+```text
+shape          type          bounds          structural validity
+```
+
+It does **not** establish that the model interpreted the person correctly. A structurally valid
+value can be semantically wrong:
+
+```text
+user says:        "about 40, maybe a few more"
+model proposes:   affected_users = 40
+numeric schema:   PASS  — 40 is an integer in range
+factual truth:    unestablished
+```
+
+Keep four steps distinct, and decide per field how far you need to go:
+
+```text
+1. candidate extraction     a model proposes a value from language
+2. schema validation        the runtime checks shape/type/bounds; a malformed value is rejected
+3. factual acceptance       something establishes the value is actually right
+4. authoritative state      the accepted value is committed and later relied upon
+```
+
+Step 2 is not step 3. When factual correctness matters, add an acceptance mechanism appropriate to
+the field:
+
+- **deterministic parsing** in host or Function Stage code, where the input has a parseable form;
+- **source-of-record lookup** through a capability, where an external system already knows the
+  answer (the retrieved value, not the model's reading of it, becomes the write);
+- **explicit user confirmation** — `RequestUserInput` for a value, or `ConfirmationPolicy` when the
+  consequential action itself is the thing to confirm;
+- **trusted host/application policy** — the host reads the proposal, applies its own rule, and
+  writes the accepted value itself;
+- **cross-field or cross-source agreement** before the value is relied on.
+
+This does **not** mean model-originating writes are invalid. Letting a model propose a schema-bound
+write is a legitimate and supported design, and for many fields — a free-text summary, a
+best-effort category, a preference — structural validation is exactly the right amount of rigour.
+The narrow point is:
+
+> **Structural validity is not factual truth.** Choose the acceptance step deliberately for the
+> fields where being wrong is expensive.
+
+### 3.3 Delegate these to a model
 
 ```text
 natural-language interpretation of what a person meant
@@ -266,25 +396,33 @@ response composition, explanation, tone
 qualitative judgment against articulated criteria
 ```
 
-### 3.3 Style and behaviour requirements
+### 3.4 Style and behaviour requirements
 
 Style requirements are real requirements, but their mechanism is instructions *plus a grader*, not
 instructions alone. Put the requirement in the Agent's `instructions` or the LLM Stage's `system`
 prompt, and put the check in the eval rubric (§11). An unevaluated style instruction is unowned.
 
-### 3.4 The division-of-labour pattern
+### 3.5 The division-of-labour pattern
 
-The strongest shape for an exact requirement inside a conversation is three-part:
+The strongest shape for an exact requirement inside a conversation separates four jobs:
 
 ```text
-LLM              interpret the person's input into candidate values
-Structured Memory retain the accepted, schema-validated values
-Function/host    compute the exact result from committed values
-LLM              explain the computed result
+LLM               interpret the person's input into CANDIDATE values
+acceptance step   establish that a candidate is actually right (§3.2)
+Structured Memory retain the accepted values
+host code         compute the exact result from the committed values
+LLM               explain the computed result it was given
 ```
 
-The model never performs the arithmetic and never becomes the source of the retained fact. See the
-worked example in §14.3.
+Two implementation facts shape where each job can live today (§2.4):
+
+- the computation reads committed Structured Memory, and **only host code can do that**
+  (`Harness.structuredMemoryOf`) — neither a Function Stage nor a `CapabilityExecutor` is given a
+  memory handle;
+- the explaining model must be *given* the number, not asked to produce it.
+
+The model never performs the arithmetic and never becomes the unchecked source of a retained fact
+that matters. See the worked example in §14.3.
 
 ---
 
@@ -324,7 +462,10 @@ For each piece of information, ask in this order:
            Bounded, controller-owned, explicit visibility. Not durable application truth.
 
 5. Is it a large durable work product or source document?
-     yes → Artifact / File. Reference it; do not inline it into memory fields or prompts.
+     yes → canonically this is the Artifact / File form, but there is NO executable
+           Artifact/File API, store, or Effect in 0.8.x (§4.5). Today: keep it in
+           application-owned durable storage and reach it through a capability you design,
+           or expose a read-only materialized resource view to Function Stage code.
 
 6. Does it already live authoritatively in an external system of record?
      yes → leave it there. Reach it through a capability; do not shadow-copy it into memory
@@ -349,7 +490,27 @@ information the next Stage or the parent needs (§8.5).
 **Transcript / context** — the conversation and recent observations. Bounded, selected, and
 transient. Anything you would be upset to lose does not belong only here (§5, §9).
 
-**External application state** — your database. The kernel does not want to own it.
+**Artifact / File** — canonical vocabulary for large durable work products. See §4.5: the concept is
+architecturally defined and **not implemented**, so it is not something you can build on today.
+
+**External application state** — your database. The kernel does not want to own it, and today it is
+where large durable work products and any cross-Execution shared state actually live.
+
+Two reachability facts that decide more designs than the classification itself (§2.4):
+
+```text
+who can READ committed Structured Memory?
+  the model, via an Agent's spec.structuredMemory.read.keys      → into model context only
+  host code, via Harness.structuredMemoryOf(executionId)         → the only programmatic read
+
+who CANNOT?
+  Function Stage code   — StageExecutionContext has no memory handle
+  CapabilityExecutor    — given no store and no ExecutionContext, by design
+  a spawned/called child — it receives no Structured Memory view at all
+```
+
+So "the program checks the committed facts" is host work today. Plan for it explicitly rather than
+discovering it when a Function Stage has nothing to read.
 
 ### 4.3 Current implemented shape (do not design past it)
 
@@ -370,26 +531,48 @@ From [`../development/002-implemented-kernel-baseline.md`](../development/002-im
   semantics.
 - Derived Semantic Memory: plain provenance-bearing claims, an explicit extraction seam, a
   deterministic reference extractor, deny-before-provider retrieval, and a bounded read view whose
-  retrieval `query` is **authored, not model-generated**.
+  retrieval `query` is **authored, not model-generated**. The current claim record is exactly
+  `{ claimId, statement, provenance }` with `provenance = { sourceRefs, derivedAt, derivation }`,
+  and unknown properties are rejected (§4.4).
 
-### 4.4 Correction and supersession
+### 4.4 Correction, currentness, and supersession
 
 Use the mechanism that matches the form; do not invent a new one.
 
+**Structured Memory** represents *current* state, so correcting it means writing the new value. The
+runtime retains history and provenance; the field itself holds the latest assertion. If concurrent
+writers are possible, supply `expectedRevision` and handle the conflict observation deliberately —
+re-read, merge, retry, or fail deliberately. Never ignore it.
+
+**Derived Semantic Memory** claims are additive and provenance-bearing, and the current record has
+**no supersession, validity-interval, currentness, or confidence field**. The accepted claim shape
+is closed:
+
 ```text
-Structured Memory
-  represents CURRENT state → write the new value.
-  History and provenance are retained by the runtime; the field itself holds the latest assertion.
-  If concurrent writers are possible, supply `expectedRevision` and handle the conflict
-  observation deliberately: re-read, merge, retry, or fail. Never ignore it.
-
-Derived Semantic Memory
-  claims are additive and provenance-bearing. Prefer recording the newer claim and its
-  supersession relation over destroying the older one; let retrieval prefer the current claim.
-
-Working Notes
-  overwrite freely. That is what scratch state is for.
+DerivedSemanticClaim = { claimId, statement, provenance }
+provenance           = { sourceRefs, derivedAt, derivation }
+                       (an unknown property is rejected, not stored)
 ```
+
+So the truthful current behaviour is:
+
+```text
+derived claims simply coexist
+  — including newer ones, and including ones that contradict each other
+  — and the reference provider implements no semantic supersession
+```
+
+Do not try to record a supersession relation in the claim; there is no field for it and the record
+will be rejected. Where currentness matters, that policy lives outside the claim schema today:
+
+- **application policy** — the application decides which claim it will act on, using `derivedAt`
+  and `sourceRefs` it already has;
+- **the provider / retrieval strategy** — a `DerivedSemanticMemoryProvider` is replaceable, and
+  ranking or filtering by recency is a provider mechanism, not kernel semantics;
+- **promotion into Structured Memory** — where a claim genuinely needs to become the current,
+  relied-upon fact, promote it and let the Structured Memory field carry currentness.
+
+**Working Notes** may be overwritten freely. That is what scratch state is for.
 
 Promotion is always explicit. Use `promoteDerivedClaim(...)`, which builds an ordinary
 `WriteMemory` proposal carrying `derivedClaimIds` and `sourceRefs` as provenance. There is no
@@ -397,6 +580,30 @@ Promotion is always explicit. Use `promoteDerivedClaim(...)`, which builds an or
 the Harness still authorizes, the schema still validates, and confirmation still applies.
 
 > **Inference cannot create authority, and provenance is not permission.**
+
+### 4.5 Artifact / File is canonical vocabulary, not a current mechanism
+
+`Artifact / File` is a real memory form in [`../memory.md`](../memory.md), and it is the right way
+to *think* about large durable work products. It is also, at this baseline, **entirely
+unimplemented**:
+
+```text
+Artifact / File
+  canonical architectural concept          yes — docs/memory.md owns it
+  executable 0.8.x application mechanism   none
+    no port, no store, no Effect, no API, no conformance coverage
+```
+
+Therefore, for anything you are building today:
+
+- do **not** treat an Artifact as a child return path (§8.3) — it is not one;
+- do **not** treat it as durable storage for long-running work (§9.2) — it is not one;
+- do **not** reference "the Artifact" in a design as if the runtime will hold it.
+
+The truthful current alternative is **application-owned durable storage reached through a
+capability you design**, with only a reference (an id, a path, a URL) travelling through Structured
+Memory, a Stage result, or a terminal result. Where trusted Function Stage code needs to read
+already-materialized content, a declared read-only `resourceViews` entry is the supported path.
 
 ---
 
@@ -419,6 +626,11 @@ Not "everything relevant". Not "everything authorized". Irrelevant or stale mate
 selection quality and costs tokens on every call.
 
 ### 5.2 Levers available today
+
+Almost all of these are **Agent** levers. An LLM Stage's context is its `system` prompt plus a
+`prompt` template into which the incoming Stage result is substituted — it has no transcript window,
+no memory read, no notes, and no retrieval of its own. Shaping an LLM Stage's context therefore
+means shaping what the preceding Stage hands it.
 
 | Lever | What it does | Author it as |
 |---|---|---|
@@ -465,7 +677,7 @@ service, and you should not design an application that assumes one.
 
 If something is large, stable, and only occasionally needed, do not put it in every model call.
 Options, in preference order: put it behind a retrieval capability; put a compact summary in
-instructions and the detail behind a lookup; store it as an Artifact and reference it; or move the
+instructions and the detail behind a lookup; keep it in application storage and reference it; or move the
 work that needs it into a Function Stage where no model sees it at all.
 
 ### 5.5 When *not* to use retrieval
@@ -477,8 +689,8 @@ work that needs it into a Function Stage where no model sees it at all.
 
 ### 5.6 Context resets are a design input, not an accident
 
-Anything that must survive a reset belongs in Structured Memory, an Artifact, or an external store —
-never only in the transcript. See §9.
+Anything that must survive a reset belongs in Structured Memory or application-owned durable
+storage — never only in the transcript. See §9.
 
 ---
 
@@ -637,17 +849,70 @@ conflicted  a versioned memory write was stale; nothing was written
 
 For each consequential action in your specification, write down what the application does for each
 outcome. In particular: **never round `unknown` up to success, and never round it down to a clean
-failure.** Use idempotency scopes so that a safe retry is safe, and surface the uncertainty when it
-is not.
+failure.**
 
-### 7.4 Why a model's claim is not evidence
+### 7.4 Deadlines, duplicate suppression, and cancellation are narrower than they look
+
+These three controls are commonly assumed to be uniform kernel-wide properties. They are not, and
+designing as if they were produces a liveness or double-execution bug that testing rarely catches.
+
+**Operation deadlines are a `UseCapability` property.** `deadlineMs` exists on the `UseCapability`
+proposal only, and the Harness's `defaultEffectDeadlineMs` is applied only on that path. Everything
+else waits with **no configured deadline**, deliberately and with the reasoning recorded in source:
+
+```text
+UseCapability            deadlineMs, defaulted and cappable by policy (maxDeadlineMs)
+child call result        deadline: null — a parent may legitimately wait for a child indefinitely,
+                                    and no child-result deadline policy is implemented
+ask / peer reply         deadline: null — a peer may take arbitrarily long
+RequestUserInput         deadline: null — a person may never answer
+pending confirmation     deadline: null — a person may never decide
+```
+
+If your application needs a bound on any of the last four, that bound is **yours to implement** in
+host orchestration — for example by timing the wait yourself and calling `cancelExecution`.
+
+**Cancellation is explicit and does not cascade.** `Harness.cancelExecution` is a trusted runtime
+entry point, not an Effect and not a model action. A `call` parent's PendingOperation settles as
+`cancelled` with one correlated `child.cancelled` Event, and that is all:
+
+```text
+cancelling one Execution does NOT cancel its parent,
+                             does NOT cancel its siblings,
+                             does NOT cancel its descendants
+```
+
+Cancelling a subtree is application work: walk it and cancel each Execution yourself.
+
+**Distinguish three different things that all get called "idempotency".**
+
+```text
+1. runtime duplicate recognition        IMPLEMENTED, narrow
+     EffectIdempotencyScope ("none" | "per_input") on a UseCapability request, plus an exact
+     comparison of capability/operation/input/resources against the Effect journal. It suppresses a
+     duplicate dispatch within this runtime's own journal.
+
+2. external system idempotency          YOURS TO DESIGN
+     The remote system must be able to recognise a repeated request — an idempotency key you send,
+     a natural unique key, or a conditional write. The Harness cannot give you this.
+
+3. durable crash/restart deduplication  NOT IMPLEMENTED (roadmap tranche M)
+     The reference runtime store is in memory. A process restart does not carry the journal, so
+     runtime duplicate recognition provides no crash-safety guarantee whatsoever.
+```
+
+For a consequential external operation where a duplicate is genuinely harmful, use (1) *and*
+implement (2). Do not rely on (1) for a guarantee only (3) could give, and do not assume the
+Harness provides (3).
+
+### 7.5 Why a model's claim is not evidence
 
 The model is a participant, not an authority. It can propose; it cannot establish. The Harness
 records what was authorized and dispatched, and the executor/environment reports what happened. Your
 stopping conditions, your terminal results, and your graders should read those, not the model's
 prose. This is the same rule the guide applies to evaluation (§11.3) and to safety (§10).
 
-### 7.5 A prompt is never the authority boundary
+### 7.6 A prompt is never the authority boundary
 
 Untrusted content — retrieved documents, tool results, peer messages, model output, third-party
 descriptors — may influence what gets *requested*. It must never widen what is *permitted*. If your
@@ -685,34 +950,59 @@ the child never finishes.
 
 What the boundary actually gives you:
 
-- **Authority attenuation.** `child = requested ∩ parent's current delegable authority ∩ policy`.
-  A child cannot mint authority, and absent `requestedOperations` means the child gets none.
-- **Context isolation.** The child gets its own views. It does **not** inherit the parent's
-  Structured Memory view or see parent Working Notes by ancestry.
+- **Capability-operation attenuation.** `child capability-operation authority = requestedOperations
+  ∩ the parent's current effective operation authority ∩ policy`. A child cannot mint authority.
+  Be precise about the scope of this one: an absent `requestedOperations` means **the child receives
+  no capability-operation authority through this attenuation path** — it does not mean the child is
+  inert. The child still has its own lifecycle, its own controller and local computation, its own
+  mailbox, and whatever its Definition's spec asks its controller to do. Other powers — spawning,
+  messaging, memory writes, user input — are governed by the `EffectAuthorizer` for that child's
+  Effects, which is a separate contract. `requestedOperations` is one narrowing lever, not the whole
+  child security envelope.
+- **Context isolation.** The child gets its own views. It **receives no Structured Memory view at
+  all** — only `Harness.createExecution` binds one, and the spawn path does not — and it sees no
+  parent Working Notes by ancestry.
 - **Structural budget.** Autonomous spawning spends a lineage-scoped credit. `structuralSpawnBudget`
   omitted at root creation means the lineage can spawn nothing — "nobody granted spawn capacity" is
   not "unlimited". A descendant cannot enlarge it. Recursive definitions are legal; the budget, not
   acyclicity, is what bounds expansion.
-- **Cancellation and deadline propagation**, plus terminal-dependency abandonment.
+- **Terminal-dependency abandonment**, and a `call` parent's PendingOperation settling as
+  `cancelled` if the child is cancelled. Note what this is *not*: cancellation does not cascade, and
+  no child-result deadline is configured (§7.4).
 
-### 8.3 Working Notes handoff
+### 8.3 Working Notes handoff and the child return path
 
-Parent→child handoff is explicit and selective: build it with
-`selectWorkingNotesHandoff(frame, { keys })` and pass it as `workingNotes` on the spawn/call input.
-The child receives an immutable inherited snapshot plus its own independent writable frame.
+Distinguish the generic mechanism from what the stock Stage definitions actually expose.
 
-There is **no automatic child→parent note return** — intentionally. If the parent needs something
-back, it comes back as the child's **terminal result**, or through Structured Memory, or as an
-Artifact. Design the return path explicitly.
+**Generic kernel/controller capability.** A controller may build a `spawn`/`call` proposal carrying
+`workingNotes`, normally selected with `selectWorkingNotesHandoff(frame, { keys })`. The Harness
+envelope-checks the snapshot, policy may deny the concrete transfer, and the child receives an
+immutable inherited snapshot plus its own independent writable frame.
+
+**What Agent Stage and Workflow Stage expose.** Neither. An `AgentStageDefinition` /
+`WorkflowStageDefinition` carries a `ChildDefinitionRef` and `requestedOperations`, and the Workflow
+controller builds its child `call` from that alone — **no `workingNotes`, no child input beyond the
+adapted Stage result, no deadline**. Handing off notes to a child today therefore requires a
+controller that builds the proposal itself, which the stock Agent and Workflow controllers do not.
+
+**The child return path, exactly as implemented.** For a stock Agent Stage or Workflow Stage the
+**terminal result is the only built-in return route.** There is deliberately no automatic
+child→parent Working Notes return, the child has no Structured Memory view to write into, and there
+is no Artifact mechanism (§4.5). Anything else the parent needs must come back either in that
+terminal result or through an **application-defined external mechanism** — your own store, written
+by a capability the child is authorized to use and read by the parent through a capability or by the
+host. Design that path explicitly; it will not appear on its own.
 
 ### 8.4 Parallel Workflow branches — current limits
 
 Implemented today: system-defined fork topology with **two or more branches**; each branch body is
 **exactly one adapter-free Stage** of any of the four kinds; a branch Stage is reachable only through
-its fork and transitions only to its own fork's join; the join has exactly one ordinary downstream
-Stage which is not itself a branch Stage. Branch Effects, branch child calls, and branch model
-resumptions work, with branch-qualified correlation. The join delivers each branch's final
-`text | none` result in **authored branch order**.
+its fork and transitions only to its own fork's join; and the join has **exactly one downstream
+Function Stage**, which may not itself be a branch Stage. The Function-Stage requirement is not
+incidental — the join snapshot is delivered to Function Stage code (`StageExecutionContext.join`),
+so a non-Function join successor could not consume it and validation rejects it. Branch Effects,
+branch child calls, and branch model resumptions work, with branch-qualified correlation. The join
+delivers each branch's final `text | none` result in **authored branch order**.
 
 Explicitly **not** implemented — validation rejects these rather than half-supporting them:
 multi-Stage branch subgraphs, nested or concurrent forks, branch loops, branch Adapters, branch
@@ -729,14 +1019,34 @@ easier to reason about, cheaper, and easier to evaluate.
 
 ### 8.5 Cross-Stage data flow
 
-A Stage transition carries `text | none`. That is intentionally small so that graph edges stay
-inspectable. Everything structural travels through explicit shared state:
+**A Stage result and a transition label are two different things.** Keep them separate; encoding
+control into the data string is a bug waiting to happen.
 
 ```text
-Stage result           small text handoff or a transition label
-Structured Memory      the asserted facts later Stages read
-Artifact / File        large work products
-resource views         explicitly exposed read-only local materialisations
+StageResult = string | null
+  the DATA one Stage hands to the next. `null` means none — not "", not "unknown".
+
+transition label
+  a separate CONTROL selection. A Stage returns a label; the definition declares where each
+  label goes. A label the Stage never declared is rejected, not routed.
+```
+
+A Function Stage returns both independently (`{ status: "completed", result, transition }`), and an
+`always` Stage returns no label at all. Do not pack a routing decision into the result text and
+re-parse it downstream — that turns a declared graph edge into a string convention, and the
+Workflow stops describing its own control flow.
+
+The result contract is intentionally the smallest useful edge value in the kernel, so structural
+information travels elsewhere:
+
+```text
+Stage result           one small text handoff (or none)
+transition label       one declared control choice
+Structured Memory      asserted facts — writable from a Function Stage, but NOT readable by
+                       Stage code (§4.2); host code reads it
+resource views         explicitly exposed read-only local materialisations, declared per Stage
+application storage    large or structured work products, reached through a capability
+                       (there is no Artifact mechanism — §4.5)
 ```
 
 Do not use Working Notes as a second data-flow system between Stages; there is no sequential-Stage
@@ -792,10 +1102,10 @@ Practical artifacts, mapped to ArrokothI:
 
 | Continuity need | Where it goes |
 |---|---|
-| the objective and its acceptance criteria | Structured Memory, or an Artifact referenced from it |
-| what is done / what remains | Structured Memory fields, or a progress Artifact |
+| the objective and its acceptance criteria | Structured Memory, or application storage referenced from it |
+| what is done / what remains | Structured Memory fields, or a progress record in application storage |
 | the current unit of work and its hypotheses | Working Notes (this Execution only) |
-| large intermediate products | Artifacts / Files |
+| large intermediate products | application-owned storage, reached through a capability (no Artifact mechanism — §4.5) |
 | what actually happened | Effect journal, Events, lifecycle history (runtime truth; observability, not semantic state) |
 | how to verify | tests, validators, deterministic graders — outside the Execution |
 
@@ -873,10 +1183,15 @@ claim the runtime does not make.
 
 ### 10.4 Budgets are not permissions
 
-`AgentLimits.maxModelCalls`, deadlines, effect deadlines, and the lineage structural spawn budget
-constrain *how much* autonomous work may occur. They say nothing about whether an action is allowed.
-Set both. A composition with authority but no budget can burn cost; a composition with budget but no
-authority does nothing. Exhausting a budget should be a **reported failure**, not a silent loop.
+`AgentLimits` (model calls, per-step call fan-out, context messages, notes and derived budgets), the
+`UseCapability` operation deadline, and the lineage structural spawn budget constrain *how much*
+autonomous work may occur. They say nothing about whether an action is allowed. Set both: a
+composition with authority but no budget can burn cost; one with budget but no authority does
+nothing. Exhausting a budget should be a **reported failure**, not a silent loop.
+
+Be precise about coverage (§7.4): a configured deadline bounds a `UseCapability` operation. Waiting
+for a child result, a peer reply, user input, or a confirmation has **no configured deadline**, so
+any bound on those is yours to enforce in host orchestration.
 
 ### 10.5 Approval fatigue
 
@@ -969,7 +1284,8 @@ This is the most important discipline in the guide. Assign one class, then fix a
 ## 12. Requirements → ArrokothI mapping
 
 A compact reference. Every row is grounded in a current contract; follow the section for the
-conditions.
+conditions. **Check §2.4 before committing to a row** — the surface you pick decides whether the
+mechanism named here is authorable from it.
 
 | Requirement shape | ArrokothI choice | § |
 |---|---|---|
@@ -980,8 +1296,8 @@ conditions.
 | Choice among known outcomes | LLM or Function Stage + **labelled transitions** | §2.2 |
 | Specialized, independently progressing autonomous sub-task | **Agent Stage** → child Agent `call` | §2.3, §8.2 |
 | Reusable sub-process with its own topology | **Workflow Stage** → child Workflow `call` | §2.3, §8.2 |
-| Independent concurrent work inside one Workflow | **system-defined fork/join** (narrow topology — check §8.4) | §8.4 |
-| Explicit authoritative application fact | **Structured Memory** field (schema-bound; written via `WriteMemory`) | §4 |
+| Independent concurrent work inside one Workflow | **system-defined fork/join**: ≥2 single-Stage adapter-free branches, join successor is **exactly one Function Stage** | §8.4 |
+| Explicit authoritative application fact | **Structured Memory** field (schema-bound; written via `WriteMemory` from an Agent or a Function Stage — never an LLM Stage) | §2.4, §4 |
 | Temporary controller/model scratch | **Working Notes** (`spec.workingNotes`, `working_notes_set`) | §4 |
 | Inferred or retrieved semantic claim | **Derived Semantic Memory** claim with provenance | §4 |
 | Accepting an inferred claim as fact | explicit **promotion** (`promoteDerivedClaim` → `WriteMemory` with provenance) | §4.4 |
@@ -989,15 +1305,19 @@ conditions.
 | Large optional context universe | bounded retrieval + reference-then-detail operations; small Active View | §5.3 |
 | Consequential external action | **Effect** through the Harness + authorization + declared consequentiality | §7 |
 | Approval of one exact payload | **`ConfirmationPolicy`** (mechanical confirmation) | §7.2, §10 |
-| A value only a person can supply | **`RequestUserInput`** (schema-validated) | §7.1 |
-| Talking to an existing Execution | **`SendMessage`** — `send` / `ask` / `reply` | §8.1 |
-| Large durable work product | **Artifact / File**, referenced not inlined | §4 |
-| Must survive context resets | Structured Memory / Artifact / external store — never only the transcript | §9 |
+| A value only a person can supply | **`RequestUserInput`** (schema-validated) — not emittable by a stock Agent or Stage; see §2.4 | §2.4, §7.1 |
+| Talking to an existing Execution | **`SendMessage`** — `send` / `ask` / `reply`; not emittable by a stock Agent or Stage (§2.4) | §2.4, §8.1 |
+| Large durable work product | **application-owned storage** reached through a capability; only a reference travels through the kernel. `Artifact/File` is canonical vocabulary with **no** 0.8.x mechanism | §4.5 |
+| Must survive context resets | Structured Memory / application-owned durable store — never only the transcript | §9 |
 | "This must never happen" | withhold authority **and** exposure; add a gate. Not an instruction | §10 |
-| Bounding autonomous work | `AgentLimits`, deadlines, lineage `structuralSpawnBudget` | §10.4 |
-| Safe retry of an external action | `EffectIdempotencyScope` + honest `unknown` handling | §7.3 |
+| Bounding autonomous work | `AgentLimits`, the `UseCapability` operation deadline, lineage `structuralSpawnBudget`. Child/peer/user-input waits have **no** configured deadline | §7.4, §10.4 |
+| Safe retry of a consequential external action | `EffectIdempotencyScope` on `UseCapability` **plus** external idempotency you design; honest `unknown` handling | §7.3, §7.4 |
 | Concurrent writers to one memory view | `expectedRevision` + explicit conflict handling | §4.4, §8.4 |
-| Style / tone / format | instructions **plus** an eval rubric | §3.3, §11 |
+| Style / tone / format | instructions **plus** an eval rubric | §3.4, §11 |
+| A model-interpreted value that must be factually right | an explicit acceptance step — deterministic parsing, source-of-record lookup, user confirmation, or host policy. Schema validation alone checks shape only | §3.2 |
+| Multi-turn conversation | **Agent** Execution. A stock Workflow consumes `external.input` only once, before its first Activation | §2.4 |
+| Reading committed facts in code | **host code** via `Harness.structuredMemoryOf`. Neither Stage code nor a `CapabilityExecutor` can read memory | §2.4, §4.2 |
+| Getting work back from a child | the child's **terminal result**, or an application-defined external mechanism. No note return, no shared memory view, no Artifact | §8.3 |
 | "How do we know it works?" | eval case grading the world, not the transcript | §11 |
 
 ---
@@ -1038,19 +1358,20 @@ Run the §4.1 decision tree over every piece of information. Produce:
 Structured Memory      field key → ValueSchema → description → who writes it → who reads it
 Derived Semantic       what is extracted, from what material, with what provenance
 Working Notes          which Execution, and what the notes are for
-Artifacts              what, and how it is referenced
+application storage    what, where it lives, and how it is referenced from the kernel
 external state         what stays in your own store
 nothing persistent     what is allowed to expire
 ```
 
 Decide the handoff paths explicitly: parent→child Working Notes selection, and how a child's result
-gets back (terminal result, memory, or Artifact — never an implicit note return).
+gets back. For a stock Agent/Workflow Stage child that is the terminal result, or an
+application-defined external mechanism — never an implicit note return, and never an Artifact (§8.3).
 
 ### 6. Design capabilities and Effects
 
 For each external interaction: name, description, bounded input schema, output shape, error text,
-consequentiality classification, idempotency scope, and deadline. Apply §6.2. Separate grounding
-from action. Decide, per operation, whether a model selects it or the program does — the same
+consequentiality classification, and — for `UseCapability` — idempotency scope and deadline (§7.4).
+Apply §6.2. Separate grounding from action. Decide, per operation, whether a model selects it or the program does — the same
 implementation used in both places is a different semantic design.
 
 ### 7. Define authority, exposure, and confirmation
@@ -1077,8 +1398,10 @@ discovery (roadmap K) or on any other unimplemented mechanism.
 For every Agent: `maxModelCalls`, per-step call fan-out, context/notes/derived budgets, completion
 mode, and what "done" reads from the environment. For every Workflow: which transitions reach
 `complete`, and what happens on adapter rejection (`onAdapterReject`; absent means the Workflow
-fails — the deterministic default). For every Effect: deadline and idempotency. For every lineage:
-spawn budget. Make exhaustion a reported failure.
+fails — the deterministic default). For every `UseCapability`: deadline and idempotency scope, plus
+external idempotency where a duplicate would be harmful. For every wait with **no** configured
+deadline — child result, peer reply, user input, confirmation — decide whether the host must impose
+one. For every lineage: spawn budget. Make exhaustion a reported failure.
 
 ### 10. Implement the smallest working composition
 
@@ -1089,12 +1412,40 @@ end-to-end path working with a deterministic scripted provider before adding a s
 
 **Import from `@arrokothi/core/execution`, `@arrokothi/core/ports`, and `@arrokothi/core/reference`.**
 The package root `@arrokothi/core` still carries the legacy Session/Flow/`AgentRuntime` API and
-exports a *different* `defineAgent` and `AgentDefinition`; every example under `examples/`
-currently targets that legacy surface. Never import `@arrokothi/core/testing` into application code.
-The closest current end-to-end wiring of the Execution kernel is
-`scripts/workflow-scenario-canary.ts` (it needs a live key to run, but the assembly is readable
-offline); the conformance suite under `tests/conformance/` shows the same wiring through the
-`testing` helpers, which exist for tests rather than for applications.
+exports a *different* `defineAgent` and `AgentDefinition`; `examples/minimal-agent/`,
+`examples/estate-like/`, and both `examples/benchmark/` subjects target that legacy surface, so do
+not use them as models for Execution-kernel code.
+
+Be honest with yourself about the level you are working at: these exports are the current *explicit*
+kernel surface, not a polished application-composition API. Assembling a Harness means naming a
+definition store, runtime store, scheduler, controller registry, clock, id generator, authorizer,
+capability catalog, capability executor, and — depending on the composition — model resolution, an
+Agent executor, or the Function Stage and Adapter registries. That is expected, and every one of
+those is a real seam rather than ceremony.
+
+**A runnable minimal reference:**
+[`../../examples/execution-kernel-minimal/`](../../examples/execution-kernel-minimal/README.md) is a
+deterministic, offline, key-free application that assembles exactly this from the production-facing
+surfaces — including one authorized path and one deny-by-default path. Run it with
+`npm run example:execution-kernel` and its tests with `npm run test:example:execution-kernel`.
+`scripts/workflow-scenario-canary.ts` shows the same assembly for a Workflow, against a live model.
+
+**Where `@arrokothi/core/testing` belongs.** It is not forbidden — it is scoped:
+
+```text
+production / runtime application code
+  → @arrokothi/core/execution, /ports, /reference only.
+    createAgentTestHarness and friends assemble collaborators with test-shaped defaults;
+    shipping them means your application's wiring is invisible and not yours to configure.
+
+tests, deterministic prototypes, benchmark subjects, eval harnesses
+  → @arrokothi/core/testing is appropriate and intended.
+    ScriptedModelProvider, scripted capability executors, the harness builders, and the
+    contract suites exist precisely so a deterministic offline subject is cheap to write.
+```
+
+A benchmark subject or eval harness built on `/testing` is using it correctly; that choice says
+nothing about how the corresponding production application should be assembled.
 
 ### 11. Build deterministic tests
 
@@ -1119,39 +1470,82 @@ missing kernel contract as a documented candidate issue — never as a silent lo
 
 Illustrative, and deliberately generic. They demonstrate architectural choice, not domain answers.
 
-### 14.1 A deterministic qualification funnel
+### 14.1 A qualification funnel with a conversational surface
 
 *Requirement shape:* collect a fixed set of facts through conversation, qualify against exact rules,
 show only real records, hand off to a human team when qualified.
 
+**The ideal semantic decomposition.** This part is sound and is what you should reason with:
+
 ```text
-Workflow
-  entry: LLM Stage "converse"
-      instructions carry tone and one-question-at-a-time behaviour
-      exposes a read-only record-search callable
-      writes candidate facts as WriteMemory requests
-        ↓ always
-  Function Stage "gate"
-      reads committed Structured Memory
-      completeness + eligibility computed in code
-        ↓ labelled: "incomplete" → back to "converse"
-        ↓ labelled: "qualified"  → "handoff"
-  Function Stage "handoff"
-      returns a UseCapability request for the external handoff operation
-      idempotency scope so a retry cannot double-send
-      ConfirmationPolicy requires approval of this exact payload
-        ↓ always → complete
+known business progression       →  system-defined topology
+open-ended conversation          →  model responsibility
+exact completeness / eligibility →  deterministic code over accepted facts
+record lookup                    →  grounded read-only capability
+consequential handoff            →  Harness-authorized Effect, confirmed
 ```
 
-Why this shape: the progression is knowable, so it is a Workflow. Completeness and eligibility are
-exact, so they are code reading committed memory — not a prompt asking the model to check. The
-records are grounded through a read-only capability, and the one consequential action is a single
-Effect with declared consequentiality, idempotency, and confirmation. The model owns interpretation
-and phrasing; it owns nothing else.
+**What the current stock surfaces can compose directly.** The whole thing is *not* one stock
+Workflow, and it is worth being exact about why (§2.4):
 
-What is *not* here: no Agent (nothing is open-ended), no child Execution (nothing needs independent
-identity), no retrieval layer (a record capability is enough), no Working Notes (nothing to keep
-across steps that is not already an asserted fact).
+```text
+a stock Workflow consumes external.input ONCE, before its first Activation
+  → it cannot host a multi-turn conversation loop
+
+an LLM Stage has callables that resolve to capability operations
+  → it cannot write Structured Memory
+
+no Stage or capability executor is given a memory handle
+  → the "read committed memory and decide" gate cannot live in a Function Stage
+```
+
+So the viable current shape puts the conversation in an **Agent** and the exact gate in the **host**:
+
+```text
+host creates a root AGENT Execution
+  Harness.createExecution({ definition, structuredMemory: { fields: [...] },
+                            operationAuthority: { ... } })
+
+Agent spec
+  instructions: tone, one question at a time, never assert an unlisted record
+  operations:   record_search        read-only grounding
+                handoff_to_team      consequential; declared consequential in the catalog
+  structuredMemory.read.keys   the fields the model should see
+  structuredMemory.write.keys  the fields the model may propose
+  completion: respond_and_wait       a response is communication, not termination
+
+per turn (host loop)
+  harness.deliverExternalInput({ destination, label: "user", payload: text })
+  harness.runUntilIdle() / drainResumptions()
+  read the reply from harness.emissionsOf(...)
+
+between turns (host code — the deterministic gate)
+  const view = await harness.structuredMemoryOf(executionId)
+  completeness + eligibility computed in ordinary code over view.values
+  the host owns a gate flag derived from that computation
+
+the consequential handoff
+  EffectAuthorizer wraps createAllowListAuthorizer and DENIES handoff_to_team
+    while the host's gate flag is false  → the Agent observes effect.denied and must react
+  ConfirmationPolicy requires approval of the exact payload
+  UseCapability carries an idempotency scope, and the executor implements external
+    idempotency too (§7.4)
+```
+
+Why this shape: the progression *is* knowable, but the part that is knowable is the **gate**, not
+the conversation, and the gate is the part that must be deterministic. Putting it in host code and
+in the `EffectAuthorizer` makes it exact and Harness-enforced — strictly stronger than a Workflow
+transition, because the model cannot route around a denial. The records stay grounded through a
+read-only capability. The model owns interpretation and phrasing; it owns nothing else.
+
+Where a Workflow *is* the right answer here: if a turn's post-processing is itself a multi-step
+known process — normalise, look up, score, write — run it as a **separate Workflow Execution per
+turn** from the host, with the turn's text as its start input. That keeps the topology honest
+instead of pretending one Workflow Execution can span a conversation.
+
+What is *not* here: no child Execution (nothing needs independent identity), no retrieval layer
+(a record capability is enough), no Working Notes (nothing to keep that is not already an asserted
+fact or in the transcript).
 
 ### 14.2 An open-ended investigation task
 
@@ -1177,37 +1571,87 @@ holds.
 
 If this Agent is one step of a larger known process, make it an **Agent Stage** of the enclosing
 Workflow and verify its claims in the following Function Stage. Do not let the child's prose become
-the parent's truth.
+the parent's truth. Two constraints to design around when you do (§8.2, §8.3): the child receives
+**no Structured Memory view**, so everything it produces must come back in its **terminal result**;
+and the Stage passes it **no Working Notes handoff**, so its `spec.workingNotes` frame starts empty.
+Its own local Working Notes still work — those are Agent-local and need no handoff.
 
 ### 14.3 An exact calculation inside a conversation
 
 *Requirement shape:* a person describes their situation in prose; the system must produce an exact
 number and explain it.
 
+**The pattern to preserve:**
+
 ```text
-LLM              interprets the prose into candidate field values
-Structured Memory retains the accepted values — schema-validated, rejected if malformed
-Function/host    computes the exact result from committed values only
-LLM              explains the computed result, and is given the number rather than asked for it
+language interpretation  +  accepted factual state  +  deterministic calculation  +  explanation
 ```
 
-Why this shape: the model is good at interpretation and explanation and is not a calculator. The
-schema is what stops "about 40" from becoming a numeric field; the function is what stops the
-arithmetic from being probabilistic; and because the explanation step receives the computed value,
-the number a person reads is the number the program produced.
+**The current implementation path**, with each job where it can actually live:
 
-The distinguishing test for this pattern: **could the model's output and the committed state ever
-disagree about the answer?** If yes, the computation is in the wrong place.
+```text
+1. LLM interprets prose into CANDIDATE values
+     Agent with structuredMemory.write.keys exposed, or an LLM Stage returning text
+
+2. acceptance — the step that is easy to skip and expensive to skip (§3.2)
+     schema validation establishes shape/type/bounds and rejects a malformed value.
+     It does NOT establish that "about 40, maybe a few more" means 40.
+     For a field the calculation depends on, add one of:
+       deterministic parsing in host / Function Stage code
+       a source-of-record lookup whose RETRIEVED value is what gets written
+       an explicit confirmation from the person
+       a host policy that decides what to accept
+
+3. accepted values are committed to Structured Memory
+     schema-bound WriteMemory — from the Agent's model-facing write action,
+     or from a Function Stage request. NOT from an LLM Stage (§2.4).
+
+4. deterministic calculation over the COMMITTED values
+     host code, reading Harness.structuredMemoryOf.
+     Neither a Function Stage nor a CapabilityExecutor can read Structured Memory,
+     so this is host work unless the inputs are already in hand.
+
+5. the LLM explains the number it was GIVEN
+     deliver the computed result as external.input to the Agent, or pass it as the
+     input to an explaining LLM Stage. Never ask the model to recompute it.
+```
+
+Why this shape: the model is good at interpretation and explanation and is not a calculator. Step 2
+is what stops "about 40" from silently becoming an authoritative `40`; step 4 is what stops the
+arithmetic from being probabilistic; and because step 5 *receives* the value, the number a person
+reads is the number the program produced.
+
+Two tests for this pattern:
+
+- **Could the model's output and the committed state ever disagree about the answer?** If yes, the
+  computation is in the wrong place.
+- **If the model misread the person, what catches it?** If the only answer is "the schema", you have
+  step 2 missing.
 
 ---
 
 ## 15. Known application-builder friction
 
-Building on the current kernel has real rough edges — no application-facing composition root, two
-overlapping `@arrokothi/core` surfaces, and examples that predate the Execution kernel among them.
-They are recorded, classified, and kept out of this guide's decision procedure in
+Building on the current kernel has real rough edges. The ones most likely to make a sound design
+feel wrong:
+
+```text
+no application-facing composition root; the assembly helpers live in /testing
+two overlapping @arrokothi/core surfaces with a colliding defineAgent
+the kernel Effect vocabulary is much wider than any stock authoring surface (§2.4)
+no controller-side code can read Structured Memory (§4.2)
+deny-by-default misconfigurations all present as "nothing happened"
+Artifact/File is canonical vocabulary with no mechanism (§4.5)
+derived claims cannot express supersession (§4.4)
+deadline / idempotency / cancellation are narrower than they read (§7.4)
+Agent and Workflow Stages expose no Working Notes handoff (§8.3)
+```
+
+All of these are recorded, classified, and kept out of this guide's decision procedure in
 [`../development/007-application-builder-ergonomics-findings.md`](../development/007-application-builder-ergonomics-findings.md).
-Read it before concluding that a clumsy-feeling composition is your design's fault.
+Read it before concluding that a clumsy-feeling composition is your design's fault — and read it
+before proposing a kernel change, because most of these are deliberate scope decisions rather than
+gaps.
 
 ---
 
@@ -1220,6 +1664,10 @@ Read it before concluding that a clumsy-feeling composition is your design's fau
   [`../development/001-current-status-and-roadmap.md`](../development/001-current-status-and-roadmap.md).
   Do not design an application that assumes them, and do not implement them because a build exposed
   the gap.
+- **Canonical concepts that are not implemented.** Some vocabulary in
+  [`../memory.md`](../memory.md) and elsewhere is architecturally defined without an executable
+  0.8.x mechanism — `Artifact/File` (§4.5) is the clearest case, and memory *scope* beyond
+  Execution-local is another. Treat those as ideas to think with, not APIs to call.
 - **New vocabulary.** No new Stage kind, Effect kind, Event kind, memory form, or Execution kind
   follows from an application need. If you are convinced one is missing, that is a candidate
   architecture issue to document against the owning canonical doc — not something to add here.
