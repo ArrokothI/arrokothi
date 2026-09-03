@@ -1234,3 +1234,237 @@ Target the broad review after enough of the architecture has been exercised toge
 If a term is discovered earlier to be actively causing implementation mistakes or forcing the wrong semantic ownership, fix it earlier. Otherwise prefer collecting evidence and making coordinated terminology changes once, rather than repeatedly renaming the architecture as external vocabulary evolves.
 
 > **Semantic clarity comes first; terminology should then make that clarity obvious to both humans and models.**
+
+---
+
+## 14. SDK application-building surface and Studio boundary
+
+This repository is the **ArrokothI SDK/kernel repository**, not the end-user product surface. A
+separate Studio repository is expected to own the user-facing installation experience, visual
+builder/wizard, product orchestration, and other application-authoring UX. Any Studio-like code or
+UI kept in this repository should be treated as test/reference scaffolding unless explicitly promoted
+later.
+
+That separation does **not** remove the need for a coherent SDK surface. Studio should be able to
+build on ordinary supported SDK contracts rather than requiring private knowledge of test helpers or
+kernel internals. The questions below track SDK/DX evolution only; they are not an active pre-H
+roadmap tranche and do not by themselves justify new kernel semantics.
+
+### 14.1 Application-facing bootstrap/composition API
+
+The low-level Execution-kernel exports may be semantically correct while still requiring too much
+assembly for ordinary SDK consumers.
+
+Evaluate whether the SDK should eventually provide one optional supported composition/bootstrap layer
+that can assemble common pieces such as:
+
+```text
+DefinitionStore / RuntimeStore
+Scheduler / controller registration
+CapabilityCatalog / CapabilityExecutor
+EffectAuthorizer / confirmation policy
+model resolution / provider registry
+exposure and memory view resolvers
+reference stores and other replaceable defaults
+```
+
+Constraints:
+
+```text
+keep low-level ports directly available
+preserve one logical Harness authority boundary
+helpers must not invent new Agent/Workflow/Effect semantics
+deny-by-default behavior must remain visible and testable
+applications must be able to replace reference implementations
+```
+
+Use real SDK applications and benchmark subjects to discover the minimum useful layer before freezing
+an API such as a single runtime/application root.
+
+### 14.2 Stock controller and Stage authoring surface
+
+Maintain an explicit distinction between:
+
+```text
+generic kernel Effect / controller vocabulary
+        !=
+what a stock Agent or each stock Workflow Stage can author today
+```
+
+Track the practical authoring matrix for at least the stock Agent, Function Stage, LLM Stage, Agent
+Stage, and Workflow Stage. For each operation/effect family, identify whether it is:
+
+```text
+directly authorable
+available only through a specific stock surface
+requires host/application orchestration
+requires a custom controller
+not implemented
+```
+
+Then use application evidence to decide whether asymmetries are intentional, need clearer helpers, or
+justify extending a stock definition surface. Do **not** widen every controller merely for symmetry.
+
+### 14.3 Public import surface and legacy compatibility
+
+The 0.8.x SDK currently has a newer Execution-kernel surface alongside older root-package concepts.
+Before v1 stabilization, evaluate a coordinated migration/deprecation path so SDK consumers are not
+forced to understand colliding meanings such as multiple Agent authoring APIs indefinitely.
+
+Questions:
+
+```text
+Which subpaths are the durable public SDK surface?
+When should legacy root exports be deprecated or removed?
+Can migration be staged without making examples/docs teach two incompatible mental models?
+Which compatibility aliases are worth carrying before v1?
+```
+
+The separate Studio product may hide this complexity from end users, but it should not become the only
+place where the current SDK is usable correctly.
+
+### 14.4 Artifact/File executable representation
+
+`Artifact/File` is a canonical architectural concept, but a concept should not be treated as an
+implemented SDK mechanism merely because documentation can name it.
+
+Explicitly decide, based on application and interoperability evidence, whether the SDK needs:
+
+```text
+first-class Artifact/File store/binding/reference APIs
+        or
+application-owned durable storage exposed through existing Resource/capability patterns
+        or
+a deliberately layered combination of both
+```
+
+If first-class support is added, define the complete boundary rather than only a type name:
+
+```text
+identity/reference form
+storage/binding ownership
+lifecycle/retention
+read/write authority and exposure
+large-payload/context projection behavior
+child/Execution handoff behavior
+interop mapping
+failure/durability guarantees
+```
+
+Do not assume H, M, or protocol Artifact terminology automatically answers this SDK decision.
+
+### 14.5 Child interaction, state, and handoff ergonomics
+
+Continue testing whether stock child Agent/Workflow definitions expose the handoff controls real SDK
+applications need without implying hidden shared state.
+
+Questions to validate:
+
+```text
+Which parent→child Working Notes handoff is authorable from stock Stage definitions?
+Is terminal text/null result sufficient for common child calls?
+When should larger/shared state live in application-owned storage instead?
+Do common child-call patterns need safe SDK helpers without creating implicit memory inheritance?
+How should host orchestration be documented when no stock Stage can express an interaction directly?
+```
+
+Preserve:
+
+```text
+Stage != mini-Execution
+child Structured Memory is not implicitly the parent's Structured Memory
+Working Notes handoff is explicit
+shared application storage != automatic cross-Execution memory scope
+```
+
+### 14.6 Lifecycle, deadline, cancellation, and idempotency consistency
+
+Audit the SDK surface per operation/effect/wait category rather than assuming one mechanism applies
+uniformly everywhere.
+
+Track:
+
+```text
+which requests support explicit deadlines
+which waits can be cancelled and how
+whether cancellation propagates or must be explicit
+which Effects expose idempotency scope
+what the in-memory Effect journal actually guarantees
+what requires external idempotency semantics
+what becomes durable only under the future restart/recovery work
+```
+
+Later hosted/durable work may strengthen these guarantees, but current SDK documentation and helper
+APIs should remain exact about controller-specific and Effect-specific behavior.
+
+### 14.7 Preflight diagnostics and fail-closed usability
+
+Deny-by-default configuration is a safety property, but common omissions should be diagnosable before
+a developer mistakes a missing grant/catalog/resolver/budget for model failure.
+
+Evaluate an optional non-authoritative preflight/diagnostic layer for common SDK assembly mistakes,
+for example:
+
+```text
+missing capability catalog entry
+operation requested but not granted
+child capability request with no matching parent authority
+spawn/call configured without structural budget
+missing controller/provider/model resolver
+invalid or unreachable Workflow topology
+unsupported stock-controller emission path
+```
+
+Diagnostics must explain the existing contract; they must never auto-widen authority or silently
+repair security-sensitive configuration.
+
+### 14.8 Reference examples and testing boundary
+
+Maintain at least one deterministic, offline, current-Execution-kernel example that uses supported
+production-facing SDK imports without requiring a live model key.
+
+Keep the role boundary explicit:
+
+```text
+production/runtime application code
+  should use supported SDK/runtime surfaces
+
+tests, benchmark subjects, deterministic prototypes, eval scaffolding
+  may use dedicated testing helpers where appropriate
+
+separate Studio repository
+  owns the end-user authoring/product UX
+```
+
+Examples in this SDK repository exist to prove and teach SDK contracts, not to substitute for Studio.
+
+### 14.9 Evidence gate for promoting SDK friction into architecture
+
+Use P01/P02, additional benchmark subjects, and real SDK applications as evidence generators. For each
+failure, classify the problem before changing the kernel:
+
+```text
+documentation mistake
+SDK ergonomics / bootstrap API
+stock-controller authoring limitation
+effectiveness / context / tool-interface strategy
+model limitation
+benchmark / grader issue
+missing implementation of an already-defined concept
+genuine missing semantic contract
+```
+
+Only the last category should normally enter canonical architecture work directly.
+
+In particular, keep these as evidence-driven questions rather than promised features:
+
+```text
+Derived Semantic Memory supersession/currentness semantics
+model/task-dependent Derived retrieval
+cross-Execution Structured Memory implementation
+uniform controller emission coverage
+```
+
+The existing memory questions in §3 already provide the semantic investigation space. Application
+friction should first show that an additional frozen contract is necessary rather than merely more
+convenient.

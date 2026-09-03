@@ -17,6 +17,12 @@ document and defines precedence.
   engineering guidance. These are **not** architecture truth. Start from
   `docs/development/README.md`; historical Slice A-G records live under
   `docs/development/legacy/` and are not default reading.
+- `docs/guides/` holds application/developer guidance for building **on** the kernel. It is not
+  architecture truth. `docs/guides/agent-workflow-composition/` is the decision procedure for
+  turning application requirements into an Agent/Workflow composition; start at its `README.md`,
+  which routes to the topic page for the decision at hand.
+- `docs/agent-engineering/` is framework-neutral external engineering guidance synthesized from
+  public Anthropic material. It is a design reference, never ArrokothI semantics.
 - `docs/architecture-research-dossier.md` is retained research evidence, never canonical.
 
 When documents disagree, resolve by concept ownership in `docs/README.md`, not by recency or
@@ -113,3 +119,9 @@ mirrored into `.claude/skills/` via symlink. These are **coding-agent workflow s
 unrelated to the ArrokothI `Skill` composition concept in `docs/composition.md`. Either agent
 should select them automatically when a task matches the trigger description in the canonical
 `SKILL.md`; using a skill does not by itself justify editing it.
+
+Building an application **on** ArrokothI — turning product requirements into an Agent/Workflow
+composition, or redesigning one — uses `arrokothi-agent-builder` and
+`docs/guides/agent-workflow-composition/`, not the kernel-architecture skill. Application work
+does not change kernel semantics; if it appears to require a new contract, escalate through
+`arrokothi-architecture` instead of adding one.

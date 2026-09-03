@@ -15,6 +15,10 @@ architecture semantics.
 | What efficiency and authoring constraints apply? | [`004-efficiency-and-developer-ergonomics.md`](004-efficiency-and-developer-ergonomics.md) |
 | What MCP baseline exists and what must future protocol work preserve? | [`005-interoperability-baseline-and-next-constraints.md`](005-interoperability-baseline-and-next-constraints.md) |
 | What release, brand, license, and partnership checks apply? | [`006-ecosystem-integration-brand-and-license-checklist.md`](006-ecosystem-integration-brand-and-license-checklist.md) |
+| What friction does an application builder hit on the current kernel? | [`007-application-builder-ergonomics-findings.md`](007-application-builder-ergonomics-findings.md) |
+
+To build an application **on** the kernel rather than change the kernel, start from
+[`../guides/agent-workflow-composition/README.md`](../guides/agent-workflow-composition/README.md).
 
 For ordinary coding or review work:
 
