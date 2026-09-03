@@ -44,11 +44,14 @@ function view(entries: readonly { readonly capability: string; readonly operatio
 }
 
 describe("a projection binding names a typed action target", () => {
-  test("the target vocabulary has independent capability and Structured Memory arms", () => {
+  test("the model-action target vocabulary is exactly the two authority-governed arms", () => {
+    // `working_notes_set` is deliberately NOT here: it is a controller-local model control, a
+    // separate category resolved through LocalModelControlProjection, never a ModelActionTarget.
     assert.deepEqual(MODEL_ACTION_TARGET_KINDS, ["capability_operation", "structured_memory_write"]);
     assert.equal(isModelActionTarget({ kind: "capability_operation", capability: "docs", operation: "search" }), true);
     assert.equal(isModelActionTarget({ kind: "structured_memory_write", key: "profile" }), true);
     assert.equal(isModelActionTarget({ kind: "structured_memory_write", key: "profile", value: "x" }), false);
+    assert.equal(isModelActionTarget({ kind: "working_notes_set" }), false);
     assert.equal(isModelActionTarget({ kind: "write_memory", key: "profile" }), false);
     assert.deepEqual(operationRefOfTarget({ kind: "capability_operation", capability: "docs", operation: "search" }), DOCS_SEARCH);
     assert.equal(operationRefOfTarget({ kind: "structured_memory_write", key: "profile" }), null);

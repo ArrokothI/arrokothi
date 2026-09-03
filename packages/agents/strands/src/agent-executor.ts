@@ -6,15 +6,16 @@
  * an operation happened without ArrokothI authorizing it. So the bridge stops it one step earlier:
  *
  * ```text
- * ArrokothI invocation projection
- *        ↓ FunctionTool specs, built only from the projection's bindings
+ * ArrokothI invocation callable namespace
+ *        ↓ FunctionTool specs, built only from the invocation's callables
  * the model emits a tool use
  *        ↓ BeforeToolCall, BEFORE any native execution
  * event.interrupt() halts the agent and captures name + input + tool-use id
  *        ↓ a JSON snapshot is taken
- * the executor returns a semantic operation call
- *        ↓ AgentController resolves the binding and proposes UseCapability
- *        ↓ Harness authorizes, dispatches, and delivers a result Event
+ * the executor returns a semantic call
+ *        ↓ AgentController resolves it against the persisted snapshots: an authority-governed action
+ *        ↓ becomes a UseCapability/WriteMemory Effect the Harness authorizes; a controller-local
+ *        ↓ model control (working_notes_set) is applied to the controller's own state, no Effect
  * the snapshot is reloaded and resumed with that observation
  *        ↓ the interrupt returns the observation instead of throwing
  * an observation-only callback hands it to the model, and the loop continues
@@ -155,14 +156,17 @@ export function createStrandsAgentExecutor(options: StrandsAgentExecutorOptions)
       const observations = new Map<string, JSONValue>();
       const captured: CapturedCall[] = [];
 
-      // Built only from the invocation projection. A name the projection did not expose has no
-      // FunctionTool, so the framework cannot route to it and the model was never shown it.
-      const tools = request.projection.bindings.map(
-        (binding) =>
+      // Built only from the invocation's callable namespace (authority-governed actions plus
+      // controller-local model controls, already assembled by the controller). A name the
+      // invocation did not expose has no FunctionTool, so the framework cannot route to it and the
+      // model was never shown it. The bridge does not need the action/local-control provenance -
+      // it executes nothing either way - so it consumes the flat spec list.
+      const tools = request.capabilities.map(
+        (spec) =>
           new FunctionTool({
-            name: binding.alias,
-            description: binding.description,
-            inputSchema: toJsonSchema(binding.input) as never,
+            name: spec.name,
+            description: spec.description,
+            inputSchema: toJsonSchema(spec.input) as never,
             /**
              * Observation-only.
              *

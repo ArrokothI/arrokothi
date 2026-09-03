@@ -93,10 +93,14 @@ describe("model invocation is traceable without becoming semantic", () => {
     assert.equal(first.logicalRef, "primary");
     assert.equal(`${first.provider}/${first.model}`, "test/model-a");
     assert.match(first.informationSelectionId, /^ic_/, "a digest of the selection, not the prompt");
-    assert.equal(first.projectionId, "ag/step1/projection");
-    assert.equal(first.exposedActions, 1);
-    assert.deepEqual(first.bindings, [
+    assert.equal(first.actionProjectionId, "ag/step1/projection");
+    assert.equal(first.localControlProjectionId, "ag/step1/local-controls");
+    assert.match(first.actionViewId, /^amav_/);
+    assert.match(first.localControlViewId, /^lmcv_/);
+    // Every callable the provider was shown, each tagged with its source.
+    assert.deepEqual(first.callables, [
       {
+        origin: "action",
         bindingId: "ag/step1/projection/b1",
         alias: "docs_search",
         target: { kind: "capability_operation", capability: "docs", operation: "search" },
@@ -111,8 +115,10 @@ describe("model invocation is traceable without becoming semantic", () => {
       capability: "docs",
       operation: "search",
     });
+    assert.deepEqual(first.localControlApplications, [], "no local control was applied");
     assert.deepEqual([second.outcome, second.decision], ["respond", "respond"]);
     assert.deepEqual(second.proposals, [], "a response proposes nothing");
+    assert.deepEqual(second.localControlApplications, []);
 
     // What the provider reported. Discarding this is what the retrofit fixed.
     assert.deepEqual(first.metadata?.usage, { inputTokens: 120, outputTokens: 18, totalTokens: 138 });
@@ -219,7 +225,8 @@ describe("model invocation is traceable without becoming semantic", () => {
     assert.equal(record.outcome, "call_operations");
     assert.equal(record.decision, "call_operations");
     assert.equal(record.metadata?.finishReason, "TOOL_USE", "the provider's report crossed the resumption boundary");
-    assert.equal(record.projectionId, "ag/step1/projection");
+    assert.equal(record.actionProjectionId, "ag/step1/projection");
+    assert.equal(record.localControlProjectionId, "ag/step1/local-controls");
   });
 
   test("a provider rejection is traced as a failure without inventing usage", async () => {

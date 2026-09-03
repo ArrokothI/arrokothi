@@ -103,7 +103,6 @@ describe("serialization", () => {
     assert.deepEqual(context?.slots, {
       authority: null,
       memoryView: null,
-      workingNotes: null,
       policy: null,
       resources: [],
       pending: [],

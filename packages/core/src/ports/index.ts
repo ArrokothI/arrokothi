@@ -81,6 +81,27 @@ export type {
 } from "./active-structured-memory-write-view.ts";
 export { noActiveStructuredMemoryWriteView } from "./active-structured-memory-write-view.ts";
 
+// -- Derived Semantic Memory: extraction, provider, authorized retrieval -----
+export type {
+  DeriveClaimsResult,
+  DerivedMemoryExtractionRequest,
+  DerivedMemoryExtractor,
+} from "./derived-memory-extractor.ts";
+export { deriveClaims } from "./derived-memory-extractor.ts";
+export type {
+  DerivedSemanticMemoryAppendRequest,
+  DerivedSemanticMemoryAppendResult,
+  DerivedSemanticMemoryCollection,
+  DerivedSemanticMemoryProvider,
+  DerivedSemanticMemoryRetrieveRequest,
+} from "./derived-semantic-memory-provider.ts";
+export { derivedSemanticMemoryRetrieveResultIssues } from "./derived-semantic-memory-provider.ts";
+export type {
+  DerivedSemanticMemoryReadRequest,
+  DerivedSemanticMemoryReadResolver,
+} from "./derived-semantic-memory-read-view.ts";
+export { noDerivedSemanticMemoryRead } from "./derived-semantic-memory-read-view.ts";
+
 export type {
   ConfirmationPolicy,
   ConfirmationPolicyRequest,
@@ -146,13 +167,35 @@ export type {
   ModelActionTargetKind,
 } from "../operations/action-target.ts";
 export type {
+  LocalModelControlBinding,
+  LocalModelControlProjection,
+  LocalModelControlView,
+  ModelLocalControlKind,
+  ModelLocalControlTarget,
+} from "../operations/local-model-control.ts";
+export type {
+  ModelCallableBinding,
+  ModelCallableOrigin,
+  ModelInvocationInterface,
+  ModelInvocationResolution,
+} from "../operations/model-invocation-interface.ts";
+export type {
   StructuredMemoryReadField,
   StructuredMemoryReadView,
 } from "../execution/structured-memory-read.ts";
 export type {
+  DerivedMemoryClaimCandidate,
+  DerivedMemoryDerivation,
+  DerivedMemorySourceMaterial,
+  DerivedSemanticClaim,
+  DerivedSemanticMemoryClaimView,
+  DerivedSemanticMemoryReadView,
+} from "../execution/derived-semantic-memory.ts";
+export type {
   ActiveStructuredMemoryWriteEntry,
   ActiveStructuredMemoryWriteView,
 } from "../execution/structured-memory-write-view.ts";
+export type { WorkingNoteEntry, WorkingNotesFrame } from "../execution/working-notes.ts";
 export type { AgentObservationOutcome, AgentActionObservation } from "../agent/observations.ts";
 export type {
   AgentModelObservation,

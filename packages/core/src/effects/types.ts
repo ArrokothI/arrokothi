@@ -13,6 +13,11 @@
  * Work is not an Effect merely because it is work - an Effect is work that crosses the Harness.
  */
 
+import type { WorkingNotesHandoff } from "../execution/working-notes.ts";
+import { workingNotesHandoffIssues } from "../execution/working-notes.ts";
+import type { DerivedSemanticClaim } from "../execution/derived-semantic-memory.ts";
+import { derivedSemanticClaimIssues } from "../execution/derived-semantic-memory.ts";
+import type { MemoryWriteProvenance } from "../execution/structured-memory.ts";
 import type { EventId } from "../interaction/event-envelope.ts";
 import type { OperationRef, OperationRefInput } from "../operations/refs.ts";
 import { isOperationRef, operationRef } from "../operations/refs.ts";
@@ -98,6 +103,8 @@ export interface WriteMemoryProposal extends ProposalBase {
   readonly kind: "write_memory";
   readonly key: string;
   readonly value: JsonValue;
+  /** Optional plain-reference provenance for this explicit assertion. Never authority. */
+  readonly provenance?: MemoryWriteProvenance;
 }
 
 export interface SpawnExecutionProposal extends ProposalBase {
@@ -135,6 +142,21 @@ export interface SpawnExecutionProposal extends ProposalBase {
    * supported kind the Definition is.
    */
   readonly expectedChildKind?: "agent" | "workflow";
+  /**
+   * An explicit Working Notes handoff for this child (Slice F.2b).
+   *
+   * An immutable, deep-copied snapshot of an explicitly selected subset of the proposing
+   * controller's own Working Notes - data attached to an already-authorized child-spawn proposal,
+   * *not* a new operation and *not* an authority grant: it does not widen or attenuate the child's
+   * Effective Authority, does not become authority evidence, and adds no Working Notes authority
+   * ontology. It is nonetheless part of the *concrete* cross-Execution `SpawnExecution` request, so
+   * the `EffectAuthorizer` and the exact-payload confirmation gate see the whole proposal and
+   * current policy may deny (or gate) this concrete transfer because of the information it proposes
+   * to move. Absent means zero notes cross - a parent/child ownership relation carries no ambient
+   * note visibility. The Harness also checks it against a fixed transfer envelope and rejects the
+   * whole spawn atomically if it does not fit; it never truncates.
+   */
+  readonly workingNotes?: WorkingNotesHandoff;
 }
 
 /**
@@ -235,6 +257,48 @@ function issue(path: string, message: string): EffectProposalIssue {
   return { path, message };
 }
 
+function uniqueRefIssues(value: unknown, path: string): readonly EffectProposalIssue[] {
+  if (!Array.isArray(value)) return [issue(path, "expected an array of non-empty string references")];
+  const issues: EffectProposalIssue[] = [];
+  const seen = new Set<string>();
+  value.forEach((entry, index) => {
+    if (typeof entry !== "string" || entry.trim().length === 0) {
+      issues.push(issue(`${path}[${index}]`, "expected a non-empty string reference"));
+      return;
+    }
+    if (seen.has(entry)) issues.push(issue(`${path}[${index}]`, `"${entry}" is repeated`));
+    seen.add(entry);
+  });
+  return issues;
+}
+
+/**
+ * Structural validation of an optional `MemoryWriteProvenance`.
+ *
+ * Absent is fine. Present means: a plain object with only `sourceRefs` / `derivedClaimIds`, each -
+ * when present - a non-empty array of unique non-empty strings, and at least one of the two given.
+ * No authority semantics are checked because there are none: this is plain provenance data.
+ */
+export function memoryWriteProvenanceIssues(value: unknown, path = "provenance"): readonly EffectProposalIssue[] {
+  if (value === undefined) return [];
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return [issue(path, "expected a provenance object when present")];
+  }
+  const record = value as Record<string, unknown>;
+  const issues: EffectProposalIssue[] = [];
+  for (const extra of Object.keys(record).filter((key) => key !== "sourceRefs" && key !== "derivedClaimIds")) {
+    issues.push(issue(path, `unknown provenance property "${extra}"`));
+  }
+  const hasSourceRefs = record["sourceRefs"] !== undefined;
+  const hasClaimIds = record["derivedClaimIds"] !== undefined;
+  if (!hasSourceRefs && !hasClaimIds) {
+    issues.push(issue(path, "provenance is present but names no source ref or derived claim id"));
+  }
+  if (hasSourceRefs) issues.push(...uniqueRefIssues(record["sourceRefs"], `${path}.sourceRefs`));
+  if (hasClaimIds) issues.push(...uniqueRefIssues(record["derivedClaimIds"], `${path}.derivedClaimIds`));
+  return issues;
+}
+
 /**
  * Structural validation of one proposal.
  *
@@ -304,6 +368,7 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
         issues.push(issue(`${path}.key`, "expected a non-empty memory key"));
       }
       issues.push(...jsonIssues(candidate["value"], `${path}.value`).map((i) => issue(i.path, i.message)));
+      issues.push(...memoryWriteProvenanceIssues(candidate["provenance"], `${path}.provenance`));
       break;
     }
     case "spawn_execution": {
@@ -328,6 +393,14 @@ export function effectProposalIssues(proposal: unknown, path: string): readonly 
       const expectedChildKind = candidate["expectedChildKind"];
       if (expectedChildKind !== undefined && expectedChildKind !== "agent" && expectedChildKind !== "workflow") {
         issues.push(issue(`${path}.expectedChildKind`, `expected "agent" or "workflow" when present`));
+      }
+      const workingNotes = candidate["workingNotes"];
+      if (workingNotes !== undefined) {
+        // A malformed handoff is refused here as data, before identity is assigned - exactly like
+        // any other malformed proposal field, never carried into child creation.
+        for (const detail of workingNotesHandoffIssues(workingNotes)) {
+          issues.push(issue(`${path}.workingNotes`, detail));
+        }
       }
       break;
     }
@@ -406,6 +479,8 @@ export interface WriteMemoryInput {
   readonly value: JsonValue;
   readonly requestKey?: string;
   readonly authorizationEvidence?: AuthorizationEvidence;
+  /** Optional plain-reference provenance for this explicit assertion. Never authority. */
+  readonly provenance?: MemoryWriteProvenance;
 }
 
 /** Builds a schema-bound Structured Memory write proposal. The Harness still authorizes it. */
@@ -416,7 +491,53 @@ export function writeMemory(input: WriteMemoryInput): WriteMemoryProposal {
     value: input.value,
     ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
     ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),
+    ...(input.provenance !== undefined ? { provenance: input.provenance } : {}),
   };
+}
+
+export interface PromoteDerivedClaimInput {
+  /** The Derived Semantic claim a trusted caller has decided to promote. Validated, not parsed. */
+  readonly claim: DerivedSemanticClaim;
+  /** The Structured Memory field key the caller is asserting. Explicit - never inferred from the claim. */
+  readonly structuredKey: string;
+  /** The value the caller is asserting. Explicit - never parsed out of `claim.statement`. */
+  readonly value: JsonValue;
+  readonly requestKey?: string;
+}
+
+/**
+ * Builds an ordinary `WriteMemory` proposal that records it was promoted from a Derived Semantic
+ * claim.
+ *
+ * This is the *entire* promotion mechanism. There is no `PromoteMemory` Effect, no
+ * `derived.promoted` Event, and no provider callback into Structured Memory. Promotion changes a
+ * claim's epistemic status precisely because a trusted caller explicitly decides the key and the
+ * value; this helper only:
+ *
+ * - validates the claim (fail-closed - throws on a malformed claim);
+ * - attaches `{ derivedClaimIds: [claim.claimId], sourceRefs: [...claim.provenance.sourceRefs] }`
+ *   as provenance;
+ * - returns a plain `WriteMemoryProposal`.
+ *
+ * It does **not** parse `claim.statement`. The Harness still authorizes the concrete write from
+ * current policy, the Structured Memory runtime still schema-validates the value, mechanical
+ * confirmation still applies, and the commit still goes through the F.0 path. A derived claim is not
+ * authorization evidence, and this provenance is not read as authority.
+ */
+export function promoteDerivedClaim(input: PromoteDerivedClaimInput): WriteMemoryProposal {
+  const claimIssues = derivedSemanticClaimIssues(input.claim);
+  if (claimIssues.length > 0) {
+    throw new TypeError(`promoteDerivedClaim was given a malformed Derived Semantic claim: ${claimIssues[0]}`);
+  }
+  return writeMemory({
+    key: input.structuredKey,
+    value: input.value,
+    ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
+    provenance: {
+      derivedClaimIds: [input.claim.claimId],
+      sourceRefs: [...input.claim.provenance.sourceRefs],
+    },
+  });
 }
 
 /**
@@ -481,6 +602,13 @@ export interface SpawnExecutionInput {
   readonly requestedOperations?: readonly OperationRefInput[];
   /** The Definition kind the caller requires the child to be. See `SpawnExecutionProposal`. */
   readonly expectedChildKind?: "agent" | "workflow";
+  /**
+   * An explicit Working Notes handoff snapshot for the child. See `SpawnExecutionProposal`.
+   *
+   * Normally built with `selectWorkingNotesHandoff(frame, { keys })` from the proposing
+   * controller's own Working Notes frame, so the snapshot is deep-copied and bounded by its source.
+   */
+  readonly workingNotes?: WorkingNotesHandoff;
   readonly requestKey?: string;
   readonly authorizationEvidence?: AuthorizationEvidence;
 }
@@ -495,6 +623,7 @@ function spawnProposal(input: SpawnExecutionInput, awaitTerminalResult: boolean)
       ? { requestedOperations: input.requestedOperations.map((ref) => operationRef(ref.capability, ref.operation)) }
       : {}),
     ...(input.expectedChildKind !== undefined ? { expectedChildKind: input.expectedChildKind } : {}),
+    ...(input.workingNotes !== undefined ? { workingNotes: input.workingNotes } : {}),
     ...(awaitTerminalResult ? { awaitTerminalResult: true } : {}),
     ...(input.requestKey !== undefined ? { requestKey: input.requestKey } : {}),
     ...(input.authorizationEvidence !== undefined ? { authorizationEvidence: input.authorizationEvidence } : {}),

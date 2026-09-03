@@ -67,8 +67,19 @@ describe("an AgentExecutor reports selections and cannot perform them", () => {
     const request = executor.requests[0]!;
     assert.deepEqual(
       Object.keys(request).sort(),
-      ["capabilities", "continuation", "information", "limits", "model", "observations", "projection", "requirements", "step"],
-      "compiled information, a resolved model, one projection, observations, bounds - and nothing else",
+      [
+        "capabilities",
+        "continuation",
+        "information",
+        "limits",
+        "localControls",
+        "model",
+        "observations",
+        "projection",
+        "requirements",
+        "step",
+      ],
+      "compiled information, a resolved model, the two model-callable snapshots, observations, bounds - and nothing else",
     );
 
     // Nothing in the request is callable, so there is nothing to dispatch with even by accident.
@@ -116,6 +127,7 @@ describe("an AgentExecutor reports selections and cannot perform them", () => {
           },
         ],
       },
+      localControls: { projectionId: "ag/step1/local-controls", viewId: "lmcv_empty", bindings: [] },
       capabilities: [
         { name: "docs_search", description: "Search.", input: { kind: "object", fields: { query: { required: true, schema: { kind: "string" } } } } },
       ],

@@ -305,6 +305,15 @@ source indexing/materialization
 
 Do not require a graph representation in the kernel.
 
+Slice F.3 (`development/023-slice-f3-derived-semantic-memory-provenance-promotion.md`) implemented a
+**reference** `DerivedSemanticClaim` shape (`{ claimId, statement, provenance { sourceRefs≥1 unique,
+derivedAt ISO-8601, derivation { method, version? } } }`), a replaceable `DerivedSemanticMemoryProvider`
+port, and an explicit `DerivedMemoryExtractor` seam, sufficient to make the vertical slice executable.
+That is reference-implementation evidence, **not** an answer to any question above: F.3 deliberately
+omitted confidence, temporal validity, subjects/entities, and supersession links, and the reference
+lexical ranking is explicitly not canonical retrieval semantics. Every question in this list remains
+open for a portable-schema slice.
+
 ### 3.2 Promotion and trust policy
 
 Need concrete application patterns for:
@@ -319,6 +328,12 @@ revocation/correction of promoted state
 ```
 
 Derived Semantic Memory remains non-authoritative by default.
+
+Slice F.3 implemented one narrow reference path: `promoteDerivedClaim(...)` builds an ordinary
+`WriteMemory` proposal carrying an optional plain `MemoryWriteProvenance { sourceRefs?,
+derivedClaimIds? }` that is persisted with the committed record and its history and is **not**
+authorization evidence. Promotion trust policy (verification classes, multi-source agreement,
+revocation/correction of promoted state) is still application-specific and unmodelled.
 
 ### 3.3 Memory scope/view implementation
 

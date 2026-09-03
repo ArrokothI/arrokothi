@@ -192,8 +192,8 @@ async function run(catalog: CapabilityCatalog, executor: CapabilityExecutor): Pr
 
   return {
     lifecycle,
-    aliases: bundle.trace.modelInvocations.flatMap((invocation) => invocation.bindings.map((binding) => binding.alias)),
-    targets: bundle.trace.modelInvocations.flatMap((invocation) => invocation.bindings.map((binding) => binding.target)),
+    aliases: bundle.trace.modelInvocations.flatMap((invocation) => invocation.callables.map((callable) => callable.alias)),
+    targets: bundle.trace.modelInvocations.flatMap((invocation) => invocation.callables.map((callable) => callable.target)),
     effectKinds: [...new Set(journal.map((entry) => entry.effectKind))],
     journalPhases: journal.map((entry) => entry.phase),
     proposedInput: (journal.find((entry) => entry.phase === "requested")?.detail["proposal"] as { input?: JsonObject } | undefined)

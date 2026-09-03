@@ -113,7 +113,7 @@ describe("effective operation authority is a dispatch ceiling, not just an expos
     // Every Agent-side layer did say yes: the view exposed it, the projection carried it, the model
     // named it, and the controller proposed it.
     assert.deepEqual(
-      bundle.trace.modelInvocations[0]?.bindings.map((binding) => binding.alias),
+      bundle.trace.modelInvocations[0]?.callables.map((callable) => callable.alias),
       ["mail_send"],
       "the broken resolver really did put it in front of the model",
     );
@@ -255,7 +255,7 @@ describe("effective operation authority is a dispatch ceiling, not just an expos
     await bundle.harness.runUntilIdle();
 
     assert.deepEqual(
-      bundle.trace.modelInvocations[0]?.bindings.map((binding) => binding.alias),
+      bundle.trace.modelInvocations[0]?.callables.map((callable) => callable.alias),
       ["mail_send"],
       "the model really was shown it, under the ceiling that was current then",
     );

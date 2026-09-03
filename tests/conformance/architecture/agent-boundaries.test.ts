@@ -148,6 +148,116 @@ describe("Agent architecture boundaries", () => {
     }
   });
 
+  test("the Agent controller holds only the narrow Derived Semantic Memory resolver, not the provider or extractor", async () => {
+    const controller = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8"));
+    assert.ok(controller.includes("DerivedSemanticMemoryReadResolver"), "the controller holds the read resolver port");
+    for (const forbidden of [
+      "DerivedSemanticMemoryProvider",
+      "DerivedMemoryExtractor",
+      "deriveClaims",
+      "createInMemoryDerivedSemanticMemory",
+      "groundDerivedClaimCandidate",
+    ]) {
+      assert.equal(controller.includes(forbidden), false, `the AgentController must not name ${forbidden}`);
+    }
+
+    // The read-view port reaches nothing operational, and the controller's whole import graph never
+    // reaches a provider, an extractor, or the reference implementations of either.
+    const portFiles = await walk(["ports/derived-semantic-memory-read-view.ts"]);
+    assert.deepEqual([...portFiles].filter((path) => OPERATIONAL_MACHINERY.includes(path)), []);
+
+    const controllerFiles = await walk(["controllers/agent/controller.ts"]);
+    for (const forbidden of [
+      "ports/derived-semantic-memory-provider.ts",
+      "ports/derived-memory-extractor.ts",
+      "reference/in-memory-derived-semantic-memory.ts",
+      "reference/derived-memory-extractor.ts",
+      "reference/derived-semantic-memory-read-resolver.ts",
+    ]) {
+      assert.equal(controllerFiles.has(forbidden), false, `the AgentController graph must not reach ${forbidden}`);
+    }
+  });
+
+  test("Derived Semantic Memory is a dependency-free execution leaf, and its ports reach nothing operational", async () => {
+    const leaf = await walk(["execution/derived-semantic-memory.ts"]);
+    for (const path of leaf) {
+      for (const specifier of specifiersIn(await readFile(resolve(CORE_SRC, path), "utf8"))) {
+        assert.ok(
+          specifier.startsWith("."),
+          `execution/derived-semantic-memory.ts graph imports only relative modules (${specifier})`,
+        );
+      }
+    }
+    const AUTHORITY_AND_RUNTIME = [
+      ...OPERATIONAL_MACHINERY,
+      "operations/authority.ts",
+      "operations/active-view.ts",
+      "operations/projection.ts",
+      "operations/model-action-view.ts",
+      "operations/local-model-control.ts",
+    ];
+    assert.deepEqual([...leaf].filter((path) => AUTHORITY_AND_RUNTIME.includes(path)), []);
+
+    for (const port of [
+      "ports/derived-memory-extractor.ts",
+      "ports/derived-semantic-memory-provider.ts",
+      "ports/derived-semantic-memory-read-view.ts",
+    ]) {
+      const files = await walk([port]);
+      assert.deepEqual(
+        [...files].filter((path) => AUTHORITY_AND_RUNTIME.includes(path)),
+        [],
+        `${port} reaches no runtime, authority, Active View, or Effect machinery`,
+      );
+    }
+
+    // deriveClaims is not called from any controller: extraction is an application concern.
+    for (const path of await filesUnder(["controllers/"])) {
+      const code = codeOf(await readFile(resolve(CORE_SRC, path), "utf8"));
+      assert.equal(code.includes("deriveClaims"), false, `${path} must not run extraction`);
+    }
+  });
+
+  test("the information compiler may read a Derived claim snapshot but cannot retrieve, write, or promote", async () => {
+    const files = await walk(["controllers/agent/information.ts"]);
+    for (const forbidden of [
+      "ports/derived-semantic-memory-read-view.ts",
+      "ports/derived-semantic-memory-provider.ts",
+      "ports/derived-memory-extractor.ts",
+      "reference/derived-semantic-memory-read-resolver.ts",
+    ]) {
+      assert.equal(files.has(forbidden), false, `the information compiler must not reach ${forbidden}`);
+    }
+    const code = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/information.ts"), "utf8"));
+    for (const forbidden of ["deriveClaims", "promoteDerivedClaim", ".retrieve(", "DerivedSemanticMemoryProvider"]) {
+      assert.equal(code.includes(forbidden), false, `an information compiler renders claims; it does not ${forbidden}`);
+    }
+  });
+
+  test("Derived Semantic Memory adds no Effect kind, no Event kind, and no model action / local control", async () => {
+    const effects = await readFile(resolve(CORE_SRC, "effects/types.ts"), "utf8");
+    const kinds = effects.slice(effects.indexOf("export const EFFECT_KINDS"));
+    assert.equal(/derived|semantic_memory|promote/i.test(kinds.slice(0, kinds.indexOf("]"))), false, "no Effect kind for Derived Memory");
+    // Promotion is an ordinary WriteMemory with an optional provenance datum - not a new proposal kind.
+    assert.ok(effects.includes("promoteDerivedClaim"), "the promotion helper builds a WriteMemory");
+    assert.ok(effects.includes('kind: "write_memory"'), "promoteDerivedClaim returns a write_memory proposal");
+
+    const events = codeOf(await readFile(resolve(CORE_SRC, "interaction/events.ts"), "utf8"));
+    assert.equal(/derived|promoted/i.test(events), false, "no derived.* Event kind");
+
+    const actionTarget = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
+    const localControl = codeOf(await readFile(resolve(CORE_SRC, "operations/local-model-control.ts"), "utf8"));
+    assert.equal(/derived/i.test(actionTarget), false, "Derived Memory is never a ModelActionTarget");
+    assert.equal(/derived/i.test(localControl), false, "Derived Memory is never a local model control");
+
+    // The SpawnExecution proposal gains no derived-memory field: there is no parent -> child handoff.
+    const spawnProposal = effects.slice(effects.indexOf("export interface SpawnExecutionProposal"));
+    assert.equal(/derived/i.test(spawnProposal.slice(0, spawnProposal.indexOf("\n}"))), false);
+
+    const pending = await readFile(resolve(CORE_SRC, "effects/pending.ts"), "utf8");
+    assert.equal(/derived/i.test(pending), false, "Derived retrieval is not a PendingOperation kind");
+  });
+
   test("no Agent module names a dispatcher, policy evaluator, store, scheduler, or settlement path", async () => {
     const files = await filesUnder(["controllers/agent/", "agent/", "operations/"]);
     for (const path of files) {
@@ -225,14 +335,15 @@ describe("Agent architecture boundaries", () => {
     }
   });
 
-  test("model action targets are identity only, with capability and Structured Memory arms", async () => {
+  test("model action targets are identity only, with the two authority-governed arms", async () => {
     const code = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
     const declared = [...code.matchAll(/readonly kind: "(\w+)"/g)].map((match) => match[1]!);
     assert.deepEqual(
       [...new Set(declared)],
       ["capability_operation", "structured_memory_write"],
-      "the heterogeneous target is explicit and discriminated",
+      "the authority-governed target vocabulary; working_notes_set is a separate local-control category",
     );
+    assert.equal(code.includes("working_notes_set"), false, "a local control is never a ModelActionTarget");
     for (const forbidden of ["grant", "authorize", "Harness", "Executor", "credential", "token"]) {
       assert.equal(code.includes(forbidden), false, `an action target must not carry "${forbidden}"`);
     }
@@ -266,6 +377,151 @@ describe("Agent architecture boundaries", () => {
       [],
       "an exposure resolver and a projector own no instructions, transcript, or memory selection",
     );
+  });
+
+  test("Working Notes state and the local-control view/projection reach nothing operational", async () => {
+    // No runtime, no policy, no authority *implementation*, no Effect machinery in any of these graphs.
+    const AUTHORITY_AND_RUNTIME = [
+      ...OPERATIONAL_MACHINERY,
+      "operations/authority.ts",
+      "reference/active-operation-view-resolver.ts",
+      "reference/operation-authority.ts",
+      "reference/structured-memory-write-view-resolver.ts",
+      "reference/structured-memory-read-view-resolver.ts",
+      "ports/effective-operation-authority.ts",
+      "ports/active-operation-view.ts",
+      "ports/active-structured-memory-write-view.ts",
+    ];
+    // The two leaves reach nothing beyond `util/*` and their own type modules.
+    for (const entry of ["execution/working-notes.ts", "operations/local-model-control.ts"]) {
+      const files = await walk([entry]);
+      assert.deepEqual(
+        [...files].filter((path) => [...AUTHORITY_AND_RUNTIME, "operations/active-view.ts"].includes(path)),
+        [],
+        `${entry} graph reaches no runtime, authority, Active View, or Effect machinery`,
+      );
+      for (const path of files) {
+        for (const specifier of specifiersIn(await readFile(resolve(CORE_SRC, path), "utf8"))) {
+          assert.ok(specifier.startsWith("."), `${entry} graph imports only relative modules (${specifier})`);
+        }
+      }
+    }
+    // The invocation-interface composer may name the two projection *types* it merges, but reaches
+    // no authority implementation, resolver, runtime, or Effect machinery.
+    const ifaceFiles = await walk(["operations/model-invocation-interface.ts"]);
+    assert.deepEqual(
+      [...ifaceFiles].filter((path) => AUTHORITY_AND_RUNTIME.includes(path)),
+      [],
+      "the callable-namespace composer only rearranges two projections it is handed",
+    );
+    for (const entry of [
+      "execution/working-notes.ts",
+      "operations/local-model-control.ts",
+      "operations/model-invocation-interface.ts",
+    ]) {
+      const code = codeOf(await readFile(resolve(CORE_SRC, entry), "utf8"));
+      for (const forbidden of ["RuntimeStore", "Harness", "EffectAuthorizer", "EffectProposal", "CapabilityExecutor"]) {
+        assert.equal(code.includes(forbidden), false, `${entry} must not name ${forbidden}`);
+      }
+    }
+  });
+
+  test("working_notes_set is a local control, not a member of any authority-governed view", async () => {
+    // Not a ModelActionTarget.
+    const actionTarget = codeOf(await readFile(resolve(CORE_SRC, "operations/action-target.ts"), "utf8"));
+    assert.equal(actionTarget.includes("working_notes_set"), false);
+    // Not in the Active Model Action View.
+    const actionView = codeOf(await readFile(resolve(CORE_SRC, "operations/model-action-view.ts"), "utf8"));
+    assert.equal(actionView.includes("working_notes_set"), false);
+    assert.equal(actionView.includes("localControl"), false, "the Active View knows nothing about local controls");
+    // The ModelActionProjection is cut only from the Active Model Action View.
+    const projection = codeOf(await readFile(resolve(CORE_SRC, "operations/projection.ts"), "utf8"));
+    assert.equal(projection.includes("working_notes_set"), false);
+    assert.equal(projection.includes("LocalModelControl"), false);
+    // The local-control module does not depend on the authority-governed projection or view.
+    const localFiles = await walk(["operations/local-model-control.ts"]);
+    for (const forbidden of ["operations/projection.ts", "operations/model-action-view.ts", "operations/active-view.ts"]) {
+      assert.equal(localFiles.has(forbidden), false, `local-model-control must not reach ${forbidden}`);
+    }
+  });
+
+  test("the model-invocation trace records local controls distinctly from Effect proposals", async () => {
+    const modelAccess = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/model-access.ts"), "utf8"));
+    // A local control application record exists and is not an AgentActionProposalRecord.
+    assert.ok(modelAccess.includes("AgentLocalControlApplicationRecord"));
+    assert.ok(modelAccess.includes("AgentProjectedCallableRecord"));
+    // The trace module reaches nothing operational and names no Effect/dispatch machinery.
+    const files = await walk(["controllers/agent/model-access.ts"]);
+    assert.deepEqual([...files].filter((path) => OPERATIONAL_MACHINERY.includes(path)), []);
+    for (const forbidden of ["EffectProposal", "useCapability", "writeMemory", "RuntimeStore", "EffectAuthorizer"]) {
+      assert.equal(modelAccess.includes(forbidden), false, `the trace contract must not name ${forbidden}`);
+    }
+    // The controller has a dedicated local-control application record builder, distinct from
+    // proposalRecords (which filters local controls out).
+    const controller = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8"));
+    assert.ok(controller.includes("localControlApplicationRecords"));
+    const defStart = controller.indexOf("private proposalRecords(");
+    const proposalFn = controller.slice(defStart, controller.indexOf("private ", defStart + 1));
+    assert.ok(
+      proposalFn.includes('"working_notes_set"') && proposalFn.includes("continue"),
+      "proposalRecords skips local controls",
+    );
+  });
+
+  test("the local Working Notes control is not an Effect or Event; the F.2b handoff is only spawn data", async () => {
+    const effects = await readFile(resolve(CORE_SRC, "effects/types.ts"), "utf8");
+    const kinds = effects.slice(effects.indexOf("export const EFFECT_KINDS"));
+    const list = kinds.slice(0, kinds.indexOf("]"));
+    assert.equal(/working[_ ]?notes/i.test(list), false, "no sixth Effect for Working Notes");
+    // F.2a: the `working_notes_set` *local control* is never an Effect proposal field of any kind.
+    assert.equal(effects.includes("working_notes_set"), false, "working_notes_set is a local control, never an Effect field");
+    // F.2b: an explicit Working Notes *handoff* rides SpawnExecution as plain data - a snapshot
+    // attached to an already-authorized child-spawn proposal, not a new operation.
+    const spawnProposal = effects.slice(effects.indexOf("export interface SpawnExecutionProposal"));
+    const spawnBody = spawnProposal.slice(0, spawnProposal.indexOf("\n}"));
+    assert.ok(spawnBody.includes("workingNotes?: WorkingNotesHandoff"), "SpawnExecution carries an optional handoff snapshot");
+    assert.ok(
+      /WorkingNotesHandoff/.test(effects) && !/working_notes\./.test(effects),
+      "the handoff is a plain-data field, never a working_notes.* Effect/Event kind",
+    );
+
+    const events = await readFile(resolve(CORE_SRC, "interaction/events.ts"), "utf8");
+    assert.equal(/working[_ ]?notes/i.test(events), false, "no working_notes.* Event kind was invented for the handoff");
+
+    // And the handoff creates no new PendingOperation kind - it settles nothing of its own.
+    const pending = await readFile(resolve(CORE_SRC, "effects/pending.ts"), "utf8");
+    assert.equal(/working[_ ]?notes/i.test(pending), false, "the handoff is not a PendingOperation kind");
+  });
+
+  test("the Agent controller owns the local Working Notes update; the Workflow controller does not", async () => {
+    const agent = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8"));
+    assert.ok(agent.includes("setWorkingNote") && agent.includes("validateWorkingNoteUpdate"), "the Agent applies the update locally");
+    assert.ok(
+      agent.includes("createLocalModelControlView") && agent.includes("createLocalModelControlProjection"),
+      "and builds the local-control snapshot from authored enablement",
+    );
+
+    const workflow = codeOf(await readFile(resolve(CORE_SRC, "controllers/workflow/controller.ts"), "utf8"));
+    for (const forbidden of ["workingNotes", "WorkingNote", "working_notes", "LocalModelControl", "ModelInvocationInterface"]) {
+      assert.equal(workflow.includes(forbidden), false, `the Workflow controller is untouched as a local-control / Working Notes consumer (${forbidden})`);
+    }
+  });
+
+  test("the information compiler may read a Working Notes frame but cannot mutate it or choose actions", async () => {
+    const files = await walk(["controllers/agent/information.ts"]);
+    for (const forbidden of [
+      "operations/model-action-view.ts",
+      "operations/projection.ts",
+      "operations/active-view.ts",
+      "operations/local-model-control.ts",
+      "operations/model-invocation-interface.ts",
+    ]) {
+      assert.equal(files.has(forbidden), false, `the information compiler must not reach ${forbidden}`);
+    }
+    const code = codeOf(await readFile(resolve(CORE_SRC, "controllers/agent/information.ts"), "utf8"));
+    for (const mutator of ["setWorkingNote", "workingNotesBudgetIssue", "validateWorkingNoteUpdate"]) {
+      assert.equal(code.includes(mutator), false, `an information compiler renders notes; it does not ${mutator}`);
+    }
   });
 
   test("projection has no AgentSpec side channel, and only the Agent consumes write exposure", async () => {

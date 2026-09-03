@@ -48,12 +48,30 @@ export interface AgentLimits {
   readonly maxOperationCallsPerStep: number;
   /** How many messages the information branch may carry into a model call. */
   readonly maxContextMessages: number;
+  /**
+   * How many entries the local Working Notes frame may hold. A budget on scratch state, not a
+   * permission - an over-budget `working_notes_set` is refused whole.
+   */
+  readonly maxWorkingNoteEntries: number;
+  /** Ceiling on the canonical-JSON byte size of the whole Working Notes frame. Also a budget. */
+  readonly maxWorkingNotesBytes: number;
+  /**
+   * How many Derived Semantic claims an authorized retrieval may put into one model context. A
+   * budget, never authority - and the effective ceiling on `derivedMemory.read.maxClaims`.
+   */
+  readonly maxDerivedMemoryClaims: number;
+  /** Ceiling on the canonical-JSON byte size of the Derived Semantic Memory snapshot. Also a budget. */
+  readonly maxDerivedMemoryBytes: number;
 }
 
 export const DEFAULT_AGENT_LIMITS: AgentLimits = Object.freeze({
   maxModelCalls: 8,
   maxOperationCallsPerStep: 4,
   maxContextMessages: 64,
+  maxWorkingNoteEntries: 32,
+  maxWorkingNotesBytes: 16384,
+  maxDerivedMemoryClaims: 16,
+  maxDerivedMemoryBytes: 8192,
 });
 
 /**
@@ -99,6 +117,58 @@ export interface AgentStructuredMemorySpec {
   readonly write?: AgentStructuredMemoryWrite;
 }
 
+/**
+ * An authored request to retrieve Derived Semantic claims into the model's information context.
+ *
+ * ```text
+ * spec.derivedMemory.read.query    the explicit authored retrieval intent
+ * Derived read authority           deny-by-default; decided before the provider is consulted
+ * a replaceable provider           ranks and returns claims by its own mechanism
+ *          ↓ authorized + bounded
+ * inferred-claim snapshot          rendered as "inferred, may be wrong" - not authority, not state
+ * ```
+ *
+ * `query` is authored, not model-generated: F.3 does not solve dynamic/current-task retrieval, and
+ * a hidden LLM-formed query would make retrieval non-deterministic. Absent means no Derived Memory
+ * retrieval - no resolver call, no provider call, no context block, no extra model call.
+ */
+export interface AgentDerivedMemoryRead {
+  /** Non-empty authored retrieval intent. */
+  readonly query: string;
+  /**
+   * How many claims to retrieve. A positive finite integer, further clamped to
+   * `limits.maxDerivedMemoryClaims`. Absent uses the limit.
+   */
+  readonly maxClaims?: number;
+}
+
+/** Independent Derived Semantic Memory request. Retrieval only in F.3; not a memory-form union. */
+export interface AgentDerivedMemorySpec {
+  readonly read?: AgentDerivedMemoryRead;
+}
+
+/**
+ * Authored enablement of the Agent's own local Working Notes.
+ *
+ * ```text
+ * read: true    the model's information context may include the current local Working Notes
+ * write: true   the model may receive the local `working_notes_set` action
+ * absent        no notes context and no notes action
+ * ```
+ *
+ * `read` and `write` are independent, and neither is inferred from the other, from a Structured
+ * Memory grant, or from the mere existence of notes. Each present value must be literal `true`.
+ *
+ * This enables model-visible *local controller* functionality. Because a note update mutates only
+ * this controller's own scratch frame and crosses no Execution or runtime boundary, F.2a needs no
+ * separate runtime authority for it - but this enablement is therefore also not reusable as
+ * permission for Structured Memory, child visibility, cross-Execution handoff, or external actions.
+ */
+export interface AgentWorkingNotesSpec {
+  readonly read?: true;
+  readonly write?: true;
+}
+
 export interface AgentSpec {
   /** Logical model plus the portable features this Agent genuinely needs. Never a provider id. */
   readonly model: LogicalModelRequest;
@@ -108,6 +178,10 @@ export interface AgentSpec {
   readonly operations?: OperationExposureRequest;
   /** Independent read-information and write-action requests. Absent means no memory work. */
   readonly structuredMemory?: AgentStructuredMemorySpec;
+  /** Authored enablement of the Agent's local Working Notes. Absent means no notes work. */
+  readonly workingNotes?: AgentWorkingNotesSpec;
+  /** Authored Derived Semantic Memory retrieval request. Absent means no retrieval. */
+  readonly derivedMemory?: AgentDerivedMemorySpec;
   readonly limits?: AgentLimits;
   readonly completion?: AgentCompletionMode;
 }
@@ -118,6 +192,8 @@ export interface AgentSpecInput {
   readonly instructions: string;
   readonly operations?: OperationExposureRequest;
   readonly structuredMemory?: AgentStructuredMemorySpec;
+  readonly workingNotes?: AgentWorkingNotesSpec;
+  readonly derivedMemory?: AgentDerivedMemorySpec;
   readonly limits?: Partial<AgentLimits>;
   readonly completion?: AgentCompletionMode;
 }
@@ -130,6 +206,21 @@ export function agentStructuredMemoryRead(spec: AgentSpec): AgentStructuredMemor
 /** The authored Structured Memory write-exposure request, or `null` when none was authored. */
 export function agentStructuredMemoryWrite(spec: AgentSpec): AgentStructuredMemoryWrite | null {
   return spec.structuredMemory?.write ?? null;
+}
+
+/** The authored Derived Semantic Memory retrieval request, or `null` when none was authored. */
+export function agentDerivedMemoryRead(spec: AgentSpec): AgentDerivedMemoryRead | null {
+  return spec.derivedMemory?.read ?? null;
+}
+
+/** Whether the model's information context may include the local Working Notes. */
+export function agentWorkingNotesRead(spec: AgentSpec): boolean {
+  return spec.workingNotes?.read === true;
+}
+
+/** Whether the model may receive the local `working_notes_set` action. */
+export function agentWorkingNotesWrite(spec: AgentSpec): boolean {
+  return spec.workingNotes?.write === true;
 }
 
 export function agentLimits(spec: AgentSpec): AgentLimits {

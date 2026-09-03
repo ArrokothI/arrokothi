@@ -46,20 +46,26 @@ export {
 // -- agent semantics ---------------------------------------------------------
 export type {
   AgentCompletionMode,
+  AgentDerivedMemoryRead,
+  AgentDerivedMemorySpec,
   AgentLimits,
   AgentSpec,
   AgentSpecInput,
   AgentStructuredMemoryRead,
   AgentStructuredMemorySpec,
   AgentStructuredMemoryWrite,
+  AgentWorkingNotesSpec,
 } from "./agent/spec.ts";
 export {
   AGENT_COMPLETION_MODES,
   DEFAULT_AGENT_LIMITS,
   agentCompletionMode,
+  agentDerivedMemoryRead,
   agentLimits,
   agentStructuredMemoryRead,
   agentStructuredMemoryWrite,
+  agentWorkingNotesRead,
+  agentWorkingNotesWrite,
 } from "./agent/spec.ts";
 export type { AgentSpecIssue, AgentSpecIssueCode, AgentSpecValidation } from "./agent/validation.ts";
 export { validateAgentSpec } from "./agent/validation.ts";
@@ -111,6 +117,47 @@ export {
   operationRefOfTarget,
   structuredMemoryWriteTarget,
 } from "./operations/action-target.ts";
+/**
+ * Controller-local model controls: a *separate category* from the authority-governed model actions
+ * above. They carry no authority, are never members of an Active View / Effective Authority, and
+ * mutate only the controller's own state. See [`../../docs/authority.md`](../../docs/authority.md).
+ */
+export type {
+  LocalModelControlBinding,
+  LocalModelControlEntry,
+  LocalModelControlProjection,
+  LocalModelControlResolution,
+  LocalModelControlView,
+  ModelLocalControlKind,
+  ModelLocalControlTarget,
+} from "./operations/local-model-control.ts";
+export {
+  MODEL_LOCAL_CONTROL_KINDS,
+  MODEL_WORKING_NOTES_SET_ALIAS,
+  WORKING_NOTES_SET_INPUT,
+  createLocalModelControlProjection,
+  createLocalModelControlView,
+  emptyLocalModelControlProjection,
+  emptyLocalModelControlView,
+  formatModelLocalControlTarget,
+  isModelLocalControlTarget,
+  localModelControlProjectionIssues,
+  resolveLocalControlAlias,
+  workingNotesSetTarget,
+} from "./operations/local-model-control.ts";
+export type {
+  InvocationInterfaceIssue,
+  ModelCallableBinding,
+  ModelCallableOrigin,
+  ModelInvocationInterface,
+  ModelInvocationInterfaceResult,
+  ModelInvocationResolution,
+} from "./operations/model-invocation-interface.ts";
+export {
+  createModelInvocationInterface,
+  modelInvocationCallableSpecs,
+  resolveModelInvocationAlias,
+} from "./operations/model-invocation-interface.ts";
 export type { OperationRef, OperationRefInput } from "./operations/refs.ts";
 export {
   compareOperationRefs,
@@ -254,6 +301,7 @@ export type {
   MailboxRef,
 } from "./execution/context.ts";
 export type {
+  MemoryWriteProvenance,
   StructuredMemoryBinding,
   StructuredMemoryBindingIssue,
   StructuredMemoryCommittedValue,
@@ -270,6 +318,37 @@ export type {
   StructuredMemoryReadView,
 } from "./execution/structured-memory-read.ts";
 export { projectStructuredMemoryReadView } from "./execution/structured-memory-read.ts";
+/**
+ * Derived Semantic Memory: inferred, provenance-bearing claims. A *different memory form* from
+ * Structured Memory and Working Notes - inferred, retrieval-oriented, not authoritative by default,
+ * and never authority evidence. The reference v0.4 claim shape here is executable-slice scaffolding,
+ * not the frozen portable schema (`docs/future-plan.md` §3.1).
+ */
+export type {
+  DerivedMemoryClaimCandidate,
+  DerivedMemoryDerivation,
+  DerivedMemoryProvenance,
+  DerivedMemorySourceMaterial,
+  DerivedSemanticClaim,
+  DerivedSemanticMemoryClaimView,
+  DerivedSemanticMemoryReadBudget,
+  DerivedSemanticMemoryReadView,
+  GroundDerivedClaimResult,
+} from "./execution/derived-semantic-memory.ts";
+export {
+  cloneDerivedSemanticClaim,
+  derivedClaimId,
+  derivedMemorySourceMaterialIssues,
+  derivedSemanticClaimBytes,
+  derivedSemanticClaimIssues,
+  derivedSemanticMemoryEmptyEnvelopeFits,
+  derivedSemanticMemoryReadViewBytes,
+  derivedSemanticMemoryReadViewIssue,
+  groundDerivedClaimCandidate,
+  isAcceptedDerivedAt,
+  isDerivedSemanticClaim,
+  projectDerivedSemanticMemoryReadView,
+} from "./execution/derived-semantic-memory.ts";
 export type {
   ActiveStructuredMemoryWriteEntry,
   ActiveStructuredMemoryWriteView,
@@ -279,6 +358,33 @@ export {
   emptyActiveStructuredMemoryWriteView,
   projectActiveStructuredMemoryWriteView,
 } from "./execution/structured-memory-write-view.ts";
+export type {
+  WorkingNoteEntry,
+  WorkingNotesBudget,
+  WorkingNotesBudgetIssue,
+  WorkingNotesFrame,
+  WorkingNotesHandoff,
+  WorkingNotesHandoffSelection,
+  WorkingNoteUpdateValidation,
+} from "./execution/working-notes.ts";
+export {
+  cloneWorkingNotesHandoff,
+  emptyWorkingNotesFrame,
+  selectWorkingNotesHandoff,
+  setWorkingNote,
+  validateWorkingNoteUpdate,
+  WORKING_NOTES_HANDOFF_MAX_BYTES,
+  WORKING_NOTES_HANDOFF_MAX_ENTRIES,
+  workingNoteContent,
+  workingNoteEntryIssue,
+  workingNotesBudgetIssue,
+  workingNotesFrameBytes,
+  workingNotesFrameFromHandoff,
+  workingNotesFrameIssues,
+  workingNotesHandoffBudgetIssue,
+  workingNotesHandoffIssues,
+  workingNotesHandoffSelectionIssues,
+} from "./execution/working-notes.ts";
 /**
  * Controller-local resumptions are exported as *readable* shapes only.
  *
@@ -420,6 +526,7 @@ export type {
   EffectKind,
   EffectProposal,
   EffectRequest,
+  PromoteDerivedClaimInput,
   RequestUserInputProposal,
   SendMessageProposal,
   SpawnExecutionProposal,
@@ -434,6 +541,8 @@ export {
   isEffectKind,
   isUseCapabilityProposal,
   isWriteMemoryProposal,
+  memoryWriteProvenanceIssues,
+  promoteDerivedClaim,
   useCapability,
   writeMemory,
 } from "./effects/types.ts";
@@ -485,7 +594,8 @@ export type {
   AgentModelAccess,
   AgentModelInvocation,
   AgentActionProposalRecord,
-  AgentProjectedBindingRecord,
+  AgentLocalControlApplicationRecord,
+  AgentProjectedCallableRecord,
   AgentTrace,
 } from "./controllers/agent/model-access.ts";
 export type {

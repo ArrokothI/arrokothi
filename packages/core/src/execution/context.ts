@@ -10,10 +10,26 @@
  *   control                                 owned by the controller, opaque to the kernel
  *   terminalResult / failure                written only by a validated Activation outcome
  *
- * Slots that later slices own (memory, notes, resources, pending, policy) are present as explicit
+ * Slots that later slices own (memory, resources, pending, policy) are present as explicit
  * null/empty references rather than absent or improvised. They mark where those concerns live
  * without pretending an earlier slice has answered them. `authority` is no longer one of those: it
  * is a typed reference to the Execution's runtime-owned effective operation authority.
+ *
+ * There is deliberately no Working Notes slot. Slice F.2a established that an Agent's Working Notes
+ * are *controller-owned* plain semantic state - they live in `AgentControlState` next to `messages`
+ * and `pending`, not in a `RuntimeStore` record a slot ref would address. The early
+ * `slots.workingNotes` placeholder implied a runtime-owned subsystem that F.2a decided not to
+ * build, so it was removed rather than left claiming an architecture that does not exist.
+ *
+ * Slice F.2b adds `workingNotesHandoff`: the immutable, controller-neutral snapshot the spawning
+ * Execution explicitly selected. It is the "selected inherited (read-only) view" half of canonical
+ * `memory.md` §5 / `composition.md` §15; the child-local *writable* frame half lives in the
+ * controller's own progress (`AgentControlState.workingNotes` for an Agent). Stored here at child
+ * creation, surfaced through the `ExecutionView`, and read by the child's controller *only* while
+ * initializing its writable frame - seeded once, never re-overlaid. It is plain data, not a slot
+ * ref and not a runtime-owned subsystem, and it does not disappear after seeding: it stays as the
+ * read-only record of what was delegated. `null` for a root Execution and for any child spawned
+ * without a handoff, which is the zero-cost default.
  *
  * There is deliberately no Active View slot. An Active Operation View is a deterministic derivation
  * from authority plus catalog plus an authored exposure request, so persisting one would store a
@@ -30,6 +46,7 @@ import type { JsonObject } from "../util/json.ts";
 import type { ControllerResumptionId, ExecutionId } from "./ids.ts";
 import type { LifecycleState } from "./lifecycle.ts";
 import type { StructuredMemoryViewRef } from "./structured-memory.ts";
+import type { WorkingNotesHandoff } from "./working-notes.ts";
 import { assertTransition } from "./lifecycle.ts";
 import type { ExecutionFailure, TerminalResultEnvelope } from "./terminal-result.ts";
 
@@ -132,8 +149,6 @@ export interface DeferredSlots {
   readonly authority: OperationAuthorityRef | null;
   /** Execution-local Structured Memory view. A typed address, never an authorization. */
   readonly memoryView: StructuredMemoryViewRef | null;
-  /** Slice F: Working Note frame/view. */
-  readonly workingNotes: string | null;
   /** Slice H: effective runtime policy. */
   readonly policy: string | null;
   /** Slice B/C: logical resource bindings. */
@@ -145,7 +160,6 @@ export interface DeferredSlots {
 export const EMPTY_SLOTS: DeferredSlots = Object.freeze({
   authority: null,
   memoryView: null,
-  workingNotes: null,
   policy: null,
   resources: Object.freeze([]) as readonly string[],
   pending: Object.freeze([]) as readonly string[],
@@ -165,6 +179,16 @@ export interface ExecutionContext {
   readonly waitingFor: ExecutionWait | null;
   readonly mailbox: MailboxRef;
   readonly slots: DeferredSlots;
+  /**
+   * The immutable inherited Working Notes snapshot this Execution was spawned with (Slice F.2b), or
+   * `null`.
+   *
+   * Plain data, assigned once at creation by the Effect gateway from the spawning proposal, never
+   * rewritten - the read-only record of what the parent explicitly delegated. The child's
+   * controller reads it once, to seed its own separate writable frame, and then leaves it in place;
+   * it grants no authority.
+   */
+  readonly workingNotesHandoff: WorkingNotesHandoff | null;
   readonly terminalResult: TerminalResultEnvelope | null;
   readonly failure: ExecutionFailure | null;
   readonly createdAt: string;
@@ -187,6 +211,14 @@ export interface ExecutionView {
   readonly rootExecutionId: ExecutionId;
   readonly lifecycle: LifecycleState;
   readonly control: ControllerProgress;
+  /**
+   * The Working Notes handoff this Execution was spawned with (Slice F.2b), or `null`.
+   *
+   * A read-only copy of the immutable snapshot. A controller reads it *only* when initializing its
+   * own progress and never afterwards; it is information the spawning Execution explicitly
+   * delegated, not authority and not ambient context.
+   */
+  readonly workingNotesHandoff: WorkingNotesHandoff | null;
   readonly createdAt: string;
   readonly updatedAt: string;
 }
@@ -209,6 +241,13 @@ export interface CreateExecutionContextInput {
   readonly authority?: OperationAuthorityRef;
   /** Runtime-created Execution-local Structured Memory view, when one was configured. */
   readonly memoryView?: StructuredMemoryViewRef;
+  /**
+   * The Working Notes handoff snapshot the spawning proposal carried (Slice F.2b).
+   *
+   * Supplied by the Effect gateway from an already-validated, envelope-checked, deep-copied
+   * snapshot. Omitted for a root Execution and for any child spawned without a handoff.
+   */
+  readonly workingNotesHandoff?: WorkingNotesHandoff;
 }
 
 export function createExecutionContext(input: CreateExecutionContextInput): ExecutionContext {
@@ -222,6 +261,7 @@ export function createExecutionContext(input: CreateExecutionContextInput): Exec
     control: initialControllerProgress(input.kind),
     waitingFor: null,
     mailbox: { mailboxId: input.mailboxId },
+    workingNotesHandoff: input.workingNotesHandoff ?? null,
     slots:
       input.authority || input.memoryView
         ? {
@@ -247,6 +287,7 @@ export function toExecutionView(context: ExecutionContext): ExecutionView {
     rootExecutionId: context.rootExecutionId,
     lifecycle: context.lifecycle,
     control: context.control,
+    workingNotesHandoff: context.workingNotesHandoff,
     createdAt: context.createdAt,
     updatedAt: context.updatedAt,
   };

@@ -34,9 +34,12 @@ import type { OperationRef } from "../operations/refs.ts";
 import type { ActiveOperationViewResolver } from "../ports/active-operation-view.ts";
 import type { StructuredMemoryReadViewResolver } from "../ports/structured-memory-read-view.ts";
 import type { ActiveStructuredMemoryWriteViewResolver } from "../ports/active-structured-memory-write-view.ts";
+import type { DerivedSemanticMemoryProvider } from "../ports/derived-semantic-memory-provider.ts";
+import type { DerivedSemanticMemoryReadResolver } from "../ports/derived-semantic-memory-read-view.ts";
 import type { AgentExecutor } from "../ports/agent-executor.ts";
 import type { CapabilityCatalog } from "../ports/capability-catalog.ts";
 import { emptyCapabilityCatalog } from "../ports/capability-catalog.ts";
+import type { ExecutionController } from "../ports/controller.ts";
 import type { ModelProvider, ModelProviderLookup } from "../ports/model-provider.ts";
 import type { ModelResolver } from "../ports/model-resolver.ts";
 import { createActiveOperationViewResolver } from "../reference/active-operation-view-resolver.ts";
@@ -48,6 +51,7 @@ import type { StructuredMemoryReadGrantRule } from "../reference/structured-memo
 import { createStructuredMemoryReadViewResolver } from "../reference/structured-memory-read-view-resolver.ts";
 import type { StructuredMemoryWriteExposureGrantRule } from "../reference/structured-memory-write-view-resolver.ts";
 import { createStructuredMemoryWriteViewResolver } from "../reference/structured-memory-write-view-resolver.ts";
+import { createDerivedSemanticMemoryReadResolver } from "../reference/derived-semantic-memory-read-resolver.ts";
 import { createTestHarness } from "./execution-harness.ts";
 import type { TestHarnessBundle, TestHarnessOptions } from "./execution-harness.ts";
 
@@ -57,7 +61,7 @@ export interface RecordingAgentTrace extends AgentTrace {
   readonly proposals: readonly AgentActionProposalRecord[];
   /** `provider/model` for each step, which is the usual portability assertion. */
   deployments(): readonly string[];
-  /** The projection identity each step was shown, which is the usual snapshot assertion. */
+  /** The authority-governed action-projection identity each step was shown. */
   projections(): readonly string[];
   /** The information-selection identity each step saw, for reproducibility assertions. */
   informationSelections(): readonly string[];
@@ -79,7 +83,7 @@ export function recordingAgentTrace(): RecordingAgentTrace {
       return modelInvocations.map((invocation) => `${invocation.provider}/${invocation.model}`);
     },
     projections() {
-      return modelInvocations.map((invocation) => invocation.projectionId);
+      return modelInvocations.map((invocation) => invocation.actionProjectionId);
     },
     informationSelections() {
       return modelInvocations.map((invocation) => invocation.informationSelectionId);
@@ -119,6 +123,13 @@ export interface AgentTestHarnessOptions extends Omit<TestHarnessOptions, "contr
   readonly taskScope?: readonly string[];
   readonly trace?: AgentTrace;
   /**
+   * Extra controllers to register alongside the real `AgentController`.
+   *
+   * Needed when a case needs a *parent* of a different kind - e.g. a scripted Workflow controller
+   * that proposes a `SpawnExecution` (with a Working Notes handoff) for a real Agent child.
+   */
+  readonly extraControllers?: readonly ExecutionController[];
+  /**
    * The Structured Memory read resolver handed to the `AgentController`.
    *
    * Held by the controller the way the exposure resolver is - a narrow read-only port, not runtime
@@ -137,6 +148,25 @@ export interface AgentTestHarnessOptions extends Omit<TestHarnessOptions, "contr
   readonly structuredMemoryWriteView?: ActiveStructuredMemoryWriteViewResolver;
   /** Convenience: builds the reference write-exposure resolver against the shared store. */
   readonly memoryWriteExposureGrants?: StructuredMemoryWriteExposureGrantRule;
+  /**
+   * The Derived Semantic Memory retrieval resolver handed to the `AgentController`.
+   *
+   * Held by the controller the way the exposure resolvers are - a narrow read-only port, and NOT
+   * the provider. Omitting it (and `derivedMemory`) means the fail-closed default: no Derived
+   * Semantic Memory reaches the model even for an Agent that authored a retrieval query.
+   */
+  readonly derivedSemanticMemoryReadView?: DerivedSemanticMemoryReadResolver;
+  /**
+   * Convenience: builds the reference Derived read resolver over a provider, deny-by-default.
+   *
+   * `grant` defaults to `false` (denied). `collectionFor` defaults to the Execution id. A test that
+   * needs finer control passes `derivedSemanticMemoryReadView` instead.
+   */
+  readonly derivedMemory?: {
+    readonly provider: DerivedSemanticMemoryProvider;
+    readonly grant?: boolean;
+    readonly collectionFor?: (executionId: string) => string | null;
+  };
 }
 
 export interface CreateTestAgentInput {
@@ -188,6 +218,18 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
       ? createStructuredMemoryWriteViewResolver({ store, grants: options.memoryWriteExposureGrants })
       : undefined);
 
+  const derivedSemanticMemoryReadView =
+    options.derivedSemanticMemoryReadView ??
+    (options.derivedMemory !== undefined
+      ? createDerivedSemanticMemoryReadResolver({
+          provider: options.derivedMemory.provider,
+          grant: options.derivedMemory.grant ?? false,
+          ...(options.derivedMemory.collectionFor !== undefined
+            ? { collectionFor: options.derivedMemory.collectionFor }
+            : {}),
+        })
+      : undefined);
+
   const controller = createAgentController({
     views,
     ...(options.models !== undefined ? { models: options.models } : {}),
@@ -196,12 +238,13 @@ export function createAgentTestHarness(options: AgentTestHarnessOptions = {}): A
     ...(options.information !== undefined ? { information: options.information } : {}),
     ...(structuredMemoryReadView !== undefined ? { structuredMemoryReadView } : {}),
     ...(structuredMemoryWriteView !== undefined ? { structuredMemoryWriteView } : {}),
+    ...(derivedSemanticMemoryReadView !== undefined ? { derivedSemanticMemoryReadView } : {}),
     ...(options.taskScope !== undefined ? { taskScope: options.taskScope } : {}),
     trace,
   });
 
   const bundle = createTestHarness({
-    controllers: [controller],
+    controllers: [controller, ...(options.extraControllers ?? [])],
     store,
     capabilityCatalog: options.capabilityCatalog ?? catalog,
     ...(options.activationBudget !== undefined ? { activationBudget: options.activationBudget } : {}),

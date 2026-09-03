@@ -22,6 +22,8 @@ export type AgentSpecIssueCode =
   | "invalid_instructions"
   | "invalid_operations"
   | "invalid_structured_memory"
+  | "invalid_working_notes"
+  | "invalid_derived_memory"
   | "invalid_limits"
   | "invalid_completion"
   | "unknown_field";
@@ -36,9 +38,26 @@ export type AgentSpecValidation =
   | { readonly ok: true; readonly spec: AgentSpec }
   | { readonly ok: false; readonly issues: readonly AgentSpecIssue[] };
 
-const KNOWN_FIELDS = new Set(["model", "instructions", "operations", "structuredMemory", "limits", "completion"]);
+const KNOWN_FIELDS = new Set([
+  "model",
+  "instructions",
+  "operations",
+  "structuredMemory",
+  "workingNotes",
+  "derivedMemory",
+  "limits",
+  "completion",
+]);
 const REQUIREMENT_LEVELS = new Set<ModelRequirementLevel>(["required", "optional"]);
-const LIMIT_FIELDS = ["maxModelCalls", "maxOperationCallsPerStep", "maxContextMessages"] as const;
+const LIMIT_FIELDS = [
+  "maxModelCalls",
+  "maxOperationCallsPerStep",
+  "maxContextMessages",
+  "maxWorkingNoteEntries",
+  "maxWorkingNotesBytes",
+  "maxDerivedMemoryClaims",
+  "maxDerivedMemoryBytes",
+] as const;
 
 function modelIssues(value: unknown): AgentSpecIssue[] {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -166,6 +185,99 @@ function structuredMemoryIssues(value: unknown): AgentSpecIssue[] {
   return issues;
 }
 
+/**
+ * Strict authored Working Notes enablement.
+ *
+ * A plain object whose only keys are `read` and `write`, each - when present - literally `true`.
+ * Nothing is inferred, and unknown properties are rejected rather than carried.
+ */
+function workingNotesIssues(value: unknown): AgentSpecIssue[] {
+  if (value === undefined) return [];
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return [{ path: "spec.workingNotes", code: "invalid_working_notes", message: "expected a Working Notes spec object" }];
+  }
+  const issues: AgentSpecIssue[] = [];
+  const spec = value as Record<string, unknown>;
+  for (const key of Object.keys(spec)) {
+    if (key !== "read" && key !== "write") {
+      issues.push({
+        path: `spec.workingNotes.${key}`,
+        code: "invalid_working_notes",
+        message: `unknown Working Notes spec field "${key}"`,
+      });
+    }
+  }
+  for (const key of ["read", "write"] as const) {
+    if (Object.prototype.hasOwnProperty.call(spec, key) && spec[key] !== true) {
+      issues.push({
+        path: `spec.workingNotes.${key}`,
+        code: "invalid_working_notes",
+        message: `"${key}" must be literally true when present`,
+      });
+    }
+  }
+  return issues;
+}
+
+/**
+ * Strict authored Derived Semantic Memory request.
+ *
+ * A plain object whose only key is `read`; `read` is a plain object of a non-empty `query` string
+ * and an optional positive-finite-integer `maxClaims`. Nothing here is authority - `query` is an
+ * intent, and it is intersected downstream with deny-by-default Derived read authority.
+ */
+function derivedMemoryIssues(value: unknown): AgentSpecIssue[] {
+  if (value === undefined) return [];
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return [{ path: "spec.derivedMemory", code: "invalid_derived_memory", message: "expected a Derived Semantic Memory spec object" }];
+  }
+  const issues: AgentSpecIssue[] = [];
+  const spec = value as Record<string, unknown>;
+  for (const key of Object.keys(spec)) {
+    if (key !== "read") {
+      issues.push({
+        path: `spec.derivedMemory.${key}`,
+        code: "invalid_derived_memory",
+        message: `unknown Derived Semantic Memory spec field "${key}"`,
+      });
+    }
+  }
+  const read = spec["read"];
+  if (read === undefined) return issues;
+  if (read === null || typeof read !== "object" || Array.isArray(read)) {
+    issues.push({ path: "spec.derivedMemory.read", code: "invalid_derived_memory", message: "expected a read-request object" });
+    return issues;
+  }
+  const request = read as Record<string, unknown>;
+  for (const key of Object.keys(request)) {
+    if (key !== "query" && key !== "maxClaims") {
+      issues.push({
+        path: `spec.derivedMemory.read.${key}`,
+        code: "invalid_derived_memory",
+        message: `unknown read-request field "${key}"`,
+      });
+    }
+  }
+  if (typeof request["query"] !== "string" || (request["query"] as string).trim().length === 0) {
+    issues.push({
+      path: "spec.derivedMemory.read.query",
+      code: "invalid_derived_memory",
+      message: "expected a non-empty retrieval query",
+    });
+  }
+  if (request["maxClaims"] !== undefined) {
+    const maxClaims = request["maxClaims"];
+    if (typeof maxClaims !== "number" || !Number.isInteger(maxClaims) || maxClaims < 1) {
+      issues.push({
+        path: "spec.derivedMemory.read.maxClaims",
+        code: "invalid_derived_memory",
+        message: "expected a positive integer when present",
+      });
+    }
+  }
+  return issues;
+}
+
 function limitIssues(value: unknown): AgentSpecIssue[] {
   if (value === undefined) return [];
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -203,6 +315,10 @@ export function validateAgentSpec(input: unknown): AgentSpecValidation {
   }
 
   issues.push(...structuredMemoryIssues(candidate["structuredMemory"]));
+
+  issues.push(...workingNotesIssues(candidate["workingNotes"]));
+
+  issues.push(...derivedMemoryIssues(candidate["derivedMemory"]));
 
   issues.push(...limitIssues(candidate["limits"]));
 
