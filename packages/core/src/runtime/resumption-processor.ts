@@ -121,12 +121,19 @@ export type ResumptionDependency =
 /**
  * The resolved form of a *set* of reported resumption dependencies (Slice G.2).
  *
- * Legal only when every id is legal - work belonging to this Execution that has not settled, either
- * registered by this Activation (`newRecords`) or recovered as an unresolved record - and no id is
- * repeated. One illegal id rejects the whole set, so a partial dependency set can never be committed.
+ * Legal only when every id is legal: work registered by this Activation (`newRecords`), or a
+ * persisted id that this Activation itself observed pending through `scope.run()`
+ * (`recoveredIds`). A recovered id may settle after that observation; `alreadySatisfied` records
+ * that preflight fact, while the Harness still re-reads every recovered record in its final
+ * transaction. One illegal or repeated id rejects the whole set before any Effect is processed.
  */
 export type ResumptionDependencySet =
-  | { readonly status: "ok"; readonly newRecords: readonly ControllerResumption[] }
+  | {
+      readonly status: "ok";
+      readonly newRecords: readonly ControllerResumption[];
+      readonly recoveredIds: readonly ControllerResumptionId[];
+      readonly alreadySatisfied: boolean;
+    }
   | { readonly status: "invalid"; readonly detail: string };
 
 /**
@@ -149,8 +156,9 @@ export interface ActivationResumptions {
    * Checks a whole *set* of reported ids (Slice G.2).
    *
    * Rejects the entire set if any id is illegal or repeated, so the Harness never commits a partial
-   * dependency set. On success it returns the records for the ids that are `new` this Activation;
-   * the Harness inserts every one of them in the same transaction as the controller progress.
+   * dependency set. On success it returns both records that are `new` this Activation and persisted
+   * ids that `scope.run()` genuinely observed pending. The Harness inserts the new records and
+   * re-reads every recovered id in the same transaction as the controller progress.
    */
   resolveMany(resumptionIds: readonly ControllerResumptionId[], at: string): Promise<ResumptionDependencySet>;
   /**
@@ -181,6 +189,12 @@ export class ControllerResumptionProcessor {
     const executionId = context.executionId;
     const observedRevision = context.revision;
     const registrations = new Map<string, Registration>();
+    /**
+     * Persisted ids this Activation actually observed pending through `scope.run()`.
+     *
+     * This is the authority for dependency-set recovery: merely knowing an old id is not enough.
+     */
+    const observedPending = new Set<ControllerResumptionId>();
     /** Keys this Activation already resolved inline, so a repeated call is not a second dispatch. */
     const settledInline = new Map<string, ControllerResumptionAttempt>();
     const byKey = new Map<string, ControllerResumptionId>();
@@ -204,6 +218,7 @@ export class ControllerResumptionProcessor {
         if (stored) {
           const outcome = outcomeOfResumption(stored);
           if (outcome) return this.attemptOf(outcome);
+          observedPending.add(stored.resumptionId);
           return { status: "suspended", resumptionId: stored.resumptionId };
         }
 
@@ -265,12 +280,41 @@ export class ControllerResumptionProcessor {
           return { status: "invalid", detail: "the dependency set contains a duplicate resumption id" };
         }
         const newRecords: ControllerResumption[] = [];
+        const recoveredIds: ControllerResumptionId[] = [];
+        let alreadySatisfied = false;
         for (const id of resumptionIds) {
-          const dependency = await resolveOne(id, at);
-          if (dependency.status === "invalid") return { status: "invalid", detail: dependency.detail };
-          if (dependency.status === "new") newRecords.push(dependency.record);
+          const registration = registrations.get(id);
+          if (registration) {
+            newRecords.push(
+              createControllerResumption({
+                resumptionId: id,
+                executionId,
+                key: registration.key,
+                activationId,
+                observedRevision,
+                createdAt: at,
+              }),
+            );
+            continue;
+          }
+
+          // A persisted id is legal only if this Activation learned it by re-deriving the stable
+          // key and observing the record pending. That observation remains legitimate if the
+          // promise settles before preflight; an arbitrary historical settled id remains invalid.
+          if (!observedPending.has(id)) {
+            return { status: "invalid", detail: `${id} was not observed pending by this Activation` };
+          }
+          const stored = await this.deps.store.readControllerResumption(id);
+          if (!stored || stored.executionId !== executionId) {
+            return { status: "invalid", detail: `${id} was not registered for this Execution` };
+          }
+          if (stored.state === "invalidated") {
+            return { status: "invalid", detail: `${id} is already invalidated` };
+          }
+          recoveredIds.push(id);
+          if (stored.state === "settled") alreadySatisfied = true;
         }
-        return { status: "ok", newRecords };
+        return { status: "ok", newRecords, recoveredIds, alreadySatisfied };
       },
       attach: (resumptionId: ControllerResumptionId) => {
         const registration = registrations.get(resumptionId);

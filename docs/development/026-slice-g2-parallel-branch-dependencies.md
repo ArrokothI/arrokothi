@@ -18,6 +18,25 @@
 
 This is an engineering record, not a new owner of runtime or composition semantics.
 
+## 0. Independent-review correction after `a9ad428`
+
+Independent review accepted the G.2 architecture in direction but found two defects in the
+dependency-set acceptance boundary at reviewed HEAD
+`a9ad42832ce341d6689f06e442472cce0082caf3`:
+
+1. `Harness.applyOutcome` processed Effects before runtime identity/ownership validation of every
+   reported resumption, so an invalid outcome could cross the Effect boundary before failing.
+2. A legitimately recovered sibling could settle while the re-entered Activation was RUNNING.
+   Settlement before `resolveMany` was misclassified as invalid, while settlement after
+   `resolveMany` could be missed by the final transaction and leave a lost `WAITING` wake.
+
+The correction is implementation-only. Dependency identity/ownership is now preflighted before any
+Effect authorization, journal request, dispatch, PendingOperation creation, or external
+consequence. The final transaction then derives READY versus WAITING from current mailbox and
+ControllerResumption truth. Canonical composition/runtime semantics, the G.1/G.2 branch model, and
+`WORKFLOW_CONTROL_STATE_VERSION = 4` are unchanged. G.2 remains unmerged and awaits independent
+re-review; no G.3 work begins here.
+
 ## 1. Why G.2 exists
 
 G.1 proved *system-defined parallel branches with an explicit join*, but only for branches that
@@ -192,32 +211,63 @@ no `interleave` field, and `event-router.ts` / `resumption-processor.ts` never i
 when one member of the set fires. Existing E.1 `interleave` semantics on the `event` /
 `controller_resumption` arms are untouched.
 
-## 8. Atomic commit of several new resumption registrations
+## 8. Fail-closed, race-safe dependency-set acceptance
 
-`ControllerResumptionProcessor` gained `resolveMany(ids, at)` →
-`{ status: "ok", newRecords } | { status: "invalid", detail }`:
+Each Activation records the persisted resumption ids that its own
+`ControllerResumptionScope.run()` actually returned as `suspended(id)` while pending.
+`ControllerResumptionProcessor.resolveMany(ids, at)` returns:
 
-```text
-reject the whole set if any id is illegal / foreign / already-terminal, or repeated
-`newRecords` are the records for ids this Activation registered; recovered ids need nothing written
+```ts
+| {
+    status: "ok";
+    newRecords: readonly ControllerResumption[];
+    recoveredIds: readonly ControllerResumptionId[];
+    alreadySatisfied: boolean;
+  }
+| { status: "invalid"; detail: string }
 ```
 
-`Harness.applyOutcome` for `await_dependencies`:
+Classification is deliberately strict:
 
 ```text
-1. resolveMany(reported ids) BEFORE the transaction  -> an illegal id fails the Activation cleanly
-2. process this Activation's Effects (branch proposals)
+new registration from this Activation                  -> newRecords
+persisted id observed pending by this Activation       -> recoveredIds
+that observed id raced pending -> settled              -> recoveredIds + alreadySatisfied
+arbitrary old settled id / foreign id / invalidated id -> invalid
+duplicate id                                            -> invalid
+```
+
+Knowing an old id is therefore not authority to wait on it. The special acceptance of a settled
+record applies only when this Activation really received `suspended(id)` for that record while it
+was pending.
+
+`Harness.applyOutcome` uses this exact order for `await_dependencies`:
+
+```text
+1. preflight resolveMany(reported ids)
+     invalid -> fail before Effect authorization/journal/dispatch/PendingOperation/external work
+2. process this Activation's accepted Effects
 3. ONE transaction:
-     insert EVERY newRecord (controller progress + all new resumption records commit coherently)
-     peek the mailbox for the reported `event`
-       already present  -> to = READY, requeue     (the fast / mixed path)
-       not present       -> to = WAITING, waitingFor = dependenciesWait(event, resumptionMembers)
-4. post-commit: attach every newRecord's promise (whether READY or WAITING)
+     insert EVERY newRecord
+     peek the mailbox for the reported event
+     re-read EVERY recoveredId
+     invalidated / missing / ownership-impossible -> fail closed
+     matching Event OR any recovered resumption settled -> READY + requeue
+     otherwise                                      -> WAITING on the dependency set
+     persist controller progress and lifecycle atomically with those decisions
+4. post-commit: attach every accepted newRecord on both READY and WAITING paths
 ```
 
-Recovery can never observe a partial dependency set. A recovered member is already being followed
-from the Activation that first reported it; `attach` is a no-op for it. A registration the
-controller did not report is abandoned by never being attached.
+The final re-read closes both timing windows. A record observed pending and settled before
+preflight remains a legitimate satisfied member instead of failing the Workflow. A record that
+settles after preflight but before the final transaction is seen settled there, so the Harness
+cannot persist `WAITING` on a wake that will never recur. If settlement happens after the final
+transaction, transaction serialization makes settlement observe `WAITING` and perform the
+ordinary wake.
+
+Recovery can never observe a partial set of new registrations. A recovered member is already being
+followed from the Activation that first reported it; `attach` is a no-op for it. A registration
+the controller did not report is abandoned by never being attached.
 
 ### The fast / mixed path (`await_dependencies` + an already-available Event)
 
@@ -339,11 +389,13 @@ Core:
 - `ports/controller.ts` — `ControllerNext` `await_dependencies` arm.
 - `execution/context.ts` — `ExecutionWait` `dependencies` kind + `dependenciesWait`.
 - `runtime/activation.ts` — `await_dependencies` structural validation.
-- `runtime/harness.ts` — `resolveMany`; atomic multi-record commit; fast/mixed path;
+- `runtime/harness.ts` - dependency-set preflight before Effects; atomic multi-record commit;
+  transactional Event + recovered-resumption re-read; READY/WAITING decision;
   `attachDependencyResumptions`.
 - `runtime/event-router.ts` — route the `dependencies` `event` member without invalidating siblings.
-- `runtime/resumption-processor.ts` — `resolveMany` / `ResumptionDependencySet`; `settle` wakes a
-  `dependencies` wait; no sibling invalidation.
+- `runtime/resumption-processor.ts` - `resolveMany` / `ResumptionDependencySet`;
+  Activation-observed pending recovery classification; `settle` wakes a `dependencies` wait; no
+  sibling invalidation.
 
 Docs/tests:
 
@@ -354,16 +406,18 @@ Docs/tests:
   updated for G.2 (branch body widened, version 4, branch `WriteMemory` is the fail-closed case).
 - `tests/conformance/workflow/parallel-branch-effects.test.ts` — new (Function branch Effects,
   Agent/Workflow branch child calls, fail-closed deferrals).
-- `tests/conformance/workflow/parallel-branch-resumptions.test.ts` — new (branch model
-  resumptions, mixed Event + resumption, fast/mixed path, reconstruction).
-- `tests/conformance/execution/multi-dependency-wait.test.ts` — new (runtime dependency-set
-  semantics directly, dependency-set validation, failure atomicity, G.1 regressions under G.2).
+- `tests/conformance/workflow/parallel-branch-resumptions.test.ts` - branch model resumptions,
+  mixed Event + resumption, fast/mixed path, reconstruction, and deterministic settlement before
+  preflight plus after-preflight/before-commit race proofs.
+- `tests/conformance/execution/multi-dependency-wait.test.ts` - runtime dependency-set semantics,
+  fail-closed invalid-dependency-plus-real-Effect proof, dependency validation, failure atomicity,
+  and G.1 regressions under G.2.
 
 ## 14. Local validation (local, not CI)
 
 ```text
-npm test                        1075 pass, 0 fail   (was 1049 at the G.1 checkpoint)
-npm run test:conformance         824 pass, 0 fail   (was 798)
+npm test                        1078 pass, 0 fail   (was 1049 at the G.1 checkpoint)
+npm run test:conformance         827 pass, 0 fail   (was 798)
 npm run test:mcp                  68 pass, 0 fail
 npm run test:evals               12 pass, 0 fail    (unchanged)
 npm run test:benchmark-subjects   8 pass, 0 fail
@@ -410,5 +464,7 @@ and the architecture proves deterministic conflict handling.
 
 ## 17. Status
 
-Implemented, committed, and pushed to `slice-g-structured-concurrency`. **Not merged. Not
-self-approved.** Awaiting independent G.2 architecture review before any G.3 work begins.
+The G.2 checkpoint is implemented on `slice-g-structured-concurrency`; the independent-review
+correction after reviewed HEAD `a9ad42832ce341d6689f06e442472cce0082caf3` makes dependency-set
+acceptance fail-closed before Effects and race-safe at the final transaction. **Not merged. Not
+self-approved.** Awaiting independent G.2 re-review before any G.3 work begins.

@@ -24,8 +24,14 @@ import {
   Harness,
   defineWorkflow,
   readWorkflowControlState,
+  useCapability,
 } from "@agent-sdk/core/execution";
-import type { ActivationOutcome, ExecutionController } from "@agent-sdk/core/ports";
+import type {
+  ActivationOutcome,
+  CapabilityExecutor,
+  EffectAuthorizer,
+  ExecutionController,
+} from "@agent-sdk/core/ports";
 import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
 import type { StageExecutionContext } from "@agent-sdk/core/ports";
 import {
@@ -224,7 +230,13 @@ function forgingController(build: (ids: { r1: string; r2: string }) => Activatio
   };
 }
 
-function forgingRig(controller: ExecutionController) {
+function forgingRig(
+  controller: ExecutionController,
+  options: {
+    readonly authorizer?: EffectAuthorizer;
+    readonly capabilities?: CapabilityExecutor;
+  } = {},
+) {
   const definitions = new InMemoryDefinitionStore();
   const store = new InMemoryRuntimeStore();
   const harness = new Harness({
@@ -235,11 +247,68 @@ function forgingRig(controller: ExecutionController) {
     clock: createFixedClock(),
     ids: createDeterministicIds(),
     inlineWait: createNoInlineWaitBudget(),
+    ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
+    ...(options.capabilities !== undefined ? { capabilities: options.capabilities } : {}),
   });
   return { harness, definitions, store };
 }
 
 describe("Slice G.2: dependency-set validation is fail-closed", () => {
+  test("an invalid dependency set is rejected before a real Effect crosses the Harness boundary", async () => {
+    const capabilities = createDeferredCapabilityExecutor();
+    const controller: ExecutionController = {
+      kind: "agent",
+      async activate(_input, resumptions): Promise<ActivationOutcome> {
+        const attempt = await resumptions.run("valid", () => new Promise(() => {}));
+        assert.equal(attempt.status, "suspended");
+        const valid = attempt.status === "suspended" ? attempt.resumptionId : "res_unreachable";
+        return {
+          control: { kind: "agent", progress: {} },
+          effects: [
+            useCapability({
+              capability: SEARCH.capability,
+              operation: SEARCH.operation,
+              input: {},
+              requestKey: "real-effect",
+            }),
+          ],
+          next: {
+            status: "await_dependencies",
+            event: {
+              eventKinds: ["capability.completed", "capability.failed"],
+              correlationId: "real-effect",
+            },
+            resumptions: [valid as never, "res_foreign_999" as never],
+          },
+        };
+      },
+    };
+    const { harness, definitions } = forgingRig(controller, {
+      authorizer: createAllowListAuthorizer({ grants: [{ capability: SEARCH.capability }] }),
+      capabilities,
+    });
+    const ref = await definitions.save(
+      scriptedAgentDefinition({ id: "forge-foreign-with-effect", program: [{ do: "complete" }] }),
+    );
+    const handle = await harness.createExecution({
+      definition: ref,
+      operationAuthority: { operations: [SEARCH] },
+    });
+    await harness.runUntilIdle();
+
+    const context = await harness.inspect(handle.executionId);
+    assert.equal(context?.lifecycle, "FAILED");
+    assert.match(context?.failure?.code ?? "", /invalid_resumption/);
+    assert.equal(capabilities.callCount, 0, "the executor is never called for a rejected outcome");
+    assert.deepEqual(await harness.effectJournalOf(handle.executionId), [], "no Effect request was journaled");
+    assert.deepEqual(await harness.pendingOperationsOf(handle.executionId), [], "no PendingOperation was created");
+    assert.deepEqual(
+      await harness.controllerResumptionsOf(handle.executionId),
+      [],
+      "the otherwise-valid new registration was not partially committed",
+    );
+  });
+
   test("(55) a foreign resumption id in the set fails the Activation, and no record is created", async () => {
     const { harness, definitions } = forgingRig(
       forgingController(({ r1 }) => ({ status: "await_dependencies", resumptions: [r1 as never, "res_forged_999" as never] })),

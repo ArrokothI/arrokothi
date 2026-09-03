@@ -26,12 +26,22 @@ import {
   readWorkflowControlState,
 } from "@agent-sdk/core/execution";
 import type { WorkflowSpecInput } from "@agent-sdk/core/execution";
-import type { StageExecutionContext } from "@agent-sdk/core/ports";
+import type {
+  CapabilityExecutor,
+  EffectAuthorizer,
+  StageExecutionContext,
+} from "@agent-sdk/core/ports";
 import {
   createAllowListAuthorizer,
   createDeferredCapabilityExecutor,
   createDeferredModelProvider,
+  createDeterministicIds,
+  createFixedClock,
   createFunctionStageRegistry,
+  createNoInlineWaitBudget,
+  FifoScheduler,
+  InMemoryDefinitionStore,
+  InMemoryRuntimeStore,
   StaticModelResolver,
   portableModelFeatures,
 } from "@agent-sdk/core/reference";
@@ -45,6 +55,64 @@ const SEARCH = { capability: "knowledge.retrieval", operation: "search" } as con
  */
 async function flush(times = 8): Promise<void> {
   for (let i = 0; i < times; i += 1) await new Promise((resolve) => setImmediate(resolve));
+}
+
+function signal() {
+  let release!: () => void;
+  const reached = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  return { reached, release };
+}
+
+/** Narrow runtime test double exposing exactly when recovery/preflight reads occur. */
+class ObservedResumptionStore extends InMemoryRuntimeStore {
+  readonly recoveredPending = signal();
+  recoveredPendingReads = 0;
+  dependencyPreflightReads = 0;
+
+  override async findControllerResumptionByKey(
+    executionId: Parameters<InMemoryRuntimeStore["findControllerResumptionByKey"]>[0],
+    key: string,
+  ) {
+    const stored = await super.findControllerResumptionByKey(executionId, key);
+    if (stored?.state === "pending") {
+      this.recoveredPendingReads += 1;
+      this.recoveredPending.release();
+    }
+    return stored;
+  }
+
+  override async readControllerResumption(
+    resumptionId: Parameters<InMemoryRuntimeStore["readControllerResumption"]>[0],
+  ) {
+    this.dependencyPreflightReads += 1;
+    return super.readControllerResumption(resumptionId);
+  }
+}
+
+function controlledWorkflowRig(options: {
+  readonly store: ObservedResumptionStore;
+  readonly models: ReturnType<typeof modelAccess>;
+  readonly functions: ReturnType<typeof createFunctionStageRegistry>;
+  readonly authorizer: EffectAuthorizer;
+  readonly capabilities: CapabilityExecutor;
+}) {
+  const definitions = new InMemoryDefinitionStore();
+  const harness = new Harness({
+    definitions,
+    store: options.store,
+    scheduler: new FifoScheduler(),
+    controllers: new ControllerRegistry([
+      createWorkflowController({ models: options.models, functions: options.functions }),
+    ]),
+    clock: createFixedClock(),
+    ids: createDeterministicIds(),
+    inlineWait: createNoInlineWaitBudget(),
+    authorizer: options.authorizer,
+    capabilities: options.capabilities,
+  });
+  return { harness, definitions };
 }
 
 /** A resolver that maps `wB` -> provider `alpha` and `wC` -> provider `beta`, so each branch's slow model call can be settled on its own. */
@@ -74,6 +142,20 @@ function twoLLMBranchSpec(): WorkflowSpecInput {
       { id: "a", kind: "function", implementationRef: "a", transitions: { kind: "always", next: { to: "fork", fork: "p" } } },
       llmBranchStage("b", "wB"),
       llmBranchStage("c", "wC"),
+      { id: "d", kind: "function", implementationRef: "d", transitions: { kind: "always", next: { to: "complete" } } },
+    ],
+  };
+}
+
+/** B is a slow LLM branch; C is a Function branch whose Effects wake the fork. */
+function llmAndEffectBranchSpec(): WorkflowSpecInput {
+  return {
+    entryStage: "a",
+    forks: [{ id: "p", branches: [{ id: "b", stage: "b" }, { id: "c", stage: "c" }], join: { next: "d" } }],
+    stages: [
+      { id: "a", kind: "function", implementationRef: "a", transitions: { kind: "always", next: { to: "fork", fork: "p" } } },
+      llmBranchStage("b", "wB"),
+      { id: "c", kind: "function", implementationRef: "c", transitions: { kind: "always", next: { to: "join", fork: "p" } } },
       { id: "d", kind: "function", implementationRef: "d", transitions: { kind: "always", next: { to: "complete" } } },
     ],
   };
@@ -182,6 +264,176 @@ describe("Slice G.2: multiple parallel branch ControllerResumptions", () => {
     await harness.runUntilIdle();
     assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "COMPLETED");
     assert.equal(alpha.invocationCount, 1);
+  });
+
+  test("a recovered sibling may settle after it was observed pending during the re-entered Activation", async () => {
+    const store = new ObservedResumptionStore();
+    const alpha = createDeferredModelProvider("alpha");
+    const capabilities = createDeferredCapabilityExecutor();
+    const cEntered = signal();
+    const releaseC = signal();
+    const joins: StageExecutionContext["join"][] = [];
+    const functions = createFunctionStageRegistry({
+      a: () => ({ status: "completed", result: "seed" }),
+      c: async (ctx) => {
+        if (ctx.progress["asked"] !== true) {
+          return {
+            status: "awaitEffects",
+            progress: { asked: true },
+            effects: [{ key: "first", capability: SEARCH.capability, operation: SEARCH.operation, input: {} }],
+          };
+        }
+        cEntered.release();
+        await releaseC.reached;
+        return { status: "completed", result: "C-complete" };
+      },
+      d: (ctx) => {
+        joins.push(ctx.join);
+        return { status: "completed", result: "done" };
+      },
+    });
+    const { harness, definitions } = controlledWorkflowRig({
+      store,
+      models: modelAccess(twoModelResolver(), [alpha]),
+      functions,
+      authorizer: createAllowListAuthorizer({ grants: [{ capability: SEARCH.capability }] }),
+      capabilities,
+    });
+    const ref = await definitions.save(
+      defineWorkflow({ id: "g2-settle-during-activation", spec: llmAndEffectBranchSpec() }),
+    );
+    const handle = await harness.createExecution({
+      definition: ref,
+      operationAuthority: { operations: [SEARCH] },
+    });
+    await harness.runUntilIdle();
+    assert.equal(alpha.invocationCount, 1);
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "WAITING");
+
+    const first = capabilities.outstanding[0]!;
+    capabilities.complete(first.request.effectId, { phase: "first" });
+    await harness.drainEffects();
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "READY");
+
+    const activation = harness.runOnce();
+    await Promise.all([store.recoveredPending.reached, cEntered.reached]);
+    assert.equal(store.recoveredPendingReads, 1, "B really observed its existing resumption pending");
+
+    alpha.settle({ text: "B-settled-during-A" });
+    await harness.drainResumptions();
+    const during = await harness.inspect(handle.executionId);
+    assert.equal(during?.lifecycle, "RUNNING", "settlement during the Activation records truth without a wake");
+    assert.equal(
+      (await harness.controllerResumptionsOf(handle.executionId))[0]!.state,
+      "settled",
+      "RB settled before the controller reported the dependency set",
+    );
+
+    releaseC.release();
+    const record = await activation;
+    assert.equal(record?.lifecycleAfter, "READY", "the raced dependency keeps the Workflow runnable");
+    assert.equal((await harness.inspect(handle.executionId))?.waitingFor, null);
+
+    await harness.runUntilIdle();
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "COMPLETED");
+    assert.equal(alpha.invocationCount, 1, "stable-key recovery did not invoke the provider twice");
+    assert.deepEqual(joins[0]!.branches, [
+      { branchId: "b", stageId: "b", result: "B-settled-during-A" },
+      { branchId: "c", stageId: "c", result: "C-complete" },
+    ]);
+  });
+
+  test("the final wait transaction re-reads a resumption that settles after preflight", async () => {
+    const store = new ObservedResumptionStore();
+    const alpha = createDeferredModelProvider("alpha");
+    const capabilities = createDeferredCapabilityExecutor();
+    const authorizerEntered = signal();
+    const releaseAuthorizer = signal();
+    const baseAuthorizer = createAllowListAuthorizer({ grants: [{ capability: SEARCH.capability }] });
+    const authorizer: EffectAuthorizer = {
+      async authorize(request) {
+        if (
+          request.proposal.kind === "use_capability" &&
+          request.proposal.requestKey?.endsWith("/request/second")
+        ) {
+          authorizerEntered.release();
+          await releaseAuthorizer.reached;
+        }
+        return baseAuthorizer.authorize(request);
+      },
+    };
+    const functions = createFunctionStageRegistry({
+      a: () => ({ status: "completed", result: "seed" }),
+      c: (ctx) => {
+        const phase = ctx.progress["phase"];
+        if (phase === undefined) {
+          return {
+            status: "awaitEffects",
+            progress: { phase: "first" },
+            effects: [{ key: "first", capability: SEARCH.capability, operation: SEARCH.operation, input: {} }],
+          };
+        }
+        if (phase === "first") {
+          return {
+            status: "awaitEffects",
+            progress: { phase: "second" },
+            effects: [{ key: "second", capability: SEARCH.capability, operation: SEARCH.operation, input: {} }],
+          };
+        }
+        return { status: "completed", result: "C-complete" };
+      },
+      d: () => ({ status: "completed", result: "done" }),
+    });
+    const { harness, definitions } = controlledWorkflowRig({
+      store,
+      models: modelAccess(twoModelResolver(), [alpha]),
+      functions,
+      authorizer,
+      capabilities,
+    });
+    const ref = await definitions.save(
+      defineWorkflow({ id: "g2-settle-after-preflight", spec: llmAndEffectBranchSpec() }),
+    );
+    const handle = await harness.createExecution({
+      definition: ref,
+      operationAuthority: { operations: [SEARCH] },
+    });
+    await harness.runUntilIdle();
+
+    const first = capabilities.outstanding[0]!;
+    capabilities.complete(first.request.effectId, { phase: "first" });
+    await harness.drainEffects();
+    const readsBefore = store.dependencyPreflightReads;
+
+    const activation = harness.runOnce();
+    await authorizerEntered.reached;
+    const preflightRanBeforeEffectAuthorization = store.dependencyPreflightReads > readsBefore;
+
+    let during: Awaited<ReturnType<typeof harness.inspect>>;
+    try {
+      alpha.settle({ text: "B-settled-after-preflight" });
+      await harness.drainResumptions();
+      during = await harness.inspect(handle.executionId);
+    } finally {
+      releaseAuthorizer.release();
+    }
+    const record = await activation;
+
+    assert.equal(preflightRanBeforeEffectAuthorization, true, "resolveMany observed RB pending before the Effect boundary");
+    assert.equal(during!.lifecycle, "RUNNING");
+    assert.equal((await harness.controllerResumptionsOf(handle.executionId))[0]!.state, "settled");
+    assert.equal(record?.lifecycleAfter, "READY");
+    assert.equal((await harness.inspect(handle.executionId))?.waitingFor, null, "the final transaction did not park on settled RB");
+    assert.equal(alpha.invocationCount, 1);
+
+    await harness.runUntilIdle();
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "WAITING", "only C's second Effect remains");
+    assert.equal(alpha.invocationCount, 1, "B recovered the stored result without redispatch");
+    const second = capabilities.outstanding[0]!;
+    capabilities.complete(second.request.effectId, { phase: "second" });
+    await harness.drainEffects();
+    await harness.runUntilIdle();
+    assert.equal((await harness.inspect(handle.executionId))?.lifecycle, "COMPLETED");
   });
 
   test("(23) reversing the settlement order (B first, then C) has equivalent semantics", async () => {

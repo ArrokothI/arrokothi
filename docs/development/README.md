@@ -106,8 +106,11 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   and `ExecutionWait` `dependencies { event, resumptions }` (`dependenciesWait`) - where any one
   member settling re-enters, the `event` member waking does NOT invalidate any `resumptions` member
   and vice versa (deliberately NOT `interleave`; no `interleave` field on this arm), and the Harness
-  commits every newly-registered resumption record with controller progress in one transaction
-  (`resolveMany`; one illegal / foreign / duplicate id fails the Activation cleanly). Branch-qualified
+  preflights `resolveMany` before any Effect boundary (one illegal / foreign / duplicate id fails
+  with no Effect consequence), then commits every newly-registered resumption record with controller
+  progress in one transaction. That final transaction re-reads every legitimately recovered
+  resumption and chooses READY when either the Event or a resumption is already satisfied, closing
+  both during-Activation settlement races. Branch-qualified
   Effect correlation (`branchStageCorrelationId`) and ControllerResumption keys
   (`branchStageResumptionScope` + `modelPhaseResumptionKey`) - two sibling branches may share a
   Stage-local request key and still receive only their own observations. `WORKFLOW_CONTROL_STATE_VERSION`
@@ -119,7 +122,7 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   kind; no branch Execution, no new RuntimeStore / Harness facet. No canonical-doc change
   (`future-plan.md` §1.3 pointer only). Concurrent Structured Memory branch writes, multi-Stage
   branches, nested forks, reducers/merge, cancellation propagation, and branch Working Notes remain
-  G.3+. Not merged; awaiting independent review.
+  G.3+. Not merged; awaiting independent re-review after the `a9ad428` correction.
 
 025-slice-g1-minimal-workflow-fork-join.md
   the Slice G.1 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
@@ -369,7 +372,7 @@ Slice G structured concurrency
                 reducers, merge - all G.2/G.3.    (future-plan.md §1.3 gains a pointer only).
 
   G.2           parallel branch dependencies,     current checkpoint (026); same branch, continuing
-                Effects, async resumptions.       from G.1. Not merged, awaiting independent review.
+                Effects, async resumptions.       from G.1. Not merged, awaiting independent re-review.
                 A branch may be any adapter-free  Branch body widened function -> function / llm /
                 Stage kind and may hold a real    agent / workflow (adds no Stage kind); a branch
                 async dependency while staying a  may request UseCapability Effect(s), call an
@@ -397,6 +400,10 @@ Slice G structured concurrency
                                                   branches, nested forks, reducers/merge,
                                                   cancellation propagation, Working Notes branch
                                                   merge - all G.3+.
+                Review correction after a9ad428:    dependency ids preflight BEFORE Effects; final
+                fail-closed + race-safe boundary.  transaction re-reads Event + recovered-resumption
+                                                  truth and chooses READY if either is satisfied.
+                                                  New registrations commit/attach on both paths.
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

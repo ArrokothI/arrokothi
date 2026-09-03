@@ -866,7 +866,28 @@ export class Harness {
     const executionId = running.executionId;
     const next: ControllerNext = outcome.next;
 
-    // Effects are processed before the lifecycle is derived, and this ordering is load-bearing. A
+    // A G.2 dependency set is authority-bearing input: validate every member before any proposed
+    // Effect can be authorized, journaled, dispatched, or turned into a PendingOperation. Recovery
+    // is legal only for persisted ids this Activation actually observed pending through scope.run().
+    let dependencySet: ResumptionDependencySet | null = null;
+    if (next.status === "await_dependencies") {
+      try {
+        dependencySet = await resumptions.resolveMany(next.resumptions ?? [], nowIso(this.options.clock));
+      } catch (error) {
+        return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
+          code: "resumption_dependency_unresolvable",
+          message: error instanceof Error ? error.message : String(error),
+        });
+      }
+      if (dependencySet.status === "invalid") {
+        return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
+          code: "invalid_controller_outcome:invalid_resumption",
+          message: `controller resumption ${dependencySet.detail}`,
+        });
+      }
+    }
+
+    // Effects are processed only after dependency-set preflight and before lifecycle is derived. A
     // result that settled inline is already in the mailbox when the wake dependency is checked
     // below, so the Execution stays runnable; one that did not leaves a pending operation and the
     // Execution waits for the identical Event. Neither the controller nor the Event body can tell
@@ -910,26 +931,6 @@ export class Harness {
         return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
           code: "invalid_controller_outcome:invalid_resumption",
           message: `controller resumption ${dependency.detail}`,
-        });
-      }
-    }
-
-    // The parallel-branch union wait (Slice G.2): resolve the *whole* reported set before the
-    // transaction, so one illegal id fails the Activation rather than rolling back a half-written one.
-    let dependencySet: ResumptionDependencySet | null = null;
-    if (next.status === "await_dependencies") {
-      try {
-        dependencySet = await resumptions.resolveMany(next.resumptions ?? [], finishedAt);
-      } catch (error) {
-        return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
-          code: "resumption_dependency_unresolvable",
-          message: error instanceof Error ? error.message : String(error),
-        });
-      }
-      if (dependencySet.status === "invalid") {
-        return this.failActivation(running, activationId, startedAt, deliveredEventIds, {
-          code: "invalid_controller_outcome:invalid_resumption",
-          message: `controller resumption ${dependencySet.detail}`,
         });
       }
     }
@@ -1025,31 +1026,60 @@ export class Harness {
           attachResumption = true;
         }
       } else if (!cancelling && next.status === "await_dependencies") {
-        // The parallel-branch union wait (Slice G.2). One transaction: the controller's progress and
-        // *every* newly-registered resumption record, so recovery can never observe a partial
-        // dependency set. Then: if the Event member is already in the mailbox the Execution stays
-        // runnable (the fast/mixed path), but the sibling resumptions are still committed and
-        // attached - never abandoned or re-dispatched merely because the Event won the race. If a
-        // resumption then settles while the Execution is already READY, its outcome is recorded with
-        // no second wake.
+        // The parallel-branch union wait (Slice G.2). One transaction inserts every new record,
+        // re-reads every legitimately recovered record, checks the Event mailbox, and persists
+        // controller progress plus READY/WAITING. Thus a recovery that settles after preflight
+        // cannot be overwritten by a stale RUNNING -> WAITING decision. New siblings are committed
+        // and followed on both the READY and WAITING paths.
         for (const record of dependencySet!.newRecords) {
           await tx.controllerResumptions.insert(record);
         }
+
         const reportedEvent = next.event ?? null;
         const pending = reportedEvent !== null ? await tx.mailboxes.peek(running.mailbox.mailboxId) : [];
         const eventSatisfied =
           reportedEvent !== null && pending.some((event) => eventSatisfiesWake(event, reportedEvent));
+
+        let resumptionSatisfied = false;
+        let invalidResumption: string | null = null;
+        for (const resumptionId of dependencySet!.recoveredIds) {
+          const current = await tx.controllerResumptions.get(resumptionId);
+          if (current === undefined || current.executionId !== executionId) {
+            invalidResumption = `${resumptionId} disappeared or changed ownership after preflight`;
+            break;
+          }
+          if (current.state === "invalidated") {
+            invalidResumption = `${resumptionId} became invalidated after preflight`;
+            break;
+          }
+          if (current.state === "settled") resumptionSatisfied = true;
+        }
+        if (dependencySet!.alreadySatisfied && !resumptionSatisfied && invalidResumption === null) {
+          invalidResumption = "a resumption observed settled during preflight was no longer settled";
+        }
+
         const resumptionMembers = next.resumptions ?? [];
-        if (eventSatisfied) {
+        if (invalidResumption !== null) {
+          to = "FAILED";
+          result = "failed";
+          rejection = `invalid_resumption: ${invalidResumption}`;
+          failure = {
+            code: "invalid_controller_outcome:invalid_resumption",
+            message: `controller resumption ${invalidResumption}`,
+            failedByActivationId: activationId,
+            failedAt: finishedAt,
+          };
+        } else if (eventSatisfied || resumptionSatisfied) {
           to = "READY";
           result = "continued";
           requeue = true;
+          attachDependencyResumptions = true;
         } else {
           to = "WAITING";
           waitingFor = dependenciesWait(reportedEvent, resumptionMembers);
           result = "waiting";
+          attachDependencyResumptions = true;
         }
-        attachDependencyResumptions = true;
       } else if (!cancelling && next.status === "complete") {
         const validation = validateTerminalResult(definition.terminalResult, next.result, {
           activationId,
