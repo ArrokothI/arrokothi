@@ -108,19 +108,21 @@ SendMessage / RequestUserInput / detached spawn
                              @arrokothi/core/testing, or a custom ExecutionController
 ```
 
-Two related narrowings with the same cause: a stock Workflow consumes `external.input` **only
-once**, before its first Activation (`startInput` in the Workflow controller; later application
-input is explicitly not consumed), so it cannot host a multi-turn conversation; and no
-controller-side code can *read* Structured Memory — `StageExecutionContext` has no memory handle and
-`CapabilityExecutor` is given no store or ExecutionContext, leaving `Harness.structuredMemoryOf` as
-the only programmatic read.
+A related narrowing with the same cause: a stock Workflow consumes `external.input` **only once**,
+before its first Activation (`startInput` in the Workflow controller; later application input is
+explicitly not consumed), so it cannot host a multi-turn conversation.
+
+Note what this finding is *not* about. Whether a surface can **emit** a memory Effect is a different
+dimension from whether it has a usable **memory view**; conflating them produced the separate error
+recorded in finding 16.
 
 **Consequence for a builder.** A design derived from the kernel vocabulary looks correct until
 `defineWorkflow` rejects it or the controller simply never proposes the Effect. This was the single
 largest source of unbuildable guidance in the first draft of the builder guide.
 
-**Documentation fix applied.** The guide's §2.4 is now an explicit per-surface emission matrix, with
-§2.5 giving the ladder — another existing composition, host orchestration, an application-supplied
+**Documentation fix applied.** [`../guides/agent-workflow-composition/current-authoring-surface.md`](../guides/agent-workflow-composition/current-authoring-surface.md)
+carries an explicit per-surface emission matrix, followed by the escalation ladder — another
+existing composition, host orchestration, an application-supplied
 port, and only then a custom controller.
 
 **Not a semantic gap.** Every one of these narrowings is a deliberate scope decision, and the
@@ -215,8 +217,9 @@ places structured cross-Stage information belongs — "none of which exist yet".
 long-running progress artifacts to "an Artifact" is unbuildable. The first draft of the builder
 guide did exactly that in five places.
 
-**Correction applied.** The guide now marks Artifact/File as canonical-but-unimplemented in one
-place (§4.5) and routes every current recommendation to application-owned durable storage reached
+**Correction applied.** [`../guides/agent-workflow-composition/state-memory-and-context.md`](../guides/agent-workflow-composition/state-memory-and-context.md) marks
+Artifact/File as canonical-but-unimplemented in one place and routes every current recommendation to
+application-owned durable storage reached
 through a capability, with only a reference travelling through the kernel.
 
 **Why this one keeps the `possible semantic gap` label.** Unlike findings 6 and 7, there is no
@@ -275,7 +278,8 @@ particular, in-memory journal duplicate recognition is not external idempotency 
 crash-safe deduplication — the reference store is in memory and durable restart is roadmap tranche
 M.
 
-**Correction applied.** The guide's §7.4 now separates the three meanings of "idempotency", states
+**Correction applied.** [`../guides/agent-workflow-composition/capabilities-effects-and-authority.md`](../guides/agent-workflow-composition/capabilities-effects-and-authority.md)
+separates the three meanings of "idempotency", states
 which waits have no configured deadline, and says cancellation must be cascaded by the application.
 
 ## 12. Agent/Workflow Stages expose no Working Notes handoff — `ergonomics / API`
@@ -292,7 +296,8 @@ the only built-in child return path**: no note handoff in, no note return out, n
 Memory view, and no Artifact mechanism (finding 9). Anything else requires an application-defined
 external mechanism.
 
-**Correction applied.** The guide's §8.3 now separates the generic controller capability from what
+**Correction applied.** [`../guides/agent-workflow-composition/composition-children-and-concurrency.md`](../guides/agent-workflow-composition/composition-children-and-concurrency.md)
+separates the generic controller capability from what
 the Stage definitions expose, and states the return path exactly.
 
 ## 13. `requestedOperations` is one narrowing lever, not the child security envelope — `documentation`
@@ -302,7 +307,9 @@ authority through that attenuation path. It does not mean the child is inert: it
 lifecycle, controller, local computation, and mailbox, and other powers are governed by the
 `EffectAuthorizer` evaluating that child's Effects.
 
-**Correction applied.** The guide's §2.3 and §8.2 now say "no capability-operation authority through
+**Correction applied.** [`../guides/agent-workflow-composition/workflow-agent-and-stages.md`](../guides/agent-workflow-composition/workflow-agent-and-stages.md) and
+[`../guides/agent-workflow-composition/composition-children-and-concurrency.md`](../guides/agent-workflow-composition/composition-children-and-concurrency.md) say
+"no capability-operation authority through
 this attenuation path" rather than "the child gets nothing", while preserving
 `requested ≠ granted` and parent-current-authority attenuation.
 
@@ -316,8 +323,62 @@ declared graph. `stage-result.ts` is explicit that `null` means *none*, not empt
 row, which invites encoding control into the data string and turns a declared graph edge into a
 string convention.
 
-**Correction applied.** The guide's §8.5 now separates them and says not to pack routing into the
+**Correction applied.** [`../guides/agent-workflow-composition/composition-children-and-concurrency.md`](../guides/agent-workflow-composition/composition-children-and-concurrency.md)
+separates them and says not to pack routing into the
 result text.
+
+## 16. Agent Structured Memory needs application-supplied view resolvers — `ergonomics / API`
+
+**Observation.** An Agent's authored `spec.structuredMemory.read.keys` / `.write.keys` are
+*requests*. Each also requires the Execution's memory binding **and** a separate application-supplied
+resolver handed to `createAgentController`, and each resolver is denied by default:
+
+```text
+structuredMemoryReadView   : StructuredMemoryReadViewResolver
+                             absent → noStructuredMemoryRead → null; the reference
+                             createStructuredMemoryReadViewResolver defaults `grants` to false
+structuredMemoryWriteView  : ActiveStructuredMemoryWriteViewResolver
+                             absent → noActiveStructuredMemoryWriteView → empty; the reference
+                             createStructuredMemoryWriteViewResolver defaults `grants` to false
+```
+
+Conformance pins that request, exposure grant, and binding are **all** necessary before a model is
+offered a write callable (`structured-memory-model-write.test.ts`, "request, exposure authority, and
+binding are all necessary"), and that an unauthorized read resolves to `null` with zero view reads
+(`structured-memory-read.test.ts`).
+
+**Consequence for a builder.** An Agent authored with read/write keys and no resolvers behaves
+exactly like one authored without them: no memory in context, no write action, no error. This is a
+third distinct misconfiguration that presents as "nothing happened" (finding 8), and it is the one a
+builder is least likely to suspect, because the definition looks complete.
+
+**Also corrected: the reader model was overstated.** Earlier drafts of the guide — and finding 4
+above — said host code was the *only* programmatic reader of Structured Memory. There are two, and
+they are different things:
+
+```text
+Harness.structuredMemoryOf(executionId)   trusted host/application inspection of the full
+                                          committed view; not an Effect, not reachable from a
+                                          controller or a model context
+AgentInformationInput.memory              the already-authorized, narrowed StructuredMemoryReadView
+                                          snapshot handed to a replaceable AgentInformationCompiler
+                                          for one invocation; it selects, and cannot widen
+```
+
+`StageExecutionContext`, `CapabilityExecutor`, and the `ExecutionView` a generic controller receives
+still have no memory handle at all, so the practical guidance — deterministic gates over committed
+facts are host work — is unchanged.
+
+**Classification rationale.** Not a semantic gap. The layering is deliberate and load-bearing:
+read authority, write *exposure*, and final `WriteMemory` authorization are three independent
+deny-by-default decisions, and the resolvers are the seam that keeps them independent. The finding is
+that the chain is long, entirely implicit at authoring time, and silent when incomplete — an
+ergonomics and documentation problem. The SDK-level version of it is tracked in
+[`../future-plan.md`](../future-plan.md) §14.1 (bootstrap layer) and §14.7 (preflight diagnostics).
+
+**Documentation fix applied.** [`../guides/agent-workflow-composition/current-authoring-surface.md`](../guides/agent-workflow-composition/current-authoring-surface.md)
+§3 now carries the full read chain, write chain, and reader table; the state, requirements, README,
+worked-examples, and skill pages were corrected to match.
 
 ## 15. `docs/agent-engineering/` was unregistered in the documentation map — `documentation`
 
@@ -349,6 +410,7 @@ their non-canonical status stated.
 | 13 | `requestedOperations` is not the whole child security envelope | documentation |
 | 14 | Stage result and transition label were conflated | documentation |
 | 15 | `agent-engineering/` unregistered in the doc map | documentation (fixed) |
+| 16 | Agent Structured Memory needs application-supplied view resolvers; authored keys alone fail closed and silently | ergonomics / API |
 
 Finding 9 is the only remaining **possible semantic gap**, and it is a candidate architecture issue
 for [`../memory.md`](../memory.md)'s owner. Finding 6 raises an open scope question for the same

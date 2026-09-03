@@ -20,16 +20,26 @@ The same application runs twice, changing exactly one thing — the Effect polic
 
 ```text
 run 1  an EffectAuthorizer allows docs.search
-       proposed -> authorized -> dispatched -> settled, and the Agent answers from the result
+       requested -> authorized -> dispatch_started -> completed
+       the model is shown the handbook entry
 
 run 2  no EffectAuthorizer at all
-       proposed -> denied. Nothing reached the executor, and the Agent says it could not look it up
+       requested -> denied
+       nothing reached the executor; the model is shown the denial
 ```
 
-The definition, the operation ceiling, the exposure request, the catalog, the executor, and the
-model script are identical across both runs, so the difference is attributable to the Harness:
+The definition, the operation ceiling, the exposure request, the catalog, the executor, **and the
+model script** are byte-identical across both runs, so every difference is attributable to the
+Harness:
 
 > Requesting an Effect is never permission to perform it.
+
+Because the script is held constant, the Agent produces the **same confident sentence in both runs**
+— including the one where nothing was looked up. That is the second lesson, and it is why the runner
+prints what the model was *shown* alongside what it said:
+
+> What a model says is never evidence that an action occurred. The Effect journal and the executor
+> are.
 
 ## Import surface
 

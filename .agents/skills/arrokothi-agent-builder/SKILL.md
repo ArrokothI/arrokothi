@@ -31,8 +31,9 @@ agent-workflow-composition/README.md          principles, requirements mapping, 
   requirements-and-control.md                 observable requirements; deterministic vs model;
                                               schema validity vs factual acceptance
   workflow-agent-and-stages.md                Workflow or Agent; which of the four Stage kinds
-  current-authoring-surface.md                CAN my chosen surface emit this today? imports,
-                                              legacy-root collision, /testing policy
+  current-authoring-surface.md                CAN my chosen surface emit this today? Structured
+                                              Memory read/write wiring; imports; legacy-root
+                                              collision; /testing policy
   state-memory-and-context.md                 Structured / Derived / Working Notes / context /
                                               application storage; Artifact status; who can read
   capabilities-effects-and-authority.md       operation design, Effect lifecycle, authority chain,
@@ -69,10 +70,13 @@ eval/benchmark failure ≠ justification for a kernel change
    cannot write Structured Memory; a stock Agent cannot spawn, message, or request user input;
    Agent/Workflow Stages express only a child `call`; and a stock Workflow consumes
    `external.input` only once, so it is not multi-turn.
-2. **No controller-side code can read Structured Memory.** Not Stage code, not a
-   `CapabilityExecutor`. Committed values reach the model via an Agent's read keys, and reach code
-   only via host `Harness.structuredMemoryOf`. Deterministic gates over committed facts are host
-   work.
+2. **Structured Memory access is multi-step and fail-closed.** Authored `read.keys` / `write.keys`
+   are requests, not access: each also needs the Execution's memory binding *and* an
+   application-supplied `structuredMemoryReadView` / `structuredMemoryWriteView` resolver that
+   grants them — both denied by default — and a write still faces fresh `WriteMemory` authorization.
+   Ordinary Stage code and a `CapabilityExecutor` have no memory handle; host code inspects via
+   `Harness.structuredMemoryOf`, and an `AgentInformationCompiler` receives the already-authorized
+   invocation snapshot. Chain in `current-authoring-surface.md` §3.
 3. **Import surface.** Application code uses `@arrokothi/core/execution`, `/ports`, `/reference`.
    The package root `@arrokothi/core` is the legacy Session/Flow API and exports a *different*
    `defineAgent` and `AgentDefinition`. `@arrokothi/core/testing` is right for tests, prototypes,

@@ -254,22 +254,21 @@ export function handbookAuthorizer(): EffectAuthorizer {
 }
 
 /**
- * The model script both runs share: call the operation, then answer.
+ * The one model script. Both runs use it, unchanged.
  *
- * Identical in both runs on purpose. What differs between them is policy, so any difference in the
- * outcome is attributable to the Harness rather than to the model.
+ * This is what makes the comparison controlled: the definition, the ceiling, the exposure request,
+ * the catalog, the executor, and the model's behaviour are all held constant, so every difference
+ * between the two runs is attributable to the `EffectAuthorizer` and to nothing else.
+ *
+ * It also demonstrates something the guide says elsewhere and this example can show directly. The
+ * scripted model asserts the same confident sentence in both runs - including the run where the
+ * lookup was refused and no executor ever ran. A model's prose is not evidence of what happened;
+ * the Effect journal and the executor are. `main.ts` prints both so the divergence is visible under
+ * an identical answer.
  */
 export function modelScript(): readonly ScriptedModelStep[] {
   return [
     { output: { capabilityCalls: [{ id: "c1", capability: "docs_search", input: { query: "refunds" } }] } },
     { output: { text: "Refunds under 50 are automatic; anything larger needs a supervisor." } },
-  ];
-}
-
-/** The second run's answer, after the Effect was denied. The Agent must not claim it looked it up. */
-export function deniedScript(): readonly ScriptedModelStep[] {
-  return [
-    { output: { capabilityCalls: [{ id: "c1", capability: "docs_search", input: { query: "refunds" } }] } },
-    { output: { text: "I could not look that up - the handbook search was refused, so I have no policy to quote." } },
   ];
 }

@@ -47,7 +47,7 @@ application logic belongs:
 | Surface | What it adds |
 |---|---|
 | **host / application code** (trusted runtime entry points, not Effects) | `createExecution`, `deliverExternalInput`, `submitUserInput`, `resolveConfirmation`, `settleEffect`, `cancelExecution`, and — the one most often missed — `structuredMemoryOf(executionId)` to **read** committed Structured Memory |
-| **application-supplied ports** | `EffectAuthorizer`, `ConfirmationPolicy`, `CapabilityExecutor`, `FunctionStageRegistry`, `LocalResourceEnvironment` — ordinary application code, and where most deterministic gating actually lives |
+| **application-supplied ports** | `EffectAuthorizer`, `ConfirmationPolicy`, `CapabilityExecutor`, `FunctionStageRegistry`, `LocalResourceEnvironment`, and the two Structured Memory view resolvers in §3 — ordinary application code, and where most deterministic gating actually lives |
 
 ---
 
@@ -58,12 +58,15 @@ Each of these has bitten a real design.
 - **An LLM Stage cannot write Structured Memory.** Its `callables` are capability operations. If a
   model-interpreted value must be retained, the LLM Stage returns it as its `StageResult` text and a
   following **Function Stage** parses it and requests the write.
-- **No controller-side code can read Structured Memory.** `StageExecutionContext` has no memory
-  handle, and `CapabilityExecutor` is given no store and no `ExecutionContext`, by design. Committed
-  values reach only (a) an Agent's *model* information context via `spec.structuredMemory.read.keys`
-  and (b) host code via `Harness.structuredMemoryOf`. Deterministic computation over committed state
-  is therefore host work, or work over data reached through a resource view or capability. See
-  [state and memory](state-memory-and-context.md).
+- **Emitting a memory Effect and having a usable memory view are different questions.** The matrix
+  says an Agent or a Function Stage *can propose* `WriteMemory`. Whether an Agent's model ever sees
+  memory, or is ever offered a write action, depends on a separate multi-step wiring chain that
+  fails closed at every step — see §3.
+- **Ordinary Stage code and capability implementations cannot read Structured Memory.**
+  `StageExecutionContext` has no memory handle; `CapabilityExecutor` is given no store and no
+  `ExecutionContext`, by design; and the `ExecutionView` a generic controller receives carries no
+  slot references. Programmatic reads happen in exactly two places, and they are different things —
+  see §3.3.
 - **A stock Workflow is not multi-turn.** It consumes `external.input` exactly once, before its
   first Activation, as the entry Stage's input; later application input is not consumed by the
   Workflow controller. A conversation across turns is **Agent** shape, or host orchestration that
@@ -84,7 +87,115 @@ Both of the last two, and the child return path they imply, are covered in
 
 ---
 
-## 3. When your requirement is not directly authorable
+## 3. Structured Memory wiring: authoring keys is not access
+
+Every other row in the matrix is a single yes/no. Structured Memory is not — it is a **chain**, and
+every link fails closed independently. This is the most common reason a correctly authored Agent
+sees no memory and is offered no write action.
+
+> **Authoring `read.keys` or `write.keys` does not make memory appear.** They are *requests*
+> evaluated against separately configured authority. Nobody-configured-it and it-was-allowed must
+> never look the same.
+
+### 3.1 The read chain (memory into a model's information context)
+
+```text
+1. binding        Harness.createExecution({ structuredMemory: { fields: [...] } })
+                    the Execution-local, schema-bound view. Omit it and there is nothing to read.
+
+2. request        AgentSpec.spec.structuredMemory.read.keys
+                    an authored declaration. Grants nothing; a key need not exist.
+
+3. resolver       createAgentController({ structuredMemoryReadView: <resolver> })
+                    a StructuredMemoryReadViewResolver the APPLICATION supplies.
+                    Absent → noStructuredMemoryRead → null. Fail-closed, not a stub.
+
+4. grant          the resolver applies its read grants BEFORE resolving the bound view, so a
+                    denied key cannot become a field-existence oracle.
+                    Reference: createStructuredMemoryReadViewResolver({ store, grants, executions? })
+                    `grants` defaults to DENIED; `true` or `{ readableKeys }` opens it.
+
+5. snapshot       StructuredMemoryReadView = request ∩ read grants ∩ bound declarations
+                    plain data: key, description, schema, current value. No whole-view revision.
+                    Resolved once per NEW model invocation; a re-entering invocation replays its
+                    persisted information and never re-resolves.
+
+6. selection      AgentInformationInput.memory reaches the AgentInformationCompiler, which
+                    SELECTS from it — all, some, or none. It cannot reach past the snapshot.
+
+7. context        the selected memory appears in that one model invocation's context.
+```
+
+Read authority is **independent of `WriteMemory` authority**: an Execution may have one, both, or
+neither.
+
+### 3.2 The write chain (a model proposing a memory write)
+
+```text
+1. binding        as above. Without it there is no declared field to write.
+
+2. request        AgentSpec.spec.structuredMemory.write.keys — an authored declaration.
+
+3. resolver       createAgentController({ structuredMemoryWriteView: <resolver> })
+                    an ActiveStructuredMemoryWriteViewResolver the APPLICATION supplies.
+                    Absent → noActiveStructuredMemoryWriteView → empty. Fail-closed.
+
+4. exposure       write-exposure authority is applied BEFORE the binding is resolved.
+                    Reference: createStructuredMemoryWriteViewResolver({ store, grants, executions? })
+                    `grants` defaults to DENIED; `true` or `{ writableKeys }` opens it.
+
+5. write view     ActiveStructuredMemoryWriteView = request ∩ exposure grant ∩ bound declarations
+                    METADATA ONLY — key, description, valueSchema. Never current values.
+
+6. projection     the entries enter the model action projection as a write callable
+                    (alias `memory_write_<key>`). The binding owns the key; the model supplies
+                    exactly a `{ value }` wrapper and can never name a different field.
+
+7. proposal       the model selects it; the controller proposes an ordinary WriteMemory Effect.
+
+8. authorization  the Harness authorizes the concrete proposal FRESHLY. A write that was exposed
+                    and selected can still be denied here — exposure is not authorization.
+
+9. confirmation   ConfirmationPolicy may require exact-payload approval; a decline writes nothing.
+
+10. commit        schema validation is runtime-authoritative, `expectedRevision` is checked when
+                    supplied, and the commit is atomic → `memory.written`, or
+                    `memory.write_conflict` on a stale versioned write.
+```
+
+All three of request, exposure grant, and binding are **necessary**; conformance pins that
+(`tests/conformance/memory/structured-memory-model-write.test.ts`). Removing any one leaves the model
+with no write callable at all.
+
+### 3.3 Who can read committed Structured Memory, exactly
+
+```text
+CAN read
+  trusted host / application code
+      Harness.structuredMemoryOf(executionId) → the full committed StructuredMemoryView.
+      Cloned read-only data, not a store handle. It is not a `ReadMemory` Effect, and it is
+      explicitly not available to a controller or to a model context.
+
+  an AgentInformationCompiler
+      AgentInformationInput.memory → the ALREADY-AUTHORIZED StructuredMemoryReadView snapshot
+      for one invocation. Program-readable data, narrowed by §3.1 before it arrives. A
+      replaceable strategy chooses what to render from it; it cannot widen it.
+
+CANNOT read
+  Function Stage code        StageExecutionContext has no memory handle
+  CapabilityExecutor         given no store and no ExecutionContext, by design
+  a generic controller       ExecutionView carries no slot references
+  a spawned/called child     receives no Structured Memory view at all
+```
+
+The practical consequence for design: a deterministic gate over committed facts lives in **host
+code**, or in an `EffectAuthorizer` / `ConfirmationPolicy` the host wired — not in a Function Stage.
+The information compiler is a real programmatic reader, but its input is already narrowed and its job
+is context selection, not application logic.
+
+---
+
+## 4. When your requirement is not directly authorable
 
 Work down this list. **Do not jump to a custom controller** — it is the last option, not the first.
 
@@ -105,7 +216,7 @@ Work down this list. **Do not jump to a custom controller** — it is the last o
 
 ---
 
-## 4. Import surface
+## 5. Import surface
 
 **Application code imports from:**
 
@@ -158,7 +269,7 @@ nothing about how the corresponding production application should be assembled.
 
 ---
 
-## 5. Current-versus-future caveats that affect authoring
+## 6. Current-versus-future caveats that affect authoring
 
 Do not design an application that assumes any of these.
 
@@ -166,6 +277,7 @@ Do not design an application that assumes any of these.
 |---|---|
 | `Artifact/File` | canonical vocabulary, **no** port, store, Effect, or API — see [state and memory](state-memory-and-context.md) |
 | Structured Memory scope beyond Execution-local | not implemented; cross-Execution sharing is application storage |
+| Structured Memory read/write for a model | implemented, but only through the multi-step fail-closed wiring in §3 — never from authored keys alone |
 | Derived Semantic Memory supersession / currentness | no field on the claim record; policy lives outside it |
 | progressive heterogeneous action discovery | roadmap tranche K; what exists is catalog → Active View → immutable projection |
 | MCP beyond synchronous Tools | roadmap tranches I/J |
@@ -179,15 +291,18 @@ open SDK-surface questions are tracked in [`../../future-plan.md`](../../future-
 
 ---
 
-## 6. Deny-by-default defaults are load-bearing
+## 7. Deny-by-default defaults are load-bearing
 
 Several distinct misconfigurations all present as "nothing happened":
 
 ```text
-no EffectAuthorizer            every Effect is denied
-no operationAuthority          the Execution can expose nothing
-no structuralSpawnBudget       the lineage can spawn nothing
-unclassified catalog operation treated as consequential
+no EffectAuthorizer              every Effect is denied
+no operationAuthority            the Execution can expose nothing
+no structuredMemoryReadView      no memory reaches any model context (§3.1)
+no structuredMemoryWriteView     no memory write action is ever offered (§3.2)
+no structuredMemory binding      neither of the above has anything to resolve
+no structuralSpawnBudget         the lineage can spawn nothing
+unclassified catalog operation   treated as consequential
 ```
 
 Each default is correct — "nobody configured it" and "it was allowed" must never look the same — but

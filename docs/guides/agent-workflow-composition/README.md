@@ -72,6 +72,7 @@ Frequent specific questions and their destination:
 "Which import path do I use?"                      current-authoring-surface.md
 "Is Artifact/File available?"                      state-memory-and-context.md
 "Can a Function Stage read committed memory?"      state-memory-and-context.md
+"My Agent sees no memory / cannot write"            current-authoring-surface.md
 "Does this action need confirmation?"              capabilities-effects-and-authority.md
 "Does this Effect have a deadline?"                capabilities-effects-and-authority.md
 "How does a child Agent return its result?"        composition-children-and-concurrency.md
@@ -109,7 +110,9 @@ you pick decides whether the mechanism named here is authorable from it.
 | A value only a person can supply | **`RequestUserInput`** — not emittable by a stock Agent or Stage | [surface](current-authoring-surface.md) |
 | Talking to an existing Execution | **`SendMessage`** — not emittable by a stock Agent or Stage | [surface](current-authoring-surface.md) |
 | Multi-turn conversation | **Agent** Execution. A stock Workflow consumes `external.input` only once | [surface](current-authoring-surface.md) |
-| Reading committed facts in code | **host code** via `Harness.structuredMemoryOf`. Neither Stage code nor a `CapabilityExecutor` can read memory | [state](state-memory-and-context.md) |
+| Inspecting committed facts from application code | **host code** via `Harness.structuredMemoryOf`. Stage code and a `CapabilityExecutor` have no memory handle | [state](state-memory-and-context.md) |
+| Getting committed facts into a model's context | the read chain: binding + authored `read.keys` + a configured read-view resolver + grants; the compiler then selects from the authorized snapshot | [surface](current-authoring-surface.md) |
+| Letting a model propose a memory write | the write chain: binding + authored `write.keys` + a configured write-view resolver + exposure grant; then fresh `WriteMemory` authorization | [surface](current-authoring-surface.md) |
 | Getting work back from a child | the child's **terminal result**, or an application-defined external mechanism | [composition](composition-children-and-concurrency.md) |
 | Large durable work product | **application-owned storage** reached through a capability. `Artifact/File` is canonical vocabulary with **no** 0.8.x mechanism | [state](state-memory-and-context.md) |
 | Must survive context resets | Structured Memory / application-owned durable store — never only the transcript | [state](state-memory-and-context.md) |

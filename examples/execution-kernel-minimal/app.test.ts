@@ -12,7 +12,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { effectRequestsIn } from "@arrokothi/core/execution";
-import { DOCS_SEARCH, createApp, deniedScript, handbookAuthorizer, modelScript, supportAgent } from "./app.ts";
+import { DOCS_SEARCH, createApp, handbookAuthorizer, modelScript, supportAgent } from "./app.ts";
 import type { App } from "./app.ts";
 
 const QUESTION = "What is our refund policy?";
@@ -22,6 +22,8 @@ async function run(app: App): Promise<{
   readonly phases: readonly string[];
   readonly proposals: number;
   readonly answer: string | undefined;
+  /** What the Harness put in front of the model before its final answer. */
+  readonly shown: string;
 }> {
   const executionId = await app.start(QUESTION);
   const context = await app.settle(executionId);
@@ -32,6 +34,7 @@ async function run(app: App): Promise<{
     phases: journal.map((entry) => entry.phase),
     proposals: effectRequestsIn(journal).length,
     answer: emissions.flatMap((e) => (e.body.kind === "text" ? [e.body.text] : [])).at(-1),
+    shown: String(app.provider.requests.at(-1)?.messages.at(-1)?.content ?? ""),
   };
 }
 
@@ -54,24 +57,36 @@ describe("the minimal Execution-kernel example", () => {
     assert.equal(result.phases.includes("denied"), false, "policy allowed it");
     assert.ok(result.phases.includes("dispatch_started"), `dispatched, got ${result.phases.join(",")}`);
     assert.ok(result.phases.includes("completed"), `completed, got ${result.phases.join(",")}`);
-    assert.match(result.answer ?? "", /supervisor/, "the Agent answered from the handbook result");
+    assert.match(result.shown, /supervisor/, "and the handbook entry is what the model was shown");
   });
 
   test("deny-by-default: with no authorizer the same request is refused and nothing dispatches", async () => {
-    const result = await run(createApp({ modelSteps: [...deniedScript()] }));
+    const result = await run(createApp({ modelSteps: [...modelScript()] }));
 
     assert.equal(result.proposals, 1, "the controller still proposed - requesting is not permission");
     assert.ok(result.phases.includes("denied"), `denied, got ${result.phases.join(",")}`);
     assert.equal(result.phases.includes("dispatch_started"), false, "nothing reached the executor");
     assert.equal(result.phases.includes("completed"), false, "and nothing completed");
-    assert.doesNotMatch(result.answer ?? "", /supervisor/, "and the Agent quoted no policy it never read");
+    assert.doesNotMatch(result.shown, /supervisor/, "and no handbook content ever reached the model");
   });
 
-  test("the two runs differ only in policy, so the difference is attributable to the Harness", async () => {
+  test("the two runs differ ONLY in policy: same script, same answer, different journal", async () => {
     const permitted = await run(createApp({ authorizer: handbookAuthorizer(), modelSteps: [...modelScript()] }));
-    const unconfigured = await run(createApp({ modelSteps: [...deniedScript()] }));
+    const unconfigured = await run(createApp({ modelSteps: [...modelScript()] }));
 
+    // Held constant: the model's behaviour, right down to the words it produced.
     assert.equal(permitted.proposals, unconfigured.proposals, "the same Effect was proposed both times");
-    assert.notDeepEqual(permitted.phases, unconfigured.phases, "and only the journal diverged");
+    assert.equal(permitted.answer, unconfigured.answer, "and the same scripted model said the same thing");
+
+    // Diverged: only what the Harness did, and therefore what the model was shown.
+    assert.notDeepEqual(permitted.phases, unconfigured.phases, "the journal is where the runs differ");
+    assert.notEqual(permitted.shown, unconfigured.shown, "as is the observation the model received");
+  });
+
+  test("an identical confident answer proves nothing; the journal does", async () => {
+    const unconfigured = await run(createApp({ modelSteps: [...modelScript()] }));
+
+    assert.match(unconfigured.answer ?? "", /supervisor/, "the model asserted a policy...");
+    assert.equal(unconfigured.phases.includes("dispatch_started"), false, "...having looked nothing up");
   });
 });

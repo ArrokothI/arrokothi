@@ -100,10 +100,12 @@ this?" — it is "**is there a mechanism that establishes the exact truth, and a
 
 Concretely: if the specification says *"never hand off without a phone number"*, the enforcement is
 a `phone` field with a schema **plus an exact gate that reads the committed value**. Note where that
-gate can live today: **no controller-side code can read Structured Memory**, so the gate is host code
-reading `Harness.structuredMemoryOf`, or an `EffectAuthorizer` / `ConfirmationPolicy` that refuses
-the handoff Effect until the host's gate has passed. See
-[current authoring surface](current-authoring-surface.md) for why, and
+gate can live today: **ordinary Function Stage code and capability implementations have no Structured
+Memory handle**, so the gate is host code reading `Harness.structuredMemoryOf`, or an
+`EffectAuthorizer` / `ConfirmationPolicy` the host wired that refuses the handoff Effect until its
+gate has passed. (An `AgentInformationCompiler` also receives an already-authorized memory snapshot,
+but its job is choosing model context, not enforcing application rules.) See
+[current authoring surface §3](current-authoring-surface.md) for the exact chain, and
 [state and memory](state-memory-and-context.md) for who can read what. The instruction telling the
 model to collect a phone number is a helpful restatement; it is not the requirement's implementation.
 
@@ -193,9 +195,11 @@ LLM               explain the computed result it was given
 
 Two implementation facts shape where each job can live today:
 
-- the computation reads committed Structured Memory, and **only host code can do that**
-  (`Harness.structuredMemoryOf`) — neither a Function Stage nor a `CapabilityExecutor` is given a
-  memory handle. See [state and memory](state-memory-and-context.md);
+- the computation reads committed Structured Memory, and **neither a Function Stage nor a
+  `CapabilityExecutor` is given a memory handle**, so it belongs in host code via
+  `Harness.structuredMemoryOf`. (The other programmatic reader, an `AgentInformationCompiler`,
+  receives an already-authorized snapshot for building model context — not a place for the
+  calculation.) See [state and memory](state-memory-and-context.md);
 - the explaining model must be *given* the number, not asked to produce it.
 
 The model never performs the arithmetic and never becomes the unchecked source of a retained fact

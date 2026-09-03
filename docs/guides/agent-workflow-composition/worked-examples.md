@@ -56,6 +56,12 @@ Agent spec
   structuredMemory.write.keys  the fields the model may propose
   completion: respond_and_wait       a response is communication, not termination
 
+application wiring the memory keys REQUIRE (they grant nothing on their own)
+  createAgentController({ structuredMemoryReadView, structuredMemoryWriteView })
+    both resolvers are application-supplied and denied by default; omit either and the
+    model silently sees no memory / is offered no write action. Full chain in
+    current-authoring-surface.md §3.
+
 per turn (host loop)
   harness.deliverExternalInput({ destination, label: "user", payload: text })
   harness.runUntilIdle() / drainResumptions()
@@ -74,6 +80,10 @@ the consequential handoff
     idempotency too
 ```
 
+> Every memory write the model proposes still goes through fresh `WriteMemory` authorization at the
+> Harness, then schema validation, then commit. Exposing a write interface is not authorizing a
+> write — see [current authoring surface §3.2](current-authoring-surface.md).
+
 Why this shape: the progression *is* knowable, but the knowable part is the **gate**, not the
 conversation, and the gate is what must be deterministic. Putting it in host code and in the
 `EffectAuthorizer` makes it exact and Harness-enforced — strictly stronger than a Workflow
@@ -90,8 +100,9 @@ record capability is enough), no Working Notes (nothing to keep that is not alre
 or in the transcript).
 
 Related: [capabilities and authority](capabilities-effects-and-authority.md) for the denial and
-confirmation gates; [state and memory](state-memory-and-context.md) for who can read committed
-values.
+confirmation gates; [current authoring surface §3](current-authoring-surface.md) for the memory
+wiring this example assumes; [state and memory](state-memory-and-context.md) for who can read
+committed values.
 
 ---
 
@@ -179,11 +190,16 @@ language interpretation  +  accepted factual state  +  deterministic calculation
 3. accepted values are committed to Structured Memory
      schema-bound WriteMemory — from the Agent's model-facing write action,
      or from a Function Stage request. NOT from an LLM Stage.
+     For the Agent path this needs the whole write chain: the Execution's memory binding,
+     the authored write.keys, a configured structuredMemoryWriteView resolver that grants
+     them, and then fresh Harness authorization of the concrete write. Authored keys alone
+     produce no write action at all.
 
 4. deterministic calculation over the COMMITTED values
      host code, reading Harness.structuredMemoryOf.
-     Neither a Function Stage nor a CapabilityExecutor can read Structured Memory,
-     so this is host work unless the inputs are already in hand.
+     A Function Stage and a CapabilityExecutor have no memory handle, so this is host work
+     unless the inputs are already in hand. (An AgentInformationCompiler does receive an
+     authorized snapshot, but it builds model context — it is not where a calculation belongs.)
 
 5. the LLM explains the number it was GIVEN
      deliver the computed result as external.input to the Agent, or pass it as the
@@ -203,8 +219,8 @@ Two tests for this pattern:
   step 2 missing.
 
 Related: [requirements and control](requirements-and-control.md) for the four-step acceptance
-sequence; [current authoring surface](current-authoring-surface.md) for why step 3 excludes an LLM
-Stage and step 4 excludes Stage code.
+sequence; [current authoring surface §3](current-authoring-surface.md) for the memory wiring steps 3
+and 4 depend on, why step 3 excludes an LLM Stage, and why step 4 excludes Stage code.
 
 ---
 

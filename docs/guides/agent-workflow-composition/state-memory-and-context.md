@@ -85,24 +85,62 @@ and **not implemented** (§5). Not something you can build on today.
 **External application state** — your database. The kernel does not want to own it, and today it is
 where large durable work products and any cross-Execution shared state actually live.
 
+### Storing memory is not the same as anyone being able to read it
+
+Structured Memory has seven distinct steps between "the application has a fact" and "a model acts on
+it", and each one fails closed:
+
+```text
+storage / binding      Harness.createExecution({ structuredMemory: { fields } })
+request                AgentSpec.spec.structuredMemory.read.keys / .write.keys — declarations
+view resolution        an application-supplied resolver, denied by default
+grant                  request ∩ grant ∩ bound declarations
+model exposure         the authorized snapshot, or the write callable, enters one invocation
+write proposal         the model selects; the controller proposes WriteMemory
+Effect authorization   the Harness authorizes the concrete proposal, freshly
+commit                 schema and revision checks, then an atomic commit
+```
+
+The exact resolver names, defaults, and ordering are in
+[current authoring surface §3](current-authoring-surface.md), which is where the operational wiring
+lives. Two rules from that chain matter for classification here:
+
+> **memory ≠ context.** A committed value exists whether or not any model call ever sees it.
+> Reaching a model context requires the read chain, and a compiler still selects from the result.
+
+> **exposure ≠ authority.** A write interface being visible to a model does not mean the resulting
+> `WriteMemory` will be authorized. The Harness decides that again, on the concrete proposal.
+
 ### Who can read committed Structured Memory
 
-This decides more designs than the classification itself:
+Two programmatic readers exist, and they are different things:
 
 ```text
 CAN read
-  the model, via an Agent's spec.structuredMemory.read.keys   → into model context only
-  host code, via Harness.structuredMemoryOf(executionId)      → the only programmatic read
+  trusted host / application code
+      Harness.structuredMemoryOf(executionId) → the full committed view, as cloned read-only
+      data. General inspection: not an Effect, and not reachable from a controller or a model
+      context.
+
+  an AgentInformationCompiler
+      AgentInformationInput.memory → the ALREADY-AUTHORIZED snapshot for one invocation,
+      narrowed by the read chain before it arrives. A replaceable strategy selects what to
+      render from it and cannot widen it.
+
+  (and the model itself sees only what that compiler selected)
 
 CANNOT read
   Function Stage code    — StageExecutionContext has no memory handle
   CapabilityExecutor     — given no store and no ExecutionContext, by design
+  a generic controller   — ExecutionView carries no slot references
   a spawned/called child — it receives no Structured Memory view at all
 ```
 
-So "the program checks the committed facts" is host work today. Plan for it explicitly rather than
-discovering it when a Function Stage has nothing to read. See
-[current authoring surface](current-authoring-surface.md).
+The design consequence: **a deterministic gate over committed facts is host work**, or work done by
+an `EffectAuthorizer` / `ConfirmationPolicy` the host wired — not a Function Stage. The information
+compiler is a genuine programmatic reader, but its input is already narrowed and its job is context
+selection, not application logic. Plan for this explicitly rather than discovering it when a Function
+Stage has nothing to read.
 
 ---
 
