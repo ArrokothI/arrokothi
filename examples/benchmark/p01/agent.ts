@@ -116,7 +116,13 @@ export function createP01AgentDefinition(): AgentDefinition {
       },
       limits: {
         maxModelCalls: 32,
-        maxOperationCallsPerStep: 3,
+        // A fully-specified opening turn ("300 sq ft exterior wall, 3-inch interior layer, what
+        // volume?") legitimately needs one step to emit all three `memory_write` calls (context,
+        // area, thickness) plus the single `hempcrete.estimate_volume` call = 4 actions. The former
+        // ceiling of 3 hard-failed that step (`agent_action_fanout_exceeded`); 5 covers the 4 real
+        // actions with one slot of slack for a stochastic redundant call, and P02 raised its own
+        // ceiling for the same reason (see `p02/BUILDER_NOTES.md` §4).
+        maxOperationCallsPerStep: 5,
         maxContextMessages: 24,
       },
       completion: "respond_and_wait",

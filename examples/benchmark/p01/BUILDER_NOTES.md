@@ -34,7 +34,19 @@ number as `external.input`) would close that gap but needs the host to also own 
 For P01 the capability path is the better cost/benefit; noting the seam. Classification: documented
 design constraint, not a gap.
 
-## 4. `GeminiModelProviderOptions` has no `model` field
+## 4. `maxOperationCallsPerStep` must cover writes + capability calls in one step
+
+A fully-specified opening turn ("300 sq ft exterior wall, 3-inch interior layer, what volume?")
+needs the model to emit three `memory_write` calls (context, area, thickness) **and** the single
+`hempcrete.estimate_volume` call in one step — 4 actions. The initial ceiling of `3` made the
+reference agent executor hard-fail that step with `agent_action_fanout_exceeded`, aborting the
+scenario. Raised to `5` (4 real actions + one slot of slack). Unlike the silent truncation P02 hit
+(§4 of `p02/BUILDER_NOTES.md`), this one *did* surface as a step failure that reached the runner, so
+the observability is better here; the ergonomic point is that the per-step ceiling has to be sized
+against `|memory writes| + |capability calls|` for the busiest single turn, not just the number of
+distinct operations. Classification: ergonomics / example-coverage.
+
+## 5. `GeminiModelProviderOptions` has no `model` field
 
 The concrete model name is only carried through the `StaticModelResolver` mapping and reaches the
 provider per-request. Passing `model` to `createGeminiModelProviderFromEnv` is a type error. This is
