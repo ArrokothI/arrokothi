@@ -29,6 +29,8 @@ export interface P01CliResponse {
   readonly conversation: P01SessionResult["conversation"];
   readonly turns: P01SessionResult["turns"];
   readonly projectState: P01SessionResult["projectState"];
+  /** BENCHMARK-DIAGNOSTIC. Runtime-derived model-call accounting; not part of the conversation. */
+  readonly diagnostics: P01SessionResult["diagnostics"];
 }
 
 function asObject(value: unknown, label: string): Record<string, unknown> {
@@ -109,5 +111,6 @@ export function formatP01Response(result: P01SessionResult): P01CliResponse {
     conversation: result.conversation,
     turns: result.turns,
     projectState: result.projectState,
+    diagnostics: result.diagnostics,
   };
 }

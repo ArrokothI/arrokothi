@@ -95,7 +95,7 @@ export function createP02AgentDefinition(): AgentDefinition {
         write: { keys: [...P02_MEMORY_KEYS] },
       },
       limits: {
-        maxModelCalls: 10,
+        maxModelCalls: 48,
         maxOperationCallsPerStep: 8,
         maxContextMessages: 32,
       },

@@ -8,6 +8,7 @@
     "./agent": "./agent.ts",
     "./app": "./app.ts",
     "./volume": "./volume.ts",
+    "./pace": "./pace.ts",
     "./protocol": "./protocol.ts"
   },
   "dependencies": {

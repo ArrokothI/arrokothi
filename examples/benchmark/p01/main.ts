@@ -13,6 +13,7 @@ import { validateDefinition } from "@arrokothi/core/execution";
 import { createGeminiModelProviderFromEnv } from "@arrokothi/provider-gemini";
 import { createP01AgentDefinition } from "./agent.ts";
 import { createP01App } from "./app.ts";
+import { benchmarkRpmFromEnv, createPacedFetch } from "./pace.ts";
 import { formatP01Response, parseP01CliRequest } from "./protocol.ts";
 import { runP01Session } from "./subject.ts";
 
@@ -34,6 +35,7 @@ if (process.argv.includes("--check")) {
         subject: "p01",
         agentId: definition.id,
         model: definition.spec.model,
+        limits: definition.spec.limits ?? {},
         operations: definition.spec.operations?.refs ?? [],
         memoryKeys: {
           read: definition.spec.structuredMemory?.read?.keys ?? [],
@@ -53,8 +55,16 @@ if (process.argv.includes("--check")) {
     }
     const request = parseP01CliRequest(JSON.parse(raw) as unknown);
     const modelName = request.generation?.model ?? process.env["GEMINI_MODEL"] ?? DEFAULT_MODEL;
+    // Benchmark deployment plumbing: when the runner supplies an RPM budget, pace every outgoing
+    // Gemini HTTP request (retries included) and hand retry responsibility to the outer runner,
+    // which already has bounded retry, backoff, and resumable checkpointing. No effect on request
+    // content, responses, prompts, or any application decision. Unset outside the benchmark.
+    const benchmarkRpm = benchmarkRpmFromEnv();
     const provider = createGeminiModelProviderFromEnv({
       id: "gemini",
+      ...(benchmarkRpm > 0
+        ? { fetchImpl: createPacedFetch({ rpm: benchmarkRpm }), maxRetries: 0 }
+        : {}),
       ...(request.generation?.temperature !== undefined
         ? { temperature: request.generation.temperature }
         : {}),

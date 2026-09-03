@@ -327,6 +327,73 @@ describe("synthetic probe B — intent flips, email declined, one handoff", () =
   });
 });
 
+describe("the Execution-lifetime model-call budget", () => {
+  test("the definition ceiling is high enough for a long qualification conversation", () => {
+    const ceiling = createP02AgentDefinition().spec.limits?.maxModelCalls ?? 0;
+    // Derived from synthetic measurement: a clean qualification session spends ~2.5 model calls per
+    // turn (a write plus a response, plus a grounding search / handoff round-trip on some turns).
+    // This ceiling covers a long conversation with corrections and re-searches, absorbs one
+    // pathological multi-fact turn, and still bounds a runaway loop.
+    assert.ok(ceiling >= 32, `expected a healthy multi-turn ceiling, got ${ceiling}`);
+  });
+
+  test("diagnostics report the real model-call count, per turn and in total", async () => {
+    const { app } = scriptedApp([
+      writes({ intent: "buy", location: "Tribeca" }),
+      search({ location: "Tribeca" }),
+      respond("Here is a Tribeca listing. What's your budget?"),
+      writes({ budget: "3M" }),
+      respond("Noted. Timeline?"),
+    ]);
+    const result = await runP02Session(app, [
+      { message: "Buying in Tribeca." },
+      { message: "Budget about 3 million." },
+    ]);
+    assert.deepEqual(result.diagnostics.modelCallsByTurn, [3, 2]);
+    assert.equal(result.diagnostics.totalModelCalls, 5);
+    assert.equal(
+      result.diagnostics.maxModelCalls,
+      createP02AgentDefinition().spec.limits?.maxModelCalls,
+    );
+  });
+
+  test("a long synthetic qualification session stays under the ceiling and answers every turn", async () => {
+    const steps: ScriptedModelStep[] = [];
+    const turns: { message: string }[] = [];
+    for (let i = 0; i < 14; i++) {
+      steps.push(writes({ budget: `${1_000_000 + i * 50_000}` }));
+      steps.push(respond(`Recorded a budget update. What else can I help with? (turn ${i + 1})`));
+      turns.push({ message: `Change my budget to ${1_000_000 + i * 50_000}.` });
+    }
+    const result = await runP02Session(scriptedApp(steps).app, turns);
+    for (const turn of result.turns) {
+      assert.equal(turn.lifecycle, "WAITING", `turn ${turn.turn} kept waiting`);
+      assert.ok(turn.assistant.trim().length > 0, `turn ${turn.turn} answered`);
+    }
+    assert.equal(result.lead["budget"], "1650000", "the last correction wins");
+    assert.ok(
+      result.diagnostics.totalModelCalls < result.diagnostics.maxModelCalls,
+      `spent ${result.diagnostics.totalModelCalls} of ${result.diagnostics.maxModelCalls}`,
+    );
+  });
+
+  test("exhausting the lifetime budget fails loudly rather than emitting empty turns", async () => {
+    const ceiling = createP02AgentDefinition().spec.limits?.maxModelCalls ?? 0;
+    const steps: ScriptedModelStep[] = [];
+    const turns: { message: string }[] = [];
+    for (let i = 0; i < ceiling + 3; i++) {
+      steps.push(respond(`answer ${i + 1}`));
+      turns.push({ message: `question ${i + 1}` });
+    }
+    await assert.rejects(
+      runP02Session(scriptedApp(steps).app, turns),
+      (error: Error) =>
+        error.message.includes(`turn ${ceiling + 1}`) &&
+        error.message.includes("agent_model_call_budget_exhausted"),
+    );
+  });
+});
+
 describe("no hidden model calls", () => {
   test("runtime files only wire the injected provider", async () => {
     for (const file of ["main.ts", "app.ts", "subject.ts", "agent.ts", "properties.ts", "email.ts", "lead.ts"]) {

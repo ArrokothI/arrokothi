@@ -30,6 +30,8 @@ export interface P02CliResponse {
   readonly turns: P02SessionResult["turns"];
   readonly lead: P02SessionResult["lead"];
   readonly handoff: P02SessionResult["handoff"];
+  /** BENCHMARK-DIAGNOSTIC. Runtime-derived model-call accounting; not part of the conversation. */
+  readonly diagnostics: P02SessionResult["diagnostics"];
 }
 
 function asObject(value: unknown, label: string): Record<string, unknown> {
@@ -111,5 +113,6 @@ export function formatP02Response(result: P02SessionResult): P02CliResponse {
     turns: result.turns,
     lead: result.lead,
     handoff: result.handoff,
+    diagnostics: result.diagnostics,
   };
 }

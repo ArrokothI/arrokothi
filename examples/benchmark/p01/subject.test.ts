@@ -163,6 +163,92 @@ describe("deny-by-default authority", () => {
   });
 });
 
+describe("the Execution-lifetime model-call budget", () => {
+  test("the definition ceiling is high enough for a long consultative conversation", () => {
+    const ceiling = createP01AgentDefinition().spec.limits?.maxModelCalls ?? 0;
+    // Derived from synthetic measurement (a loaded 8-turn stress session spends ~14 model calls);
+    // this leaves generous headroom for a longer conversation with several corrections and volume
+    // recomputes while still bounding a runaway loop.
+    assert.ok(ceiling >= 24, `expected a healthy multi-turn ceiling, got ${ceiling}`);
+  });
+
+  test("diagnostics report the real model-call count, per turn and in total", async () => {
+    const { app } = scriptedApp([
+      write("construction_context", "wall"),
+      respond("Noted a wall. What's the area in square feet?"),
+      write("wall_area_sq_ft", 420),
+      write("layer_thickness_in", 8),
+      callEstimate(420, 8),
+      respond("About 7.93 m3. Is this new-build infill?"),
+    ]);
+    const result = await runP01Session(app, [
+      { message: "I'm building a wall." },
+      { message: "420 sq ft, 8 inch layer." },
+    ]);
+    assert.deepEqual(result.diagnostics.modelCallsByTurn, [2, 4]);
+    assert.equal(result.diagnostics.totalModelCalls, 6);
+    assert.equal(
+      result.diagnostics.maxModelCalls,
+      createP01AgentDefinition().spec.limits?.maxModelCalls,
+    );
+    assert.deepEqual(
+      result.turns.map((t) => t.modelCalls),
+      [2, 4],
+    );
+  });
+
+  test("a long synthetic session stays under the ceiling with a non-empty answer every turn", async () => {
+    // 14 turns, ~2 model calls each (one write + one response), well within the ceiling.
+    const steps: ScriptedModelStep[] = [];
+    const turns: { message: string }[] = [];
+    for (let i = 0; i < 14; i++) {
+      steps.push(write("wall_area_sq_ft", 300 + i));
+      steps.push(respond(`Recorded ${300 + i} sq ft. What thickness are you planning? (turn ${i + 1})`));
+      turns.push({ message: `The area is now ${300 + i} square feet.` });
+    }
+    const result = await runP01Session(scriptedApp(steps).app, turns);
+    for (const turn of result.turns) {
+      assert.equal(turn.lifecycle, "WAITING", `turn ${turn.turn} kept waiting for input`);
+      assert.ok(turn.assistant.trim().length > 0, `turn ${turn.turn} answered`);
+    }
+    assert.equal(result.projectState["wall_area_sq_ft"], 313, "the last correction wins");
+    assert.ok(
+      result.diagnostics.totalModelCalls < result.diagnostics.maxModelCalls,
+      `spent ${result.diagnostics.totalModelCalls} of ${result.diagnostics.maxModelCalls}`,
+    );
+  });
+
+  test("the ceiling is per Execution, not per turn: it does not reset on external input", async () => {
+    const ceiling = createP01AgentDefinition().spec.limits?.maxModelCalls ?? 0;
+    // One model call per turn. If the budget reset on each external input this would never exhaust.
+    // Instead it must exhaust exactly when the lifetime count reaches the ceiling — and the runner
+    // surfaces that as a loud error rather than a run of empty assistant turns.
+    const steps: ScriptedModelStep[] = [];
+    const turns: { message: string }[] = [];
+    for (let i = 0; i < ceiling + 3; i++) {
+      steps.push(respond(`answer ${i + 1}`));
+      turns.push({ message: `question ${i + 1}` });
+    }
+    await assert.rejects(
+      runP01Session(scriptedApp(steps).app, turns),
+      (error: Error) =>
+        error.message.includes(`turn ${ceiling + 1}`) &&
+        error.message.includes("agent_model_call_budget_exhausted"),
+    );
+  });
+
+  test("a session that ends WAITING every turn never throws", async () => {
+    const steps: ScriptedModelStep[] = [];
+    const turns: { message: string }[] = [];
+    for (let i = 0; i < 10; i++) {
+      steps.push(respond(`ok ${i + 1}`));
+      turns.push({ message: `q ${i + 1}` });
+    }
+    const result = await runP01Session(scriptedApp(steps).app, turns);
+    assert.equal(result.turns.every((t) => t.lifecycle === "WAITING" && t.assistant), true);
+  });
+});
+
 describe("no hidden model calls", () => {
   test("main.ts and app.ts only wire the injected provider", async () => {
     for (const file of ["main.ts", "app.ts", "subject.ts", "agent.ts"]) {
