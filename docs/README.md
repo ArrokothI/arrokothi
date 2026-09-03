@@ -27,6 +27,8 @@ Supporting material:
 |---|---|
 | [`product-vision.md`](product-vision.md) | cross-repository ArrokothI product direction: heterogeneous Agent application composition, Studio/Cloud direction, ecosystem/adoption/business posture; **not canonical kernel architecture** |
 | [`development/`](development/) | current implementation synthesis, active roadmap, and specialized engineering guidance; historical records are routed through `development/legacy/` |
+| [`guides/`](guides/README.md) | application/developer guidance for building **on** the kernel — decision procedures for composing Agents and Workflows from application requirements; **not canonical kernel architecture** |
+| [`agent-engineering/`](agent-engineering/README.md) | framework-neutral external engineering guidance synthesized from public Anthropic material; a design reference for agent/workflow engineering, **never ArrokothI semantics** |
 | [`architecture-research-dossier.md`](architecture-research-dossier.md) | retained non-canonical research/source dossier; useful evidence and external-system survey |
 | [`research/`](research/) | focused, non-canonical protocol/system comparisons and experiment directions outside the active implementation sequence; includes MCP semantic mapping and Agent caching research |
 
@@ -49,6 +51,21 @@ product-vision
 ```
 
 Then return to the canonical concept owner before changing kernel semantics.
+
+### Building an application on ArrokothI?
+
+Start from the application decision procedure, then descend into the canonical owners it cites:
+
+```text
+guides/agent-workflow-composition
+        ↓
+mental-model → composition → memory → authority
+        ↓
+development/002-implemented-kernel-baseline    (what is actually implemented)
+```
+
+`agent-engineering/` supplies the framework-neutral engineering reasoning that guide translates.
+Neither the guide nor `agent-engineering/` owns a kernel concept.
 
 ### Building/composing Agents and Workflows?
 
@@ -191,6 +208,12 @@ product-vision.md
 
 development/
   owns implementation work-in-progress, not architecture truth
+
+guides/
+  owns application-building decision procedures only, never kernel semantics
+
+agent-engineering/
+  external framework-neutral engineering guidance only, never kernel semantics
 
 architecture-research-dossier.md
   retained research evidence only, never canonical truth
