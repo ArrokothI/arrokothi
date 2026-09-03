@@ -101,6 +101,16 @@ Invariant to preserve:
 
 > **Ambiguous shared-state writes must not silently become timing-dependent last-write-wins.**
 
+Slice G.1 (`development/025-slice-g1-minimal-workflow-fork-join.md`) implemented the narrowest honest
+proof of the first three items: authored `{ to: "fork" }` / `{ to: "join" }` topology, one
+branch-local `WorkflowParallelState` record per branch (its own visit, input snapshot, progress, and
+result), an explicit join as a distinct controller step that exposes an immutable authored-order
+`WorkflowJoinContext` to one downstream Function Stage, deterministic result/failure ordering, and a
+`parallel_branch_effects_unsupported` fail-closed for a branch that returns `awaitEffects`. It is
+reference-implementation evidence, not a frozen API: a G.1 branch body is exactly one Function Stage,
+and branch Effects/resumptions, multi-Stage branches, nested forks, branch loops, reducers, merge,
+cancellation propagation, and branch Working Notes all remain open (G.2/G.3).
+
 ### 1.4 Shared mutable resources
 
 Concrete resource/memory APIs may need:

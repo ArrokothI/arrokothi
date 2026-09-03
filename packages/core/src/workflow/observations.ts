@@ -20,6 +20,8 @@
 
 import type { JsonObject, JsonValue } from "../util/json.ts";
 import type { EffectIdempotencyScope } from "../effects/fingerprint.ts";
+import type { BranchId, ForkId, StageId } from "./spec.ts";
+import type { StageResult } from "./stage-result.ts";
 
 /**
  * A capability request a Stage body wants performed.
@@ -109,6 +111,33 @@ export type StageObservation = StageCapabilityObservation | StageMemoryWriteObse
 
 export function isSuccessfulObservation(observation: StageObservation): boolean {
   return observation.outcome === "completed";
+}
+
+// -- explicit join surface (Slice G.1) ------------------------------------------
+
+/**
+ * One branch's final result, as the downstream Stage sees it at the join.
+ *
+ * This is a *value*, not a handle: the downstream Stage receives each branch's final `text | none`
+ * result plus its authored identity, and never a reference to branch progress or branch internals.
+ */
+export interface WorkflowJoinedBranchResult {
+  readonly branchId: BranchId;
+  readonly stageId: StageId;
+  readonly result: StageResult;
+}
+
+/**
+ * The read-only snapshot a fork's explicit join hands to its immediate downstream Function Stage.
+ *
+ * `branches` is in authored branch order - never completion order. It is `null` for every ordinary
+ * Stage visit and present only on the visit a join created. The downstream Stage's ordinary `input`
+ * is still the fork's original incoming `StageResult`; this carries the parallel results alongside
+ * it without changing the `text | none` cross-Stage contract.
+ */
+export interface WorkflowJoinContext {
+  readonly forkId: ForkId;
+  readonly branches: readonly WorkflowJoinedBranchResult[];
 }
 
 /** The observation for one Stage-local key, if it settled during this visit. */

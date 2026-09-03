@@ -64,6 +64,29 @@
  * The persisted position is what makes the second Activation cheap and correct. It records that the
  * Stage body already ran, which Adapter to run next, and which transition the body chose, so
  * resuming re-runs exactly the work that did not finish and nothing else.
+ *
+ * ## Parallel branches (Slice G.1)
+ *
+ * A Stage transition may resolve to `{ to: "fork" }`. The controller then installs an active fork in
+ * `WorkflowControlState.parallel` - one branch-local record per authored branch, each with its own
+ * visit, its own snapshot of the fork input, and its own progress - and yields. Nothing about a
+ * branch is an Execution: no id, no lifecycle, no mailbox, no authority, no child link.
+ *
+ * ```text
+ * Activation N     Stage A completes -> install the fork -> persist -> continue
+ * Activation N+1   run every branch Function body, overlapping in wall-clock time,
+ *                  then fold results in authored order -> persist joinReady -> continue
+ *                  (Stage D has not run)
+ * Activation N+2   explicit join: enter Stage D with the fork input as its ordinary input
+ *                  and the immutable branch results as context.join -> clear the fork
+ * ```
+ *
+ * The branch bodies run concurrently inside one Activation via `Promise.all`, but the controller
+ * mutates no shared state while they run: each computes from its own immutable snapshot and returns
+ * data, and the single serialized commit happens afterwards. Completion timing never decides
+ * ordering - branch results and the primary failure are always taken in authored branch order. A
+ * branch that returns `awaitEffects` fails the Workflow with a G.1-specific unsupported-semantics
+ * code; branch Effects, branch resumptions, and multi-Stage branches are G.2/G.3 work.
  */
 
 import type { DefinitionKind } from "../../definitions/types.ts";
@@ -89,10 +112,14 @@ import type {
   ChildBarrierOutcome,
   WorkflowBoundaryState,
   WorkflowControlState,
+  WorkflowParallelBranchState,
+  WorkflowParallelState,
 } from "../../workflow/control-state.ts";
 import {
   childBarrierEntry,
   initialWorkflowControlState,
+  installFork,
+  joinContextOf,
   observationsOf,
   readWorkflowControlState,
   settleBarrierEntry,
@@ -107,9 +134,11 @@ import type {
   StageDefinition,
   StageId,
   TransitionTarget,
+  WorkflowForkDefinition,
   WorkflowSpec,
   WorkflowStageDefinition,
 } from "../../workflow/spec.ts";
+import { findFork } from "../../workflow/spec.ts";
 import type { StageResult } from "../../workflow/stage-result.ts";
 import { validateWorkflowSpec } from "../../workflow/validation.ts";
 import { runAdapterChain } from "./adapters.ts";
@@ -139,6 +168,12 @@ interface Failure {
   readonly message: string;
   readonly details?: JsonValue;
 }
+
+/** How one G.1 parallel branch Function body settled, in controller-local terms. */
+type BranchRun =
+  | { readonly kind: "already" }
+  | { readonly kind: "completed"; readonly result: StageResult; readonly progress: JsonObject }
+  | { readonly kind: "fail"; readonly code: string; readonly message: string };
 
 type StepOutcome =
   | { readonly kind: "awaitEffects"; readonly state: WorkflowControlState; readonly proposals: readonly EffectProposal[]; readonly emissions: readonly EmissionProposal[] }
@@ -312,13 +347,20 @@ class WorkflowController implements ExecutionController {
     const spec = validation.spec;
 
     const persisted = readWorkflowControlState(input.execution.control.progress);
+
+    // An active fork routes before anything else: what the Workflow is doing lives in its
+    // branch-local `parallel` state, not in `currentStage`, `barrier`, or `boundary`.
+    if (persisted && persisted.parallel !== null) {
+      return this.finish(await this.advanceParallel(spec, persisted, input, resumptions));
+    }
+
     let state: WorkflowControlState;
     if (persisted) {
       state = this.collect(persisted, input.events);
     } else {
       // First Activation: install the entry Stage, which runs its input Adapters. An Adapter that
       // rejects here resolves through the same predefined policy as one anywhere else.
-      const entered = await this.enterStage(spec, spec.entryStage, startInput(input.events), 1, 0, resumptions);
+      const entered = await this.enterStage(spec, spec.entryStage, startInput(input.events), 1, 0, 0, resumptions);
       if (entered.kind !== "continue") return this.finish(entered);
       state = entered.state;
     }
@@ -742,6 +784,9 @@ class WorkflowController implements ExecutionController {
         cancellationReason: input.activation.cancellation.reason,
         deadline: input.activation.budget.deadline,
       },
+      // Non-null only on the visit a fork's join created (Slice G.1); cleared once this Stage
+      // transitions away.
+      join: state.join,
     };
 
     try {
@@ -821,15 +866,51 @@ class WorkflowController implements ExecutionController {
       const hasTerminal = terminal !== undefined && terminal.kind === "value";
       return {
         kind: "complete",
-        state: { ...state, provisionalResult: result, transitions },
+        // Leaving a Stage clears its join snapshot: a completed Workflow carries no fork state.
+        state: { ...state, provisionalResult: result, transitions, join: null },
         terminal: hasTerminal ? (terminal as { kind: "value"; value: JsonValue }).value : undefined,
         hasTerminal,
         emissions,
       };
     }
 
+    if (target.to === "fork") {
+      // A fork is a graph edge, not a Stage body or an Effect. Install the branch-local state and
+      // yield: the branch Function bodies run on the next Activation, never inside whichever
+      // Activation happened to resolve this transition.
+      const fork = findFork(spec, target.fork);
+      if (!fork) {
+        return {
+          kind: "fail",
+          state,
+          emissions,
+          failure: {
+            code: "workflow_fork_missing",
+            message: `stage "${from.id}" transitions to fork "${target.fork}", which the pinned definition does not declare`,
+          },
+        };
+      }
+      // The single `stageTransitioned` trace for a fork/join is emitted by the join step (from the
+      // forking Stage to the join successor); the intermediate fork node has no `StageId` to name.
+      return { kind: "continue", state: { ...installFork(state, fork, result), transitions }, emissions };
+    }
+
+    if (target.to === "join") {
+      // Unreachable through this path: only a branch Stage transitions to a join, branch Stages are
+      // run inside `advanceParallel`, and validation rejects a `{ to: "join" }` edge anywhere else.
+      return {
+        kind: "fail",
+        state,
+        emissions,
+        failure: {
+          code: "workflow_unexpected_join",
+          message: `stage "${from.id}" resolved to a join transition outside an active fork`,
+        },
+      };
+    }
+
     this.trace?.stageTransitioned?.({ from: from.id, visit: state.visit, label, to: target.stage });
-    const entered = await this.enterStage(spec, target.stage, result, state.visit + 1, transitions, resumptions);
+    const entered = await this.enterStage(spec, target.stage, result, state.visit + 1, transitions, state.forks, resumptions);
     // The predecessor's emissions travel with whatever entering produced, including a suspension:
     // they are persisted by this Activation, and the one that resumes proposes none of its own.
     return { ...entered, emissions };
@@ -848,11 +929,14 @@ class WorkflowController implements ExecutionController {
     incoming: StageResult,
     visit: number,
     transitions: number,
+    forks: number,
     resumptions: ControllerResumptionScope,
   ): Promise<StepOutcome> {
     const stage = spec.stages.find((candidate) => candidate.id === stageId);
     const base = initialWorkflowControlState(stageId, incoming);
-    const state: WorkflowControlState = { ...base, visit, transitions };
+    // `forks` (the fork-invocation counter) is threaded through like `transitions`: entering an
+    // ordinary Stage clears `parallel`/`join` but never rewinds how many forks have run.
+    const state: WorkflowControlState = { ...base, visit, transitions, forks };
     if (!stage) {
       return {
         kind: "fail",
@@ -947,6 +1031,221 @@ class WorkflowController implements ExecutionController {
       };
     }
     return this.applyTransition(spec, stage, state, stage.onAdapterReject, reason, null, emissions, resumptions);
+  }
+
+  // -- parallel branches (Slice G.1) ---------------------------------------
+
+  /**
+   * Advances an Execution whose `parallel` state is non-null.
+   *
+   * Two distinct semantic steps, one per Activation:
+   *
+   * ```text
+   * !joinReady   run every branch Function body (overlapping), fold results in authored order,
+   *              persist joinReady, yield  - Stage D has NOT run
+   * joinReady    the explicit join: enter Stage D with the fork input as its ordinary input and the
+   *              immutable branch results as its `join` context, then clear the fork
+   * ```
+   */
+  private async advanceParallel(
+    spec: WorkflowSpec,
+    state: WorkflowControlState,
+    input: ActivationInput,
+    resumptions: ControllerResumptionScope,
+  ): Promise<StepOutcome> {
+    const parallel = state.parallel!;
+    const fork = findFork(spec, parallel.forkId);
+    if (!fork) {
+      return {
+        kind: "fail",
+        state,
+        emissions: [],
+        failure: {
+          code: "workflow_fork_missing",
+          message: `Workflow control state names fork "${parallel.forkId}", which the pinned definition does not declare`,
+        },
+      };
+    }
+
+    if (!parallel.joinReady) {
+      return this.runParallelBranches(spec, state, fork, parallel, input);
+    }
+
+    // The explicit join is its own transition: completing the branches did not enter Stage D.
+    const transitions = state.transitions + 1;
+    if (transitions > this.maxTransitions) {
+      return {
+        kind: "fail",
+        state,
+        emissions: [],
+        failure: {
+          code: "workflow_transition_limit",
+          message: `this Workflow resolved ${transitions} transitions without reaching a completion target`,
+        },
+      };
+    }
+    const joinContext = joinContextOf(parallel);
+    this.trace?.stageTransitioned?.({ from: state.currentStage, visit: state.visit, label: null, to: fork.join.next });
+    const entered = await this.enterStage(
+      spec,
+      fork.join.next,
+      parallel.input,
+      state.visit + 1,
+      transitions,
+      state.forks,
+      resumptions,
+    );
+    // Splice the join snapshot onto whatever entering produced (continue, suspend, or fail) and
+    // clear the active fork. Stage D's ordinary `stageInput` stays the fork's original input.
+    return { ...entered, state: { ...entered.state, parallel: null, join: joinContext } };
+  }
+
+  /**
+   * Runs every `ready` branch Function body concurrently, then commits once.
+   *
+   * The bodies overlap in wall-clock time - each `implementation.run` is started before any is
+   * awaited - but no controller state is mutated while they run: a branch computes from its own
+   * immutable snapshot and returns data. Results and the primary failure are folded in authored
+   * branch order, never completion order, and `Promise.all` over already-started work means no
+   * sibling body is left unobserved when another fails.
+   */
+  private async runParallelBranches(
+    spec: WorkflowSpec,
+    state: WorkflowControlState,
+    fork: WorkflowForkDefinition,
+    parallel: WorkflowParallelState,
+    input: ActivationInput,
+  ): Promise<StepOutcome> {
+    const started = parallel.branches.map((branch): { readonly branch: WorkflowParallelBranchState; readonly run: Promise<BranchRun> } => {
+      if (branch.status === "completed") {
+        return { branch, run: Promise.resolve({ kind: "already" }) };
+      }
+      const stageDef = spec.stages.find((candidate) => candidate.id === branch.stageId);
+      if (!stageDef || stageDef.kind !== "function") {
+        return {
+          branch,
+          run: Promise.resolve({
+            kind: "fail",
+            code: "parallel_branch_stage_invalid",
+            message: `fork "${fork.id}" branch "${branch.branchId}": stage "${branch.stageId}" is not a function Stage`,
+          }),
+        };
+      }
+      const implementation = this.functions.resolve(stageDef.implementationRef);
+      if (!implementation) {
+        return {
+          branch,
+          run: Promise.resolve({
+            kind: "fail",
+            code: "function_stage_implementation_missing",
+            message: `fork "${fork.id}" branch "${branch.branchId}": no Function Stage implementation is wired for logical ref "${stageDef.implementationRef}"`,
+          }),
+        };
+      }
+      const context: StageExecutionContext = {
+        stage: stageDef,
+        stageId: stageDef.id,
+        visit: branch.visit,
+        input: branch.input,
+        config: stageDef.config ?? {},
+        progress: branch.progress,
+        observations: [],
+        resources: this.viewFor(stageDef),
+        activation: {
+          cancelled: input.activation.cancellation.cancelled,
+          cancellationReason: input.activation.cancellation.reason,
+          deadline: input.activation.budget.deadline,
+        },
+        join: null,
+      };
+      // Invoke now so siblings overlap; classify (or catch) inside the branch's own Promise.
+      const run = (async (): Promise<BranchRun> => {
+        try {
+          return this.classifyBranchOutcome(fork, branch, await implementation.run(context));
+        } catch (error) {
+          return {
+            kind: "fail",
+            code: "parallel_branch_error",
+            message: `fork "${fork.id}" branch "${branch.branchId}" threw: ${error instanceof Error ? error.message : String(error)}`,
+          };
+        }
+      })();
+      return { branch, run };
+    });
+
+    const runs = await Promise.all(started.map((entry) => entry.run));
+
+    const nextBranches: WorkflowParallelBranchState[] = [];
+    let failure: Failure | null = null;
+    for (let index = 0; index < runs.length; index += 1) {
+      const run = runs[index]!;
+      const branch = started[index]!.branch;
+      if (run.kind === "completed") {
+        nextBranches.push({ ...branch, status: "completed", result: run.result, progress: run.progress });
+        continue;
+      }
+      if (run.kind === "fail" && failure === null) {
+        failure = { code: run.code, message: run.message };
+      }
+      nextBranches.push(branch);
+    }
+
+    const updated: WorkflowParallelState = { ...parallel, branches: nextBranches };
+    if (failure !== null) {
+      return { kind: "fail", state: { ...state, parallel: updated }, emissions: [], failure };
+    }
+    // Persist a join-ready state and yield. Stage D still has not run: the join is Activation N+2.
+    return { kind: "continue", state: { ...state, parallel: { ...updated, joinReady: true } }, emissions: [] };
+  }
+
+  /**
+   * Maps one G.1 branch Function outcome to a `BranchRun`.
+   *
+   * G.1 branches support exactly `completed` and `failed`. `awaitEffects` fails closed with a
+   * dedicated code and proposes nothing - branch Effects need branch-scoped barrier/correlation
+   * state that is G.2 work, and half-supporting them here would be the unsafe half of it. Branch
+   * emissions and branch transition labels are likewise refused rather than given timing-sensitive
+   * semantics this slice has not defined.
+   */
+  private classifyBranchOutcome(
+    fork: WorkflowForkDefinition,
+    branch: WorkflowParallelBranchState,
+    outcome: FunctionStageOutcome,
+  ): BranchRun {
+    const where = `fork "${fork.id}" branch "${branch.branchId}" (stage "${branch.stageId}")`;
+    const issues = functionStageOutcomeIssues(outcome);
+    if (issues.length > 0) {
+      return {
+        kind: "fail",
+        code: "invalid_function_stage_outcome",
+        message: `${where}: ${issues.map((issue) => `${issue.path}: ${issue.message}`).join("; ")}`,
+      };
+    }
+    if (outcome.status === "awaitEffects") {
+      return {
+        kind: "fail",
+        code: "parallel_branch_effects_unsupported",
+        message: `${where} returned awaitEffects; a G.1 parallel branch must reach a local terminal outcome and cannot request Effects`,
+      };
+    }
+    if (outcome.status === "failed") {
+      return { kind: "fail", code: `parallel_branch_failed:${outcome.code}`, message: `${where}: ${outcome.message}` };
+    }
+    if (outcome.emissions !== undefined && outcome.emissions.length > 0) {
+      return {
+        kind: "fail",
+        code: "parallel_branch_emissions_unsupported",
+        message: `${where} produced emissions; branch emission ordering is deferred past G.1`,
+      };
+    }
+    if (outcome.transition !== undefined) {
+      return {
+        kind: "fail",
+        code: "parallel_branch_transition_unsupported",
+        message: `${where} returned transition ${JSON.stringify(outcome.transition)}; a G.1 branch Stage's transition is fixed to its fork's join`,
+      };
+    }
+    return { kind: "completed", result: outcome.result ?? null, progress: outcome.progress ?? branch.progress };
   }
 
   // -- helpers ---------------------------------------------------------------

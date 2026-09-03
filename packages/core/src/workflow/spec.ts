@@ -61,6 +61,31 @@ export function stageId(value: string): StageId {
   return value;
 }
 
+/**
+ * System-defined parallel-fork topology identity (Slice G.1).
+ *
+ * A `ForkId` names one authored fork node in a Workflow graph - the point at which one Stage's
+ * result splits into several branches that rejoin at an explicit join. Like a `StageId` it is
+ * authored topology, never runtime identity: it is not an `ExecutionId`, nothing is addressed to it,
+ * and no lifecycle attaches to it. It identifies a *definition* of a fork, not one invocation of it;
+ * the invocation coordinate (`forkVisit`) lives in `control-state.ts`.
+ */
+export type ForkId = string & { readonly __brand: "ForkId" };
+
+/** One branch of a `ForkId`. Authored, branch-local, unique within its fork. Not runtime identity. */
+export type BranchId = string & { readonly __brand: "BranchId" };
+
+const FORK_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/;
+const BRANCH_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/;
+
+export function isForkId(value: unknown): value is ForkId {
+  return typeof value === "string" && FORK_ID_PATTERN.test(value);
+}
+
+export function isBranchId(value: unknown): value is BranchId {
+  return typeof value === "string" && BRANCH_ID_PATTERN.test(value);
+}
+
 /** Logical name of application-wired executable behaviour. Never the behaviour itself. */
 export type ImplementationRef = string;
 
@@ -93,10 +118,19 @@ export type TerminalProposal =
   | { readonly kind: "none" }
   | { readonly kind: "value"; readonly value: JsonValue };
 
-/** Where a resolved transition goes. Both targets are declared in the definition. */
+/**
+ * Where a resolved transition goes. Every target is declared in the definition.
+ *
+ * `fork` and `join` (Slice G.1) are Workflow *topology*, not Stage bodies: `fork` enters a
+ * system-defined parallel region and `join` leaves it. There is deliberately no `fork`/`join` Stage
+ * kind and no `fork`/`join` Effect - a fork is a graph edge, and the join is a distinct semantic
+ * controller step, not an operation anything authorizes.
+ */
 export type TransitionTarget =
   | { readonly to: "stage"; readonly stage: StageId }
-  | { readonly to: "complete"; readonly terminal?: TerminalProposal };
+  | { readonly to: "complete"; readonly terminal?: TerminalProposal }
+  | { readonly to: "fork"; readonly fork: ForkId }
+  | { readonly to: "join"; readonly fork: ForkId };
 
 /**
  * The predefined transition set for one Stage.
@@ -263,20 +297,60 @@ export type StageDefinition =
   | AgentStageDefinition
   | WorkflowStageDefinition;
 
+// -- system-defined parallel fork/join (Slice G.1) --------------------------
+
+/**
+ * One branch of a fork.
+ *
+ * For G.1 a branch body is *exactly one Function Stage*. The branch carries its authored `id` and
+ * the Stage that is its whole body; the branch Stage's own topology is fixed by validation to an
+ * unconditional transition back to this fork's explicit join.
+ */
+export interface WorkflowForkBranch {
+  readonly id: BranchId;
+  readonly stage: StageId;
+}
+
+/**
+ * One authored fork: a Stage result splits into `branches`, which run with branch-local progress and
+ * branch-local results and rejoin at the explicit `join`.
+ *
+ * G.1 is a deliberately narrow topology proof. A fork has at least two single-Function-Stage
+ * branches and exactly one ordinary downstream Stage after the join. Branch Effects, branch child
+ * calls, multi-Stage branch subgraphs, nested forks, branch loops, and join reducers are all later
+ * (G.2/G.3) work and are rejected by validation here rather than half-supported.
+ */
+export interface WorkflowForkDefinition {
+  readonly id: ForkId;
+  readonly branches: readonly WorkflowForkBranch[];
+  /** The explicit join. For G.1 it has exactly one ordinary downstream Function Stage. */
+  readonly join: {
+    readonly next: StageId;
+  };
+}
+
 /**
  * One Workflow's complete topology.
  *
  * `stages` is an array rather than a record so that a duplicate Stage id is *representable* and can
  * therefore be rejected. A record silently keeps the last one, which is the difference between a
  * definition that fails loudly and a Workflow that runs a program its author did not write.
+ *
+ * `forks` is optional and absent by default: a Workflow that declares none validates and executes
+ * exactly as it did before Slice G.1.
  */
 export interface WorkflowSpec {
   readonly entryStage: StageId;
   readonly stages: readonly StageDefinition[];
+  readonly forks?: readonly WorkflowForkDefinition[];
 }
 
 export function findStage(spec: WorkflowSpec, id: StageId): StageDefinition | undefined {
   return spec.stages.find((stage) => stage.id === id);
+}
+
+export function findFork(spec: WorkflowSpec, id: ForkId): WorkflowForkDefinition | undefined {
+  return spec.forks?.find((fork) => fork.id === id);
 }
 
 // -- authoring input ---------------------------------------------------------
@@ -296,11 +370,20 @@ export interface StageIdentityInput {
 
 export type TransitionTargetInput =
   | { readonly to: "stage"; readonly stage: string }
-  | { readonly to: "complete"; readonly terminal?: TerminalProposal };
+  | { readonly to: "complete"; readonly terminal?: TerminalProposal }
+  | { readonly to: "fork"; readonly fork: string }
+  | { readonly to: "join"; readonly fork: string };
 
 export type StageTransitionsInput =
   | { readonly kind: "always"; readonly next: TransitionTargetInput }
   | { readonly kind: "labeled"; readonly cases: readonly { readonly label: string; readonly next: TransitionTargetInput }[] };
+
+/** Authoring shape for a fork: plain-string ids, validated and branded by `defineWorkflow`. */
+export interface WorkflowForkDefinitionInput {
+  readonly id: string;
+  readonly branches: readonly { readonly id: string; readonly stage: string }[];
+  readonly join: { readonly next: string };
+}
 
 type Authorable<T extends StageDefinitionBase> = Omit<T, "id" | "transitions" | "onAdapterReject"> & StageIdentityInput;
 
@@ -313,4 +396,5 @@ export type StageDefinitionInput =
 export interface WorkflowSpecInput {
   readonly entryStage: string;
   readonly stages: readonly StageDefinitionInput[];
+  readonly forks?: readonly WorkflowForkDefinitionInput[];
 }

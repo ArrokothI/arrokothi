@@ -96,8 +96,26 @@ For the current v0.4 Agent work and the cross-cutting path toward v1.0, use the 
   observation. Agent-only consumer, controller-neutral resolver, no caching or Workflow LLM change.
   No canonical-doc change. Merged to main (PR #11); part of the merged `main` F.2a baseline.
 
+025-slice-g1-minimal-workflow-fork-join.md
+  the current Slice G.1 checkpoint, on the long-lived branch `slice-g-structured-concurrency`,
+  continuing from the independently-accepted G.0. The narrowest honest proof of system-defined
+  parallel Workflow branches: authored `{ to: "fork" }` / `{ to: "join" }` topology
+  (`WorkflowSpec.forks?`, `ForkId` / `BranchId` - no new Stage/Effect/Event kind); branch-local
+  `WorkflowParallelState` (own visit / input snapshot / progress / result per branch) at
+  `WORKFLOW_CONTROL_STATE_VERSION` 2 -> 3; branch bodies that are exactly one Function Stage, run
+  overlapping via `Promise.all` over immutable snapshots with one serialized commit afterwards; an
+  explicit join as a distinct controller step (a persisted state where both branches are done and
+  Stage D has not run) that exposes an immutable authored-order `WorkflowJoinContext` to one
+  downstream Function Stage (D's ordinary input stays the fork input); deterministic result / failure
+  ordering by authored branch order; `parallel_branch_effects_unsupported` fail-closed for a branch
+  that returns `awaitEffects`. Exactly one Execution - no child Executions, no new RuntimeStore /
+  Harness facet, no branch Effects / resumptions. No canonical-doc change (`future-plan.md` §1.3
+  gains a pointer only). LLM/Agent/Workflow branches, branch Effects, nested forks, reducers, merge,
+  and Working Notes branch handling are all deferred to G.2/G.3. Not merged; awaiting independent
+  review.
+
 024-slice-g0-structured-memory-optimistic-conflict.md
-  the current Slice G.0 checkpoint, on the long-lived branch `slice-g-structured-concurrency` from
+  the independently-accepted Slice G.0 checkpoint, on the long-lived branch `slice-g-structured-concurrency` from
   the merged Slice-F baseline (`cadf1f1`, PR #12). The first honest optimistic Structured Memory
   write precondition: an optional whole-view `WriteMemoryProposal.expectedRevision` compare-and-set
   (absent = the accepted F.0 unconditional write; never exposed to the model) and one distinct
@@ -263,10 +281,10 @@ Slice F memory
   Slice F accepted + reviewed + MERGED             main @ cadf1f1 (PR #12)
         ↓
 Slice G structured concurrency
-  G.0           Structured Memory optimistic       current checkpoint (024); on branch
+  G.0           Structured Memory optimistic       independently accepted (024); on branch
                 write preconditions + explicit    slice-g-structured-concurrency from the merged
-                conflict observations.            Slice-F baseline, not merged, awaiting independent
-                Optional whole-view               review. Optional WriteMemoryProposal.expectedRevision
+                conflict observations.            Slice-F baseline, on the branch, not merged.
+                Optional whole-view               Optional WriteMemoryProposal.expectedRevision
                 WriteMemoryProposal               (a non-negative integer on the WHOLE bound view
                 .expectedRevision compare-and-set revision; absent = the accepted F.0 unconditional
                 (never exposed to the model);     write; NEVER exposed to the model - the F.1.1 write
@@ -289,6 +307,35 @@ Slice G structured concurrency
                 No canonical-doc change           all deferred to G.1+. No canonical-doc change
                 (future-plan.md §1.4 / §3.4       (future-plan.md §1.4 / §3.4 gain a pointer only).
                 pointer only).
+
+  G.1           minimal system-defined Workflow   current checkpoint (025); same branch, continuing
+                fork/join.                        from G.0. Not merged, awaiting independent review.
+                Authored { to: "fork" } /         TransitionTarget gains { to: "fork", fork } and
+                { to: "join" } topology on        { to: "join", fork }; WorkflowForkDefinition
+                WorkflowSpec.forks?; ForkId /     { id, branches[>=2], join: { next } }. fork/join are
+                BranchId brands. No new Stage /   topology graph edges - not a Stage kind, not an
+                Effect / Event kind.              Effect, not an Event. WORKFLOW_CONTROL_STATE_VERSION
+                WorkflowParallelState (per-branch 2 -> 3: WorkflowParallelState + per-branch
+                visit / input snapshot /          WorkflowParallelBranchState; new .forks / .parallel
+                progress / result) v2 -> v3.      / .join fields; plain JSON only. A G.1 branch body
+                Branch bodies = exactly one       is exactly one adapter-free Function Stage; static
+                Function Stage, run overlapping   validation rejects everything wider. Branch work
+                via Promise.all over immutable    overlaps in one Activation; one serialized commit
+                snapshots, one serialized commit  afterwards. The explicit join is a distinct step
+                afterwards. Explicit join is a    (a persisted joinReady state where D has not run)
+                distinct controller step exposing exposing an immutable authored-order
+                an authored-order                 WorkflowJoinContext to one downstream Function
+                WorkflowJoinContext to D          Stage; D's ordinary input stays the fork input.
+                (D.input stays the fork input).   Deterministic result / failure ordering by authored
+                Deterministic ordering; a branch  branch order. A branch returning awaitEffects fails
+                awaitEffects fails closed         closed (parallel_branch_effects_unsupported) - no
+                (parallel_branch_effects_         Effect, no half-built G.2. Exactly one Execution:
+                unsupported). Exactly one         no child Execution / link / spawn budget / new
+                Execution. No canonical-doc       RuntimeStore or Harness facet. LLM/Agent/Workflow
+                change (future-plan.md §1.3       branches, branch Effects/resumptions, nested forks,
+                pointer only). LLM/Agent branch,  reducers, merge, Working Notes branch handling all
+                branch Effects, nested forks,     deferred to G.2/G.3. No canonical-doc change
+                reducers, merge - all G.2/G.3.    (future-plan.md §1.3 gains a pointer only).
 
 cross-cutting v1 validation
   efficiency / optional runtime cost /

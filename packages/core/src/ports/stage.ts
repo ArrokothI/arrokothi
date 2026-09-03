@@ -33,7 +33,7 @@
 import type { JsonObject } from "../util/json.ts";
 import type { EmissionProposal } from "../execution/emission.ts";
 import type { StageDefinition, StageId } from "../workflow/spec.ts";
-import type { StageEffectRequest, StageObservation } from "../workflow/observations.ts";
+import type { StageEffectRequest, StageObservation, WorkflowJoinContext } from "../workflow/observations.ts";
 import type { StageResult } from "../workflow/stage-result.ts";
 import type { LocalResourceView } from "./local-resource.ts";
 
@@ -74,6 +74,15 @@ export interface StageExecutionContext {
   /** Explicitly exposed read-only local resource views. Anything else is unreachable. */
   readonly resources: LocalResourceView;
   readonly activation: StageActivationFacts;
+  /**
+   * The explicit-join snapshot, when this Stage visit was entered by a fork's join (Slice G.1).
+   *
+   * `null` for every ordinary Stage visit. When present, it carries each parallel branch's final
+   * `text | none` result in authored branch order. It is read-only branch *results* - never branch
+   * progress, never a handle to branch state - and it does not replace `input`, which stays the
+   * fork's original incoming result.
+   */
+  readonly join: WorkflowJoinContext | null;
 }
 
 export type FunctionStageOutcome =

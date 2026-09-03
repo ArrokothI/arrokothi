@@ -19,6 +19,13 @@
  * **A bounded Stage must be bounded by construction.** `maxModelPhases` is validated as a small
  * positive integer, and a Stage that exposes callables must allow at least two phases, because the
  * final phase never exposes callables. There is no authored value that produces an open-ended loop.
+ *
+ * **A parallel fork is a narrow, statically-checked shape (Slice G.1).** `forkTopologyIssues`
+ * rejects everything statically knowable about the deliberately small G.1 topology: fork/branch id
+ * validity and uniqueness, at least two branches, single-Function-Stage Adapter-free branch bodies,
+ * a branch Stage reached only through its fork, a branch Stage whose only transition is to its own
+ * fork's join, and a join with one existing Function successor that is not itself a branch Stage.
+ * These are the only new graph rules; nothing here does broader reachability analysis.
  */
 
 import { objectSchemaIssues } from "../schema/value-schema.ts";
@@ -26,7 +33,7 @@ import type { LogicalModelRequest, ModelRequirementLevel } from "../model/types.
 import { jsonIssues } from "../util/json.ts";
 import { isAdapterKind } from "./adapters.ts";
 import type { WorkflowSpec } from "./spec.ts";
-import { isImplementationRef, isStageId, isStageKind } from "./spec.ts";
+import { isBranchId, isForkId, isImplementationRef, isStageId, isStageKind } from "./spec.ts";
 
 /** The largest number of predetermined model phases one LLM Stage may declare. */
 export const MAX_MODEL_PHASES = 8;
@@ -45,6 +52,8 @@ export type WorkflowSpecIssueCode =
   | "invalid_child_ref"
   | "invalid_callable"
   | "invalid_resource_view"
+  | "invalid_fork"
+  | "invalid_branch"
   | "not_serializable";
 
 export interface WorkflowSpecIssue {
@@ -148,7 +157,27 @@ function adapterIssues(declaration: unknown, path: string): WorkflowSpecIssue[] 
   return issues;
 }
 
-function targetIssues(target: unknown, path: string, known: ReadonlySet<string>): WorkflowSpecIssue[] {
+/**
+ * The fork-topology facts every transition check needs (Slice G.1).
+ *
+ * `forkIds` is the set of declared fork ids; `branchStageToFork` maps each parallel branch Stage to
+ * the one fork that owns it. Both are empty for a Workflow that declares no `forks`, and every rule
+ * below then reduces to the pre-G.1 behaviour.
+ */
+interface ForkContext {
+  readonly forkIds: ReadonlySet<string>;
+  readonly branchStageToFork: ReadonlyMap<string, string>;
+}
+
+const EMPTY_FORK_CONTEXT: ForkContext = { forkIds: new Set(), branchStageToFork: new Map() };
+
+function targetIssues(
+  target: unknown,
+  path: string,
+  known: ReadonlySet<string>,
+  forks: ForkContext,
+  ownerForkId: string | null,
+): WorkflowSpecIssue[] {
   if (target === null || typeof target !== "object" || Array.isArray(target)) {
     return [issue(path, "invalid_transition", "expected a transition target object")];
   }
@@ -160,6 +189,15 @@ function targetIssues(target: unknown, path: string, known: ReadonlySet<string>)
     }
     if (!known.has(stage)) {
       return [issue(`${path}.stage`, "unknown_stage", `transition targets stage "${stage}", which this Workflow does not declare`)];
+    }
+    if (forks.branchStageToFork.has(stage)) {
+      // A branch Stage is reached only through its fork. An ordinary edge into one would give it a
+      // second, non-parallel entry, which is not the narrow topology G.1 supports.
+      return [issue(
+        `${path}.stage`,
+        "invalid_transition",
+        `stage "${stage}" is a parallel branch Stage; it is reached through fork "${forks.branchStageToFork.get(stage)!}", not an ordinary transition`,
+      )];
     }
     return [];
   }
@@ -178,16 +216,57 @@ function targetIssues(target: unknown, path: string, known: ReadonlySet<string>)
     }
     return [];
   }
-  return [issue(`${path}.to`, "invalid_transition", `expected "stage" or "complete", received ${JSON.stringify(candidate["to"])}`)];
+  if (candidate["to"] === "fork") {
+    const fork = candidate["fork"];
+    if (typeof fork !== "string" || !forks.forkIds.has(fork)) {
+      return [issue(`${path}.fork`, "invalid_transition", `transition targets fork ${JSON.stringify(fork)}, which this Workflow does not declare`)];
+    }
+    return [];
+  }
+  if (candidate["to"] === "join") {
+    const fork = candidate["fork"];
+    if (ownerForkId === null) {
+      // Only a parallel branch Stage transitions to a join. An ordinary Stage that named one would
+      // be pretending to be inside a fork it never entered.
+      return [issue(`${path}`, "invalid_transition", `only a parallel branch Stage transitions to a join`)];
+    }
+    if (typeof fork !== "string" || fork !== ownerForkId) {
+      return [issue(`${path}.fork`, "invalid_transition", `a branch Stage joins its own fork "${ownerForkId}", not ${JSON.stringify(fork)}`)];
+    }
+    return [];
+  }
+  return [issue(`${path}.to`, "invalid_transition", `expected "stage", "complete", "fork", or "join", received ${JSON.stringify(candidate["to"])}`)];
 }
 
-function transitionsIssues(transitions: unknown, path: string, known: ReadonlySet<string>): WorkflowSpecIssue[] {
+function transitionsIssues(
+  transitions: unknown,
+  path: string,
+  known: ReadonlySet<string>,
+  forks: ForkContext,
+  ownerForkId: string | null,
+): WorkflowSpecIssue[] {
   if (transitions === null || typeof transitions !== "object" || Array.isArray(transitions)) {
     return [issue(path, "invalid_transition", "every Stage declares its predefined transitions")];
   }
   const candidate = transitions as Record<string, unknown>;
+
+  if (ownerForkId !== null) {
+    // A G.1 branch Stage's topology is fixed: one unconditional transition to its own fork's join,
+    // and nothing else. No labelled routing, no loop, no nested fork, no other fork's join.
+    if (candidate["kind"] !== "always") {
+      return [issue(`${path}.kind`, "invalid_branch", `a G.1 branch Stage has exactly one unconditional transition to fork "${ownerForkId}" join`)];
+    }
+    const next = candidate["next"];
+    const nextIssues = targetIssues(next, `${path}.next`, known, forks, ownerForkId);
+    if (nextIssues.length > 0) return nextIssues;
+    if ((next as Record<string, unknown>)["to"] !== "join") {
+      return [issue(`${path}.next`, "invalid_branch", `a G.1 branch Stage transitions only to fork "${ownerForkId}" join`)];
+    }
+    return [];
+  }
+
   if (candidate["kind"] === "always") {
-    return targetIssues(candidate["next"], `${path}.next`, known);
+    return targetIssues(candidate["next"], `${path}.next`, known, forks, ownerForkId);
   }
   if (candidate["kind"] === "labeled") {
     const cases = candidate["cases"];
@@ -211,11 +290,131 @@ function transitionsIssues(transitions: unknown, path: string, known: ReadonlySe
       } else {
         labels.add(label);
       }
-      issues.push(...targetIssues((entry as Record<string, unknown>)["next"], `${path}.cases[${index}].next`, known));
+      issues.push(...targetIssues((entry as Record<string, unknown>)["next"], `${path}.cases[${index}].next`, known, forks, ownerForkId));
     }
     return issues;
   }
   return [issue(`${path}.kind`, "invalid_transition", `expected "always" or "labeled"`)];
+}
+
+/**
+ * Validates the `forks` block and returns the `ForkContext` the transition checks need.
+ *
+ * Everything statically knowable about this deliberately narrow topology is rejected here: fork id
+ * validity and uniqueness, at least two branches, branch id validity and uniqueness, branch Stage
+ * existence, a Stage in at most one branch, a Function-only branch body with no Adapters, no branch
+ * on the entry Stage, and a join whose single successor exists, is a Function Stage, and is not one
+ * of the fork's own branch Stages.
+ */
+function forkTopologyIssues(
+  forksRaw: unknown,
+  known: ReadonlySet<string>,
+  entryStage: unknown,
+  stagesById: ReadonlyMap<string, Record<string, unknown>>,
+): { readonly issues: readonly WorkflowSpecIssue[]; readonly context: ForkContext } {
+  if (forksRaw === undefined) return { issues: [], context: EMPTY_FORK_CONTEXT };
+
+  const issues: WorkflowSpecIssue[] = [];
+  const forkIds = new Set<string>();
+  const branchStageToFork = new Map<string, string>();
+  const context: ForkContext = { forkIds, branchStageToFork };
+
+  if (!Array.isArray(forksRaw)) {
+    issues.push(issue("spec.forks", "invalid_fork", "expected an array of fork definitions when present"));
+    return { issues, context };
+  }
+
+  const hasAdapters = (stage: Record<string, unknown> | undefined): boolean =>
+    stage !== undefined &&
+    ((Array.isArray(stage["inputAdapters"]) && stage["inputAdapters"].length > 0) ||
+      (Array.isArray(stage["outputAdapters"]) && stage["outputAdapters"].length > 0));
+
+  forksRaw.forEach((forkRaw, fi) => {
+    const at = `spec.forks[${fi}]`;
+    if (forkRaw === null || typeof forkRaw !== "object" || Array.isArray(forkRaw)) {
+      issues.push(issue(at, "invalid_fork", "expected a fork definition object"));
+      return;
+    }
+    const fork = forkRaw as Record<string, unknown>;
+
+    const id = fork["id"];
+    let forkId: string | null = null;
+    if (!isForkId(id)) {
+      issues.push(issue(`${at}.id`, "invalid_fork", `invalid fork id ${JSON.stringify(id)}`));
+    } else if (forkIds.has(id)) {
+      issues.push(issue(`${at}.id`, "invalid_fork", `fork id "${id}" is declared more than once`));
+    } else {
+      forkIds.add(id);
+      forkId = id;
+    }
+
+    const branches = fork["branches"];
+    if (!Array.isArray(branches) || branches.length < 2) {
+      issues.push(issue(`${at}.branches`, "invalid_fork", "a fork declares at least two branches"));
+    } else {
+      const branchIds = new Set<string>();
+      branches.forEach((branchRaw, bi) => {
+        const bat = `${at}.branches[${bi}]`;
+        if (branchRaw === null || typeof branchRaw !== "object" || Array.isArray(branchRaw)) {
+          issues.push(issue(bat, "invalid_branch", "expected a branch object"));
+          return;
+        }
+        const branch = branchRaw as Record<string, unknown>;
+        const bid = branch["id"];
+        if (!isBranchId(bid)) {
+          issues.push(issue(`${bat}.id`, "invalid_branch", `invalid branch id ${JSON.stringify(bid)}`));
+        } else if (branchIds.has(bid)) {
+          issues.push(issue(`${bat}.id`, "invalid_branch", `branch id "${bid}" is declared twice in fork "${forkId ?? String(id)}"`));
+        } else {
+          branchIds.add(bid);
+        }
+
+        const stage = branch["stage"];
+        if (!isStageId(stage) || !known.has(stage)) {
+          issues.push(issue(`${bat}.stage`, "invalid_branch", `branch stage ${JSON.stringify(stage)} is not a declared Stage`));
+          return;
+        }
+        if (stage === entryStage) {
+          issues.push(issue(`${bat}.stage`, "invalid_branch", `the entry Stage "${stage}" cannot be a parallel branch Stage`));
+        }
+        if (branchStageToFork.has(stage)) {
+          issues.push(issue(`${bat}.stage`, "invalid_branch", `stage "${stage}" is already a branch of fork "${branchStageToFork.get(stage)!}"`));
+        } else if (forkId !== null) {
+          branchStageToFork.set(stage, forkId);
+        }
+        const stageDef = stagesById.get(stage);
+        if (stageDef !== undefined && stageDef["kind"] !== "function") {
+          issues.push(issue(`${bat}.stage`, "invalid_branch", `a G.1 branch Stage is a function Stage; "${stage}" is "${String(stageDef["kind"])}"`));
+        }
+        if (hasAdapters(stageDef)) {
+          issues.push(issue(`${bat}.stage`, "invalid_branch", `a G.1 branch Stage ("${stage}") cannot declare input or output Adapters`));
+        }
+      });
+    }
+
+    const join = fork["join"];
+    if (join === null || typeof join !== "object" || Array.isArray(join)) {
+      issues.push(issue(`${at}.join`, "invalid_fork", "a fork declares an explicit join with one downstream Stage"));
+      return;
+    }
+    const next = (join as Record<string, unknown>)["next"];
+    if (!isStageId(next) || !known.has(next)) {
+      issues.push(issue(`${at}.join.next`, "invalid_fork", `the join successor ${JSON.stringify(next)} is not a declared Stage`));
+      return;
+    }
+    const nextDef = stagesById.get(next);
+    if (nextDef !== undefined && nextDef["kind"] !== "function") {
+      issues.push(issue(`${at}.join.next`, "invalid_fork", `the G.1 join successor "${next}" must be a function Stage so the join snapshot is consumable`));
+    }
+    if (
+      Array.isArray(branches) &&
+      branches.some((b) => (b === null || typeof b !== "object" ? false : (b as Record<string, unknown>)["stage"] === next))
+    ) {
+      issues.push(issue(`${at}.join.next`, "invalid_fork", `the join successor "${next}" cannot also be one of this fork's branch Stages`));
+    }
+  });
+
+  return { issues, context };
 }
 
 function callableIssues(callable: unknown, path: string): WorkflowSpecIssue[] {
@@ -248,12 +447,15 @@ function callableIssues(callable: unknown, path: string): WorkflowSpecIssue[] {
   return issues;
 }
 
-function stageIssues(stage: unknown, path: string, known: ReadonlySet<string>): WorkflowSpecIssue[] {
+function stageIssues(stage: unknown, path: string, known: ReadonlySet<string>, forks: ForkContext): WorkflowSpecIssue[] {
   if (stage === null || typeof stage !== "object" || Array.isArray(stage)) {
     return [issue(path, "invalid_spec", "expected a stage definition object")];
   }
   const candidate = stage as Record<string, unknown>;
   const issues: WorkflowSpecIssue[] = [];
+
+  const rawId = candidate["id"];
+  const ownerForkId = typeof rawId === "string" ? (forks.branchStageToFork.get(rawId) ?? null) : null;
 
   if (!isStageId(candidate["id"])) {
     issues.push(issue(`${path}.id`, "invalid_stage_id", `invalid stage id ${JSON.stringify(candidate["id"])}`));
@@ -267,9 +469,9 @@ function stageIssues(stage: unknown, path: string, known: ReadonlySet<string>): 
     return issues;
   }
 
-  issues.push(...transitionsIssues(candidate["transitions"], `${path}.transitions`, known));
+  issues.push(...transitionsIssues(candidate["transitions"], `${path}.transitions`, known, forks, ownerForkId));
   if (candidate["onAdapterReject"] !== undefined) {
-    issues.push(...targetIssues(candidate["onAdapterReject"], `${path}.onAdapterReject`, known));
+    issues.push(...targetIssues(candidate["onAdapterReject"], `${path}.onAdapterReject`, known, forks, ownerForkId));
   }
 
   for (const position of ["inputAdapters", "outputAdapters"] as const) {
@@ -449,6 +651,7 @@ export function validateWorkflowSpec(input: unknown): WorkflowSpecValidation {
   }
 
   const known = new Set<string>();
+  const stagesById = new Map<string, Record<string, unknown>>();
   for (const [index, stage] of stages.entries()) {
     const id = (stage as { id?: unknown } | null)?.["id"];
     if (typeof id !== "string") continue;
@@ -456,6 +659,9 @@ export function validateWorkflowSpec(input: unknown): WorkflowSpecValidation {
       issues.push(issue(`spec.stages[${index}].id`, "duplicate_stage_id", `stage id "${id}" is declared more than once`));
     }
     known.add(id);
+    if (stage !== null && typeof stage === "object" && !Array.isArray(stage)) {
+      stagesById.set(id, stage as Record<string, unknown>);
+    }
   }
 
   const entry = candidate["entryStage"];
@@ -465,8 +671,12 @@ export function validateWorkflowSpec(input: unknown): WorkflowSpecValidation {
     issues.push(issue("spec.entryStage", "missing_entry_stage", `entry stage "${entry}" is not declared by this Workflow`));
   }
 
+  // Parallel fork/join topology (Slice G.1). Absent `forks` => an empty context and pre-G.1 rules.
+  const forkResult = forkTopologyIssues(candidate["forks"], known, entry, stagesById);
+  issues.push(...forkResult.issues);
+
   stages.forEach((stage, index) => {
-    issues.push(...stageIssues(stage, `spec.stages[${index}]`, known));
+    issues.push(...stageIssues(stage, `spec.stages[${index}]`, known, forkResult.context));
   });
 
   for (const problem of jsonIssues(candidate, "spec")) {

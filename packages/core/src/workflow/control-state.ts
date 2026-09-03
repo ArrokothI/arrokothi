@@ -55,17 +55,23 @@
  */
 
 import type { JsonObject, JsonValue } from "../util/json.ts";
-import type { StageId } from "./spec.ts";
-import type { StageObservation, StageObservationOutcome } from "./observations.ts";
+import type { BranchId, ForkId, StageId, WorkflowForkDefinition } from "./spec.ts";
+import type { StageObservation, StageObservationOutcome, WorkflowJoinContext } from "./observations.ts";
 import type { StageResult } from "./stage-result.ts";
 
 /**
- * Version 2 adds the re-enterable Stage boundary.
+ * Version history:
  *
- * Bumped rather than back-fitted: a pre-v1 shape that could not express "the body already ran"
- * would have to be simulated by re-running it, which is precisely the defect this slice removes.
+ * ```text
+ * 2  the re-enterable Stage boundary
+ * 3  active-fork branch-local state + the persisted explicit-join snapshot (Slice G.1)
+ * ```
+ *
+ * Bumped rather than back-fitted each time: a shape that cannot represent "two branches are active,
+ * each with its own progress and result" would have to fake it by mutating one current Stage's
+ * fields, which is exactly the ambiguity structured parallelism forbids.
  */
-export const WORKFLOW_CONTROL_STATE_VERSION = 2;
+export const WORKFLOW_CONTROL_STATE_VERSION = 3;
 
 /** What a barrier entry is waiting for. */
 export type BarrierEntryKind = "effect" | "child";
@@ -162,8 +168,66 @@ export interface WorkflowBoundaryState {
   readonly transitionLabel: string | null;
 }
 
+// -- active fork state (Slice G.1) --------------------------------------------
+
+/**
+ * One branch of an active fork, as serializable controller progress.
+ *
+ * Every branch owns its own `visit`, its own `input` snapshot, its own `progress`, its own status,
+ * and its own final `result`. There is no ambient branch-shared progress object: a branch cannot
+ * read or write another branch's fields, and a JSON round trip of the enclosing state preserves each
+ * branch's data exactly.
+ *
+ * `status` is only ever `ready` (installed, not yet run) or `completed` (its Function body reached a
+ * local terminal outcome). A branch whose Function fails does not persist a status - it fails the
+ * whole Workflow Execution before any join-ready state is written.
+ */
+export interface WorkflowParallelBranchState {
+  readonly branchId: BranchId;
+  readonly stageId: StageId;
+  /** This branch's own Stage visit. Distinct from every other branch and from the join successor. */
+  readonly visit: number;
+  /** The fork input, snapshotted per branch. Both branches receive the same immutable value. */
+  readonly input: StageResult;
+  /** Branch-local Stage progress, owned by the branch Function body, opaque to the controller. */
+  readonly progress: JsonObject;
+  readonly status: "ready" | "completed";
+  /** The branch's final `text | none` result, present once `status` is `completed`. */
+  readonly result: StageResult | null;
+}
+
+/**
+ * The active fork.
+ *
+ * Present in `WorkflowControlState.parallel` exactly while a fork is between its entry and its
+ * explicit join. While it is present the Workflow is *not* "in" `currentStage` - it is between the
+ * Stage that forked and the fork's join - and the controller routes on `parallel` before it looks at
+ * `currentStage`, `barrier`, or `boundary`.
+ */
+export interface WorkflowParallelState {
+  readonly forkId: ForkId;
+  /**
+   * Stable identity for this invocation of the fork, distinct from the authored `ForkId` because a
+   * Workflow may (later) revisit a fork. Monotone over fork entries for the whole Execution.
+   */
+  readonly forkVisit: number;
+  /** The post-Stage-A result that entered this fork. Also becomes the join successor's ordinary input. */
+  readonly input: StageResult;
+  /** Definition/authored branch order. Never completion order. */
+  readonly branches: readonly WorkflowParallelBranchState[];
+  /** Every branch has reached a local terminal result and the explicit join step has not run yet. */
+  readonly joinReady: boolean;
+}
+
 export interface WorkflowControlState {
   readonly version: number;
+  /**
+   * The Stage the Workflow is at.
+   *
+   * While `parallel` is non-null this names the Stage whose transition entered the active fork - the
+   * Workflow is between that Stage and the fork's join, not executing `currentStage`. Read `parallel`
+   * first.
+   */
   readonly currentStage: StageId;
   /** Monotone Stage-entry counter. Identifies this invocation, never an Execution. */
   readonly visit: number;
@@ -183,8 +247,20 @@ export interface WorkflowControlState {
   readonly provisionalResult: StageResult | null;
   /** How many Stage transitions this Workflow has resolved. Useful for traces and loop bounds. */
   readonly transitions: number;
+  /** How many forks this Workflow has entered. The next `forkVisit`. Monotone, survives loops. */
+  readonly forks: number;
   /** Where inside a Stage boundary this Workflow suspended, if it did. */
   readonly boundary: WorkflowBoundaryState | null;
+  /** The active fork, while one is between its entry and its explicit join (Slice G.1). */
+  readonly parallel: WorkflowParallelState | null;
+  /**
+   * The explicit-join snapshot for the current Stage visit (Slice G.1).
+   *
+   * Non-null only on the visit a fork's join created, and on that Stage's re-entries until it
+   * transitions away. It is the immutable branch results the downstream Function Stage reads through
+   * `StageExecutionContext.join`; it is never the Stage's ordinary `stageInput`.
+   */
+  readonly join: WorkflowJoinContext | null;
 }
 
 export function initialWorkflowControlState(entryStage: StageId, stageInput: StageResult): WorkflowControlState {
@@ -197,7 +273,10 @@ export function initialWorkflowControlState(entryStage: StageId, stageInput: Sta
     barrier: [],
     provisionalResult: null,
     transitions: 0,
+    forks: 0,
     boundary: null,
+    parallel: null,
+    join: null,
   };
 }
 
@@ -250,7 +329,10 @@ export function readWorkflowControlState(progress: JsonObject): WorkflowControlS
     barrier: state.barrier ?? [],
     provisionalResult: state.provisionalResult ?? null,
     transitions: state.transitions ?? 0,
+    forks: state.forks ?? 0,
     boundary: state.boundary ?? null,
+    parallel: state.parallel ?? null,
+    join: state.join ?? null,
   };
 }
 
@@ -345,4 +427,53 @@ export function observationsOf(state: WorkflowControlState): readonly StageObser
 /** The single `child` barrier entry for the current visit, if this is an Agent/Workflow Stage. */
 export function childBarrierEntry(state: WorkflowControlState): ChildBarrierEntry | undefined {
   return state.barrier.find((entry): entry is ChildBarrierEntry => entry.kind === "child");
+}
+
+// -- fork/join (Slice G.1) -----------------------------------------------------
+
+/**
+ * Installs an active fork: a fresh `WorkflowParallelState` with one `ready` branch per authored
+ * branch, each branch handed the same immutable fork-input snapshot and its own Stage visit.
+ *
+ * Branch visits are assigned in authored order starting one past the forking Stage's visit, so every
+ * branch, and the eventual join successor, occupies a distinct visit number. The caller owns the
+ * `transitions` counter (a fork entry is one transition, like any other edge).
+ */
+export function installFork(
+  state: WorkflowControlState,
+  fork: WorkflowForkDefinition,
+  forkInput: StageResult,
+): WorkflowControlState {
+  const forkVisit = state.forks + 1;
+  const branches: WorkflowParallelBranchState[] = fork.branches.map((branch, index) => ({
+    branchId: branch.id,
+    stageId: branch.stage,
+    visit: state.visit + 1 + index,
+    input: forkInput,
+    progress: {},
+    status: "ready",
+    result: null,
+  }));
+  return {
+    ...state,
+    visit: state.visit + fork.branches.length,
+    forks: forkVisit,
+    barrier: [],
+    boundary: null,
+    provisionalResult: forkInput,
+    join: null,
+    parallel: { forkId: fork.id, forkVisit, input: forkInput, branches, joinReady: false },
+  };
+}
+
+/** The immutable join snapshot for an active fork whose branches have all completed, authored order. */
+export function joinContextOf(parallel: WorkflowParallelState): WorkflowJoinContext {
+  return {
+    forkId: parallel.forkId,
+    branches: parallel.branches.map((branch) => ({
+      branchId: branch.branchId,
+      stageId: branch.stageId,
+      result: branch.result,
+    })),
+  };
 }
