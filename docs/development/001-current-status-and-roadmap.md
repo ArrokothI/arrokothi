@@ -377,6 +377,11 @@ hostile-code isolated untrusted code behind a real isolation backend and resourc
 Define an `ExecutionEnvironment`/isolation seam and run one untrusted capability or controller
 extension in a credible isolated backend with explicit filesystem, network, secret, CPU/memory,
 timeout, termination, and audit behavior. Prove fail-closed behavior when isolation is unavailable.
+The proof must also demonstrate that the physical environment is replaceable infrastructure rather
+than runtime identity: one logical Execution can release, lose, or replace its isolated environment
+and later reacquire a suitable environment without becoming a different Execution. Backing
+credentials remain outside the hostile environment and are exercised only through mediated,
+authorized operations.
 
 ### Explicit non-goals
 
@@ -392,6 +397,8 @@ timeout, termination, and audit behavior. Prove fail-closed behavior when isolat
 - the isolated proof prevents at least the declared filesystem/network/secret escapes;
 - resource exhaustion, timeout, cancellation, and audit behavior are tested;
 - identity and credential boundaries are distinct from Execution identity;
+- an Execution can replace/reacquire an isolated environment without changing logical identity;
+- the hostile environment never receives raw backing credentials for mediated operations;
 - disabled isolation adds no external round trip to the trusted-local path.
 
 ### Dependencies
@@ -442,12 +449,19 @@ in-flight uncertain outcomes          scheduler/requeue state
 `PendingOperation` and `ControllerResumption` remain semantically distinct even if one backend
 shares transaction or storage machinery.
 
+The durable implementation must also preserve the authoritative source facts and references needed
+for later authorized context/reconstruction strategies after restart. This is an optionality
+requirement, not a unified-log requirement: model trace or rendered invocation context must not
+become recovery-critical, and runtime Events/history, Effect journal, controller progress, memory,
+resources, and trace retain their distinct meanings even if one backend shares storage machinery.
+
 ### Explicit non-goals
 
 - choosing a universal durable platform for every deployment;
 - treating reconstruction over the same in-memory store as crash durability;
 - retrying uncertain consequential work as if it definitely failed;
 - collapsing Events, Effect journal, controller progress, and trace into one log;
+- requiring model trace or previously rendered prompt/context for correctness or restart;
 - redesigning controller semantics for backend convenience.
 
 ### Exit criteria
@@ -457,6 +471,8 @@ shares transaction or storage machinery.
 - replay/dispatch policy preserves honest `success | failure | unknown` certainty;
 - duplicate external consequences are prevented or surfaced according to declared guarantees;
 - recovery does not merge PendingOperation with ControllerResumption meaning;
+- durable source facts remain available for an authorized fresh-context reconstruction strategy
+  without depending on model trace as semantic state;
 - reference durability cost/write amplification is measured.
 
 ### Dependencies
@@ -500,7 +516,11 @@ A single reproducible program must include:
 - heterogeneous discovered capabilities/services through a small Active View;
 - MCP and/or A2A projection;
 - one hosted/isolated execution path;
-- restart/recovery while real pending state exists.
+- restart/recovery while real pending state exists;
+- at least one long-lived Execution that survives process restart after its prior isolated
+  environment is gone, reacquires a fresh environment, receives a bounded freshly compiled model
+  context from retained authorized sources rather than its entire lifetime history, and continues
+  under the same logical Execution identity.
 
 ### Explicit non-goals
 
