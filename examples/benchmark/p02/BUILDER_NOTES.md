@@ -48,6 +48,14 @@ is a first-class answer rather than a missing piece. Classification: documentati
 A turn that records five freshly supplied lead fields in one model step needs the model to emit
 five `memory_write_*` calls in one step. With the P01-style default of `3` not all of them were
 dispatched and no error reached the runner — the symptom was an incomplete lead record a couple of
-turns later. Raising `maxOperationCallsPerStep` to 8 fixed it, but "the step exceeded the per-step
-call budget" deserves to reach the journal or the turn result the way a rejected memory write does.
+turns later. Raising `maxOperationCallsPerStep` to 8 fixed the silent-drop case, but "the step
+exceeded the per-step call budget" deserves to reach the journal or the turn result the way a
+rejected memory write does.
+
+A later scenario (P02-V2-S17) then showed the other failure mode of the same ceiling: an opening
+turn that supplies intent, location, budget, timeline, financing, first name, last name and phone
+at once is 8 `memory_write` calls plus one `properties.search` — 9 actions in one step — and the
+reference executor *hard-fails* that step with `agent_action_fanout_exceeded` rather than dropping
+a call. Raised to 10 (9 real actions + one slot of slack). No kernel/semantic change; this is an
+application authority budget on one benchmark example.
 Classification: ergonomics / observability.

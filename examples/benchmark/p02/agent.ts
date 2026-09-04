@@ -96,7 +96,12 @@ export function createP02AgentDefinition(): AgentDefinition {
       },
       limits: {
         maxModelCalls: 48,
-        maxOperationCallsPerStep: 8,
+        // A fully-specified opening turn (intent + location + budget + timeline + financing +
+        // first name + last name + phone = 8 memory_write calls, then one properties.search) is
+        // 9 legitimate actions in a single model step. A ceiling of 8 hard-failed that step with
+        // agent_action_fanout_exceeded and aborted the scenario (P02-V2-S17). Raised to 10 (9 real
+        // actions + one slot of slack for a stochastic redundant call), mirroring the P01 fix.
+        maxOperationCallsPerStep: 10,
         maxContextMessages: 32,
       },
       completion: "respond_and_wait",
