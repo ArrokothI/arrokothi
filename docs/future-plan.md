@@ -857,6 +857,46 @@ context caching
 
 Measure both task quality and context efficiency. Larger context is not automatically better context.
 
+### 10.4.1 Queryable historical context source
+
+Long-lived managed Agents may benefit from selectively rereading retained historical observations
+that no longer fit in the current model context. External managed-agent systems provide evidence
+that this capability can be useful, but they do not establish that ArrokothI needs one unified
+`Session`, `ExecutionHistory`, or append-only Journal abstraction.
+
+Questions to validate after durable runtime evidence exists:
+
+```text
+Do durable Events/history, Effect records, controller state, memory, Artifacts, and resources
+already provide sufficient sources for fresh-context reconstruction?
+
+Would a read-only HistoricalObservationView / ExecutionHistory-style interface materially simplify
+context compilation without becoming a new source of runtime truth?
+
+What historical material is retained, compacted, summarized, redacted, expired, or referenced?
+
+Can an authorized context compiler retrieve older observations without exposing the entire lifetime
+history or coupling model context to storage layout?
+
+Should retrieval expose semantic observations/references rather than raw backend journal rows?
+
+Does evidence justify a first-class kernel interface, or only a replaceable context-source/provider
+mechanism above existing durable records?
+```
+
+Preserve:
+
+```text
+historical execution data != invocation context
+historical execution data != Derived Semantic Memory
+historical execution data != model invocation trace
+historical execution data != Effect journal
+backend append-only storage != one canonical Session ontology
+```
+
+Do not make model trace, previously rendered prompts, or a unified event log recovery-critical merely
+because one context strategy finds historical retrieval useful.
+
 ### 10.5 Long-horizon progress protocols
 
 Long-running work may need explicit externalized continuity rather than assuming one model context persists forever.
