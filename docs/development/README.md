@@ -11,6 +11,7 @@ architecture semantics.
 | What is canonical? | [`../README.md`](../README.md), then the canonical concept owner it names. |
 | What does the current kernel demonstrably implement? | [`002-implemented-kernel-baseline.md`](002-implemented-kernel-baseline.md) |
 | What is the current status and next roadmap? | [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) |
+| What benchmark/stabilization gate must be completed before Slice H becomes the main track? | [`008-post-g-benchmark-rebuild-and-stabilization-gate.md`](008-post-g-benchmark-rebuild-and-stabilization-gate.md) |
 | How should Agent quality work be evaluated? | [`003-agent-effectiveness-guidance.md`](003-agent-effectiveness-guidance.md) |
 | What efficiency and authoring constraints apply? | [`004-efficiency-and-developer-ergonomics.md`](004-efficiency-and-developer-ergonomics.md) |
 | What MCP baseline exists and what must future protocol work preserve? | [`005-interoperability-baseline-and-next-constraints.md`](005-interoperability-baseline-and-next-constraints.md) |
@@ -27,7 +28,9 @@ For ordinary coding or review work:
    implementation evidence;
 3. read [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) for current and
    next work;
-4. load only the specialized active document relevant to the task.
+4. if the task touches the current pre-H benchmark/v0.8.1 stabilization campaign, read
+   [`008`](008-post-g-benchmark-rebuild-and-stabilization-gate.md);
+5. load only the specialized active document relevant to the task.
 
 Do **not** load every Slice A–G record into context by default. Those records are historical
 engineering evidence under [`legacy/`](legacy/README.md) and are useful only when investigating a
@@ -41,8 +44,14 @@ roadmap's “v0.8 architecture-complete experimental release” gate has been me
 
 The post-Slice-G verdict is **NO**: portable service contracts, broader interoperability,
 progressive heterogeneous discovery, hosted containment/security, durable restart/recovery, and a
-whole-architecture integration campaign remain. The dependency-ordered plan is in
+whole-architecture integration campaign remain. The dependency-ordered architecture plan is in
 [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md).
+
+Before Slice H becomes the main architecture track, the project is running a scoped benchmark and
+stabilization gate: rebuild the benchmark as standalone P01-P04 tasks, repair benchmark-controlled
+effect/judge/provenance defects, add Synthetic provider support, harden/freeze the competitor set,
+and build a new immutable comparison campaign without mutating the frozen v0.8.0 corpus. That plan
+is in [`008`](008-post-g-benchmark-rebuild-and-stabilization-gate.md).
 
 ## Document roles
 
