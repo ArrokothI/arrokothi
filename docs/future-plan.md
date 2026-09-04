@@ -322,6 +322,41 @@ Skill
 interaction template
 ```
 
+The detailed hierarchical namespace and Context Scout research remains in
+[`research/jit-capability-namespace-and-context-scouts.md`](research/jit-capability-namespace-and-context-scouts.md).
+Do not duplicate its ontology, prototype sequence, or benchmark matrix here.
+
+A separate unresolved integration boundary is **provider-native JIT tool loading**. Some model
+providers can register a broad deferred tool set, search it, and hydrate only selected schemas into
+the model's immediate context. Treat that as context-loading/projection machinery, not as an
+authority mechanism.
+
+Questions to validate:
+
+```text
+Should a provider deferred-tool registry count as model-discoverable exposure and therefore be
+bounded by the current Active/Exposed View rather than by Effective Authority alone?
+
+Do we need an explicit non-semantic Loaded/Materialized View below Active View, or should that remain
+purely provider-adapter state?
+
+How should provider-discovered/hydrated schemas preserve the immutable invocation projection and
+binding guarantees if the provider expands them dynamically?
+
+Which provider capabilities deserve normalized feature discovery (deferred tools, native tool
+search, custom search hooks, schema hydration, provider context editing)?
+
+When does ArrokothI pre-filtering materially improve provider-native search quality, latency, or cost
+versus passing the entire already-discoverable set to the provider?
+```
+
+Preserve:
+
+```text
+provider deferral/search != authority
+provider-loaded schema    != new grant
+```
+
 ---
 
 ## 3. Memory evolution
@@ -897,6 +932,61 @@ backend append-only storage != one canonical Session ontology
 Do not make model trace, previously rendered prompts, or a unified event log recovery-critical merely
 because one context strategy finds historical retrieval useful.
 
+### 10.4.2 Semantic context IR and provider rendering
+
+The reference information compiler can remain simple while experiments ask whether richer context
+engineering needs a semantic intermediate representation before provider-specific rendering.
+Conceptually, a compiler might select typed sections such as:
+
+```text
+instructions
+Structured Memory
+Working Notes
+Derived Semantic Memory
+retrieved evidence / Resource references
+behavioral examples
+history / observations
+current input
+```
+
+A provider renderer could then choose model-specific ordering and representation while the separate
+operation branch continues to own model-callable capability projection.
+
+Questions to validate:
+
+```text
+Which context-section semantics are stable enough to standardize, and which should remain local to a
+replaceable compiler strategy?
+
+Should information selection identity/digest be distinct from provider-rendering identity/digest so
+the same selected context can be compared under Claude-, GPT-, Qwen-, or other renderers?
+
+How much reordering/reformatting may a provider renderer perform without changing the semantic
+selection being evaluated?
+
+How should ArrokothI exploit provider prompt caching, context editing/compaction, retained reasoning,
+or other native context features without allowing provider mechanics to decide authoritative state,
+provenance, or what information is semantically retained?
+
+How should evaluation/reproducibility work when a hosted provider adds hidden model scaffolding or
+otherwise does not expose the exact final token sequence?
+
+Can the same semantic context representation serve both hosted providers, where ArrokothI controls
+structured API fields but not the final chat template, and self-hosted open-weight models, where the
+adapter may control the exact chat template/tokenization protocol?
+
+Should behavioral examples become first-class selected context items, or remain authored prompt text
+until evidence shows a portable contract is useful?
+```
+
+Preserve:
+
+```text
+semantic context selection != provider prompt rendering
+provider context mechanics   != memory semantics
+provider hidden scaffold     != ArrokothI authority
+```
+
 ### 10.5 Long-horizon progress protocols
 
 Long-running work may need explicit externalized continuity rather than assuming one model context persists forever.
@@ -1013,6 +1103,28 @@ selection latency
 extra model turns
 input tokens
 schema hydration cost
+```
+
+The namespace research note owns the detailed hierarchy/Scout design. One additional representation
+question worth keeping open here is whether folder/category paths should be **virtual views over stable
+typed descriptor references** rather than one canonical tree. The same Operation, Resource, Skill, or
+service could then appear in domain-, task-, frequency-, recovery-, or other context-specific views
+without duplicating its identity.
+
+Questions:
+
+```text
+Should category/folder placement be disposable projection metadata while stable typed refs remain the
+only identity used for binding and authorization?
+
+How are dynamic task/frequency views produced, invalidated, and traced so model-visible organization
+can change without making old references ambiguous?
+
+Which ranking/frequency signals may be Execution-local, application-local, user-specific, or global,
+and how do we prevent cross-principal leakage or self-reinforcing stale rankings?
+
+Can multiple views improve small-model navigation enough to justify the additional discovery surface,
+or does one hierarchy plus search perform better?
 ```
 
 Do not make an LLM selector mandatory without evidence that it improves the full task-level tradeoff.
