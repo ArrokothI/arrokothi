@@ -11,7 +11,8 @@ architecture semantics.
 | What is canonical? | [`../README.md`](../README.md), then the canonical concept owner it names. |
 | What does the current kernel demonstrably implement? | [`002-implemented-kernel-baseline.md`](002-implemented-kernel-baseline.md) |
 | What is the current status and next roadmap? | [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) |
-| What is the **current** benchmark/stabilization checkpoint before Slice H? | [`011-post-corpus-review-and-interactive-user-evaluation-lane.md`](011-post-corpus-review-and-interactive-user-evaluation-lane.md) |
+| What is the **current** benchmark/stabilization checkpoint before Slice H? | [`013-benchmark-subject-build-isolation-and-runtime-boundaries.md`](013-benchmark-subject-build-isolation-and-runtime-boundaries.md) |
+| What fixed-corpus / interactive-user policy led into the current checkpoint? | [`011-post-corpus-review-and-interactive-user-evaluation-lane.md`](011-post-corpus-review-and-interactive-user-evaluation-lane.md) |
 | What evaluator ownership/hybrid-scoring rule applies when matrices/evaluators are materialized? | [`012-benchmark-evaluator-ownership-and-hybrid-scoring.md`](012-benchmark-evaluator-ownership-and-hybrid-scoring.md) |
 | What was the post-reconciliation case-authoring checkpoint that led here? | [`010-post-reconciliation-benchmark-case-authoring-gate.md`](010-post-reconciliation-benchmark-case-authoring-gate.md) |
 | What was the original post-G benchmark/stabilization rationale and campaign plan? | [`008-post-g-benchmark-rebuild-and-stabilization-gate.md`](008-post-g-benchmark-rebuild-and-stabilization-gate.md) |
@@ -32,10 +33,11 @@ For ordinary coding or review work:
    implementation evidence;
 3. read [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) for current and
    next architecture work;
-4. if the task touches the current pre-H benchmark/v0.8.1 stabilization campaign, read
-   [`011`](011-post-corpus-review-and-interactive-user-evaluation-lane.md) **first**; when the work touches
-   coverage matrices, evaluator mappings, judge prompts, sentinels, or result aggregation, also read
-   [`012`](012-benchmark-evaluator-ownership-and-hybrid-scoring.md); then load
+4. if the task touches the current pre-H benchmark/runtime/subject-build campaign, read
+   [`013`](013-benchmark-subject-build-isolation-and-runtime-boundaries.md) **first**; then load
+   [`011`](011-post-corpus-review-and-interactive-user-evaluation-lane.md) for fixed-corpus and interactive-lane policy;
+   when the work touches coverage matrices, evaluator mappings, judge prompts, sentinels, or result aggregation,
+   also read [`012`](012-benchmark-evaluator-ownership-and-hybrid-scoring.md); then load
    [`010`](010-post-reconciliation-benchmark-case-authoring-gate.md) for the preceding case-authoring gate,
    [`009`](009-benchmark-provider-and-source-audit-corrections.md) for provider/quota/source-audit policy,
    and [`008`](008-post-g-benchmark-rebuild-and-stabilization-gate.md) for the original forensic rationale
@@ -58,19 +60,20 @@ whole-architecture integration campaign remain. The dependency-ordered architect
 [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md).
 
 Before Slice H becomes the main architecture track, the project is finishing a scoped benchmark and
-stabilization gate. P01-P04 now have all 112 scored cases concretely authored (8 public, 104 evaluation),
-while canonical coverage matrices/evaluator mappings and generation readiness remain deliberately blocked.
-The current checkpoint is the full-corpus review and fixed-benchmark freeze path in
-[`011`](011-post-corpus-review-and-interactive-user-evaluation-lane.md). Evaluator materialization follows
-[`012`](012-benchmark-evaluator-ownership-and-hybrid-scoring.md): objective lifecycle/state/payload truth is
-checked deterministically, semantic meaning is judged semantically, and hybrid requirements explicitly
-separate those responsibilities rather than replacing semantic decisions with regex/keyword heuristics.
-`011` also records a separate, non-blocking interactive-user realism lane: fixed cases remain canonical,
-while a deterministic user director plus LLM surface realizer may be piloted diagnostically after the shared
-evidence/runtime contracts stabilize. The original rationale and campaign principles remain in
-[`008`](008-post-g-benchmark-rebuild-and-stabilization-gate.md), with provider/quota corrections in
-[`009`](009-benchmark-provider-and-source-audit-corrections.md) and the preceding case-authoring checkpoint in
-[`010`](010-post-reconciliation-benchmark-case-authoring-gate.md).
+stabilization gate. P01-P04 have 112 scored cases, frozen coverage/evaluator mappings, and a provider-neutral
+controlled-effect + normalized-evidence harness, while generation readiness remains deliberately blocked.
+The current checkpoint is [`013`](013-benchmark-subject-build-isolation-and-runtime-boundaries.md): implement
+the provider-neutral/OpenAI-compatible runtime, quota/429 handling, per-generation-unit resumability, and the
+builder/runtime isolation boundary before framework freeze and subject generation. The canonical subject-build
+experiment should resemble normal client development: a strong coding agent receives public product requirements
+plus the complete frozen framework checkout and its public docs/manuals, but never receives the benchmark repo root,
+hidden cases, evaluator mappings, judge prompts, prior scores, or evaluation-specific hints. Frozen runnable subject
+applications live in the benchmark repository; framework implementations remain in their own pinned repositories or
+packages. Evaluator materialization follows [`012`](012-benchmark-evaluator-ownership-and-hybrid-scoring.md), and
+[`011`](011-post-corpus-review-and-interactive-user-evaluation-lane.md) continues to own the non-blocking interactive-user lane.
+The original rationale and campaign principles remain in [`008`](008-post-g-benchmark-rebuild-and-stabilization-gate.md),
+with provider/quota corrections in [`009`](009-benchmark-provider-and-source-audit-corrections.md) and the preceding
+case-authoring checkpoint in [`010`](010-post-reconciliation-benchmark-case-authoring-gate.md).
 
 ## Document roles
 
