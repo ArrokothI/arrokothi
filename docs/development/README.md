@@ -11,7 +11,8 @@ architecture semantics.
 | What is canonical? | [`../README.md`](../README.md), then the canonical concept owner it names. |
 | What does the current kernel demonstrably implement? | [`002-implemented-kernel-baseline.md`](002-implemented-kernel-baseline.md) |
 | What is the current status and next roadmap? | [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) |
-| What is the **current** benchmark/stabilization checkpoint before Slice H? | [`010-post-reconciliation-benchmark-case-authoring-gate.md`](010-post-reconciliation-benchmark-case-authoring-gate.md) |
+| What is the **current** benchmark/stabilization checkpoint before Slice H? | [`011-post-corpus-review-and-interactive-user-evaluation-lane.md`](011-post-corpus-review-and-interactive-user-evaluation-lane.md) |
+| What was the post-reconciliation case-authoring checkpoint that led here? | [`010-post-reconciliation-benchmark-case-authoring-gate.md`](010-post-reconciliation-benchmark-case-authoring-gate.md) |
 | What was the original post-G benchmark/stabilization rationale and campaign plan? | [`008-post-g-benchmark-rebuild-and-stabilization-gate.md`](008-post-g-benchmark-rebuild-and-stabilization-gate.md) |
 | What provider/quota/source-audit corrections apply to that plan? | [`009-benchmark-provider-and-source-audit-corrections.md`](009-benchmark-provider-and-source-audit-corrections.md) |
 | How should Agent quality work be evaluated? | [`003-agent-effectiveness-guidance.md`](003-agent-effectiveness-guidance.md) |
@@ -31,10 +32,11 @@ For ordinary coding or review work:
 3. read [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) for current and
    next architecture work;
 4. if the task touches the current pre-H benchmark/v0.8.1 stabilization campaign, read
-   [`010`](010-post-reconciliation-benchmark-case-authoring-gate.md) **first**, then load
-   [`009`](009-benchmark-provider-and-source-audit-corrections.md) for provider/quota/source-audit policy
+   [`011`](011-post-corpus-review-and-interactive-user-evaluation-lane.md) **first**, then load
+   [`010`](010-post-reconciliation-benchmark-case-authoring-gate.md) for the preceding case-authoring gate,
+   [`009`](009-benchmark-provider-and-source-audit-corrections.md) for provider/quota/source-audit policy,
    and [`008`](008-post-g-benchmark-rebuild-and-stabilization-gate.md) for the original forensic rationale
-   when needed;
+   only when needed;
 5. load only the specialized active document relevant to the task.
 
 Do **not** load every Slice A–G record into context by default. Those records are historical
@@ -52,13 +54,16 @@ progressive heterogeneous discovery, hosted containment/security, durable restar
 whole-architecture integration campaign remain. The dependency-ordered architecture plan is in
 [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md).
 
-Before Slice H becomes the main architecture track, the project is running a scoped benchmark and
-stabilization gate. The source-audit/reconciliation phase for standalone P01-P04 is now substantially
-complete, and all four benchmark-owned task manifests are at `ready-for-case-authoring`. The immediate
-checkpoint is a cross-task normalization review followed by coverage-matrix and case-authoring work; see
-[`010`](010-post-reconciliation-benchmark-case-authoring-gate.md). The original rationale and campaign
-principles remain in [`008`](008-post-g-benchmark-rebuild-and-stabilization-gate.md), with provider/quota and
-source-audit corrections in [`009`](009-benchmark-provider-and-source-audit-corrections.md).
+Before Slice H becomes the main architecture track, the project is finishing a scoped benchmark and
+stabilization gate. P01-P04 now have all 112 scored cases concretely authored (8 public, 104 evaluation),
+while canonical coverage matrices/evaluator mappings and generation readiness remain deliberately blocked.
+The current checkpoint is the full-corpus review and fixed-benchmark freeze path in
+[`011`](011-post-corpus-review-and-interactive-user-evaluation-lane.md). That note also records a separate,
+non-blocking interactive-user realism lane: fixed cases remain canonical, while a deterministic user director
+plus LLM surface realizer may be piloted diagnostically after the shared evidence/runtime contracts stabilize.
+The original rationale and campaign principles remain in [`008`](008-post-g-benchmark-rebuild-and-stabilization-gate.md),
+with provider/quota corrections in [`009`](009-benchmark-provider-and-source-audit-corrections.md) and the
+preceding case-authoring checkpoint in [`010`](010-post-reconciliation-benchmark-case-authoring-gate.md).
 
 ## Document roles
 
