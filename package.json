@@ -15,9 +15,7 @@
     "examples/execution-kernel-minimal",
     "examples/minimal-agent",
     "examples/estate-like",
-    "examples/strands-gemini",
-    "examples/benchmark/p01",
-    "examples/benchmark/p02"
+    "examples/strands-gemini"
   ],
   "engines": {
     "node": ">=22.9.0"
@@ -32,9 +30,6 @@
     "example:strands": "node --env-file-if-exists=.env --experimental-strip-types examples/strands-gemini/main.ts",
     "example:execution-kernel": "node --experimental-strip-types examples/execution-kernel-minimal/main.ts",
     "test:example:execution-kernel": "node --test --experimental-strip-types examples/execution-kernel-minimal/*.test.ts",
-    "example:benchmark:p01": "node --env-file-if-exists=.env --experimental-strip-types examples/benchmark/p01/main.ts",
-    "example:benchmark:p02": "node --env-file-if-exists=.env --experimental-strip-types examples/benchmark/p02/main.ts",
-    "test:benchmark-subjects": "node --test --experimental-strip-types examples/benchmark/p01/*.test.ts examples/benchmark/p02/*.test.ts",
     "canary:gemini": "node --env-file-if-exists=.env --experimental-strip-types scripts/gemini-provider-canary.ts",
     "canary:workflow": "node --env-file-if-exists=.env --experimental-strip-types scripts/workflow-scenario-canary.ts",
     "canary:mcp:gemini": "node --env-file-if-exists=.env --experimental-strip-types scripts/mcp-gemini-canary.ts",

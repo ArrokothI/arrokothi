@@ -360,8 +360,9 @@ policy and isolation backends.
 ## 15. Conformance, eval, and benchmark surfaces
 
 **Implemented capability.** Offline semantic conformance across packages and
-`tests/conformance/`; package contracts; behavioral Agent evals under `tests/evals/`; deterministic
-benchmark subjects under `examples/benchmark/`; opt-in live canaries.
+`tests/conformance/`; package contracts; behavioral Agent evals under `tests/evals/`; opt-in live
+canaries. Cross-framework benchmark subjects and their evaluation live in the standalone
+`ArrokothI/benchmark` repository, not in this repository.
 
 **Non-obvious invariant.** Semantic conformance ≠ behavioral quality evaluation ≠ performance
 measurement ≠ live integration health. A passing category cannot substitute for another.
@@ -371,7 +372,7 @@ invariants being tested. Engineering discipline is in [`003`](003-agent-effectiv
 and [`004`](004-efficiency-and-developer-ergonomics.md).
 
 **Representative commands.** `npm test`, `npm run test:conformance`, `npm run test:mcp`,
-`npm run test:evals`, `npm run test:benchmark-subjects`, `npm run typecheck`.
+`npm run test:evals`, `npm run typecheck`.
 
 **Major deferrals.** Post-Slice-G orchestration-overhead report, durable/hosted benchmarks, and the
 whole-architecture release-readiness campaign in [`001`](001-current-status-and-roadmap.md).

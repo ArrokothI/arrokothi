@@ -78,9 +78,9 @@ root surface is the real fix, and `execution-api.ts` already anticipates it.
 
 ## 3. Every other example targets the legacy surface — `documentation`
 
-**Observation.** `examples/minimal-agent/`, `examples/estate-like/`, and both
-`examples/benchmark/` subjects build on `AgentRuntime`, `InMemorySessionStore`, `ToolRegistry`,
-`KnowledgeIndex`, and the legacy `defineAgent`. None exercises `Harness`, `Execution`, Stages,
+**Observation.** `examples/minimal-agent/` and `examples/estate-like/` build on `AgentRuntime`,
+`InMemorySessionStore`, `ToolRegistry`, `KnowledgeIndex`, and the legacy `defineAgent`. None
+exercises `Harness`, `Execution`, Stages,
 Effects, Structured Memory as an Execution-local view, Working Notes, or child composition.
 
 **Consequence for a builder.** "Read the examples" — the correct instinct, and the instruction most

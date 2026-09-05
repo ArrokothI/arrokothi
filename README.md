@@ -205,8 +205,6 @@ Agent executor is Strands, while model inference remains behind a provider-neutr
 npm run example:minimal
 npm run example:estate
 npm run example:strands          # add -- --live for Gemini
-npm run example:benchmark:p01 -- --check
-npm run example:benchmark:p02 -- --check
 npm run canary:gemini            # optional live provider check
 npm run canary:workflow          # optional live 0.8.x Workflow scenario
 npm run canary:mcp:gemini        # optional live Agent -> MCP Tool check

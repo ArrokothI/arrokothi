@@ -229,9 +229,8 @@ Work down this list. **Do not jump to a custom controller** — it is the last o
 **The package root `@arrokothi/core` is a different, legacy surface.** It still carries the
 Session/Flow/`AgentRuntime` API and exports a *different* `defineAgent` and a different type named
 `AgentDefinition`. Importing it into Execution-kernel code produces a definition that will not run,
-and the failure appears far from the import. `examples/minimal-agent/`, `examples/estate-like/`, and
-both `examples/benchmark/` subjects target that legacy surface, so do not use them as models for
-Execution-kernel code.
+and the failure appears far from the import. `examples/minimal-agent/` and `examples/estate-like/`
+target that legacy surface, so do not use them as models for Execution-kernel code.
 
 Be honest about the level you are working at: these exports are the current *explicit* kernel
 surface, not a polished application-composition API. Assembling a Harness means naming a definition
