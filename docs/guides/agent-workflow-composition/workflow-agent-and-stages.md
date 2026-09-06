@@ -1,138 +1,83 @@
-# Workflow, Agent, and Stage kinds
+# Choose control and Stages
 
-> **Application/developer guidance — not canonical architecture.**
-> **Canonical owner:** [`../../composition.md`](../../composition.md), with the system-wide
-> invariants in [`../../mental-model.md`](../../mental-model.md).
-> Precedence, principles, and the end-to-end procedure are in [`README.md`](README.md).
+[Guide home](README.md). Canonical owner: [composition](../../composition.md).
 
-This page covers builder step 4: who owns semantic progression, and which Stage body implements each
-node. It does not tell you whether your chosen surface can *emit* the operations your design needs —
-that is [current authoring surface](current-authoring-surface.md), and you should read it
-immediately after this page.
+Use ordinary deterministic code when the answer is computable. Put it in a Function Stage only when
+it belongs to an explicitly managed process. Use a Workflow when you can declare the possible semantic
+steps and transitions. Use an Agent for the part whose next action cannot be enumerated in advance.
+A model choosing among fixed labels is still a Workflow; neither tool use nor many LLM calls makes a
+Workflow an Agent.
 
----
+## Four Stage kinds
 
-## 1. The distinction
-
-```text
-Workflow
-= system-defined semantic topology
-  the application declares the Stages and the allowed transitions
-
-Agent
-= primarily model-directed semantic progression
-  the model owns an open-ended continuation space inside runtime bounds
-```
-
-Two facts that decide most arguments:
-
-- **The number of LLM calls does not matter.** An LLM Stage may make several model calls and remain
-  a Workflow. An Agent with one model call is still an Agent.
-- **A model choosing among declared transition labels is still Workflow semantics.** Model-driven
-  *data* is fine; model-driven *topology* is Agent semantics, and dynamic topology mutation is out
-  of scope for 0.8.x.
-
----
-
-## 2. Decision procedure
-
-Run this per requirement cluster, not once per product.
-
-1. **Can code alone satisfy it?** Then no model is involved. Function Stage or host logic. Stop.
-2. **Can you write down the complete set of semantic steps and the conditions between them?**
-   If yes → **Workflow**. The steps become Stages; the conditions become declared transitions.
-3. **Is the uncertainty about *which declared branch*, or about *what to do at all*?**
-   - which declared branch → **Workflow** with labelled transitions; a classifier is an LLM Stage.
-   - what to do at all → **Agent**.
-4. **Does progression depend on what earlier observations reveal, in a way you cannot enumerate?**
-   → **Agent** for that part only.
-5. **Is the open-ended part a bounded sub-problem inside a knowable process?**
-   → **Workflow** whose one Stage is an **Agent Stage** (a child Agent call). This is the default
-   hybrid and it is usually the right answer for a real product.
-6. **Would you struggle to write the stopping condition?** That is a signal the boundary is wrong.
-   A Workflow's stopping condition is its topology; an Agent needs an explicit one (§5, and budgets
-   in [capabilities](capabilities-effects-and-authority.md)).
-
----
-
-## 3. Choosing the body for a Workflow Stage
-
-Four Stage kinds exist, and exactly four. `router`, `classifier`, `gate`, `guard`, `retriever`,
-`evaluator`, and `aggregator` are compositions of these plus transitions — not new kinds.
-
-| Use | Kind | When |
+| Kind | Authoring fields | Application wiring |
 |---|---|---|
-| exact computation, validation, ranking, merging, record filtering; requesting capability/memory Effects programmatically | **Function Stage** | the answer is computable, or the program (not the model) decides an action must occur |
-| a bounded, program-defined language task | **LLM Stage** | interpretation/summarisation/classification/composition with a *predetermined* number of model phases (`maxModelPhases`, default 1) |
-| a bounded sub-problem needing open-ended model progression | **Agent Stage** | you want the Agent's terminal result as this Stage's output; the parent graph must not show the Agent's internal cycles |
-| a reusable sub-process with its own topology | **Workflow Stage** | recursive composition without flattening the child graph into the parent |
+| `function` | `implementationRef`, optional `config` / `resourceViews`, transitions | `createFunctionStageRegistry` handlers |
+| `llm` | `model`, `system`, `prompt`, optional `callables`, `maxModelPhases`, transitions | Workflow model resolver and providers |
+| `agent` | `child: { definitionId, definitionVersion }`, optional `requestedOperations` | Saved child definition, Agent controller, spawn policy + credits |
+| `workflow` | Same child-reference shape | Saved Workflow definition/controller, spawn policy + credits |
 
-Notes that matter in practice:
+Router, validator, retriever, gate, aggregator and evaluator are application roles, not additional
+Stage kinds. Stage IDs are graph identities, not Execution IDs. Stages have no independent mailbox,
+lifecycle, authority, or cancellation.
 
-- An LLM Stage's model-callable operations are **declared in the definition** as
-  `{ name, description, input, capability, operation }`. The model-facing `name` is vocabulary; the
-  definition owns the identity. A returned name the Stage never declared resolves to nothing.
-- `maxModelPhases` is enforced structurally: callables are exposed only while phases remain, so the
-  last phase cannot ask for more work. There is no phase count that turns an LLM Stage into an
-  Agent — that is a different Execution kind.
-- A Function Stage cannot call an executor. It *returns* `awaitEffects` requests; the controller
-  proposes them and the Harness performs them. Propose, do not perform.
-- Agent and Workflow Stages take a `ChildDefinitionRef` plus `requestedOperations`. Requested is not
-  granted, and `requestedOperations` narrows only capability-operation authority — see
-  [composition](composition-children-and-concurrency.md) for what that does and does not cover.
+## Function Stage re-entry
 
-**A Stage is not a mini-Execution.** It has no lifecycle, mailbox, authority envelope, or
-cancellation of its own; those belong to the enclosing Workflow Execution. The canonical statement
-of that boundary is in [`../../composition.md`](../../composition.md).
+A handler receives `input`, `config`, serializable `progress`, `observations`, read-only declared
+resources, activation facts, and (at a join) branch results. It returns one of:
 
----
+- `{ status: 'completed', result: string | null, transition?, progress?, emissions? }`
+- `{ status: 'awaitEffects', effects: [...], progress?, emissions? }`
+- `{ status: 'failed', code, message }`
 
-## 4. Hybrid shapes that work
+After requested Effects settle, the same Stage visit runs again. Look up the observation by its
+Stage-local `key`, check its `outcome`, and only then complete or propose the next round. Returning
+the initial request unconditionally on every invocation repeats work. Observations are replaced for
+each round; preserve still-needed facts in `progress`. Keys must be unique within a request batch.
+The controller does not infer a retry/merge policy for you.
 
-```text
-multi-turn conversation with exact gating
-  Agent Execution (root, Structured Memory bound at creation)
-  + read-only grounding capability
-  + host code between turns reading structuredMemoryOf and applying the exact rule
-  + EffectAuthorizer / ConfirmationPolicy gating the consequential capability
+A completed Stage passes its result to the next Stage. For `always` transitions omit `transition`;
+for `labeled` transitions return one declared label. Undeclared labels fail. `progress` is Stage-local
+and does not automatically flow to the next Stage. See the compiled handler in
+[patterns.ts](../../../examples/execution-kernel-minimal/patterns.ts).
 
-knowable process with one genuinely open sub-problem
-  Workflow: Function Stage (prepare) → Agent Stage (investigate)
-            → Function Stage (verify the child's terminal result) → complete
+## LLM Stage constraints
 
-model interpretation that must become retained state
-  Workflow: LLM Stage (interpret → text) → Function Stage (parse, validate, request WriteMemory)
+The prompt substitutes `{{input}}` with incoming Stage text. `maxModelPhases` defaults to 1. Callables
+are offered only before the final phase, so a Stage that must call a capability then interpret the
+result needs at least 2 phases. A model returning a callable on the final phase fails explicitly.
+The Stage's callables map model-facing names to declared capability/operation identities; they do
+not grant those operations.
 
-open-ended work with reusable exact sub-processes
-  Agent whose capabilities include a Workflow-backed operation implemented by the application
-```
+Labelled transitions use the controller's structured output for `{ transition, result }`. There is
+no arbitrary per-Stage object output schema slot. A bounded extraction can return text that a
+Function Stage parses/validates; persist accepted facts through that Function Stage's WriteMemory
+Effect if needed. Raw JSON serialized as text is possible but is an application encoding: validate
+it at each boundary and do not describe it as typed kernel data flow.
 
-Each of these is worked out in [worked-examples.md](worked-examples.md).
+LLM Stages have no Agent memory/notes/context compiler. An Agent is appropriate when the language
+subtask needs repeated open-ended operation choices or Agent context features, not merely because
+an LLM Stage field is missing. Check the [surface matrix](current-authoring-surface.md) first.
 
----
+## Responses and completion
 
-## 5. Response is not completion
+Agent `completion` defaults to `respond_and_wait`: text is emitted and the Agent waits for more input.
+Use this for a conversation. `complete_on_response` finishes on text; for a one-shot child that must
+return text also declare a **string** `terminalResult` schema. Without a terminal schema the Agent
+can emit text and complete but return no value. An object terminal schema does not parse the text.
 
-An Agent's default `completion` mode is `respond_and_wait`: a response is communication and the
-Execution stays alive. `complete_on_response` makes a response the terminal answer — a deliberate
-contract, appropriate for a one-shot Agent Stage child, wrong for a long-lived conversational
-Execution. Choose it explicitly; do not let the default decide by accident.
+Workflow completion is a declared transition. Its optional terminal proposal is an authored literal,
+not the latest Stage output. Read [child and data-flow limitations](composition-children-and-concurrency.md)
+before designing reusable computed-return subworkflows.
 
-This is also where an Agent's stopping condition lives in practice: a budget the Harness enforces
-plus an instruction the model can act on. The budget is the part that actually holds.
+## Useful combinations
 
----
+- Conversation: root Agent, grounding operations, optional Structured Memory, exact gates in current
+  host policy, and trusted confirmation UI.
+- Known process: Function prepare → LLM classify → declared branches → Function act via Effects.
+- Known process with exploration: Agent child Stage → Function validate the child's result → next
+  action. The parent should establish acceptance independently of the child's prose.
+- Pure deterministic transform: ordinary function. No Execution needed unless identity/lifecycle or
+  runtime-managed Effects are part of the product requirement.
 
-## 6. When *not* to reach for an Agent
-
-- The path is knowable and you are choosing an Agent for flexibility you cannot name.
-- You cannot state a stopping condition or a budget.
-- You cannot state what the environment will report to prove progress.
-- The only thing you actually need is one bounded language task — that is an LLM Stage.
-
-## 7. When to choose parallel Workflow branches
-
-Only when the branches are genuinely independent and the latency is worth the coordination cost. The
-current fork topology is deliberately narrow — check
-[composition](composition-children-and-concurrency.md) before designing around it, because several
-natural shapes are rejected at `defineWorkflow` time.
+See [worked patterns](worked-examples.md) and [tests/diagnosis](evaluation-and-diagnosis.md).
