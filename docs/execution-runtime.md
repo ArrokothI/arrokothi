@@ -982,6 +982,13 @@ mechanical confirmation
 unknown-outcome reporting
 ```
 
+Mechanical confirmation does not create a weaker dispatch path. After approval and the current
+authority re-check, a capability proposal obeys the same prior-operation/idempotency contract as a
+direct proposal. Its own confirmation-gated PendingOperation is the dependency being resolved, not a
+prior attempt that may self-block it. Equivalent consequential proposals that are approved
+concurrently must linearize duplicate recognition with dispatch intent so at most one reaches the
+external executor.
+
 Existing durable execution systems may later implement runtime ports, but their own Workflow/object models must not redefine ArrokothI's Execution semantics. Backend selection is future work in [`future-plan.md`](future-plan.md).
 
 ---

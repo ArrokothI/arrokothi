@@ -146,6 +146,18 @@ interface RequestFacts {
   readonly consequential: boolean;
 }
 
+interface CapabilityDispatchSafety {
+  readonly constraints: AuthorizationConstraints;
+  readonly consequential: boolean;
+  readonly scope: EffectIdempotencyScope;
+  readonly idempotencyKey: IdempotencyKey;
+}
+
+type PriorOperationGuard =
+  | { readonly kind: "proceed" }
+  | { readonly kind: "refuse"; readonly code: string; readonly message: string }
+  | { readonly kind: "replay"; readonly operation: PendingOperation; readonly observation: JsonValue };
+
 /** What the Harness gets back per proposal, for the Activation record and for diagnostics. */
 export interface EffectDispatchRecord {
   readonly effectId: EffectId;
@@ -245,6 +257,15 @@ export type ResolveConfirmationReceipt =
       readonly pendingOperationId: PendingOperationId;
       readonly phase: EffectJournalPhase;
       readonly settledInline: boolean;
+    }
+  /** Approved and authorized, but answered from a prior successful operation; no external dispatch. */
+  | {
+      readonly status: "replayed";
+      readonly confirmationId: string;
+      readonly executionId: ExecutionId;
+      readonly pendingOperationId: PendingOperationId;
+      readonly phase: "replayed";
+      readonly settledInline: true;
     }
   /** Approved, but the current authority now denies it. Nothing dispatched; an ordinary denial. */
   | {
@@ -645,12 +666,34 @@ export class EffectProcessor {
       });
     }
 
+    const capabilityProposal = proposal as UseCapabilityProposal;
+    const safety = this.capabilityDispatchSafety(executionId, effectId, capabilityProposal, decision);
+
+    // Recognise an already-known duplicate before asking a human to approve work the runtime will
+    // not dispatch. This is only an early answer: dispatchCapability repeats the guard in the same
+    // transaction as dispatch intent so two proposals that became gated concurrently are safe too.
+    const prior = await this.checkPriorOperations(
+      executionId,
+      safety.idempotencyKey,
+      safety.consequential,
+      capabilityProposal,
+    );
+    if (prior.kind === "refuse") {
+      return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
+        code: prior.code,
+        message: prior.message,
+      });
+    }
+    if (prior.kind === "replay") {
+      return this.replay(input, capabilityProposal, effectId, correlationId, prior.operation, prior.observation);
+    }
+
     // The confirmation gate, strictly after `allow` and strictly before dispatch. If it fires, the
     // exact payload is persisted and nothing runs until a trusted approve.
     const gated = await this.gateOrNull(input, proposal, effectId, correlationId, requestedAt, decision.grantId);
     if (gated) return gated;
 
-    return this.dispatchCapability(input, proposal as UseCapabilityProposal, effectId, correlationId, decision);
+    return this.dispatchCapability(input, capabilityProposal, effectId, correlationId, decision);
   }
 
   // -- mechanical confirmation gate --------------------------------------
@@ -801,8 +844,9 @@ export class EffectProcessor {
    *              `confirmation.declined` Event; nothing dispatched
    * approve   -> ConfirmationRequest approved (linearization point), then the CURRENT authority is
    *              re-checked on the STORED proposal:
-   *                still allowed -> dispatch the STORED exact payload through the ordinary path,
-   *                                 reusing the exact PendingOperation; no model turn
+   *                still allowed -> apply the ordinary prior-operation guard, then either replay a
+   *                                 prior success or dispatch the STORED exact payload, reusing and
+   *                                 settling this confirmation's PendingOperation; no model turn
    *                now denied    -> nothing dispatched; an ordinary authorization denial
    * ```
    *
@@ -1046,7 +1090,8 @@ export class EffectProcessor {
    * in-transaction authority recheck, or by `dispatchWriteMemory`'s optimistic conflict path) means
    * the gated PendingOperation was already settled `denied` / `rejected` / `conflicted` and one
    * correlated Event routed - the receipt just reports which. An `abandoned` phase means the
-   * requester terminalized mid-resume. Otherwise the stored payload dispatched.
+   * requester terminalized mid-resume. A replay reports that no external dispatch occurred;
+   * otherwise the stored payload dispatched.
    */
   private receiptForResumedRecord(
     request: ConfirmationRequest,
@@ -1067,6 +1112,16 @@ export class EffectProcessor {
     }
     if (record.phase === "abandoned") {
       return { status: "abandoned", confirmationId: request.confirmationId };
+    }
+    if (record.phase === "replayed") {
+      return {
+        status: "replayed",
+        confirmationId: request.confirmationId,
+        executionId: request.executionId,
+        pendingOperationId: operation.pendingOperationId,
+        phase: "replayed",
+        settledInline: true,
+      };
     }
     return this.dispatchedReceipt(request, operation, record);
   }
@@ -2545,43 +2600,12 @@ export class EffectProcessor {
     resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
   ): Promise<EffectDispatchRecord> {
     const executionId = input.context.executionId;
-    const constraints: AuthorizationConstraints = decision.constraints ?? {};
-
-    // Consequentiality is a baseline property of the operation, not a policy opinion: the
-    // descriptor sets the floor, and a decision may only raise it. An unclassified operation
-    // defaults to consequential, so a catalog with a gap fails toward the safe interpretation.
-    // There is structurally no way to read this as `false` when the descriptor says `true` - the
-    // authorization type has no field that could express a downgrade.
-    const descriptor = this.deps.catalog.describe(proposal.capability, proposal.operation);
-    const descriptorConsequential = descriptor?.consequential ?? true;
-    const consequential = descriptorConsequential || constraints.forceConsequential === true;
-
-    const scope: EffectIdempotencyScope = constraints.idempotency ?? proposal.idempotency ?? "none";
-    const idempotencyKey = effectIdempotencyKey({
-      scope,
+    const { constraints, consequential, scope, idempotencyKey } = this.capabilityDispatchSafety(
       executionId,
       effectId,
-      capability: proposal.capability,
-      operation: proposal.operation,
-      input: proposal.input,
-    });
-
-    // The duplicate/unresolved guard runs at proposal time. On the confirmed-dispatch path the exact
-    // payload was already guarded when it was proposed, and §18's re-check concerns *authority*, not
-    // duplicate suppression - which `approveConfirmation` handled by re-running the ceiling and
-    // authorizer on the stored proposal.
-    if (resume === undefined) {
-      const guard = await this.checkPriorOperations(executionId, idempotencyKey, consequential, proposal);
-      if (guard.kind === "refuse") {
-        return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
-          code: guard.code,
-          message: guard.message,
-        });
-      }
-      if (guard.kind === "replay") {
-        return this.replay(input, proposal, effectId, correlationId, guard.operation, guard.observation);
-      }
-    }
+      proposal,
+      decision,
+    );
 
     const pendingOperationId =
       resume?.pendingOperationId ?? (this.deps.ids.next(EFFECT_ID_PREFIXES.pendingOperation) as PendingOperationId);
@@ -2601,7 +2625,8 @@ export class EffectProcessor {
     type DispatchIntent =
       | { readonly kind: "dispatched"; readonly operation: PendingOperation }
       | { readonly kind: "abandoned" }
-      | { readonly kind: "denied"; readonly code: string; readonly message: string };
+      | { readonly kind: "denied"; readonly code: string; readonly message: string }
+      | Extract<PriorOperationGuard, { readonly kind: "refuse" | "replay" }>;
 
     // One transaction: the grant, the pending operation, and the intent to dispatch commit together
     // and commit *before* the call. If this throws, nothing exists and nothing was attempted.
@@ -2663,6 +2688,21 @@ export class EffectProcessor {
           return { kind: "denied", code, message };
         }
       }
+
+      // Duplicate classification and dispatch intent must linearize together. The early proposal
+      // check avoids needless confirmation when possible, but only this in-transaction check closes
+      // the race where two equivalent proposals were gated before either approval dispatched. The
+      // approved confirmation's own not-yet-dispatched row is excluded so it cannot self-block.
+      const guard = await this.checkPriorOperationsInTransaction(
+        tx,
+        executionId,
+        idempotencyKey,
+        consequential,
+        proposal,
+        resume?.pendingOperationId,
+      );
+      if (guard.kind !== "proceed") return guard;
+
       await this.journal(tx, {
         effectId,
         executionId,
@@ -2733,6 +2773,20 @@ export class EffectProcessor {
         settledInline: true,
         refusal: { kind: "effect.denied", code: intent.code, message: intent.message },
       };
+    }
+    if (intent.kind === "refuse") {
+      return this.refuse(
+        input,
+        proposal,
+        effectId,
+        correlationId,
+        "effect.rejected",
+        { code: intent.code, message: intent.message },
+        resume,
+      );
+    }
+    if (intent.kind === "replay") {
+      return this.replay(input, proposal, effectId, correlationId, intent.operation, intent.observation, resume);
     }
     const operation = intent.operation;
 
@@ -3092,27 +3146,50 @@ export class EffectProcessor {
     correlationId: string,
     prior: PendingOperation,
     observation: JsonValue,
+    resume?: { readonly pendingOperationId: PendingOperationId; readonly confirmationId: string },
   ): Promise<EffectDispatchRecord> {
     const at = nowIso(this.deps.clock);
     const eventId = this.deps.ids.next(ID_PREFIXES.event) as EventId;
     const executionId = input.context.executionId;
 
-    const abandoned = await this.deps.store.transact(executionId, async (tx): Promise<boolean> => {
-      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at)) return true;
+    type ReplayCommit = "replayed" | "abandoned" | "gone";
+    const committed = await this.deps.store.transact(executionId, async (tx): Promise<ReplayCommit> => {
+      if (await this.abandonIfCancellationPending(tx, input, proposal, effectId, at, resume?.pendingOperationId)) {
+        return "abandoned";
+      }
+
+      const replayOperation = resume ? await tx.pendingOperations.get(resume.pendingOperationId) : undefined;
+      if (resume && (!replayOperation || replayOperation.status !== "pending")) return "gone";
+      if (resume) {
+        const context = await tx.executions.get(executionId);
+        if (!context || isTerminalLifecycle(context.lifecycle)) {
+          await tx.pendingOperations.update(markAbandoned(replayOperation!, at));
+          return "abandoned";
+        }
+      }
+
+      const resultPendingOperationId = replayOperation?.pendingOperationId ?? prior.pendingOperationId;
       await this.journal(tx, {
         effectId,
         executionId,
         effectKind: proposal.kind,
         phase: "replayed",
         activationId: input.activationId,
-        pendingOperationId: prior.pendingOperationId,
+        pendingOperationId: resultPendingOperationId,
         at,
         detail: {
           replayedFromEffectId: prior.effectId,
           idempotencyKey: prior.idempotencyKey,
           resultEventId: eventId,
+          ...(resume ? { confirmationId: resume.confirmationId } : {}),
         },
       });
+      if (replayOperation) {
+        // A confirmed replay answers the confirmation's own dependency. It never mutates or reuses
+        // the prior operation record, and `dispatch` remains `not_dispatched` because no external
+        // call occurred for this Effect.
+        await tx.pendingOperations.update(markSettled(replayOperation, "success", eventId, at));
+      }
       const envelope: EventEnvelope = {
         eventId,
         destination: { executionId },
@@ -3120,7 +3197,7 @@ export class EffectProcessor {
         body: {
           effectId,
           effectKind: proposal.kind,
-          pendingOperationId: prior.pendingOperationId,
+          pendingOperationId: resultPendingOperationId,
           capability: proposal.capability,
           operation: proposal.operation,
           observation,
@@ -3138,18 +3215,25 @@ export class EffectProcessor {
           await tx.transitions.append({ executionId: id, from, to, at: when, activationId: null, reason: why });
         },
       });
-      return false;
+      return "replayed";
     });
 
-    if (abandoned) {
-      return { effectId, effectKind: proposal.kind, correlationId, pendingOperationId: null, phase: "abandoned", settledInline: false };
+    if (committed !== "replayed") {
+      return {
+        effectId,
+        effectKind: proposal.kind,
+        correlationId,
+        pendingOperationId: committed === "gone" ? (resume?.pendingOperationId ?? null) : null,
+        phase: "abandoned",
+        settledInline: false,
+      };
     }
 
     return {
       effectId,
       effectKind: proposal.kind,
       correlationId,
-      pendingOperationId: prior.pendingOperationId,
+      pendingOperationId: resume?.pendingOperationId ?? prior.pendingOperationId,
       phase: "replayed",
       settledInline: true,
     };
@@ -3176,60 +3260,97 @@ export class EffectProcessor {
     idempotencyKey: IdempotencyKey,
     consequential: boolean,
     proposal: UseCapabilityProposal,
-  ): Promise<
-    | { readonly kind: "proceed" }
-    | { readonly kind: "refuse"; readonly code: string; readonly message: string }
-    | { readonly kind: "replay"; readonly operation: PendingOperation; readonly observation: JsonValue }
-  > {
-    return this.deps.store.transact(executionId, async (tx) => {
-      const candidates = await tx.pendingOperations.findByIdempotencyKey(executionId, idempotencyKey);
-      if (candidates.length === 0) return { kind: "proceed" } as const;
+  ): Promise<PriorOperationGuard> {
+    return this.deps.store.transact(executionId, (tx) =>
+      this.checkPriorOperationsInTransaction(tx, executionId, idempotencyKey, consequential, proposal),
+    );
+  }
 
-      const prior: PendingOperation[] = [];
-      for (const candidate of candidates) {
-        const entries = await tx.effectJournal.listByEffect(candidate.effectId);
-        const requested = entries.find((entry) => entry.phase === "requested");
-        const recorded = requested?.detail["proposal"];
-        if (recorded === undefined) continue;
-        if (sameLogicalCapabilityRequest(recorded as unknown as UseCapabilityProposal, proposal)) {
-          prior.push(candidate);
-        }
+  private async checkPriorOperationsInTransaction(
+    tx: RuntimeTransaction,
+    executionId: ExecutionId,
+    idempotencyKey: IdempotencyKey,
+    consequential: boolean,
+    proposal: UseCapabilityProposal,
+    excludePendingOperationId?: PendingOperationId,
+  ): Promise<PriorOperationGuard> {
+    const candidates = (await tx.pendingOperations.findByIdempotencyKey(executionId, idempotencyKey)).filter(
+      (candidate) => candidate.pendingOperationId !== excludePendingOperationId,
+    );
+    if (candidates.length === 0) return { kind: "proceed" };
+
+    const prior: PendingOperation[] = [];
+    for (const candidate of candidates) {
+      const entries = await tx.effectJournal.listByEffect(candidate.effectId);
+      const requested = entries.find((entry) => entry.phase === "requested");
+      const recorded = requested?.detail["proposal"];
+      if (recorded === undefined) continue;
+      if (sameLogicalCapabilityRequest(recorded as unknown as UseCapabilityProposal, proposal)) {
+        prior.push(candidate);
       }
-      if (prior.length === 0) return { kind: "proceed" } as const;
+    }
+    if (prior.length === 0) return { kind: "proceed" };
 
-      const succeeded = prior.find((operation) => operation.status === "settled" && operation.outcome === "success");
-      if (succeeded) {
-        const entries = await tx.effectJournal.listByEffect(succeeded.effectId);
-        const completed = entries.find((entry) => entry.phase === "completed");
-        return {
-          kind: "replay",
-          operation: succeeded,
-          observation: (completed?.detail["observation"] ?? null) as JsonValue,
-        } as const;
-      }
+    const succeeded = prior.find((operation) => operation.status === "settled" && operation.outcome === "success");
+    if (succeeded) {
+      const entries = await tx.effectJournal.listByEffect(succeeded.effectId);
+      const completed = entries.find((entry) => entry.phase === "completed");
+      return {
+        kind: "replay",
+        operation: succeeded,
+        observation: (completed?.detail["observation"] ?? null) as JsonValue,
+      };
+    }
 
-      if (!consequential) return { kind: "proceed" } as const;
+    if (!consequential) return { kind: "proceed" };
 
-      const unresolved = prior.find((operation) => operation.status === "pending" && operation.dispatch === "dispatched");
-      if (unresolved) {
-        return {
-          kind: "refuse",
-          code: "prior_dispatch_unresolved",
-          message: `an earlier dispatch of this exact operation (${unresolved.effectId}) has not resolved; automatic redispatch of a consequential operation is not authorized`,
-        } as const;
-      }
+    const unresolved = prior.find((operation) => operation.status === "pending" && operation.dispatch === "dispatched");
+    if (unresolved) {
+      return {
+        kind: "refuse",
+        code: "prior_dispatch_unresolved",
+        message: `an earlier dispatch of this exact operation (${unresolved.effectId}) has not resolved; automatic redispatch of a consequential operation is not authorized`,
+      };
+    }
 
-      const unknown = prior.find((operation) => operation.outcome === "unknown");
-      if (unknown) {
-        return {
-          kind: "refuse",
-          code: "prior_outcome_unknown",
-          message: `the outcome of an earlier dispatch of this exact operation (${unknown.effectId}) is unknown; automatic retry is not authorized`,
-        } as const;
-      }
+    const unknown = prior.find((operation) => operation.outcome === "unknown");
+    if (unknown) {
+      return {
+        kind: "refuse",
+        code: "prior_outcome_unknown",
+        message: `the outcome of an earlier dispatch of this exact operation (${unknown.effectId}) is unknown; automatic retry is not authorized`,
+      };
+    }
 
-      return { kind: "proceed" } as const;
+    return { kind: "proceed" };
+  }
+
+  private capabilityDispatchSafety(
+    executionId: ExecutionId,
+    effectId: EffectId,
+    proposal: UseCapabilityProposal,
+    decision: Extract<AuthorizationDecision, { decision: "allow" }>,
+  ): CapabilityDispatchSafety {
+    const constraints: AuthorizationConstraints = decision.constraints ?? {};
+
+    // Consequentiality is a baseline property of the operation, not a policy opinion: the
+    // descriptor sets the floor, and a decision may only raise it. An unclassified operation
+    // defaults to consequential, so a catalog with a gap fails toward the safe interpretation.
+    // There is structurally no way to read this as `false` when the descriptor says `true` - the
+    // authorization type has no field that could express a downgrade.
+    const descriptor = this.deps.catalog.describe(proposal.capability, proposal.operation);
+    const descriptorConsequential = descriptor?.consequential ?? true;
+    const consequential = descriptorConsequential || constraints.forceConsequential === true;
+    const scope: EffectIdempotencyScope = constraints.idempotency ?? proposal.idempotency ?? "none";
+    const idempotencyKey = effectIdempotencyKey({
+      scope,
+      executionId,
+      effectId,
+      capability: proposal.capability,
+      operation: proposal.operation,
+      input: proposal.input,
     });
+    return { constraints, consequential, scope, idempotencyKey };
   }
 
   // -- helpers ---------------------------------------------------------------

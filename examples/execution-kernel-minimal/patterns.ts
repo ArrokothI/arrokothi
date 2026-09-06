@@ -119,7 +119,8 @@ export function createPatternApp(steps: readonly ScriptedModelStep[]) {
       publisherCalls.push(title);
       // Fake external idempotency: this sample defines exact title as a unique article key.
       // A real publisher normally uses a durable application request ID + atomic conditional insert.
-      // This guard matters even in-process: confirmed proposals currently bypass kernel replay.
+      // Keep this even with runtime per_input suppression: durable external reconciliation must
+      // survive process crashes and outcome uncertainty that the in-memory reference store cannot.
       const existing = [...articles].find(([, publishedTitle]) => publishedTitle === title);
       if (existing) return { status: "success", observation: { id: existing[0], title } };
       const id = `article-${articles.size + 1}`;

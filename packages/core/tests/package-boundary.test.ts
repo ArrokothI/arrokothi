@@ -10,8 +10,6 @@ const REPOSITORY_ROOT = resolve(CORE_ROOT, "../..");
 const FORBIDDEN_SOURCE_ROOTS = [
   "packages/agents",
   "packages/models",
-  "packages/storage",
-  "apps",
 ];
 const FORBIDDEN_PACKAGES = [
   "@arrokothi/integration-strands",

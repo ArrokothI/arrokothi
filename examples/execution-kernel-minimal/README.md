@@ -30,9 +30,9 @@ provider adapters; `/testing` belongs in tests.
 
 The fake publisher creates one article per exact title and returns an existing receipt on repetition.
 This is a deliberately simple application unique-key rule. A real service should use a durable
-application action ID and atomic conditional write. Confirmed proposals currently bypass the kernel's
-duplicate/unresolved guard; the repeated-proposal test makes the limitation visible and verifies that
-the application still publishes once. See [findings](../../docs/development/007-application-builder-ergonomics-findings.md).
+application action ID and atomic conditional write. Runtime `per_input` recognition covers direct and
+confirmed dispatch; the repeated-proposal test verifies that the known duplicate replays without a
+second publisher call while the application guard remains in place for crash-safe external correctness.
 
 `settleOffline` drains finite offline work. It is not a network timeout or a production worker loop.
 The examples use in-memory stores and deterministic IDs/clocks; they provide no process-crash

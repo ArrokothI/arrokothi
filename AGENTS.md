@@ -109,7 +109,7 @@ Node 22.9+. Default test suites and deterministic examples are offline. Copy `.e
 ```bash
 npm install
 npm test                 # semantic conformance suite (packages/*/tests + tests/conformance)
-npm run typecheck        # tsc --noEmit over packages, apps, examples, scripts, tests
+npm run typecheck        # tsc --noEmit over packages, examples, scripts, tests
 npm run test:conformance # just tests/conformance/*/*.test.ts
 npm run test:evals       # behavioural baseline for the reference Agent (separate question)
 ```

@@ -53,7 +53,8 @@ proposal → current authorization → optional exact-payload confirmation
 The UI discovers requests using `pendingConfirmations()` or `confirmationRequestsOf(id)`, shows the
 stored `proposal`, and calls `resolveConfirmation({ confirmationId, decision: 'approve' | 'decline' })`
 through a trusted authenticated handler. Approval rechecks current authority and dispatches the
-stored payload; a changed payload needs a new proposal. Reusing the same confirmation ID cannot
+stored payload, or returns `status: 'replayed'` from a prior authoritative success without another
+external call; a changed payload needs a new proposal. Reusing the same confirmation ID cannot
 produce a second dispatch. Natural-language “yes”, an emission, or a Working Note is not resolution.
 
 | Observation | Application response |
@@ -81,14 +82,11 @@ when a factual status must be exact.
 - `cancelExecution` does not cascade to descendants or siblings. Enumerate child links and cancel
   those you intend to stop. Cancellation is not rollback of an external action.
 - `idempotency: 'per_input'` is narrow in-runtime duplicate recognition for capability requests.
-  On the ordinary path, an exact prior success can replay; unresolved/unknown consequential work
-  blocks automatic redispatch. `none` does not provide cross-proposal suppression.
-- **Known defect:** confirmed capability dispatch skips that duplicate/unresolved guard. Two distinct
-  approved proposals with identical input can call the executor twice despite `per_input`. Do not
-  rely on kernel duplicate recognition for confirmed actions. The
-  [pattern test](../../../examples/execution-kernel-minimal/patterns.test.ts) demonstrates this and an
-  application unique-key guard. The [finding](../../development/007-application-builder-ergonomics-findings.md#confirmed-capability-redispatch)
-  records the reproduction and required follow-up.
+  For direct and confirmed dispatch, an exact prior success replays; unresolved/unknown consequential
+  work blocks automatic redispatch. Equivalent confirmations approved concurrently linearize at
+  dispatch intent, so at most one reaches the executor. A known duplicate is replayed before a
+  redundant confirmation when prior truth is already available. `none` does not provide
+  cross-proposal suppression.
 - External idempotency is separate: use an application action ID/unique key and conditional write at
   the system of record, with reconciliation for unknown outcomes. The example's title key is a small
   domain convention, not a generic identity scheme. In-memory journals provide no crash protection.

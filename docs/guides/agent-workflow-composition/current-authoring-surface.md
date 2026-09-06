@@ -89,8 +89,8 @@ Structured Memory handle; do not close over the store in a Stage to circumvent t
   reconciliation.
 - No generic discovery across services/resources/skills. MCP covers synchronous Tools only.
 - UseCapability deadlines/idempotency do not apply uniformly to other Effects; see
-  [action lifecycle](capabilities-effects-and-authority.md). Confirmed redispatch has a known replay
-  gap; application idempotency is necessary.
+  [action lifecycle](capabilities-effects-and-authority.md). Runtime `per_input` suppression covers
+  direct and confirmed capability dispatch; durable external idempotency remains an application concern.
 
 ## When the stock surface is insufficient
 

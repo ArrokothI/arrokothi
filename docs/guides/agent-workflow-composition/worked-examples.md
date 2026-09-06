@@ -29,9 +29,10 @@ waits from approval waits. The CLI approves its own scripted fake-world action s
 the API; a real UI must authenticate a human decision. `completion` stays `respond_and_wait`.
 
 The publisher's exact-title unique key is a sample domain rule. Replace it with a durable application
-action ID and conditional insert when appropriate. The test verifies application idempotency even
-though repeated confirmed proposals currently bypass runtime replay. It also verifies that a model
-claiming “Published!” after denial creates no article.
+action ID and conditional insert when appropriate. The test verifies that repeated confirmed
+`per_input` proposals replay without a second publisher call while the application guard remains in
+place for durable external correctness. It also verifies that a model claiming “Published!” after
+denial creates no article.
 
 ## Fixed process containing an Agent subtask
 

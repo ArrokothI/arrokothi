@@ -48,8 +48,9 @@ an architecture-complete production deployment stack. In particular:
 
 Consult the [surface matrix](docs/guides/agent-workflow-composition/current-authoring-surface.md) and
 [known builder concerns](docs/development/007-application-builder-ergonomics-findings.md) before making
-application guarantees. The findings include a confirmed-action duplicate-recognition defect requiring
-application idempotency; same-confirmation-ID resolution still dispatches at most once.
+application guarantees. Confirmed capability approvals now obey the same in-runtime `per_input`
+duplicate/unresolved guard as direct dispatch, including concurrent approvals. Consequential external
+systems still need durable application-owned idempotency and unknown-outcome reconciliation.
 
 ## Verify and diagnose
 

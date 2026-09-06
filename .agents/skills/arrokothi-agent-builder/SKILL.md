@@ -33,8 +33,8 @@ the topic needed. The roadmap and external engineering notes are not prerequisit
   there is no public host memory setter. The guide shows supported paths.
 - Account for cumulative Agent budgets, response versus completion, child spawn credits, and the
   text-only/literal restrictions on Stage/terminal data flow. Do not infer APIs from canonical sketches.
-- Use actual receipts/world state to test success. Consult the known confirmed-redispatch limitation
-  before relying on `per_input`; external idempotency and crash recovery are application concerns.
+- Use actual receipts/world state to test success. Runtime `per_input` suppression covers direct and
+  confirmed capability dispatch; external idempotency and crash recovery remain application concerns.
 
 ## Deliver working applications
 

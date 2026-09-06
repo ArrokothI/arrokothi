@@ -49,7 +49,7 @@ understanding. Live canaries are optional and require deployment credentials.
 | Agent fails after several successful turns | Failure code, `readAgentControlState` | `agent_model_call_budget_exhausted`; budget is Execution-wide |
 | Tool inaccessible in LLM Stage | `maxModelPhases` and declared callables | Nonempty callables require ≥2 phases and `capabilityCalls: 'required'`; last phase cannot request tools |
 | Runtime “idle” but app unfinished | `waitingFor`, pending operations, resumptions, confirmations | Idle only means no queued Activation; keep driving after settlement |
-| Same consequential action happens twice | Exact input + confirmation path + external action ID | Check known confirmed-replay gap and durable external idempotency |
+| Same consequential action happens twice | Exact input, idempotency scope, journal, external action ID | Confirm `per_input` and logical identity match; reconcile the durable external idempotency record |
 | Long conversations get expensive | Retained state size and compiled context | Message window does not trim stored history or bound bytes per message |
 
 ## Observability APIs

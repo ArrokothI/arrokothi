@@ -25,12 +25,10 @@ test("multiple turns: committed memory reaches context, exact approval publishes
   assert.deepEqual([...app.articles.values()], ["A useful guide"]);
   await app.harness.deliverExternalInput({ destination: id, label: "user", payload: "Publish the same title again" });
   await settleOffline(app.harness, id);
-  const [repeatConfirmation] = await app.harness.pendingConfirmations();
-  assert.ok(repeatConfirmation, "a new proposal is confirmed before duplicate recognition");
-  await app.harness.resolveConfirmation({ confirmationId: repeatConfirmation.confirmationId, decision: "approve" });
-  await settleOffline(app.harness, id);
+  assert.equal((await app.harness.pendingConfirmations()).length, 0, "the known duplicate replays before redundant confirmation");
   assert.equal(app.articles.size, 1, "application-owned unique key prevents duplicate publication");
-  assert.equal(app.publisherCalls.length, 2, "known confirmed-dispatch replay gap: external idempotency must hold");
+  assert.equal(app.publisherCalls.length, 1, "runtime per_input recognition prevents a second in-process dispatch");
+  assert.ok((await app.harness.effectJournalOf(id)).some((entry) => entry.phase === "replayed"));
   assert.equal((await app.harness.emissionsOf(id)).length, 3, "host must track a cursor to avoid showing old emissions again");
 });
 

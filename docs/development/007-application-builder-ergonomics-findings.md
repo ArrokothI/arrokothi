@@ -17,6 +17,21 @@ matching-rule precedence and wildcard rules. The new
 failed before the fix (executor called before approval) and passes after it. No Effect or authority
 contract changed.
 
+**Confirmed capability redispatch — runtime correctness defect.**
+[effect-processor.ts](../../packages/core/src/runtime/effect-processor.ts) previously ran the
+prior-operation guard only on direct capability dispatch, while approval entered through the
+`resume` path. Distinct confirmed `per_input` proposals could therefore bypass success replay and
+the unresolved/unknown consequential-operation blocks. The repair performs an early guard before
+creating a redundant confirmation when prior truth is already known, then repeats duplicate
+classification in the same RuntimeStore transaction that commits dispatch intent. The
+approval's own gated PendingOperation is excluded from candidates and is reused/settled for replay
+or refusal, preserving correlation and Events. This makes concurrent approvals linearize so at most
+one equivalent consequential operation reaches the executor. Dedicated mechanical-confirmation
+conformance covers prior success, concurrent approvals, same-ID approval, unresolved/unknown,
+definite failure, non-success terminal states, different inputs, and `none` scope. Application-owned
+durable idempotency and reconciliation remain required across process crashes and uncertain external
+outcomes.
+
 **Guidance defects.** The old front door required conceptual reading and a 13-step procedure before
 useful implementation, repeated the same traps across many pages, and routed some missing conveniences
 to “record and stop”. Replaced by runnable-first routing, a public API map, compiled patterns/provider
@@ -26,31 +41,6 @@ The minimal example now drains dispatched capabilities and distinguishes input w
 Effect waits through a shared finite offline pump. The implementation baseline's
 “deadline/cancellation propagation” wording was corrected to actual child
 cancellation settlement without cascade or configured child-result deadlines.
-
-## Confirmed capability redispatch
-
-**Observed implementation defect, deliberately not fixed here.**
-[effect-processor.ts](../../packages/core/src/runtime/effect-processor.ts): `process` gates a proposal
-before `dispatchCapability`; `dispatchCapability` calls `checkPriorOperations` only when `resume` is
-absent. `approveConfirmation` invokes it with `resume`. The comment claiming the payload was guarded
-at proposal time is not true for a gated proposal.
-
-**Reproduction:** run the “multiple turns” test in
-[patterns.test.ts](../../examples/execution-kernel-minimal/patterns.test.ts). Save a title, publish and
-approve it, then submit and approve a second identical publish proposal with policy
-`idempotency: 'per_input'`. The executor is called twice. The example's application unique-key guard
-keeps one article; it does not fix the runtime. Reapproving the **same confirmation ID** remains
-idempotent; that is a different behavior.
-
-**Impact:** builders cannot rely on runtime replay suppression for confirmed actions. The same bypass
-also skips the unresolved/unknown guard by code inspection; success redispatch was directly exercised,
-while unresolved/unknown and concurrent-approval cases need dedicated regression coverage.
-
-**Direction:** unify prior-operation guarding across direct and confirmed dispatch, explicitly excluding
-the confirmation's own pending row and preserving settlement/correlation of that row. Cover prior
-success, unknown/unresolved, denial, cancellation and concurrent approvals before changing this path.
-This is beyond a safe helper lookup fix. Applications need durable external idempotency/reconciliation
-regardless; current guidance makes this additional in-process limitation explicit.
 
 ## Authoring and API concerns left for discussion
 
@@ -105,10 +95,9 @@ validation utility and clearly owned dispatch-validation contract.
 
 The builder guide is suitable to freeze **as a versioned guide to this implemented surface**, with
 runnable evidence and explicit limits. This is not a production-readiness verdict for the kernel.
-Confirmed redispatch is the most urgent remaining implementation concern for consequential actions.
 Revalidate guidance when public exports/controllers change, and resolve the findings before promising
-unqualified durable or duplicate-safe application execution. SDK bootstrap and computed-return
-composition remain high-value ergonomics questions for a separate task.
+unqualified durable application execution. SDK bootstrap and computed-return composition remain
+high-value ergonomics questions for a separate task.
 
 ## Validation and discovery review
 
@@ -120,13 +109,17 @@ requirements. Both were corrected; the new compiled classifier exercises both de
 
 Validation on this change:
 
-- `npm test`: 1,100 package/conformance tests passed, including the confirmation-rule regression.
+- `npm test`: 940 package/conformance tests passed, including 22 mechanical-confirmation tests.
 - `npm run test:example:execution-kernel`: 18 application/example tests passed.
-- `npm run typecheck`: passed, including definitions, host wiring and both provider/executor factories.
-- Both offline example commands passed and checked actual publication/terminal results.
-- `npm run check:builder-docs`: local link/anchor and public import checks passed.
-- Builder skill frontmatter validation and `git diff --check` passed.
+- `npm run test:evals`: 12 evaluation tests passed.
+- `npm run typecheck`: passed, including definitions, host wiring and provider/executor factories.
+- Both offline example commands passed and checked actual publication/terminal results; the
+  application pattern made one publisher call for two identical `per_input` proposals.
+- `npm run check:builder-docs` passed for 18 guide files, 193 local links/anchors and 26 public
+  imports; a repository-wide scan passed for 48 Markdown files and 488 local links/anchors.
+- Workspace dependency validation and package dry-runs for all five publishable workspaces passed.
+- Active-tree legacy/path scans and `git diff --check` passed.
 
 No live-provider quality claim follows from these runs: Gemini HTTP was faked for provider-wiring
 checks. The repository's unrelated behavioral baseline was not used as a substitute for application
-tests. Kernel-semantic changes and deployment/production certification were outside this task.
+tests. Deployment/production certification remains outside this task.

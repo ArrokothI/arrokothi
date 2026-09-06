@@ -280,7 +280,7 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
       "tests/evals/agent/mcp-operation-parity.eval.test.ts",
       "scripts/mcp-gemini-canary.ts",
     ];
-    const roots = ["packages", "apps", "examples", "scripts", "tests"];
+    const roots = ["packages", "examples", "scripts", "tests"];
     const violations: string[] = [];
     for (const root of roots) {
       const absolute = resolve(REPO_ROOT, root);
