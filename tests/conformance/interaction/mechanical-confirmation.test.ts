@@ -58,6 +58,27 @@ async function gatedTrader(harness: ReturnType<typeof rig>["harness"], definitio
 }
 
 describe("the confirmation gate", () => {
+  test("separate rules for the same capability each gate their listed operation", async () => {
+    const executor = createScriptedCapabilityExecutor({
+      handlers: { "world.trade:execute": () => ({ status: "success", observation: "filled" }) },
+    });
+    const { harness, definitions } = createTestHarness({
+      capabilities: executor,
+      authorizer: createAllowListAuthorizer({ grants: [{ capability: "world.trade", operations: ["execute"] }] }),
+      confirmationPolicy: createCapabilityConfirmationPolicy({ rules: [
+        { capability: "world.trade", operations: ["cancel"], reason: "confirm cancellation" },
+        { capability: "world.trade", operations: ["execute"], reason: "confirm execution" },
+      ] }),
+    });
+    const handle = await gatedTrader(harness, definitions);
+    assert.equal(executor.callCount, 0, "an earlier rule for another operation must not bypass confirmation");
+    const [confirmation] = await harness.confirmationRequestsOf(handle.executionId);
+    assert.equal(confirmation?.reason, "confirm execution");
+    assert.ok(confirmation);
+    assert.equal((await harness.resolveConfirmation({ confirmationId: confirmation.confirmationId, decision: "approve" })).status, "dispatched");
+    assert.equal(executor.callCount, 1);
+  });
+
   test("confirmation not required leaves ordinary Effect behaviour unchanged", async () => {
     const { harness, definitions, executor } = rig({ confirm: false });
     const handle = await gatedTrader(harness, definitions);

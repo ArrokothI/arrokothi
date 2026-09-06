@@ -32,9 +32,11 @@ export function createCapabilityConfirmationPolicy(options: CapabilityConfirmati
     requires(request: ConfirmationPolicyRequest): ConfirmationRequirement {
       if (!isUseCapabilityProposal(request.proposal)) return { required: false };
       const proposal = request.proposal;
-      const rule = options.rules.find((candidate) => candidate.capability === (proposal.capability as string));
+      const rule = options.rules.find((candidate) =>
+        candidate.capability === (proposal.capability as string) &&
+        (candidate.operations === undefined || candidate.operations.includes(proposal.operation as string))
+      );
       if (!rule) return { required: false };
-      if (rule.operations && !rule.operations.includes(proposal.operation as string)) return { required: false };
       return {
         required: true,
         reason:
