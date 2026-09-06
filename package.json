@@ -14,7 +14,6 @@
     "apps/studio",
     "examples/execution-kernel-minimal",
     "examples/minimal-agent",
-    "examples/estate-like",
     "examples/strands-gemini"
   ],
   "engines": {
@@ -26,7 +25,6 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "studio": "node --experimental-strip-types --experimental-sqlite apps/studio/src/server.ts",
     "example:minimal": "node --experimental-strip-types examples/minimal-agent/main.ts",
-    "example:estate": "node --experimental-strip-types examples/estate-like/main.ts",
     "example:strands": "node --env-file-if-exists=.env --experimental-strip-types examples/strands-gemini/main.ts",
     "example:execution-kernel": "node --experimental-strip-types examples/execution-kernel-minimal/main.ts",
     "test:example:execution-kernel": "node --test --experimental-strip-types examples/execution-kernel-minimal/*.test.ts",

@@ -1,7 +1,9 @@
 # Implemented kernel baseline
 
-> **Status:** current implementation evidence for merged `main` at
-> `3e1f31e78913d6d4016f9d2b32ac23c89dee45c2`.
+> **Status:** current implementation evidence. The kernel implementation baseline is the Slice G
+> structured-concurrency tranche (PR #13, merge `3e1f31e`); no kernel-semantic changes have landed
+> on `main` since, only documentation, the `0.8.0` package-identity reset, and benchmark-subject
+> work now owned by `ArrokothI/benchmark`.
 > **Role:** compact engineering map, not canonical architecture.
 
 This document answers one question: **What does the current ArrokothI kernel demonstrably

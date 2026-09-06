@@ -1,7 +1,10 @@
 # Current status and post-Slice-G roadmap
 
 > **Status:** primary active development plan for the ArrokothI agent-kernel 0.8.x line.
-> **Baseline:** merged `main` at `3e1f31e78913d6d4016f9d2b32ac23c89dee45c2` (Slice G / PR #13).
+> **Kernel baseline:** the Slice G structured-concurrency tranche (PR #13, merge `3e1f31e`). No
+> kernel-semantic changes have landed since; subsequent `main` commits are documentation, the
+> `0.8.0` package-identity reset, the application-builder guide, and benchmark-subject work now
+> owned by the standalone `ArrokothI/benchmark` repository.
 > **Role:** engineering roadmap, not canonical architecture.
 
 Canonical semantics remain in the documents indexed by [`../README.md`](../README.md). This plan

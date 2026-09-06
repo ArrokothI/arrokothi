@@ -203,7 +203,7 @@ Agent executor is Strands, while model inference remains behind a provider-neutr
 
 ```bash
 npm run example:minimal
-npm run example:estate
+npm run example:execution-kernel # deterministic offline current-surface example
 npm run example:strands          # add -- --live for Gemini
 npm run canary:gemini            # optional live provider check
 npm run canary:workflow          # optional live 0.8.x Workflow scenario
@@ -211,7 +211,7 @@ npm run canary:mcp:gemini        # optional live Agent -> MCP Tool check
 npm run studio
 ```
 
-Cross-framework P01/P02 evaluation and retained historical evidence live in the standalone `ArrokothI/benchmark` repository. This repository owns ArrokothI framework code, examples, and architecture documentation.
+Cross-framework benchmark subjects, evaluators, providers, and their execution live in the standalone `ArrokothI/benchmark` repository, which owns benchmark-v3 policy. This repository owns ArrokothI framework code, examples, and architecture documentation; benchmark evidence can inform framework work but this repository does not generate, orchestrate, or judge the benchmark.
 
 ## Repository layout
 

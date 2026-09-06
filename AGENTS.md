@@ -87,7 +87,7 @@ current contracts, and conformance tests before modifying it.
 ## Commands
 
 Node 22.9+. Default test suites and deterministic examples are offline. Copy `.env.example` to
-`.env` only for live-provider examples, benchmark execution, or canaries.
+`.env` only for live-provider examples or canaries.
 
 ```bash
 npm install

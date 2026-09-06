@@ -12,7 +12,6 @@
     "@arrokothi/storage-sqlite": "*",
     "@arrokothi/provider-gemini": "*",
     "@arrokothi/integration-strands": "*",
-    "@arrokothi/example-minimal-agent": "*",
-    "@arrokothi/example-estate-like": "*"
+    "@arrokothi/example-minimal-agent": "*"
   }
 }

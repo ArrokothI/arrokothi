@@ -78,18 +78,20 @@ root surface is the real fix, and `execution-api.ts` already anticipates it.
 
 ## 3. Every other example targets the legacy surface — `documentation`
 
-**Observation.** `examples/minimal-agent/` and `examples/estate-like/` build on `AgentRuntime`,
-`InMemorySessionStore`, `ToolRegistry`, `KnowledgeIndex`, and the legacy `defineAgent`. None
-exercises `Harness`, `Execution`, Stages,
-Effects, Structured Memory as an Execution-local view, Working Notes, or child composition.
+**Observation.** `examples/minimal-agent/` builds on `AgentRuntime`, `InMemorySessionStore`,
+`ToolRegistry`, `KnowledgeIndex`, and the legacy `defineAgent`. It does not exercise `Harness`,
+`Execution`, Stages, Effects, Structured Memory as an Execution-local view, Working Notes, or child
+composition. (The former `examples/estate-like/`, an application-shaped legacy-surface example that
+originated as a benchmark subject, has since been retired; its runnable form lives in the
+`ArrokothI/benchmark` repository.)
 
 **Consequence for a builder.** "Read the examples" — the correct instinct, and the instruction most
 builder guidance gives — taught the wrong API.
 
 **Addressed.** `examples/execution-kernel-minimal/` is a deterministic offline example on the
 current surfaces, with one authorized path and one deny-by-default path, registered as
-`npm run example:execution-kernel` / `npm run test:example:execution-kernel`. The legacy examples
-were deliberately left alone; migrating or retiring them is separate work.
+`npm run example:execution-kernel` / `npm run test:example:execution-kernel`. `examples/minimal-agent/`
+is deliberately left on the legacy surface; migrating or retiring it is separate work.
 
 ## 4. The kernel Effect vocabulary is much wider than any stock authoring surface — `ergonomics / API`
 
