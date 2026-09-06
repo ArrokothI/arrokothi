@@ -58,6 +58,8 @@ import {
 } from "@arrokothi/core/reference";
 import type { ScriptedModelStep } from "@arrokothi/core/reference";
 
+import { settleOffline } from "./settle.ts";
+
 // -- the one operation this application exposes ------------------------------
 
 export const DOCS_SEARCH: OperationRef = { capability: "docs", operation: "search" };
@@ -227,21 +229,7 @@ export function createApp(options: AppOptions): App {
       return handle.executionId;
     },
     async settle(executionId: ExecutionId): Promise<ExecutionContext | undefined> {
-      // Two drains, because two different things make an Execution runnable: a delivered Event, and
-      // a settled controller-local resumption such as a slow model call. Bounded so a controller
-      // that never settles fails the example rather than hanging it.
-      for (let i = 0; i < 16; i++) {
-        await harness.runUntilIdle();
-        await harness.drainResumptions();
-        const context = await harness.inspect(executionId);
-        if (!context) return undefined;
-        if (context.lifecycle === "COMPLETED" || context.lifecycle === "FAILED" || context.lifecycle === "CANCELLED") {
-          return context;
-        }
-        // WAITING on an Event means the Agent answered and is waiting for whatever comes next.
-        if (context.lifecycle === "WAITING" && context.waitingFor?.kind === "event") return context;
-      }
-      return harness.inspect(executionId);
+      return settleOffline(harness, executionId);
     },
   };
 }

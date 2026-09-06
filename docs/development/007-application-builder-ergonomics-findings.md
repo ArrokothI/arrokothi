@@ -1,420 +1,133 @@
-# Application-builder ergonomics findings
-
-> **Status:** engineering findings recorded while writing
-> [`../guides/agent-workflow-composition/`](../guides/agent-workflow-composition/README.md) and
-> corrected after an independent audit of it.
-> **Role:** observations and candidate work items. **Not canonical architecture, and not a plan of
-> record.** Nothing here is implemented by the change that recorded it.
-> **Baseline inspected:** merged `main` at `85cd89da2a52787803bb911439d3ec2c7af159f2`.
-
-These are the frictions a competent application builder — human or coding agent — actually hits
-when asked to turn a product specification into an ArrokothI composition on the current kernel.
-Each is classified as:
-
-```text
-documentation             the contract is fine; finding or understanding it is not
-ergonomics / API          the correct design is unnecessarily hard to express or easy to misuse
-effectiveness strategy    a replaceable quality/strategy or API tradeoff, not a contract question
-possible semantic gap     the semantics an application needs may genuinely not exist
-```
-
-A **possible semantic gap** is a candidate architecture issue for the owning canonical document. It
-is *not* licence to add a contract. Escalate through
-[`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) and the owner named in
-[`../README.md`](../README.md).
-
-Note the classification bar. A capability that is *architecturally defined but not implemented*, or
-*deliberately scoped narrower than the architecture permits*, is an implementation or API finding —
-**not** a missing semantic contract. Findings 6 and 7 were originally filed as possible semantic
-gaps and are reclassified below on exactly that ground.
-
----
-
-## 1. There is no application-facing composition root — `ergonomics / API`
-
-**Observation.** Running one real Execution requires assembling `DefinitionStore`, `RuntimeStore`,
-`Scheduler`, `ControllerRegistry`, `Clock`, `IdGenerator`, an `EffectAuthorizer`, a
-`CapabilityCatalog`, a `CapabilityExecutor`, a `ModelResolver`, provider registry, an
-`AgentExecutor` or the Function/Adapter registries, plus the exposure and memory view resolvers.
-The only helpers that assemble this coherently — `createTestHarness`, `createAgentTestHarness`,
-`createWorkflowTestHarness` — are published under `@arrokothi/core/testing`.
-
-**Evidence.** Outside `tests/conformance/`, `tests/evals/`, and one adapter test, the only place
-that built a real Execution-kernel `Harness` for an application-shaped scenario was
-`scripts/workflow-scenario-canary.ts`, which needs a live key.
-
-**Consequence for a builder.** A coding agent either copies a conformance test's wiring (importing a
-`testing` surface into production code) or reconstructs the composition root from `HarnessOptions`
-field by field. See also finding 8: an incomplete assembly fails as "everything is denied" rather
-than as "you forgot the authorizer".
-
-**Partially addressed.** `examples/execution-kernel-minimal/` now provides a deterministic, offline,
-production-surface assembly to copy from. That is a documentation/example fix; the underlying
-ergonomics finding stands.
-
-**Not a semantic gap.** The separation of ports is deliberate and correct. What is missing is an
-*application-facing* assembly convenience with the same fail-closed defaults.
-[`004-efficiency-and-developer-ergonomics.md`](004-efficiency-and-developer-ergonomics.md) §8
-already states the goal ("Level 1 should not require construction of Level-3 machinery"); this is
-evidence that Level 1 does not yet exist for the Execution kernel.
-
-## 2. `@arrokothi/core` publishes two overlapping surfaces with colliding names — `ergonomics / API`
-
-**Observation.** The package root (`.`) exports the legacy Session/Flow/`AgentRuntime` API; the
-current Execution kernel is at `./execution`. Both export `defineAgent` and a type named
-`AgentDefinition`, meaning different things.
-
-**Evidence.** `packages/core/src/index.ts` and `packages/core/src/execution-api.ts`, whose own
-docstring says the split exists "only because the root still carries the v0 Session/Flow API during
-migration, and the two occupy several of the same names."
-
-**Consequence for a builder.** An agent importing `defineAgent` from `@arrokothi/core` writes a
-legacy-runtime Agent that will not run on the Execution kernel, and the failure appears far from the
-import. This remains the highest-probability wrong turn available.
-
-**Mitigation applied.** The builder guide, the skill, and the new example all state the import
-surface explicitly. That is a documentation patch over an API-shape problem; removing the legacy
-root surface is the real fix, and `execution-api.ts` already anticipates it.
-
-## 3. Every other example targets the legacy surface — `documentation`
-
-**Observation.** `examples/minimal-agent/` builds on `AgentRuntime`, `InMemorySessionStore`,
-`ToolRegistry`, `KnowledgeIndex`, and the legacy `defineAgent`. It does not exercise `Harness`,
-`Execution`, Stages, Effects, Structured Memory as an Execution-local view, Working Notes, or child
-composition. (The former `examples/estate-like/`, an application-shaped legacy-surface example that
-originated as a benchmark subject, has since been retired; its runnable form lives in the
-`ArrokothI/benchmark` repository.)
-
-**Consequence for a builder.** "Read the examples" — the correct instinct, and the instruction most
-builder guidance gives — taught the wrong API.
-
-**Addressed.** `examples/execution-kernel-minimal/` is a deterministic offline example on the
-current surfaces, with one authorized path and one deny-by-default path, registered as
-`npm run example:execution-kernel` / `npm run test:example:execution-kernel`. `examples/minimal-agent/`
-is deliberately left on the legacy surface; migrating or retiring it is separate work.
-
-## 4. The kernel Effect vocabulary is much wider than any stock authoring surface — `ergonomics / API`
-
-**Observation.** The kernel understands five Effect kinds, but no stock authoring surface can emit
-all five. Verified against current source:
-
-```text
-reference Agent controller   imports only useCapability and writeMemory
-                             (controllers/agent/controller.ts) — no spawn, message, or user input
-reference Workflow controller imports only callExecution, useCapability, writeMemory
-Function Stage               StageEffectRequest = StageCapabilityRequest | StageMemoryWriteRequest
-LLM Stage                    ModelCallableDeclaration resolves to a capability/operation only
-Agent / Workflow Stage       one child `call`, built from the Stage definition alone
-SendMessage / RequestUserInput / detached spawn
-                             exercised only through the scripted controller in
-                             @arrokothi/core/testing, or a custom ExecutionController
-```
-
-A related narrowing with the same cause: a stock Workflow consumes `external.input` **only once**,
-before its first Activation (`startInput` in the Workflow controller; later application input is
-explicitly not consumed), so it cannot host a multi-turn conversation.
-
-Note what this finding is *not* about. Whether a surface can **emit** a memory Effect is a different
-dimension from whether it has a usable **memory view**; conflating them produced the separate error
-recorded in finding 16.
-
-**Consequence for a builder.** A design derived from the kernel vocabulary looks correct until
-`defineWorkflow` rejects it or the controller simply never proposes the Effect. This was the single
-largest source of unbuildable guidance in the first draft of the builder guide.
-
-**Documentation fix applied.** [`../guides/agent-workflow-composition/current-authoring-surface.md`](../guides/agent-workflow-composition/current-authoring-surface.md)
-carries an explicit per-surface emission matrix, followed by the escalation ladder — another
-existing composition, host orchestration, an application-supplied
-port, and only then a custom controller.
-
-**Not a semantic gap.** Every one of these narrowings is a deliberate scope decision, and the
-generic `ExecutionController` port remains open. This is an authoring-surface coverage question.
-
-## 5. Fork/join topology is narrower than the natural authoring instinct — `ergonomics / API`
-
-**Observation.** A branch body is exactly one adapter-free Stage; branches transition only to their
-own fork's join; **the join successor must be a `function` Stage** — validation says so explicitly,
-because the join snapshot is delivered to Function Stage code via `StageExecutionContext.join` and a
-non-Function successor could not consume it. Nested forks, branch loops, multi-Stage branch
-subgraphs, branch Adapters, and join reducers are rejected.
-
-**Assessment.** The narrowness is deliberate, documented, and rejected at validation time rather
-than half-supported. The friction is that the natural product-level requirement — "do these three
-multi-step things in parallel and merge the results" — does not map onto it, and a builder discovers
-this at `defineWorkflow` time.
-
-**Correction applied.** The guide previously said the join successor was "one ordinary downstream
-Stage". It now states the Function-Stage requirement and why.
-
-## 6. Structured Memory has only the Execution-local scope — `ergonomics / API`
-
-**Reclassified** from "possible semantic gap".
-
-**Observation.** [`../memory.md`](../memory.md) §11 already defines memory **form** and memory
-**scope** as orthogonal axes and names user-, tenant-, application-, and group-scoped views as
-coherent combinations. The canonical vocabulary is therefore present and adequate. What is absent is
-an *implementation* of any scope beyond Execution-local, together with an application-facing API for
-one.
-
-**Why the reclassification.** A semantic gap means the architecture cannot express the requirement.
-Here the architecture expresses it and the implementation has not exposed it — which is an
-implementation/API limitation plus an explicit application-storage boundary, not missing semantic
-vocabulary. Escalating it as a semantic gap would invite adding ontology that
-[`../memory.md`](../memory.md) already has.
-
-**Consequence for a builder.** "Remember this about the user across sessions" and "the whole
-organisation shares these settings" have no kernel-level answer today. The honest current answer,
-now stated in the guide, is application-owned storage reached through a capability, with Structured
-Memory holding this Execution's own assertions. A related, easily-missed consequence: an
-autonomously spawned or called child receives **no** Structured Memory view at all — only
-`Harness.createExecution` binds one.
-
-**Open question for the owner, not a proposal.** Whether a broader scope belongs in the kernel or
-stays application storage is a decision for [`../memory.md`](../memory.md)'s owner. **No
-implementation follows from this note.**
-
-## 7. Derived Semantic Memory retrieval is authored, not task-following — `effectiveness strategy`
-
-**Reclassified** from "possible semantic gap".
-
-**Observation.** `AgentDerivedMemoryRead.query` is authored in the definition. The reasoning is
-recorded in `agent/spec.ts`: F.3 deliberately did not solve dynamic/current-task retrieval, and a
-hidden LLM-formed query would make retrieval non-deterministic.
-
-**Why the reclassification.** Dynamic, task-dependent lookup is already supported — as a model-selected
-**retrieval capability**, which is the architecturally intended mechanism for "the model decides what
-to look up" and carries the correct authority and determinism properties. Two mechanisms exist with
-different tradeoffs, and choosing between them is an effectiveness/API-tradeoff question rather than
-a missing contract:
-
-```text
-spec.derivedMemory.read.query     authored, deterministic, no extra model call, provenance-bearing
-retrieval capability operation    model-selected, task-following, authority-governed, costs a call
-```
-
-**Consequence for a builder.** The workaround is non-obvious but fully supported, and the guide now
-states both options and the tradeoff. **No dynamic Derived-query semantics were created.**
-
-## 8. Deny-by-default failures are correct but not self-describing — `ergonomics / API`
-
-**Observation.** Omitting `authorizer` denies every Effect; omitting `operationAuthority` means the
-Execution can expose nothing; omitting `structuralSpawnBudget` means the lineage can spawn nothing;
-an unclassified catalog operation is treated as consequential.
-
-**Assessment.** Each default is right, and the source says so emphatically. The friction is
-diagnostic: several distinct misconfigurations converge on the same observable ("nothing happened",
-"denied"). [`004`](004-efficiency-and-developer-ergonomics.md) §8 already requires that error
-messages "name the violated boundary and exact refusal"; this is a place to check that against a
-from-scratch application assembly rather than a test fixture.
-
-## 9. `Artifact / File` is canonical vocabulary with no executable mechanism — `possible semantic gap`
-
-**Observation.** `Artifact / File` is one of the four memory forms in
-[`../memory.md`](../memory.md). It has **no** implementation: no port, no store, no Effect, no API,
-no conformance coverage. The only occurrence of the word in `packages/core/src` is a comment in
-`workflow/stage-result.ts` noting that Structured Memory, Artifacts, and bound resources are the
-places structured cross-Stage information belongs — "none of which exist yet".
-
-**Consequence for a builder.** Guidance that routes large durable work products, child returns, or
-long-running progress artifacts to "an Artifact" is unbuildable. The first draft of the builder
-guide did exactly that in five places.
-
-**Correction applied.** [`../guides/agent-workflow-composition/state-memory-and-context.md`](../guides/agent-workflow-composition/state-memory-and-context.md) marks
-Artifact/File as canonical-but-unimplemented in one place and routes every current recommendation to
-application-owned durable storage reached
-through a capability, with only a reference travelling through the kernel.
-
-**Why this one keeps the `possible semantic gap` label.** Unlike findings 6 and 7, there is no
-kernel-side mechanism at all and no roadmap tranche in
-[`001`](001-current-status-and-roadmap.md) that names it. Whether the kernel should own an Artifact
-contract, or whether application storage is the permanent answer, is genuinely open and belongs to
-[`../memory.md`](../memory.md)'s owner. **Nothing was implemented.**
-
-## 10. Derived claims cannot express supersession or currentness — `ergonomics / API`
-
-**Observation.** The accepted claim record is closed:
-
-```text
-DerivedSemanticClaim = { claimId, statement, provenance }
-provenance           = { sourceRefs, derivedAt, derivation }
-```
-
-`CLAIM_KEYS` and `PROVENANCE_KEYS` reject unknown properties, and the reference provider implements
-no semantic supersession. [`../memory.md`](../memory.md) §10 describes supersession/contradiction
-relations as *potential* metadata and explicitly declines to freeze one universal claim schema.
-
-**Consequence for a builder.** Advice to "record the newer claim and its supersession relation" —
-present in the guide's first draft — cannot be followed: there is no field for it and the record is
-rejected. Contradictory and superseded claims simply coexist.
-
-**Correction applied.** The guide now states the closed shape, says claims coexist, and routes
-currentness policy to application policy, the replaceable provider/retrieval strategy, or promotion
-into Structured Memory.
-
-**Classification rationale.** Not a semantic gap: the canonical document deliberately left the claim
-schema unfrozen, so this is the implementation choosing the smallest shape, consistent with its
-owner. **No Derived Memory fields were added.**
-
-## 11. Lifecycle controls are narrower than they read — `documentation`
-
-**Observation.** Verified in `effects/types.ts` and `runtime/effect-processor.ts`:
-
-```text
-deadlineMs / EffectIdempotencyScope   fields of UseCapabilityProposal only.
-                                      ProposalBase carries requestKey + authorizationEvidence.
-defaultEffectDeadlineMs               applied only in deadlineFor(proposal: UseCapabilityProposal…)
-child call result                     PendingOperation deadline: null, with a source comment that
-                                      no child-result deadline/cancellation policy is implemented
-ask / peer reply, RequestUserInput,
-pending confirmation                  deadline: null
-cancellation                          "Cancellation does not propagate: the parent is not cancelled,
-                                      siblings are not cancelled, and descendants are not cancelled"
-                                      (harness.ts), with conformance coverage
-duplicate detection                   sameLogicalCapabilityRequest(a, b: UseCapabilityProposal),
-                                      against the in-memory Effect journal
-```
-
-**Consequence for a builder.** Treating deadlines, idempotency, or cancellation as uniform kernel-wide
-properties produces a liveness bug or a double-execution bug that testing rarely catches. In
-particular, in-memory journal duplicate recognition is not external idempotency and is not
-crash-safe deduplication — the reference store is in memory and durable restart is roadmap tranche
-M.
-
-**Correction applied.** [`../guides/agent-workflow-composition/capabilities-effects-and-authority.md`](../guides/agent-workflow-composition/capabilities-effects-and-authority.md)
-separates the three meanings of "idempotency", states
-which waits have no configured deadline, and says cancellation must be cascaded by the application.
-
-## 12. Agent/Workflow Stages expose no Working Notes handoff — `ergonomics / API`
-
-**Observation.** The generic mechanism exists: a controller may build a `spawn`/`call` proposal
-carrying `workingNotes`, the Harness envelope-checks it, and policy may deny the concrete transfer
-(covered by `tests/conformance/memory/working-notes-handoff.test.ts`). But that test drives it from
-a **scripted** Workflow controller. `AgentStageDefinition` / `WorkflowStageDefinition` carry only
-`child` and `requestedOperations`, and the real Workflow controller builds `callExecution({...})`
-from those alone — no `workingNotes`, no deadline.
-
-**Consequence for a builder.** For a stock Agent Stage or Workflow Stage the **terminal result is
-the only built-in child return path**: no note handoff in, no note return out, no shared Structured
-Memory view, and no Artifact mechanism (finding 9). Anything else requires an application-defined
-external mechanism.
-
-**Correction applied.** [`../guides/agent-workflow-composition/composition-children-and-concurrency.md`](../guides/agent-workflow-composition/composition-children-and-concurrency.md)
-separates the generic controller capability from what
-the Stage definitions expose, and states the return path exactly.
-
-## 13. `requestedOperations` is one narrowing lever, not the child security envelope — `documentation`
-
-**Observation.** An absent `requestedOperations` means the child receives no *capability-operation*
-authority through that attenuation path. It does not mean the child is inert: it still has its own
-lifecycle, controller, local computation, and mailbox, and other powers are governed by the
-`EffectAuthorizer` evaluating that child's Effects.
-
-**Correction applied.** [`../guides/agent-workflow-composition/workflow-agent-and-stages.md`](../guides/agent-workflow-composition/workflow-agent-and-stages.md) and
-[`../guides/agent-workflow-composition/composition-children-and-concurrency.md`](../guides/agent-workflow-composition/composition-children-and-concurrency.md) say
-"no capability-operation authority through
-this attenuation path" rather than "the child gets nothing", while preserving
-`requested ≠ granted` and parent-current-authority attenuation.
-
-## 14. Stage result and transition label were conflated — `documentation`
-
-**Observation.** `StageResult = string | null` is the data edge; a transition label is a separate
-declared control selection, returned independently by a Function Stage and resolved against the
-declared graph. `stage-result.ts` is explicit that `null` means *none*, not empty and not unknown.
-
-**Consequence.** The guide's first draft listed "small text handoff or a transition label" as one
-row, which invites encoding control into the data string and turns a declared graph edge into a
-string convention.
-
-**Correction applied.** [`../guides/agent-workflow-composition/composition-children-and-concurrency.md`](../guides/agent-workflow-composition/composition-children-and-concurrency.md)
-separates them and says not to pack routing into the
-result text.
-
-## 15. `docs/agent-engineering/` was unregistered in the documentation map — `documentation`
-
-**Observation.** The directory existed and is referenced by name in task material, but
-[`../README.md`](../README.md)'s supporting-material table did not list it, so a reader following the
-canonical map could not find it or tell whether it was canonical.
-
-**Fixed** alongside the builder guide: `agent-engineering/` and `guides/` are both registered, with
-their non-canonical status stated.
-
-## 16. Agent Structured Memory needs application-supplied view resolvers — `ergonomics / API`
-
-**Observation.** An Agent's authored `spec.structuredMemory.read.keys` / `.write.keys` are
-*requests*. Each also requires the Execution's memory binding **and** a separate application-supplied
-resolver handed to `createAgentController`, and each resolver is denied by default:
-
-```text
-structuredMemoryReadView   : StructuredMemoryReadViewResolver
-                             absent → noStructuredMemoryRead → null; the reference
-                             createStructuredMemoryReadViewResolver defaults `grants` to false
-structuredMemoryWriteView  : ActiveStructuredMemoryWriteViewResolver
-                             absent → noActiveStructuredMemoryWriteView → empty; the reference
-                             createStructuredMemoryWriteViewResolver defaults `grants` to false
-```
-
-Conformance pins that request, exposure grant, and binding are **all** necessary before a model is
-offered a write callable (`structured-memory-model-write.test.ts`, "request, exposure authority, and
-binding are all necessary"), and that an unauthorized read resolves to `null` with zero view reads
-(`structured-memory-read.test.ts`).
-
-**Consequence for a builder.** An Agent authored with read/write keys and no resolvers behaves
-exactly like one authored without them: no memory in context, no write action, no error. This is a
-third distinct misconfiguration that presents as "nothing happened" (finding 8), and it is the one a
-builder is least likely to suspect, because the definition looks complete.
-
-**Also corrected: the reader model was overstated.** Earlier drafts of the guide — and finding 4
-above — said host code was the *only* programmatic reader of Structured Memory. There are two, and
-they are different things:
-
-```text
-Harness.structuredMemoryOf(executionId)   trusted host/application inspection of the full
-                                          committed view; not an Effect, not reachable from a
-                                          controller or a model context
-AgentInformationInput.memory              the already-authorized, narrowed StructuredMemoryReadView
-                                          snapshot handed to a replaceable AgentInformationCompiler
-                                          for one invocation; it selects, and cannot widen
-```
-
-`StageExecutionContext`, `CapabilityExecutor`, and the `ExecutionView` a generic controller receives
-still have no memory handle at all, so the practical guidance — deterministic gates over committed
-facts are host work — is unchanged.
-
-**Classification rationale.** Not a semantic gap. The layering is deliberate and load-bearing:
-read authority, write *exposure*, and final `WriteMemory` authorization are three independent
-deny-by-default decisions, and the resolvers are the seam that keeps them independent. The finding is
-that the chain is long, entirely implicit at authoring time, and silent when incomplete — an
-ergonomics and documentation problem. The SDK-level version of it is tracked in
-[`../future-plan.md`](../future-plan.md) §14.1 (bootstrap layer) and §14.7 (preflight diagnostics).
-
-**Documentation fix applied.** [`../guides/agent-workflow-composition/current-authoring-surface.md`](../guides/agent-workflow-composition/current-authoring-surface.md)
-§3 now carries the full read chain, write chain, and reader table; the state, requirements, README,
-worked-examples, and skill pages were corrected to match.
-
----
-
-## Summary
-
-| # | Finding | Class |
+# Application-builder findings
+
+Engineering observations from the current public Execution surface, not architecture changes or a
+new roadmap. The [builder guide](../guides/agent-workflow-composition/README.md) documents usable paths.
+This review used repository implementation, canonical documents and ordinary conformance/examples.
+No domain-specific evaluation requirements informed the guidance.
+
+## Fixed in this change
+
+**Confirmation rule shadowing — bounded implementation defect.**
+[createCapabilityConfirmationPolicy](../../packages/core/src/reference/confirmation-policy.ts)
+selected the first matching capability, then returned “not required” if its operation list did not
+match. With rules for `world.trade/cancel` followed by `world.trade/execute`, execute bypassed its
+listed confirmation. The lookup now matches capability and operation together, preserving first
+matching-rule precedence and wildcard rules. The new
+[mechanical confirmation regression](../../tests/conformance/interaction/mechanical-confirmation.test.ts)
+failed before the fix (executor called before approval) and passes after it. No Effect or authority
+contract changed.
+
+**Guidance defects.** The old front door required conceptual reading and a 13-step procedure before
+useful implementation, repeated the same traps across many pages, and routed some missing conveniences
+to “record and stop”. Replaced by runnable-first routing, a public API map, compiled patterns/provider
+wiring and concrete diagnosis. Corrected claims about host memory writes, stale between-turn gates,
+Stage/terminal return, call-budget lifetime and model explanations guaranteeing exact displayed facts.
+The minimal example now drains dispatched capabilities and distinguishes input waits from arbitrary
+Effect waits through a shared finite offline pump. The implementation baseline's
+“deadline/cancellation propagation” wording was corrected to actual child
+cancellation settlement without cascade or configured child-result deadlines.
+
+## Confirmed capability redispatch
+
+**Observed implementation defect, deliberately not fixed here.**
+[effect-processor.ts](../../packages/core/src/runtime/effect-processor.ts): `process` gates a proposal
+before `dispatchCapability`; `dispatchCapability` calls `checkPriorOperations` only when `resume` is
+absent. `approveConfirmation` invokes it with `resume`. The comment claiming the payload was guarded
+at proposal time is not true for a gated proposal.
+
+**Reproduction:** run the “multiple turns” test in
+[patterns.test.ts](../../examples/execution-kernel-minimal/patterns.test.ts). Save a title, publish and
+approve it, then submit and approve a second identical publish proposal with policy
+`idempotency: 'per_input'`. The executor is called twice. The example's application unique-key guard
+keeps one article; it does not fix the runtime. Reapproving the **same confirmation ID** remains
+idempotent; that is a different behavior.
+
+**Impact:** builders cannot rely on runtime replay suppression for confirmed actions. The same bypass
+also skips the unresolved/unknown guard by code inspection; success redispatch was directly exercised,
+while unresolved/unknown and concurrent-approval cases need dedicated regression coverage.
+
+**Direction:** unify prior-operation guarding across direct and confirmed dispatch, explicitly excluding
+the confirmation's own pending row and preserving settlement/correlation of that row. Cover prior
+success, unknown/unresolved, denial, cancellation and concurrent approvals before changing this path.
+This is beyond a safe helper lookup fix. Applications need durable external idempotency/reconciliation
+regardless; current guidance makes this additional in-process limitation explicit.
+
+## Authoring and API concerns left for discussion
+
+| Observation and evidence | Builder impact | Assessment / promising direction |
 |---|---|---|
-| 1 | No application-facing composition root; assembly helpers live in `testing` | ergonomics / API |
-| 2 | Two overlapping `@arrokothi/core` surfaces with colliding `defineAgent` | ergonomics / API |
-| 3 | Every other example targets the legacy surface | documentation (example added) |
-| 4 | Kernel Effect vocabulary ≫ any stock authoring surface | ergonomics / API |
-| 5 | Fork/join narrower than instinct; join successor must be a Function Stage | ergonomics / API |
-| 6 | Structured Memory has only the Execution-local scope | ergonomics / API *(was: semantic gap)* |
-| 7 | Derived retrieval query is authored, not task-following | effectiveness strategy *(was: semantic gap)* |
-| 8 | Deny-by-default misconfigurations are not self-describing | ergonomics / API |
-| 9 | `Artifact/File` is canonical with no executable mechanism | possible semantic gap |
-| 10 | Derived claims cannot express supersession or currentness | ergonomics / API |
-| 11 | Deadline / idempotency / cancellation are narrower than they read | documentation |
-| 12 | Agent/Workflow Stages expose no Working Notes handoff | ergonomics / API |
-| 13 | `requestedOperations` is not the whole child security envelope | documentation |
-| 14 | Stage result and transition label were conflated | documentation |
-| 15 | `agent-engineering/` unregistered in the doc map | documentation (fixed) |
-| 16 | Agent Structured Memory needs application-supplied view resolvers; authored keys alone fail closed and silently | ergonomics / API |
+| Root `/` and `/execution` export incompatible `defineAgent`/`AgentDefinition`: [exports](../../packages/core/package.json), [root](../../packages/core/src/index.ts) | Autocomplete and legacy examples lead to the wrong runtime | API migration problem. A future major release could make the current API the default; guidance now labels legacy routes |
+| Assembly needs many independently deny-by-default collaborators: [HarnessOptions](../../packages/core/src/runtime/harness.ts), [Agent options](../../packages/core/src/controllers/agent/controller.ts) | No memory/actions often looks like model inaction | Consider a public bootstrap/preflight layer reporting missing wiring while preserving independent policy decisions; example assembly is not a new SDK |
+| Stock controllers omit spawn/message/user-input actions that generic Effects support: [Agent controller](../../packages/core/src/controllers/agent/controller.ts), [Stage requests](../../packages/core/src/workflow/observations.ts) | Natural application compositions require host/port work | Authoring coverage gap, not absent kernel vocabulary. Consider explicit stock controller action interfaces with conformance |
+| Agent `maxModelCalls` defaults to 8 and `state.step` accumulates across turns: [spec](../../packages/core/src/agent/spec.ts), [controller](../../packages/core/src/controllers/agent/controller.ts) | A healthy conversation eventually fails; no public budget-renewal operation | Internally consistent. Decide deliberate continuity/budget policy; possible future bounded renewal needs abuse/spend analysis |
+| Compiler slices model-visible messages, but Agent state retains the full transcript: [compiler](../../packages/core/src/controllers/agent/information.ts), [state](../../packages/core/src/agent/control-state.ts) | Long-lived chat grows retained state; message count does not bound per-message bytes | Strategy/ergonomics concern. Measure serialized progress and introduce explicit compaction/retention policy without losing pending invocation truth |
+| Stock Workflow completion accepts only literal terminal values or none: [TerminalProposal](../../packages/core/src/workflow/spec.ts), [transitions](../../packages/core/src/controllers/workflow/transitions.ts) | Computed final Stage output cannot be returned directly by a child Workflow | Internally consistent but composition-limiting. Evaluate an explicit validated result selector, keeping Stage output separate from terminal commitment |
+| Child Stages accept only text/null; Agent completion forwards response text, not parsed objects: [Workflow controller](../../packages/core/src/controllers/workflow/controller.ts), [Agent completion](../../packages/core/src/controllers/agent/controller.ts) | Typed terminal schema vocabulary overpromises stock structured-return ergonomics | Do not silently coerce. Consider explicit adapters/typed output selection at the boundary in a separate design |
+| Structured Memory fields start unset, host has no public setter, Stage context has no reader, spawned children have no binding: [binding](../../packages/core/src/execution/structured-memory.ts), [Stage](../../packages/core/src/ports/stage.ts), [spawn](../../packages/core/src/runtime/effect-processor.ts) | Initialization, deterministic gates and reusable child state require substantial host wiring | Some boundaries are intentional. Evaluate an explicit authorized initialization/read-view story rather than passing ambient stores into Stages |
+| [Canonical composition §4](../composition.md#4-stage-transition-contract) recommends later Stages read Structured Memory; stock Stages cannot. Artifact/File is canonical but has no API | Small edge values plus unavailable shared-state readers leave awkward data-flow choices | Coverage/design tension, not resolved here. Reconsider Stage value restrictions together with explicit resource/memory views; never treat the canonical sketch as executable today |
+| Forks accept one adapter-free Stage per branch and a Function join successor: [validation](../../packages/core/src/workflow/validation.ts) | Natural nested/multi-step plans are rejected | Deliberate implementation scope. Expand only with clear branch-state, failure, cancellation and result contracts |
+| Derived queries are authored; closed claim records have no supersession/currentness metadata: [spec](../../packages/core/src/agent/spec.ts), [claims](../../packages/core/src/execution/derived-semantic-memory.ts) | Dynamic retrieval/currentness needs capability/application policy | Replaceable strategy/API limits. No new claim fields or memory semantics introduced |
+| Allow-list policy chooses first matching capability, not first matching capability+operation: [authorizer](../../packages/core/src/reference/allow-list-authorizer.ts) | Multiple operation-specific grant entries unexpectedly deny later operations | Unlike confirmation, combining grants/constraints can widen authority, so not changed casually. Consolidate one capability rule or use a custom policy; define overlap semantics before improving helper |
 
-Finding 9 is the only remaining **possible semantic gap**, and it is a candidate architecture issue
-for [`../memory.md`](../memory.md)'s owner. Finding 6 raises an open scope question for the same
-owner without claiming missing vocabulary. Nothing in this document was implemented, worked around
-in core, or reflected in any contract by the changes that recorded it.
+## Capability schema validation boundary
+
+**Observed API/enforcement asymmetry.**
+[Model response validation](../../packages/core/src/model/validation.ts) checks callable arguments
+against projected schemas; the Function/custom-controller `UseCapability` path in
+[EffectProcessor](../../packages/core/src/runtime/effect-processor.ts) checks proposal shape and
+permission but does not validate input against `CapabilityCatalog.input`. Agent controller binding
+also does not itself replace provider schema validation. An executor cannot assume every caller
+passed the model-provider path.
+
+**Impact:** a catalog's bounded schema is not a universal domain enforcement boundary. Validate
+external/domain input in the capability implementation and policy where relevant. The example
+publisher validates title length independently. The public ValueSchema validation helpers are not
+all exported from `/execution`/`ports`, which makes reuse less convenient.
+
+**Assessment:** whether catalog validation should be centrally mandatory is an API/contract decision;
+unknown-catalog capabilities currently have conservative consequentiality handling and may be legal.
+Do not change that behavior as a side effect of documentation. Investigate a consistent public
+validation utility and clearly owned dispatch-validation contract.
+
+## Deployment limitations, not newly discovered bugs
+
+- No crash-durable Execution RuntimeStore/scheduler. [SQLite](../../packages/storage/sqlite/src/index.ts)
+  implements legacy Session persistence. Reconstructing against the same in-memory store is not
+  process recovery. Durable action IDs and reconciliation belong in the application today.
+- UseCapability deadlines do not cover child results, peer replies, user-input or confirmation waits.
+  Cancellation does not cascade. See [child cancellation tests](../../tests/conformance/composition/child-cancellation.test.ts)
+  and [child deadlines](../../tests/conformance/composition/child-call-deadline.test.ts).
+- Stock Stages cannot hand off notes or return child scratch. Cross-Execution Structured Memory and
+  Artifact/File storage are unavailable. Application storage is the supported integration route.
+- Trusted-local execution supplies semantic mediation, not physical containment or general
+  information-flow control. Current MCP covers synchronous Tools, not full service interoperability.
+
+## Readiness assessment
+
+The builder guide is suitable to freeze **as a versioned guide to this implemented surface**, with
+runnable evidence and explicit limits. This is not a production-readiness verdict for the kernel.
+Confirmed redispatch is the most urgent remaining implementation concern for consequential actions.
+Revalidate guidance when public exports/controllers change, and resolve the findings before promising
+unqualified durable or duplicate-safe application execution. SDK bootstrap and computed-return
+composition remain high-value ergonomics questions for a separate task.
+
+## Validation and discovery review
+
+The completed guidance was traced from `AGENTS.md` and the builder skill against four ordinary
+application questions: a stateful conversation with corrections/approval, a known process with an
+Agent child, fixed model extraction/classification, and parallel lookup/wait diagnosis. An independent
+read-only forward check found an unsupported child integrity option and missing authored LLM feature
+requirements. Both were corrected; the new compiled classifier exercises both declared branches.
+
+Validation on this change:
+
+- `npm test`: 1,100 package/conformance tests passed, including the confirmation-rule regression.
+- `npm run test:example:execution-kernel`: 18 application/example tests passed.
+- `npm run typecheck`: passed, including definitions, host wiring and both provider/executor factories.
+- Both offline example commands passed and checked actual publication/terminal results.
+- `npm run check:builder-docs`: local link/anchor and public import checks passed.
+- Builder skill frontmatter validation and `git diff --check` passed.
+
+No live-provider quality claim follows from these runs: Gemini HTTP was faked for provider-wiring
+checks. The repository's unrelated behavioral baseline was not used as a substitute for application
+tests. Kernel-semantic changes and deployment/production certification were outside this task.

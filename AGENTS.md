@@ -4,6 +4,26 @@ ArrokothI is a **provider-neutral execution kernel** for long-lived Agents and W
 bounded authority, explicit memory, durable waiting, composable communication, and
 protocol-neutral service interoperability. Workspace packages use the `@arrokothi/*` scope.
 
+## Building an application: start here
+
+For ordinary product requirements, use the `arrokothi-agent-builder` skill and read
+[`docs/guides/agent-workflow-composition/README.md`](docs/guides/agent-workflow-composition/README.md).
+That is the single builder front door: quick start → current API/surface → only the topics the
+application needs → runnable patterns and diagnosis. You do not need the roadmap or external
+engineering dossier before starting an application.
+
+New application code imports `@arrokothi/core/execution`, `/ports`, and `/reference`. The package
+root exports the legacy Session/Flow API with a different `defineAgent`. Start from
+[`examples/execution-kernel-minimal/`](examples/execution-kernel-minimal/README.md), not the legacy
+minimal-agent/strands-gemini examples or Studio server. Run `npm run example:application-patterns`
+and `npm run test:example:execution-kernel` for state, confirmation, and child examples.
+
+Keep kernel semantics unchanged during application work. Use supported composition, host logic,
+and application-supplied ports when they fit. Record larger/ambiguous framework concerns in
+[`docs/development/007-application-builder-ergonomics-findings.md`](docs/development/007-application-builder-ergonomics-findings.md)
+and continue supported work; a missing stock convenience is not by itself a reason to stop or to
+invent a kernel contract.
+
 ## Authoritative documentation
 
 `docs/README.md` is the canonical map. It assigns **non-overlapping concept ownership** to each

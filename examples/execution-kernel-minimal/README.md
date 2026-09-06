@@ -1,95 +1,40 @@
-# Minimal Execution-kernel example
+# Execution-kernel application examples
 
-The smallest honest application on the current ArrokothI Execution kernel: one Agent, one
-capability operation, one Harness, assembled by hand from the **production-facing** surfaces.
+Start from the [builder guide](../../docs/guides/agent-workflow-composition/README.md).
+These examples run offline using the current public Execution API. The Harness, controllers,
+authorization, state commits, child creation and confirmation are real; the model and external
+publisher are deterministic fakes. They demonstrate implementation behavior, not language quality.
 
-It exists because every other example in this repository targets the legacy `@arrokothi/core` root
-API, and the only other cohesive Execution-kernel assemblies live in the conformance suite (which is
-written to prove semantics, not to model applications) and in a live-key canary.
-
-```bash
-npm run example:execution-kernel        # run it
-npm run test:example:execution-kernel   # its deterministic tests
+```sh
+npm install
+npm run example:execution-kernel
+npm run example:application-patterns
+npm run test:example:execution-kernel
+npm run typecheck
 ```
 
-Deterministic and offline: no API key, no network, no timers.
+| File | Read for |
+|---|---|
+| [app.ts](app.ts) | Small standalone Agent assembly; catalog, executor, operation ceiling, model resolution, policy |
+| [main.ts](main.ts) / [app.test.ts](app.test.ts) | Allowed/denied lookup with identical model prose; journal establishes what happened |
+| [settle.ts](settle.ts) | Shared finite offline pump; distinguish input/confirmation waits from unsettled model/capability work |
+| [classification.ts](classification.ts) / [classification.test.ts](classification.test.ts) | One-phase labelled LLM Stage, authored feature requirements, exact branch routing |
+| [patterns.ts](patterns.ts) | Full memory chain, several-turn Agent, current-state action gate, exact confirmation, Workflow → Agent child → Function Effect barrier |
+| [patterns-main.ts](patterns-main.ts) / [patterns.test.ts](patterns.test.ts) | Fake UI driver, state/action assertions, stale title, decline, budget exhaustion, child return, application idempotency |
+| [provider-wiring.ts](provider-wiring.ts) / [provider-wiring.test.ts](provider-wiring.test.ts) | Gemini wiring for reference/Strands executors and Workflow; fake-HTTP validation without a key |
 
-## What it shows
+Copy the relevant composition root into your application and replace domain definitions/policy and
+executor code. Do not treat these example helpers as a new SDK. Runtime files import only
+`@arrokothi/core/execution`, `/ports`, `/reference`, and concrete provider adapters; `/testing` belongs
+in tests. The similarly named package-root APIs and other legacy examples target a different runtime.
 
-The same application runs twice, changing exactly one thing — the Effect policy:
+The fake publisher creates one article per exact title and returns an existing receipt on repetition.
+This is a deliberately simple application unique-key rule. A real service should use a durable
+application action ID and atomic conditional write. Confirmed proposals currently bypass the kernel's
+duplicate/unresolved guard; the repeated-proposal test makes the limitation visible and verifies that
+the application still publishes once. See [findings](../../docs/development/007-application-builder-ergonomics-findings.md).
 
-```text
-run 1  an EffectAuthorizer allows docs.search
-       requested -> authorized -> dispatch_started -> completed
-       the model is shown the handbook entry
-
-run 2  no EffectAuthorizer at all
-       requested -> denied
-       nothing reached the executor; the model is shown the denial
-```
-
-The definition, the operation ceiling, the exposure request, the catalog, the executor, **and the
-model script** are byte-identical across both runs, so every difference is attributable to the
-Harness:
-
-> Requesting an Effect is never permission to perform it.
-
-Because the script is held constant, the Agent produces the **same confident sentence in both runs**
-— including the one where nothing was looked up. That is the second lesson, and it is why the runner
-prints what the model was *shown* alongside what it said:
-
-> What a model says is never evidence that an action occurred. The Effect journal and the executor
-> are.
-
-## Import surface
-
-```text
-@arrokothi/core/execution    definitions, Harness, controllers, Execution/Effect vocabulary
-@arrokothi/core/ports        interfaces the application supplies or implements
-@arrokothi/core/reference    dependency-free implementations of those ports
-```
-
-Deliberately absent from [`app.ts`](app.ts):
-
-- **`@arrokothi/core`** (the package root) — it still carries the separate legacy Session/Flow API
-  and exports a *different* `defineAgent` and `AgentDefinition`. Importing it here is the most
-  common wrong turn available.
-- **`@arrokothi/core/testing`** — appropriate in tests, prototypes, benchmark subjects, and eval
-  harnesses; not in application runtime code, where it would hide the wiring an application should
-  own. This example's own tests happen not to need it either.
-
-## The seams
-
-[`app.ts`](app.ts) is short on purpose, and reads as an inventory of the decisions an application
-actually makes:
-
-| Collaborator | Side | Note |
-|---|---|---|
-| `InMemoryDefinitionStore` | Harness | where published definitions live |
-| `InMemoryRuntimeStore` | both | built first: the Harness writes authority into it, the controller's exposure resolver reads it back |
-| `FifoScheduler` | Harness | scheduling strategy is policy |
-| `ControllerRegistry` + `createAgentController` | Harness / controller | one controller per Definition kind |
-| `createFixedClock` / `createDeterministicIds` | Harness | deterministic, so runs are reproducible |
-| `createCapabilityCatalog` | controller + Harness | descriptive truth; grants nothing; unclassified means consequential |
-| `createActiveOperationViewResolver` | controller | narrows authority into exposure; never widens |
-| `StaticModelResolver` + `ScriptedModelProvider` | controller | deployment decides the concrete model; the definition names only a logical reference |
-| `createReferenceAgentExecutor` | controller | invokes the resolved provider |
-| `EffectAuthorizer` | **Harness** | **omit it and every Effect is denied** |
-| `CapabilityExecutor` | Harness | where authorized work happens; given no store and no ExecutionContext |
-| `operationAuthority` at `createExecution` | Harness | the runtime-owned ceiling; **omit it and nothing can be exposed** |
-
-Two defaults are load-bearing and deliberately fail closed: no authorizer denies everything, and no
-operation ceiling exposes nothing. "Nobody configured it" and "it was allowed" must never look the
-same.
-
-## What it is not
-
-Not a template for a whole product, and not a polished composition API — the current Execution-kernel
-developer surface is genuinely low-level, and this example shows that honestly rather than hiding it.
-
-For deciding *what* to build — Workflow or Agent, which Stage kind, what belongs in Structured
-Memory, when an action needs confirmation — see
-[`docs/guides/agent-workflow-composition/`](../../docs/guides/agent-workflow-composition/README.md),
-and in particular
-[`current-authoring-surface.md`](../../docs/guides/agent-workflow-composition/current-authoring-surface.md),
-which records what each stock surface can actually emit today.
+`settleOffline` drains finite offline work. It is not a network timeout or a production worker loop.
+The examples use in-memory stores and deterministic IDs/clocks; they provide no process-crash
+recovery. The CLI's automatic approval is solely a simulated decision for a fake publisher. A real
+application must present the stored proposal and resolve it through an authenticated human action.

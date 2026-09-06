@@ -170,7 +170,8 @@ or emissions, join reducers/synthesis.
 
 **Implemented capability.** `SpawnExecution` spawn/call modes; child links; parent/child result
 correlation; recursive Agent/Workflow graphs; authority attenuation; structural lineage budgets;
-deadline/cancellation propagation; terminal-dependency abandonment; explicit Working Notes handoff.
+child cancellation settlement (without cascading cancellation or configured child-result deadlines);
+terminal-dependency abandonment; explicit Working Notes handoff.
 
 **Non-obvious invariant.** A child is a real Execution. Authority and note visibility do not flow
 merely from ancestry; the child receives only explicit attenuation/transfer. A Stage remains

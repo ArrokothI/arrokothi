@@ -43,11 +43,25 @@ and does not automatically flow to the next Stage. See the compiled handler in
 
 ## LLM Stage constraints
 
-The prompt substitutes `{{input}}` with incoming Stage text. `maxModelPhases` defaults to 1. Callables
-are offered only before the final phase, so a Stage that must call a capability then interpret the
-result needs at least 2 phases. A model returning a callable on the final phase fails explicitly.
+The prompt substitutes `{{input}}` with incoming Stage text. `maxModelPhases` defaults to 1.
+Definition validation rejects nonempty `callables` unless `maxModelPhases >= 2` and the authored model
+requirements include `capabilityCalls: 'required'`. Callables are offered only before the final phase;
+a model returning one on the final phase fails explicitly.
 The Stage's callables map model-facing names to declared capability/operation identities; they do
 not grant those operations.
+
+Labelled LLM transitions require `model.requirements.structuredOutput: 'required'` at definition time.
+Resolver `portableFeatures` alone is insufficient: authored requirements and deployment features are
+distinct. For example:
+
+```ts
+model: { logicalRef: 'primary', requirements: { text: true, structuredOutput: 'required' } }
+```
+
+[The compiled classifier](../../../examples/execution-kernel-minimal/classification.ts) shows the
+complete definition and host assembly; [its tests](../../../examples/execution-kernel-minimal/classification.test.ts)
+exercise both declared branches. For a tool-using LLM Stage see
+[LLM RAG conformance](../../../tests/conformance/workflow/llm-rag.test.ts).
 
 Labelled transitions use the controller's structured output for `{ transition, result }`. There is
 no arbitrary per-Stage object output schema slot. A bounded extraction can return text that a

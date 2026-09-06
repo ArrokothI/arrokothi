@@ -17,7 +17,7 @@
 
 The [runnable application](../../../examples/execution-kernel-minimal/patterns.ts) wires these together.
 Catalogs are descriptors, not credential stores, executors, or a universal input validation gateway.
-The Agent validates projected arguments, but a Function/custom-controller capability request does not
+Conforming ModelProviders validate projected arguments, but a Function/custom-controller capability request does not
 receive equivalent catalog-schema enforcement in the Effect processor. Validate at the executor or
 trusted domain boundary too; see [findings](../../development/007-application-builder-ergonomics-findings.md).
 

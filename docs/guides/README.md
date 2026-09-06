@@ -1,25 +1,10 @@
-# Builder guides
+# Application builder guide
 
-Practical, procedural guidance for **building applications on ArrokothI**. These documents are
-developer guidance, not canonical kernel architecture: they translate the canonical semantics
-indexed by [`../README.md`](../README.md) into decision procedures an application author (human or
-coding agent) can follow.
+**[Start building here](agent-workflow-composition/README.md).** One guide covers setup, public APIs,
+control choice, state, actions, multi-turn applications, children, providers, worked patterns and
+failure diagnosis. Its front door routes by the next implementation question; no separate conceptual
+manual is required before coding.
 
-| Guide | Use it when |
-|---|---|
-| [`agent-workflow-composition/`](agent-workflow-composition/README.md) | turning an application specification into an Agent/Workflow composition. Its `README.md` is the front door: principles, the requirements mapping, the end-to-end procedure, and a router to eight topic pages — requirements and control, Workflow/Agent/Stage choice, the current authoring surface, state and memory, capabilities and authority, composition and concurrency, evaluation and diagnosis, and worked examples |
-
-## Precedence
-
-```text
-canonical concept owner (docs/README.md table)
-        ↓ overrides
-development/ synthesis and roadmap
-        ↓ overrides
-guides/
-```
-
-A guide never owns a concept. When a guide and a canonical document disagree, the canonical
-document wins and the guide is corrected. Guides may cite the framework-neutral external
-engineering material in [`../agent-engineering/`](../agent-engineering/README.md), which is
-likewise not ArrokothI architecture.
+These pages explain how to use the current implementation. They own no kernel semantics: consult
+[canonical concept owners](../README.md) for meaning, and source/conformance for executable behavior.
+Record discrepancies rather than silently treating a roadmap or canonical example as an available API.

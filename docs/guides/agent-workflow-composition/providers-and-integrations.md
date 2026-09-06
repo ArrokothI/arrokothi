@@ -58,7 +58,8 @@ For task-following retrieval, expose a small `search` capability returning IDs a
 
 For standing inferred knowledge use `DerivedSemanticMemoryProvider`, extractor, and read resolver;
 `AgentSpec.derivedMemory.read.query` is a fixed authored query, not a query generated each turn.
-`@arrokothi/retrieval-local` supplies current derived retrieval; its `/legacy` exports are for the
+`@arrokothi/core/reference` supplies the in-memory derived provider and read resolver.
+`@arrokothi/retrieval-local` supplies lexical retrieval, record queries, resources and a capability executor; its `/legacy` exports are for the
 old knowledge API. See [state guidance](state-memory-and-context.md).
 
 Function Stages can read pre-materialized local resources via declared `resourceViews` and a
@@ -67,7 +68,7 @@ replacement for authority on external operations.
 
 ## MCP
 
-`@arrokothi/interop-mcp` owns MCP wire types. `importMcpTools` produces a catalog, operation refs,
+`@arrokothi/integration-mcp` owns MCP wire types. `importMcpTools` produces a catalog, operation refs,
 and a capability executor; the application still grants selected refs in `operationAuthority`,
 requests exposure in the definition, and authorizes concrete Effects. Importing or discovering a Tool
 is not a grant. The executor should be composed with your other capability executors by explicit

@@ -1,115 +1,88 @@
-# Evaluation and failure diagnosis
+# Test and diagnose an application
 
-> **Application/developer guidance — not canonical architecture.**
-> **Canonical owner:** none — this is engineering discipline, not a kernel concept. The active
-> repository guidance it follows is
-> [`../../development/003-agent-effectiveness-guidance.md`](../../development/003-agent-effectiveness-guidance.md).
-> Precedence and the end-to-end procedure are in [`README.md`](README.md).
+[Guide home](README.md). Application tests establish business behavior; conformance establishes
+runtime boundaries. `npm run test:evals` is the repository's reference-Agent behavior baseline, not an
+automatic evaluator of your new application.
 
-This page covers builder steps 12 and 13: proving the application works, and deciding what to change
-when it does not.
+## Validate in layers
 
-```text
-kernel conformance        does the RUNTIME preserve its semantic contract?     npm test
-application effectiveness did THIS composition accomplish the task?            npm run test:evals
+```sh
+npm run test:example:execution-kernel  # executable builder examples, offline
+npm run typecheck                    # public TypeScript wiring throughout the repository
+npm run check:builder-docs           # local links/anchors and public imports in builder artifacts
+npm test                             # package + semantic conformance tests
 ```
 
-These answer different questions and must stay separate. A green conformance suite says nothing
-about whether your Agent is useful; a passing eval says nothing about whether the kernel is correct.
+Run your application's own tests first. Use a scripted/deferred `ModelProvider` to control decisions
+and timing, and a fake external system whose records you can assert. `/testing` scaffolds are useful
+in tests; inspect what authority and controllers a helper supplies rather than copying its default
+behavior into your runtime. [patterns.test.ts](../../../examples/execution-kernel-minimal/patterns.test.ts)
+uses the same public assembly as the example.
 
----
+Cover required facts, schema rejection, exact calculations, action denial, confirmation pending and
+decline, failure/unknown outcome, corrected state, repeated inputs, budget exhaustion, and child
+return/cancellation where relevant. Add slow settlement tests when asynchronous behavior matters.
+Assert that **no executor ran** on refusal, and that success changed the external record. Checking
+only a response string can pass when nothing happened.
 
-## 1. Define success before tuning anything
+Evaluate model quality separately with realistic user language and a live configured provider:
+grounding, task completion, correctness of retained state, response quality, turns, model/action
+calls, context/token use, latency and cost. Keep held-out cases. Provider-reported metrics may be
+missing; do not report missing usage as zero. Offline scripted outputs prove wiring, not language
+understanding. Live canaries are optional and require deployment credentials.
 
-Before the first prompt edit, write down for each requirement: what success is, what failure is, and
-**how the environment can tell them apart**. If you cannot answer the third, you do not yet have a
-requirement you can build against — go back to
-[requirements and control](requirements-and-control.md).
+## Find the layer that failed
 
----
-
-## 2. Build deterministic tests first
-
-Most hard requirements are testable without a model at all: schema rejection, transition correctness,
-exact calculations, gate behaviour, authority denial, confirmation decline, conflict handling,
-idempotency, budget exhaustion. Cover these with ordinary tests over your Function Stages, schemas,
-policies, and topology. They are cheap, fast, offline, and they are what actually enforces the
-specification.
-
-Make progress increments bounded and verified:
-
-```text
-reconstruct state → choose ONE bounded objective → do it
-    → verify against an environmental observation → record progress → next
-```
-
-"Done" is a verified requirement, not a model's impression. Use validators, schema validation,
-committed memory values, capability outcomes, and tests as backpressure — an agent generates work
-faster than it can reliably judge it.
-
----
-
-## 3. Then evaluate behaviour, grading the world
-
-Model the eval on the existing behavioural baseline (`tests/evals/agent/`): each case owns a small
-deterministic world, and grading reads the world.
-
-Record at least:
-
-```text
-task success                 did the required outcome occur?
-hard requirement failures    which deterministic requirements were violated?
-grounding failures           claims not supported by a record or observation
-state correctness            are the committed Structured Memory values right?
-tool/effect correctness      right operation, right arguments, right outcome handling?
-model calls                  count
-tool/action calls            count
-turns                        count
-context/token use            where the provider reports it
-latency / cost               where available
-```
-
-Report quality and cost together. A strategy that improves success through unbounded context, extra
-model turns, or full-catalog exposure has a real price.
-
-**Grade the outcome, not the transcript.** An Agent that says it sent the message and sent nothing
-has failed, whatever the prose looked like. An Agent that left the world correct but explained it
-badly has passed the outcome check and failed the quality check — two separate measurements.
-
-Include unhappy paths deliberately: capability failure, policy denial, confirmation decline, unknown
-outcome, memory conflict, budget exhaustion, adversarial retrieved content, ambiguous user input. A
-happy-path-only suite hides the failures that dominate production.
-
-Keep held-out cases. Once prompts, descriptions, or exposure are tuned against a suite, that suite
-has stopped measuring generalisation.
-
----
-
-## 4. Classify every failure before changing anything
-
-This is the most important discipline in the guide. Assign one class, then fix at that layer:
-
-| Class | Symptom | Fix |
+| Symptom | Inspect first | Likely cause / next step |
 |---|---|---|
-| application composition | wrong Workflow/Agent boundary, missing Stage, missing gate, requirement left to a prompt | [workflow](workflow-agent-and-stages.md), [requirements](requirements-and-control.md) |
-| surface limitation | the design needs an emission the chosen stock surface cannot produce | [current authoring surface](current-authoring-surface.md) — work down its escalation ladder |
-| prompt / context | the model lacked, or was swamped by, information | [state and memory](state-memory-and-context.md) |
-| tool / interface | wrong operation chosen, ambiguous names, unusable results, unhelpful errors | [capabilities](capabilities-effects-and-authority.md) |
-| model limitation | the task is beyond this model or this budget | change model, or decompose, or add determinism |
-| framework ergonomics | correct design was hard to express or easy to misuse | record it in the findings note — do not bend the design around it silently |
-| genuine missing kernel contract | the semantics you need do not exist | write it up as a candidate architecture issue; **do not implement it here** |
-| evaluation / grader | the rubric was wrong, brittle, or measured the transcript | fix the grader |
+| Wrong `defineAgent` shape or no Harness compatibility | Imports and package exports | Legacy root import; use `/execution` |
+| No model request | `inspect(id)`, controller registration, input receipt | Missing controller, unknown definition/ref, no Agent start input, model resolver failure |
+| No visible operations | Effective authority + actual model projection | Missing `operationAuthority`, no authored refs, catalog mismatch or exposure limit |
+| Visible action but no executor call | Effect journal, pending confirmations | Missing/denying authorizer, exact gate, declined request, invalid request |
+| No memory in context / no write callable | Binding, authored keys, resolver and grants | Each is independently required; defaults deny |
+| “Required” field is unset | `structuredMemoryOf(id)` values | Declaring a field creates no initial value; host needs an exact completeness check |
+| Workflow ignores next user turn | Workflow start state | Stock Workflow accepts only its initial input; use an Agent or host-created per-turn job |
+| Parent waits after child answered | Child lifecycle and terminal result | `respond_and_wait` child, absent terminal schema, or still-pending work |
+| Child creation rejected | Journal, definition/version, lineage credits | Spawn policy and budget are separate; default credits are zero |
+| Child object return fails | Child terminal schema + Stage contract | Stock child Stages only accept string/null |
+| Final Stage output missing from Workflow result | Completion transition | No dynamic terminal-result forwarding; output via emission/store is separate |
+| Agent fails after several successful turns | Failure code, `readAgentControlState` | `agent_model_call_budget_exhausted`; budget is Execution-wide |
+| Tool inaccessible in LLM Stage | `maxModelPhases` and declared callables | Nonempty callables require ≥2 phases and `capabilityCalls: 'required'`; last phase cannot request tools |
+| Runtime “idle” but app unfinished | `waitingFor`, pending operations, resumptions, confirmations | Idle only means no queued Activation; keep driving after settlement |
+| Same consequential action happens twice | Exact input + confirmation path + external action ID | Check known confirmed-replay gap and durable external idempotency |
+| Long conversations get expensive | Retained state size and compiled context | Message window does not trim stored history or bound bytes per message |
 
-> **A failing benchmark or eval never by itself justifies changing kernel semantics.** Exhaust the
-> earlier classes first, then escalate through
-> [`../../development/001-current-status-and-roadmap.md`](../../development/001-current-status-and-roadmap.md)
-> and the owning canonical document. The evidence gate for promoting application friction into
-> architecture is stated in [`../../future-plan.md`](../../future-plan.md) §14.9.
+## Observability APIs
 
-Record ergonomics and gap findings in
-[`../../development/007-application-builder-ergonomics-findings.md`](../../development/007-application-builder-ergonomics-findings.md),
-which also shows the classification format to use. The escalation rule is in
-[`README.md`](README.md).
+`Harness.inspect(id)` returns runtime status, waiting dependency, failure and terminal result.
+Do not use it as a mutable runtime handle. Query only the evidence you need:
 
-Resist the two standard reflexes: adding an Agent where a Stage would do, and adding instructions
-where a gate would do.
+| Question | Public read API |
+|---|---|
+| What did the app communicate? | `emissionsOf(id)`; track IDs/cursor |
+| Why did it transition? | `transitionsOf(id)` |
+| Was an Effect requested, authorized, dispatched, settled? | `effectJournalOf(id)`; correlate Effect/pending IDs |
+| What is still pending? | `pendingOperationsOf(id)`, `controllerResumptionsOf(id)` |
+| What can run / what facts were committed? | `effectiveOperationAuthorityOf(id)`, `structuredMemoryOf(id)` |
+| Which human action is needed? | `confirmationRequestsOf(id)`, `userInputRequestsOf(id)` |
+| Which child/peer blocks it? | `childExecutionLinksOf(id)`, `peerRequestLinksOf(id)`, `waitForEdgesFrom(id)` |
+
+For the stock Agent, `readAgentControlState(context.control.progress)` safely decodes versioned state
+and reveals transcript, pending calls, step count and invocation snapshot. Handle its tagged result;
+never cast opaque progress into application truth. Agent model trace callbacks live under
+`createAgentController({ models: { resolver, trace } })`; Workflow has its own `trace` and model trace
+options. Trace data may contain sensitive inputs, so apply the application's logging/redaction policy.
+
+Slow local model work uses ControllerResumptions; capability work uses PendingOperations and result
+Events. Do not fake either by delivering `capability.completed` through external ingress or calling
+`settleEffect` with invented results. Trusted settlement is for an executor/environment result that
+actually occurred.
+
+## When to change the framework
+
+Reproduce a suspected defect with public APIs, inspect the owning contract and relevant conformance,
+and separate application misuse from missing ergonomics and semantic uncertainty. Fix a bounded,
+unambiguous defect with regression coverage when authorized. Record larger issues in
+[builder findings](../../development/007-application-builder-ergonomics-findings.md); do not alter
+kernel semantics just to make an application test green. Continue application work using documented
+supported paths. A model quality failure alone is not evidence of a kernel bug.
