@@ -16,6 +16,7 @@ own architecture semantics.
 | What MCP baseline exists and what must future protocol work preserve? | [`005-interoperability-baseline-and-next-constraints.md`](005-interoperability-baseline-and-next-constraints.md) |
 | What release, brand, and license checks apply? | [`006-ecosystem-integration-brand-and-license-checklist.md`](006-ecosystem-integration-brand-and-license-checklist.md) |
 | What friction does an application builder hit on the current kernel? | [`007-application-builder-ergonomics-findings.md`](007-application-builder-ergonomics-findings.md) |
+| What external validation gate follows the accepted v0.8.1 freeze? | [`008-external-validation-gates.md`](008-external-validation-gates.md) |
 | Where is cross-framework benchmark design and execution? | the standalone **`ArrokothI/benchmark`** repository. |
 
 To build an application **on** the kernel rather than change the kernel, start from
@@ -32,6 +33,7 @@ performance / developer ergonomics → 004-efficiency-and-developer-ergonomics.m
 interoperability baseline         → 005-interoperability-baseline-and-next-constraints.md
 ecosystem / brand / license       → 006-ecosystem-integration-brand-and-license-checklist.md
 application-builder friction      → 007-application-builder-ergonomics-findings.md
+external validation gates         → 008-external-validation-gates.md
 cross-framework benchmark design and execution → ArrokothI/benchmark (separate repository)
 ```
 
@@ -42,7 +44,7 @@ For ordinary coding or review work:
    implementation evidence;
 3. read [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) for current and
    next architecture work;
-4. load only the specialized active document (003–007) relevant to the task.
+4. load only the specialized active document (003–008) relevant to the task.
 
 ## Benchmark work lives elsewhere
 
@@ -60,7 +62,10 @@ identifies the pre-1.0 package namespace and development line.
 The architecture-completeness verdict is **NO**: portable service contracts, broader interoperability,
 progressive heterogeneous discovery, hosted containment/security, durable restart/recovery, and a
 whole-architecture integration campaign remain. The dependency-ordered architecture plan (tranches
-H–N) is in [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md).
+H–N) is in [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md). External validation
+of the accepted v0.8.1 release now proceeds through the neutral real coding-agent canary described in
+[`008-external-validation-gates.md`](008-external-validation-gates.md); this is an evidence gate, not an
+architecture-completeness claim.
 
 ## Document roles
 
