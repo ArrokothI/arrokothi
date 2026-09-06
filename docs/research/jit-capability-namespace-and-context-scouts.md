@@ -4,7 +4,9 @@
 >
 > This document records a research direction for scaling knowledge/resource discovery and tool exposure without placing every authorized descriptor into every model context. It does **not** redefine current kernel semantics. Canonical authority/exposure ownership remains with [`../authority.md`](../authority.md); memory/context semantics remain with [`../memory.md`](../memory.md); child Execution composition and delegation remain with [`../composition.md`](../composition.md).
 >
-> Research date: **2026-09-04**. Scope clarification added **2026-09-06**: the virtual namespace is intended as a general Agent-environment abstraction, not only a coding-agent/filesystem technique. See [`arrokothi-machine-abi-and-program-model.md`](arrokothi-machine-abi-and-program-model.md).
+> Research date: **2026-09-04**.
+>
+> **2026-09-06 scope clarification:** the virtual namespace is intended as a general Agent-environment abstraction, not only a coding-agent/filesystem technique. A customer-service, educational, shopping, website, research, or enterprise Agent may navigate logical application state through the same interface without any real filesystem, host shell, or subprocess access. See [`arrokothi-machine-abi-and-program-model.md`](arrokothi-machine-abi-and-program-model.md) for the broader 2.0 logical-machine hypothesis and the proposed separation between machine capability and containment profiles.
 
 ## 1. Executive conclusion
 
@@ -23,8 +25,6 @@ The research direction in this note is to make that progressive discovery surfac
 
 Instead of eagerly projecting every relevant tool schema, knowledge descriptor, resource, Skill, or service into a model invocation, the runtime could expose a small **virtual capability namespace** whose directory/category names provide semantic hints. A model could progressively navigate that namespace using familiar operations analogous to `ls`, `find`, and `cat`, materializing detailed descriptors only when needed.
 
-The filesystem analogy is only an interaction grammar. The same namespace could describe a customer-support world, educational world, shopping application, enterprise system, or coding workspace without requiring a real OS filesystem.
-
 Conceptually:
 
 ```text
@@ -39,7 +39,23 @@ Model Invocation Projection
 
 The namespace is a **discovery/index representation**, not an authority mechanism. It must never reveal or activate capability outside Effective Authority, and final concrete Effects remain subject to current Harness authorization.
 
-A second extension is to delegate context acquisition to a constrained **Context Scout**: a cheaper/smaller child model whose job is to navigate authorized knowledge/resources, rank evidence, and return a compact provenance-preserving context package to the stronger primary model.
+A second extension is to delegate context acquisition to a constrained **Context Scout**: a cheaper/smaller child model whose job is to navigate authorized knowledge/resources, rank evidence, and return a compact provenance-preserving context package to the stronger primary model. This creates a tiered cognition pattern where expensive models spend tokens on reasoning and decisions rather than catalog exploration.
+
+The two ideas fit together:
+
+```text
+cheap deterministic retrieval
+        ↓
+small Context Scout
+        ↓
+compact evidence + descriptor references
+        ↓
+strong primary model
+        ↓
+decision / action
+```
+
+This direction is especially interesting for ArrokothI's goal of making smaller/open models effective through architecture rather than relying only on larger context windows and larger models.
 
 ---
 
@@ -55,30 +71,50 @@ multiple services / Agents / Workflows
 Skills and interaction templates
 ```
 
-But authorization answers what the Execution may use, not what must be eagerly shown to the model.
+But authorization answers:
 
-Flat catalogs eventually reproduce the same token problem in a cheaper form. A hierarchy can reduce the branching factor at each decision.
+> What could this Execution legally use/access now?
 
-This applies equally to non-coding applications. For example, a customer-service Agent might navigate:
+It does **not** imply:
+
+> The model should receive the full description/schema of everything now.
+
+The canonical `Effective Authority -> Active View -> Model Invocation Projection` split already protects this distinction. The remaining research question is how to make the narrowing/discovery process easy for models when the authorized universe itself becomes large.
+
+Flat catalogs eventually reproduce the same token problem in a cheaper form:
+
+```text
+1000 full schemas      -> too large
+1000 names+descriptions -> still large
+1000 names             -> still noisy
+```
+
+A hierarchy can reduce the branching factor at each decision:
+
+```text
+communication
+  -> email
+     -> send
+        -> full descriptor/schema
+```
+
+rather than forcing one model decision over hundreds of unrelated leaves.
+
+The same logic applies outside coding. For example:
 
 ```text
 /customer
-/orders
-/policies
-/capabilities/refunds
-/capabilities/escalation
-```
+  -> orders
+     -> returns
+        -> request
 
-while an educational Agent might navigate:
-
-```text
 /student
-/curriculum
-/exercises
-/capabilities/assessment
+  -> curriculum
+     -> algebra
+        -> next-exercise
 ```
 
-Neither layout implies real files. They are application-shaped logical views.
+These can be pure logical views over application resources.
 
 ---
 
@@ -91,7 +127,14 @@ Example:
 ```text
 /capabilities
 ├── knowledge
+│   ├── project
+│   ├── customer
+│   └── policy
 ├── tools
+│   ├── communication
+│   ├── engineering
+│   ├── data
+│   └── web
 ├── resources
 ├── skills
 ├── services
@@ -99,6 +142,55 @@ Example:
 ```
 
 The hierarchy itself acts as a low-cost semantic index. Directory/category names communicate intent before detailed descriptors are loaded.
+
+A possible exploration sequence:
+
+```text
+ls /capabilities/tools
+
+communication/
+engineering/
+data/
+web/
+```
+
+then:
+
+```text
+ls /capabilities/tools/communication
+
+email/       Email messaging and mailbox operations
+slack/       Slack messaging and channel operations
+calendar/    Calendar lookup and scheduling operations
+```
+
+then:
+
+```text
+ls /capabilities/tools/communication/email
+
+search       Search authorized mailboxes
+send         Send an email
+create_draft Create an email draft
+```
+
+and only after selecting a leaf:
+
+```text
+cat /capabilities/tools/communication/email/send
+
+stable operation ref: op-42
+effect: write
+summary: Send an email
+confirmation: policy-dependent
+input contract: ...
+```
+
+The detailed descriptor can then be admitted to the Active View and provider projection for the next invocation.
+
+### 3.1 `ls`, `find`, and `cat` are interaction semantics, not necessarily shell commands
+
+The important property is that models already understand filesystem navigation extremely well. The implementation does not have to expose a real shell or real paths.
 
 A runtime could offer controller-facing primitives such as:
 
@@ -110,11 +202,41 @@ capability_view(ref, detail_level?)
 
 while presenting them to a CLI-oriented model using filesystem-like affordances.
 
-The same underlying operations could also be projected as structured functions or another ACI. The virtual hierarchy should therefore remain semantic/index data, not depend on shell implementation details.
+This avoids accidental coupling to host filesystem security and allows the runtime to preserve typed stable references behind friendly paths.
+
+In the broader logical-machine research, the same principle applies to non-capability roots such as `/customer`, `/student`, `/orders`, or `/curriculum`: familiar path navigation may be only a projection over typed application resources.
+
+### 3.2 The hierarchy is part of retrieval
+
+A poor implementation would make:
+
+```text
+ls /capabilities
+```
+
+return 2,000 leaf names. That merely recreates the original problem.
+
+The useful property is progressive reduction:
+
+```text
+root categories
+    ↓
+provider/domain categories
+    ↓
+capability groups
+    ↓
+leaf descriptors
+    ↓
+full schema/contract
+```
+
+The ontology itself becomes a retrieval index.
 
 ---
 
 ## 4. Relationship to current Active View semantics
+
+This proposal should **not** redefine Active View to mean all of Effective Authority.
 
 Current canonical semantics remain:
 
@@ -128,25 +250,62 @@ Effective Authority
 Catalog universe
 ```
 
-The namespace is a derived discovery structure over authorized possibilities. Model-visible discovery results still do not become authority.
+A clean interpretation is:
 
-Friendly paths should resolve to stable typed references. Renaming a path must not silently redefine what a delayed model response means.
+```text
+Effective Authority
+  ↓
+build an authorized discovery index / namespace
+  ↓ model navigates the index
+select stable descriptor refs
+  ↓ deterministic validation/ranking
+expand or refresh Active View
+  ↓
+project selected descriptors to model invocation
+```
+
+Under this interpretation, the namespace is a derived discovery structure over authorized possibilities. Model-visible discovery results still do not become authority. Selected callable leaves must enter the Active View/provider projection before ordinary tool selection, unless a future canonical design defines a direct typed invocation path with equivalent snapshot/binding guarantees.
+
+An alternative design would model directory/category nodes themselves as catalog descriptors and put only those lightweight nodes in the Active View. That may be viable, but it would enlarge the descriptor ontology and requires a canonical decision. This note does not assume that change.
 
 ---
 
-## 5. `active` vs `available`
+## 5. The `available` / "other capabilities" idea
 
-A useful UX distinction is between things likely relevant now and things still authorized to discover.
+A useful UX distinction is between:
+
+```text
+likely relevant now
+vs.
+other things this Execution is still authorized to discover
+```
+
+For example:
 
 ```text
 /capabilities
 ├── active
+│   ├── knowledge/...
+│   └── tools/...
 └── available
+    ├── communication/...
+    ├── enterprise_apps/...
+    └── data/...
 ```
 
-`available` must never mean the global catalog. It is bounded by Effective Authority.
+However, this tree should be understood carefully.
 
-The exact representation remains TBD because current Active View is a semantic exposure layer whereas the namespace is primarily a discovery/index layer.
+`available` must **not** mean "everything in the global Catalog." It may contain only possibilities already inside current Effective Authority:
+
+```text
+discoverable ⊆ Effective Authority
+```
+
+A capability cannot become legal merely because a model finds a path to it.
+
+A safer terminology than `other_capabilities` is therefore `available` or `authorized`, because it communicates that these are dormant/discoverable possibilities for this Execution rather than arbitrary platform capabilities.
+
+The exact representation of `active/` versus `available/` remains TBD because current Active View is a semantic exposure layer, while the proposed namespace is primarily a discovery/index layer. An implementation should avoid creating two conflicting meanings of "active."
 
 ---
 
@@ -154,13 +313,69 @@ The exact representation remains TBD because current Active View is a semantic e
 
 JIT disclosure solves little if every descriptor loaded during a long Execution remains in model context forever.
 
-The runtime should investigate progressive materialization and later de-materialization while preserving immutable invocation snapshots for delayed responses.
+The runtime should investigate **progressive materialization with later de-materialization**.
 
-Candidate signals include current phase, recent use, context pressure, explicit release, and authority/catalog revision.
+Conceptually:
+
+```text
+authorized + discoverable
+      ↓ inspect
+selected descriptor
+      ↓
+Active View / invocation projection
+      ↓ use / phase transition / inactivity / compaction
+return to discoverable-only state
+```
+
+This is analogous to a capability lease for context, not a lease for authority.
+
+Important distinction:
+
+```text
+context/materialization lease expires
+  -> descriptor/schema stops consuming model context
+
+Effective Authority changes/revokes
+  -> capability may no longer be legal or discoverable
+```
+
+Those events must not be conflated.
+
+The exact eviction policy is research work. Candidate signals include:
+
+- current Stage/flow phase;
+- recent tool use;
+- task-local relevance score;
+- context pressure;
+- explicit model release;
+- controller compaction;
+- authority/catalog revision.
+
+Any delayed model response still resolves against the exact immutable invocation projection/binding snapshot defined by `authority.md`, not against a later refreshed view.
 
 ---
 
-## 7. Unifying discovery without unifying semantics
+## 7. Unifying knowledge/resource JIT and tool JIT
+
+Today these are often treated as separate problems:
+
+```text
+Knowledge JIT
+query -> retrieve documents -> inject chunks
+
+Tool JIT
+search tools -> retrieve schema -> expose tool
+```
+
+The capability namespace suggests a common operation:
+
+```text
+navigate namespace
+      ↓
+inspect lightweight descriptor/reference
+      ↓
+materialize selected information into model context
+```
 
 Potential typed roots include:
 
@@ -175,154 +390,445 @@ memory interfaces
 interaction templates
 ```
 
-This does **not** mean these types become semantically identical. The unification is only at the discovery/navigation interface.
+This does **not** mean they become semantically identical. Their typed ownership, authority rules, execution behavior, and provenance remain distinct. The unification is only at the **discovery/navigation interface**.
 
-This becomes especially useful in the broader ArrokothI logical-machine research: one Agent-facing namespace can present heterogeneous application state and capabilities while the kernel retains strict typed ownership and authority semantics underneath.
+This could give models one stable environmental mental model while the kernel keeps strong internal type distinctions.
+
+The logical-machine research generalizes this further: application-specific roots may coexist with capability roots while remaining typed under the hood. The interface can be unified without making `/orders`, `/memory`, and `/capabilities` the same semantic object.
 
 ---
 
-## 8. Context Scouts
+## 8. Context Scouts: delegate context acquisition to a cheaper model
 
-A specialized child Execution can act as a read-oriented Context Scout:
+The primary model does not necessarily need to perform every discovery step itself.
+
+A specialized child Execution can act as a **Context Scout**:
 
 ```text
-Primary Agent
-    ↓
-Context Scout
-    ↓
+Primary Agent (strong model)
+        ↓ requests context acquisition
+Context Scout (small/cheap model)
+        ↓
 navigate authorized namespace
-search resources
-rank/filter evidence
-    ↓
-Context Package
-    ↓
+search knowledge/resources
+inspect candidate evidence
+rank/filter results
+        ↓
+compact Context Package
+        ↓
 Primary Agent
 ```
 
-The Scout's product is context, not external action. Its authority should be attenuated accordingly and its output should preserve provenance rather than returning unsupported prose summaries.
+The Scout's product is **context, not external actions**.
 
-Tiered cognition remains a benchmarkable strategy:
+### 8.1 Authority attenuation
+
+A default Scout should receive only the parent's delegable read/discovery authority needed for the task.
+
+Conceptually:
+
+```text
+Scout Effective Authority
+  = requested retrieval authority
+    ∩ parent's delegable Effective Authority
+    ∩ application/runtime policy
+```
+
+Example:
+
+```text
+Parent:
+  github.read
+  github.write
+  slack.read
+  slack.send
+  filesystem.read
+  filesystem.write
+
+Scout:
+  github.read
+  slack.read
+  filesystem.read
+```
+
+The Scout may recommend an operation/resource reference to the parent, but it cannot grant that capability or bypass the parent's own Active View/final authorization path.
+
+### 8.2 Provenance-preserving output
+
+A small model should not be trusted to freely rewrite all retrieved evidence into prose. Its result should preserve references and selected source material so that the stronger model can inspect the evidence directly.
+
+A candidate shape:
+
+```text
+ContextPackage {
+  query
+  findings[] {
+    source_ref
+    descriptor_ref
+    excerpt_or_fact
+    relevance
+  }
+  candidate_resources[]
+  candidate_capabilities[]
+  unresolved_questions[]
+  search_trace_summary?
+}
+```
+
+For high-value evidence, prefer:
+
+```text
+source reference + bounded raw excerpt + Scout annotation
+```
+
+rather than:
+
+```text
+Scout-generated summary only
+```
+
+This reduces distortion and makes evidence auditable.
+
+### 8.3 Tiered cognition
+
+Context Scouts suggest a broader optimization hierarchy:
 
 ```text
 strong model
-  decision / synthesis
+  decision / synthesis / consequential planning
+        ↑
+medium model
+  difficult search / decomposition / ambiguity resolution
         ↑
 small model
-  navigation / filtering
+  navigation / filtering / ranking / extraction
         ↑
 deterministic runtime
-  indexes / search / policy filtering
+  lexical search / embeddings / SQL / indexes / policy filtering
 ```
+
+The runtime should attempt to solve context acquisition at the cheapest layer that can reliably do so.
+
+Example:
+
+```text
+need architecture evidence about authority inheritance
+        ↓
+deterministic retrieval -> 120 candidates
+        ↓
+small Scout -> 8 candidates
+        ↓
+optional stronger Scout -> 3 evidence packets
+        ↓
+primary model reasons over 3 relevant passages
+```
+
+This is not necessarily a universal routing rule. It is a benchmarkable policy option.
 
 ---
 
 ## 9. External precedents and adjacent systems
 
-Several current systems converge on progressive disclosure through Skills, tool search, files, and code-oriented interfaces. These are useful precedents for Agent-computer interfaces, but the ArrokothI research target is broader than a coding shell.
+The proposed direction is not isolated; several current systems are converging on progressive disclosure. The distinctive research question for ArrokothI is whether to make **one hierarchical authorized discovery namespace** span heterogeneous capability types under the existing authority model.
 
-The relevant question is whether one **authority-aware logical namespace** can work for customer, educational, workflow, website, research, and coding Agents alike.
+### 9.1 Anthropic: JIT context and filesystem navigation
 
-Coding-agent systems are useful because modern models understand hierarchical navigation well; they do not define the intended deployment shape of ArrokothI.
+Anthropic's context-engineering guidance describes "just in time" context as retaining lightweight identifiers such as file paths, stored queries, and links, then loading data dynamically during execution. It explicitly highlights progressive disclosure through filesystem-like exploration: naming conventions, file sizes, and timestamps can help an agent choose what to inspect next.
+
+Anthropic has also described exposing MCP tools as code/files so models can read tool definitions on demand instead of placing every schema into context, or alternatively using a `search_tools` interface with multiple detail levels.
+
+This is the closest conceptual precedent for treating a filesystem-like hierarchy as a context-efficiency mechanism.
+
+### 9.2 Anthropic Agent Skills: metadata first, body later
+
+Agent Skills use a directory plus `SKILL.md`. Name/description metadata is available first; detailed skill instructions are loaded later when relevant. Larger skills can further reference additional files.
+
+This demonstrates a practical multi-level disclosure pattern:
+
+```text
+name + description
+   ↓
+full skill instructions
+   ↓
+additional referenced files
+```
+
+### 9.3 Hermes Agent: progressive tool disclosure
+
+As of this research date, Hermes Agent contains explicit progressive tool disclosure. Deferrable MCP/plugin tools can hide behind bridge operations roughly corresponding to:
+
+```text
+tool_search
+  -> tool_describe
+  -> tool_call
+```
+
+Its implementation can degrade the catalog representation from grouped names/descriptions toward smaller listings as context pressure increases. Hermes also uses on-demand Skill loading.
+
+This is very close to the ArrokothI direction, but the mechanisms remain separate surfaces rather than one authority-aware hierarchical namespace across tools, knowledge, resources, services, Skills, etc.
+
+A useful warning also appears in current Hermes discussion: deferring recovery-critical tools can hurt cheap/fast models because they may fail to rediscover the needed tool. ArrokothI should therefore benchmark a small always-visible core/recovery surface rather than assuming that maximum deferral is always optimal.
+
+### 9.4 OpenClaw: skill metadata on demand, tool list still explicit
+
+OpenClaw documents a system prompt that includes its tool list and short descriptions while Skills are represented by metadata and their detailed instructions load on demand. This again shows progressive disclosure for one capability class, but not yet a universal directory-like discovery abstraction for all authorized capabilities.
+
+### 9.5 Dify: converging on Agents + Skills + Files + Tools + CLI
+
+Dify's August 2026 Agent redesign treats an Agent as a reusable unit with model, prompt, Skills, Files, and Tools, and also supports CLI tools in an isolated sandbox. This is directionally similar in that capabilities are becoming heterogeneous resources around an Agent rather than one flat function list.
+
+The material reviewed for this note does not establish that Dify exposes those resources through one JIT hierarchical authorized namespace. Treat that comparison as adjacent product direction, not an implementation claim.
+
+These coding-oriented precedents motivate familiar navigation, but they should not narrow ArrokothI's target to coding Agents. The virtual namespace should be evaluated on ordinary application Agents that never receive real machine access.
 
 ---
 
 ## 10. Security and semantic invariants
 
-Any prototype should preserve:
+Any prototype should preserve at least these invariants.
 
 ### 10.1 Discovery never grants authority
 
 ```text
 discovery result != permission
-path/ref != bearer credential
+path/ref          != bearer credential
 model-visible name != authorization
 ```
 
-### 10.2 Namespace is authority-filtered
+### 10.2 The namespace is authority-filtered
 
-Prefer building the discoverable universe from Effective Authority rather than disclosing the global Catalog and filtering only after discovery.
+Prefer:
+
+```text
+Effective Authority
+  -> authorized candidate universe
+  -> hierarchy/ranking/search
+```
+
+not:
+
+```text
+global Catalog
+  -> model search
+  -> filter after disclosure
+```
+
+The latter can leak existence of unauthorized capabilities/resources.
 
 ### 10.3 Final Effects are re-authorized
 
-A selected operation still resolves to a typed runtime request and current Harness authorization.
+A selected leaf descriptor still resolves to a typed Effect proposal and goes through current Harness authorization on the concrete request.
 
 ### 10.4 Stable refs remain separate from friendly paths
 
-Paths/categories are retrieval UX.
+Paths/categories are retrieval UX. Internal identity should remain stable and typed so renaming/reorganization cannot silently change what an old model response means.
 
 ### 10.5 Invocation projection remains a binding snapshot
 
-Delayed output must resolve against the immutable projection/binding shown to that invocation.
+If the model saw `send_email -> op-42` in invocation N, its response must resolve against that exact invocation snapshot even if the namespace/Active View changes before the response is processed.
 
 ### 10.6 Do not expose secrets through the discovery tree
 
-Credentials and privileged bindings stay outside model-visible descriptors unless explicitly intended.
+Descriptor metadata should reveal only what policy allows the Execution/model to know. Credentials and sensitive resource bindings remain outside prompt-visible descriptors unless explicitly intended and authorized.
 
 ### 10.7 A real filesystem is not required
 
 A virtual namespace avoids accidental path traversal, host-file disclosure, and coupling authority semantics to OS permissions.
 
-More strongly: **a terminal-like or filesystem-like Agent experience must not imply a terminal security model.** A lightweight website/customer Agent can use the same namespace abstraction entirely in memory through typed application resources and capabilities.
+More strongly:
 
-Physical sandboxing becomes relevant when actual general executable code, host filesystem/process access, or ambient network powers are mounted into the machine—not merely because the model navigates logical paths.
+> **A terminal-like or filesystem-like Agent experience must not imply a terminal security model.**
 
-See the machine capability / trust-containment matrix in [`arrokothi-machine-abi-and-program-model.md`](arrokothi-machine-abi-and-program-model.md).
+A lightweight website/customer Agent can navigate logical paths entirely through typed in-memory/application resources. Physical sandboxing becomes relevant when actual general executable code, host filesystem/process access, or ambient network powers are mounted into the machine—not merely because the Agent-facing ACI uses familiar path/command metaphors.
 
 ---
 
 ## 11. Design questions to benchmark rather than guess
 
-Compare hierarchical browse, semantic search, hybrid retrieval, runtime preselection, and direct structured tools.
+### 11.1 Hierarchical browse vs semantic search
 
-Also test whether non-coding Agents benefit from the same environmental metaphor:
+Compare:
 
 ```text
-customer support
-education
-shopping/website interaction
-enterprise workflows
-research orchestration
-coding
+flat tool search
+hierarchical navigation
+embedding/hybrid search
+hierarchy + search
+runtime preselection + model navigation
 ```
 
-Important metrics include task success, discovery turns, context tokens, recovery behavior, provenance, and failure to discover obscure operations.
+Hierarchy may help small models through low branching factors, while semantic search may reach obscure leaves faster.
+
+### 11.2 How should categories be created?
+
+Candidates:
+
+- authored catalog groups;
+- provider/integration groups;
+- descriptor tags;
+- generated semantic clustering;
+- task-specific virtual folders;
+- hybrid deterministic hierarchy + dynamic ranking.
+
+Generated hierarchy is flexible but can become unstable. Authored hierarchy is predictable but may require maintenance.
+
+### 11.3 What should remain eagerly visible?
+
+Potential always-visible items:
+
+- discovery/navigation primitives;
+- recovery/context restoration tools;
+- a very small set of ubiquitous controller controls;
+- task-critical operations explicitly authored for the current Stage.
+
+Everything else can be deferred.
+
+### 11.4 Does a small Scout actually outperform direct retrieval?
+
+Measure:
+
+- retrieval precision/recall;
+- hallucinated/misattributed evidence;
+- token cost by model tier;
+- end-to-end latency;
+- number of discovery turns;
+- primary-model task success;
+- provenance retention;
+- small-model failure to discover obscure capabilities.
+
+### 11.5 When should materialized descriptors be evicted?
+
+Compare:
+
+- invocation-only;
+- phase/Stage scoped;
+- inactivity-based;
+- relevance-score based;
+- context-pressure based;
+- explicit release;
+- hybrid.
+
+### 11.6 Can the same namespace work across heterogeneous types?
+
+The experiment should test whether one navigation mental model improves behavior without obscuring important semantic differences between:
+
+```text
+Operation
+Resource
+knowledge source
+Skill
+Agent/Workflow service
+memory interface
+```
+
+The interface may be unified while underlying types remain strict.
+
+The experiment should also include non-coding logical roots and workloads, not only developer-tool catalogs.
 
 ---
 
 ## 12. Suggested prototype slices
 
-### P1 — virtual operation hierarchy
+A low-risk experimental sequence:
+
+### P1 — virtual tool hierarchy only
 
 Build an authority-filtered read-only index over Operations.
 
-### P2 — application/resource roots
+```text
+list category
+list leaves
+view descriptor
+materialize selected tool schema
+```
 
-Add knowledge, Resources, and application-shaped views while preserving typed read behavior.
+Benchmark flat eager schemas vs flat search vs hierarchy.
+
+### P2 — knowledge/resource roots
+
+Add knowledge and Resource descriptors using the same navigation interface, while preserving distinct typed fetch/read behavior.
 
 ### P3 — materialization/eviction policy
 
-Allow detailed descriptors to leave model context while remaining rediscoverable if authority remains valid.
+Allow detailed descriptors to leave the Active View after phase change or context pressure while remaining rediscoverable if authority remains valid.
 
 ### P4 — Context Scout
 
-Spawn a read-only child Execution and require provenance-preserving context output.
+Spawn a read-only child Execution using a small model. Give it a bounded retrieval task and require a provenance-preserving `ContextPackage`.
 
-### P5 — logical-machine integration
+Compare:
 
-Expose the namespace as part of the broader ArrokothI machine prototype and test it in both lightweight non-coding applications and heavier coding/data applications.
+```text
+primary model searches directly
+vs.
+small Scout searches -> primary model reasons
+```
 
-The implementation should verify that the lighter cases do not inherit unnecessary filesystem/process/sandbox dependencies.
+### P5 — automatic tier routing
+
+Try deterministic retrieval first, Scout second, stronger model only when ambiguity remains.
+
+The runtime should log why escalation occurred and measure whether the architecture lowers total cost without reducing task success.
+
+### P6 — logical application namespace
+
+Mount non-coding application views such as customer/order or student/curriculum resources into the same virtual namespace and verify that no real filesystem/process/sandbox dependency is introduced.
 
 ---
 
 ## 13. Working hypothesis
 
-> **Effective Authority should bound what an Execution may discover and use, while model context should contain only a small navigable projection plus the capabilities/evidence materialized for the current reasoning step. The navigable projection is a logical application namespace, not necessarily a filesystem.**
+The strongest version of the hypothesis is:
 
-If this holds experimentally, ArrokothI can make authority scale, catalog scale, model-context scale, and physical-compute requirements substantially more independent.
+> **Effective Authority should bound what an Execution may discover and use, while model context should contain only a small navigable projection plus the capabilities/evidence materialized for the current reasoning step.**
+
+A hierarchical namespace can make discovery easier by turning one high-branching selection problem into several low-branching navigation decisions. Context Scouts can further move those navigation/retrieval tokens onto cheaper models while preserving the primary model's attention for synthesis and consequential decisions.
+
+If this holds experimentally, ArrokothI gains a useful scaling property:
+
+```text
+large capability universe
+      does not require
+large model-visible capability surface
+
+and
+
+large information universe
+      does not require
+strongest model performs every retrieval step
+```
+
+The broader machine hypothesis adds another desirable independence:
+
+```text
+terminal-like logical ACI
+      does not require
+real terminal / filesystem / process isolation
+```
+
+That would make authority scale, catalog scale, model-context scale, and physical-compute requirements substantially more independent.
 
 ---
 
 ## 14. Sources reviewed
 
-Research sources originally checked on 2026-09-04 include Anthropic context engineering and Agent Skills material, Hermes progressive disclosure, OpenClaw Skills/tooling, and Dify's Agent redesign. External systems are research analogues only; their terminology does not define ArrokothI semantics.
+Research sources checked on 2026-09-04:
+
+1. Anthropic, **Effective context engineering for AI agents**  
+   https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+2. Anthropic, **Code execution with MCP: building more efficient AI agents**  
+   https://www.anthropic.com/engineering/code-execution-with-mcp
+3. Anthropic, **Equipping agents for the real world with Agent Skills**  
+   https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
+4. Hermes Agent, **progressive tool disclosure / tool search implementation**  
+   https://github.com/NousResearch/hermes-agent/blob/main/tools/tool_search.py
+5. Hermes Agent repository / Skills documentation and examples  
+   https://github.com/NousResearch/hermes-agent
+6. OpenClaw, **Token use and costs**  
+   https://github.com/openclaw/openclaw/blob/main/docs/reference/token-use.md
+7. OpenClaw, **Skills**  
+   https://github.com/openclaw/openclaw/blob/main/docs/tools/skills.md
+8. Dify, **Introducing New Agent** (2026-08-27)  
+   https://dify.ai/blog/introducing-new-dify-agent
+
+External systems are used here as research analogues only. Their terminology does not define ArrokothI semantics.
