@@ -758,8 +758,6 @@ Do not preserve a proprietary ArrokothI abstraction merely because it existed fi
 
 Conversely, do not promote a wire feature into the kernel merely because a popular protocol exposes it.
 
-The retained [`architecture-research-dossier.md`](architecture-research-dossier.md) contains broader external-system evidence; this document remains the canonical interoperability owner.
-
 ---
 
 ## 21. Interoperability invariants

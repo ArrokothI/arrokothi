@@ -15,7 +15,7 @@
  * is *waiting for an Event matching X*. Only the Harness, after confirming there is no runnable
  * local work, derives the WAITING state.
  *
- * Slice B widens the outcome by exactly one field: `effects`, a list of Effect *proposals* as plain
+ * The outcome includes `effects`, a list of Effect *proposals* as plain
  * data. Note what did not appear alongside it. A controller still receives no `CapabilityExecutor`,
  * no `EffectAuthorizer`, no Effect journal, no pending-operation store, no `RuntimeStore`, and no
  * scheduler. It describes what it would like the runtime to do; the Harness authorizes, journals,
@@ -25,7 +25,7 @@
  * has runnable local work, and the Harness decides whether the Effect settled inline, whether work
  * remains pending, and therefore whether this Execution is READY or WAITING.
  *
- * Slice C.1 adds one argument and one outcome status, and nothing else. `activate` receives a
+ * `activate` also receives a
  * second parameter - a `ControllerResumptionScope` - through which slow *controller-local* work
  * such as a model-provider call can be started and, if it outlives the Activation's inline budget,
  * yielded on. It is a separate argument rather than an `ActivationInput` field precisely because
@@ -83,7 +83,7 @@ export type ControllerNext =
   /**
    * No runnable local work; this Execution depends on an Event matching `wake`.
    *
-   * `interleave` (Slice E.1) is an optional second, separate wake condition. An Event that matches
+   * `interleave` is an optional second, separate wake condition. An Event that matches
    * it makes the Execution `READY` for another Activation *without* satisfying the primary `wake`
    * dependency - the primary `PendingOperation` (an `ask` reply, a child result) stays pending and
    * the controller may report the same prospective dependency again on the next Activation. Absent
@@ -97,8 +97,8 @@ export type ControllerNext =
    * checks that the identifier names an unresolved registration created for *this* Execution
    * during *this* Activation, and derives `WAITING` itself.
    *
-   * `interleave` (Slice E.1) is an optional wake condition. Absent it, this suspension is
-   * *exclusive*, exactly as in v0.4: no Event produces an intervening Activation. With it, an Event
+   * `interleave` is an optional wake condition. Absent it, this suspension is
+   * *exclusive*: no Event produces an intervening Activation. With it, an Event
    * that matches `interleave` atomically invalidates this still-pending resumption and makes the
    * Execution `READY`; the resumption's late result can then never wake the Execution or be reused
    * by stable-key recovery, and the controller re-evaluates from the consolidated new state.
@@ -110,7 +110,7 @@ export type ControllerNext =
     }
   /**
    * No branch has runnable local work now; this Execution depends on a *set* of dependencies, and
-   * any one of them settling should re-enter the controller (Slice G.2).
+   * any one of them settling should re-enter the controller.
    *
    * The parallel-Workflow union wait. One Workflow Execution can legitimately hold several
    * independent branch dependencies at once - one branch waiting on an Effect result Event, another
@@ -128,7 +128,7 @@ export type ControllerNext =
    *   causes no second wake
    * ```
    *
-   * This is deliberately *not* `interleave`: E.1's stale-continuation rule invalidates an overtaken
+   * This is deliberately *not* `interleave`: the stale-continuation rule invalidates an overtaken
    * resumption because an unrelated semantic continuation changed the assumptions under it. Sibling
    * parallel branches are explicitly separate progress, so that rule does not apply here and there
    * is no `interleave` field on this arm.

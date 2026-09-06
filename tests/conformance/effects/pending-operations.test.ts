@@ -70,7 +70,7 @@ function eventWakeOf(context: ExecutionContext | undefined): WakeCondition | nul
 }
 
 describe("pending operations", () => {
-  test("a null deadline never expires; a real deadline still expires by the same rule (E.0.1)", () => {
+  test("a null deadline never expires; a real deadline still expires by the same rule", () => {
     const noDeadline = createPendingOperation({
       pendingOperationId: "pop_1" as PendingOperationId,
       executionId: "exe_1" as never,

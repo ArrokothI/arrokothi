@@ -120,7 +120,7 @@ describe("model invocation is traceable without becoming semantic", () => {
     assert.deepEqual(second.proposals, [], "a response proposes nothing");
     assert.deepEqual(second.localControlApplications, []);
 
-    // What the provider reported. Discarding this is what the retrofit fixed.
+    // Preserve what the provider reported.
     assert.deepEqual(first.metadata?.usage, { inputTokens: 120, outputTokens: 18, totalTokens: 138 });
     assert.equal(first.metadata?.finishReason, "TOOL_USE");
     assert.deepEqual(first.metadata?.diagnostics, { safetyRatings: [], candidateCount: 1 });

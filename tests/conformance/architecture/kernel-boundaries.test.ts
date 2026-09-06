@@ -1,16 +1,4 @@
-/**
- * Architecture assertions for the v0.4 path.
- *
- * The stated risk for this slice is "a superficially new API backed by legacy machinery", and no
- * amount of naming discipline detects that. So this test walks the actual import graph from the
- * v0.4 entry modules and proves what the new path is made of: nothing from Session, Flow, planning,
- * the old harness or runtime, and no external package at all - only two dependency-free leaves it
- * deliberately reuses.
- *
- * It also checks the boundary in the other direction (legacy code must not start depending on the
- * new substrate, so the old path stays deletable) and that the conformance suite speaks target
- * terminology rather than testing new semantics through legacy APIs.
- */
+/** Architecture assertions for the published Execution-kernel surface. */
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
@@ -22,8 +10,8 @@ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const CORE_SRC = resolve(REPO_ROOT, "packages/core/src");
 const IMPORT_SPECIFIER = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)["']([^"']+)["']/g;
 
-/** Everything the v0.4 path is published through. */
-const V04_ENTRY_MODULES = [
+/** Entry modules whose transitive graph must remain provider-neutral and dependency-free. */
+const KERNEL_ENTRY_MODULES = [
   "execution-api.ts",
   "controllers/agent/controller.ts",
   "controllers/workflow/controller.ts",
@@ -37,8 +25,8 @@ const V04_ENTRY_MODULES = [
   "testing/contracts/index.ts",
 ];
 
-/** Directories and files the v0.4 path owns. */
-const V04_OWNED = [
+/** Directories and files the kernel path owns. */
+const KERNEL_OWNED = [
   "agent/",
   "controllers/",
   "definitions/",
@@ -52,7 +40,7 @@ const V04_OWNED = [
   "testing/contracts/",
   "workflow/",
 ];
-const V04_OWNED_FILES = [
+const KERNEL_OWNED_FILES = [
   "execution-api.ts",
   "testing/workflow.ts",
   "testing/agent.ts",
@@ -69,38 +57,10 @@ const V04_OWNED_FILES = [
 ];
 
 /**
- * Dependency-free leaves the new path is allowed to reuse.
- *
- * The migration plan calls for deliberately reusing the schema language and content hashing rather
- * than duplicating them. Both are pure, import nothing, and already sit at the right ownership
- * level; the allowlist is explicit so nothing else drifts in beside them.
+ * Dependency-free leaves the kernel path is allowed to reuse. The allowlist is explicit so
+ * unrelated implementation code cannot drift into the semantic graph.
  */
-const ALLOWED_LEAVES = ["schema/value-schema.ts", "util/hash.ts", "util/json.ts"];
-
-const FORBIDDEN_LEGACY = [
-  "session/",
-  "flow/",
-  "planning/",
-  "harness/",
-  "runtime/runtime.ts",
-  "runtime/journal.ts",
-  "runtime/decision.ts",
-  "definition/",
-  "knowledge/",
-  "tools/",
-  "capabilities/",
-  "loop/",
-  "compiler/",
-  "context/",
-  "confirmation/",
-  "memory/",
-  "provider/",
-  "trace/",
-  "index.ts",
-  "testing/index.ts",
-  "testing/scripted-provider.ts",
-  "testing/fake-executors.ts",
-];
+const ALLOWED_LEAVES = ["schema/value-schema.ts", "util/hash.ts", "util/json.ts", "util/result.ts"];
 
 const FORBIDDEN_VENDOR = [
   "@langchain/core",
@@ -111,8 +71,6 @@ const FORBIDDEN_VENDOR = [
   "better-sqlite3",
   "@arrokothi/integration-strands",
   "@arrokothi/provider-gemini",
-  "@arrokothi/storage-sqlite",
-  "@arrokothi/studio",
 ];
 
 function specifiersIn(source: string): string[] {
@@ -120,7 +78,7 @@ function specifiersIn(source: string): string[] {
 }
 
 function isOwned(relativePath: string): boolean {
-  return V04_OWNED.some((dir) => relativePath.startsWith(dir)) || V04_OWNED_FILES.includes(relativePath);
+  return KERNEL_OWNED.some((dir) => relativePath.startsWith(dir)) || KERNEL_OWNED_FILES.includes(relativePath);
 }
 
 interface Graph {
@@ -153,31 +111,23 @@ async function walkGraph(entries: readonly string[]): Promise<Graph> {
   return { files, bare };
 }
 
-function walkV04Graph(): Promise<Graph> {
-  return walkGraph(V04_ENTRY_MODULES);
+function walkKernelGraph(): Promise<Graph> {
+  return walkGraph(KERNEL_ENTRY_MODULES);
 }
 
 async function coreSourceFiles(): Promise<string[]> {
   return (await readdir(CORE_SRC, { recursive: true })).filter((path) => path.endsWith(".ts"));
 }
 
-describe("v0.4 architecture boundaries", () => {
-  test("the v0.4 import graph reaches no legacy module", async () => {
-    const { files } = await walkV04Graph();
-    const violations = [...files].filter(
-      (path) => !isOwned(path) && FORBIDDEN_LEGACY.some((legacy) => path === legacy || path.startsWith(legacy)),
-    );
-    assert.deepEqual(violations, [], "the new substrate is not built on Session, Flow, planning, or the old harness/runtime");
-  });
-
-  test("the v0.4 import graph reuses only the declared dependency-free leaves", async () => {
-    const { files } = await walkV04Graph();
+describe("Execution-kernel architecture boundaries", () => {
+  test("the kernel import graph reuses only the declared dependency-free leaves", async () => {
+    const { files } = await walkKernelGraph();
     const outside = [...files].filter((path) => !isOwned(path)).sort();
-    assert.deepEqual(outside, [...ALLOWED_LEAVES].sort(), "reuse outside the new ownership area is explicit and small");
+    assert.deepEqual(outside, [...ALLOWED_LEAVES].sort(), "reuse outside the kernel graph is explicit and small");
   });
 
-  test("the v0.4 import graph has no external dependency at all", async () => {
-    const { bare } = await walkV04Graph();
+  test("the kernel import graph has no external dependency at all", async () => {
+    const { bare } = await walkKernelGraph();
     assert.deepEqual(
       [...bare.keys()].sort(),
       [],
@@ -185,8 +135,8 @@ describe("v0.4 architecture boundaries", () => {
     );
   });
 
-  test("no vendor, storage, or application package name appears in the v0.4 sources", async () => {
-    const { files } = await walkV04Graph();
+  test("no vendor, storage, or application package name appears in kernel sources", async () => {
+    const { files } = await walkKernelGraph();
     const violations: string[] = [];
     for (const path of files) {
       const source = await readFile(resolve(CORE_SRC, path), "utf8");
@@ -197,29 +147,10 @@ describe("v0.4 architecture boundaries", () => {
     assert.deepEqual(violations, []);
   });
 
-  test("legacy modules do not depend on the new substrate", async () => {
-    // Keeps the boundary one-way so the legacy path stays independently deletable. The two barrels
-    // that intentionally re-export both surfaces during migration are the only exceptions.
-    const barrels = new Set(["execution-api.ts", "testing/index.ts"]);
-    const violations: string[] = [];
-
-    for (const path of await coreSourceFiles()) {
-      if (isOwned(path) || barrels.has(path)) continue;
-      const absolute = resolve(CORE_SRC, path);
-      const source = await readFile(absolute, "utf8");
-      for (const specifier of specifiersIn(source)) {
-        if (!specifier.startsWith(".")) continue;
-        const target = relative(CORE_SRC, resolve(dirname(absolute), specifier));
-        if (isOwned(target)) violations.push(`${path} imports ${target}`);
-      }
-    }
-
-    assert.deepEqual(violations, []);
-  });
-
-  test("conformance tests use the target surface, not legacy compatibility APIs", async () => {
+  test("conformance tests use published package surfaces", async () => {
     const conformanceRoot = resolve(REPO_ROOT, "tests/conformance");
     const allowed = new Set([
+      "@arrokothi/core",
       "@arrokothi/core/execution",
       "@arrokothi/core/ports",
       "@arrokothi/core/reference",
@@ -241,15 +172,14 @@ describe("v0.4 architecture boundaries", () => {
       const source = await readFile(resolve(conformanceRoot, path), "utf8");
       for (const specifier of specifiersIn(source)) {
         if (specifier.startsWith("node:")) continue;
-        // A relative import stays inside the conformance tree - shared fixtures live there. The
-        // rule being enforced is that conformance never reaches for a legacy package API.
+        // A relative import stays inside the conformance tree; shared fixtures live there.
         if (specifier.startsWith(".")) continue;
         if (allowed.has(specifier)) continue;
         violations.push(`${path} imports ${specifier}`);
       }
     }
 
-    assert.deepEqual(violations, [], "conformance asserts target semantics through the published v0.4 surface only");
+    assert.deepEqual(violations, [], "conformance asserts semantics through published package surfaces only");
   });
 
   test("the controller boundary cannot reach an executor, policy, journal, or store", async () => {
@@ -280,11 +210,11 @@ describe("v0.4 architecture boundaries", () => {
 
   test("no controller-reachable module mentions settlement ingress", async () => {
     // Belt and suspenders alongside the import-graph check above: `settleEffect` is trusted
-    // runtime/integration ingress (see docs/development/legacy/005-slice-b-decisions.md, DEC-B02), never
-    // an Agent/Workflow/Stage capability. This greps text, not just imports, so the rule survives
+    // runtime/integration ingress, never an Agent/Workflow/Stage capability. This greps text, not
+    // just imports, so the rule survives
     // even a future refactor that moves `settleEffect` somewhere the import-graph check does not
-    // yet name - and it is written against `ports/controller.ts` specifically so it keeps
-    // protecting the same boundary once a Stage execution context exists in a later slice.
+    // yet name. It is written against `ports/controller.ts` specifically so it keeps protecting
+    // the same boundary if the Stage execution context evolves.
     const { files } = await walkGraph(["ports/controller.ts"]);
     const violations: string[] = [];
     for (const path of files) {
@@ -378,13 +308,20 @@ describe("v0.4 architecture boundaries", () => {
     assert.deepEqual(reverseImports, [], "the vendor adapter depends inward; the kernel never depends outward on Gemini");
   });
 
-  test("the published v0.4 entry points are the ones the package exports", async () => {
+  test("the published entry points are the ones the package exports", async () => {
     const manifest = JSON.parse(await readFile(resolve(REPO_ROOT, "packages/core/package.json"), "utf8")) as {
       exports: Record<string, string>;
     };
+    assert.equal(manifest.exports["."], "./src/index.ts");
     assert.equal(manifest.exports["./execution"], "./src/execution-api.ts");
     assert.equal(manifest.exports["./ports"], "./src/ports/index.ts");
     assert.equal(manifest.exports["./reference"], "./src/reference/index.ts");
     assert.equal(manifest.exports["./testing"], "./src/testing/index.ts");
+  });
+
+  test("the package root and focused execution entry point expose the same semantic API", async () => {
+    const rootApi = await import("@arrokothi/core");
+    const executionApi = await import("@arrokothi/core/execution");
+    assert.deepEqual(Object.keys(rootApi).sort(), Object.keys(executionApi).sort());
   });
 });

@@ -103,7 +103,7 @@ requeue/wake counts       duplicate dispatches          recovery time
 
 Prefer operation counts and broad regression envelopes over brittle CI millisecond thresholds.
 
-## 6. Post-Slice-G orchestration benchmark
+## 6. Orchestration benchmark
 
 Use deterministic fake/instant dependencies so model latency cannot hide kernel cost. Suggested
 matrix:
@@ -177,8 +177,3 @@ Measure and inspect when:
 - isolation silently falls back to trusted local;
 - performance work changes Event/Effect or memory meaning;
 - ordinary users must manipulate PendingOperation/ControllerResumption internals.
-
-Historical sources:
-
-- [`legacy/014-v1-efficiency-and-developer-ergonomics-validation.md`](legacy/014-v1-efficiency-and-developer-ergonomics-validation.md)
-- [`legacy/022a-f2b-working-notes-retention-hot-path-followup.md`](legacy/022a-f2b-working-notes-retention-hot-path-followup.md)

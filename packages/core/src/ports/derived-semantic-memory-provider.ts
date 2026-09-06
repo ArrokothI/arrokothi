@@ -17,7 +17,7 @@
  *   claims out, plain JSON.
  *
  * `collection` is an **opaque** token the resolver hands in. It is a sharing/association dimension,
- * not a permission (`../../docs/memory.md` §11, §26 of the F.3 task): holding one does not authorise
+ * not a permission (`../../docs/memory.md` §11): holding one does not authorise
  * a read. There is no ambient "all claims for this user" call.
  */
 
@@ -50,7 +50,7 @@ export interface DerivedSemanticMemoryProvider {
   /**
    * Appends validated claims to a collection. Additive: an existing claim is never destructively
    * rewritten because another arrived. The provider decides its own identity/dedup rule (see the
-   * reference provider for the one this slice uses).
+   * reference provider for its rule).
    */
   append(
     request: DerivedSemanticMemoryAppendRequest,

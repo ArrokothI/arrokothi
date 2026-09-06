@@ -19,8 +19,9 @@ the topic needed. The roadmap and external engineering notes are not prerequisit
 
 ## Decisions that prevent expensive wrong turns
 
-- Use `@arrokothi/core/execution`, `/ports`, and `/reference` for runtime code. The root is a legacy
-  API with a different `defineAgent`; `/testing` is test scaffolding. Start from
+- Use `@arrokothi/core`, `/ports`, and `/reference` for runtime code;
+  `@arrokothi/core/execution` is an equivalent focused entry point and `/testing` is test
+  scaffolding. Start from
   [the current example](../../../examples/execution-kernel-minimal/README.md).
 - Choose code for exact work, Workflow for declared progression, and Agent for open-ended decisions
   or a stock multi-turn conversation. Check the surface matrix: a stock Agent cannot call children,

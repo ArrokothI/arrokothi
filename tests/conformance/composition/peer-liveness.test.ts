@@ -1,5 +1,5 @@
 /**
- * The A↔B liveness proof (Slice E.1).
+ * The A↔B liveness proof.
  *
  * ```text
  * A ask B   ("need value B")            A waits for B's reply, but interleaves on peer.message

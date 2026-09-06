@@ -4,8 +4,8 @@
 > **Role:** replaceable Agent/ACI/context/retrieval/model-engineering strategy, not canonical
 > architecture.
 
-This guide preserves the still-live guidance from the pre-Agent review record while removing its
-obsolete Slice-D sequencing. Canonical semantics remain under [`docs/`](../README.md).
+This guide records current Agent-effectiveness guidance. Canonical semantics remain under
+[`docs/`](../README.md).
 
 ## 1. Keep correctness and effectiveness separate
 
@@ -135,5 +135,3 @@ Stop and re-check the boundary if an effectiveness change:
 For each accepted strategy, record the workload, measurements, tradeoffs, and replaceability. If it
 reveals a genuine missing kernel contract, open a separate architecture review against the relevant
 canonical owner. Do not smuggle that contract into the kernel through an Agent implementation.
-
-Historical source: [`legacy/009-agent-effectiveness-seams-before-slice-d-review.md`](legacy/009-agent-effectiveness-seams-before-slice-d-review.md).

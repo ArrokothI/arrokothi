@@ -7,7 +7,7 @@
  * *observable* rather than a convention that holds only while nobody writes down the wrong name.
  *
  * This is not a sandbox and makes no containment claim. It is the narrow read-only view boundary
- * Workflow Stage conformance needs; Slice H owns real isolation.
+ * Workflow Stage conformance needs; real isolation remains future work.
  */
 
 import type { LocalResource, LocalResourceEnvironment, LocalResourceView } from "../ports/local-resource.ts";

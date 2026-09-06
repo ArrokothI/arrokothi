@@ -11,7 +11,7 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { effectRequestsIn } from "@arrokothi/core/execution";
+import { effectRequestsIn } from "@arrokothi/core";
 import { DOCS_SEARCH, createApp, handbookAuthorizer, modelScript, supportAgent } from "./app.ts";
 import type { App } from "./app.ts";
 

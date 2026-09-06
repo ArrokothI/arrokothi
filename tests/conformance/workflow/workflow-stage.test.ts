@@ -1,5 +1,5 @@
 /**
- * Workflow Stage: one Workflow Stage boundary implemented by a child Workflow `call` (Slice E.2).
+ * Workflow Stage: one Workflow Stage boundary implemented by a child Workflow `call`.
  *
  * Structurally identical to an Agent Stage - the only difference is the child Definition kind. From
  * the parent graph's perspective the child Workflow remains one Stage boundary; its topology is

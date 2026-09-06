@@ -24,7 +24,7 @@
  *
  * This is **not** a sandbox, and must not be described as one. It is the narrow read-only
  * computation/resource-view boundary Workflow Stage conformance needs. Containment against hostile
- * code is Slice H's `ExecutionEnvironment`, and building a fraction of one here would make a
+ * code belongs to an `ExecutionEnvironment`, and building a fraction of one here would make a
  * containment claim the trusted-local profile cannot honour.
  *
  * Note what a `LocalResource` cannot be handed: it has no writer, no credential, no connection, and

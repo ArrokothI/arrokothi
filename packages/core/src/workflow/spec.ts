@@ -1,8 +1,7 @@
 /**
  * The Workflow spec: system-defined semantic topology, as authored data.
  *
- * Slice A kept `WorkflowSpec = JsonObject` so the substrate would not guess at this slice. This is
- * the replacement, and every shape in this file is chosen by what it *cannot* contain. A Stage
+ * Every shape in this file is chosen by what it *cannot* contain. A Stage
  * definition holds an id, a kind, logical references, authored configuration, adapter declarations,
  * and its predefined transitions. It never holds a function value, a provider client, a
  * `ModelProvider`, an API key, a `RuntimeStore`, a Harness, a `CapabilityExecutor`, resource
@@ -62,7 +61,7 @@ export function stageId(value: string): StageId {
 }
 
 /**
- * System-defined parallel-fork topology identity (Slice G.1).
+ * System-defined parallel-fork topology identity.
  *
  * A `ForkId` names one authored fork node in a Workflow graph - the point at which one Stage's
  * result splits into several branches that rejoin at an explicit join. Like a `StageId` it is
@@ -111,7 +110,7 @@ export function isStageKind(value: unknown): value is StageKind {
  * Kept separate from `StageResult` on purpose. A Stage producing text has produced a value for the
  * *next Stage*; whether the Execution returns anything, and what, is a different contract that the
  * definition declares and the Harness validates. The only two forms here are "no value" and "this
- * authored value", which is enough for Slice C and leaves no path by which a Stage's text silently
+ * authored value", which leaves no path by which a Stage's text silently
  * becomes an Execution's terminal result.
  */
 export type TerminalProposal =
@@ -121,7 +120,7 @@ export type TerminalProposal =
 /**
  * Where a resolved transition goes. Every target is declared in the definition.
  *
- * `fork` and `join` (Slice G.1) are Workflow *topology*, not Stage bodies: `fork` enters a
+ * `fork` and `join` are Workflow *topology*, not Stage bodies: `fork` enters a
  * system-defined parallel region and `join` leaves it. There is deliberately no `fork`/`join` Stage
  * kind and no `fork`/`join` Effect - a fork is a graph edge, and the join is a distinct semantic
  * controller step, not an operation anything authorizes.
@@ -222,7 +221,7 @@ export interface StageDefinitionBase {
 export interface FunctionStageDefinition extends StageDefinitionBase {
   readonly kind: "function";
   readonly implementationRef: ImplementationRef;
-  /** Authored configuration handed to the implementation. Data only. */
+  /** Authored configuration handed to the trusted implementation. Data only. */
   readonly config?: JsonObject;
 }
 
@@ -250,7 +249,7 @@ export interface LLMStageDefinition extends StageDefinitionBase {
 }
 
 /**
- * One Workflow Stage boundary implemented by a child Agent Execution (Slice E.2).
+ * One Workflow Stage boundary implemented by a child Agent Execution.
  *
  * The Stage runs the child through a `call` (`SpawnExecution` with `awaitTerminalResult`). It carries
  * only what the child call needs: which definition, and which child operations it requests. It never
@@ -297,12 +296,12 @@ export type StageDefinition =
   | AgentStageDefinition
   | WorkflowStageDefinition;
 
-// -- system-defined parallel fork/join (Slice G.1) --------------------------
+// -- system-defined parallel fork/join --------------------------
 
 /**
  * One branch of a fork.
  *
- * For G.1 a branch body is *exactly one Function Stage*. The branch carries its authored `id` and
+ * A branch body is *exactly one adapter-free Stage*. The branch carries its authored `id` and
  * the Stage that is its whole body; the branch Stage's own topology is fixed by validation to an
  * unconditional transition back to this fork's explicit join.
  */
@@ -315,15 +314,15 @@ export interface WorkflowForkBranch {
  * One authored fork: a Stage result splits into `branches`, which run with branch-local progress and
  * branch-local results and rejoin at the explicit `join`.
  *
- * G.1 is a deliberately narrow topology proof. A fork has at least two single-Function-Stage
- * branches and exactly one ordinary downstream Stage after the join. Branch Effects, branch child
- * calls, multi-Stage branch subgraphs, nested forks, branch loops, and join reducers are all later
- * (G.2/G.3) work and are rejected by validation here rather than half-supported.
+ * Fork topology is deliberately narrow. A fork has at least two single-Stage branches and exactly
+ * one ordinary Function Stage after the join. Branch Effects and child calls are supported, while
+ * multi-Stage branch subgraphs, nested forks, branch loops, adapters, and join reducers are rejected
+ * by validation rather than half-supported.
  */
 export interface WorkflowForkDefinition {
   readonly id: ForkId;
   readonly branches: readonly WorkflowForkBranch[];
-  /** The explicit join. For G.1 it has exactly one ordinary downstream Function Stage. */
+  /** The explicit join. It has exactly one ordinary downstream Function Stage. */
   readonly join: {
     readonly next: StageId;
   };
@@ -337,7 +336,7 @@ export interface WorkflowForkDefinition {
  * definition that fails loudly and a Workflow that runs a program its author did not write.
  *
  * `forks` is optional and absent by default: a Workflow that declares none validates and executes
- * exactly as it did before Slice G.1.
+ * exactly as it did before this field was added.
  */
 export interface WorkflowSpec {
   readonly entryStage: StageId;

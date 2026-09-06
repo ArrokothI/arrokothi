@@ -4,7 +4,7 @@
  * `docs/development/004-efficiency-and-developer-ergonomics.md` review discipline
  * for a slice that adds a new semantic guarantee: state what physical work the simple path that does
  * not use the new guarantee now pays for, and prove it stays zero. Child composition's guarantee is
- * recursive delegation under a bounded lineage budget; E.2 adds user-input requests and exact-payload
+ * recursive delegation under a bounded lineage budget; user-input requests and exact-payload
  * confirmations. The facets that exist purely to implement any of these must not be touched by an
  * ordinary Activation whose whole program is a capability call and which uses none of them. This is a
  * narrow instrumented regression, not a benchmark: it counts RuntimeStore facet calls, not wall time.

@@ -21,9 +21,8 @@ scripted model; their outputs demonstrate wiring and enforcement, not model qual
 
 Read [quick start](quick-start.md), then copy the relevant portion of
 [the runnable example](../../../examples/execution-kernel-minimal/README.md). **Import application
-code from `@arrokothi/core/execution`, `/ports`, and `/reference`.** The package root
-`@arrokothi/core` exports a different, legacy `defineAgent`. Do not start a new Execution-kernel
-application from `examples/minimal-agent`, `examples/strands-gemini`, or Studio's legacy server.
+code from `@arrokothi/core`, `/ports`, and `/reference`.**
+`@arrokothi/core/execution` is an equivalent focused semantic entry point.
 
 ## Choose the smallest working shape
 

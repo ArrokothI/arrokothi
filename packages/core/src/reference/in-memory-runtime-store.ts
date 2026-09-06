@@ -99,7 +99,7 @@ function mailbox(state: RuntimeState, mailboxId: string): MailboxState {
 /**
  * The *reusable* resumption record for one Execution's stable controller-local key.
  *
- * E.1 may leave historical `invalidated` records for a key alongside a fresh one, so a plain
+ * Interleaving may leave historical `invalidated` records for a key alongside a fresh one, so a plain
  * first-match lookup is not enough: an obsolete record must never be handed back as the reusable
  * result. `invalidated` records are skipped entirely; among what remains a `pending` record wins
  * (the recovery-as-suspension case), otherwise the most recently created `settled` one.

@@ -7,7 +7,7 @@
  * never enter a mailbox and a controller never consumes them. Making every audit record an Event
  * is how a runtime ends up with a controller that can be woken by its own bookkeeping.
  *
- * The vocabulary is closed and small, and it is derived from what Slice B semantics actually need:
+ * The vocabulary is closed and small, and it is derived from what current semantics actually need:
  *
  *   capability.completed   a mediated operation succeeded, and here is what it observed
  *   capability.failed      it definitely did not happen
@@ -24,7 +24,7 @@
  *   confirmation.declined  a human declined an exact-payload mechanical confirmation; nothing ran
  *   memory.written         a Structured Memory write committed at a runtime-owned revision
  *   memory.write_conflict  a valid, authorized versioned Structured Memory write whose optimistic
- *                          precondition was no longer true; nothing was mutated (Slice G.0)
+ *                          precondition was no longer true; nothing was mutated
  *   external.input         an observation delivered from outside the kernel
  *
  * The three capability outcomes are separate kinds rather than a status field so that a controller
@@ -33,20 +33,18 @@
  * saying no, the other is the request never having been answerable. Conflating them would make a
  * misconfiguration look like a security decision.
  *
- * The child kinds arrive with Slice E, exactly as this file's original note said they would ("Kinds
- * for later slices - child completion, peer messages, user input, timers - are deliberately absent.
- * They arrive with the Effects that produce them."). `child.spawned` is the immediate result of a
+ * `child.spawned` is the immediate result of a
  * `SpawnExecution` Effect; `child.completed` / `child.failed` / `child.cancelled` settle a `call`'s
  * dependency on the child's terminal outcome, and are distinct kinds so that "created", "finished",
  * and "cancelled" can never be read for one another - `spawn` vs `call` and `failed` vs `cancelled`
  * both depend on it.
  *
- * `message.sent` and `peer.message` arrive with Slice E.1's `SendMessage` runtime. `message.sent`
+ * `message.sent` and `peer.message` arrive with the `SendMessage` runtime. `message.sent`
  * answers the *sender's* Effect - the runtime admitted the message for that destination. `peer.message`
  * is the *recipient's* observation; a reply to an `ask` is also a `peer.message`, carrying the
  * asker's original correlation so its exact PendingOperation settles.
  *
- * `memory.write_conflict` arrives with Slice G.0. It is a *distinct* runtime observation, not a
+ * `memory.write_conflict` is a *distinct* runtime observation, not a
  * reuse of `effect.rejected`: the request was structurally valid, inside the effective authority
  * ceiling, authorized by policy, and (where gated) confirmed - it simply lost an optimistic
  * compare-and-set on the bound Structured Memory view revision. A controller that receives it knows
@@ -54,7 +52,7 @@
  * runtime-established like `memory.written` and cannot be delivered through the `external.input`
  * path.
  *
- * `user.input` and `confirmation.declined` arrive with Slice E.2. `user.input` is a
+ * `user.input` is a
  * *runtime-established* correlated result: it settles one exact pending `RequestUserInput` Effect and
  * carries enough runtime truth to identify the request, the PendingOperation, and the validated
  * value. It is deliberately distinct from `external.input`, which is an application observation and
@@ -308,7 +306,7 @@ export interface MemoryWrittenBody extends EffectResultFields {
 }
 
 /**
- * A runtime-established optimistic-concurrency conflict for one versioned `WriteMemory` (Slice G.0).
+ * A runtime-established optimistic-concurrency conflict for one versioned `WriteMemory`.
  *
  * The request was valid and authorized (and, where gated, confirmed), but its `expectedRevision`
  * precondition no longer matched the bound view at the moment the atomic memory transaction

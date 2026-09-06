@@ -4,9 +4,9 @@
 >
 > Read the canonical documents first: [`mental-model.md`](mental-model.md), [`execution-runtime.md`](execution-runtime.md), [`composition.md`](composition.md), [`authority.md`](authority.md), [`memory.md`](memory.md), [`interoperability.md`](interoperability.md), and [`security-guarantees.md`](security-guarantees.md).
 >
-> Current implementation evidence and the post-Slice-G roadmap belong under
-> [`development/`](development/). The research basis and external-system survey remain in
-> [`architecture-research-dossier.md`](architecture-research-dossier.md).
+> Current implementation evidence and the active roadmap belong under
+> [`development/`](development/). Focused external-system research lives under
+> [`research/`](research/).
 
 This file records questions that are deliberately **not frozen** into the current architecture.
 
@@ -195,7 +195,7 @@ Execution completion with work still in flight
 
 ### 1.7 `reply_and_ask()` as a compound peer interaction
 
-Slice E.1 intentionally keeps the first `reply` contract conservative: answering an existing `ask`
+The current `reply` contract is intentionally conservative: answering an existing `ask`
 should not claim that the reply itself also opened a new reply dependency unless the runtime actually
 records that second dependency. A richer compound interaction remains worth evaluating after the basic
 send / ask / reply path has implementation evidence.
@@ -382,11 +382,11 @@ Do not require a graph representation in the kernel.
 The current baseline ([`development/002`](development/002-implemented-kernel-baseline.md)) implements a
 **reference** `DerivedSemanticClaim` shape (`{ claimId, statement, provenance { sourceRefs≥1 unique,
 derivedAt ISO-8601, derivation { method, version? } } }`), a replaceable `DerivedSemanticMemoryProvider`
-port, and an explicit `DerivedMemoryExtractor` seam, sufficient to make the vertical slice executable.
-That is reference-implementation evidence, **not** an answer to any question above: F.3 deliberately
-omitted confidence, temporal validity, subjects/entities, and supersession links, and the reference
+port, and an explicit `DerivedMemoryExtractor` seam, sufficient to make the path executable.
+That is reference-implementation evidence, **not** an answer to any question above: the current shape
+omits confidence, temporal validity, subjects/entities, and supersession links, and the reference
 lexical ranking is explicitly not canonical retrieval semantics. Every question in this list remains
-open for a portable-schema slice.
+open for a portable-schema design.
 
 ### 3.2 Promotion and trust policy
 
@@ -403,7 +403,7 @@ revocation/correction of promoted state
 
 Derived Semantic Memory remains non-authoritative by default.
 
-Slice F.3 implemented one narrow reference path: `promoteDerivedClaim(...)` builds an ordinary
+The current implementation provides one narrow reference path: `promoteDerivedClaim(...)` builds an ordinary
 `WriteMemory` proposal carrying an optional plain `MemoryWriteProvenance { sourceRefs?,
 derivedClaimIds? }` that is persisted with the committed record and its history and is **not**
 authorization evidence. Promotion trust policy (verification classes, multi-source agreement,
@@ -1378,8 +1378,7 @@ migration scope generated from code/docs search
 
 ### 13.3 Timing
 
-After the coordinated 0.8.0 project/package identity reset, do not repeatedly interrupt the 0.8.x
-line merely to rename otherwise coherent concepts.
+Do not repeatedly interrupt the 0.8.x line merely to rename otherwise coherent concepts.
 
 Target the broad review after enough of the architecture has been exercised together to expose real confusion, but before v1 API stabilization—ideally during the v0.8 integration / v0.9 stabilization period.
 
@@ -1457,23 +1456,12 @@ not implemented
 Then use application evidence to decide whether asymmetries are intentional, need clearer helpers, or
 justify extending a stock definition surface. Do **not** widen every controller merely for symmetry.
 
-### 14.3 Public import surface and legacy compatibility
+### 14.3 Public import surface
 
-The 0.8.x SDK currently has a newer Execution-kernel surface alongside older root-package concepts.
-Before v1 stabilization, evaluate a coordinated migration/deprecation path so SDK consumers are not
-forced to understand colliding meanings such as multiple Agent authoring APIs indefinitely.
-
-Questions:
-
-```text
-Which subpaths are the durable public SDK surface?
-When should legacy root exports be deprecated or removed?
-Can migration be staged without making examples/docs teach two incompatible mental models?
-Which compatibility aliases are worth carrying before v1?
-```
-
-The separate Studio product may hide this complexity from end users, but it should not become the only
-place where the current SDK is usable correctly.
+The 0.8.1 SDK publishes the Execution-kernel semantic API at both `@arrokothi/core` and the focused
+`@arrokothi/core/execution` entry point. Ports, reference implementations, and testing helpers
+remain separate subpaths. Before v1, decide whether both semantic entry points remain useful or
+whether one should become the sole documented path.
 
 ### 14.4 Artifact/File executable representation
 

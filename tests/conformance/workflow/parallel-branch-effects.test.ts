@@ -1,5 +1,5 @@
 /**
- * Slice G.2 — parallel branch Effects, child calls, and the fail-closed deferrals.
+ * parallel branch Effects, child calls, and the fail-closed deferrals.
  *
  * A branch of one Workflow Execution may hold a real asynchronous dependency - a `UseCapability`
  * Effect, or an Agent / Workflow child `call` - while remaining a branch, not an Execution. What
@@ -14,7 +14,7 @@
  * an Agent / Workflow branch Stage creates its child through the ordinary SpawnExecution path;
  *   the branch itself is never an Execution
  * an UNVERSIONED branch WriteMemory fails closed (parallel_branch_memory_write_requires_revision);
- *   a versioned branch write is proved in parallel-branch-structured-memory.test.ts (G.3)
+ *   a versioned branch write is proved in parallel-branch-structured-memory.test.ts
  * a branch emission / transition label / Adapter / multi-Stage subgraph stays unsupported
  * ```
  */
@@ -109,7 +109,7 @@ async function settleBranchEffect(
   await harness.runUntilIdle();
 }
 
-describe("Slice G.2: Function branch Effects", () => {
+describe("Function branch Effects", () => {
   test("B and C each request one UseCapability with the SAME Stage-local key; correlations are branch-qualified", async () => {
     const capabilities = createDeferredCapabilityExecutor();
     const seenByD: StageExecutionContext["join"][] = [];
@@ -266,7 +266,7 @@ describe("Slice G.2: Function branch Effects", () => {
   });
 });
 
-describe("Slice G.2: Agent / Workflow branch Stages", () => {
+describe("Agent / Workflow branch Stages", () => {
   const CHILD_STRING = { schemaId: "answer", schemaVersion: 1, schema: { kind: "string" } } as const;
 
   test("a Function branch and an Agent branch run together; the child is created via SpawnExecution, the branch is not an Execution", async () => {
@@ -388,10 +388,10 @@ describe("Slice G.2: Agent / Workflow branch Stages", () => {
   });
 });
 
-describe("Slice G.2: fail-closed deferred branch semantics", () => {
+describe("fail-closed deferred branch semantics", () => {
   const forkSpec = branchForkSpec(["b", "c"]);
 
-  test("(42)+(43) an unversioned branch WriteMemory fails closed (G.3 requires expectedRevision); the Effect journal stays empty", async () => {
+  test("(42)+(43) an unversioned branch WriteMemory fails closed; the Effect journal stays empty", async () => {
     const { harness, definitions } = createWorkflowTestHarness({
       authorizer: createAllowListAuthorizer({ grants: [], memory: true }),
       functions: createFunctionStageRegistry({

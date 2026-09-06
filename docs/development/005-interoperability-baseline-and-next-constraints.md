@@ -201,8 +201,3 @@ Representative tests:
 - `tests/conformance/mcp/imported-operation-outcome-certainty.test.ts`
 - `tests/conformance/mcp/exported-operation.test.ts`
 - `tests/conformance/architecture/mcp-boundaries.test.ts`
-
-Historical sources:
-
-- [`legacy/011-mcp-synchronous-operation-proof.md`](legacy/011-mcp-synchronous-operation-proof.md)
-- [`legacy/012-mcp-post-proof-semantic-corrections.md`](legacy/012-mcp-post-proof-semantic-corrections.md)

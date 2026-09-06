@@ -24,7 +24,7 @@
  * permitted".
  *
  * Depth limits, active-descendant limits, per-subtree subdivision, and parallel-creation limits are
- * all legitimate future refinements of the same idea; E.0 implements the one counter the mandatory
+ * all legitimate future refinements of the same idea; this type implements the one counter the mandatory
  * recursion proof needs and records the rest as deferred.
  */
 

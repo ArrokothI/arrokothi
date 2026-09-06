@@ -1,11 +1,10 @@
 /**
- * A `call`'s pending dependency on a child terminal result has no configured deadline (E.0.1
- * correction).
+ * A `call`'s pending dependency on a child terminal result has no configured deadline.
  *
  * `PendingOperation.deadline` can be `null`: "no configured operation deadline", never a fabricated
  * far-future timestamp standing in for one. Canonical: a long-lived Execution may intentionally wait
- * indefinitely for a dependency (`docs/execution-runtime.md` §16). E.0 does not implement a
- * child-result deadline or cancellation policy - that is E.1 work - so the honest representation is
+ * indefinitely for a dependency (`docs/execution-runtime.md` §16). The kernel does not impose a
+ * child-result deadline, so the honest representation is
  * `null`, not a one-year sentinel that quietly claims a deadline exists.
  */
 

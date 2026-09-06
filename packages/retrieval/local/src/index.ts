@@ -1,5 +1,5 @@
 /**
- * Local retrieval implementations for the v0.4 kernel.
+ * Local retrieval implementations for the Execution kernel.
  *
  * This package exists because a retrieval implementation is not kernel semantics. The dependency
  * direction is one-way and enforced by an architecture test:
@@ -23,8 +23,6 @@
  *   `createLocalRetrievalExecutor`
  *     the mediated path; a Stage must request a UseCapability Effect and observe the result Event
  *
- * The legacy pre-v0.4 `KnowledgeIndex` moved here too, under `@arrokothi/retrieval-local/legacy`.
- * It is isolated compatibility for consumers that have not migrated, not part of this surface.
  */
 
 export { DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, LexicalIndex, splitSource, tokenize } from "./lexical.ts";

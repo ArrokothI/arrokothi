@@ -1,4 +1,4 @@
-/** Reusable conformance contract for every v0.4 ModelProvider implementation. */
+/** Reusable conformance contract for every ModelProvider implementation. */
 
 import { ModelInvocationError } from "../../model/errors.ts";
 import type { ModelProviderRequest, ModelRequirements, ResolvedModel } from "../../model/types.ts";

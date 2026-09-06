@@ -1,5 +1,5 @@
 /**
- * Architecture boundaries for Slice E.0 child composition.
+ * Architecture boundaries for child composition.
  *
  * The stated risk is a child implemented as an in-process call between controllers, or a controller
  * that reaches past the Effect gateway to construct runtime state directly. These walk the real
@@ -10,7 +10,7 @@
  *   the structural spawn budget is written in exactly two runtime modules and nowhere else
  *   child creation is mediated by the Effect gateway, which the controller boundary cannot reach
  *   the `SpawnExecution` proposal is plain data
- *   no provider, protocol, or storage package entered core with this slice
+ *   no provider, protocol, or storage package enters core
  */
 
 import { test, describe } from "node:test";
@@ -53,7 +53,7 @@ async function coreSourceFiles(): Promise<string[]> {
   return (await readdir(CORE_SRC, { recursive: true })).filter((path) => path.endsWith(".ts"));
 }
 
-describe("Slice E.0 composition boundaries", () => {
+describe("child-composition boundaries", () => {
   test("no controller module constructs a child, a delegated ceiling, a budget, or a link", async () => {
     const files = (await coreSourceFiles()).filter((path) => path.startsWith("controllers/"));
     const forbidden = [
@@ -135,7 +135,7 @@ describe("Slice E.0 composition boundaries", () => {
       "runtime/effect-processor.ts",
       "runtime/harness.ts",
     ]);
-    const forbidden = ["@modelcontextprotocol", "@arrokothi/integration-mcp", "@arrokothi/provider-gemini", "@arrokothi/storage-sqlite", "mcp", "Mcp", "MCP", "A2A"];
+    const forbidden = ["@modelcontextprotocol", "@arrokothi/integration-mcp", "@arrokothi/provider-gemini", "mcp", "Mcp", "MCP", "A2A"];
     for (const path of files) {
       const source = await readFile(resolve(CORE_SRC, path), "utf8");
       for (const name of forbidden) {
@@ -148,7 +148,7 @@ describe("Slice E.0 composition boundaries", () => {
     for (const proposal of [
       spawnExecution({ definitionId: "child", definitionVersion: 1, requestedOperations: [{ capability: "a", operation: "b" }], input: { x: 1 } }),
       callExecution({ definitionId: "child", definitionVersion: 1 }),
-      // Slice F.2b: a Working Notes handoff is data on the proposal, nothing more.
+      // a Working Notes handoff is data on the proposal, nothing more.
       spawnExecution({
         definitionId: "child",
         definitionVersion: 1,
@@ -164,7 +164,7 @@ describe("Slice E.0 composition boundaries", () => {
 
   test("an Agent/Workflow Stage proposes a child call - it never creates the child or routes its result", async () => {
     const source = await readFile(resolve(CORE_SRC, "controllers/workflow/controller.ts"), "utf8");
-    // Slice E.2: the Stage is implemented by a child `call` the controller *proposes*.
+    // the Stage is implemented by a child `call` the controller *proposes*.
     assert.ok(source.includes("callExecution"), "an Agent/Workflow Stage proposes a child call");
     assert.equal(source.includes("stage_kind_unsupported"), false, "no longer a gap");
     // But it still may not perform the spawn itself or touch child-result machinery.
@@ -180,7 +180,7 @@ describe("Slice E.0 composition boundaries", () => {
   });
 });
 
-describe("Slice E.1 interleaving / peer / cancellation boundaries", () => {
+describe("interleaving / peer / cancellation boundaries", () => {
   test("the Effect vocabulary gained no sixth kind for messaging or cancellation", async () => {
     const source = await readFile(resolve(CORE_SRC, "effects/types.ts"), "utf8");
     const declared = source.slice(source.indexOf("export type EffectKind"));
@@ -263,7 +263,7 @@ describe("Slice E.1 interleaving / peer / cancellation boundaries", () => {
   });
 });
 
-describe("Slice F.2b explicit Working Notes handoff boundaries", () => {
+describe("explicit Working Notes handoff boundaries", () => {
   test("the handoff snapshot / selection helper is a dependency-free execution leaf", async () => {
     const { files, bare } = await walkGraph(["execution/working-notes.ts"]);
     assert.deepEqual([...bare].sort(), [], "Working Notes (frame + handoff) imports no package and no builtin");
@@ -348,7 +348,7 @@ describe("Slice F.2b explicit Working Notes handoff boundaries", () => {
     );
   });
 
-  test("ActiveModelActionView stays F.1.1 authority-governed only", async () => {
+  test("ActiveModelActionView stays authority-governed only", async () => {
     const view = await readFile(resolve(CORE_SRC, "operations/model-action-view.ts"), "utf8");
     for (const forbidden of ["handoff", "Handoff", "workingNotes", "WorkingNotes", "spawn", "localControl"]) {
       assert.equal(view.includes(forbidden), false, `the Active Model Action View knows nothing about ${forbidden}`);

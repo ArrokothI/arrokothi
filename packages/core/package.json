@@ -1,6 +1,6 @@
 {
   "name": "@arrokothi/core",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "ArrokothI provider-neutral execution kernel with one primary Harness and pluggable controllers.",
   "type": "module",
   "exports": {
@@ -13,8 +13,5 @@
   "files": [
     "src"
   ],
-  "sideEffects": false,
-  "devDependencies": {
-    "@arrokothi/retrieval-local": "*"
-  }
+  "sideEffects": false
 }

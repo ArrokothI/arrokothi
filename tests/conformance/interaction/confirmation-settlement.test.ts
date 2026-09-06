@@ -1,7 +1,7 @@
 /**
- * Resume-aware settlement of a confirmed Effect that is refused before it dispatches (Slice E.2.1).
+ * Resume-aware settlement of a confirmed Effect that is refused before it dispatches.
  *
- * E.2 creates one `PendingOperation` when an Effect is gated for confirmation. E.2.1 closes the gap
+ * The runtime creates one `PendingOperation` when an Effect is gated for confirmation and closes the gap
  * after approval: an approved stored Effect may still receive an ordinary runtime answer before
  * anything is dispatched - a missing/kind-mismatched child Definition, an exhausted structural spawn
  * budget, an invalid message destination, or an authority that was revoked while the human was
@@ -230,7 +230,7 @@ describe("a resumed SendMessage refusal settles the gated PendingOperation", () 
 });
 
 /**
- * Deterministic authority-race regression (Slice E.2.1 §16).
+ * Deterministic authority-race regression.
  *
  * A store-owned hard operation-authority revocation that commits *before* a confirmed capability
  * dispatch intent must win: the executor is never called, `dispatch_started` never commits, the

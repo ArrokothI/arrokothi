@@ -54,7 +54,7 @@ export interface StrandsAgentExecutorOptions {
   /**
    * Cancellation, where the framework supports it.
    *
-   * v0.4 has no Agent cancellation to plumb, so this is how a deployment supplies one today. It is
+   * The Agent request has no cancellation signal to plumb, so a deployment supplies one here. It is
    * a scope-level concern, not something an executor request may carry: the request is plain data.
    */
   readonly cancelSignal?: AbortSignal;

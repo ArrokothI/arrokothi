@@ -75,7 +75,7 @@ export interface StageExecutionContext {
   readonly resources: LocalResourceView;
   readonly activation: StageActivationFacts;
   /**
-   * The explicit-join snapshot, when this Stage visit was entered by a fork's join (Slice G.1).
+   * The explicit-join snapshot, when this Stage visit was entered by a fork's join.
    *
    * `null` for every ordinary Stage visit. When present, it carries each parallel branch's final
    * `text | none` result in authored branch order. It is read-only branch *results* - never branch

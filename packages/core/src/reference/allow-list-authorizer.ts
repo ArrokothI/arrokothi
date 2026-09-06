@@ -1,9 +1,8 @@
 /**
  * A reference EffectAuthorizer: an explicit allow-list.
  *
- * Small on purpose. Slice B needs a boundary that is real, inspectable, and impossible for a
- * controller to talk its way past - not the full authority-envelope and delegation model, which
- * later slices own. So this evaluates one question: is this (capability, operation, resources)
+ * Small on purpose. The kernel needs a boundary that is real, inspectable, and impossible for a
+ * controller to talk its way past. This evaluates one question: is this (capability, operation, resources)
  * triple listed for this Execution, and what narrowing applies?
  *
  * Everything it does is subtractive. It can deny, it can restrict the resource bindings a request
@@ -193,7 +192,7 @@ export function createAllowListAuthorizer(options: AllowListAuthorizerOptions): 
         return {
           decision: "deny",
           code: "effect_kind_not_supported",
-          message: `effect kind "${request.effectKind}" is accepted vocabulary but has no implementation in this slice; its owning slice will provide one`,
+          message: `effect kind "${request.effectKind}" is accepted vocabulary but is not supported by this authorizer`,
         };
       }
 

@@ -14,7 +14,7 @@
  * move the Workflow somewhere the definition did not declare. An `AdapterResult.nextStage` field
  * would defeat the whole point, so no such field exists.
  *
- * Two declaration kinds, matching the canonical v0.4 vocabulary:
+ * Two declaration kinds, matching the canonical vocabulary:
  *
  *   function   one local computation, reached by logical implementation ref
  *   llm        exactly one bounded model inference, with no callables exposed

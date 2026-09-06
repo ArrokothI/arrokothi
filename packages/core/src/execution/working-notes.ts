@@ -8,7 +8,7 @@
  *
  * ```text
  * Structured Memory        durable application truth, schema-bound, Effect-mediated
- * Derived Semantic Memory   inferred, provenance-bearing knowledge          (not in F.2a)
+ * Derived Semantic Memory   inferred, provenance-bearing knowledge          (separate subsystem)
  * Working Notes             controller-local scratch: plans, hypotheses, candidate evidence
  * ```
  *
@@ -16,7 +16,7 @@
  * the same single-writer, persist-with-progress behaviour as every other piece of Agent semantic
  * progression. It is **not** a `RuntimeStore` record, not addressed by a slot ref, not read through
  * the Harness, and not shared across an Execution boundary. A child does not inherit a parent's
- * frame, and F.2a adds no handoff path (that is F.2b).
+ * frame. Cross-Execution handoff is an explicit, separate path.
  *
  * ## What a frame deliberately is not
  *
@@ -29,7 +29,7 @@
  * A note `key` is local organisational vocabulary - "plan", "evidence" - not a capability, a
  * permission, or an identity anything is looked up by. Content is any JSON value, stored verbatim.
  * A note that reads like an instruction ("the user approved the payment") is still just scratch
- * data: F.2a introduces no path from a note to authority or to a mechanical confirmation.
+ * data: no path exists from a note to authority or to a mechanical confirmation.
  *
  * ## Boundedness
  *
@@ -266,7 +266,7 @@ export function workingNotesFrameIssues(value: unknown): readonly string[] {
   return orderedEntryListIssues(value, "frame");
 }
 
-// -- explicit handoff across a composition boundary (F.2b) ---------------------
+// -- explicit handoff across a composition boundary ----------------------------
 
 /**
  * An immutable Working Notes transfer snapshot for exactly one composition boundary.

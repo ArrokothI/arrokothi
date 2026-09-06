@@ -1,5 +1,5 @@
 /**
- * Exact-payload mechanical confirmation (Slice E.2).
+ * Exact-payload mechanical confirmation.
  *
  * Confirmation is a *separate* gate from authorization (which stays `allow | deny`) and from
  * `RequestUserInput` (which asks for semantic data). It runs strictly after an `allow`, on the exact

@@ -9,7 +9,7 @@
  * belong solely on an authorization decision either (see `ports/effect-authorizer.ts`, which can
  * only promote a decision toward consequential, never away from it).
  *
- * Slice D adds the descriptive facts a model-facing projection actually consumes - a title, a
+ * The catalog includes the descriptive facts a model-facing projection consumes - a title, a
  * description, an input schema, and authored group labels - and nothing else. They are additive and
  * optional, so a catalog that only classifies consequentiality stays valid. There is deliberately
  * no second ontology: no `AgentToolDescriptor`, no protocol tool type, no parallel registry. An

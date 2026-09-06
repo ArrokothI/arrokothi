@@ -1,8 +1,8 @@
 /**
- * Slice G.0: the first honest optimistic Structured Memory write precondition.
+ * the first honest optimistic Structured Memory write precondition.
  *
  * `WriteMemoryProposal.expectedRevision` is an optional application-level compare-and-set on the
- * whole bound `StructuredMemoryView.revision`. Absent -> the accepted F.0 unconditional write.
+ * whole bound `StructuredMemoryView.revision`. Absent means an unconditional write.
  * Present and stale -> a *distinct* `memory.write_conflict` observation, a terminal `conflicted`
  * journal phase, and (when gated) a `conflicted` PendingOperation outcome with `dispatch`
  * `not_dispatched`. A stale versioned write never silently becomes last-write-wins.
@@ -118,8 +118,8 @@ function progressOf(bundle: Awaited<ReturnType<typeof scriptedWriter>>) {
     .then((context) => readScriptedProgress(context!.control.progress));
 }
 
-describe("G.0 — unconditional compatibility", () => {
-  test("a WriteMemory with no expectedRevision behaves exactly as F.0", async () => {
+describe("unconditional compatibility", () => {
+  test("a WriteMemory with no expectedRevision remains unconditional", async () => {
     const run = await scriptedWriter("unconditional", [versionedWrite("count", 1, "w1"), versionedWrite("count", 2, "w2")], {
       memory: MEMORY,
     });
@@ -141,7 +141,7 @@ describe("G.0 — unconditional compatibility", () => {
   });
 });
 
-describe("G.0 — the optimistic precondition", () => {
+describe("the optimistic precondition", () => {
   test("a matching precondition commits exactly once and advances the revision", async () => {
     const run = await scriptedWriter("matching", [versionedWrite("count", 5, "w1", 0)], { memory: MEMORY });
     await run.harness.runUntilIdle();
@@ -228,10 +228,10 @@ describe("G.0 — the optimistic precondition", () => {
     );
   });
 
-  test("different keys still conflict on the same whole-view revision - deliberate G.0 coarseness", async () => {
+  test("different keys still conflict on the same whole-view revision", async () => {
     // Writer A targets `profile`, writer B targets `count`, both expecting revision 0. After A commits,
-    // B conflicts even though the keys are disjoint. This is intentional view-level semantics for G.0,
-    // not a bug: G.0 uses the whole Structured Memory view revision. Field-level conflict is later work.
+    // B conflicts even though the keys are disjoint. The contract uses the whole Structured Memory
+    // view revision; field-level conflict is future work.
     const run = await scriptedWriter(
       "coarse",
       [versionedWrite("profile", { name: "Ada" }, "a", 0), versionedWrite("count", 7, "b", 0)],
@@ -250,7 +250,7 @@ describe("G.0 — the optimistic precondition", () => {
   });
 });
 
-describe("G.0 — structural validation of the precondition", () => {
+describe("structural validation of the precondition", () => {
   test("expectedRevisionIssues rejects every malformed shape and accepts a non-negative integer", () => {
     for (const bad of [-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, "0" as unknown, null as unknown, {} as unknown]) {
       assert.equal(expectedRevisionIssues(bad).length, 1, `${String(bad)} is malformed`);
@@ -310,7 +310,7 @@ describe("G.0 — structural validation of the precondition", () => {
   });
 });
 
-describe("G.0 — authorization ordering and no revision oracle", () => {
+describe("authorization ordering and no revision oracle", () => {
   class ViewGetCountingStore extends InMemoryRuntimeStore {
     viewGets = 0;
     override async transact<T>(scope: Parameters<InMemoryRuntimeStore["transact"]>[0], work: (tx: RuntimeTransaction) => Promise<T>): Promise<T> {
@@ -349,7 +349,7 @@ describe("G.0 — authorization ordering and no revision oracle", () => {
   });
 });
 
-describe("G.0 — the confirmation digest covers the precondition", () => {
+describe("the confirmation digest covers the precondition", () => {
   test("same key/value, different expected revisions -> different proposal digests", () => {
     const four = writeMemory({ key: "count", value: 3, expectedRevision: 4 });
     const five = writeMemory({ key: "count", value: 3, expectedRevision: 5 });
@@ -368,7 +368,7 @@ const confirmWrites: ConfirmationPolicy = {
   },
 };
 
-describe("G.0 — confirmation / state race", () => {
+describe("confirmation / state race", () => {
   test("a confirmed write expecting revision N conflicts if the view advances before confirmed dispatch", async () => {
     const run = await scriptedWriter("confirm-race", [versionedWrite("count", 42, "w", 0)], {
       memory: MEMORY,
@@ -430,7 +430,7 @@ describe("G.0 — confirmation / state race", () => {
   });
 });
 
-describe("G.0 — physical persistence CAS backstop", () => {
+describe("physical persistence CAS backstop", () => {
   class RacingStore extends InMemoryRuntimeStore {
     armed = false;
     override async transact<T>(scope: Parameters<InMemoryRuntimeStore["transact"]>[0], work: (tx: RuntimeTransaction) => Promise<T>): Promise<T> {
@@ -467,7 +467,7 @@ describe("G.0 — physical persistence CAS backstop", () => {
   });
 });
 
-describe("G.0 — Workflow Stage observation fidelity", () => {
+describe("Workflow Stage observation fidelity", () => {
   test("a stale required WriteMemory settles the barrier as conflicted, distinct from rejected", async () => {
     let observed: unknown;
     const functions = createFunctionStageRegistry({
@@ -521,8 +521,8 @@ describe("G.0 — Workflow Stage observation fidelity", () => {
   });
 });
 
-describe("G.0 — model-facing surfaces unchanged", () => {
-  test("the F.1.1 model write callable never asks the model for expectedRevision", async () => {
+describe("model-facing surfaces", () => {
+  test("the model write callable never asks the model for expectedRevision", async () => {
     const executor = scriptedAgentExecutor([{ kind: "respond", text: "done" }]);
     const bundle = createAgentTestHarness({
       models: agentModelAccess(testModelResolver()),

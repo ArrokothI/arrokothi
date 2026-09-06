@@ -1,8 +1,8 @@
 /**
- * Interleaving and peer/cancellation cost discipline (Slice E.1, `docs/development/014`).
+ * Interleaving and peer/cancellation cost discipline.
  *
- * `014` §9: a slice that adds a new semantic guarantee must state what physical work the simple
- * path that uses none of it now pays for. E.1's guarantees are controlled interleaving,
+ * A new semantic guarantee must state what physical work the simple
+ * path that uses none of it now pays for. The guarantees are controlled interleaving,
  * stale-continuation safety, peer messaging, and a cancellation hook. This test:
  *
  *   1. proves an ordinary no-message / no-interleave / no-cancellation Activation touches none of

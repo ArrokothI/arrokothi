@@ -1,7 +1,7 @@
 /**
  * Architecture assertions for the MCP adapter boundary.
  *
- * The claim this slice makes is not "MCP works". It is that MCP works *without becoming a kernel
+ * The claim is not merely "MCP works". It is that MCP works *without becoming a kernel
  * concern*, and only an import graph can prove that. These cases walk the real files and the real
  * manifests:
  *
@@ -226,20 +226,17 @@ describe("MCP is an adapter dependency, never a kernel one", () => {
         "capability.completed",
         "capability.failed",
         "capability.unknown",
-        // Slice E.0 added the child-composition kinds and E.1 added child.cancelled + the peer
-        // messaging kinds; the MCP slice added nothing.
+        // Child-composition and peer-messaging kinds remain kernel vocabulary; MCP adds nothing.
         "child.cancelled",
         "child.completed",
         "child.failed",
         "child.spawned",
-        // Slice E.2 added confirmation.declined for mechanical confirmation and user.input for the
-        // RequestUserInput runtime; the MCP slice added nothing.
+        // Mechanical-confirmation and user-input kinds remain kernel vocabulary; MCP adds nothing.
         "confirmation.declined",
         "effect.denied",
         "effect.rejected",
         "external.input",
-        // Slice F.0 added memory.written and Slice G.0 added memory.write_conflict; both are
-        // kernel-owned Structured Memory results and MCP still added nothing.
+        // Both are kernel-owned Structured Memory results; MCP adds nothing.
         "memory.write_conflict",
         "memory.written",
         "message.sent",

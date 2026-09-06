@@ -5,7 +5,7 @@
  * and it is not a claim that anything happened. A controller returns proposals as plain data; the
  * Harness assigns identity, authorizes, journals, dispatches, and eventually delivers an Event.
  *
- * The union is closed at the five accepted v0.4 kinds. The dispatchable subset is explicit; an
+ * The union is closed at the five accepted kinds. The dispatchable subset is explicit; an
  * accepted but unimplemented kind is answered with a refusal rather than becoming a silent no-op.
  *
  * What is not an Effect: a function call, a parse, a local rerank over an already-exposed corpus, a
@@ -106,9 +106,9 @@ export interface WriteMemoryProposal extends ProposalBase {
   /** Optional plain-reference provenance for this explicit assertion. Never authority. */
   readonly provenance?: MemoryWriteProvenance;
   /**
-   * Optional optimistic-concurrency precondition (Slice G.0).
+   * Optional optimistic-concurrency precondition.
    *
-   * Absent means the write is unconditional - the accepted F.0 last-writer-replaces behaviour, and
+   * Absent means the write is unconditional - the last-writer-replaces behaviour, and
    * the byte-identical model-facing path. Present means: commit only if the *whole* bound
    * `StructuredMemoryView.revision` still equals this number at the moment the atomic memory
    * transaction resolves. A stale versioned write does not silently become last-write-wins - it
@@ -116,8 +116,8 @@ export interface WriteMemoryProposal extends ProposalBase {
    *
    * It is a non-negative integer referring to the entire bound view, never a per-field version and
    * never a predicate. It is part of the exact proposal, so two otherwise-identical writes expecting
-   * different revisions have different exact-payload confirmation digests. G.0 is a
-   * trusted/programmatic primitive: the F.1.1 model-facing write callable never asks the model for
+   * different revisions have different exact-payload confirmation digests. This is a
+   * trusted/programmatic primitive: the model-facing write callable never asks the model for
    * it, and the model-facing read projection still carries no whole-view revision.
    */
   readonly expectedRevision?: number;
@@ -149,7 +149,7 @@ export interface SpawnExecutionProposal extends ProposalBase {
    */
   readonly awaitTerminalResult?: boolean;
   /**
-   * The Definition kind the caller expects the child to resolve to (Slice E.2).
+   * The Definition kind the caller expects the child to resolve to.
    *
    * Set by an Agent Stage / Workflow Stage so the Harness refuses a mismatched child kind rather
    * than running it under the wrong Stage semantics. The check happens at the Harness's ordinary
@@ -159,7 +159,7 @@ export interface SpawnExecutionProposal extends ProposalBase {
    */
   readonly expectedChildKind?: "agent" | "workflow";
   /**
-   * An explicit Working Notes handoff for this child (Slice F.2b).
+   * An explicit Working Notes handoff for this child.
    *
    * An immutable, deep-copied snapshot of an explicitly selected subset of the proposing
    * controller's own Working Notes - data attached to an already-authorized child-spawn proposal,
@@ -316,7 +316,7 @@ export function memoryWriteProvenanceIssues(value: unknown, path = "provenance")
 }
 
 /**
- * Structural validation of an optional `WriteMemory` optimistic-concurrency precondition (G.0).
+ * Structural validation of an optional `WriteMemory` optimistic-concurrency precondition.
  *
  * Absent is fine (an unconditional write). Present means a non-negative integer: a `number` that
  * `Number.isInteger` accepts and that is `>= 0`. This rejects a fractional value, `NaN`, `Infinity`,
@@ -516,7 +516,7 @@ export interface WriteMemoryInput {
   /** Optional plain-reference provenance for this explicit assertion. Never authority. */
   readonly provenance?: MemoryWriteProvenance;
   /**
-   * Optional optimistic-concurrency precondition (Slice G.0): commit only if the bound
+   * Optional optimistic-concurrency precondition: commit only if the bound
    * `StructuredMemoryView.revision` still equals this non-negative integer. Absent = unconditional.
    * A trusted/programmatic caller supplies it; the model-facing write callable never does.
    */
@@ -545,7 +545,7 @@ export interface PromoteDerivedClaimInput {
   readonly value: JsonValue;
   readonly requestKey?: string;
   /**
-   * Optional optimistic-concurrency precondition (Slice G.0), forwarded verbatim onto the ordinary
+   * Optional optimistic-concurrency precondition, forwarded verbatim onto the ordinary
    * `WriteMemory` proposal this helper builds. Promotion has no special concurrency mechanism: a
    * trusted caller that wants a compare-and-set promotion supplies the expected view revision here
    * and gets the same `memory.write_conflict` outcome an ordinary versioned write would.
@@ -565,12 +565,12 @@ export interface PromoteDerivedClaimInput {
  * - validates the claim (fail-closed - throws on a malformed claim);
  * - attaches `{ derivedClaimIds: [claim.claimId], sourceRefs: [...claim.provenance.sourceRefs] }`
  *   as provenance;
- * - forwards an optional G.0 `expectedRevision` precondition unchanged;
+ * - forwards an optional `expectedRevision` precondition unchanged;
  * - returns a plain `WriteMemoryProposal`.
  *
  * It does **not** parse `claim.statement`. The Harness still authorizes the concrete write from
  * current policy, the Structured Memory runtime still schema-validates the value, mechanical
- * confirmation still applies, and the commit still goes through the F.0 path. A derived claim is not
+ * confirmation still applies, and the commit still goes through the ordinary write path. A derived claim is not
  * authorization evidence, and this provenance is not read as authority.
  */
 export function promoteDerivedClaim(input: PromoteDerivedClaimInput): WriteMemoryProposal {

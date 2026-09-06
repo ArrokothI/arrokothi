@@ -5,13 +5,13 @@
  * by the shape of what a controller receives (no store, no scheduler, no lifecycle setter, nothing
  * mutable), and by what happens when a controller reports something the Harness must refuse.
  *
- * Slice C.1 added a second `activate` parameter, and the shape check is deliberately split rather
+ * The second `activate` parameter keeps the shape check deliberately split rather
  * than relaxed. `ActivationInput` is still frozen pure data with no functions anywhere in it - that
  * is the invariant a resumption field would have destroyed, and it is why the scope is a separate
  * argument. The scope itself is then checked on its own terms: exactly one method, and no route
  * from it to a store, a scheduler, a lifecycle, the Effect gateway, or a settlement path.
  *
- * Slice F.1's read snapshot does *not* appear here: it is resolved by the AgentController from a
+ * The Structured Memory read snapshot does *not* appear here: it is resolved by the AgentController from a
  * narrow read-only port when it builds a model invocation, never delivered per Activation.
  */
 

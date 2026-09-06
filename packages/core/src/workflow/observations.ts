@@ -30,11 +30,11 @@ import type { StageResult } from "./stage-result.ts";
  * WorkflowController scopes that name to the current Stage visit before it ever becomes a
  * correlation. Stage logic therefore never learns, and never needs, a runtime-minted `EffectId`.
  *
- * `UseCapability` remains the default. Slice F.0 adds a discriminated Structured Memory request;
- * child calls remain owned by their dedicated Stage kinds, and messages/user input stay deferred.
+ * `UseCapability` is the default. Structured Memory uses a distinct discriminated request, while child
+ * calls remain owned by their dedicated Stage kinds.
  */
 export interface StageCapabilityRequest {
-  /** Omitted for backward-compatible authored data; when present, discriminates the request. */
+  /** Omitted means a capability request; when present, discriminates the request. */
   readonly kind?: "use_capability";
   /** Stage-local name for this request. Unique within one Stage visit. */
   readonly key: string;
@@ -56,9 +56,9 @@ export interface StageMemoryWriteRequest {
   readonly memoryKey: string;
   readonly value: JsonValue;
   /**
-   * Optional optimistic-concurrency precondition (Slice G.0): a non-negative integer bound-view
-   * revision. Absent = unconditional (the accepted F.0 behaviour). Present and stale ⇒ the barrier
-   * settles `conflicted` and nothing is written. This lets deterministic Workflow code exercise G.0
+   * Optional optimistic-concurrency precondition: a non-negative integer bound-view
+   * revision. Absent means unconditional. Present and stale means the barrier settles `conflicted`
+   * and nothing is written. This lets deterministic Workflow code exercise optimistic concurrency
    * through the ordinary Effect path.
    */
   readonly expectedRevision?: number;
@@ -71,9 +71,9 @@ export type StageEffectRequest = StageCapabilityRequest | StageMemoryWriteReques
  *
  * Mirrors the Event vocabulary rather than compressing it: `denied` is policy refusing, `rejected`
  * is a request that was never answerable, `failed` is a definite non-event, `unknown` is the
- * ambiguous case where the operation may well have happened, `declined` (Slice E.2.1) is a human
+ * ambiguous case where the operation may well have happened, `declined` is a human
  * declining an exact-payload mechanical confirmation - nothing dispatched, policy did not deny - and
- * `conflicted` (Slice G.0) is a valid, authorized versioned `WriteMemory` whose optimistic
+ * `conflicted` is a valid, authorized versioned `WriteMemory` whose optimistic
  * precondition was stale, so nothing was written. Collapsing any pair of these would make a Stage
  * confidently wrong about the world.
  */
@@ -113,7 +113,7 @@ export function isSuccessfulObservation(observation: StageObservation): boolean 
   return observation.outcome === "completed";
 }
 
-// -- explicit join surface (Slice G.1) ------------------------------------------
+// -- explicit join surface ------------------------------------------
 
 /**
  * One branch's final result, as the downstream Stage sees it at the join.

@@ -1,5 +1,5 @@
 /**
- * The v0.4 local retrieval surface.
+ * The local retrieval surface.
  *
  * Both halves of the retrieval rule are implemented here, and they are deliberately different
  * objects rather than one object with a flag:
@@ -10,7 +10,6 @@
  *   `createLocalRetrievalExecutor`
  *     the mediated path, reached only through an authorized UseCapability Effect
  *
- * The algorithms are the ones the pre-v0.4 `KnowledgeIndex` proved out; what changed is ownership.
  * These tests exercise the implementations directly, without a Harness, because a retrieval backend
  * should be testable as a backend.
  */

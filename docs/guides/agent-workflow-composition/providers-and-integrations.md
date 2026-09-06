@@ -18,8 +18,7 @@ LLM Stage.model.logicalRef
 The reference Agent executor is a small, dependency-free implementation of `AgentExecutor`.
 `createStrandsAgentExecutor` from `@arrokothi/integration-strands` is the current Strands integration
 for that same port. Both receive the kernel's invocation snapshot and return outcomes/action
-selections; they do not run the application's external capabilities independently. Do not use the
-legacy `StrandsLoopEngine` / `createStrandsGeminiEngine` for Execution-kernel applications.
+selections; they do not run the application's external capabilities independently.
 
 For an Agent, wire `models: { resolver }` on `createAgentController` and
 `executor: createReferenceAgentExecutor({ providers })` (or `createStrandsAgentExecutor({ providers })`).
@@ -31,8 +30,7 @@ provider only for the Agent does not make it available to the Workflow controlle
 Keep definitions unchanged. In the composition root:
 
 1. Construct `GeminiModelProvider` from `@arrokothi/provider-gemini` with a deployment-supplied `apiKey`,
-   or use `createGeminiModelProviderFromEnv`. These implement the current `ModelProvider` port;
-   `GeminiProvider` is legacy.
+   or use `createGeminiModelProviderFromEnv`. These implement the `ModelProvider` port.
 2. Register that instance in `new ModelProviderRegistry([provider])`.
 3. Map `primary` in `StaticModelResolver` to `{ provider: provider.id, model: configuredModelId,
    portableFeatures: portableModelFeatures({ capabilityCalls: true, structuredOutput: true }) }`.
@@ -59,8 +57,8 @@ For task-following retrieval, expose a small `search` capability returning IDs a
 For standing inferred knowledge use `DerivedSemanticMemoryProvider`, extractor, and read resolver;
 `AgentSpec.derivedMemory.read.query` is a fixed authored query, not a query generated each turn.
 `@arrokothi/core/reference` supplies the in-memory derived provider and read resolver.
-`@arrokothi/retrieval-local` supplies lexical retrieval, record queries, resources and a capability executor; its `/legacy` exports are for the
-old knowledge API. See [state guidance](state-memory-and-context.md).
+`@arrokothi/retrieval-local` supplies lexical retrieval, record queries, resources, and a
+capability executor. See [state guidance](state-memory-and-context.md).
 
 Function Stages can read pre-materialized local resources via declared `resourceViews` and a
 `LocalResourceEnvironment`. This is explicit read-only access, not a general database handle or a
@@ -83,8 +81,8 @@ exact assembly; the tests may use `/testing` because they are tests.
 ## Storage and service boundaries
 
 `InMemoryRuntimeStore` and `FifoScheduler` are useful reference mechanisms, not production crash
-recovery. `@arrokothi/storage-sqlite` implements the legacy Session surface and is not a drop-in
-`RuntimeStore`. Keep durable business facts, idempotency records, and uncertain-outcome reconciliation
+recovery. No durable `RuntimeStore` implementation ships in this repository. Keep durable business
+facts, idempotency records, and uncertain-outcome reconciliation
 in your application storage. Recreating an Execution after a crash is a new run, not automatic replay
 or recovery of in-flight Effects.
 

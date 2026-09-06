@@ -1,11 +1,9 @@
 /**
- * The v0.4 Execution kernel: authoring definitions and running Executions.
+ * The Execution kernel: authoring definitions and running Executions.
  *
- * This is the curated semantic surface - what an application needs to define an Agent or Workflow,
- * create Executions, deliver Events, and observe results. It is published as
- * `@arrokothi/core/execution` rather than at the package root only because the root still carries
- * the v0 Session/Flow API during migration, and the two occupy several of the same names. When the
- * legacy surface is removed, this becomes the root.
+ * This is the curated semantic surface: what an application needs to define an Agent or Workflow,
+ * create Executions, deliver Events, and observe results. It is published at `@arrokothi/core`
+ * and at the focused `@arrokothi/core/execution` entry point.
  *
  * Deliberately absent: lifecycle mutation (`transitionContext`, `assertTransition`), context
  * construction, controller-outcome validation, and every store facet. Applications create, observe,
@@ -330,7 +328,7 @@ export { projectStructuredMemoryReadView } from "./execution/structured-memory-r
 /**
  * Derived Semantic Memory: inferred, provenance-bearing claims. A *different memory form* from
  * Structured Memory and Working Notes - inferred, retrieval-oriented, not authoritative by default,
- * and never authority evidence. The reference v0.4 claim shape here is executable-slice scaffolding,
+ * and never authority evidence. The reference claim shape here is current implementation scaffolding,
  * not the frozen portable schema (`docs/future-plan.md` §3.1).
  */
 export type {
@@ -416,7 +414,7 @@ export type {
   TerminalResultRejection,
 } from "./execution/terminal-result.ts";
 
-// -- child Execution composition (Slice E.0) --------------------------------
+// -- child Execution composition --------------------------------
 /**
  * Child-Execution composition surface.
  *
@@ -437,7 +435,7 @@ export {
   spawnBudgetRemaining,
 } from "./execution/structural-budget.ts";
 
-// -- peer interaction and cancellation (Slice E.1) -------------------------
+// -- peer interaction and cancellation -------------------------
 /**
  * `send` / `ask` / `reply` all build the same `SendMessage` proposal; a controller *proposes* one
  * and the Harness mediates delivery, correlation, and authorization. The peer request link and
@@ -451,7 +449,7 @@ export type { CancellationRequest, CancellationRequestState } from "./execution/
 export type { WaitForEdge, WaitForEdgeKind } from "./execution/wait-for.ts";
 export { WAIT_FOR_EDGE_KINDS } from "./execution/wait-for.ts";
 
-// -- human interaction and mechanical confirmation (Slice E.2) -----------
+// -- human interaction and mechanical confirmation -----------
 /**
  * `requestUserInput` builds a `RequestUserInput` proposal; a controller *proposes* one and the
  * Harness mediates it - authorizing (deny-by-default), recording a runtime-owned `UserInputRequest`,
@@ -630,7 +628,13 @@ export type { EffectDispatchRecord, SettleEffectInput, SettleEffectReceipt } fro
 
 // -- shared value domain -----------------------------------------------------
 export type { JsonObject, JsonPrimitive, JsonValue } from "./util/json.ts";
-export type { FieldSpec, ObjectSchema, ValueSchema } from "./schema/value-schema.ts";
+export type {
+  FieldSpec,
+  ObjectSchema,
+  SchemaIssue,
+  ValidationResult,
+  ValueSchema,
+} from "./schema/value-schema.ts";
 /**
  * Projection of the portable schema language into JSON Schema.
  *
@@ -638,4 +642,13 @@ export type { FieldSpec, ObjectSchema, ValueSchema } from "./schema/value-schema
  * it, and each writing its own would be the first step toward a second schema ontology. Projection
  * is presentation: it grants nothing and narrows nothing.
  */
-export { toJsonSchema } from "./schema/value-schema.ts";
+export {
+  describeIssues,
+  objectSchemaIssues,
+  toJsonSchema,
+  validateObject,
+  validateValue,
+  valueSchemaIssues,
+} from "./schema/value-schema.ts";
+export type { Err, Ok, Result } from "./util/result.ts";
+export { err, ok } from "./util/result.ts";

@@ -35,7 +35,7 @@ understanding. Live canaries are optional and require deployment credentials.
 
 | Symptom | Inspect first | Likely cause / next step |
 |---|---|---|
-| Wrong `defineAgent` shape or no Harness compatibility | Imports and package exports | Legacy root import; use `/execution` |
+| Wrong `defineAgent` shape or no Harness compatibility | Imports and package exports | Stale code or deep import; use the package root or `/execution` |
 | No model request | `inspect(id)`, controller registration, input receipt | Missing controller, unknown definition/ref, no Agent start input, model resolver failure |
 | No visible operations | Effective authority + actual model projection | Missing `operationAuthority`, no authored refs, catalog mismatch or exposure limit |
 | Visible action but no executor call | Effect journal, pending confirmations | Missing/denying authorizer, exact gate, declined request, invalid request |

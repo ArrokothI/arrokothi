@@ -1,7 +1,7 @@
 /**
- * `confirmation.declined` is an Effect result that the reference controllers must consume (E.2.1).
+ * `confirmation.declined` is an Effect result that the reference controllers must consume.
  *
- * E.2 routes exactly one `confirmation.declined` Event when a human declines an exact-payload
+ * The runtime routes exactly one `confirmation.declined` Event when a human declines an exact-payload
  * mechanical confirmation, and settles the gated `PendingOperation` `declined`. But the reference
  * Agent and Workflow result collectors did not map that Event to a semantic observation, so the
  * controller-side dependency (an `AgentPendingCall`, a Stage barrier entry) stayed unsettled while

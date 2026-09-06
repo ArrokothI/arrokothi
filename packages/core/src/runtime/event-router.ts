@@ -15,17 +15,17 @@
  * or a poll. And the wake decision is made against `context.waitingFor`, the dependency the Harness
  * recorded when it derived WAITING - not against anything the arriving Event claims about itself.
  *
- * Since Slice C.1 that dependency is a tagged union, and only its Event arm is routable here as a
+ * That dependency is a tagged union, and only its Event arm is routable here as a
  * *primary* wake. An Execution waiting on a controller-local resumption still *accepts* Events - the
  * mailbox is not closed - and absent an interleave condition no Event makes it READY; only that
  * resumption settling does.
  *
- * Slice G.2 adds a `dependencies` arm - the parallel-branch union wait. Its `event` member is a
+ * The `dependencies` arm is the parallel-branch union wait. Its `event` member is a
  * primary wake routable here: a match makes the Execution READY and, unlike `interleave`, does not
  * invalidate any ControllerResumption in the set. A `dependencies` wait with `event === null` (only
  * resumption members) is not woken by an ordinary Event, exactly like the plain resumption arm.
  *
- * ## Controlled interleaving (Slice E.1)
+ * ## Controlled interleaving
  *
  * A wait may carry a second, separate `interleave` wake condition. An Event that matches it makes
  * the Execution `READY` for another Activation *without* the primary dependency being satisfied:
@@ -130,9 +130,9 @@ export async function routeEvent(input: RouteEventInput): Promise<EventRoutingRe
       return { status: "delivered", eventId: envelope.eventId, wokeExecution: true };
     }
 
-    // The parallel-branch union wait (Slice G.2): the `event` member wakes the Execution and does
+    // The parallel-branch union wait: the `event` member wakes the Execution and does
     // NOT invalidate any sibling ControllerResumption in the set - branch progress is explicitly
-    // separate, so the E.1 stale-continuation rule deliberately does not apply. A resumption-only
+    // separate, so the stale-continuation rule deliberately does not apply. A resumption-only
     // union wait (`event === null`) is not woken by an ordinary Event at all; it falls through to
     // "mailbox only" below, exactly like the plain `controller_resumption` arm.
     if (wait.kind === "dependencies" && wait.event !== null && eventSatisfiesWake(envelope, wait.event)) {
@@ -142,8 +142,8 @@ export async function routeEvent(input: RouteEventInput): Promise<EventRoutingRe
       return { status: "delivered", eventId: envelope.eventId, wokeExecution: true };
     }
 
-    // Controlled interleaving (Slice E.1): an explicitly opted-in Event overtakes the wait. Only the
-    // `event` / `controller_resumption` arms carry an `interleave`; the G.2 `dependencies` union
+    // Controlled interleaving: an explicitly opted-in Event overtakes the wait. Only the
+    // `event` / `controller_resumption` arms carry an `interleave`; the `dependencies` union
     // wait deliberately does not.
     if (wait.kind !== "dependencies" && wait.interleave !== undefined && eventSatisfiesWake(envelope, wait.interleave)) {
       if (wait.kind === "controller_resumption") {

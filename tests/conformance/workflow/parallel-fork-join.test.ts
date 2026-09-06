@@ -1,5 +1,5 @@
 /**
- * Slice G.1 — minimal system-defined parallel Workflow branches with an explicit join.
+ * minimal system-defined parallel Workflow branches with an explicit join.
  *
  * The proof topology is exactly:
  *
@@ -21,12 +21,12 @@
  * controller-state mutation stays serialized (one commit after the branches settle)
  * the explicit join is a distinct semantic step, not "whichever branch finished last"
  * deterministic result / failure ordering by authored branch order, never completion timing
- * an UNVERSIONED branch Structured Memory write fails closed (a versioned one is G.3, see
+ * an UNVERSIONED branch Structured Memory write fails closed (a versioned one is covered in
  *   parallel-branch-structured-memory.test.ts)
  * closed Stage / Effect vocabularies stay closed
  * ```
  *
- * Slices G.2 / G.3 keep this file as the fork/join *regression* suite (branch dependencies, Effects,
+ * This file remains the fork/join *regression* suite (branch dependencies, Effects,
  * async resumptions, and concurrent Structured Memory writes get their own focused files). The edits
  * here are: the branch body may now be any adapter-free Stage kind, the persisted control-state
  * version is 4, and an unversioned branch `WriteMemory` is the fail-closed case.
@@ -77,7 +77,7 @@ async function waitFor(predicate: () => boolean, label: string): Promise<void> {
   throw new Error(`waitFor timed out: ${label}`);
 }
 
-/** The canonical G.1 graph: entry A, fork P with branches B and C, join into D. */
+/** The canonical fork graph: entry A, fork P with branches B and C, join into D. */
 function forkJoinSpec(): WorkflowSpecInput {
   return {
     entryStage: "a",
@@ -100,7 +100,7 @@ function forkJoinSpec(): WorkflowSpecInput {
   };
 }
 
-describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
+describe("minimal system-defined Workflow fork/join", () => {
   test("A -> fork(B,C) -> join -> D succeeds with all four Stages in one Execution", async () => {
     const seenByD: { input: StageExecutionContext["input"]; join: StageExecutionContext["join"] } = { input: "unset", join: null };
     const { harness, definitions, store } = createWorkflowTestHarness({
@@ -329,13 +329,13 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
     assert.equal(finalState.join, null, "the join snapshot is cleared when the Workflow leaves D");
   });
 
-  test("a branch that requests an UNVERSIONED Structured Memory write fails closed (G.3), no Effect", async () => {
+  test("a branch that requests an UNVERSIONED Structured Memory write fails closed with no Effect", async () => {
     const { harness, definitions } = createWorkflowTestHarness({
       authorizer: createAllowListAuthorizer({ grants: [], memory: true }),
       functions: createFunctionStageRegistry({
         a: () => ({ status: "completed", result: "seed" }),
         b: () => ({
-          // No expectedRevision: a parallel branch write must be optimistic (G.3).
+          // No expectedRevision: a parallel branch write must be optimistic.
           status: "awaitEffects",
           effects: [{ kind: "write_memory", key: "w", memoryKey: "note", value: "from B" }],
         }),
@@ -611,7 +611,7 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
     );
   });
 
-  test("a valid G.1 graph is portable data with a stable digest", () => {
+  test("a valid fork graph is portable data with a stable digest", () => {
     const definition = defineWorkflow({ id: "g1-portable", spec: forkJoinSpec() });
     assert.deepEqual(JSON.parse(JSON.stringify(definition)), definition);
     const fork = definition.spec.forks?.[0];
@@ -626,7 +626,7 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
       assert.equal((STAGE_KINDS as readonly string[]).includes(invented), false);
       assert.equal((EFFECT_KINDS as readonly string[]).includes(invented), false);
     }
-    // Slice G.2 bumped the persisted control-state shape to 4 (per-branch barrier + wait status).
+    // Version 4 includes each branch's barrier and wait status.
     assert.equal(WORKFLOW_CONTROL_STATE_VERSION, 4);
 
     // (16) a Workflow with no forks validates and runs exactly as before.
@@ -724,7 +724,7 @@ describe("Slice G.1: minimal system-defined Workflow fork/join", () => {
   });
 });
 
-describe("Slice G.1: Stage-visit coordinates stay truthful across a fork (independent-review correction)", () => {
+describe("Stage-visit coordinates stay truthful across a fork", () => {
   const at = async (harness: ReturnType<typeof createWorkflowTestHarness>["harness"], id: ExecutionId) =>
     readWorkflowControlState((await harness.inspect(id))!.control.progress)!;
 

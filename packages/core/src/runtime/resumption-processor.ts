@@ -119,7 +119,7 @@ export type ResumptionDependency =
   | { readonly status: "invalid"; readonly detail: string };
 
 /**
- * The resolved form of a *set* of reported resumption dependencies (Slice G.2).
+ * The resolved form of a *set* of reported resumption dependencies.
  *
  * Legal only when every id is legal: work registered by this Activation (`newRecords`), or a
  * persisted id that this Activation itself observed pending through `scope.run()`
@@ -153,7 +153,7 @@ export interface ActivationResumptions {
    */
   resolve(resumptionId: ControllerResumptionId, at: string): Promise<ResumptionDependency>;
   /**
-   * Checks a whole *set* of reported ids (Slice G.2).
+   * Checks a whole *set* of reported ids.
    *
    * Rejects the entire set if any id is illegal or repeated, so the Harness never commits a partial
    * dependency set. On success it returns both records that are `new` this Activation and persisted
@@ -386,7 +386,7 @@ export class ControllerResumptionProcessor {
    * One transaction, and it does exactly two things. No mailbox append, no Event, no Effect journal
    * entry, no pending operation, no authorizer call - a controller-local result is not an
    * observation delivered through the runtime boundary, and writing it as one would erase the
-   * distinction this slice exists to establish.
+   * distinction this processor establishes.
    */
   private async settle(
     executionId: ExecutionId,
@@ -415,7 +415,7 @@ export class ControllerResumptionProcessor {
 
         const waiting = context.waitingFor;
         // A settled resumption wakes the Execution only when it is genuinely the dependency being
-        // waited on - the single `controller_resumption` arm, or a member of a G.2 `dependencies`
+        // waited on - the single `controller_resumption` arm, or a member of a `dependencies`
         // union wait. In every other case (already READY / RUNNING, or WAITING on something else)
         // the outcome is still recorded above; it simply causes no second READY transition, which is
         // exactly the "R2 settles while already READY" rule.

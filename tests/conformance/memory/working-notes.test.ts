@@ -1,5 +1,5 @@
 /**
- * Slice F.2a: local Working Notes scratch semantics.
+ * local Working Notes scratch semantics.
  *
  * Working Notes are the Agent controller's own temporary scratch state. They live in
  * `AgentControlState`, they are read into the model's information context when the Agent authored

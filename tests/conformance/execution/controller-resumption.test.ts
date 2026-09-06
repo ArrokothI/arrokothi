@@ -12,7 +12,7 @@
  * ```
  *
  * Everything here checks one of the three: that the record exists and is only data, that the
- * settlement path touches none of the Effect machinery, that v0.4's exclusive suspension holds, and
+ * settlement path touches none of the Effect machinery, that exclusive suspension holds, and
  * that the JSON boundary a slow result crosses is the same one a fast result crosses - so "it
  * settled inline" can never be the reason something succeeded.
  */
@@ -185,7 +185,7 @@ describe("controller-local resumption", () => {
       "createdAt",
       "executionId",
       "failure",
-      // Slice E.1 invalidation provenance: diagnostics for an interleave Event that overtook the
+      // Interleaving invalidation provenance: diagnostics for an interleave Event that overtook the
       // work. Still only plain data - no Effect vocabulary.
       "invalidatedAt",
       "invalidatedAtRevision",
@@ -212,9 +212,8 @@ describe("controller-local resumption", () => {
 
     const context = await harness.inspect(handle.executionId);
     const record = (await harness.controllerResumptionsOf(handle.executionId))[0]!;
-    // No policy is attached to it in v0.4 - v0.4 suspends exclusively, so there is no intervening
-    // Activation and no stale continuation to detect. It is recorded now so v0.5's rule has
-    // something to check without migrating persisted records.
+    // No policy is attached to it: exclusive suspension means there is no intervening Activation
+    // and no stale continuation to detect.
     assert.equal(typeof record.observedRevision, "number");
     assert.ok(record.observedRevision > 0 && record.observedRevision < context!.revision);
     assert.match(record.activationId, /^act_/, "and which Activation started the work");
@@ -247,7 +246,7 @@ describe("controller-local resumption", () => {
     }
 
     const still = await harness.inspect(handle.executionId);
-    assert.equal(still?.lifecycle, "WAITING", "v0.4 suspends exclusively while a continuation is outstanding");
+    assert.equal(still?.lifecycle, "WAITING", "the controller suspends exclusively while a continuation is outstanding");
     assert.equal(still?.waitingFor?.kind, "controller_resumption");
     assert.equal((await store.peekMailbox(still!.mailbox.mailboxId)).length, 1, "the Event is retained, not dropped");
     assert.equal(await harness.runOnce(), null, "and no intervening Activation was scheduled");

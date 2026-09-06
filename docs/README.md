@@ -26,13 +26,12 @@ Supporting material:
 | Path | Role |
 |---|---|
 | [`product-vision.md`](product-vision.md) | cross-repository ArrokothI product direction: heterogeneous Agent application composition, Studio/Cloud direction, ecosystem/adoption/business posture; **not canonical kernel architecture** |
-| [`development/`](development/) | current implementation synthesis, active roadmap, and specialized engineering guidance; historical records are routed through `development/legacy/` |
+| [`development/`](development/) | current implementation synthesis, active roadmap, and specialized engineering guidance |
 | [`guides/`](guides/README.md) | application/developer guidance for building **on** the kernel — decision procedures for composing Agents and Workflows from application requirements; **not canonical kernel architecture** |
 | [`agent-engineering/`](agent-engineering/README.md) | framework-neutral external engineering guidance synthesized from public Anthropic material; a design reference for agent/workflow engineering, **never ArrokothI semantics** |
-| [`architecture-research-dossier.md`](architecture-research-dossier.md) | retained non-canonical research/source dossier; useful evidence and external-system survey |
 | [`research/`](research/) | focused, non-canonical protocol/system comparisons and experiment directions outside the active implementation sequence; includes MCP semantic mapping and Agent caching research |
 
-The product vision may guide future repositories and product surfaces, but it does not own kernel semantics. The research dossier and focused notes under `research/` are intentionally **not** canonical even when they contain useful reasoning. When any supporting research conflicts with a canonical document, the canonical document wins.
+The product vision may guide future repositories and product surfaces, but it does not own kernel semantics. Focused notes under `research/` are intentionally **not** canonical even when they contain useful reasoning. When any supporting research conflicts with a canonical document, the canonical document wins.
 
 ---
 
@@ -167,7 +166,7 @@ Research notes frame questions and experiments; return to the canonical concept 
 development/
 ```
 
-Development docs may contain historical assumptions. Canonical docs take precedence when they disagree.
+Development docs may lag the canonical contract. Canonical docs take precedence when they disagree.
 
 ---
 
@@ -211,9 +210,6 @@ guides/
 
 agent-engineering/
   external framework-neutral engineering guidance only, never kernel semantics
-
-architecture-research-dossier.md
-  retained research evidence only, never canonical truth
 
 research/
   focused research observations only, never canonical truth or an implementation commitment
@@ -479,10 +475,10 @@ Before changing architecture or implementing a slice:
 2. List the invariants the change must preserve.
 3. Read [`development/002-implemented-kernel-baseline.md`](development/002-implemented-kernel-baseline.md)
    for current evidence and [`development/001-current-status-and-roadmap.md`](development/001-current-status-and-roadmap.md)
-   for next work; load specialized or legacy evidence only when relevant.
+   for next work; load specialized evidence only when relevant.
 4. Separate semantic changes from package/naming/backend changes.
 5. For external standards, decide whether the idea belongs in kernel semantics, portable interoperability semantics, or only an adapter/backend.
 6. Test the smallest vertical slice that proves the semantic boundary.
 7. Put unresolved questions in [`future-plan.md`](future-plan.md), not into canonical APIs accidentally.
 
-The cross-repository [`product-vision.md`](product-vision.md) can guide product/repository decisions but cannot override the concept owners above. The retained [`architecture-research-dossier.md`](architecture-research-dossier.md) can be consulted for external references and the reasoning behind several recent distinctions, but it is intentionally broader and less authoritative than the canonical documents.
+The cross-repository [`product-vision.md`](product-vision.md) can guide product/repository decisions but cannot override the concept owners above.

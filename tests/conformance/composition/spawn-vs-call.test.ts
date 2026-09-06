@@ -1,5 +1,5 @@
 /**
- * `spawn` vs `call` (Slice E.0).
+ * `spawn` vs `call`.
  *
  * `call` is `spawn` plus one thing: a required dependency on the child's terminal result. The child
  * is the same independently managed Execution either way. And "the child was created" is never the

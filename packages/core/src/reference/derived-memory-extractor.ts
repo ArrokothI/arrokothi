@@ -1,7 +1,7 @@
 /**
  * Reference `DerivedMemoryExtractor` implementations - all deterministic, none model-backed.
  *
- * F.3 does not need a real LLM to prove its semantics. These cover the two honest deterministic
+ * Derived-memory extraction does not need a real LLM to prove its semantics. These cover the two deterministic
  * shapes:
  *
  * - `createFakeDerivedMemoryExtractor` - returns a fixed list of candidates (optionally computed

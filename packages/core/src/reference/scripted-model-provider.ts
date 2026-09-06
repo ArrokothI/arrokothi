@@ -1,4 +1,4 @@
-/** Dependency-free scripted implementation of the v0.4 ModelProvider port. */
+/** Dependency-free scripted implementation of the ModelProvider port. */
 
 import { ModelInvocationError } from "../model/errors.ts";
 import type {

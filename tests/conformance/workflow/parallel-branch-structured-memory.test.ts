@@ -1,13 +1,13 @@
 /**
- * Slice G.3 — concurrent Structured Memory branch writes + explicit optimistic conflict handling.
+ * concurrent Structured Memory branch writes + explicit optimistic conflict handling.
  *
  * A parallel Workflow branch may now use the ordinary `WriteMemory` Effect, but only *optimistically*:
  * a branch write must carry an explicit `expectedRevision`. This connects two already-proven pieces
  * with no new merge system:
  *
  * ```text
- * G.0   optimistic whole-view expectedRevision, memory.written / memory.write_conflict, whole-view CAS
- * G.2   branch-local Effect barriers, branch-qualified correlations, authored proposal folding,
+ * optimistic whole-view expectedRevision, memory.written / memory.write_conflict, whole-view CAS
+ * branch-local Effect barriers, branch-qualified correlations, authored proposal folding,
  *       one Workflow Execution owning every branch Effect
  * ```
  *
@@ -25,10 +25,10 @@
  * no automatic retry / merge; exactly one write attempt per proposal
  * denied / declined / approved-stale each mutate nothing and reach the branch as their own outcome
  * a branch WriteMemory proposal never reaches the Harness when a sibling fails in the same Activation
- * a branch WriteMemory Event and a sibling LLM ControllerResumption compose in one G.2 dependency set
+ * a branch WriteMemory Event and a sibling LLM ControllerResumption compose in one dependency set
  * a persisted active fork with a branch awaiting a WriteMemory result reconstructs and continues
- * ordinary non-parallel unconditional WriteMemory is unchanged (G.0 / F.0 compatible)
- * G.3 adds no Stage / Effect / Event / wait vocabulary; WORKFLOW_CONTROL_STATE_VERSION stays 4
+ * ordinary non-parallel unconditional WriteMemory is unchanged
+ * no Stage / Effect / Event / wait vocabulary is added; WORKFLOW_CONTROL_STATE_VERSION stays 4
  * ```
  */
 
@@ -147,7 +147,7 @@ const confirmWrites: ConfirmationPolicy = {
 
 // ---------------------------------------------------------------------------
 
-describe("Slice G.3: a versioned branch write, and the expectedRevision requirement", () => {
+describe("a versioned branch write, and the expectedRevision requirement", () => {
   test("A. one versioned branch write commits through the ordinary WriteMemory path; one Execution, no child", async () => {
     const joinSeen: StageExecutionContext["join"][] = [];
     const { harness, definitions, store } = createWorkflowTestHarness({
@@ -174,7 +174,7 @@ describe("Slice G.3: a versioned branch write, and the expectedRevision requirem
     assert.equal((await store.listExecutions()).length, 1);
     assert.deepEqual(await harness.childExecutionLinksOf(handle.executionId), []);
 
-    // Branch-qualified correlation, exactly the G.2 format.
+    // Branch-qualified correlation.
     const journal = await harness.effectJournalOf(handle.executionId);
     const requested = journal.filter((entry) => entry.phase === "requested");
     assert.equal(requested.length, 1);
@@ -239,7 +239,7 @@ describe("Slice G.3: a versioned branch write, and the expectedRevision requirem
     assert.equal((await harness.structuredMemoryOf(handle.executionId))?.revision, 0);
   });
 
-  test("T. an ordinary NON-parallel unconditional WriteMemory is unchanged (G.0 / F.0 compatible)", async () => {
+  test("T. an ordinary NON-parallel unconditional WriteMemory is unchanged", async () => {
     const { harness, definitions } = createWorkflowTestHarness({
       authorizer: ALLOW_MEMORY,
       functions: createFunctionStageRegistry({
@@ -273,7 +273,7 @@ describe("Slice G.3: a versioned branch write, and the expectedRevision requirem
   });
 });
 
-describe("Slice G.3: deterministic proposal arbitration for simultaneously ungated branch writes", () => {
+describe("deterministic proposal arbitration for simultaneously ungated branch writes", () => {
   test("C. two sibling writes from the same revision - the authored-first branch commits, the other conflicts", async () => {
     const joinSeen: StageExecutionContext["join"][] = [];
     const { harness, definitions } = createWorkflowTestHarness({
@@ -413,7 +413,7 @@ describe("Slice G.3: deterministic proposal arbitration for simultaneously ungat
   });
 });
 
-describe("Slice G.3: conflict is an observation, not an automatic failure", () => {
+describe("conflict is an observation, not an automatic failure", () => {
   test("H. a conflicted branch settles \"conflicted\" and may still complete normally - fork and Workflow proceed", async () => {
     const joinSeen: StageExecutionContext["join"][] = [];
     const { harness, definitions } = createWorkflowTestHarness({
@@ -530,7 +530,7 @@ describe("Slice G.3: conflict is an observation, not an automatic failure", () =
   });
 });
 
-describe("Slice G.3: authority is fail-closed; confirmation stays authoritative", () => {
+describe("authority is fail-closed; confirmation stays authoritative", () => {
   test("J. a denied versioned branch write mutates nothing and reaches the branch as \"denied\"", async () => {
     const joinSeen: StageExecutionContext["join"][] = [];
     const { harness, definitions } = createWorkflowTestHarness({
@@ -628,7 +628,7 @@ describe("Slice G.3: authority is fail-closed; confirmation stays authoritative"
   });
 });
 
-describe("Slice G.3: failure atomicity and the mixed dependency set", () => {
+describe("failure atomicity and the mixed dependency set", () => {
   test("M. branch B proposes a versioned write while sibling C fails in the same Activation - the write never reaches the Harness", async () => {
     const { harness, definitions } = createWorkflowTestHarness({
       authorizer: ALLOW_MEMORY,
@@ -646,7 +646,7 @@ describe("Slice G.3: failure atomicity and the mixed dependency set", () => {
     const context = await harness.inspect(handle.executionId);
     assert.equal(context?.lifecycle, "FAILED");
     assert.equal(context?.failure?.code, "parallel_branch_failed:c_broke");
-    // The Structured Memory version of the G.2 "Effect proposal + sibling failure" proof.
+    // The Structured Memory version of the "Effect proposal + sibling failure" proof.
     assert.equal((await harness.structuredMemoryOf(handle.executionId))?.revision, 0, "memory revision unchanged");
     assert.equal((await harness.structuredMemoryOf(handle.executionId))?.values["note"], undefined, "value unchanged");
     assert.deepEqual(await harness.effectJournalOf(handle.executionId), [], "no B write request in the Effect journal");
@@ -654,7 +654,7 @@ describe("Slice G.3: failure atomicity and the mixed dependency set", () => {
     assert.deepEqual(await harness.confirmationRequestsOf(handle.executionId), []);
   });
 
-  test("N. a branch WriteMemory Event and a sibling LLM ControllerResumption compose in one G.2 dependency set", async () => {
+  test("N. a branch WriteMemory Event and a sibling LLM ControllerResumption compose in one dependency set", async () => {
     const beta = createDeferredModelProvider("beta");
     const joinSeen: StageExecutionContext["join"][] = [];
     const resolver = new StaticModelResolver({
@@ -731,7 +731,7 @@ describe("Slice G.3: failure atomicity and the mixed dependency set", () => {
   });
 });
 
-describe("Slice G.3: reconstruction from persisted branch memory-barrier state", () => {
+describe("reconstruction from persisted branch memory-barrier state", () => {
   test("Q. a fresh WorkflowController over the same store continues a branch awaiting a WriteMemory result", async () => {
     const first = createWorkflowTestHarness({
       authorizer: ALLOW_MEMORY,
@@ -795,7 +795,7 @@ describe("Slice G.3: reconstruction from persisted branch memory-barrier state",
   });
 });
 
-describe("Slice G.3: G.1 invariants and closed vocabularies", () => {
+describe("fork invariants and closed vocabularies", () => {
   test("R. currentStage + visit / visits / forkVisit stay truthful while a branch write is outstanding", async () => {
     const { harness, definitions } = createWorkflowTestHarness({
       authorizer: ALLOW_MEMORY,
@@ -820,7 +820,7 @@ describe("Slice G.3: G.1 invariants and closed vocabularies", () => {
     assert.equal(state.parallel!.branches.find((branch) => branch.branchId === "c")!.visit, 3);
   });
 
-  test("S. G.3 adds no Stage / Effect / Event / wait vocabulary and does not bump the control-state version", async () => {
+  test("S. structured-memory branches add no Stage / Effect / Event / wait vocabulary and do not bump the control-state version", async () => {
     assert.deepEqual([...STAGE_KINDS], ["function", "llm", "agent", "workflow"]);
     assert.deepEqual([...EFFECT_KINDS], ["use_capability", "write_memory", "spawn_execution", "send_message", "request_user_input"]);
     assert.equal(EVENT_KINDS.includes("memory.conflict_resolved" as never), false);
@@ -828,6 +828,6 @@ describe("Slice G.3: G.1 invariants and closed vocabularies", () => {
     assert.equal(EVENT_KINDS.includes("branch_memory" as never), false);
     assert.ok(EVENT_KINDS.includes("memory.written"));
     assert.ok(EVENT_KINDS.includes("memory.write_conflict"));
-    assert.equal(WORKFLOW_CONTROL_STATE_VERSION, 4, "no persisted-shape change - the G.2 branch barrier already represents WriteMemory");
+    assert.equal(WORKFLOW_CONTROL_STATE_VERSION, 4, "the branch barrier already represents WriteMemory");
   });
 });

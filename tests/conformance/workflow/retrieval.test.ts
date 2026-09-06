@@ -90,7 +90,7 @@ async function reachForUnexposed(context: StageExecutionContext): Promise<Functi
   }
 }
 
-/** Requires live retrieval through the Effect gateway; it cannot call the implementation itself. */
+/** Requires live retrieval through the Effect gateway; it cannot call the retriever directly. */
 function liveSearch(context: StageExecutionContext): FunctionStageOutcome {
   if (context.progress["requested"] !== true) {
     return {

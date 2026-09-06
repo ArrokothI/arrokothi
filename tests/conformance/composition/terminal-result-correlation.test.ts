@@ -1,5 +1,5 @@
 /**
- * Child terminal-result correlation (Slice E.0).
+ * Child terminal-result correlation.
  *
  * A child reaching a terminal state settles the exact `PendingOperation` its `call` parent
  * registered, through the ordinary correlated-Event path. No result is delivered to the wrong

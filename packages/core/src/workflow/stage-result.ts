@@ -11,7 +11,7 @@
  * Workflow transitions into a second general-purpose shared-state mechanism, at which point the
  * graph stops describing the data flow. Structured or persistent cross-Stage information belongs in
  * Structured Memory, Artifacts, or bound resources - none of which exist yet, which is exactly why
- * Slice C scenarios are shaped to need only text.
+ * current scenarios are shaped to need only text.
  *
  * Two things it is not:
  *

@@ -1,4 +1,4 @@
-/** Deterministic RUNNING-cancellation and Effect-dispatch linearization (Slice E.1.1). */
+/** Deterministic RUNNING-cancellation and Effect-dispatch linearization. */
 
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";

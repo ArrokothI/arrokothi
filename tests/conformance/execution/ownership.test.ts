@@ -2,8 +2,8 @@
  * Ownership and root identity.
  *
  * Ownership answers "who created this and where does its ancestry start". It is not communication
- * permission, not inspection rights, and not something an ExecutionId confers. Slice A only assigns
- * the relation; delegated authority and child-completion Events are Slice E's work.
+ * permission, not inspection rights, and not something an ExecutionId confers. The runtime assigns
+ * the relation separately from delegated authority and child-completion Events.
  */
 
 import { test, describe } from "node:test";

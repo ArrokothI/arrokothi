@@ -2,8 +2,8 @@
 import {
   ControllerRegistry, Harness, createAgentController, createWorkflowController,
   defineAgent, defineWorkflow,
-} from "@arrokothi/core/execution";
-import type { ObjectSchema, StructuredMemoryBinding } from "@arrokothi/core/execution";
+} from "@arrokothi/core";
+import type { ObjectSchema, StructuredMemoryBinding } from "@arrokothi/core";
 import type { CapabilityExecutor, EffectAuthorizer } from "@arrokothi/core/ports";
 import {
   FifoScheduler, InMemoryDefinitionStore, InMemoryRuntimeStore, ModelProviderRegistry,

@@ -1,5 +1,5 @@
 /**
- * Slice G.2 — parallel branch ControllerResumptions and the mixed Event + resumption union wait.
+ * parallel branch ControllerResumptions and the mixed Event + resumption union wait.
  *
  * A parallel branch may be mid a slow *model* call while a sibling branch waits on an Effect result,
  * all inside one Workflow Execution. What these cases hold true:
@@ -161,7 +161,7 @@ function llmAndEffectBranchSpec(): WorkflowSpecInput {
   };
 }
 
-describe("Slice G.2: multiple parallel branch ControllerResumptions", () => {
+describe("multiple parallel branch ControllerResumptions", () => {
   test("two LLM branches start model work; two branch-qualified keys; C settles first, B stays valid and later recovers once", async () => {
     const alpha = createDeferredModelProvider("alpha");
     const beta = createDeferredModelProvider("beta");
@@ -473,7 +473,7 @@ describe("Slice G.2: multiple parallel branch ControllerResumptions", () => {
   });
 });
 
-describe("Slice G.2: mixed Event + ControllerResumption union wait", () => {
+describe("mixed Event + ControllerResumption union wait", () => {
   /** entry a -> fork(B: Function+Effect, C: LLM) -> join -> d. */
   function mixedSpec(): WorkflowSpecInput {
     return {
@@ -658,7 +658,7 @@ describe("Slice G.2: mixed Event + ControllerResumption union wait", () => {
   });
 });
 
-describe("Slice G.2: reconstruction from persisted branch + runtime dependency state", () => {
+describe("reconstruction from persisted branch + runtime dependency state", () => {
   test("a fresh WorkflowController over the same store continues a branch Effect + a branch ControllerResumption", async () => {
     const capabilities = createDeferredCapabilityExecutor();
     const beta = createDeferredModelProvider("beta");

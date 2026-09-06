@@ -1,11 +1,6 @@
 /**
  * The WorkflowController: system-defined semantic topology, advanced one Stage step per Activation.
  *
- * This is a *new* controller. It does not subclass, rename, wrap, or translate the legacy
- * Flow/Phase coordinator, and it imports nothing from it: Flow was a closed conversational state
- * machine and Stage is a Workflow composition boundary, so a mechanical translation would have
- * carried the wrong ownership into the new path.
- *
  * ## What this owns, and what it must never touch
  *
  * ```text
@@ -65,7 +60,7 @@
  * Stage body already ran, which Adapter to run next, and which transition the body chose, so
  * resuming re-runs exactly the work that did not finish and nothing else.
  *
- * ## Parallel branches (Slices G.1 / G.2 / G.3)
+ * ## Parallel branches
  *
  * A Stage transition may resolve to `{ to: "fork" }`. The controller then installs an active fork in
  * `WorkflowControlState.parallel` - one branch-local record per authored branch, each with its own
@@ -86,7 +81,7 @@
  * shared state while they run: each computes from its own immutable snapshot and returns data, and
  * the single serialized commit happens afterwards. Completion timing never decides ordering - branch
  * results, the primary failure, and simultaneously-proposed Effects are all taken in authored branch
- * order. A branch `WriteMemory` (G.3) must carry an explicit `expectedRevision`: a stale versioned
+ * order. A branch `WriteMemory` must carry an explicit `expectedRevision`: a stale versioned
  * write settles the branch barrier `conflicted` (never overwriting a sibling's commit), and an
  * unversioned one fails closed (`parallel_branch_memory_write_requires_revision`). Branch emissions,
  * branch transition labels, branch Adapters, multi-Stage branch subgraphs, and nested forks stay
@@ -182,7 +177,7 @@ interface Failure {
 }
 
 /**
- * One Stage invocation's coordinates, as `runStageBodyFor` needs them (Slice G.2).
+ * One Stage invocation's coordinates, as `runStageBodyFor` needs them.
  *
  * The ordinary path fills this from the top-level `WorkflowControlState`; a parallel branch fills it
  * from that branch's own `WorkflowParallelBranchState`. The Stage kind's meaning does not change -
@@ -210,7 +205,7 @@ function activationFacts(input: ActivationInput): StageExecutionContext["activat
 /**
  * Turns one Stage body's `awaitEffects` requests into barrier entries and Effect proposals.
  *
- * Shared by an ordinary Stage visit and a parallel branch Stage visit (Slice G.2): only
+ * Shared by an ordinary Stage visit and a parallel branch Stage visit: only
  * `correlationFor` differs - `stageCorrelationId(stage, visit, key)` for the ordinary path, the
  * branch-qualified `branchStageCorrelationId(...)` for a branch - so the same barrier shape,
  * `write_memory` / `use_capability` mapping, and idempotency-key plumbing apply either way. The
@@ -299,7 +294,7 @@ type StepOutcome =
   /** A model call outlived this Activation. The state carries enough to re-enter where it stopped. */
   | { readonly kind: "suspend"; readonly state: WorkflowControlState; readonly resumptionId: ControllerResumptionId; readonly emissions: readonly EmissionProposal[] }
   /**
-   * Several parallel branches hold independent asynchronous dependencies (Slice G.2). The Execution
+   * Several parallel branches hold independent asynchronous dependencies. The Execution
    * waits on the *union*: an Event dependency (for branches awaiting Effect/child results) plus a set
    * of ControllerResumption ids (for branches mid slow model call). Any one settling re-enters.
    */
@@ -324,9 +319,8 @@ type StepOutcome =
  * nothing and a JSON blob squeezed into it would be structured cross-Stage data by the back door.
  *
  * Deliberately narrow. Later application input is not consumed here - an Execution that is already
- * running is answering its own topology, and selective, correlated user/application input is Slice G
- * work (see `docs/development/legacy/005-slice-b-decisions.md`, DEC-B01). An application that needs its
- * input to be seen should deliver it before the first Activation is scheduled.
+ * running is answering its own topology. An application that needs input to be seen should deliver
+ * it before the first Activation is scheduled.
  */
 function startInput(events: readonly DeliveredEvent[]): StageResult {
   for (const event of events) {
@@ -356,7 +350,7 @@ function outcomeOf(event: DeliveredEvent): {
         },
       };
     case "memory.write_conflict":
-      // Slice G.0: a valid, authorized versioned WriteMemory whose optimistic precondition was stale.
+      // a valid, authorized versioned WriteMemory whose optimistic precondition was stale.
       // The barrier settles `conflicted` - distinct from `rejected` / `denied` / `failed` - so the
       // Stage does not wait forever and Stage logic can re-read and decide.
       return {
@@ -448,7 +442,7 @@ function childOutcomeOf(event: DeliveredEvent): {
 }
 
 /**
- * Folds delivered Effect/child result Events into the matching *branch* barriers (Slice G.2).
+ * Folds delivered Effect/child result Events into the matching *branch* barriers.
  *
  * Only an `awaiting_effects` branch whose barrier holds an entry with the Event's exact correlation
  * settles - and the correlation is branch-qualified (`branchStageCorrelationId`), so branch B's
@@ -844,7 +838,7 @@ class WorkflowController implements ExecutionController {
    * `SpawnExecution` also fails the Stage, because the Stage's one required call received a terminal
    * answer even though no child exists, and each refusal keeps its own code: `effect.denied` ->
    * `<kind>_stage_spawn_denied`, `effect.rejected` -> `<kind>_stage_spawn_rejected`, and a declined
-   * exact-payload confirmation (`confirmation.declined`, Slice E.2.1) -> `<kind>_stage_spawn_declined`.
+   * exact-payload confirmation (`confirmation.declined`) -> `<kind>_stage_spawn_declined`.
    * A structured/non-string child terminal value fails the Stage rather than being smuggled through
    * the `text | none` edge.
    */
@@ -897,7 +891,7 @@ class WorkflowController implements ExecutionController {
    * Runs the Stage body for its kind, or returns the child call an Agent/Workflow Stage requires.
    *
    * The one path both an ordinary Stage invocation and a parallel branch Stage invocation take
-   * (Slice G.2). The caller supplies a `BodyCoordinate` - the invocation's visit, input, progress,
+   *. The caller supplies a `BodyCoordinate` - the invocation's visit, input, progress,
    * observations, join snapshot, and resumption-key scope - so the *same* Function/LLM outcome
    * validation, child-call construction, and model-call resumption apply whether the coordinate is
    * `wf/<stage>#<visit>` or `wf/fork/<fork>#<forkVisit>/branch/<branch>/stage/<stage>#<visit>`. The
@@ -988,7 +982,7 @@ class WorkflowController implements ExecutionController {
         input: state.stageInput,
         progress: state.stageProgress,
         observations: observationsOf(state),
-        // Non-null only on the visit a fork's join created (Slice G.1); cleared once this Stage
+        // Non-null only on the visit a fork's join created; cleared once this Stage
         // transitions away.
         join: state.join,
         resumptionScope: stageResumptionScope(stage.id, state.visit),
@@ -1128,7 +1122,7 @@ class WorkflowController implements ExecutionController {
   /**
    * Runs a target Stage's input Adapters from a position, and installs the adapted input.
    *
-   * The sharp case in this slice. An input Adapter suspends *during* a transition, when the target
+   * The sharp case is an input Adapter that suspends *during* a transition, when the target
    * Stage is only half entered - so the state committed before yielding is already the target
    * Stage's own state, with its new visit, its transition count, and the partially adapted value.
    * The Activation that resumes re-enters here and neither re-runs the predecessor Stage, nor
@@ -1206,7 +1200,7 @@ class WorkflowController implements ExecutionController {
     return this.applyTransition(spec, stage, state, stage.onAdapterReject, reason, null, emissions, resumptions);
   }
 
-  // -- parallel branches (Slice G.1 / G.2) --------------------------------
+  // -- parallel branches --------------------------------
 
   /**
    * Advances an Execution whose `parallel` state is non-null.
@@ -1389,7 +1383,7 @@ class WorkflowController implements ExecutionController {
    * Reuses the ordinary Stage-body machinery (`runStageBodyFor`, `buildEffectBarrier`, the child
    * barrier) with a branch-qualified coordinate: branch-local visit, input, progress, observations,
    * a `null` join, and a branch-qualified resumption scope. The branch wrapper adds only the
-   * fail-closed rules - a branch `WriteMemory` must carry `expectedRevision` (G.3), no branch
+   * fail-closed rules - a branch `WriteMemory` must carry `expectedRevision`, no branch
    * emissions, no branch transition label.
    */
   private async attemptBranch(
@@ -1480,12 +1474,12 @@ class WorkflowController implements ExecutionController {
     }
 
     if (outcome.status === "awaitEffects") {
-      // G.3: a parallel branch MAY perform a Structured Memory write, but only an *optimistic* one.
+      // A parallel branch may perform a Structured Memory write, but only an *optimistic* one.
       // An unversioned branch `WriteMemory` (no `expectedRevision`) could silently overwrite state a
       // sibling branch committed during the same Activation, which is exactly the timing-dependent
       // last-writer-wins the structured-concurrency rule forbids. It fails closed here - before the
       // proposal reaches the Harness, so no Effect journal entry, no PendingOperation, no revision
-      // advance. The ordinary non-parallel unconditional `WriteMemory` (G.0/F.0) is unchanged; this
+      // advance. The ordinary non-parallel unconditional `WriteMemory` is unchanged; this
       // constraint is scoped to writes emitted from a parallel branch Stage.
       const unversioned = outcome.effects.find(
         (request) => request.kind === "write_memory" && request.expectedRevision === undefined,
@@ -1497,7 +1491,7 @@ class WorkflowController implements ExecutionController {
           message:
             `${where} requested an unversioned Structured Memory write ("${(unversioned as { memoryKey: string }).memoryKey}"); ` +
             `a parallel branch WriteMemory must carry an explicit expectedRevision so a stale write becomes an ` +
-            `observable conflict instead of silently overwriting a sibling's commit (Slice G.3)`,
+            `observable conflict instead of silently overwriting a sibling's commit`,
         };
       }
       const { barrier, proposals } = buildEffectBarrier(outcome.effects, (key) =>
@@ -1508,7 +1502,7 @@ class WorkflowController implements ExecutionController {
 
     // completed
     if (outcome.emissions !== undefined && outcome.emissions.length > 0) {
-      return { kind: "fail", code: "parallel_branch_emissions_unsupported", message: `${where} produced emissions; branch emission ordering is deferred past G.2` };
+      return { kind: "fail", code: "parallel_branch_emissions_unsupported", message: `${where} produced emissions; parallel branch emission ordering is not supported` };
     }
     if (outcome.transition !== undefined) {
       return {
@@ -1551,7 +1545,7 @@ class WorkflowController implements ExecutionController {
         // WAITING itself - the same division of labour as `await_event`.
         return { control, ...emissions, next: { status: "await_resumption", resumptionId: step.resumptionId } };
       case "awaitDependencies":
-        // The parallel-branch union wait (Slice G.2): any one of an Event dependency and a set of
+        // The parallel-branch union wait: any one of an Event dependency and a set of
         // ControllerResumption ids settling re-enters. The Harness validates every reported id,
         // commits controller progress and every newly-registered resumption record in one
         // transaction, and derives WAITING (or stays runnable if the Event is already in the mailbox).

@@ -1,7 +1,7 @@
 /**
  * A reference `DerivedSemanticMemoryReadResolver`: authorize, then retrieve, then bound.
  *
- * Deny-by-default, and the mirror of the F.1 Structured Memory read resolver. The ordering is the
+ * Deny-by-default, and the mirror of the Structured Memory read resolver. The ordering is the
  * whole point:
  *
  * ```text

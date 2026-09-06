@@ -1,9 +1,6 @@
 # Implemented kernel baseline
 
-> **Status:** current implementation evidence. The kernel implementation baseline is the Slice G
-> structured-concurrency tranche (PR #13, merge `3e1f31e`); no kernel-semantic changes have landed
-> on `main` since, only documentation, the `0.8.0` package-identity reset, and benchmark-subject
-> work now owned by `ArrokothI/benchmark`.
+> **Status:** current implementation evidence for the 0.8.1 Execution-kernel package line.
 > **Role:** compact engineering map, not canonical architecture.
 
 This document answers one question: **What does the current ArrokothI kernel demonstrably
@@ -342,17 +339,17 @@ sessions/auth/hosting, A2A/service projection.
 ## 14. Reference stores, providers, and retrieval
 
 **Implemented capability.** In-memory Definition/Runtime stores, FIFO scheduler, scripted and
-deferred providers/executors, local lexical/resource retrieval, Gemini model provider, Strands
-integration, SQLite implementation for the legacy Session/Definition store contracts.
+deferred providers/executors, local lexical/resource retrieval, Gemini model provider, and Strands
+integration.
 
 **Non-obvious invariant.** Reference implementations demonstrate ports; they do not make their
-mechanisms canonical. The SQLite package is not yet a durable replacement for the complete
-Execution kernel `RuntimeStore`.
+mechanisms canonical. No durable implementation of the complete Execution-kernel `RuntimeStore`
+ships in this repository.
 
 **Canonical owner.** The port's relevant concept owner through [`../README.md`](../README.md).
 
 **Representative source.** `packages/core/src/reference/`, `packages/retrieval/local/src/`,
-`packages/models/gemini/src/`, `packages/agents/strands/src/`, `packages/storage/sqlite/src/`.
+`packages/models/gemini/src/`, `packages/agents/strands/src/`.
 
 **Representative tests.** `tests/conformance/contracts/`, package-local tests under
 `packages/*/tests/`, and `tests/conformance/models/`.
@@ -377,5 +374,5 @@ and [`004`](004-efficiency-and-developer-ergonomics.md).
 **Representative commands.** `npm test`, `npm run test:conformance`, `npm run test:mcp`,
 `npm run test:evals`, `npm run typecheck`.
 
-**Major deferrals.** Post-Slice-G orchestration-overhead report, durable/hosted benchmarks, and the
+**Major deferrals.** Orchestration-overhead reporting, durable/hosted benchmarks, and the
 whole-architecture release-readiness campaign in [`001`](001-current-status-and-roadmap.md).

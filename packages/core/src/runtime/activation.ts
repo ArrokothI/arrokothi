@@ -75,7 +75,7 @@ export type OutcomeValidation =
 const reject = (code: OutcomeRejectionCode, message: string): OutcomeValidation => ({ ok: false, rejection: { code, message } });
 
 /**
- * A controlled-interleaving wake condition (Slice E.1).
+ * A controlled-interleaving wake condition.
  *
  * Optional, and when present it is checked exactly like the primary `wake`: it must be declarative,
  * serializable runtime data. A malformed one is a rejected outcome, not a silently dropped field.
@@ -119,7 +119,7 @@ function validateNext(next: unknown): OutcomeRejection | null {
       return interleaveRejection((next as { interleave?: unknown }).interleave);
     }
     case "await_dependencies": {
-      // The parallel-branch union wait (Slice G.2). Structural checks only - whether each id names
+      // The parallel-branch union wait. Structural checks only - whether each id names
       // work this Execution is actually waiting on is a runtime fact the Harness establishes.
       const event = (next as { event?: unknown }).event;
       const resumptions = (next as { resumptions?: unknown }).resumptions;
@@ -259,7 +259,7 @@ export function validateActivationOutcome(outcome: unknown, kind: DefinitionKind
         `an Activation reporting "${String(status)}" cannot also propose Effects; their results could never be observed`,
       );
     }
-    // v0.4 suspends exclusively on a controller-local resumption: while one is outstanding no Event
+    // Suspend exclusively on a controller-local resumption: while one is outstanding no Event
     // produces an Activation. An Effect proposed alongside it would leave its result Event sitting
     // in the mailbox with nothing waiting on it, which is a lost wake dressed up as a feature.
     if (effects.length > 0 && status === "await_resumption") {
@@ -268,7 +268,7 @@ export function validateActivationOutcome(outcome: unknown, kind: DefinitionKind
         "an Activation suspending on controller-local work cannot also propose Effects; nothing would be waiting on their results",
       );
     }
-    // A union wait (Slice G.2) may carry Effects, but only when it also carries the Event dependency
+    // A union wait may carry Effects, but only when it also carries the Event dependency
     // that their result Events answer - a resumption-only union wait would strand them like above.
     if (effects.length > 0 && status === "await_dependencies" && (candidate.next as { event?: unknown }).event === undefined) {
       return reject(

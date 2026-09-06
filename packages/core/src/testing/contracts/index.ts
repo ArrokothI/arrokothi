@@ -1,7 +1,7 @@
 /**
  * Port contract suites.
  *
- * Each suite is a factory taking a way to construct the implementation under test and returning
+ * Each suite is a factory that takes a way to construct the implementation under test and returns
  * named cases. External packages instantiate the same suites, so "my SQLite store passes" means the
  * same thing as "the in-memory reference passes", rather than "I wrote a test that looks similar".
  */

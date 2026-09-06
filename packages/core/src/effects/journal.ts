@@ -7,13 +7,13 @@
  *   authorized            policy allowed it
  *   denied                policy refused it
  *   rejected              the request was never valid or dispatchable at all
- *   confirmation_pending  authorized, but an exact-payload confirmation gates dispatch (Slice E.2)
+ *   confirmation_pending  authorized, but an exact-payload confirmation gates dispatch
  *   declined              a human declined the exact-payload confirmation; nothing dispatched
  *   dispatch_started      the runtime is about to do something it cannot take back
  *   completed             the world said it worked
  *   failed                the world said it definitely did not
  *   conflicted            a valid, authorized versioned Structured Memory write whose optimistic
- *                         precondition was no longer true; nothing was mutated (Slice G.0)
+ *                         precondition was no longer true; nothing was mutated
  *   unknown_outcome       the world did not say
  *   replayed              a duplicate request was answered from the prior authoritative outcome
  *   abandoned             the Execution went terminal before the result could be delivered
@@ -24,8 +24,7 @@
  *
  * These are audit records. They are never routed to a mailbox and never reach a controller: an
  * Execution learns what happened from delivered Events, and its own request history is not an
- * observation it consumes. Sharing physical storage with Events in a later slice must not merge
- * those roles.
+ * observation it consumes. Sharing physical storage with Events must not merge those roles.
  */
 
 import type { ActivationId, ExecutionId } from "../execution/ids.ts";
@@ -38,17 +37,17 @@ export type EffectJournalPhase =
   | "authorized"
   | "denied"
   | "rejected"
-  /** Slice E.2: authorized, but an exact-payload mechanical confirmation gates dispatch. */
+  /** authorized, but an exact-payload mechanical confirmation gates dispatch. */
   | "confirmation_pending"
-  /** Slice E.2: a human declined the exact-payload confirmation. Distinct from `denied`. */
+  /** a human declined the exact-payload confirmation. Distinct from `denied`. */
   | "declined"
   | "dispatch_started"
   | "completed"
   | "failed"
-  /** Slice E.1: a `call` child reached `CANCELLED`. Distinct from `failed`. */
+  /** a `call` child reached `CANCELLED`. Distinct from `failed`. */
   | "cancelled"
   /**
-   * Slice G.0: a valid, authorized `WriteMemory` whose optimistic `expectedRevision` precondition no
+   * a valid, authorized `WriteMemory` whose optimistic `expectedRevision` precondition no
    * longer matched the bound view. Nothing was mutated, no revision advanced, no write history
    * appended. Distinct from `denied` (policy), `rejected` (never dispatchable), and `failed` (a
    * dispatched operation the world said did not happen).

@@ -1,14 +1,14 @@
 /**
  * One operation ontology, enriched rather than duplicated.
  *
- * Slice D needed description and schema for a model-facing projection. The temptation was a second
+ * Model-facing projections need descriptions and schemas. A second
  * descriptor type - an "AgentTool", a protocol tool, a provider tool spec treated as truth - and
  * taking it would have given one operation two identities, two descriptions, and eventually two
  * consequentiality baselines that could disagree.
  *
  * So the catalog stays the single source, and these cases check the consequences: identity is still
  * `(capability, operation)`, descriptive metadata comes from the same descriptor the gateway
- * classifies from, the Slice-B consequentiality behaviour is untouched, and no parallel registry
+ * classifies from, an earlier consequentiality behaviour is untouched, and no parallel registry
  * exists for anything to drift into.
  */
 
@@ -48,9 +48,9 @@ describe("capability-operation descriptors stay the one operation ontology", () 
     assert.equal(catalog.describe("mail" as CapabilityId, "send" as OperationId)!.consequential, true);
   });
 
-  test("Slice B consequentiality behaviour is unchanged, including its conservative gaps", () => {
+  test("consequentiality classification is unchanged, including its conservative gaps", () => {
     // A catalog that classifies only consequentiality is still a valid catalog: the descriptive
-    // fields are additive, so nothing that worked before Slice D needs rewriting.
+    // fields are additive, so nothing that worked before this field was added needs rewriting.
     const minimal = createCapabilityCatalog([{ capability: "weather", operation: "get", consequential: false }]);
     const descriptor = minimal.describe("weather" as CapabilityId, "get" as OperationId)!;
     assert.equal(descriptor.consequential, false);
@@ -81,7 +81,7 @@ describe("capability-operation descriptors stay the one operation ontology", () 
   test("no Agent-specific second operation ontology was introduced", async () => {
     // Declarations, not prose: `ports/capability-catalog.ts` names the ontologies it refuses to
     // become, so the check has to look for something being *declared*, not merely mentioned. The
-    // scan covers the areas Slice D owns; the pre-v0.4 tool subsystem is a separate deletable graph.
+    // scan covers the Agent, operation, port, reference, and model surfaces.
     const owned = ["agent/", "operations/", "controllers/agent/", "ports/", "reference/", "model/"];
     const files = (await readdir(CORE_SRC, { recursive: true }))
       .filter((path) => path.endsWith(".ts"))

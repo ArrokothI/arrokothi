@@ -1,5 +1,5 @@
 /**
- * `RequestUserInput` as a real Harness-mediated user interaction (Slice E.2).
+ * `RequestUserInput` as a real Harness-mediated user interaction.
  *
  * `RequestUserInput` is one of the existing five Effects, made dispatchable through the ordinary
  * gateway. It asks the human/application for semantic data; it is *not* mechanical confirmation.

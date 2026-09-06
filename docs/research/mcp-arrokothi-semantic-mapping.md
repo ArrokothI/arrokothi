@@ -115,10 +115,7 @@ explicit capability-operation export
 ```
 
 That proof is synchronous and intentionally does **not** establish support for Resources, Prompts,
-Tasks, elicitation, subscriptions, OAuth, production hosting, or general dynamic refresh. See
-[`../development/legacy/011-mcp-synchronous-operation-proof.md`](../development/legacy/011-mcp-synchronous-operation-proof.md)
-and
-[`../development/legacy/012-mcp-post-proof-semantic-corrections.md`](../development/legacy/012-mcp-post-proof-semantic-corrections.md).
+Tasks, elicitation, subscriptions, OAuth, production hosting, or general dynamic refresh.
 
 ## 4. Two compatibility directions
 

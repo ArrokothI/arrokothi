@@ -1,5 +1,5 @@
 /**
- * The lineage/root-scoped structural spawn budget (Slice E.0).
+ * The lineage/root-scoped structural spawn budget.
  *
  * A per-Execution child limit cannot bound recursion. So autonomous child creation spends a finite
  * budget that belongs to the whole lineage, keyed by its root. Descendants may consume it; they can

@@ -1,10 +1,8 @@
-# Current status and post-Slice-G roadmap
+# Current status and roadmap
 
 > **Status:** primary active development plan for the ArrokothI agent-kernel 0.8.x line.
-> **Kernel baseline:** the Slice G structured-concurrency tranche (PR #13, merge `3e1f31e`). No
-> kernel-semantic changes have landed since; subsequent `main` commits are documentation, the
-> `0.8.0` package-identity reset, the application-builder guide, and benchmark-subject work now
-> owned by the standalone `ArrokothI/benchmark` repository.
+> **Kernel baseline:** the capability baseline summarized in
+> [`002-implemented-kernel-baseline.md`](002-implemented-kernel-baseline.md).
 > **Role:** engineering roadmap, not canonical architecture.
 
 Canonical semantics remain in the documents indexed by [`../README.md`](../README.md). This plan
@@ -14,19 +12,16 @@ and converts unresolved work into dependency-ordered vertical proofs.
 ## 1. Version and release-gate convention
 
 ```text
-Project/package development version:  ArrokothI agent-kernel 0.8.0
+Project/package development version:  ArrokothI agent-kernel 0.8.1
 Architecture-complete release gate:    separate; not implied by the package version
 ```
 
-`0.8.0` is a new experimental project/package baseline under the `arrokothi` / `@arrokothi/*`
-identity. It is not a claim that the milestone once called “v0.8 architecture complete” has been
-reached. SemVer orders `0.8.0` below the old `0.37.0`; this is an intentional pre-1.0 identity and
-version reset, not a monotonic release of the old `@agent-sdk/*` packages.
+`0.8.1` is the clean Execution-kernel package baseline under the `arrokothi` /
+`@arrokothi/*` identity. It does not claim architecture completeness.
 
 ### Release-readiness verdict
 
-**NO — the post-Slice-G kernel is not ready to claim the old roadmap's “v0.8
-architecture-complete experimental release.”**
+**NO — the current kernel is not ready to claim architecture completeness.**
 
 The current kernel has substantial, conformance-backed execution, composition, memory, authority,
 provider, and narrow MCP foundations. The following architecture-completion work still lacks an
@@ -39,12 +34,12 @@ integrated reference proof:
 - durable restart/recovery of real waiting and in-flight state;
 - an end-to-end campaign exercising the architecture together.
 
-The verdict is based on current source/tests and the canonical unresolved constraints, not on the
-string `0.8.0`.
+The verdict is based on current source/tests and canonical unresolved constraints, not the package
+version.
 
 ## 2. Completed baseline
 
-Slice A–G is now one implemented baseline, organized by capability rather than slice letter:
+The implemented baseline is organized by capability:
 
 - Execution identity, lifecycle, mailbox, scheduler, Harness mediation, Events, Effects,
   PendingOperations, and ControllerResumptions;
@@ -61,8 +56,7 @@ Slice A–G is now one implemented baseline, organized by capability rather than
   outcome-certainty rules.
 
 The exact implementation/test map and intentional deferrals are in
-[`002`](002-implemented-kernel-baseline.md). Historical Slice checkpoints are in
-[`legacy/`](legacy/README.md).
+[`002`](002-implemented-kernel-baseline.md).
 
 ## 3. Dependency order
 
@@ -83,7 +77,8 @@ N  Whole-architecture integration + release-readiness campaign
 ```
 
 Some investigation may overlap, but each minimum vertical proof depends on the accepted contracts
-above it. Do not invent “G.4”: G.0–G.3 are the completed structured-concurrency tranche.
+above it. Structured concurrency is part of the implemented baseline; extend it only through an
+explicit architectural decision.
 
 ## 4. H — Portable schema and service-descriptor foundation
 
@@ -162,7 +157,7 @@ One portable descriptor bundle that can:
 
 ### Dependencies
 
-Completed Slice G baseline only.
+Current implementation baseline only.
 
 ## 5. I — MCP expansion beyond the synchronous Tool proof
 
@@ -434,7 +429,7 @@ idempotency, or recovery of uncertain in-flight outcomes after a process crash.
 - `RuntimeStore`, scheduler, serializable Execution/controller state and wait conditions;
 - Effect journal/idempotency keys, PendingOperations, ControllerResumptions;
 - child/peer/user-input/confirmation links;
-- SQLite package for legacy storage contracts, but no complete durable kernel backend.
+- no complete durable kernel backend.
 
 ### Minimum durable reference path
 

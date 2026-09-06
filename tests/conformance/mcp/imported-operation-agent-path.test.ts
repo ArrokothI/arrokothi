@@ -34,7 +34,7 @@
  * Nothing in that column knows MCP exists except the two ends. The Agent controller, the exposure
  * resolver, the projection, the action target, the Effect gateway, the Event vocabulary, and the
  * observation projector are the same code a native capability operation goes through - which is the
- * actual claim this slice makes, and the reason the assertions below walk every layer rather than
+ * contract under test, and the reason the assertions below walk every layer rather than
  * checking only that the server was called.
  */
 

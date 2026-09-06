@@ -20,13 +20,12 @@
  * positive integer, and a Stage that exposes callables must allow at least two phases, because the
  * final phase never exposes callables. There is no authored value that produces an open-ended loop.
  *
- * **A parallel fork is a narrow, statically-checked shape (Slice G.1 / G.2).** `forkTopologyIssues`
+ * **A parallel fork is a narrow, statically-checked shape.** `forkTopologyIssues`
  * rejects everything statically knowable about the deliberately small fork topology: fork/branch id
  * validity and uniqueness, at least two branches, single-Stage Adapter-free branch bodies, a branch
  * Stage reached only through its fork, a branch Stage whose only transition is to its own fork's
- * join, and a join with one existing Function successor that is not itself a branch Stage. Slice G.2
- * widens the *branch Stage body* from Function-only to any adapter-free Stage kind
- * (`function` / `llm` / `agent` / `workflow`) - it adds no Stage kind and no graph rule; branch
+ * join, and a join with one existing Function successor that is not itself a branch Stage. A branch
+ * body may use any adapter-free Stage kind (`function` / `llm` / `agent` / `workflow`); branch
  * Adapters, multi-Stage branch subgraphs, branch loops, and nested forks stay rejected here.
  */
 
@@ -160,11 +159,11 @@ function adapterIssues(declaration: unknown, path: string): WorkflowSpecIssue[] 
 }
 
 /**
- * The fork-topology facts every transition check needs (Slice G.1).
+ * The fork-topology facts every transition check needs.
  *
  * `forkIds` is the set of declared fork ids; `branchStageToFork` maps each parallel branch Stage to
  * the one fork that owns it. Both are empty for a Workflow that declares no `forks`, and every rule
- * below then reduces to the pre-G.1 behaviour.
+ * below then reduces to ordinary non-fork behavior.
  */
 interface ForkContext {
   readonly forkIds: ReadonlySet<string>;
@@ -194,7 +193,7 @@ function targetIssues(
     }
     if (forks.branchStageToFork.has(stage)) {
       // A branch Stage is reached only through its fork. An ordinary edge into one would give it a
-      // second, non-parallel entry, which is not the narrow topology G.1 supports.
+      // second, non-parallel entry, which the narrow topology does not support.
       return [issue(
         `${path}.stage`,
         "invalid_transition",
@@ -253,16 +252,16 @@ function transitionsIssues(
   const candidate = transitions as Record<string, unknown>;
 
   if (ownerForkId !== null) {
-    // A G.1 branch Stage's topology is fixed: one unconditional transition to its own fork's join,
+    // A branch Stage's topology is fixed: one unconditional transition to its own fork's join,
     // and nothing else. No labelled routing, no loop, no nested fork, no other fork's join.
     if (candidate["kind"] !== "always") {
-      return [issue(`${path}.kind`, "invalid_branch", `a G.1 branch Stage has exactly one unconditional transition to fork "${ownerForkId}" join`)];
+      return [issue(`${path}.kind`, "invalid_branch", `a parallel branch Stage has exactly one unconditional transition to fork "${ownerForkId}" join`)];
     }
     const next = candidate["next"];
     const nextIssues = targetIssues(next, `${path}.next`, known, forks, ownerForkId);
     if (nextIssues.length > 0) return nextIssues;
     if ((next as Record<string, unknown>)["to"] !== "join") {
-      return [issue(`${path}.next`, "invalid_branch", `a G.1 branch Stage transitions only to fork "${ownerForkId}" join`)];
+      return [issue(`${path}.next`, "invalid_branch", `a parallel branch Stage transitions only to fork "${ownerForkId}" join`)];
     }
     return [];
   }
@@ -385,21 +384,21 @@ function forkTopologyIssues(
           branchStageToFork.set(stage, forkId);
         }
         const stageDef = stagesById.get(stage);
-        // Slice G.2: a branch Stage body is any adapter-free Stage kind. `stageIssues` still validates
+        // a branch Stage body is any adapter-free Stage kind. `stageIssues` still validates
         // the Stage's own `kind` against the closed `STAGE_KINDS` set - this only enforces that a
         // branch is not something outside that set masquerading as one.
         if (stageDef !== undefined && !isStageKind(stageDef["kind"])) {
           issues.push(issue(`${bat}.stage`, "invalid_branch", `a branch Stage is one of the declared Stage kinds; "${stage}" is "${String(stageDef["kind"])}"`));
         }
         if (hasAdapters(stageDef)) {
-          issues.push(issue(`${bat}.stage`, "invalid_branch", `a parallel branch Stage ("${stage}") cannot declare input or output Adapters (deferred past G.2)`));
+          issues.push(issue(`${bat}.stage`, "invalid_branch", `a parallel branch Stage ("${stage}") cannot declare input or output Adapters`));
         }
         // Adapters declared on the branch entry itself are equally unsupported.
         if (
           (Array.isArray(branch["inputAdapters"]) && branch["inputAdapters"].length > 0) ||
           (Array.isArray(branch["outputAdapters"]) && branch["outputAdapters"].length > 0)
         ) {
-          issues.push(issue(`${bat}`, "invalid_branch", `a parallel branch declares no Adapters (deferred past G.2)`));
+          issues.push(issue(`${bat}`, "invalid_branch", `a parallel branch declares no Adapters`));
         }
       });
     }
@@ -416,7 +415,7 @@ function forkTopologyIssues(
     }
     const nextDef = stagesById.get(next);
     if (nextDef !== undefined && nextDef["kind"] !== "function") {
-      issues.push(issue(`${at}.join.next`, "invalid_fork", `the G.1 join successor "${next}" must be a function Stage so the join snapshot is consumable`));
+      issues.push(issue(`${at}.join.next`, "invalid_fork", `the join successor "${next}" must be a function Stage so the join snapshot is consumable`));
     }
     if (
       Array.isArray(branches) &&
@@ -614,7 +613,7 @@ function stageIssues(stage: unknown, path: string, known: ReadonlySet<string>, f
         issues.push(issue(
           `${path}.childInput`,
           "invalid_spec",
-          "childInput was removed in Slice E.2; the Stage's adapted StageResult is the child's input",
+          "childInput is not supported; the Stage's adapted StageResult is the child's input",
         ));
       }
       const requestedOperations = candidate["requestedOperations"];
@@ -683,7 +682,7 @@ export function validateWorkflowSpec(input: unknown): WorkflowSpecValidation {
     issues.push(issue("spec.entryStage", "missing_entry_stage", `entry stage "${entry}" is not declared by this Workflow`));
   }
 
-  // Parallel fork/join topology (Slice G.1). Absent `forks` => an empty context and pre-G.1 rules.
+  // Parallel fork/join topology. Absent `forks` means an empty fork context.
   const forkResult = forkTopologyIssues(candidate["forks"], known, entry, stagesById);
   issues.push(...forkResult.issues);
 
@@ -698,4 +697,3 @@ export function validateWorkflowSpec(input: unknown): WorkflowSpecValidation {
   if (issues.length > 0) return { ok: false, issues };
   return { ok: true, spec: candidate as unknown as WorkflowSpec };
 }
-

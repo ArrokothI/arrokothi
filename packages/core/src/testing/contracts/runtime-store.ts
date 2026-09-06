@@ -6,17 +6,17 @@
  * pending operations and the Effect journal committing inside the same transaction as the mailbox
  * write they belong to, and audit records kept out of mailboxes entirely.
  *
- * The rollback case is the one that matters most for Slice B. A store that could commit "the Effect
+ * The rollback case is the one that matters most. A store that could commit "the Effect
  * was dispatched" without "there is a pending operation to settle", or "the result Event is in the
  * mailbox" without "the operation is no longer pending", would let an Execution be woken by an
  * observation the runtime does not believe in.
  *
- * Slice C.1 adds the controller-resumption facet on the same terms, with its own combination that
+ * The controller-resumption facet follows the same terms, with its own combination that
  * must never be observable: a resumption settled while the Execution it belongs to still reads as
  * WAITING on it. Lookup by the controller's stable key is contract rather than convenience - it is
  * what stops a resumed Activation dispatching a second provider call.
  *
- * Slice D adds effective operation authority, with the combination that must never be observable
+ * Effective operation authority follows the same rule, with the combination that must never be observable
  * being an Execution that exists without the ceiling its exposure will be derived from. The
  * fail-closed reading of a missing record is contract too: absent means nothing is authorized.
  */
@@ -585,7 +585,7 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
       },
     },
     {
-      name: "a peer request link correlates an ask and settles once (Slice E.1)",
+      name: "a peer request link correlates an ask and settles once",
       async run() {
         const store = factory();
         await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
@@ -618,7 +618,7 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
       },
     },
     {
-      name: "a cancellation request is a single per-Execution record, applied once (Slice E.1)",
+      name: "a cancellation request is a single per-Execution record, applied once",
       async run() {
         const store = factory();
         await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
@@ -646,7 +646,7 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
       },
     },
     {
-      name: "a user-input request is keyed by requestId, listable, and discoverable while open (Slice E.2)",
+      name: "a user-input request is keyed by requestId, listable, and discoverable while open",
       async run() {
         const store = factory();
         await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));
@@ -684,7 +684,7 @@ export function runtimeStoreContract(factory: () => RuntimeStore): readonly Cont
       },
     },
     {
-      name: "a confirmation request binds one exact proposal + digest, resolved once (Slice E.2)",
+      name: "a confirmation request binds one exact proposal + digest, resolved once",
       async run() {
         const store = factory();
         await store.transact(EXECUTION, async (tx) => tx.executions.insert(context()));

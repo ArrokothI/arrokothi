@@ -38,11 +38,11 @@ export type PendingDispatchState = "not_dispatched" | "dispatched";
 /**
  * What the outside world established, once it did. `null` while nothing is known.
  *
- * `cancelled` (Slice E.1) is distinct from `failure` on purpose: a `call` parent whose child reached
+ * `cancelled` is distinct from `failure` on purpose: a `call` parent whose child reached
  * `CANCELLED` settles as `cancelled`, and the runtime must never relabel that as failure merely
  * because the union once lacked the word.
  *
- * `declined`, `denied`, and `rejected` (Slice E.2 / E.2.1) are each distinct from `failure` and
+ * `declined`, `denied`, and `rejected` are each distinct from `failure` and
  * `cancelled`. `declined` is a human declining an exact-payload mechanical confirmation. `denied` is
  * an authorization refusal of an approved payload - the confirmation's current-authority re-check, or
  * a hard operation-authority ceiling narrowed while the human deliberated. `rejected` is a runtime
@@ -52,7 +52,7 @@ export type PendingDispatchState = "not_dispatched" | "dispatched";
  * outcome as a capability failure, a decline, a denial, or a cancellation - they mean different
  * things.
  *
- * `conflicted` (Slice G.0) is a confirmation-gated `WriteMemory` whose optimistic `expectedRevision`
+ * `conflicted` is a confirmation-gated `WriteMemory` whose optimistic `expectedRevision`
  * precondition was no longer true when its approved dispatch resolved. Nothing reached Structured
  * Memory: `dispatch` stays `not_dispatched`, no value changed, no revision advanced. It is distinct
  * from `denied` (authorization), `declined` (a human), `rejected` (never dispatchable), and
@@ -168,8 +168,8 @@ export function isUnresolved(operation: PendingOperation): boolean {
  * Dispatched with no outcome: the state that makes duplicate external effects possible.
  *
  * A runtime reconstructed after a crash uses this to recognise operations it must not automatically
- * redispatch. Slice B does not automatically redispatch anything, so this is a query rather than a
- * recovery mechanism; Slice I owns production recovery.
+ * redispatch. The kernel does not automatically redispatch anything, so this is a query rather than a
+ * recovery mechanism; production recovery remains future work.
  */
 export function isUnresolvedDispatch(operation: PendingOperation): boolean {
   return operation.status === "pending" && operation.dispatch === "dispatched";

@@ -35,7 +35,7 @@
 import type { ObjectSchema } from "../schema/value-schema.ts";
 import { hashValue } from "../util/hash.ts";
 
-/** The one local control this slice defines. Identity only - it carries no key. */
+/** The local control identity. It carries no key. */
 export type ModelLocalControlTarget = { readonly kind: "working_notes_set" };
 
 export const MODEL_LOCAL_CONTROL_KINDS = ["working_notes_set"] as const;
@@ -200,8 +200,8 @@ const LOCAL_CONTROL_KIND_SET = new Set<string>(MODEL_LOCAL_CONTROL_KINDS);
  * Deterministic structural validation of a *persisted* local-control projection.
  *
  * A returned alias is resolved against this snapshot on re-entry, so a persisted snapshot must be an
- * honest F.2a local-control projection: plain data, non-empty ids, and every binding's alias, target,
- * and input schema canonical for its kind, with no duplicate aliases. This is scoped to the F.2a
+ * honest local-control projection: plain data, non-empty ids, and every binding's alias, target,
+ * and input schema canonical for its kind, with no duplicate aliases. This is scoped to the local
  * re-entry contract - it is not a universal persisted-Agent-state validator.
  */
 export function localModelControlProjectionIssues(value: unknown): readonly string[] {

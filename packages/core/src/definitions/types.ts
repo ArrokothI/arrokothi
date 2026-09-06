@@ -53,10 +53,8 @@ export interface DefinitionBase {
 }
 
 /**
- * The Agent body is no longer open.
- *
- * Slice D replaced the generic Slice-A placeholder with a real spec (`agent/spec.ts`). An Agent
- * definition now declares a logical model, its instructions, the operations it would like exposed,
+ * The Agent body is a concrete portable spec (`agent/spec.ts`). An Agent definition declares a
+ * logical model, its instructions, the operations it would like exposed,
  * its bounds, and what a response means - and `validateDefinition` rejects anything that is not one,
  * so an unrunnable Agent is unpublishable rather than discovered several Activations in.
  *
@@ -66,10 +64,8 @@ export interface DefinitionBase {
 export type { AgentSpec };
 
 /**
- * The Workflow body is no longer open.
- *
- * Slice C replaced the generic Slice-A placeholder with real Stage topology (`workflow/spec.ts`).
- * A Workflow definition now declares its entry Stage, its Stage definitions, its predefined
+ * The Workflow body is concrete Stage topology (`workflow/spec.ts`). A Workflow definition declares
+ * its entry Stage, its Stage definitions, its predefined
  * transitions, and its completion targets, and `validateDefinition` rejects anything that is not
  * one - so a malformed graph is unpublishable rather than discovered several Activations in.
  */

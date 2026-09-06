@@ -1,6 +1,6 @@
 /** Fixed model classification: the model selects a declared label, never a Stage ID. */
-import { ControllerRegistry, Harness, createWorkflowController, defineWorkflow } from "@arrokothi/core/execution";
-import type { WorkflowModelAccess } from "@arrokothi/core/execution";
+import { ControllerRegistry, Harness, createWorkflowController, defineWorkflow } from "@arrokothi/core";
+import type { WorkflowModelAccess } from "@arrokothi/core";
 import {
   FifoScheduler, InMemoryDefinitionStore, InMemoryRuntimeStore,
   createDeterministicIds, createFixedClock, createFunctionStageRegistry,

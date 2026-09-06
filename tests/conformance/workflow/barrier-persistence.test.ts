@@ -8,7 +8,7 @@
  *
  * This is a *reference-runtime* reconstruction, not a crash-recovery claim. Real durability -
  * restart, an idempotent dispatch boundary, recovering an Execution that was mid-Activation - is
- * Slice I. What is proved here is narrower and still worth proving: a second Harness with a fresh
+ * future work. What is proved here is narrower: a second Harness with a fresh
  * WorkflowController, reading the same persisted records, resumes into exactly the Stage state the
  * first one left behind rather than inventing a different one.
  */

@@ -6,7 +6,7 @@
  * Structured Memory fields may this Execution read into a context right now, and it answers
  * deny-by-default.
  *
- * The ordering matters and matches F.0's write path: the read grant is applied **first**, and only
+ * The ordering matters and matches the write path: the read grant is applied **first**, and only
  * if something survives it is the bound view resolved. An Execution with no read grant never causes
  * a view lookup and learns nothing about which fields exist.
  *

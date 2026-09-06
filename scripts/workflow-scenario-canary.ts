@@ -1,5 +1,5 @@
 /**
- * Optional live canary for the v0.4 **Workflow** path. Never part of the CI suite.
+ * Optional live canary for the **Workflow** path. Never part of the CI suite.
  *
  * This is deliberately not a provider test. `gemini-provider-canary.ts` proves the Gemini provider
  * contract against a live request; this proves *Workflow Stage semantics* while using the provider
@@ -60,7 +60,7 @@ const apiKey = geminiApiKeyFromEnv();
 const timestamp = new Date().toISOString();
 
 function report(payload: Record<string, unknown>): void {
-  console.log(JSON.stringify({ scenario: "v0.4 workflow: bounded LLM Stage with live retrieval", timestamp, ...payload }, null, 2));
+  console.log(JSON.stringify({ scenario: "workflow: bounded LLM Stage with live retrieval", timestamp, ...payload }, null, 2));
 }
 
 if (!apiKey) {

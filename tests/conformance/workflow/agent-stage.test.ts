@@ -1,5 +1,5 @@
 /**
- * Agent Stage: one Workflow Stage boundary implemented by a child Agent `call` (Slice E.2).
+ * Agent Stage: one Workflow Stage boundary implemented by a child Agent `call`.
  *
  *   the Stage gets no ExecutionId / lifecycle / mailbox / authority - the child gets all of them
  *   exactly one child call, never re-spawned when the Workflow controller re-enters after WAITING

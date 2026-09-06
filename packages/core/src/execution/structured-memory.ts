@@ -1,9 +1,8 @@
 /**
  * Execution-kernel Structured Memory.
  *
- * This is intentionally separate from `memory/structured.ts`, which belongs to the legacy
- * Session/Flow projection. The Execution kernel stores one explicit schema-bound view as runtime
- * state, and an Execution holds only a reference to it. The record contains no authorization flag:
+ * The Execution kernel stores one explicit schema-bound view as runtime state, and an Execution
+ * holds only a reference to it. The record contains no authorization flag:
  * a view id, an owner relationship, and a committed value are all data, never permission.
  */
 
@@ -27,7 +26,7 @@ export interface StructuredMemoryViewRef {
  * not mechanical confirmation, and never a reason the Harness allows a write. It rides the
  * `WriteMemory` proposal (so it is covered by the exact-payload confirmation digest) and is
  * persisted with the committed record and its history. When present, at least one reference is
- * given. F.1's model-facing read rendering is unchanged: promotion provenance is application/runtime
+ * given. Model-facing read rendering is unchanged: promotion provenance is application/runtime
  * inspection data, not something the model observation exposes.
  */
 export interface MemoryWriteProvenance {

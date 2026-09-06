@@ -63,7 +63,7 @@ for (const source of sources) {
 
 const manifests = [
   "packages/core", "packages/agents/strands", "packages/models/gemini",
-  "packages/interoperability/mcp", "packages/retrieval/local", "packages/storage/sqlite",
+  "packages/interoperability/mcp", "packages/retrieval/local",
 ];
 const packagePaths = new Set<string>();
 for (const directory of manifests) {
@@ -79,8 +79,8 @@ for (const file of (await readdir(join(root, example))).filter((name) => name.en
     if (!specifier.startsWith("@arrokothi/")) continue;
     imports++;
     if (!packagePaths.has(specifier)) errors.push(`${example}/${file}: not a public export: ${specifier}`);
-    if (specifier === "@arrokothi/core" || (!file.endsWith(".test.ts") && specifier === "@arrokothi/core/testing")) {
-      errors.push(`${example}/${file}: runtime starter imports legacy/test surface: ${specifier}`);
+    if (!file.endsWith(".test.ts") && specifier === "@arrokothi/core/testing") {
+      errors.push(`${example}/${file}: runtime starter imports test-only surface: ${specifier}`);
     }
   }
 }

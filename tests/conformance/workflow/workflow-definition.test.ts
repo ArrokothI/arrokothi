@@ -1,8 +1,7 @@
 /**
  * The Workflow definition is real topology, and it is checked before it can run.
  *
- * Slice A deliberately left `WorkflowSpec = JsonObject`. These cases prove the replacement: a
- * Workflow now declares an entry Stage, Stage definitions, predefined transitions, and completion
+ * A Workflow declares an entry Stage, Stage definitions, predefined transitions, and completion
  * targets, all as portable data - and every statically knowable defect is refused at authoring time
  * rather than discovered several Activations into a run.
  *

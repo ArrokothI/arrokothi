@@ -6,8 +6,8 @@
  * invariants that must commit together, such as "consume the mailbox, record controller progress,
  * and transition the lifecycle" or "validate the terminal result and reach COMPLETED".
  *
- * Slice A needed the executions, mailboxes, emissions, and transition-audit facets. Slice B adds
- * pending operations and the Effect journal here, inside the *same* transaction, because the
+ * The store combines executions, mailboxes, emissions, transition audit, pending operations, and
+ * the Effect journal inside the *same* transaction because the
  * combinations that must never be observable are exactly the ones that span facets:
  *
  *   an Effect journaled as dispatched with no pending operation to settle
@@ -15,18 +15,16 @@
  *   a result Event delivered while the operation still reads as unresolved
  *   an Execution woken by an Event that rolled back
  *
- * Independently transactional micro-stores cannot express any of that. Slice C.1 adds controller
- * resumptions for the same reason, with its own combination that must never be observable:
+ * Independently transactional micro-stores cannot express any of that. Controller resumptions use
+ * the same transaction for the same reason; this combination must never be observable:
  *
  *   a resumption settled while the Execution it belongs to still reads as WAITING on it
  *
- * Slice D adds effective operation authority on the same terms, with its own combination that must
- * never be observable:
+ * Effective operation authority follows the same rule; this combination must never be observable:
  *
  *   an Execution created without the authority record its exposure will be derived from
  *
- * Slice F adds memory and Slice I the durable outbox as further facets of this same transaction,
- * not as new stores.
+ * Memory and the durable outbox are further facets of this same transaction, not separate stores.
  */
 
 import type { EffectJournalDraft, EffectJournalEntry } from "../effects/journal.ts";
@@ -132,7 +130,7 @@ export interface EffectJournalFacet {
  * controller-local key finds the settled record and reads its outcome instead of starting the work
  * again.
  *
- * Since E.1 a key may accumulate historical `invalidated` records (an interleave Event overtook the
+ * A key may accumulate historical `invalidated` records when an interleave Event overtakes the
  * work) alongside a fresh one. `findByKey` must return the *reusable* record - a `pending` or
  * `settled` one - and never an `invalidated` one, so a re-derived key after invalidation starts
  * fresh work rather than recovering an obsolete result. A durable store should index this rather
@@ -156,7 +154,7 @@ export interface ControllerResumptionFacet {
  * Execution whose exposure silently reads as "nothing authorized", and one whose ceiling committed
  * without its context would be a permission attached to nothing.
  *
- * There is no `delete`, no `widen`, and no `update`. Child delegation - implemented in E.0 - does
+ * There is no `delete`, no `widen`, and no `update`. Child delegation does
  * not narrow or otherwise rewrite the parent's record: it inserts a *fresh* delegated authority
  * record for the child, `version: 1`, computed from `requestedOperations ∩ the parent's current
  * effective authority` at spawn time. The parent's own record is untouched by delegating from it.
@@ -199,7 +197,7 @@ export interface ChildExecutionLinkFacet {
 }
 
 /**
- * Peer request links (Slice E.1).
+ * Peer request links.
  *
  * The runtime-owned correlation between an `ask` and the reply that settles it. A facet of the same
  * transaction because "the message reached the recipient", "the requester's PendingOperation is
@@ -215,7 +213,7 @@ export interface PeerRequestLinkFacet {
 }
 
 /**
- * Cancellation requests (Slice E.1).
+ * Cancellation requests.
  *
  * A narrow record that a RUNNING Execution should reach a safe boundary and become CANCELLED. Its
  * own facet - not a field of the ExecutionContext - so recording one does not touch the context
@@ -228,7 +226,7 @@ export interface CancellationRequestFacet {
 }
 
 /**
- * User-input requests (Slice E.2).
+ * User-input requests.
  *
  * The runtime-owned record of one open `RequestUserInput` Effect. A facet of the same transaction
  * because "the request exists", "the sender's PendingOperation is pending", and the journal entries
@@ -244,7 +242,7 @@ export interface UserInputRequestFacet {
 }
 
 /**
- * Confirmation requests (Slice E.2).
+ * Confirmation requests.
  *
  * The runtime-owned record of one pending exact-payload mechanical confirmation. A facet of the same
  * transaction because "the exact proposal is stored", "the Effect PendingOperation exists", and the
@@ -260,7 +258,7 @@ export interface ConfirmationRequestFacet {
 }
 
 /**
- * Execution-kernel Structured Memory (Slice F.0).
+ * Execution-kernel Structured Memory.
  *
  * A view is a facet of the same transaction as the Effect journal and mailbox so a committed field
  * value and its `memory.written` observation can never become visible separately. The view has its
@@ -269,7 +267,7 @@ export interface ConfirmationRequestFacet {
  * `update`'s `expectedRevision` is the *physical persistence CAS* - an implementation guard that a
  * backend cannot silently accept a stale writer, and it throws `StructuredMemoryConcurrencyError`
  * when it does not match. It is a different concern from the *semantic* optimistic precondition
- * Slice G.0 added to the `WriteMemory` proposal (`WriteMemoryProposal.expectedRevision`): the
+ * carried by the `WriteMemory` proposal (`WriteMemoryProposal.expectedRevision`): the
  * proposal precondition is an application-level compare-and-set that produces a distinct
  * `memory.write_conflict` observation, and the Effect gateway checks it inside this same transaction
  * before calling `update`. If the physical CAS still fails after the semantic check matched, the

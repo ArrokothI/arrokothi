@@ -1,9 +1,8 @@
 /**
  * The Agent spec: portable authored data for a model-directed Execution.
  *
- * Slice A left this as `JsonObject` so the substrate would not guess at this slice. This is the
- * replacement, and like the Workflow spec it is chosen by what it *cannot* contain. An Agent
- * definition names a logical model, its instructions, its bounds, and the actions/information it
+ * The shape is chosen by what it *cannot* contain. An Agent definition names a logical model, its
+ * instructions, its bounds, and the actions/information it
  * would like exposed. It holds no provider client, API key, executor, store, Harness, capability
  * catalog, authority grant, Active View, model projection, provider tool schema, application
  * principal, or protocol type. `definitions/validation.ts` enforces the plain-JSON half, and the
@@ -128,7 +127,7 @@ export interface AgentStructuredMemorySpec {
  * inferred-claim snapshot          rendered as "inferred, may be wrong" - not authority, not state
  * ```
  *
- * `query` is authored, not model-generated: F.3 does not solve dynamic/current-task retrieval, and
+ * `query` is authored, not model-generated: the kernel does not provide dynamic/current-task retrieval, and
  * a hidden LLM-formed query would make retrieval non-deterministic. Absent means no Derived Memory
  * retrieval - no resolver call, no provider call, no context block, no extra model call.
  */
@@ -142,7 +141,7 @@ export interface AgentDerivedMemoryRead {
   readonly maxClaims?: number;
 }
 
-/** Independent Derived Semantic Memory request. Retrieval only in F.3; not a memory-form union. */
+/** Independent Derived Semantic Memory request. Retrieval only; not a memory-form union. */
 export interface AgentDerivedMemorySpec {
   readonly read?: AgentDerivedMemoryRead;
 }
@@ -160,7 +159,7 @@ export interface AgentDerivedMemorySpec {
  * Memory grant, or from the mere existence of notes. Each present value must be literal `true`.
  *
  * This enables model-visible *local controller* functionality. Because a note update mutates only
- * this controller's own scratch frame and crosses no Execution or runtime boundary, F.2a needs no
+ * this controller's own scratch frame and crosses no Execution or runtime boundary, it needs no
  * separate runtime authority for it - but this enablement is therefore also not reusable as
  * permission for Structured Memory, child visibility, cross-Execution handoff, or external actions.
  */

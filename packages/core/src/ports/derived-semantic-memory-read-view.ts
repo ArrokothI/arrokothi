@@ -2,7 +2,7 @@
  * The authorized Derived Semantic Memory retrieval seam.
  *
  * An Execution must never receive ambient access to all provider memory. It sees Derived Semantic
- * Memory only through this narrow, controller-neutral resolver - exactly the pattern F.1 established
+ * Memory only through this narrow, controller-neutral resolver
  * for Structured Memory reads.
  *
  * The resolver owns:

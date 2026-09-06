@@ -9,13 +9,13 @@
  * So it imports only the production-facing surfaces:
  *
  * ```text
- * @arrokothi/core/execution   definitions, Harness, controllers, Execution/Effect vocabulary
+ * @arrokothi/core             definitions, Harness, controllers, Execution/Effect vocabulary
  * @arrokothi/core/ports       the interfaces an application implements or supplies
  * @arrokothi/core/reference   dependency-free implementations of those ports
  * ```
  *
- * Nothing here comes from `@arrokothi/core/testing`, and nothing here comes from the package root
- * `@arrokothi/core`, which still carries the separate legacy Session/Flow API.
+ * Nothing here comes from `@arrokothi/core/testing`. The focused `/execution` entry point is
+ * equivalent to the package root and keeps this file's semantic imports visually grouped.
  *
  * Read it as an inventory of the seams. Each collaborator below is a real decision an application
  * makes, and the two most important ones are deny-by-default: with no `EffectAuthorizer` the
@@ -31,14 +31,14 @@ import type {
   ExecutionId,
   ObjectSchema,
   OperationRef,
-} from "@arrokothi/core/execution";
+} from "@arrokothi/core";
 import {
   ControllerRegistry,
   Harness,
   createAgentController,
   defineAgent,
-} from "@arrokothi/core/execution";
-import type { AgentModelAccess } from "@arrokothi/core/execution";
+} from "@arrokothi/core";
+import type { AgentModelAccess } from "@arrokothi/core";
 import type { CapabilityCatalog, CapabilityExecutor, EffectAuthorizer } from "@arrokothi/core/ports";
 import {
   FifoScheduler,

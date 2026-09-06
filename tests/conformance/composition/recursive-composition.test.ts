@@ -1,5 +1,5 @@
 /**
- * Recursive Definition composition is legal (Slice E.0).
+ * Recursive Definition composition is legal.
  *
  * A Definition appearing earlier in its own ownership ancestry is not a runtime error. The runtime
  * adds no static cycle rejection; expansion is bounded by the finite lineage structural budget

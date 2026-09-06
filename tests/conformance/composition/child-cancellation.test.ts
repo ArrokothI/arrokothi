@@ -1,5 +1,5 @@
 /**
- * Basic child cancellation (Slice E.1).
+ * Basic child cancellation.
  *
  * Cancellation is trusted runtime control - `harness.cancelExecution(...)` - not a model action and
  * not a sixth Effect. A `call` parent's exact PendingOperation settles as `cancelled` (never

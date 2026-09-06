@@ -1,7 +1,7 @@
 /**
- * Cross-feature composition (Slice E.2 §44).
+ * Cross-feature composition.
  *
- * These prove the E.2 features compose - a child Execution behind one Workflow Stage boundary runs
+ * These prove the features compose: a child Execution behind one Workflow Stage boundary runs
  * its own user-input and mechanical-confirmation cycles, and the parent Stage resumes normally on
  * the child's terminal result. The parent Workflow never learns the child's internal cycles.
  */

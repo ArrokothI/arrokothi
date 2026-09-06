@@ -25,8 +25,8 @@ npm run typecheck
 
 Copy the relevant composition root into your application and replace domain definitions/policy and
 executor code. Do not treat these example helpers as a new SDK. Runtime files import only
-`@arrokothi/core/execution`, `/ports`, `/reference`, and concrete provider adapters; `/testing` belongs
-in tests. The similarly named package-root APIs and other legacy examples target a different runtime.
+`@arrokothi/core` (or its focused `/execution` entry point), `/ports`, `/reference`, and concrete
+provider adapters; `/testing` belongs in tests.
 
 The fake publisher creates one article per exact title and returns an existing receipt on repetition.
 This is a deliberately simple application unique-key rule. A real service should use a durable

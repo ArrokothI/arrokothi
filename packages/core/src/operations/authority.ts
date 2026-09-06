@@ -20,15 +20,14 @@
  * by nothing that can dispatch. A controller never receives the record - it receives, at most, a
  * deterministic narrowing of it that is already plain data.
  *
- * Two things this record deliberately is not. It is not a policy language: v0.4 needs an allow-set
- * of operation identities and nothing more, and a general grant/constraint/expiry vocabulary would
- * be guessing at a slice that has not happened. And it is not the decisive authorization: an
+ * Two things this record deliberately is not. It is not a policy language: the current kernel needs
+ * an allow-set of operation identities and nothing more, and a general grant/constraint/expiry
+ * vocabulary would be speculative. And it is not the decisive authorization: an
  * operation in this set may still be denied at dispatch, because authority may have changed or
  * because the concrete payload is not allowed. Exposure derived from a stale or buggy view can
  * therefore cause a denial; it can never cause a bypass.
  *
- * `version` exists so a later narrowing is observable rather than silent. v0.4 writes 1 and never
- * changes it; child delegation belongs to the composition slice.
+ * `version` exists so a later narrowing is observable rather than silent.
  */
 
 import type { OperationRef } from "./refs.ts";
@@ -37,7 +36,7 @@ import { compareOperationRefs, formatOperationRef, isSameOperationRef } from "./
 /**
  * A typed reference to a stored authority record.
  *
- * Held by the Execution record in place of the Slice-A opaque string. Holding one grants nothing:
+ * Held by the Execution record in place of an earlier opaque string. Holding one grants nothing:
  * it is an address into runtime-owned state, and there is no read path from a controller to it.
  */
 export interface OperationAuthorityRef {

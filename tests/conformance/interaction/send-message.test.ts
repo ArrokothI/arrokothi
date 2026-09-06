@@ -1,5 +1,5 @@
 /**
- * `SendMessage` as a real Harness-mediated peer interaction (Slice E.1).
+ * `SendMessage` as a real Harness-mediated peer interaction.
  *
  * `send`, `ask`, and `reply` are the same Effect kind. They differ only in the completion dependency
  * they create. The sender never writes another Execution's mailbox; a controller never receives a

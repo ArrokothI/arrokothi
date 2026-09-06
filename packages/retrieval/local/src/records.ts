@@ -1,8 +1,7 @@
 /**
  * Deterministic filtering and sorting over a typed record set.
  *
- * Migrated verbatim in behaviour from the pre-v0.4 core `knowledge/record-query.ts`, and unchanged
- * where it was already right: this exists because "which properties are at or under my budget" must
+ * This exists because "which properties are at or under my budget" must
  * not be answered by prose reasoning over a pile of listings. The runtime computes it; the model
  * reports it.
  *
@@ -12,9 +11,8 @@
  *  - Comparison operators require the declared field to be numeric. Comparing strings with `<` is
  *    the kind of quiet nonsense that produces confidently wrong answers.
  *
- * What changed is the input type. The evaluator now takes a structural `RecordSetView` declared
- * here rather than the legacy core `RecordSetSource`, so the algorithm has no dependency on legacy
- * knowledge ownership. The legacy shape is structurally compatible and still works.
+ * The evaluator takes the structural `RecordSetView` declared here, so the algorithm has no
+ * dependency on application-specific data ownership.
  */
 
 import type { Result, ValueSchema } from "@arrokothi/core";

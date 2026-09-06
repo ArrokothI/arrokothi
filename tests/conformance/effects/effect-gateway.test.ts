@@ -329,7 +329,7 @@ describe("the Effect gateway", () => {
       scriptedAgentDefinition({
         id: "wants-to-write-memory",
         program: [
-          // F.0 dispatches `write_memory`, but a successful write requires a runtime-bound view.
+          // A successful `write_memory` requires a runtime-bound view.
           { do: "propose_effect", effect: { kind: "write_memory", key: "note", value: { text: "hi" } } },
           { do: "complete" },
         ],

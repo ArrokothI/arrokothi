@@ -53,35 +53,35 @@ describe("the Event vocabulary", () => {
         "capability.completed",
         "capability.failed",
         "capability.unknown",
-        // Slice E.0: the `SpawnExecution` Effect owns these three, and they arrive with it.
+        // the `SpawnExecution` Effect owns these three, and they arrive with it.
         "child.cancelled",
         "child.completed",
         "child.failed",
         "child.spawned",
-        // Slice E.2: mechanical confirmation owns `confirmation.declined` (a human declining an exact
+        // mechanical confirmation owns `confirmation.declined` (a human declining an exact
         // payload, distinct from `effect.denied`).
         "confirmation.declined",
         "effect.denied",
         "effect.rejected",
         "external.input",
-        // Slice G.0: a runtime-established optimistic-concurrency conflict for a versioned
+        // a runtime-established optimistic-concurrency conflict for a versioned
         // `WriteMemory`. A distinct observation, not a reuse of `effect.rejected`.
         "memory.write_conflict",
-        // Slice F.0: a runtime-established successful Structured Memory commit.
+        // a runtime-established successful Structured Memory commit.
         "memory.written",
-        // Slice E.1: the `SendMessage` runtime owns these, and child cancellation adds `child.cancelled`.
+        // the `SendMessage` runtime owns these, and child cancellation adds `child.cancelled`.
         "message.sent",
         "peer.message",
-        // Slice E.2: `RequestUserInput` owns `user.input` - a trusted, runtime-established response,
+        // `RequestUserInput` owns `user.input` - a trusted, runtime-established response,
         // distinct from the externally-mintable `external.input`.
         "user.input",
       ],
-      "kinds for Effects that later slices own arrive with those Effects, not before them",
+      "kinds for unsupported Effects are absent from the current vocabulary",
     );
     for (const kind of ["tool.called", "message.received", "timer.fired"]) {
       assert.equal(isEventKind(kind), false, `${kind} is not yet kernel vocabulary`);
     }
-    assert.equal(isEventKind("memory.written"), true, "F.0 owns the successful WriteMemory result");
+    assert.equal(isEventKind("memory.written"), true, "memory.written is the successful WriteMemory result");
     assert.ok(
       EFFECT_RESULT_EVENT_KINDS.every((kind) => EVENT_KINDS.includes(kind)),
       "every Effect-result kind is part of the same closed set",

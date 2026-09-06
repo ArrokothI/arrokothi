@@ -1,11 +1,10 @@
 {
   "name": "@arrokothi/retrieval-local",
-  "version": "0.8.0",
-  "description": "Local retrieval implementations behind the kernel's capability and local-resource ports. Owns the LangChain dependency that used to sit inside core.",
+  "version": "0.8.1",
+  "description": "Local retrieval implementations behind the kernel's capability and local-resource ports.",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./legacy": "./src/legacy.ts"
+    ".": "./src/index.ts"
   },
   "files": [
     "src"

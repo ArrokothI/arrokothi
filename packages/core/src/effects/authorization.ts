@@ -1,7 +1,7 @@
 /**
  * The authorization decision.
  *
- * Slice B is not the authority slice, but `UseCapability` still has to cross a real boundary, so
+ * `UseCapability` has to cross a real authority boundary, so
  * this is the smallest honest shape of one: the Harness asks a kernel-owned evaluator about a
  * specific Execution, a specific capability/operation, and a specific validated payload, and gets
  * back allow-with-narrowed-constraints or deny-with-a-reason.

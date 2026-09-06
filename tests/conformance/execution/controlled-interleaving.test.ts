@@ -1,14 +1,14 @@
 /**
- * Controlled Event interleaving and the minimal stale-continuation rule (Slice E.1).
+ * Controlled Event interleaving and the minimal stale-continuation rule.
  *
- * v0.4 suspended on a `ControllerResumption` *exclusively*: no Event produced an intervening
- * Activation. E.1 lets a controller opt a specific class of Event into overtaking that wait. The
+ * By default a `ControllerResumption` suspends *exclusively*: no Event produces an intervening
+ * Activation. A controller can opt a specific class of Event into overtaking that wait. The
  * risk this introduces - a stale controller-local result silently committing assumptions a later
  * Activation superseded - is closed by invalidating the resumption in the same transaction that
  * queues the winning Event.
  *
- * The cases below are the R1-R8 matrix from the slice plan plus the default-compatibility check.
- * They use deterministic barriers (a gate the test opens), never sleeps.
+ * The cases below cover the full interleaving matrix plus the default behavior. They use
+ * deterministic barriers (a gate the test opens), never sleeps.
  */
 
 import { test, describe } from "node:test";
@@ -183,7 +183,7 @@ describe("controlled interleaving", () => {
     assert.equal(workStarts, 2, "stable-key recovery did not start a duplicate R2");
   });
 
-  test("R5 - a controller with no interleave declaration keeps the exact v0.4 exclusive-resumption behaviour", async () => {
+  test("R5 - a controller with no interleave declaration keeps exclusive-resumption behaviour", async () => {
     const { harness, definitions, open } = rig();
     const ref = await definitions.save(
       scriptedAgentDefinition({

@@ -1,10 +1,10 @@
 /**
- * Messaging authority and existence-disclosure hardening (Slice E.1).
+ * Messaging authority and existence-disclosure hardening.
  *
  * Sending a message is exercising outbound authority; receiving one is not. The concrete
  * `SendMessage` proposal is authorized at the Harness boundary, deny-by-default. A policy-denied
  * sender must not be able to tell an existing destination from a nonexistent one - through the
- * refusal class or a pre-policy runtime lookup - exactly as with the E.0.1 spawn hardening.
+ * refusal class or a pre-policy runtime lookup, exactly as with spawn authority.
  */
 
 import { test, describe } from "node:test";

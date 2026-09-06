@@ -1,7 +1,7 @@
 /**
  * Deterministic wiring for Workflow conformance.
  *
- * Workflow semantics need more collaborators than the Slice-A/B substrate did - a Function Stage
+ * Workflow semantics need more collaborators than an earlier/B substrate did - a Function Stage
  * registry, an Adapter registry, model access, a local resource environment - and a conformance test
  * should spend its words on semantics rather than on construction. These helpers assemble exactly
  * that, over the dependency-free reference components, with no clock, no timer, and no network.

@@ -33,8 +33,7 @@ incomplete, and never infer permanent policy from implementation observations.
    `docs/README.md`. Read the whole relevant section, plus `docs/mental-model.md` for the
    system-wide invariants. Then read `docs/development/002-implemented-kernel-baseline.md` for
    current evidence and `docs/development/001-current-status-and-roadmap.md` for planned work.
-   Load a specialized active note only when relevant; consult `docs/development/legacy/` only for
-   historical rationale or regression evidence.
+   Load a specialized active note only when relevant.
 3. **Inspect the implementation and its tests.** Locate the affected implementation under
    `packages/` and its coverage under `tests/conformance/` or `packages/*/tests/`. Read the tests
    that currently pin the behavior.

@@ -1,5 +1,5 @@
 /**
- * Failure atomicity of child creation (Slice E.0).
+ * Failure atomicity of child creation.
  *
  * A refused spawn - unknown Definition, exhausted budget, denied by policy, malformed request -
  * leaves no partial child: no Execution record, no authority record, no spent budget credit, no

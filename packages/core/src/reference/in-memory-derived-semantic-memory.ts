@@ -11,7 +11,7 @@
  * kernel does not care. This one scores by shared distinct lowercase word tokens between the query
  * and the claim statement, breaks ties by `claimId` ascending, and truncates to `limit`.
  *
- * ## Identity / dedup rule (the one this slice chose; see the F.3 task §24)
+ * ## Identity and deduplication
  *
  * Within one collection, a `claimId` identifies **one** record, checked against both the already
  * stored claims and the earlier claims of the same incoming batch:

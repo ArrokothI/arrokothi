@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { ControllerRegistry, Harness, createAgentController, defineAgent } from "@arrokothi/core/execution";
+import { ControllerRegistry, Harness, createAgentController, defineAgent } from "@arrokothi/core";
 import { FifoScheduler, InMemoryDefinitionStore, InMemoryRuntimeStore, createDeterministicIds, createFixedClock } from "@arrokothi/core/reference";
 import { geminiWiring } from "./provider-wiring.ts";
 import { settleOffline } from "./settle.ts";

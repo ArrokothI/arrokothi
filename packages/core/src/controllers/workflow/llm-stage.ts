@@ -164,7 +164,7 @@ export async function runLLMStage(
   trace: WorkflowTrace | undefined,
   resumptions: ControllerResumptionScope,
   /**
-   * The resumption-key scope for this Stage invocation (Slice G.2). `wf/<stage>#<visit>` for an
+   * The resumption-key scope for this Stage invocation. `wf/<stage>#<visit>` for an
    * ordinary Stage, or the branch-qualified `wf/fork/<fork>#<forkVisit>/branch/<branch>/stage/...`
    * for a parallel branch, so two sibling branches' phase-1 model calls never collide by key.
    */

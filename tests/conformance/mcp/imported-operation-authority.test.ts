@@ -1,5 +1,5 @@
 /**
- * Protocol interoperability cannot weaken Slice D.
+ * Protocol interoperability cannot weaken kernel authority.
  *
  * Every case here asks the same question from a different angle: can an MCP server, or a bug on the
  * ArrokothI side, cause a `tools/call` that the Execution's current effective authority does not

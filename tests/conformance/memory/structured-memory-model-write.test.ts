@@ -1,4 +1,4 @@
-/** Slice F.1.1: model-directed Structured Memory writes through ordinary Effects. */
+/** model-directed Structured Memory writes through ordinary Effects. */
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";

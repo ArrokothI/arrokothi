@@ -162,6 +162,3 @@ A bilateral agreement may be valuable even when independent technical compatibil
 [ ] A named owner and review date make stale assumptions discoverable.
 [ ] Qualified counsel reviewed non-standard or materially ambiguous terms for commercial release.
 ```
-
-Historical source and dated integration-specific snapshots:
-[`legacy/015-ecosystem-integration-brand-and-license-checklist.md`](legacy/015-ecosystem-integration-brand-and-license-checklist.md).

@@ -1,4 +1,4 @@
-import type { Harness, ExecutionId } from "@arrokothi/core/execution";
+import type { Harness, ExecutionId } from "@arrokothi/core";
 
 /** Only for these finite offline scripts. Drains can wait indefinitely on real network work. */
 export async function settleOffline(harness: Harness, executionId: ExecutionId) {

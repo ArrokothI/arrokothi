@@ -1,11 +1,6 @@
 /**
  * The AgentController: model-directed progression, one bounded step per Activation.
  *
- * This is a *new* controller. It does not adapt, wrap, or translate the legacy Session/turn Agent
- * loop, and it imports nothing from it: that loop's unit of progress was a request-scoped turn and
- * its unit of action was a direct gateway call, and mechanically translating either would have
- * carried the wrong ownership into the new path.
- *
  * ## What this owns, and what it must never touch
  *
  * ```text

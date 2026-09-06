@@ -18,9 +18,8 @@
  *   this fingerprint binds consent to a payload
  *
  * Effect identity is an `EffectId` minted by the id port and persisted with the request record.
- * When a later slice needs a digest that survives an adversary - exact-payload confirmation
- * binding, for example - it must introduce a reviewed collision-resistant mechanism behind its own
- * port rather than promoting this helper.
+ * Security-sensitive digests such as exact-payload confirmation binding use a reviewed,
+ * collision-resistant mechanism behind their own port rather than promoting this helper.
  */
 
 import { hashValue } from "../util/hash.ts";

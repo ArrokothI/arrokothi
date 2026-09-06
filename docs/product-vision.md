@@ -515,8 +515,7 @@ These names and boundaries are provisional. The durable rule is architectural de
 product surfaces consume the kernel contracts; product requirements do not silently redefine kernel
 semantics.
 
-A separate Studio repository is desirable once the current in-repo Studio has served its migration
-and inspection purpose and a clean API boundary exists.
+If a Studio product is built, keep it in a separate repository behind the public kernel API.
 
 ---
 

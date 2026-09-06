@@ -21,15 +21,14 @@
  * is delivered to a mailbox and nothing here is an Event.
  *
  * `observedRevision` records the `ExecutionContext.revision` the suspending Activation read. It is
- * retained provenance, and E.1 deliberately does **not** use a naive `current.revision !==
+ * retained provenance, and the runtime deliberately does **not** use a naive `current.revision !==
  * observedRevision` equality to detect staleness: `ExecutionContext.revision` also advances for
  * ordinary lifecycle bookkeeping (`READY -> RUNNING`, `RUNNING -> WAITING`, `WAITING -> READY`), so
- * that comparison would classify a normal suspension as an intervening semantic mutation. See
- * [`../../../../docs/development/legacy/016-slice-e1-interleaving-peer-interaction.md`](../../../../docs/development/legacy/016-slice-e1-interleaving-peer-interaction.md).
+ * that comparison would classify a normal suspension as an intervening semantic mutation.
  *
- * ## `invalidated` (Slice E.1 / E.1.1)
+ * ## `invalidated`
  *
- * E.1 lets an explicitly opted-in interleave Event overtake a still-pending resumption. When that
+ * An explicitly opted-in interleave Event may overtake a still-pending resumption. When that
  * happens the resumption is moved to `invalidated` in the same transaction that queues the Event and
  * makes the Execution `READY`. An invalidated record is honest history:
  *

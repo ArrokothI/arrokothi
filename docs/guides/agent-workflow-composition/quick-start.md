@@ -13,11 +13,10 @@ Use `import type` for types and `.ts` extensions for relative source imports. Pa
 
 | Import | Use |
 |---|---|
-| `@arrokothi/core/execution` | `defineAgent`, `defineWorkflow`, `Harness`, `ControllerRegistry`, controllers, public data types, Effect constructors, state readers |
+| `@arrokothi/core` or `@arrokothi/core/execution` | `defineAgent`, `defineWorkflow`, `Harness`, `ControllerRegistry`, controllers, public data types, Effect constructors, state readers |
 | `@arrokothi/core/ports` | Interfaces for capabilities, policy, models, storage, stages, context and view resolution |
 | `@arrokothi/core/reference` | In-memory stores, scheduler, registries, reference resolvers/executor, scripted/deferred providers |
 | `@arrokothi/core/testing` | Test harnesses and fixtures; inspect their defaults before copying expectations |
-| `@arrokothi/core` | Legacy Session/Flow runtime; different `defineAgent` and `AgentDefinition` |
 
 Use [package exports](../../../packages/core/package.json) and the
 [public API map](current-authoring-surface.md#public-api-map) when autocomplete suggests an internal

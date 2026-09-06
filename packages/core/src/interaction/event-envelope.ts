@@ -7,8 +7,7 @@
  *
  * The envelope is generic over the closed `EventKind` union in `events.ts`, so `kind` and `body`
  * cannot disagree: an envelope tagged `capability.failed` carries a `CapabilityFailedBody` and
- * nothing else. Slice A carried an open `kind: string` because there was no vocabulary yet; there
- * is one now.
+ * nothing else.
  *
  * Four states are deliberately distinct, and this file only owns the first two:
  *
@@ -68,8 +67,8 @@ export type DeliveredEvent = EventEnvelope & {
  * application-defined `label`, so an Execution waiting for one kind of application input still wakes
  * for every other one addressed to it - at worst a spurious Activation, never an incorrect semantic
  * result, since the controller can simply report the same prospective condition again. Selective
- * input matching is accepted future work (see `docs/development/legacy/005-slice-b-decisions.md`, DEC-B01)
- * and is deliberately deferred rather than solved here with an arbitrary predicate: a wake condition
+ * input matching is accepted future work and is deliberately deferred rather than solved here with
+ * an arbitrary predicate: a wake condition
  * must stay declarative, serializable runtime data, not a callback or a query language.
  */
 export interface WakeCondition {

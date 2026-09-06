@@ -1,5 +1,5 @@
 /**
- * Child identity and lineage (Slice E.0).
+ * Child identity and lineage.
  *
  * A spawned child is an independently managed Execution: its own `ExecutionId`, its own mailbox, its
  * own lifecycle. Its owner is its immediate parent; its root is the top of the ownership tree, not

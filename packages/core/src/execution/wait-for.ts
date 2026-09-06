@@ -5,7 +5,7 @@
  * observable for diagnostics, tracing, and future deadlock detection - and that a cycle in this
  * view is a *deadlock candidate*, never a proven deadlock the runtime may kill.
  *
- * E.1 derives the graph from the links it already keeps rather than storing a third structure:
+ * The runtime derives the graph from the links it already keeps rather than storing a third structure:
  *
  * ```text
  * child_call   ChildExecutionLink with an unsettled pendingOperationId   parent -> child

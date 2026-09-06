@@ -439,7 +439,7 @@ export class Harness {
     });
 
     // Enqueue after the record is durable. A crash in this window leaves a READY Execution that is
-    // not queued; recovering those on restart is Slice I's durable-outbox work, not a Slice A claim.
+    // not queued; recovering those on restart is future durable-outbox recovery, not a crash-recovery guarantee.
     await this.options.scheduler.enqueue(id);
 
     return {
@@ -866,7 +866,7 @@ export class Harness {
     const executionId = running.executionId;
     const next: ControllerNext = outcome.next;
 
-    // A G.2 dependency set is authority-bearing input: validate every member before any proposed
+    // A dependency set is authority-bearing input: validate every member before any proposed
     // Effect can be authorized, journaled, dispatched, or turned into a PendingOperation. Recovery
     // is legal only for persisted ids this Activation actually observed pending through scope.run().
     let dependencySet: ResumptionDependencySet | null = null;
@@ -1026,7 +1026,7 @@ export class Harness {
           attachResumption = true;
         }
       } else if (!cancelling && next.status === "await_dependencies") {
-        // The parallel-branch union wait (Slice G.2). One transaction inserts every new record,
+        // The parallel-branch union wait. One transaction inserts every new record,
         // re-reads every legitimately recovered record, checks the Event mailbox, and persists
         // controller progress plus READY/WAITING. Thus a recovery that settles after preflight
         // cannot be overwritten by a stale RUNNING -> WAITING decision. New siblings are committed
@@ -1164,7 +1164,7 @@ export class Harness {
     // Execution is terminal, so nothing is followed.
     if (next.status === "await_resumption" && applied.attachResumption) resumptions.attach(next.resumptionId);
 
-    // Every newly-registered resumption in a G.2 union wait is followed post-commit - whether the
+    // Every newly registered resumption in a union wait is followed post-commit - whether the
     // Execution is WAITING on the set or was kept runnable by an already-present Event. A recovered
     // member is already being followed from the Activation that first reported it; `attach` is a
     // no-op for it. A member the controller did not report is abandoned by never being attached.
@@ -1416,8 +1416,8 @@ export class Harness {
    *
    * This is *not* a `ControllerResumption`: the child's terminal result is runtime-mediated
    * semantic work, and it settles through a PendingOperation and a correlated Event. There is a
-   * crash window between the child's terminal commit and this settlement; recovering it is Slice I's
-   * durable-outbox work, exactly as for an inline Effect result that woke a waiting Execution.
+   * crash window between the child's terminal commit and this settlement; recovering it requires a
+   * durable outbox, exactly as for an inline Effect result that woke a waiting Execution.
    */
   private async settleOwnerOnChildTerminal(
     child: ExecutionContext,

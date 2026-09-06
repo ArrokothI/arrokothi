@@ -1,5 +1,5 @@
 /**
- * Child authority attenuation (Slice E.0).
+ * Child authority attenuation.
  *
  * ```text
  * child effective operation authority
@@ -112,8 +112,8 @@ describe("child authority attenuation", () => {
   test("a stale request cannot bypass the parent's current authority", async () => {
     /**
      * The parent prepares its spawn request while it still holds A and B, then its ceiling is
-     * narrowed to A only *before* the spawn Effect is dispatched. v0.4 has no production API that
-     * narrows a stored ceiling - delegation is exactly this slice - so the narrowing is modelled at
+     * narrowed to A only *before* the spawn Effect is dispatched. There is no production API that
+     * narrows a stored ceiling, so the narrowing is modelled at
      * the store facet the gateway reads, which is where a real narrowing would land. The spawn still
      * carries the stale `[A, B]` request; the child receives only A.
      */

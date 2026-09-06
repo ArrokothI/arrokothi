@@ -1,5 +1,5 @@
 /**
- * Slice F.2b: explicit Working Notes handoff across a child Execution boundary.
+ * explicit Working Notes handoff across a child Execution boundary.
  *
  * The semantic model:
  *

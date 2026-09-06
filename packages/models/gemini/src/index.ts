@@ -1,12 +1,4 @@
-import type {
-  ModelMessage,
-  ModelProvider,
-  ModelRequest,
-  ModelResponse,
-  ModelToolCall,
-  ModelToolSpec,
-} from "@arrokothi/core";
-import { ModelProviderError, toJsonSchema } from "@arrokothi/core";
+import { toJsonSchema } from "@arrokothi/core";
 import type { ObjectSchema, ValueSchema } from "@arrokothi/core";
 import type {
   ModelCapabilityCall as PortableModelCapabilityCall,
@@ -33,23 +25,6 @@ import {
 
 const DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
 
-export interface GeminiProviderOptions {
-  /**
-   * API key. The CALLER reads this from its own environment and passes it in - core never reads a
-   * credential, and neither does this constructor by default.
-   */
-  apiKey: string;
-  /** Default model when a request does not name one. */
-  model?: string;
-  baseUrl?: string;
-  /** Provider id, matched against `AgentDefinition.model.providerId`. */
-  id?: string;
-  timeoutMs?: number;
-  /** Retries for transient transport failures. Rate limits are NOT silently retried here. */
-  maxRetries?: number;
-  fetchImpl?: typeof fetch;
-}
-
 /**
  * Reads the key from the environment, at the application boundary.
  *
@@ -75,26 +50,6 @@ interface GeminiResponseBody {
   usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
   modelVersion?: string;
   error?: { code?: number; message?: string; status?: string };
-}
-
-/** Core roles map onto Gemini's two, with tool output carried as a user-role observation. */
-function toGeminiContents(messages: ModelMessage[]): { role: string; parts: GeminiPart[] }[] {
-  return messages.map((m) => ({
-    role: m.role === "assistant" ? "model" : "user",
-    parts: [{ text: m.role === "tool" ? `Result from ${m.toolName ?? "tool"}: ${m.content}` : m.content }],
-  }));
-}
-
-function toGeminiTools(tools: ModelToolSpec[]): unknown {
-  return [
-    {
-      functionDeclarations: tools.map((t) => ({
-        name: t.name,
-        description: t.description,
-        parameters: projectGeminiFunctionSchema(t.input),
-      })),
-    },
-  ];
 }
 
 /**
@@ -137,7 +92,7 @@ class GeminiTransportError extends Error {
   }
 }
 
-/** Shared, already-validated HTTP/retry mechanism used by both migration surfaces. */
+/** Validated HTTP and retry mechanism used by the provider adapter. */
 async function postGemini(
   config: GeminiTransportConfig,
   path: string,
@@ -187,122 +142,11 @@ async function postGemini(
   throw lastError ?? new GeminiTransportError("OTHER_PROVIDER_FAILURE", "request failed with no recorded cause", true);
 }
 
-/** @deprecated Temporary v0 Session/ModelPolicy compatibility. Use `GeminiModelProvider`. */
-export class GeminiProvider implements ModelProvider {
-  readonly id: string;
-  private readonly apiKey: string;
-  private readonly defaultModel: string;
-  private readonly baseUrl: string;
-  private readonly timeoutMs: number;
-  private readonly maxRetries: number;
-  private readonly fetchImpl: typeof fetch;
-
-  constructor(options: GeminiProviderOptions) {
-    if (!options.apiKey) throw new Error("GeminiProvider requires an apiKey; the caller reads it from its own environment");
-    this.id = options.id ?? "gemini";
-    this.apiKey = options.apiKey;
-    this.defaultModel = options.model ?? "gemini-3.5-flash-lite";
-    this.baseUrl = options.baseUrl ?? DEFAULT_BASE_URL;
-    this.timeoutMs = options.timeoutMs ?? 60_000;
-    this.maxRetries = options.maxRetries ?? 2;
-    this.fetchImpl = options.fetchImpl ?? fetch;
-  }
-
-  async generate(request: ModelRequest): Promise<ModelResponse> {
-    const model = request.model || this.defaultModel;
-    const structuredProjection = request.responseSchema
-      ? projectGeminiStructuredOutput(request.responseSchema)
-      : undefined;
-    const body: Record<string, unknown> = {
-      systemInstruction: { parts: [{ text: request.system }] },
-      contents: toGeminiContents(request.messages),
-      generationConfig: {
-        temperature: request.temperature ?? 0,
-        maxOutputTokens: request.maxOutputTokens ?? 2048,
-        ...(request.responseSchema
-          ? {
-              responseMimeType: "application/json",
-              responseJsonSchema: structuredProjection!.schema,
-            }
-          : {}),
-      },
-    };
-    if (request.tools?.length) body["tools"] = toGeminiTools(request.tools);
-
-    // A message list can legitimately be empty on the first turn; Gemini requires at least one.
-    if ((body["contents"] as unknown[]).length === 0) {
-      body["contents"] = [{ role: "user", parts: [{ text: "(start of conversation)" }] }];
-    }
-
-    const payload = await this.post(`/models/${encodeURIComponent(model)}:generateContent`, body, request.signal);
-    const response = this.toModelResponse(payload, model);
-    return structuredProjection && response.json !== undefined
-      ? { ...response, json: structuredProjection.normalize(response.json) }
-      : response;
-  }
-
-  private async post(path: string, body: unknown, signal?: AbortSignal): Promise<GeminiResponseBody> {
-    try {
-      return await postGemini({
-        apiKey: this.apiKey,
-        baseUrl: this.baseUrl,
-        timeoutMs: this.timeoutMs,
-        maxRetries: this.maxRetries,
-        fetchImpl: this.fetchImpl,
-      }, path, body, signal);
-    } catch (error) {
-      if (error instanceof GeminiTransportError) {
-        throw new ModelProviderError(error.code, error.message, error.retryable);
-      }
-      throw error;
-    }
-  }
-
-  private toModelResponse(payload: GeminiResponseBody, requestedModel: string): ModelResponse {
-    if (payload.error) {
-      throw new ModelProviderError(payload.error.status ?? "PROVIDER_ERROR", payload.error.message ?? "unknown provider error");
-    }
-    const candidate = payload.candidates?.[0];
-    const parts = candidate?.content?.parts ?? [];
-
-    const text = parts.map((p) => p.text ?? "").join("").trim();
-    const toolCalls: ModelToolCall[] = parts
-      .filter((p) => p.functionCall)
-      .map((p) => ({ name: p.functionCall!.name, args: p.functionCall!.args ?? {} }));
-
-    let json: unknown;
-    if (text) {
-      try {
-        json = JSON.parse(text);
-      } catch {
-      json = undefined; // The harness safely rejects malformed structured output.
-      }
-    }
-
-    return {
-      text: text || undefined,
-      toolCalls: toolCalls.length ? toolCalls : undefined,
-      json,
-      providerId: this.id,
-      // The model the provider REPORTS, which is not always the one requested. Recorded as-is so a
-      // silent substitution is visible in the trace rather than assumed away.
-      model: payload.modelVersion ?? requestedModel,
-      finishReason: candidate?.finishReason,
-      usage: {
-        inputTokens: payload.usageMetadata?.promptTokenCount,
-        outputTokens: payload.usageMetadata?.candidatesTokenCount,
-      },
-      raw: payload,
-    };
-  }
-}
-
 /**
- * v0.4 Gemini implementation.
+ * Gemini implementation for the provider-neutral model port.
  *
- * Unlike the temporary `GeminiProvider` compatibility class above, this class receives an
- * already-resolved model, uses capability terminology, validates structured output at the
- * provider boundary, and normalizes failures into the stable kernel taxonomy.
+ * The provider receives an already-resolved model, uses capability terminology, validates
+ * structured output at the boundary, and normalizes failures into the kernel taxonomy.
  */
 export interface GeminiModelProviderOptions {
   readonly apiKey: string;
@@ -595,16 +439,7 @@ function toGeminiResponseJsonSchema(value: unknown): unknown {
   );
 }
 
-/** @deprecated Temporary v0 compatibility helper. Use `createGeminiModelProviderFromEnv`. */
-export function createGeminiProviderFromEnv(options: Omit<GeminiProviderOptions, "apiKey"> = {}): GeminiProvider {
-  const apiKey = geminiApiKeyFromEnv();
-  if (!apiKey) {
-    throw new Error("No Gemini API key found. Set GEMINI_API_KEY (or GOOGLE_API_KEY) in the environment of the app that constructs the provider.");
-  }
-  return new GeminiProvider({ ...options, apiKey });
-}
-
-/** v0.4 deployment helper; credentials remain outside semantic definitions and resolved metadata. */
+/** Deployment helper; credentials remain outside semantic definitions and resolved metadata. */
 export function createGeminiModelProviderFromEnv(
   options: Omit<GeminiModelProviderOptions, "apiKey"> = {},
 ): GeminiModelProvider {

@@ -10,18 +10,15 @@
  *   control                                 owned by the controller, opaque to the kernel
  *   terminalResult / failure                written only by a validated Activation outcome
  *
- * Slots that later slices own (memory, resources, pending, policy) are present as explicit
- * null/empty references rather than absent or improvised. They mark where those concerns live
- * without pretending an earlier slice has answered them. `authority` is no longer one of those: it
- * is a typed reference to the Execution's runtime-owned effective operation authority.
+ * Runtime-owned concerns such as memory, resources, pending work, policy, and authority appear as
+ * explicit null/empty references rather than improvised controller state. The authority slot is a
+ * typed reference to the Execution's runtime-owned effective operation authority.
  *
- * There is deliberately no Working Notes slot. Slice F.2a established that an Agent's Working Notes
- * are *controller-owned* plain semantic state - they live in `AgentControlState` next to `messages`
- * and `pending`, not in a `RuntimeStore` record a slot ref would address. The early
- * `slots.workingNotes` placeholder implied a runtime-owned subsystem that F.2a decided not to
- * build, so it was removed rather than left claiming an architecture that does not exist.
+ * There is deliberately no Working Notes slot. An Agent's Working Notes are *controller-owned*
+ * plain semantic state: they live in `AgentControlState` next to `messages` and `pending`, not in a
+ * `RuntimeStore` record a slot ref would address.
  *
- * Slice F.2b adds `workingNotesHandoff`: the immutable, controller-neutral snapshot the spawning
+ * `workingNotesHandoff` is the immutable, controller-neutral snapshot the spawning
  * Execution explicitly selected. It is the "selected inherited (read-only) view" half of canonical
  * `memory.md` §5 / `composition.md` §15; the child-local *writable* frame half lives in the
  * controller's own progress (`AgentControlState.workingNotes` for an Agent). Stored here at child
@@ -79,14 +76,14 @@ export function initialControllerProgress(kind: DefinitionKind): ControllerProgr
  * ControllerResumptionWait   only that resumption settling makes it READY
  * ```
  *
- * ## Controlled interleaving (Slice E.1)
+ * ## Controlled interleaving
  *
  * `interleave` is the minimum serializable opt-in for controlled Event interleaving. It is a second,
  * *separate* wake condition: a controller that knows some Events it can safely process while its
  * primary dependency remains unresolved declares them here.
  *
  * ```text
- * no interleave condition   -> exactly the v0.4 behaviour: only the primary dependency wakes
+ * no interleave condition   -> only the primary dependency wakes
  * primary condition matches -> ordinary dependency wake
  * interleave matches        -> this Execution becomes READY for another Activation, without the
  *                              primary dependency being satisfied; on the `controller_resumption`
@@ -97,12 +94,10 @@ export function initialControllerProgress(kind: DefinitionKind): ControllerProgr
  * It is plain declarative runtime data, exactly like `wake`: no predicate, no callback, no function.
  * Interleaving *eligibility* is not mandatory immediate execution - the runtime stays free to be
  * conservative about scheduling, and repeated matching Events do not each force a fresh expensive
- * re-invocation (see [`../runtime/event-router.ts`](../runtime/event-router.ts) and
- * [`../../../../docs/development/legacy/016-slice-e1-interleaving-peer-interaction.md`](../../../../docs/development/legacy/016-slice-e1-interleaving-peer-interaction.md)).
+ * re-invocation (see [`../runtime/event-router.ts`](../runtime/event-router.ts)).
  *
- * Absent `interleave`, the `controller_resumption` arm still suspends *exclusively*, exactly as in
- * v0.4: Events reach the mailbox but none produces an intervening Activation while the continuation
- * is outstanding.
+ * Absent `interleave`, the `controller_resumption` arm suspends *exclusively*: Events reach the
+ * mailbox but none produces an intervening Activation while the continuation is outstanding.
  */
 export type ExecutionWait =
   | { readonly kind: "event"; readonly wake: WakeCondition; readonly interleave?: WakeCondition }
@@ -112,7 +107,7 @@ export type ExecutionWait =
       readonly interleave?: WakeCondition;
     }
   /**
-   * A *set* of dependencies, any one of which settling makes this Execution READY (Slice G.2).
+   * A *set* of dependencies, any one of which settling makes this Execution READY.
    *
    * The durable form of a controller's `await_dependencies` report. It carries the two dependency
    * kinds explicitly and keeps them distinct:
@@ -160,7 +155,7 @@ export interface MailboxRef {
 }
 
 /**
- * Concerns owned by later slices.
+ * References to runtime-owned concerns.
  *
  * Each value is an opaque reference or an empty collection. Holding one grants nothing: they are
  * addresses into runtime-owned records, never the records themselves, and never a handle a
@@ -170,19 +165,18 @@ export interface DeferredSlots {
   /**
    * The Execution's effective operation authority, as a typed reference.
    *
-   * Slice D replaced the Slice-A opaque string with a real one. It is still only an address:
-   * the record lives in runtime-owned state, the Harness writes it at creation from
+   * This is only an address: the record lives in runtime-owned state, the Harness writes it at creation from
    * application/deployment grants, and nothing a controller can reach dereferences it. `null`
    * means no ceiling is configured, which reads as "nothing is authorized", never as "everything".
    */
   readonly authority: OperationAuthorityRef | null;
   /** Execution-local Structured Memory view. A typed address, never an authorization. */
   readonly memoryView: StructuredMemoryViewRef | null;
-  /** Slice H: effective runtime policy. */
+  /** effective runtime policy. */
   readonly policy: string | null;
-  /** Slice B/C: logical resource bindings. */
+  /** logical resource bindings. */
   readonly resources: readonly string[];
-  /** Slice B: pending operation references. */
+  /** pending operation references. */
   readonly pending: readonly string[];
 }
 
@@ -209,7 +203,7 @@ export interface ExecutionContext {
   readonly mailbox: MailboxRef;
   readonly slots: DeferredSlots;
   /**
-   * The immutable inherited Working Notes snapshot this Execution was spawned with (Slice F.2b), or
+   * The immutable inherited Working Notes snapshot this Execution was spawned with, or
    * `null`.
    *
    * Plain data, assigned once at creation by the Effect gateway from the spawning proposal, never
@@ -241,7 +235,7 @@ export interface ExecutionView {
   readonly lifecycle: LifecycleState;
   readonly control: ControllerProgress;
   /**
-   * The Working Notes handoff this Execution was spawned with (Slice F.2b), or `null`.
+   * The Working Notes handoff this Execution was spawned with, or `null`.
    *
    * A read-only copy of the immutable snapshot. A controller reads it *only* when initializing its
    * own progress and never afterwards; it is information the spawning Execution explicitly
@@ -271,7 +265,7 @@ export interface CreateExecutionContextInput {
   /** Runtime-created Execution-local Structured Memory view, when one was configured. */
   readonly memoryView?: StructuredMemoryViewRef;
   /**
-   * The Working Notes handoff snapshot the spawning proposal carried (Slice F.2b).
+   * The Working Notes handoff snapshot the spawning proposal carried.
    *
    * Supplied by the Effect gateway from an already-validated, envelope-checked, deep-copied
    * snapshot. Omitted for a root Execution and for any child spawned without a handoff.

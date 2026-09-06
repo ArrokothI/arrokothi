@@ -1,7 +1,7 @@
 /**
  * Local lexical document retrieval.
  *
- * The algorithm is the one the pre-v0.4 `KnowledgeIndex` proved out and is deliberately unchanged:
+ * The algorithm is deliberately small and deterministic:
  * recursive character splitting, an explainable IDF-weighted term-overlap score, deterministic
  * tie-breaking by chunk id. No embeddings, no vector service, no model call, no network - which is
  * exactly what makes it usable as a conformance fixture as well as a real local backend.

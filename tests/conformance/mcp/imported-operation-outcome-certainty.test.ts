@@ -1,5 +1,5 @@
 /**
- * Post-proof safety correction: an MCP Tool error is not evidence that a consequential effect
+ * An MCP Tool error is not evidence that a consequential effect
  * rolled back. These cases cross the real protocol, importer, Harness, Event path, and Agent
  * observation seam so an adapter-only assertion cannot accidentally stand in for runtime safety.
  */

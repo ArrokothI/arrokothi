@@ -1,5 +1,5 @@
 /**
- * Shared fixtures for the Slice E.0 child-Execution conformance suite.
+ * Shared fixtures for the child-Execution conformance suite.
  *
  * Every test here drives child creation through the ordinary Effect path: a scripted controller
  * proposes a `SpawnExecution` (via the `spawn` / `call` steps), and the Harness mediates. Nothing

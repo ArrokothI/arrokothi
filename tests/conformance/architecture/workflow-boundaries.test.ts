@@ -1,12 +1,12 @@
 /**
- * Architecture assertions for the Slice-C Workflow path.
+ * Architecture assertions for the Workflow path.
  *
  * Naming discipline does not prove a boundary; an import graph does. These cases walk the actual
- * modules and assert the claims the slice makes: a Stage is not an Execution kind, Stage and Adapter
+ * modules and assert the contract: a Stage is not an Execution kind, Stage and Adapter
  * code cannot reach the Harness or the store, the WorkflowController cannot dispatch a capability,
  * a model provider cannot reach Effect dispatch, no vendor name appears in Workflow modules, core
- * carries no LangChain dependency, `packages/retrieval/local` depends inward on core and never the
- * reverse, and the new Workflow path imports nothing from legacy Flow.
+ * carries no LangChain dependency, and `packages/retrieval/local` depends inward on core and never
+ * the reverse.
  */
 
 import { test, describe } from "node:test";
@@ -201,7 +201,7 @@ describe("Workflow architecture boundaries", () => {
     const retrievalManifest = JSON.parse(await readFile(resolve(REPO_ROOT, "packages/retrieval/local/package.json"), "utf8")) as {
       dependencies: Record<string, string>;
     };
-    assert.ok(retrievalManifest.dependencies["@arrokothi/core"], "the implementation depends on the kernel");
+    assert.ok(retrievalManifest.dependencies["@arrokothi/core"], "the retrieval package depends on the kernel");
     assert.ok(retrievalManifest.dependencies["@langchain/core"], "and owns the retrieval framework dependency");
 
     let importsCore = false;
@@ -244,22 +244,9 @@ describe("Workflow architecture boundaries", () => {
     for (const path of files) {
       const source = await readFile(resolve(CORE_SRC, path), "utf8");
       for (const forbidden of ["createExecution", "SpawnExecutionProposal", "spawn_execution"]) {
-        assert.equal(source.includes(forbidden), false, `${path} mentions ${forbidden}; child composition is Slice E`);
+        assert.equal(source.includes(forbidden), false, `${path} mentions ${forbidden}; Stage handling must remain local`);
       }
     }
   });
 
-  test("the new Workflow path imports nothing from legacy Flow or WorkflowCoordinator", async () => {
-    const { files } = await walk(CORE_SRC, WORKFLOW_ENTRY);
-    assert.deepEqual(
-      [...files].filter((path) => path.startsWith("flow/") || path.startsWith("harness/") || path.startsWith("session/")),
-      [],
-    );
-    for (const path of files) {
-      const source = await readFile(resolve(CORE_SRC, path), "utf8");
-      for (const legacy of ["WorkflowCoordinator", "PhaseId", "FlowDefinition", "SessionState"]) {
-        assert.equal(source.includes(legacy), false, `${path} mentions legacy ${legacy}`);
-      }
-    }
-  });
 });

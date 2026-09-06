@@ -12,10 +12,9 @@ That is the single builder front door: quick start → current API/surface → o
 application needs → runnable patterns and diagnosis. You do not need the roadmap or external
 engineering dossier before starting an application.
 
-New application code imports `@arrokothi/core/execution`, `/ports`, and `/reference`. The package
-root exports the legacy Session/Flow API with a different `defineAgent`. Start from
-[`examples/execution-kernel-minimal/`](examples/execution-kernel-minimal/README.md), not the legacy
-minimal-agent/strands-gemini examples or Studio server. Run `npm run example:application-patterns`
+New application code imports `@arrokothi/core`, `/ports`, and `/reference`;
+`@arrokothi/core/execution` is an equivalent focused semantic entry point. Start from
+[`examples/execution-kernel-minimal/`](examples/execution-kernel-minimal/README.md). Run `npm run example:application-patterns`
 and `npm run test:example:execution-kernel` for state, confirmation, and child examples.
 
 Keep kernel semantics unchanged during application work. Use supported composition, host logic,
@@ -35,15 +34,13 @@ document and defines precedence.
 - Unresolved/future questions only: `docs/future-plan.md`
 - `docs/development/` holds the current implementation synthesis, active roadmap, and specialized
   engineering guidance. These are **not** architecture truth. Start from
-  `docs/development/README.md`; historical Slice A-G records live under
-  `docs/development/legacy/` and are not default reading.
+  `docs/development/README.md`.
 - `docs/guides/` holds application/developer guidance for building **on** the kernel. It is not
   architecture truth. `docs/guides/agent-workflow-composition/` is the decision procedure for
   turning application requirements into an Agent/Workflow composition; start at its `README.md`,
   which routes to the topic page for the decision at hand.
 - `docs/agent-engineering/` is framework-neutral external engineering guidance synthesized from
   public Anthropic material. It is a design reference, never ArrokothI semantics.
-- `docs/architecture-research-dossier.md` is retained research evidence, never canonical.
 
 When documents disagree, resolve by concept ownership in `docs/README.md`, not by recency or
 length. If normative docs, implementation, and tests genuinely conflict, report the ambiguity
@@ -91,8 +88,8 @@ current contracts, and conformance tests before modifying it.
 
 1. Find the canonical concept owner in `docs/README.md`.
 2. Read that document first, then `docs/development/002-implemented-kernel-baseline.md` and
-   `docs/development/001-current-status-and-roadmap.md`; load specialized active or legacy evidence
-   only when the task requires it.
+   `docs/development/001-current-status-and-roadmap.md`; load specialized active evidence only
+   when the task requires it.
 3. Inspect the affected implementation under `packages/` and its conformance tests under
    `tests/conformance/` (and `packages/*/tests/`).
 4. State the existing invariant before editing it.
@@ -119,7 +116,7 @@ npm run test:evals       # behavioural baseline for the reference Agent (separat
 
 `npm test` asks whether the runtime preserved semantic boundaries. `npm run test:evals` grades what
 an Agent configuration accomplished. They answer different questions and stay separate. Per-package
-runners (`test:core`, `test:strands`, `test:storage-sqlite`, …) and examples/canaries are in
+runners (`test:core`, `test:strands`, …) and examples/canaries are in
 `package.json`.
 
 ## Agent-configuration maintenance policy

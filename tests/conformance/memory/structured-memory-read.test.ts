@@ -1,5 +1,5 @@
 /**
- * Slice F.1 (as corrected by the F.1 review): the authorized Structured Memory read path.
+ * The authorized Structured Memory read path.
  *
  * ```text
  * authored Agent information request         spec.structuredMemory.read.keys
@@ -575,9 +575,9 @@ describe("consumer-visible memory information tracks authorized selected state, 
   });
 });
 
-// -- controller-neutral seam; Agent is the only F.1 consumer -------------------
+// -- controller-neutral seam; Agent is the only consumer -----------------------
 
-describe("the read seam stays controller-neutral while F.1 wires only the Agent", () => {
+describe("the read seam stays controller-neutral while only the Agent consumes it", () => {
   test("the shared read modules name no controller concept", async () => {
     for (const path of [
       "execution/structured-memory-read.ts",
@@ -595,7 +595,7 @@ describe("the read seam stays controller-neutral while F.1 wires only the Agent"
     const agent = await readFile(resolve(CORE_SRC, "controllers/agent/controller.ts"), "utf8");
     const workflow = await readFile(resolve(CORE_SRC, "controllers/workflow/controller.ts"), "utf8");
     assert.ok(agent.includes("StructuredMemoryReadViewResolver"), "the Agent controller holds the resolver");
-    assert.ok(!workflow.includes("StructuredMemoryRead"), "the Workflow controller has no memory read wiring in F.1");
+    assert.ok(!workflow.includes("StructuredMemoryRead"), "the Workflow controller has no memory read wiring");
   });
 
   test("a Workflow with a Structured Memory binding runs without any read", async () => {
@@ -610,6 +610,6 @@ describe("the read seam stays controller-neutral while F.1 wires only the Agent"
     await bundle.harness.runUntilIdle();
     const context = await bundle.harness.inspect(handle.executionId);
     assert.equal(context?.lifecycle, "COMPLETED");
-    assert.equal(store.viewReads, 0, "no F.1 consumer means no read");
+    assert.equal(store.viewReads, 0, "no consumer means no read");
   });
 });

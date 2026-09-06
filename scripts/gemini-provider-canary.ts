@@ -1,4 +1,4 @@
-/** Optional live canary for the v0.4 resolver/provider boundary. Never part of the CI suite. */
+/** Optional live canary for the resolver/provider boundary. Never part of the CI suite. */
 
 import { ModelInvocationError, type ModelProviderRequest, type ModelRequirements } from "@arrokothi/core/ports";
 import { StaticModelResolver, portableModelFeatures } from "@arrokothi/core/reference";

@@ -26,7 +26,7 @@
  * ```
  *
  * The snapshot is immutable and taken once. There is no refresh, no `notifications/tools/list_changed`
- * subscription, and no dynamic descriptor invalidation in this slice: a catalog that could change
+ * subscription, and no dynamic descriptor invalidation: a catalog that could change
  * underneath an Active View would make a projection snapshot mean something different at dispatch,
  * and that is a separate design question from the one this proof answers.
  */

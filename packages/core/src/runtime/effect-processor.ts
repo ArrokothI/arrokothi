@@ -37,10 +37,9 @@
  * A stale or wrong view can cost an operation an unnecessary denial. It can never make one execute.
  *
  * **Dispatched is not completed.** `dispatch_started` is committed before the call, so a crash in
- * that window leaves evidence that something may have happened. Nothing in this slice automatically
+ * that window leaves evidence that something may have happened. Nothing automatically
  * redispatches such an operation, and a repeat request for a consequential operation whose outcome
- * is unresolved or unknown is refused rather than retried - the legacy runtime learned that the hard
- * way, and the rule survives here in Effect terms.
+ * is unresolved or unknown is refused rather than retried.
  *
  * **Fast is not different.** The inline wait budget decides only whether *this Activation* stays
  * occupied. Whether the result arrives inline or hours later, it is the same journal phases, the
@@ -163,7 +162,7 @@ export interface EffectDispatchRecord {
    * routed. `resolveConfirmation` maps this to its receipt; it is never persisted in an Activation
    * record because the ordinary proposal path never sets it.
    *
-   * `memory.write_conflict` (Slice G.0) is a distinct outcome, not a flavour of `effect.rejected`: an
+   * `memory.write_conflict` is a distinct outcome, not a flavour of `effect.rejected`: an
    * approved versioned `WriteMemory` whose optimistic precondition was no longer true when its
    * dispatch resolved. Nothing reached Structured Memory.
    */
@@ -273,7 +272,7 @@ export type ResolveConfirmationReceipt =
     }
   /**
    * Approved and still authorized, but an approved versioned `WriteMemory`'s optimistic
-   * `expectedRevision` precondition was no longer true when its dispatch resolved (Slice G.0).
+   * `expectedRevision` precondition was no longer true when its dispatch resolved.
    * Nothing reached Structured Memory: the gated PendingOperation settled `conflicted`
    * (`dispatch: not_dispatched`) and one correlated `memory.write_conflict` Event routed. Distinct
    * from `denied` (authorization), `rejected` (never dispatchable), and `declined` (human).
@@ -355,7 +354,7 @@ export class EffectProcessor {
    *
    * Sequential rather than concurrent: the journal is the record of what the runtime decided and in
    * what order, and interleaving two authorizations would make that record harder to read for no
-   * semantic gain in this slice.
+   * semantic gain.
    */
   async processActivationEffects(input: ProcessEffectsInput): Promise<readonly EffectDispatchRecord[]> {
     const records: EffectDispatchRecord[] = [];
@@ -598,7 +597,7 @@ export class EffectProcessor {
       // controller that asked to send a message must not be left believing that it did.
       return this.refuse(input, proposal, effectId, correlationId, "effect.rejected", {
         code: "effect_kind_not_supported",
-        message: `effect kind "${proposal.kind}" is accepted v0.4 vocabulary but is not implemented in this slice`,
+        message: `effect kind "${proposal.kind}" is accepted vocabulary but is not implemented`,
       });
     }
 
@@ -1036,7 +1035,7 @@ export class EffectProcessor {
       request,
       operation,
       "effect_kind_not_confirmable",
-      `effect kind "${request.effectKind}" cannot be dispatched from an approved confirmation in this slice`,
+      `effect kind "${request.effectKind}" cannot be dispatched from an approved confirmation`,
     );
   }
 
@@ -1359,7 +1358,7 @@ export class EffectProcessor {
     }
     const grantId = decision.grantId;
 
-    // The Working Notes handoff (Slice F.2b) is data on the concrete SpawnExecution proposal - NOT a
+    // The Working Notes handoff is data on the concrete SpawnExecution proposal - NOT a
     // separate operation, and it grants no authority and does not affect child operation attenuation.
     // The authorizer above (and the confirmation gate below) receive the WHOLE proposal, handoff
     // included, so current policy may legitimately deny (or gate) this concrete transfer because of
@@ -1537,8 +1536,7 @@ export class EffectProcessor {
           idempotencyKey: `spawn:${effectId}` as IdempotencyKey,
           createdAt: at,
           // No configured deadline, not a far-future sentinel: a parent may legitimately wait
-          // indefinitely for a child's terminal result (docs/execution-runtime.md §16), and E.0
-          // implements no child-result deadline/cancellation policy - that is E.1 work. A fabricated
+          // indefinitely for a child's terminal result (docs/execution-runtime.md §16). A fabricated
           // "long enough" timestamp would misrepresent an unconfigured deadline as a configured one.
           deadline: null,
         }),
@@ -1727,7 +1725,7 @@ export class EffectProcessor {
    *
    * Policy runs *before* the destination is ever looked up. A denied sender must not be able to tell
    * an existing destination from a nonexistent one - through the refusal class or a pre-policy
-   * runtime lookup - exactly as with the E.0.1 spawn hardening. A message/correlation id is not a
+   * runtime lookup. A message/correlation id is not a
    * credential: a `reply` is authorized as the responder's *own* outbound send, and it settles a
    * request only if the runtime holds an open link naming this Execution as the expected responder.
    */
@@ -2185,7 +2183,7 @@ export class EffectProcessor {
       }
 
       /**
-       * The optimistic-concurrency conflict path (Slice G.0).
+       * The optimistic-concurrency conflict path.
        *
        * A conflict is a *distinct* runtime observation, never a flavour of `effect.rejected`: the
        * request was valid, inside the effective-authority ceiling, authorized, and (where gated)
@@ -2252,7 +2250,7 @@ export class EffectProcessor {
       const validation = validateStructuredMemoryWrite(view, proposal.key, proposal.value);
       if (!validation.ok) return reject(validation.code, validation.message);
 
-      // The semantic optimistic precondition. Absent -> the accepted F.0 unconditional write. Present
+      // The semantic optimistic precondition. Absent means an unconditional write. Present
       // -> the whole bound view revision must still equal it, checked inside this same transaction as
       // the commit so the check and the write linearize together and the race cannot simply move.
       if (proposal.expectedRevision !== undefined && view.revision !== proposal.expectedRevision) {
@@ -2612,7 +2610,7 @@ export class EffectProcessor {
         return { kind: "abandoned" };
       }
 
-      // Slice E.2.1: the runtime-owned hard operation-authority ceiling must linearize against
+      // the runtime-owned hard operation-authority ceiling must linearize against
       // confirmed dispatch intent. On the resume path the ceiling was checked before this method, but
       // a store-owned revocation could have committed since; re-read it here, inside the same
       // transaction that commits `dispatch_started`, and refuse if the operation is no longer within
@@ -3158,7 +3156,7 @@ export class EffectProcessor {
   }
 
   /**
-   * The duplicate/unresolved guard, mined from the legacy runtime's external-execution rules.
+   * The duplicate/unresolved guard for consequential external operations.
    *
    * `idempotencyKey` only narrows candidates - it is built from a non-cryptographic fingerprint,
    * and a shared key does not by itself prove two requests are the same logical operation. Every
@@ -3325,8 +3323,8 @@ export class EffectProcessor {
    * throw to - the Activation that requested this ended long ago - and an unhandled rejection would
    * take down a runtime for one unwritable record. What it leaves behind is the honest state: a
    * pending operation still marked dispatched with no outcome, which is exactly the "something may
-   * have happened" record the journal exists to preserve. Nothing redispatches it, and Slice I owns
-   * turning that record into recovery.
+   * have happened" record the journal exists to preserve. Nothing automatically redispatches it;
+   * production recovery remains future work.
    */
   private track(work: Promise<CapabilityOutcome>, pendingOperationId: PendingOperationId, effectId: EffectId): void {
     const tracked = work

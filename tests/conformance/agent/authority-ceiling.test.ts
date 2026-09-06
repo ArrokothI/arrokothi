@@ -204,8 +204,8 @@ describe("effective operation authority is a dispatch ceiling, not just an expos
      * projection, and suspends on a ControllerResumption; the ceiling changes; the resumed
      * Activation interprets the answer against that same stored projection and proposes the Effect.
      *
-     * v0.4 has no production API that narrows a stored ceiling - delegation is the composition
-     * slice - so the narrowing is modelled at the store port the runtime reads, which is where a
+     * There is no production API that narrows a stored ceiling, so the narrowing is modelled at
+     * the store port the runtime reads, which is where a
      * real narrowing would land. Nothing about the Agent path is altered to make this work: the
      * gateway simply reads the ceiling that is current at dispatch.
      */

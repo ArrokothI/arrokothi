@@ -1,7 +1,7 @@
 /**
  * WorkflowControlState: the Workflow controller's serializable semantic progress.
  *
- * This replaces the generic Slice-A progress bag. It holds exactly what is needed to re-enter a
+ * It holds exactly what is needed to re-enter a
  * Workflow where it left off - which Stage is current, which invocation of it this is, what it was
  * given, what it has computed so far, which required operations it is still waiting on, and what
  * they observed - and it holds nothing else.
@@ -24,7 +24,7 @@
  * `visits` is the separate allocation coordinate: the highest Stage visit number handed out so far.
  * In a linear Workflow it equals `visit` at every step. They diverge only while a fork is active -
  * two branches are two more Stage invocations, but `currentStage` + `visit` still name the single
- * Stage that forked (Slice G.1). The join then allocates its successor from `visits`, so Stage visit
+ * Stage that forked. The join then allocates its successor from `visits`, so Stage visit
  * numbers stay globally unique and monotone even across a fork or a loop back through one.
  *
  * `visit`/`visits` are Workflow controller progress and nothing more. Neither is an ExecutionId,
@@ -36,7 +36,7 @@
  * carrying the correlation the controller chose, whether it has settled, and - once it has - what
  * it observed. A Stage transitions only when every entry is settled. `BarrierEntry` is a
  * discriminated union: an `effect` entry carries capability/operation and a capability observation;
- * a `child` entry (Slice E.2 - Agent Stage / Workflow Stage) carries the child Definition identity,
+ * a `child` entry (Agent Stage / Workflow Stage) carries the child Definition identity,
  * the operations the call requested, and the child's terminal outcome. Child data is never stuffed
  * into the effect entry's capability/operation fields.
  *
@@ -67,30 +67,26 @@ import type { StageObservation, StageObservationOutcome, WorkflowJoinContext } f
 import type { StageResult } from "./stage-result.ts";
 
 /**
- * Version history:
+ * Persisted version compatibility:
  *
  * ```text
  * 2  the re-enterable Stage boundary
  * 3  active-fork branch-local state + the persisted explicit-join snapshot + the `visits`
- *    allocation coordinate (Slice G.1)
+ *    allocation coordinate
  * 4  each active-fork branch carries its own completion barrier and its own local wait status
  *    (`awaiting_effects` / `awaiting_resumption`), so a branch may hold a real asynchronous
  *    dependency - an Effect or a slow model call - while remaining a branch of one Workflow
- *    Execution (Slice G.2)
+ *    Execution
  * ```
  *
  * Bumped rather than back-fitted each time: a shape that cannot represent "two branches are active,
  * each with its own progress, its own barrier, and its own wait state" would have to fake it by
  * mutating one current Stage's fields, which is exactly the ambiguity structured parallelism forbids.
  *
- * G.1's first (unaccepted) form overloaded top-level `visit` as the allocation high-water mark
- * during an active fork, which made `currentStage` + `visit` name a Stage invocation that never
- * happened. The independent-review correction split allocation into `visits` and kept `visit`
- * truthful. Because G.1 is unmerged and no version-3 record existed outside its own branch, that
- * correction revised the version-3 shape in place. G.1 is now the accepted version-3 checkpoint, so
- * G.2's genuine per-branch-barrier shape evolution is version **4**, and `readWorkflowControlState`
- * reads a version-3 active fork unchanged (a branch with no `barrier` field defaults to `[]`, and
- * `ready` / `completed` are unchanged branch statuses).
+ * Version 4 stores per-branch barriers and an independent `visits` allocation counter so the
+ * top-level `visit` remains the current Stage invocation. `readWorkflowControlState` can read a
+ * version-3 active fork: a branch with no `barrier` field defaults to `[]`, and `ready` /
+ * `completed` retain their meaning.
  */
 export const WORKFLOW_CONTROL_STATE_VERSION = 4;
 
@@ -106,7 +102,7 @@ interface BarrierEntryBase {
   readonly error: { readonly code: string; readonly message: string } | null;
 }
 
-/** One required capability operation. Pre-F.0 persisted entries have this exact shape. */
+/** One required capability operation. */
 export interface CapabilityBarrierEntry extends BarrierEntryBase {
   readonly kind: "effect";
   readonly capability: string;
@@ -137,13 +133,13 @@ export type ChildBarrierOutcome =
   | "spawn_rejected"
   /**
    * A human declined the exact-payload mechanical confirmation for the child `SpawnExecution`
-   * (Slice E.2.1) - no child exists. Distinct from `spawn_denied` (policy refused) and
+   * - no child exists. Distinct from `spawn_denied` (policy refused) and
    * `spawn_rejected` (request/runtime could not dispatch): the human declined the exact payload.
    */
   | "spawn_declined";
 
 /**
- * One required child call - an Agent Stage or a Workflow Stage (Slice E.2).
+ * One required child call - an Agent Stage or a Workflow Stage.
  *
  * The whole Stage body is this one call. On the first visit the controller proposes it and records
  * this entry; on a later Activation it correlates the child result, settles this entry, derives the
@@ -189,10 +185,10 @@ export interface WorkflowBoundaryState {
   readonly transitionLabel: string | null;
 }
 
-// -- active fork state (Slice G.1) --------------------------------------------
+// -- active fork state --------------------------------------------
 
 /**
- * How one active-fork branch is currently blocked, or that it is done (Slice G.2).
+ * How one active-fork branch is currently blocked, or that it is done.
  *
  * ```text
  * ready               installed, its Stage body has not run (or is runnable again now)
@@ -222,7 +218,7 @@ export type WorkflowParallelBranchStatus =
  * `barrier` is this branch's Stage completion barrier - the same `BarrierEntry` shape an ordinary
  * Stage uses, with branch-qualified correlation ids (`branchStageCorrelationId`) so a delivered
  * result Event settles only the branch that requested it. It is `[]` for a `ready` or `completed`
- * branch, and for a version-3 record that predates G.2.
+ * branch, and for a compatible version-3 record without branch barriers.
  */
 export interface WorkflowParallelBranchState {
   readonly branchId: BranchId;
@@ -253,11 +249,11 @@ export interface WorkflowParallelBranchState {
  * Stage that forked and the fork's join - and the controller routes on `parallel` before it looks at
  * `currentStage`, `barrier`, or `boundary`.
  *
- * Slice G.2: the branches may be *independently blocked*. One branch can be `awaiting_effects` on a
+ * the branches may be *independently blocked*. One branch can be `awaiting_effects` on a
  * slow capability while a sibling is `awaiting_resumption` on a slow model call and a third has
  * already `completed` - all at once, all inside this one Workflow Execution. The enclosing Execution
- * waits on the union of those dependencies (an Event dependency plus a set of ControllerResumption
- * ids); see `docs/development/legacy/026-slice-g2-parallel-branch-dependencies.md`.
+ * waits on the union of those dependencies: an Event dependency plus a set of
+ * ControllerResumption ids.
  */
 export interface WorkflowParallelState {
   readonly forkId: ForkId;
@@ -318,10 +314,10 @@ export interface WorkflowControlState {
   readonly forks: number;
   /** Where inside a Stage boundary this Workflow suspended, if it did. */
   readonly boundary: WorkflowBoundaryState | null;
-  /** The active fork, while one is between its entry and its explicit join (Slice G.1). */
+  /** The active fork, while one is between its entry and its explicit join. */
   readonly parallel: WorkflowParallelState | null;
   /**
-   * The explicit-join snapshot for the current Stage visit (Slice G.1).
+   * The explicit-join snapshot for the current Stage visit.
    *
    * Non-null only on the visit a fork's join created, and on that Stage's re-entries until it
    * transitions away. It is the immutable branch results the downstream Function Stage reads through
@@ -370,7 +366,7 @@ export function stageCorrelationId(stage: StageId, visit: number, key: string): 
 }
 
 /**
- * The correlation identifier for one required operation of a *parallel branch* Stage (Slice G.2).
+ * The correlation identifier for one required operation of a *parallel branch* Stage.
  *
  * ```text
  * fork = p, forkVisit = 2, branch = research, stage = b, visit = 7, request = search
@@ -440,7 +436,7 @@ export function readWorkflowControlState(progress: JsonObject): WorkflowControlS
 }
 
 /**
- * Backfills the per-branch `barrier` a version-3 active-fork record predates (Slice G.2).
+ * Backfills the per-branch `barrier` a version-3 active-fork record predates.
  *
  * A version-3 branch is only ever `ready` or `completed` and carried no barrier, so a missing
  * `barrier` field reads as `[]` - which is exactly its meaning for those two statuses.
@@ -462,13 +458,13 @@ export function unsettledEntries(state: WorkflowControlState): readonly BarrierE
   return unsettledBarrierEntries(state.barrier);
 }
 
-/** The unsettled entries of any barrier - the top-level Stage's or a parallel branch's (Slice G.2). */
+/** The unsettled entries of any barrier - the top-level Stage's or a parallel branch's. */
 export function unsettledBarrierEntries(barrier: readonly BarrierEntry[]): readonly BarrierEntry[] {
   return barrier.filter((entry) => !entry.settled);
 }
 
 /**
- * Applies one settled capability outcome to an `effect` entry of a barrier (Slice G.2 generalized).
+ * Applies one settled capability outcome to an `effect` entry of a barrier.
  *
  * Idempotent by construction: an entry that has already settled is left exactly as it was, so a
  * duplicate result Event cannot settle the same requirement twice or overwrite the authoritative
@@ -586,7 +582,7 @@ export function childBarrierEntry(state: WorkflowControlState): ChildBarrierEntr
   return childBarrierEntryOf(state.barrier);
 }
 
-// -- fork/join (Slice G.1) -----------------------------------------------------
+// -- fork/join -----------------------------------------------------
 
 /**
  * Installs an active fork: a fresh `WorkflowParallelState` with one `ready` branch per authored

@@ -1,5 +1,5 @@
 /**
- * Architecture assertions for the Slice-D Agent path.
+ * Architecture assertions for an earlier Agent path.
  *
  * Naming discipline does not prove a boundary; an import graph does. These cases walk the actual
  * modules and assert the claims the slice makes: the controller boundary did not widen to make the
@@ -77,12 +77,11 @@ const OPERATIONAL_MACHINERY = [
 
 describe("Agent architecture boundaries", () => {
   test("ActivationInput is still exactly four fields and function-free", async () => {
-    // Slice D had every reason to want an authority handle, an Active View, or a resolver in here.
+    // An Agent might want an authority handle, an Active View, or a resolver in here.
     // It got none of them: the exposure resolver is a controller construction dependency, and the
     // one live capability a controller receives is still the resumption scope, as a second argument.
     //
-    // Slice F.1 briefly delivered a read-memory snapshot here per Activation; the F.1 review
-    // reverted that. The authorized Structured Memory snapshot is resolved by the AgentController
+    // The authorized Structured Memory snapshot is resolved by the AgentController
     // from a narrow read-only port when it builds a model invocation - not delivered here, and not
     // as a handle, a resolver, an authority ref, or a store on `ActivationInput`.
     const source = await readFile(resolve(CORE_SRC, "ports/controller.ts"), "utf8");

@@ -1,5 +1,5 @@
 /**
- * Slice F.3: Derived Semantic Memory + provenance + explicit promotion.
+ * Derived Semantic Memory + provenance + explicit promotion.
  *
  * Two independent vertical slices, and the line between them is the point:
  *
@@ -1054,8 +1054,8 @@ describe("a malicious Derived claim is stored and retrievable, but it is not aut
 // NO-FEATURE COST
 // ---------------------------------------------------------------------------
 
-describe("an Agent that authored no Derived retrieval pays nothing for F.3", () => {
-  test("provider request is byte-identical to the pre-F.3 equivalent; zero resolver and provider calls", async () => {
+describe("an Agent that authored no Derived retrieval pays nothing", () => {
+  test("provider request is byte-identical; zero resolver and provider calls", async () => {
     const provider = createInMemoryDerivedSemanticMemory();
     await seedDerivedSemanticMemory(provider, "collection", [claim({ claimId: "x", statement: "unused claim" })]);
     const counted = countingProvider(provider);

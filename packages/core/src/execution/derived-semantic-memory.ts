@@ -18,15 +18,15 @@
  *
  * ## What this module is, and is not
  *
- * It is a dependency-free leaf (util only). It owns the **reference v0.4 claim/provenance shape**
- * this slice needs to be executable, deterministic validation of it, the separate notion of
+ * It is a dependency-free leaf (util only). It owns the **reference claim/provenance shape**
+ * the current implementation needs, deterministic validation of it, the separate notion of
  * *source material*, the pure grounding of an extractor *candidate* into a validated claim, and the
  * bounded model-facing projection.
  *
  * It is **not** the universal portable Derived-claim schema. `../../docs/future-plan.md` §3.1 keeps
  * the portable representation, the minimal provenance set, confidence/quality metadata, derivation
  * model/version metadata, correction/supersession links, temporal validity, and source
- * indexing/materialization deliberately unfrozen. This file chooses one small answer so F.3 runs; a
+ * indexing/materialization deliberately unfrozen. This file chooses one small answer; a
  * later portable-schema slice may choose differently without contradicting canonical memory
  * semantics.
  *
@@ -46,7 +46,7 @@ import { cloneJson, jsonIssues } from "../util/json.ts";
  *
  * `sourceRef` is an opaque application/runtime reference - an Event id, a message id, a tool-result
  * id, a resource read, a document id, an external record. The vocabulary is **not** frozen (see
- * `../../docs/memory.md` §7): F.3 does not require every runtime observation to become an `Episode`
+ * `../../docs/memory.md` §7): not every runtime observation becomes an `Episode`
  * object, and the kernel does not scan the Event journal, the mailbox, Working Notes, or the model
  * transcript for it. The extractor receives what a caller hands it, nothing more.
  */
@@ -84,7 +84,7 @@ export function derivedMemorySourceMaterialIssues(value: unknown, path = "materi
  * How a claim was produced. Provenance metadata, never authority.
  *
  * `method` is a free string ("deterministic-rule", "fake-extractor", or a future model/version tag);
- * `version` is optional. F.3 does not model confidence, calibration, or a derivation-model registry.
+ * `version` is optional. The kernel does not model confidence, calibration, or a derivation-model registry.
  */
 export interface DerivedMemoryDerivation {
   readonly method: string;
@@ -97,7 +97,7 @@ export interface DerivedMemoryProvenance {
   readonly sourceRefs: readonly string[];
   /**
    * When the claim was derived. Explicit trusted metadata supplied by the derivation pipeline -
-   * never a value the model wrote into prose. The accepted format for this slice is an ISO-8601
+   * never a value the model wrote into prose. The accepted format is an ISO-8601
    * instant (`YYYY-MM-DDTHH:MM:SS(.sss)?` with a `Z` or `±HH:MM` offset), parseable by `Date`.
    */
   readonly derivedAt: string;
@@ -107,7 +107,7 @@ export interface DerivedMemoryProvenance {
 /**
  * One validated Derived Semantic claim.
  *
- * The reference v0.4 record, not a frozen portable schema. Deliberately absent: confidence,
+ * The reference record, not a frozen portable schema. Deliberately absent: confidence,
  * valid-from/valid-until, reference/subject time, subjects/entities, contradiction or supersession
  * links, embeddings, scope refs. Contradictory claims simply coexist (they are separate records
  * with separate ids); a provider stores additively and never destructively rewrites one claim
@@ -123,7 +123,7 @@ const CLAIM_KEYS = new Set(["claimId", "statement", "provenance"]);
 const PROVENANCE_KEYS = new Set(["sourceRefs", "derivedAt", "derivation"]);
 const DERIVATION_KEYS = new Set(["method", "version"]);
 
-/** The accepted `derivedAt` timestamp format for this slice. */
+/** The accepted `derivedAt` timestamp format. */
 const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/;
 
 export function isAcceptedDerivedAt(value: unknown): value is string {

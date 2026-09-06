@@ -56,7 +56,6 @@ regardless; current guidance makes this additional in-process limitation explici
 
 | Observation and evidence | Builder impact | Assessment / promising direction |
 |---|---|---|
-| Root `/` and `/execution` export incompatible `defineAgent`/`AgentDefinition`: [exports](../../packages/core/package.json), [root](../../packages/core/src/index.ts) | Autocomplete and legacy examples lead to the wrong runtime | API migration problem. A future major release could make the current API the default; guidance now labels legacy routes |
 | Assembly needs many independently deny-by-default collaborators: [HarnessOptions](../../packages/core/src/runtime/harness.ts), [Agent options](../../packages/core/src/controllers/agent/controller.ts) | No memory/actions often looks like model inaction | Consider a public bootstrap/preflight layer reporting missing wiring while preserving independent policy decisions; example assembly is not a new SDK |
 | Stock controllers omit spawn/message/user-input actions that generic Effects support: [Agent controller](../../packages/core/src/controllers/agent/controller.ts), [Stage requests](../../packages/core/src/workflow/observations.ts) | Natural application compositions require host/port work | Authoring coverage gap, not absent kernel vocabulary. Consider explicit stock controller action interfaces with conformance |
 | Agent `maxModelCalls` defaults to 8 and `state.step` accumulates across turns: [spec](../../packages/core/src/agent/spec.ts), [controller](../../packages/core/src/controllers/agent/controller.ts) | A healthy conversation eventually fails; no public budget-renewal operation | Internally consistent. Decide deliberate continuity/budget policy; possible future bounded renewal needs abuse/spend analysis |
@@ -81,8 +80,8 @@ passed the model-provider path.
 
 **Impact:** a catalog's bounded schema is not a universal domain enforcement boundary. Validate
 external/domain input in the capability implementation and policy where relevant. The example
-publisher validates title length independently. The public ValueSchema validation helpers are not
-all exported from `/execution`/`ports`, which makes reuse less convenient.
+publisher validates title length independently. The public ValueSchema validation helpers are
+exported from the root and `/execution` semantic surfaces.
 
 **Assessment:** whether catalog validation should be centrally mandatory is an API/contract decision;
 unknown-catalog capabilities currently have conservative consequentiality handling and may be legal.
@@ -91,9 +90,9 @@ validation utility and clearly owned dispatch-validation contract.
 
 ## Deployment limitations, not newly discovered bugs
 
-- No crash-durable Execution RuntimeStore/scheduler. [SQLite](../../packages/storage/sqlite/src/index.ts)
-  implements legacy Session persistence. Reconstructing against the same in-memory store is not
-  process recovery. Durable action IDs and reconciliation belong in the application today.
+- No crash-durable Execution RuntimeStore/scheduler ships today. Reconstructing against a new
+  in-memory store is not process recovery. Durable action IDs and reconciliation belong in the
+  application.
 - UseCapability deadlines do not cover child results, peer replies, user-input or confirmation waits.
   Cancellation does not cascade. See [child cancellation tests](../../tests/conformance/composition/child-cancellation.test.ts)
   and [child deadlines](../../tests/conformance/composition/child-call-deadline.test.ts).

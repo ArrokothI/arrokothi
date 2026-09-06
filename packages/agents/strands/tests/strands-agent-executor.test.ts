@@ -308,9 +308,8 @@ describe("the Strands AgentExecutor satisfies the same semantic contract", () =>
     /**
      * The observation strategy belongs to the Agent, not to the framework adapter.
      *
-     * Before the D.0.1 retrofit this file decided for itself how a success, a denial, and an unknown
-     * outcome read to a model - a second, invisible answer to a question the controller's projector
-     * owns. Now it forwards `observation.value` and converts it to the framework's own value type,
+     * The bridge must not decide for itself how a success, denial, or unknown outcome reads to a
+     * model. It forwards `observation.value` and converts it to the framework's own value type,
      * which is provider adaptation rather than semantic shaping.
      */
     const source = await readFile(resolve(HERE, "../src/agent-executor.ts"), "utf8");

@@ -1,14 +1,14 @@
 /**
  * Scripted Agent and Workflow controllers.
  *
- * Slice A proves the *shape* of the semantic spine, so these stand in for real controllers: they
+ * These stand in for real controllers while proving the *shape* of the semantic spine: they
  * consume delivered Events, keep progress across Activations, emit without completing, report a
  * wake dependency, propose terminal results, fail, and - deliberately - misreport, so conformance
  * can show the Harness refusing them.
  *
  * The script lives in the definition itself, which means it is ordinary serializable authored data.
  * That is not a test convenience: it is the same constraint every real Agent or Workflow spec is
- * under, and it keeps these controllers from becoming a back door for runtime objects. Since Slice D
+ * under, and it keeps these controllers from becoming a back door for runtime objects. Since the kernel
  * an Agent `spec` is a real, validated Agent spec, so a scripted Agent carries its program in the
  * definition's `metadata` and pins a minimal valid spec beside it - the definition stays publishable
  * while the scripted controller keeps driving the substrate.
@@ -52,7 +52,7 @@ export type ScriptedControllerStep =
   /**
    * Report a wake dependency. The Harness, not this step, decides whether that means WAITING.
    *
-   * `interleave` (Slice E.1) declares a second, separate wake condition. An Event matching it makes
+   * `interleave` declares a second, separate wake condition. An Event matching it makes
    * the Execution READY without the primary dependency being satisfied; the step does not advance,
    * so the resumed Activation re-reports the same dependency.
    */
@@ -81,7 +81,7 @@ export type ScriptedControllerStep =
       /** Report `continue` instead of awaiting, for scripts that do not need the result yet. */
       readonly await?: boolean;
     }
-  /** Propose an Effect kind this slice does not dispatch, to prove it is refused rather than dropped. */
+  /** Propose an Effect kind the harness does not dispatch, to prove it is refused rather than dropped. */
   | { readonly do: "propose_effect"; readonly effect: EffectProposal; readonly await?: boolean }
   /**
    * Propose a `RequestUserInput` and wait for the correlated `user.input` result.
@@ -112,7 +112,7 @@ export type ScriptedControllerStep =
       readonly childInput?: JsonValue;
       readonly requestedOperations?: readonly OperationRefInput[];
       /**
-       * An explicit Working Notes handoff snapshot for the child (Slice F.2b).
+       * An explicit Working Notes handoff snapshot for the child.
        *
        * A substrate fixture has no Working Notes frame of its own, so it supplies the already-selected
        * snapshot directly - the shape a real controller would produce with
@@ -195,7 +195,7 @@ export type ScriptedControllerStep =
       /** Register the work but never report the matching dependency, so it is abandoned. */
       readonly abandon?: boolean;
       /**
-       * Opt into controlled interleaving (Slice E.1) while suspended on this work.
+       * Opt into controlled interleaving while suspended on this work.
        *
        * An Event matching this condition invalidates the still-pending resumption and makes the
        * Execution READY. The step does not advance; the resumed Activation re-runs `run(key)`, finds
@@ -260,7 +260,7 @@ function readProgress(value: JsonObject): ScriptedProgress {
  * Finds the script.
  *
  * A scripted Agent carries it in the definition's `metadata`, because an Agent `spec` is now a real
- * validated Agent spec with no room for one. A Workflow spec is real Stage topology since Slice C,
+ * validated Agent spec with no room for one. A Workflow spec is real Stage topology,
  * so a scripted Workflow wraps its program in the `config` of a single Function Stage. Either way
  * the definition stays valid and publishable while the scripted controller drives it. These
  * controllers exercise the *substrate* (Events, progress, Effects, completion), not Agent or Stage

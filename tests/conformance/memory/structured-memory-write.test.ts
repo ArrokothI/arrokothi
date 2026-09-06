@@ -1,4 +1,4 @@
-/** Slice F.0: schema-bound Execution-local Structured Memory through the Effect gateway. */
+/** schema-bound Execution-local Structured Memory through the Effect gateway. */
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
@@ -372,8 +372,8 @@ describe("WriteMemory mechanical confirmation", () => {
 });
 
 describe("reference controller observation", () => {
-  test("without an authored F.1.1 write request, a bound write-enabled Agent exposes no memory action", async () => {
-    // F.1.1 retains the F.0.1 correction: a binding and final Effect permission do not create
+  test("without an authored write request, a bound write-enabled Agent exposes no memory action", async () => {
+    // A binding and final Effect permission do not create
     // model visibility. Only an authored request passing the authorized write-view path may do so.
     const executor = scriptedAgentExecutor([{ kind: "respond", text: "done" }]);
     const bundle = createAgentTestHarness({

@@ -16,8 +16,8 @@
  * evidence that an action occurred.
  */
 
-import { effectRequestsIn } from "@arrokothi/core/execution";
-import type { ExecutionId } from "@arrokothi/core/execution";
+import { effectRequestsIn } from "@arrokothi/core";
+import type { ExecutionId } from "@arrokothi/core";
 import { createApp, handbookAuthorizer, modelScript } from "./app.ts";
 import type { App } from "./app.ts";
 

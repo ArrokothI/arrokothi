@@ -1,5 +1,5 @@
 /**
- * Agent Stage / Workflow Stage definition-kind integrity and refused-spawn handling (Slice E.2).
+ * Agent Stage / Workflow Stage definition-kind integrity and refused-spawn handling.
  *
  * A Stage is one Workflow Stage boundary implemented by a child `call`. The controller proposes the
  * spawn; the Harness owns existence/kind truth:
@@ -99,14 +99,14 @@ describe("child-kind integrity", () => {
                 id: "d",
                 kind: "agent",
                 child: { definitionId: "c", definitionVersion: 1 },
-                // @ts-expect-error childInput was removed in Slice E.2
+                // @ts-expect-error childInput is not supported
                 childInput: { depth: "shallow" },
                 transitions: { kind: "always", next: { to: "complete" } },
               },
             ],
           },
         }),
-      /childInput was removed/,
+      /childInput is not supported/,
     );
   });
 

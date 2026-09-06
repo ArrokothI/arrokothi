@@ -1,5 +1,5 @@
 /**
- * Spawn authorization happens before child-Definition resolution (E.0.1 correction).
+ * Spawn authorization happens before child-Definition resolution.
  *
  * A caller with no `SpawnExecution` authority must not be able to use the Effect as a
  * Definition-existence oracle: whether it names a real child Definition or a made-up one, a

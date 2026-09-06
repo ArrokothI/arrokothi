@@ -1,5 +1,5 @@
 /**
- * Runtime independence of a spawned child (Slice E.0).
+ * Runtime independence of a spawned child.
  *
  * A child is not an in-process function call between controllers. It has its own controller state,
  * its own mailbox, and its own lifecycle, and it runs while its parent waits.

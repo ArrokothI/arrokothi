@@ -17,9 +17,8 @@
  * the view it was cut from would be produced again from the same inputs, so ordering is by
  * `(capability, operation)`, group membership is evaluated against catalog enumeration in the
  * catalog's own stable order, and the bound is applied after ordering. There is no ranking model,
- * no retrieval index, and no extra inference: large-catalog selection is a scaling problem for a
- * later slice, and solving it here would have put a mandatory model call in front of every Agent
- * turn.
+ * no retrieval index, and no extra inference. Large-catalog selection remains future work; adding
+ * it here would put a mandatory model call in front of every Agent turn.
  *
  * The resolver holds a read-only authority source and a catalog. It holds nothing that can dispatch,
  * decide, persist, or settle - and the architecture suite walks its import graph to keep it that way.

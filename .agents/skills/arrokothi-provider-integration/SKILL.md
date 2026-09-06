@@ -28,15 +28,14 @@ incomplete, and never infer permanent policy from implementation observations.
    implements, then use `docs/README.md` to find and read its canonical owner and any adjacent
    owners the map identifies. Read `docs/development/002-implemented-kernel-baseline.md` and
    `docs/development/005-interoperability-baseline-and-next-constraints.md` for current evidence;
-   consult `docs/development/001-current-status-and-roadmap.md` for planned work. Load legacy
-   records only when historical rationale or a regression requires them.
+   consult `docs/development/001-current-status-and-roadmap.md` for planned work.
 2. **Preserve provider neutrality.** Do not add a core field, enum, lifecycle, or identity merely
    because one vendor, framework, database, or protocol has it. Admit a native concept into kernel
    semantics only through an explicitly authorized architectural decision.
 3. **Apply the current restrictions of this boundary, not another one.** Discover them from the
    canonical owner, the current port, and its conformance tests. For model-provider work, establish
-   the current resolution/invocation boundary from those sources before consulting historical
-   provider-foundation decisions for context. Do not copy restrictions between integration kinds.
+   the current resolution/invocation boundary from those sources. Do not copy restrictions between
+   integration kinds.
 4. **Normalize explicitly where the port requires it.** Contain vendor auth, transport, errors,
    retries, schemas, and wire formats at the boundary. Follow the current contract-specific feature
    and failure semantics rather than generalizing one integration's mechanisms to every boundary.

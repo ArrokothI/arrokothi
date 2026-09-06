@@ -1,7 +1,7 @@
 /**
- * Declining the exact-payload confirmation for an Agent Stage / Workflow Stage child call (E.2.1).
+ * Declining the exact-payload confirmation for an Agent Stage / Workflow Stage child call.
  *
- * E.2 made mechanical confirmation generic over `spawn_execution`, so a child-Stage call can be
+ * Mechanical confirmation is generic over `spawn_execution`, so a child-Stage call can be
  * gated. When the human declines:
  *
  *   no child Execution is created

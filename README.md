@@ -24,10 +24,9 @@ These examples are offline and need no key. They run the real Harness/controller
 models and fake external systems. The [quick start](docs/guides/agent-workflow-composition/quick-start.md)
 explains workspace setup, assembly and the host loop.
 
-**New application code uses `@arrokothi/core/execution`, `/ports`, and `/reference`.** The package root
-`@arrokothi/core` exports the legacy Session/Flow API, including a different `defineAgent`.
-`examples/minimal-agent`, `examples/strands-gemini`, and the Studio server use that legacy surface;
-they are not current Execution-kernel starters. Current Gemini and Strands wiring is in
+**New application code uses `@arrokothi/core`, `/ports`, and `/reference`.**
+`@arrokothi/core/execution` is an equivalent focused entry point for the semantic API.
+Current Gemini and Strands wiring is in
 [the provider guide](docs/guides/agent-workflow-composition/providers-and-integrations.md).
 
 ## Current scope
@@ -38,13 +37,12 @@ local to an Execution. Controllers propose Effects; the Harness authorizes and c
 executors/environment report what happened. Exposure does not grant authority, and a response is not
 necessarily completion.
 
-The experimental package line is **0.8.0**. It has real enforcement and conformance coverage, but not
+The experimental package line is **0.8.1**. It has real enforcement and conformance coverage, but not
 an architecture-complete production deployment stack. In particular:
 
 - Stock Agent/Stage authoring is narrower than the full Effect vocabulary.
 - Structured Memory is Execution-local; Artifact/File has no current API.
-- The Execution runtime store/scheduler are in memory. The SQLite adapter is legacy Session storage,
-  not Execution crash recovery.
+- The Execution runtime store/scheduler are in memory; there is no crash-recovery adapter.
 - Current security is trusted-local, not hosted hostile-code containment.
 - MCP integration covers synchronous Tools; broader services/discovery remain future work.
 
@@ -79,12 +77,11 @@ External engineering/research notes are background references rather than implem
 
 | Directory | Role |
 |---|---|
-| `packages/core` | Current contracts/runtime/reference mechanisms plus legacy compatibility |
+| `packages/core` | Current contracts, runtime, and reference mechanisms |
 | `packages/agents/strands` | Strands Agent-executor adapter |
 | `packages/models/gemini` | Gemini model-provider adapter |
 | `packages/retrieval/local` | Local retrieval/resource/capability implementations |
 | `packages/interoperability/mcp` | MCP Tool import/export boundary |
-| `packages/storage/sqlite` | Legacy Session persistence |
 | `examples/execution-kernel-minimal` | Current public-surface application examples |
 | `tests/conformance` | Semantic behavior and boundary tests |
 | `docs/guides/agent-workflow-composition` | Single application builder guide |

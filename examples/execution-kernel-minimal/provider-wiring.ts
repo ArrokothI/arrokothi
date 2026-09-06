@@ -5,7 +5,7 @@ import { createStrandsAgentExecutor } from "@arrokothi/integration-strands";
 import {
   ModelProviderRegistry, StaticModelResolver, createReferenceAgentExecutor, portableModelFeatures,
 } from "@arrokothi/core/reference";
-import type { AgentModelAccess, WorkflowModelAccess } from "@arrokothi/core/execution";
+import type { AgentModelAccess, WorkflowModelAccess } from "@arrokothi/core";
 
 export function geminiWiring(options: GeminiModelProviderOptions & { model: string }) {
   const provider = new GeminiModelProvider(options);

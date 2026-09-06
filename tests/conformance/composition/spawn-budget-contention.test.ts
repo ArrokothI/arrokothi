@@ -1,5 +1,5 @@
 /**
- * Structural-budget contention under genuine concurrency (E.0.1 correction).
+ * Structural-budget contention under genuine concurrency.
  *
  * The reference `InMemoryRuntimeStore` fully serializes `transact` calls, so a spawn's own
  * read-then-CAS-write inside one transaction can never race against itself through the ordinary
@@ -17,7 +17,7 @@
  *                         revision - the same `SpawnBudgetConcurrencyError` class and the same
  *                         throw site a genuine competing writer would produce, not a stand-in error
  *
- * What must never happen, per `docs/execution-runtime.md` §14 and the E.0.1 review:
+ * What must never happen, per `docs/execution-runtime.md` §14:
  *
  *   CAS conflict -> parent Execution FAILED
  *   CAS conflict -> budget overspent

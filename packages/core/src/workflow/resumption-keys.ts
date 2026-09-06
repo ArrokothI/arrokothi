@@ -11,7 +11,7 @@
  * resuming a suspended model call derives the same string from the same persisted coordinates and
  * is handed the stored result instead of invoking the provider a second time.
  *
- * ## Scopes (Slice G.2)
+ * ## Scopes
  *
  * Every key is `<scope>/<what>`. The scope names the Stage invocation the work belongs to, and is
  * the single place branch identity enters: an ordinary Stage's scope is `wf/<stage>#<visit>`, and a
@@ -36,7 +36,7 @@ export function stageResumptionScope(stage: StageId, visit: number): string {
 }
 
 /**
- * The resumption scope for one parallel branch Stage invocation (Slice G.2).
+ * The resumption scope for one parallel branch Stage invocation.
  *
  * ```text
  * fork = p, forkVisit = 2, branch = c, stage = c, visit = 8
@@ -87,12 +87,12 @@ export function adapterPositionResumptionKey(scope: string, position: "input" | 
   return `${scope}/adapter/${position}/${index}`;
 }
 
-/** Back-compatible convenience: the model-phase key for an ordinary Stage invocation. */
+/** Convenience helper for the model-phase key of an ordinary Stage invocation. */
 export function stageModelResumptionKey(stage: StageId, visit: number, phase: number): string {
   return modelPhaseResumptionKey(stageResumptionScope(stage, visit), phase);
 }
 
-/** Back-compatible convenience: the Adapter key for an ordinary Stage invocation. */
+/** Convenience helper for the Adapter key of an ordinary Stage invocation. */
 export function stageAdapterResumptionKey(
   stage: StageId,
   visit: number,

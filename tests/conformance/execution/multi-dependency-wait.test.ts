@@ -1,5 +1,5 @@
 /**
- * Slice G.2 — the runtime dependency-set (union) wait, exercised directly.
+ * the runtime dependency-set (union) wait, exercised directly.
  *
  * A controller may report `await_dependencies`: an optional primary Event `WakeCondition` plus a set
  * of `ControllerResumptionId`s. The Harness validates every reported id, commits controller progress
@@ -94,7 +94,7 @@ const bEffectThenComplete = (ctx: StageExecutionContext) =>
         effects: [{ key: "look", capability: SEARCH.capability, operation: SEARCH.operation, input: {} }],
       };
 
-describe("Slice G.2: runtime dependency-set wake semantics", () => {
+describe("runtime dependency-set wake semantics", () => {
   test("(51)+(52)+(53) Event + R1 + R2 as one set; the Event wakes without invalidating R1/R2; R1 wakes without invalidating R2", async () => {
     const capabilities = createDeferredCapabilityExecutor();
     const gamma = createDeferredModelProvider("gamma");
@@ -253,7 +253,7 @@ function forgingRig(
   return { harness, definitions, store };
 }
 
-describe("Slice G.2: dependency-set validation is fail-closed", () => {
+describe("dependency-set validation is fail-closed", () => {
   test("an invalid dependency set is rejected before a real Effect crosses the Harness boundary", async () => {
     const capabilities = createDeferredCapabilityExecutor();
     const controller: ExecutionController = {
@@ -345,7 +345,7 @@ describe("Slice G.2: dependency-set validation is fail-closed", () => {
   });
 });
 
-describe("Slice G.2: failure atomicity", () => {
+describe("failure atomicity", () => {
   const forkSpec: WorkflowSpecInput = {
     entryStage: "a",
     forks: [{ id: "p", branches: [{ id: "b", stage: "b" }, { id: "c", stage: "c" }], join: { next: "d" } }],
@@ -450,7 +450,7 @@ describe("Slice G.2: failure atomicity", () => {
   });
 });
 
-describe("Slice G.2: G.1 fork/join still holds under G.2, and the vocabularies stay closed", () => {
+describe("fork/join still holds with dependency sets, and the vocabularies stay closed", () => {
   test("(61)-(67) a pure local Function fork still journals no Effect, no resumption; joinReady + coordinates truthful", async () => {
     const { harness, definitions } = createWorkflowTestHarness({
       functions: createFunctionStageRegistry({
