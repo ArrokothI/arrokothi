@@ -56,10 +56,11 @@ Then return to the canonical concept owner before changing kernel semantics.
 Start from the [single builder guide](guides/agent-workflow-composition/README.md):
 
 ```text
-guide home → quick start + current public API → relevant topic → runnable example/tests
+guide home → SDK quick start + current public API → relevant topic → runnable example/tests
 ```
 
-Read canonical owners when a semantic question arises; source and conformance establish current
+The application package is [`@arrokothi/sdk`](../packages/sdk/README.md); core remains the semantic
+owner and advanced runtime surface. Read canonical owners when a semantic question arises; source and conformance establish current
 implementation coverage. Neither canonical examples nor the roadmap guarantee an available stock
 API. `agent-engineering/` is optional framework-neutral background, not prerequisite reading.
 

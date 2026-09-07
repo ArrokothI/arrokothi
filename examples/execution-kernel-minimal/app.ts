@@ -1,30 +1,4 @@
-/**
- * The composition root: one Execution-kernel application, assembled by hand.
- *
- * This file exists to answer one question a builder actually has:
- *
- * > What is the minimum honest way to run a current Execution-kernel application, without
- * > importing the testing facade?
- *
- * So it imports only the production-facing surfaces:
- *
- * ```text
- * @arrokothi/core             definitions, Harness, controllers, Execution/Effect vocabulary
- * @arrokothi/core/ports       the interfaces an application implements or supplies
- * @arrokothi/core/reference   dependency-free implementations of those ports
- * ```
- *
- * Nothing here comes from `@arrokothi/core/testing`. The focused `/execution` entry point is
- * equivalent to the package root and keeps this file's semantic imports visually grouped.
- *
- * Read it as an inventory of the seams. Each collaborator below is a real decision an application
- * makes, and the two most important ones are deny-by-default: with no `EffectAuthorizer` the
- * Harness refuses every Effect, and with no operation authority an Execution can expose nothing.
- *
- * See `docs/guides/agent-workflow-composition/` for how to decide *what* to build; this file is
- * only about how to wire it.
- */
-
+/** SDK composition root: portable definition, explicit deployment policy, shared runtime. */
 import type {
   AgentDefinition,
   ExecutionContext,
@@ -32,33 +6,15 @@ import type {
   ObjectSchema,
   OperationRef,
 } from "@arrokothi/core";
-import {
-  ControllerRegistry,
-  Harness,
-  createAgentController,
-  defineAgent,
-} from "@arrokothi/core";
-import type { AgentModelAccess } from "@arrokothi/core";
+import { createApplication, defineAgent } from "@arrokothi/sdk";
+import type { Harness } from "@arrokothi/core";
 import type { CapabilityCatalog, CapabilityExecutor, EffectAuthorizer } from "@arrokothi/core/ports";
 import {
-  FifoScheduler,
-  InMemoryDefinitionStore,
-  InMemoryRuntimeStore,
-  ModelProviderRegistry,
-  ScriptedModelProvider,
-  StaticModelResolver,
-  createActiveOperationViewResolver,
-  createAllowListAuthorizer,
-  createCapabilityCatalog,
-  createDeterministicIds,
-  createFixedClock,
-  createReferenceAgentExecutor,
-  createRuntimeOperationAuthoritySource,
-  portableModelFeatures,
+  ScriptedModelProvider, createAllowListAuthorizer, createCapabilityCatalog, portableModelFeatures,
 } from "@arrokothi/core/reference";
 import type { ScriptedModelStep } from "@arrokothi/core/reference";
 
-import { settleOffline } from "./settle.ts";
+
 
 // -- the one operation this application exposes ------------------------------
 
@@ -163,73 +119,31 @@ export interface App {
 }
 
 export function createApp(options: AppOptions): App {
-  // The store is built first because two different sides need it: the Harness writes runtime-owned
-  // authority into it, and the controller's exposure resolver reads that authority back through a
-  // narrow read-only port. Handing the controller its own store would let exposure disagree with
-  // the ceiling the Harness enforces.
-  const store = new InMemoryRuntimeStore();
-  const definitions = new InMemoryDefinitionStore();
-  const operations = catalog();
-
-  // Deployment decides which concrete model a logical reference resolves to. The definition never
-  // names a provider, which is what makes it portable.
-  const models: AgentModelAccess = {
-    resolver: new StaticModelResolver({
-      primary: {
-        provider: "scripted",
-        model: "deterministic-1",
-        portableFeatures: portableModelFeatures({ capabilityCalls: true }),
-      },
-    }),
-  };
   const provider = new ScriptedModelProvider({ id: "scripted", steps: options.modelSteps });
-
-  // Controller-side collaborators: derivational and semantic only. Note what is absent - no store,
-  // no scheduler, no authorizer, no capability executor. Those belong to the Harness.
-  const controller = createAgentController({
-    views: createActiveOperationViewResolver({
-      authority: createRuntimeOperationAuthoritySource(store),
-      catalog: operations,
-    }),
-    models,
-    executor: createReferenceAgentExecutor({ providers: new ModelProviderRegistry([provider]) }),
-  });
-
-  // Harness-side collaborators: operational and enforcing.
-  const harness = new Harness({
-    definitions,
-    store,
-    scheduler: new FifoScheduler(),
-    controllers: new ControllerRegistry([controller]),
-    clock: createFixedClock(),
-    ids: createDeterministicIds(),
-    capabilityCatalog: operations,
-    capabilities: handbookExecutor(),
-    ...(options.authorizer !== undefined ? { authorizer: options.authorizer } : {}),
-  });
-
-  return {
-    harness,
-    provider,
-    async start(question: string): Promise<ExecutionId> {
-      const ref = await definitions.save(supportAgent());
-      const handle = await harness.createExecution({
-        definition: ref,
-        // The runtime-owned ceiling. Omit it and this Execution can expose nothing at all -
-        // "nobody granted anything" and "everything is granted" must not look the same.
-        operationAuthority: { operations: [DOCS_SEARCH] },
-      });
-      // Applications mint `external.input` and nothing else. A capability result is an Event the
-      // Harness creates when it establishes what happened.
-      await harness.deliverExternalInput({
-        destination: handle.executionId,
-        label: "question",
-        payload: question,
-      });
-      return handle.executionId;
+  const application = createApplication({
+    models: {
+      providers: [provider],
+      bindings: { primary: { provider: provider.id, model: "deterministic-1",
+        portableFeatures: portableModelFeatures({ capabilityCalls: true }) } },
     },
-    async settle(executionId: ExecutionId): Promise<ExecutionContext | undefined> {
-      return settleOffline(harness, executionId);
+    capabilities: { catalog: catalog(), executor: handbookExecutor() },
+    authorizer: options.authorizer,
+  });
+  return {
+    harness: application.harness,
+    provider,
+    async start(question) {
+      const { executionId } = await application.start({
+        definition: supportAgent(),
+        operationAuthority: { operations: [DOCS_SEARCH] },
+        input: { label: "question", payload: question },
+      });
+      return executionId;
+    },
+    async settle(executionId) {
+      const result = await application.runUntilBlocked(executionId);
+      if (["timeout", "activation_limit", "aborted"].includes(result.reason)) throw new Error(`Host run stopped: ${result.reason}`);
+      return result.execution;
     },
   };
 }

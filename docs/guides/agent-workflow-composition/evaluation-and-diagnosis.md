@@ -8,6 +8,7 @@ automatic evaluator of your new application.
 
 ```sh
 npm run test:example:execution-kernel  # executable builder examples, offline
+npm run test:sdk                     # bootstrap, preflight and bounded host driving
 npm run typecheck                    # public TypeScript wiring throughout the repository
 npm run check:builder-docs           # local links/anchors and public imports in builder artifacts
 npm test                             # package + semantic conformance tests
@@ -32,6 +33,12 @@ missing; do not report missing usage as zero. Offline scripted outputs prove wir
 understanding. Live canaries are optional and require deployment credentials.
 
 ## Find the layer that failed
+
+Start with `await app.preflight(startOptions)` and inspect `started.preflight.diagnostics`.
+Configuration errors prevent SDK Execution creation; missing-grant warnings describe intentional deny-by-default
+behavior. Check `runUntilBlocked(...).reason` before interpreting an idle or timed-out run as success.
+The [quick start](quick-start.md#preflight-without-granting-anything) defines diagnostic scope;
+runtime evidence below remains authoritative for what actually happened.
 
 | Symptom | Inspect first | Likely cause / next step |
 |---|---|---|

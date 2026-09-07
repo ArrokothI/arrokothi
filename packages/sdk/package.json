@@ -1,0 +1,27 @@
+{
+  "name": "@arrokothi/sdk",
+  "version": "0.8.1",
+  "description": "Application bootstrap, preflight, and host driving for ArrokothI Agents and Workflows.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.9.0"
+  },
+  "dependencies": {
+    "@arrokothi/core": "0.8.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArrokothI/agent-kernel.git",
+    "directory": "packages/sdk"
+  }
+}

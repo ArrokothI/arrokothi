@@ -111,3 +111,15 @@ describe("capability-operation descriptors stay the one operation ontology", () 
     assert.deepEqual(violations, []);
   });
 });
+
+test("colon-bearing operation names retain distinct descriptors and consequentiality", () => {
+  const catalog = createCapabilityCatalog([
+    { capability: "a:b", operation: "c", consequential: true },
+    { capability: "a", operation: "b:c", consequential: false },
+  ]);
+  assert.equal(catalog.list().length, 2);
+  assert.equal(catalog.describe("a:b" as CapabilityId, "c" as OperationId)?.consequential, true);
+  assert.equal(catalog.describe("a" as CapabilityId, "b:c" as OperationId)?.consequential, false);
+  const single = createCapabilityCatalog([{ capability: "a", operation: "b:c", consequential: false }]);
+  assert.equal(single.describe("a:b" as CapabilityId, "c" as OperationId), undefined, "an unclassified operation must not inherit another operation's safe-to-retry classification");
+});

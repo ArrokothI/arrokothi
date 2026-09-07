@@ -58,9 +58,8 @@ export function isSameOperationRef(a: OperationRef, b: OperationRef): boolean {
 }
 
 /**
- * The canonical string form, used for deterministic ordering and set membership.
- *
- * A display/index key, never an identifier anything is addressed by and never a bearer token.
+ * Human-readable display form. Names may contain colons, so this is NOT a unique index key.
+ * Never an identifier anything is addressed by or a bearer token.
  */
 export function formatOperationRef(ref: OperationRef): string {
   return `${ref.capability}:${ref.operation}`;
@@ -71,4 +70,9 @@ export function compareOperationRefs(a: OperationRef, b: OperationRef): number {
   if (a.capability !== b.capability) return a.capability < b.capability ? -1 : 1;
   if (a.operation !== b.operation) return a.operation < b.operation ? -1 : 1;
   return 0;
+}
+
+/** Collision-free internal index for the full operation pair; not a credential or stored identity. */
+export function operationRefKey(ref: OperationRef): string {
+  return JSON.stringify([ref.capability, ref.operation]);
 }

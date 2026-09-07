@@ -1403,34 +1403,15 @@ roadmap tranche and do not by themselves justify new kernel semantics.
 
 ### 14.1 Application-facing bootstrap/composition API
 
-The low-level Execution-kernel exports may be semantically correct while still requiring too much
-assembly for ordinary SDK consumers.
+The optional application layer is now implemented in `packages/sdk` as `@arrokothi/sdk`.
+See the [decision and evidence](development/009-sdk-bootstrap-design-and-findings.md) and
+[builder quick start](guides/agent-workflow-composition/quick-start.md). It composes existing stores,
+controllers, models and authority-backed views above core without granting permissions.
 
-Evaluate whether the SDK should eventually provide one optional supported composition/bootstrap layer
-that can assemble common pieces such as:
-
-```text
-DefinitionStore / RuntimeStore
-Scheduler / controller registration
-CapabilityCatalog / CapabilityExecutor
-EffectAuthorizer / confirmation policy
-model resolution / provider registry
-exposure and memory view resolvers
-reference stores and other replaceable defaults
-```
-
-Constraints:
-
-```text
-keep low-level ports directly available
-preserve one logical Harness authority boundary
-helpers must not invent new Agent/Workflow/Effect semantics
-deny-by-default behavior must remain visible and testable
-applications must be able to replace reference implementations
-```
-
-Use real SDK applications and benchmark subjects to discover the minimum useful layer before freezing
-an API such as a single runtime/application root.
+Remaining questions concern evolution from application evidence: dynamic policy diagnostics,
+transactional start/recovery for future durable backends, and coordinated compiled package
+publication. Preserve the low-level ports, one logical Harness boundary, portable definitions and
+explicit deny-by-default behavior when extending the surface.
 
 ### 14.2 Stock controller and Stage authoring surface
 
@@ -1458,7 +1439,7 @@ justify extending a stock definition surface. Do **not** widen every controller 
 
 ### 14.3 Public import surface
 
-The 0.8.1 SDK publishes the Execution-kernel semantic API at both `@arrokothi/core` and the focused
+Application bootstrap is exported by `@arrokothi/sdk`; the underlying 0.8.1 kernel exposes its semantic API at both `@arrokothi/core` and the focused
 `@arrokothi/core/execution` entry point. Ports, reference implementations, and testing helpers
 remain separate subpaths. Before v1, decide whether both semantic entry points remain useful or
 whether one should become the sole documented path.
@@ -1539,24 +1520,14 @@ APIs should remain exact about controller-specific and Effect-specific behavior.
 
 ### 14.7 Preflight diagnostics and fail-closed usability
 
-Deny-by-default configuration is a safety property, but common omissions should be diagnosable before
-a developer mistakes a missing grant/catalog/resolver/budget for model failure.
+The SDK now provides non-authoritative composition preflight, described in the
+[quick start](guides/agent-workflow-composition/quick-start.md#preflight-without-granting-anything).
+Missing static services/definitions/handlers are errors; missing grants and potentially incomplete
+composition produce actionable diagnostics without changing authority.
 
-Evaluate an optional non-authoritative preflight/diagnostic layer for common SDK assembly mistakes,
-for example:
-
-```text
-missing capability catalog entry
-operation requested but not granted
-child capability request with no matching parent authority
-spawn/call configured without structural budget
-missing controller/provider/model resolver
-invalid or unreachable Workflow topology
-unsupported stock-controller emission path
-```
-
-Diagnostics must explain the existing contract; they must never auto-widen authority or silently
-repair security-sensitive configuration.
+Future work may improve exact per-Execution policy/resource diagnostics, arbitrary handler analysis,
+reachability and hosted configuration inspection. Dynamic policies/resolvers must remain runtime
+truth; preflight must not call them speculatively or auto-widen authority.
 
 ### 14.8 Reference examples and testing boundary
 

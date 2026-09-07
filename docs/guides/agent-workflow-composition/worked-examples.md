@@ -5,6 +5,9 @@ choices, not additional APIs. All examples use ordinary domain requirements and 
 
 ## Conversation with accepted state and a confirmed action
 
+These examples use `@arrokothi/sdk`; bootstrap and bounded host-driving options are in the
+[quick start](quick-start.md).
+
 **Requirement:** collect a draft title over multiple turns, allow corrections, and publish the exact
 current title only after approval.
 
@@ -19,7 +22,7 @@ publish proposal → host authorizer compares exact payload to current committed
                  → confirmation UI → fresh authorization → publisher → actual receipt
 ```
 
-The memory binding, authored read/write keys, both resolver grants, and memory-write authorization
+The memory binding, authored read/write keys, both SDK memory grants, and memory-write authorization
 are all explicit. The host's policy reads current state on each authorization, so a correction during
 the turn invalidates a stale publish payload. The title is a user preference; its acceptance standard
 is modest. For consequential factual fields add independent acceptance, not just schema validation.
@@ -98,3 +101,13 @@ writes, and use a sequence when concurrency provides no measurable benefit. Exac
 are in [parallel-fork-join.test.ts](../../../tests/conformance/workflow/parallel-fork-join.test.ts);
 its test harness wiring is test-specific. Current restrictions are in
 [composition](composition-children-and-concurrency.md#parallel-workflow-branches).
+
+
+## Relating common workflow patterns to the current surface
+
+Prompt chains use Stage sequences; routing uses labeled transitions; parallel sectioning/voting uses
+fork branches with an explicit Function join; evaluator/revision loops use declared transitions and
+bounds. Dynamic orchestrator/worker plans exceed stock Agent child authoring: keep known workers in
+Workflow child Stages, or explicitly design and test a custom controller through core. Avoid a helper
+that hides child execution in a capability. The external reference and design judgment are recorded
+in the [SDK design note](../../development/009-sdk-bootstrap-design-and-findings.md#external-reference-and-workflow-patterns).

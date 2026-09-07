@@ -55,6 +55,10 @@ The implemented baseline is organized by capability:
 - narrow MCP synchronous Tool import/export with strict identity, schema, result, authority, and
   outcome-certainty rules.
 
+The optional `@arrokothi/sdk` application bootstrap now composes this baseline; see
+[SDK design and findings](009-sdk-bootstrap-design-and-findings.md). It does not change the H–N
+architecture-completion sequence or deployment claims.
+
 The exact implementation/test map and intentional deferrals are in
 [`002`](002-implemented-kernel-baseline.md).
 

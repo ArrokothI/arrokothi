@@ -20,7 +20,13 @@ The reference Agent executor is a small, dependency-free implementation of `Agen
 for that same port. Both receive the kernel's invocation snapshot and return outcomes/action
 selections; they do not run the application's external capabilities independently.
 
-For an Agent, wire `models: { resolver }` on `createAgentController` and
+For the SDK, configure `createApplication({ models: { providers: [provider], bindings } })` once.
+The SDK wires both controllers and creates the reference Agent executor. Alternatively supply a
+custom `{ resolver, providers }`. The compiled `geminiWiring(...).models` is directly usable here.
+To select Strands, use `controllers: () => ({ agent: { executor: wiring.strandsExecutor } })`.
+No provider switch changes policy or grants.
+
+For low-level core assembly, wire `models: { resolver }` on `createAgentController` and
 `executor: createReferenceAgentExecutor({ providers })` (or `createStrandsAgentExecutor({ providers })`).
 For LLM Stages, wire `models: { resolver, providers }` on `createWorkflowController`. Configuring a
 provider only for the Agent does not make it available to the Workflow controller.
@@ -31,15 +37,15 @@ Keep definitions unchanged. In the composition root:
 
 1. Construct `GeminiModelProvider` from `@arrokothi/provider-gemini` with a deployment-supplied `apiKey`,
    or use `createGeminiModelProviderFromEnv`. These implement the `ModelProvider` port.
-2. Register that instance in `new ModelProviderRegistry([provider])`.
-3. Map `primary` in `StaticModelResolver` to `{ provider: provider.id, model: configuredModelId,
+2. Pass the provider to SDK `models.providers`; no manual registry is needed on this path.
+3. Map `primary` in SDK `models.bindings` to `{ provider: provider.id, model: configuredModelId,
    portableFeatures: portableModelFeatures({ capabilityCalls: true, structuredOutput: true }) }`.
    Advertise only features the chosen provider/model supports; requirements are validated, not
    silently downgraded. Model IDs and credentials are configuration, not portable Definition fields.
-4. Keep catalogs, operation ceilings, policies, and memory resolvers. Changing providers grants no
+4. Keep catalogs, operation ceilings, policies, and explicit SDK memory grants. Changing providers grants no
    additional operation authority. A model generating prose when a callable is needed is a behavior
    problem to test, not evidence that policy should be loosened.
-5. Replace the offline drain helper with your host's bounded worker loop and provider timeout policy.
+5. Use SDK `runUntilBlocked` in a bounded host worker loop, inspect its reason, and configure provider timeouts separately.
 
 [provider-wiring.ts](../../../examples/execution-kernel-minimal/provider-wiring.ts) contains compiled
 factories for both executors and Workflow model access. Its

@@ -6,6 +6,7 @@
  * deterministic Active View stays deterministic across wiring changes.
  */
 
+import { operationRefKey } from "../operations/refs.ts";
 import { capabilityId, operationId } from "../effects/ids.ts";
 import type { CapabilityCatalog, CapabilityOperationDescriptor } from "../ports/capability-catalog.ts";
 import type { ObjectSchema } from "../schema/value-schema.ts";
@@ -26,7 +27,7 @@ export function createCapabilityCatalog(descriptors: readonly CapabilityOperatio
   for (const input of descriptors) {
     const capability = capabilityId(input.capability);
     const operation = operationId(input.operation);
-    byKey.set(`${capability}:${operation}`, {
+    byKey.set(operationRefKey({ capability, operation }), {
       capability,
       operation,
       consequential: input.consequential,
@@ -49,7 +50,7 @@ export function createCapabilityCatalog(descriptors: readonly CapabilityOperatio
   );
   return {
     describe(capability, operation) {
-      return byKey.get(`${capability}:${operation}`);
+      return byKey.get(operationRefKey({ capability, operation }));
     },
     list() {
       return ordered;

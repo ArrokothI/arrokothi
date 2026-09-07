@@ -2,6 +2,7 @@
 
 [Guide home](README.md) · [Quick start](quick-start.md). Semantics belong to
 [composition](../../composition.md), [runtime](../../execution-runtime.md), and [memory](../../memory.md).
+The `@arrokothi/sdk` bootstrap composes these stock controllers without expanding their semantics.
 This table describes the stock implementation, not everything the kernel can represent.
 
 ## What each surface can do
@@ -26,7 +27,8 @@ internal source path. [Package exports](../../../packages/core/package.json) are
 
 | Need | Import surface and symbols | Source |
 |---|---|---|
-| Definitions | root or `/execution`: `defineAgent`, `defineWorkflow`, definition inputs and terminal schemas | [definitions](../../../packages/core/src/definitions/types.ts), [Agent spec](../../../packages/core/src/agent/spec.ts), [Workflow spec](../../../packages/core/src/workflow/spec.ts) |
+| Application bootstrap | `@arrokothi/sdk`: `createApplication`, `ApplicationOptions`, `StartExecutionInput`, `PreflightReport`, `RunResult` | [SDK types](../../../packages/sdk/src/types.ts), [application](../../../packages/sdk/src/application.ts), [quick start](quick-start.md) |
+| Definitions | `@arrokothi/sdk` (re-exports), or core root or `/execution`: `defineAgent`, `defineWorkflow`, definition inputs and terminal schemas | [definitions](../../../packages/core/src/definitions/types.ts), [Agent spec](../../../packages/core/src/agent/spec.ts), [Workflow spec](../../../packages/core/src/workflow/spec.ts) |
 | Run, input, inspect, cancel | root or `/execution`: `Harness`, `HarnessOptions`, `CreateExecutionInput`, `ExecutionId` | [Harness](../../../packages/core/src/runtime/harness.ts) |
 | Controller assembly | root or `/execution`: `ControllerRegistry`, `createAgentController`, `createWorkflowController` | [Agent options](../../../packages/core/src/controllers/agent/controller.ts), [Workflow options](../../../packages/core/src/controllers/workflow/controller.ts) |
 | Stage handlers | `/ports`: `StageExecutionContext`, `FunctionStageOutcome`; `/reference`: `createFunctionStageRegistry` | [Stage port](../../../packages/core/src/ports/stage.ts), [requests and observations](../../../packages/core/src/workflow/observations.ts) |
@@ -46,6 +48,12 @@ raw JSON Schema uses a different vocabulary.
 ## Structured Memory wiring
 
 Use [patterns.ts](../../../examples/execution-kernel-minimal/patterns.ts) as the compiled reference.
+With the SDK, put explicit deployment grants in `createApplication({ memory: { read,
+writeExposure }, authorizer })` and the binding in `app.start({ structuredMemory, ... })`.
+The SDK creates both resolvers against its actual runtime store. Read and write exposure remain
+separate from the author's requested keys and final Effect authorization. `controllers(services)`
+allows dynamic/per-Execution view policies. The underlying chain is:
+
 An Execution starts with declared **unset** fields, not initial values:
 
 ```text
@@ -65,7 +73,7 @@ same binding
        → schema/revision checks → commit
 ```
 
-Both resolver options are denied by default. Read grants, write **exposure** grants, and final write
+Both SDK memory grants and low-level resolver options are denied by default. Read grants, write **exposure** grants, and final write
 permission are independent. Authored keys alone do nothing. Resolver instances must use the runtime's
 store. Static grants apply to every Execution unless restricted; tenant/user policy is host work.
 Aliases in the example are deterministic for its tiny interface, but arbitrary catalogs can collide:

@@ -17,6 +17,7 @@ own architecture semantics.
 | What release, brand, and license checks apply? | [`006-ecosystem-integration-brand-and-license-checklist.md`](006-ecosystem-integration-brand-and-license-checklist.md) |
 | What friction does an application builder hit on the current kernel? | [`007-application-builder-ergonomics-findings.md`](007-application-builder-ergonomics-findings.md) |
 | What external validation gate follows the accepted v0.8.1 freeze? | [`008-external-validation-gates.md`](008-external-validation-gates.md) |
+| How does supported application bootstrap compose the kernel? | [`009-sdk-bootstrap-design-and-findings.md`](009-sdk-bootstrap-design-and-findings.md) |
 | Where is cross-framework benchmark design and execution? | the standalone **`ArrokothI/benchmark`** repository. |
 
 To build an application **on** the kernel rather than change the kernel, start from
@@ -33,6 +34,7 @@ performance / developer ergonomics → 004-efficiency-and-developer-ergonomics.m
 interoperability baseline         → 005-interoperability-baseline-and-next-constraints.md
 ecosystem / brand / license       → 006-ecosystem-integration-brand-and-license-checklist.md
 application-builder friction      → 007-application-builder-ergonomics-findings.md
+SDK bootstrap design and findings  → 009-sdk-bootstrap-design-and-findings.md
 external validation gates         → 008-external-validation-gates.md
 cross-framework benchmark design and execution → ArrokothI/benchmark (separate repository)
 ```
@@ -44,7 +46,7 @@ For ordinary coding or review work:
    implementation evidence;
 3. read [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) for current and
    next architecture work;
-4. load only the specialized active document (003–008) relevant to the task.
+4. load only the specialized active document (003–009) relevant to the task.
 
 ## Benchmark work lives elsewhere
 

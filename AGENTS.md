@@ -12,13 +12,17 @@ That is the single builder front door: quick start → current API/surface → o
 application needs → runnable patterns and diagnosis. You do not need the roadmap or external
 engineering dossier before starting an application.
 
-New application code imports `@arrokothi/core`, `/ports`, and `/reference`;
-`@arrokothi/core/execution` is an equivalent focused semantic entry point. Start from
+New applications start with `createApplication`, `defineAgent`, and `defineWorkflow` from
+`@arrokothi/sdk`. Supply explicit policy, model services and domain handlers; the SDK assembles one
+Harness and both stock controllers. Use `preflight` / `start` and `runUntilBlocked` before diagnosing
+missing wiring as model failure. `@arrokothi/core`, `/ports`, and `/reference` remain the advanced
+semantic/port surfaces. Start from
 [`examples/execution-kernel-minimal/`](examples/execution-kernel-minimal/README.md). Run `npm run example:application-patterns`
 and `npm run test:example:execution-kernel` for state, confirmation, and child examples.
 
 Keep kernel semantics unchanged during application work. Use supported composition, host logic,
-and application-supplied ports when they fit. Record larger/ambiguous framework concerns in
+and application-supplied ports when they fit. SDK bootstrap lives in `packages/sdk`, above core;
+it never grants permissions from definitions or catalogs. Record larger/ambiguous framework concerns in
 [`docs/development/007-application-builder-ergonomics-findings.md`](docs/development/007-application-builder-ergonomics-findings.md)
 and continue supported work; a missing stock convenience is not by itself a reason to stop or to
 invent a kernel contract.
@@ -111,6 +115,8 @@ npm install
 npm test                 # semantic conformance suite (packages/*/tests + tests/conformance)
 npm run typecheck        # tsc --noEmit over packages, examples, scripts, tests
 npm run test:conformance # just tests/conformance/*/*.test.ts
+npm run test:sdk         # SDK composition, preflight and host runner
+npm run check:builder-docs # builder discovery, links, public imports and package integration
 npm run test:evals       # behavioural baseline for the reference Agent (separate question)
 ```
 

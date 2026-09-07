@@ -1,80 +1,146 @@
 # Quick start: from checkout to application
 
-[Guide home](README.md). The runnable source is the copyable example; this page explains its assembly
-and lifecycle rather than maintaining a second copy of it.
+[Guide home](README.md). Use **`@arrokothi/sdk`** for ordinary application bootstrap. It sits above
+`@arrokothi/core`; definitions and runtime semantics still belong to the kernel. Copy the relevant
+[runnable example](../../../examples/execution-kernel-minimal/README.md), then replace its domain code.
 
 ## Setup and imports
 
-Use the repository's npm workspaces (`npm install` at the root). The package exports point directly
-to TypeScript source, use ESM, and need a runtime that understands it. The repository uses
-`node --experimental-strip-types` and TypeScript `NodeNext`; see [tsconfig](../../../tsconfig.json).
-Use `import type` for types and `.ts` extensions for relative source imports. Package imports have no
-`.ts` suffix. This guide does not assume that the checkout's version has been published to npm.
+Run `npm install` at the workspace root with Node 22.9+. Examples use ESM, TypeScript `NodeNext`,
+`import type`, `.ts` extensions on relative imports, and `node --experimental-strip-types`.
+Package imports have no `.ts` suffix. Exports currently point to TypeScript source. Published
+source packages require a consumer TypeScript build/bundler: stock Node will not strip `.ts` files
+inside `node_modules`. This guide does not assume this checkout has been published to npm.
 
 | Import | Use |
 |---|---|
-| `@arrokothi/core` or `@arrokothi/core/execution` | `defineAgent`, `defineWorkflow`, `Harness`, `ControllerRegistry`, controllers, public data types, Effect constructors, state readers |
-| `@arrokothi/core/ports` | Interfaces for capabilities, policy, models, storage, stages, context and view resolution |
-| `@arrokothi/core/reference` | In-memory stores, scheduler, registries, reference resolvers/executor, scripted/deferred providers |
-| `@arrokothi/core/testing` | Test harnesses and fixtures; inspect their defaults before copying expectations |
+| `@arrokothi/sdk` | `createApplication`, `defineAgent`, `defineWorkflow`, application/preflight/run types and common definition/schema types |
+| `@arrokothi/core` or `/execution` | Full kernel data/Effect vocabulary, readers, advanced `Harness` and custom-controller composition |
+| `@arrokothi/core/ports` | Application-supplied capability, policy, model, resource and storage contracts |
+| `@arrokothi/core/reference` | Catalog/policy helpers, scripted providers, static model mappings and optional reference implementations |
+| Concrete adapter packages | Gemini, Strands, local retrieval, MCP |
+| `@arrokothi/core/testing` | Test scaffolds only; not application bootstrap |
 
-Use [package exports](../../../packages/core/package.json) and the
-[public API map](current-authoring-surface.md#public-api-map) when autocomplete suggests an internal
-source file. Do not deep-import `packages/core/src` into application code.
+## One application, many Executions
 
-## Read one composition root
+The [handbook app](../../../examples/execution-kernel-minimal/app.ts) is the smallest Agent example.
+Its composition has three deployment concerns: models, capability implementation/catalog, and policy.
+The definition requests operations; each start supplies its own operation ceiling. None implies the
+others. The SDK creates stores, scheduler, both controllers, reference Agent executor and the
+store-backed view resolver. Default IDs use UUIDs and the default clock uses real time.
 
-[app.ts](../../../examples/execution-kernel-minimal/app.ts) wires a read-only handbook Agent:
+For a Function-only Workflow, `createApplication({ functions: { name: handler } })` is sufficient.
+Definitions still name handlers using `implementationRef`; executable code stays in deployment wiring.
+[Classification](../../../examples/execution-kernel-minimal/classification.ts) adds model services
+for bounded inference and declared branches. [Patterns](../../../examples/execution-kernel-minimal/patterns.ts)
+adds memory, current-state policy, exact confirmation, and a Workflow calling an Agent child.
 
-1. A catalog describes an operation; a `CapabilityExecutor` implements dispatch and outcomes.
-2. A portable definition names a logical model, requests operations, and declares bounds.
-3. Deployment maps the logical model using `StaticModelResolver`; a provider registry sits behind
-   `createReferenceAgentExecutor`. Real-provider replacements are in [provider wiring](providers-and-integrations.md).
-4. The Agent's view resolver reads operation authority from the **same store** the Harness uses.
-5. The Harness receives definitions, store, scheduler, controllers, clock, IDs, catalog, executor,
-   and explicit policy. No authorizer denies Effects; no operation grant exposes nothing.
-6. Save the definition, create the Execution with its operation ceiling, deliver initial input,
-   and drive the scheduler. Definition versions are immutable: change `version` when changing
-   saved content; an existing Execution keeps its pinned definition.
+The basic lifecycle is:
 
-For pure Function Workflows, skip model services entirely. Register Function implementations with
-`createFunctionStageRegistry` and pass it to `createWorkflowController`. Register both controller
-kinds when a Workflow calls an Agent. The [pattern assembly](../../../examples/execution-kernel-minimal/patterns.ts)
-shows both, as well as the full memory and confirmation wiring.
+```ts
+const app = createApplication({ models, capabilities, authorizer, functions });
+await app.register(reviewer); // Definitions referenced by child Stages.
+const started = await app.start({
+  definition: workflow,
+  input: { label: "topic", payload: "Explain the release process" },
+  operationAuthority: { operations: permittedOperations },
+  structuralSpawnBudget: 1,
+});
+const result = await app.runUntilBlocked(started.executionId, { timeoutMs: 5_000 });
+```
 
-The example clock/IDs are deterministic for offline testing. For a real process use
-`createSystemClock()` and an application `IdGenerator`, e.g. `next: prefix => prefix + '_' + randomUUID()`
-with `randomUUID` from `node:crypto`. Restarting a counter can reuse external identifiers. Neither
-changing IDs nor swapping a clock supplies runtime crash recovery.
+Names such as `models` and `workflow` above refer to application configuration; see the linked source
+for complete runnable declarations. No spawn capacity or operation grant is supplied automatically.
+An application can deliberately omit them and inspect refusal through the Harness.
 
-## Own the host loop
+`register(...definitions)` is idempotent for identical bytes and rejects changed bytes at an existing
+version. It checks the entire batch for known version conflicts before writes; a failing external
+DefinitionStore can still partially persist a batch because the store port has no transaction.
+`start` registers a supplied definition, or resolves an already-registered integrity-pinned ref.
+A changed definition needs a new version; existing Executions keep their pinned bytes.
 
-`createExecution` returns a handle, not a chat session object with `runTurn`. Your application maps an
-authenticated conversation/job to an Execution ID and owns transport, UI, and request serialization.
+`start` preflights before creating state and delivers initial input before SDK-driven Activations.
+Omitting input is deliberate: a Workflow can begin with null; an Agent will wait for input.
+Initial input delivery receipts remain visible on `StartedExecution`. SDK starts and scheduler
+operations serialize creation/input with Activations. Direct Harness workers must coordinate with
+SDK starts themselves; this is not a multi-process create-and-deliver transaction.
 
-- Deliver `external.input` using `deliverExternalInput({ destination, label, payload })` and check its
-  receipt. A string is the simplest conversation or Workflow input. Deliver Workflow start input
-  **before** the first scheduler run; it can start with `null` and ignores later input.
-- `runUntilIdle()` runs currently queued Activations. Idle is not completion. Slow models or
-  capabilities may still be running; a settlement schedules another Activation that the host must run.
-- In finite offline scripts, `drainResumptions()` waits for model/local work and `drainEffects()` for
-  dispatched capabilities. Then run the scheduler again. These drains can wait indefinitely on real
-  work; they are not a production request timeout. Serve a waiting status and schedule further runs
-  from your application's worker/pump with a bounded polling/backoff policy.
-- Inspect `lifecycle` and `waitingFor`. Surface pending confirmations through a trusted UI; only an
-  authenticated human decision should call `resolveConfirmation`. Do not infer approval from prose.
-- Read `emissionsOf(id)` for UI responses, tracking emission IDs or an application cursor. The method
-  returns the whole history, not just the latest turn. Read `terminalResult` only after `COMPLETED`.
-- Serialize chat turns per Execution and distinguish a conversational input wait from an Effect or
-  model wait. Cancel through `cancelExecution`; cancellation does not undo completed external work.
+## Defaults and extension points
 
-Keep runtime state in the Harness and business records in their proper store. Do not mutate
-`inspect(...).control.progress` or seed memory using `/testing` in a running application. There is no
-public host setter for committed Structured Memory: writes go through an Agent or Function Stage
-Effect (or an explicitly designed controller).
+| Concern | SDK default / explicit configuration |
+|---|---|
+| Runtime | One `InMemoryRuntimeStore`, `InMemoryDefinitionStore`, `FifoScheduler`, system clock, UUID IDs per application |
+| Controllers | Stock Agent and Workflow; portable definitions unchanged |
+| Models | Absent until configured; `models: { providers, bindings }` creates shared registry/resolver and reference Agent executor |
+| Custom model routing | `models: { providers, resolver }`; runtime validates actual resolution |
+| Capabilities | Explicit `{ catalog, executor }` pair; no automatically implemented or granted operation |
+| Effect authorization | All denied unless `authorizer` is provided |
+| Confirmation | No additional gate unless `confirmationPolicy` is provided; authorization is still required |
+| Operation exposure | Shared-store ceiling ∩ authored request ∩ catalog; no default ceiling |
+| Structured Memory | No binding/read/write grants by default; explicit start binding and application read/write-exposure grants |
+| Function/Adapter code | `functions` / `adapters` records keyed by implementation ref |
+| Advanced ports | `runtime` overrides runtime services; `controllers(services)` overrides selected stock-controller strategies |
 
-## First adaptation
+Use `controllers(services)` to build a custom view resolver against `services.store`, provide a
+Derived Memory resolver/information compiler, wire resources or tracing, or select a Strands executor.
+Only properties you return override defaults. Explicitly returning `undefined` disables that property.
+These are trusted deployment extension points; arbitrary custom controller implementations still use
+`@arrokothi/core` directly. No SDK import enters core or any provider adapter.
 
-Replace the handbook catalog/executor and instructions with your domain, then test an authorized and
-a denied request. For conversations with retained state or approval, adapt `patterns.ts`; for a fixed
-process, adapt its Workflow and Function registry. Do not import either example as a framework SDK.
+Memory grants in `memory.read` and `memory.writeExposure` apply to all Executions unless explicitly
+scoped with `memory.executions`. They are deployment policy, never inferred from authored keys. For
+per-user/current-state rules supply narrow resolvers through `controllers(services)`. Final
+WriteMemory authorization remains independent. See the [memory chain](current-authoring-surface.md#structured-memory-wiring).
+
+## Preflight without granting anything
+
+`await app.preflight(startOptions)` returns `{ ok, diagnostics }`. Each diagnostic has `severity`,
+`code`, `path`, and `message`. `start` runs the same check, throws `ApplicationConfigurationError`
+for errors, and includes warnings/info in `started.preflight`. Warnings do not prevent deliberately
+denied applications from running.
+
+Errors cover invalid definitions/topology, version/integrity conflicts, missing child definitions or
+wrong child kinds, missing static model services/provider/features, missing Function/Adapter handlers,
+invalid grants/bindings/budgets, and malformed initial data. Warnings explain absent catalog entries,
+unprojectable operations, requested-but-ungranted operations, absent memory bindings/grants, no Effect
+policy, missing spawn credits, and child response/terminal mismatches. Recursive definition graphs
+are traversed with cycle detection, not rejected merely for recursion.
+
+Preflight reads configuration, catalogs and stores. It never invokes a model, capability, handler,
+policy, custom model resolver, or custom exposure resolver. Custom/dynamic routing is reported as
+runtime-checked. It cannot predict payload-dependent permission, external availability, arbitrary
+Function Effects, business correctness, dynamic resource contents, or exact termination of a loop.
+It does not exhaustively prove reachability. The kernel validates topology, resolves actual models,
+reauthorizes Effects, and establishes outcomes during execution.
+
+## Drive and observe the host boundary
+
+`runUntilIdle()` runs currently queued work. Idle does not mean complete; slow work may wake it later.
+`runUntilBlocked(id, options)` drives the **shared** scheduler, including other Executions, and polls
+settlement until the target completes, fails, cancels, needs input/confirmation, or hits a host limit.
+It also surfaces human waits in required called children through `waitingExecutionId`; detached children
+do not create a completion dependency. Returned `execution` is the target's inspected state.
+
+| `reason` | Host response |
+|---|---|
+| `completed` | Read `execution.terminalResult`; emissions remain separate |
+| `failed`, `cancelled` | Inspect failure/cancellation and actual external outcomes |
+| `input_required` | Collect the next conversation input for `waitingExecutionId` |
+| `confirmation_required`, `user_input_required` | Present the stored request through an authenticated UI |
+| `timeout`, `activation_limit`, `aborted` | Return pending status, inspect, and schedule another bounded run or cancel explicitly |
+
+Defaults: 30s host wait, 1,000 total scheduler Activations, 10ms polling. A timeout or AbortSignal
+stops the host wait; it does not cancel a model, Effect, or Execution. Limits are checked **between**
+Activations: trusted Function code, custom ports, or an outstanding SDK lock can delay return. Provider
+and operation deadlines remain separate. No drain waits, permanent background loop, automatic retries,
+or success-shaped conversion of timeout/unknown outcomes are hidden inside this helper.
+
+Your transport authenticates callers, maps jobs/conversations to Execution IDs, serializes chat turns,
+and tracks emission IDs/cursors. `harness.emissionsOf(id)` returns the whole history. Use
+`deliverExternalInput`, `resolveConfirmation`, `submitUserInput`, and `cancelExecution` on the Harness;
+check their receipts. Natural-language approval does not resolve confirmation. Cancellation does not
+cascade or undo completed external work. Poll/back off from your host worker when further work remains.
+
+Default runtime state is in memory, and trusted-local mediation is not hostile-code containment.
+Replacing one store or scheduler does not provide crash recovery. Keep durable business facts,
+external idempotency and uncertain-outcome reconciliation in the application.

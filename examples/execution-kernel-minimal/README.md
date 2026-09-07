@@ -1,7 +1,7 @@
 # Execution-kernel application examples
 
 Start from the [builder guide](../../docs/guides/agent-workflow-composition/README.md).
-These examples run offline using the current public Execution API. The Harness, controllers,
+These examples run offline using `@arrokothi/sdk` over the current public Execution API. The Harness, controllers,
 authorization, state commits, child creation and confirmation are real; the model and external
 publisher are deterministic fakes. They demonstrate implementation behavior, not language quality.
 
@@ -15,7 +15,7 @@ npm run typecheck
 
 | File | Read for |
 |---|---|
-| [app.ts](app.ts) | Small standalone Agent assembly; catalog, executor, operation ceiling, model resolution, policy |
+| [app.ts](app.ts) | Small SDK Agent composition; catalog, executor, operation ceiling, model resolution, policy |
 | [main.ts](main.ts) / [app.test.ts](app.test.ts) | Allowed/denied lookup with identical model prose; journal establishes what happened |
 | [settle.ts](settle.ts) | Shared finite offline pump; distinguish input/confirmation waits from unsettled model/capability work |
 | [classification.ts](classification.ts) / [classification.test.ts](classification.test.ts) | One-phase labelled LLM Stage, authored feature requirements, exact branch routing |
@@ -24,9 +24,8 @@ npm run typecheck
 | [provider-wiring.ts](provider-wiring.ts) / [provider-wiring.test.ts](provider-wiring.test.ts) | Gemini wiring for reference/Strands executors and Workflow; fake-HTTP validation without a key |
 
 Copy the relevant composition root into your application and replace domain definitions/policy and
-executor code. Do not treat these example helpers as a new SDK. Runtime files import only
-`@arrokothi/core` (or its focused `/execution` entry point), `/ports`, `/reference`, and concrete
-provider adapters; `/testing` belongs in tests.
+executor code. Use the supported `@arrokothi/sdk` package for bootstrap; example helpers remain domain examples.
+Core `/ports`, `/reference`, and concrete provider adapters supply explicit integration seams; `/testing` belongs in tests.
 
 The fake publisher creates one article per exact title and returns an existing receipt on repetition.
 This is a deliberately simple application unique-key rule. A real service should use a durable
@@ -35,6 +34,6 @@ confirmed dispatch; the repeated-proposal test verifies that the known duplicate
 second publisher call while the application guard remains in place for crash-safe external correctness.
 
 `settleOffline` drains finite offline work. It is not a network timeout or a production worker loop.
-The examples use in-memory stores and deterministic IDs/clocks; they provide no process-crash
+The SDK CLI paths use `runUntilBlocked`, system time and UUID IDs. The examples use in-memory stores; they provide no process-crash
 recovery. The CLI's automatic approval is solely a simulated decision for a fake publisher. A real
 application must present the stored proposal and resolve it through an authenticated human action.

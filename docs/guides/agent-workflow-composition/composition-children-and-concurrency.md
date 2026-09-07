@@ -13,7 +13,7 @@ application controller; knowing an Execution ID does not grant messaging rights.
 
 A runnable child call is in [patterns.ts](../../../examples/execution-kernel-minimal/patterns.ts):
 
-1. Save the child definition and register its controller kind.
+1. `await app.register(childDefinition)`; the SDK already registers both stock controller kinds.
 2. Put `child: { definitionId, definitionVersion }` on the parent Stage. `ChildDefinitionRef` has
    only these two fields; the Harness resolves and pins the saved definition's integrity internally.
 3. Allow spawn for that child definition in the host authorizer and give the root a

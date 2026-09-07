@@ -8,6 +8,7 @@ const guide = "docs/guides/agent-workflow-composition";
 const example = "examples/execution-kernel-minimal";
 const sources = [
   "README.md", "AGENTS.md", "docs/README.md", "docs/guides/README.md",
+  "packages/sdk/README.md", "docs/development/009-sdk-bootstrap-design-and-findings.md",
   "docs/development/007-application-builder-ergonomics-findings.md",
   ".agents/skills/arrokothi-agent-builder/SKILL.md",
   ...(await readdir(join(root, guide))).filter((name) => name.endsWith(".md")).map((name) => `${guide}/${name}`),
@@ -62,7 +63,7 @@ for (const source of sources) {
 }
 
 const manifests = [
-  "packages/core", "packages/agents/strands", "packages/models/gemini",
+  "packages/sdk", "packages/core", "packages/agents/strands", "packages/models/gemini",
   "packages/interoperability/mcp", "packages/retrieval/local",
 ];
 const packagePaths = new Set<string>();
@@ -71,19 +72,37 @@ for (const directory of manifests) {
   for (const key of Object.keys(manifest.exports)) packagePaths.add(manifest.name + (key === "." ? "" : key.slice(1)));
 }
 let imports = 0;
-for (const file of (await readdir(join(root, example))).filter((name) => name.endsWith(".ts"))) {
-  const source = ts.createSourceFile(file, await read(join(root, example, file)), ts.ScriptTarget.Latest, true);
-  for (const node of source.statements) {
-    if (!ts.isImportDeclaration(node) || !ts.isStringLiteral(node.moduleSpecifier)) continue;
-    const specifier = node.moduleSpecifier.text;
-    if (!specifier.startsWith("@arrokothi/")) continue;
-    imports++;
-    if (!packagePaths.has(specifier)) errors.push(`${example}/${file}: not a public export: ${specifier}`);
-    if (!file.endsWith(".test.ts") && specifier === "@arrokothi/core/testing") {
-      errors.push(`${example}/${file}: runtime starter imports test-only surface: ${specifier}`);
+for (const directory of [example, "packages/sdk/src"]) {
+  for (const file of (await readdir(join(root, directory))).filter((name) => name.endsWith(".ts"))) {
+    const source = ts.createSourceFile(file, await read(join(root, directory, file)), ts.ScriptTarget.Latest, true);
+    for (const node of source.statements) {
+      if ((!ts.isImportDeclaration(node) && !ts.isExportDeclaration(node)) || !node.moduleSpecifier || !ts.isStringLiteral(node.moduleSpecifier)) continue;
+      const specifier = node.moduleSpecifier.text;
+      if (/packages\/core\/src|@arrokothi\/core\/src/.test(specifier)) errors.push(`${directory}/${file}: deep kernel import: ${specifier}`);
+      if (!specifier.startsWith("@arrokothi/")) continue;
+      imports++;
+      if (!packagePaths.has(specifier)) errors.push(`${directory}/${file}: not a public export: ${specifier}`);
+      if (!file.endsWith(".test.ts") && specifier === "@arrokothi/core/testing") errors.push(`${directory}/${file}: runtime starter imports test-only surface: ${specifier}`);
     }
   }
 }
+for (const file of ["app.ts", "patterns.ts", "classification.ts"]) {
+  if (!(await read(join(root, example, file))).includes('from "@arrokothi/sdk"')) errors.push(`${example}/${file}: ordinary application must demonstrate SDK bootstrap`);
+}
+for (const file of ["AGENTS.md", ".agents/skills/arrokothi-agent-builder/SKILL.md", "README.md", `${guide}/README.md`]) {
+  if (!(await read(join(root, file))).includes("@arrokothi/sdk")) errors.push(`${file}: missing SDK discovery route`);
+}
+const workspace = JSON.parse(await read(join(root, "package.json")));
+const sdk = JSON.parse(await read(join(root, "packages/sdk/package.json")));
+const core = JSON.parse(await read(join(root, "packages/core/package.json")));
+const lock = JSON.parse(await read(join(root, "package-lock.json")));
+if (!workspace.workspaces.includes("packages/sdk") || sdk.name !== "@arrokothi/sdk" || sdk.dependencies?.["@arrokothi/core"] !== core.version) errors.push("SDK workspace/name/core dependency is inconsistent");
+if (lock.packages["packages/sdk"]?.version !== sdk.version || !lock.packages["node_modules/@arrokothi/sdk"]?.link) errors.push("SDK lockfile integration is missing");
+if (!workspace.scripts.test.includes("packages/sdk/tests/") || !workspace.scripts["test:packages"].includes("packages/sdk/tests/")) errors.push("SDK tests are absent from standard suites");
+for (const file of (await readdir(join(root, "packages/core/src"), { recursive: true })).filter(name => name.endsWith(".ts"))) {
+  if ((await read(join(root, "packages/core/src", file))).includes("@arrokothi/sdk")) errors.push(`${file}: core must not depend on SDK`);
+}
+
 if (errors.length) {
   for (const error of errors) console.error(error);
   process.exitCode = 1;

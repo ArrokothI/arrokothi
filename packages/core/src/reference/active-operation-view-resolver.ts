@@ -29,7 +29,7 @@ import { createActiveOperationView, unauthorizedActiveOperationView } from "../o
 import type { ActiveOperationView } from "../operations/active-view.ts";
 import { authorizesOperation } from "../operations/authority.ts";
 import type { OperationRef } from "../operations/refs.ts";
-import { compareOperationRefs, formatOperationRef } from "../operations/refs.ts";
+import { compareOperationRefs, operationRefKey } from "../operations/refs.ts";
 import type {
   ActiveOperationViewRequest,
   ActiveOperationViewResolver,
@@ -47,14 +47,14 @@ export interface ActiveOperationViewResolverOptions {
 function requestedRefs(request: ActiveOperationViewRequest, catalog: CapabilityCatalog): readonly OperationRef[] {
   const byKey = new Map<string, OperationRef>();
   for (const ref of request.exposure.refs ?? []) {
-    byKey.set(formatOperationRef(ref), { capability: ref.capability, operation: ref.operation });
+    byKey.set(operationRefKey(ref), { capability: ref.capability, operation: ref.operation });
   }
   const groups = request.exposure.groups ?? [];
   if (groups.length > 0) {
     for (const descriptor of catalog.list()) {
       if (!(descriptor.groups ?? []).some((group) => groups.includes(group))) continue;
       const ref = { capability: descriptor.capability as string, operation: descriptor.operation as string };
-      byKey.set(formatOperationRef(ref), ref);
+      byKey.set(operationRefKey(ref), ref);
     }
   }
   return [...byKey.values()].sort(compareOperationRefs);

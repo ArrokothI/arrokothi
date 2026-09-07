@@ -24,8 +24,10 @@ These examples are offline and need no key. They run the real Harness/controller
 models and fake external systems. The [quick start](docs/guides/agent-workflow-composition/quick-start.md)
 explains workspace setup, assembly and the host loop.
 
-**New application code uses `@arrokothi/core`, `/ports`, and `/reference`.**
-`@arrokothi/core/execution` is an equivalent focused entry point for the semantic API.
+**New applications use [`@arrokothi/sdk`](packages/sdk/README.md).** `createApplication` assembles
+one Harness and both stock controllers; `register`, preflighted `start`, and `runUntilBlocked` cover
+the ordinary lifecycle. Policy, operation ceilings, memory grants and spawn credits stay explicit.
+`@arrokothi/core`, `/ports`, and `/reference` remain available for advanced composition.
 Current Gemini and Strands wiring is in
 [the provider guide](docs/guides/agent-workflow-composition/providers-and-integrations.md).
 
@@ -57,6 +59,7 @@ systems still need durable application-owned idempotency and unknown-outcome rec
 ```sh
 npm test                     # package tests and semantic conformance
 npm run test:conformance      # semantic conformance only
+npm run test:sdk              # bootstrap/preflight/lifecycle integration
 npm run check:builder-docs    # builder links, anchors, public imports
 npm run test:evals            # separate reference-Agent behavioral baseline
 ```
@@ -78,6 +81,7 @@ External engineering/research notes are background references rather than implem
 
 | Directory | Role |
 |---|---|
+| `packages/sdk` | Supported application bootstrap, preflight and bounded host driving |
 | `packages/core` | Current contracts, runtime, and reference mechanisms |
 | `packages/agents/strands` | Strands Agent-executor adapter |
 | `packages/models/gemini` | Gemini model-provider adapter |

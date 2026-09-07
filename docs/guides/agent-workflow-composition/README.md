@@ -20,9 +20,9 @@ All four commands need no provider key. The examples run real controllers and Ha
 scripted model; their outputs demonstrate wiring and enforcement, not model quality.
 
 Read [quick start](quick-start.md), then copy the relevant portion of
-[the runnable example](../../../examples/execution-kernel-minimal/README.md). **Import application
-code from `@arrokothi/core`, `/ports`, and `/reference`.**
-`@arrokothi/core/execution` is an equivalent focused semantic entry point.
+[the runnable example](../../../examples/execution-kernel-minimal/README.md). **Start applications with `@arrokothi/sdk`.** It assembles the runtime while keeping definitions,
+policy, operation ceilings, and domain handlers explicit. Core ports/reference implementations
+remain available for advanced composition.
 
 ## Choose the smallest working shape
 
@@ -43,7 +43,7 @@ A kernel Effect existing does not mean every stock controller can propose it.
 
 | Question | Read |
 |---|---|
-| How do I assemble and drive a Harness? Which imports? | [Quick start](quick-start.md) |
+| How do I bootstrap, preflight and drive an application? Which imports? | [Quick start](quick-start.md) |
 | Can this surface express my design? Where are the public types? | [Authoring surface and API map](current-authoring-surface.md) |
 | Which requirements need code, acceptance, or a model? | [Requirements and control](requirements-and-control.md) |
 | Agent, Workflow, LLM Stage, or Function Stage? | [Control and Stages](workflow-agent-and-stages.md) |

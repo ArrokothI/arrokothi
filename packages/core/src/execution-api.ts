@@ -652,3 +652,7 @@ export {
 } from "./schema/value-schema.ts";
 export type { Err, Ok, Result } from "./util/result.ts";
 export { err, ok } from "./util/result.ts";
+
+/** Shared portable-data validation for application ingress/preflight. */
+export { jsonIssues } from "./util/json.ts";
+export type { JsonIssue } from "./util/json.ts";

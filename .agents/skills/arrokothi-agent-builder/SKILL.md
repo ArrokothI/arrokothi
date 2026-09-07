@@ -19,17 +19,20 @@ the topic needed. The roadmap and external engineering notes are not prerequisit
 
 ## Decisions that prevent expensive wrong turns
 
-- Use `@arrokothi/core`, `/ports`, and `/reference` for runtime code;
-  `@arrokothi/core/execution` is an equivalent focused entry point and `/testing` is test
-  scaffolding. Start from
+- Start ordinary applications with `createApplication`, `defineAgent`, and `defineWorkflow` from
+  `@arrokothi/sdk`; use `register` for child definitions, preflighted `start`, and `runUntilBlocked`
+  for a bounded host request. Inspect returned diagnostics/reasons and Harness receipts. Core
+  `/ports` and `/reference` supply explicit deployment policy and integration seams; `/testing` is
+  test scaffolding. Start from
   [the current example](../../../examples/execution-kernel-minimal/README.md).
 - Choose code for exact work, Workflow for declared progression, and Agent for open-ended decisions
   or a stock multi-turn conversation. Check the surface matrix: a stock Agent cannot call children,
   send messages, or emit typed user-input requests. A Workflow consumes external input only once.
 - Keep hard requirements in validators, current-state gates, policy and external conditional writes.
   Memory schemas validate shape; model text does not establish reality or approval.
-- Bind and authorize memory explicitly. Authored read/write keys need separate view resolvers and
-  grants; writes still need final authorization. Stage code has no committed-memory reader, and
+- Bind and authorize memory explicitly. The SDK wires read/write resolvers from explicit deployment grants;
+  authored keys and bindings alone grant nothing. Writes still need final authorization. Stage code
+  has no committed-memory reader, and
   there is no public host memory setter. The guide shows supported paths.
 - Account for cumulative Agent budgets, response versus completion, child spawn credits, and the
   text-only/literal restrictions on Stage/terminal data flow. Do not infer APIs from canonical sketches.

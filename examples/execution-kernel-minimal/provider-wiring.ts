@@ -18,6 +18,7 @@ export function geminiWiring(options: GeminiModelProviderOptions & { model: stri
   const agentModels: AgentModelAccess = { resolver };
   const workflowModels: WorkflowModelAccess = { resolver, providers };
   return {
+    models: workflowModels, // Shared SDK model services for both controller kinds.
     agentModels, workflowModels,
     referenceExecutor: createReferenceAgentExecutor({ providers }),
     strandsExecutor: createStrandsAgentExecutor({ providers }),

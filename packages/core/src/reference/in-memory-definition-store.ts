@@ -17,10 +17,14 @@ export class InMemoryDefinitionStore implements DefinitionStore {
   private readonly byId = new Map<string, Map<number, ExecutionDefinition>>();
 
   constructor(definitions: readonly ExecutionDefinition[] = []) {
-    for (const definition of definitions) void this.save(definition);
+    for (const definition of definitions) this.insert(definition);
   }
 
   async save(definition: ExecutionDefinition): Promise<ExecutionDefinitionRef> {
+    return this.insert(definition);
+  }
+
+  private insert(definition: ExecutionDefinition): ExecutionDefinitionRef {
     const validated = assertValidDefinition(definition);
     const versions = this.byId.get(validated.id) ?? new Map<number, ExecutionDefinition>();
     if (versions.has(validated.version)) {

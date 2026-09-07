@@ -1,10 +1,7 @@
 /** Fixed model classification: the model selects a declared label, never a Stage ID. */
-import { ControllerRegistry, Harness, createWorkflowController, defineWorkflow } from "@arrokothi/core";
+import { createApplication, defineWorkflow } from "@arrokothi/sdk";
 import type { WorkflowModelAccess } from "@arrokothi/core";
-import {
-  FifoScheduler, InMemoryDefinitionStore, InMemoryRuntimeStore,
-  createDeterministicIds, createFixedClock, createFunctionStageRegistry,
-} from "@arrokothi/core/reference";
+
 
 export const classificationWorkflow = () => defineWorkflow({
   id: "classify-draft",
@@ -30,21 +27,16 @@ export const classificationWorkflow = () => defineWorkflow({
 });
 
 export async function startClassification(models: WorkflowModelAccess, draft: string) {
-  const definitions = new InMemoryDefinitionStore();
-  const harness = new Harness({
-    definitions, store: new InMemoryRuntimeStore(), scheduler: new FifoScheduler(),
-    clock: createFixedClock(), ids: createDeterministicIds(),
-    controllers: new ControllerRegistry([createWorkflowController({
-      models,
-      functions: createFunctionStageRegistry({ record: (context) => {
-        const result = JSON.stringify({ category: context.config["category"], reason: context.input });
-        return { status: "completed", result, emissions: [{ body: { kind: "text", text: result } }] };
-      } }),
-    })]),
+  const application = createApplication({
+    models: { resolver: models.resolver, providers: models.providers },
+    functions: { record: (context) => {
+      const result = JSON.stringify({ category: context.config["category"], reason: context.input });
+      return { status: "completed", result, emissions: [{ body: { kind: "text", text: result } }] };
+    } },
     // No capabilities, operation grants, or authorizer needed: this process only computes/emits.
   });
-  const definition = await definitions.save(classificationWorkflow());
-  const { executionId } = await harness.createExecution({ definition });
-  await harness.deliverExternalInput({ destination: executionId, label: "draft", payload: draft });
-  return { harness, executionId };
+  const { executionId } = await application.start({
+    definition: classificationWorkflow(), input: { label: "draft", payload: draft },
+  });
+  return { application, harness: application.harness, executionId };
 }

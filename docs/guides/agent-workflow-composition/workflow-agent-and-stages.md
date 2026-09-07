@@ -12,10 +12,10 @@ Workflow an Agent.
 
 | Kind | Authoring fields | Application wiring |
 |---|---|---|
-| `function` | `implementationRef`, optional `config` / `resourceViews`, transitions | `createFunctionStageRegistry` handlers |
+| `function` | `implementationRef`, optional `config` / `resourceViews`, transitions | SDK `functions` handlers (core registry for advanced wiring) |
 | `llm` | `model`, `system`, `prompt`, optional `callables`, `maxModelPhases`, transitions | Workflow model resolver and providers |
-| `agent` | `child: { definitionId, definitionVersion }`, optional `requestedOperations` | Saved child definition, Agent controller, spawn policy + credits |
-| `workflow` | Same child-reference shape | Saved Workflow definition/controller, spawn policy + credits |
+| `agent` | `child: { definitionId, definitionVersion }`, optional `requestedOperations` | SDK-registered child definition, spawn policy + credits |
+| `workflow` | Same child-reference shape | SDK-registered Workflow definition, spawn policy + credits |
 
 Router, validator, retriever, gate, aggregator and evaluator are application roles, not additional
 Stage kinds. Stage IDs are graph identities, not Execution IDs. Stages have no independent mailbox,

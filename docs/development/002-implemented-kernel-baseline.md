@@ -376,3 +376,21 @@ and [`004`](004-efficiency-and-developer-ergonomics.md).
 
 **Major deferrals.** Orchestration-overhead reporting, durable/hosted benchmarks, and the
 whole-architecture release-readiness campaign in [`001`](001-current-status-and-roadmap.md).
+
+
+## 16. Application SDK above core
+
+**Implemented capability.** `@arrokothi/sdk` creates one shared Harness, stock Agent/Workflow
+controllers, reference runtime services, shared model services, store-backed operation/memory views,
+implementation registries, idempotent definition registration, preflighted initial creation/input,
+and bounded host driving with explicit lifecycle/wait reasons. No authority is inferred from authored
+requirements or catalogs. Core remains directly available.
+
+**Evidence.** `packages/sdk/src/`, `packages/sdk/tests/`, the SDK-backed
+`examples/execution-kernel-minimal/`, and `scripts/check-builder-docs.ts`.
+The [SDK design/findings note](009-sdk-bootstrap-design-and-findings.md) records defaults, limits,
+constructor-validation and operation-index bug repairs, and unresolved architectural concerns.
+
+**Boundaries.** This is application composition, not new kernel semantics. Preflight is advisory for
+permissions and dynamic services; runtime remains authoritative. Default stores are in memory;
+host waiting limits do not interrupt arbitrary trusted code or supply provider cancellation/durability.

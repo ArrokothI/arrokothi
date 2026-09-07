@@ -26,7 +26,9 @@ source-of-record verification, or a confirmed exact write.
 
 ## Reading and writing
 
-An Agent needs a binding, authored keys, and application-supplied read/write view resolvers. A write
+An Agent needs a binding, authored keys, and independent read/write-exposure grants. The SDK
+wires the corresponding resolvers from `memory.read` and `memory.writeExposure`; advanced policies
+can supply their own through `controllers(services)`. A write
 also needs a fresh Effect authorization. The [complete chain](current-authoring-surface.md#structured-memory-wiring)
 and [compiled example](../../../examples/execution-kernel-minimal/patterns.ts) show each independent
 configuration. Read access does not imply write access, and exposing a write callable does not allow

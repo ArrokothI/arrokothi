@@ -6,6 +6,7 @@
   "type": "module",
   "workspaces": [
     "packages/core",
+    "packages/sdk",
     "packages/models/gemini",
     "packages/retrieval/local",
     "packages/interoperability/mcp",
@@ -16,7 +17,7 @@
     "node": ">=22.9.0"
   },
   "scripts": {
-    "test": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts tests/conformance/*/*.test.ts",
+    "test": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts tests/conformance/*/*.test.ts packages/sdk/tests/*.test.ts",
     "test:watch": "node --test --watch --experimental-strip-types packages/core/tests/*.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "example:execution-kernel": "node --experimental-strip-types examples/execution-kernel-minimal/main.ts",
@@ -30,9 +31,10 @@
     "test:mcp": "node --test --experimental-strip-types packages/interoperability/mcp/tests/*.test.ts tests/conformance/mcp/*.test.ts",
     "test:conformance": "node --test --experimental-strip-types tests/conformance/*/*.test.ts",
     "test:evals": "node --test --experimental-strip-types tests/evals/*/*.eval.test.ts",
-    "test:packages": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts",
+    "test:packages": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts packages/sdk/tests/*.test.ts",
     "example:application-patterns": "node --experimental-strip-types examples/execution-kernel-minimal/patterns-main.ts",
-    "check:builder-docs": "node --experimental-strip-types scripts/check-builder-docs.ts"
+    "check:builder-docs": "node --experimental-strip-types scripts/check-builder-docs.ts",
+    "test:sdk": "node --test --experimental-strip-types packages/sdk/tests/*.test.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

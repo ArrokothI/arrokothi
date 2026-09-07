@@ -5,7 +5,7 @@ new roadmap. The [builder guide](../guides/agent-workflow-composition/README.md)
 This review used repository implementation, canonical documents and ordinary conformance/examples.
 No domain-specific evaluation requirements informed the guidance.
 
-## Fixed in this change
+## Fixed during the earlier builder-guidance work
 
 **Confirmation rule shadowing — bounded implementation defect.**
 [createCapabilityConfirmationPolicy](../../packages/core/src/reference/confirmation-policy.ts)
@@ -46,7 +46,7 @@ cancellation settlement without cascade or configured child-result deadlines.
 
 | Observation and evidence | Builder impact | Assessment / promising direction |
 |---|---|---|
-| Assembly needs many independently deny-by-default collaborators: [HarnessOptions](../../packages/core/src/runtime/harness.ts), [Agent options](../../packages/core/src/controllers/agent/controller.ts) | No memory/actions often looks like model inaction | Consider a public bootstrap/preflight layer reporting missing wiring while preserving independent policy decisions; example assembly is not a new SDK |
+| Manual core assembly needs many independently deny-by-default collaborators | Missing wiring can look like model inaction | Addressed by the supported `@arrokothi/sdk` composition and preflight; [design and evidence](009-sdk-bootstrap-design-and-findings.md). Independent grants remain explicit |
 | Stock controllers omit spawn/message/user-input actions that generic Effects support: [Agent controller](../../packages/core/src/controllers/agent/controller.ts), [Stage requests](../../packages/core/src/workflow/observations.ts) | Natural application compositions require host/port work | Authoring coverage gap, not absent kernel vocabulary. Consider explicit stock controller action interfaces with conformance |
 | Agent `maxModelCalls` defaults to 8 and `state.step` accumulates across turns: [spec](../../packages/core/src/agent/spec.ts), [controller](../../packages/core/src/controllers/agent/controller.ts) | A healthy conversation eventually fails; no public budget-renewal operation | Internally consistent. Decide deliberate continuity/budget policy; possible future bounded renewal needs abuse/spend analysis |
 | Compiler slices model-visible messages, but Agent state retains the full transcript: [compiler](../../packages/core/src/controllers/agent/information.ts), [state](../../packages/core/src/agent/control-state.ts) | Long-lived chat grows retained state; message count does not bound per-message bytes | Strategy/ergonomics concern. Measure serialized progress and introduce explicit compaction/retention policy without losing pending invocation truth |
@@ -96,8 +96,9 @@ validation utility and clearly owned dispatch-validation contract.
 The builder guide is suitable to freeze **as a versioned guide to this implemented surface**, with
 runnable evidence and explicit limits. This is not a production-readiness verdict for the kernel.
 Revalidate guidance when public exports/controllers change, and resolve the findings before promising
-unqualified durable application execution. SDK bootstrap and computed-return composition remain
-high-value ergonomics questions for a separate task.
+unqualified durable application execution. SDK bootstrap is now supported above core; computed-return
+composition remains a high-value design question. The [SDK implementation review](009-sdk-bootstrap-design-and-findings.md)
+records the chosen boundary, additional bounded fixes and remaining concerns.
 
 ## Validation and discovery review
 

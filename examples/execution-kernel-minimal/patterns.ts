@@ -1,17 +1,10 @@
-/** Application-owned assembly: multi-turn drafting and a fixed review/publish Workflow. */
-import {
-  ControllerRegistry, Harness, createAgentController, createWorkflowController,
-  defineAgent, defineWorkflow,
-} from "@arrokothi/core";
+/** SDK application: multi-turn drafting and a fixed review/publish Workflow. */
+import { createApplication, defineAgent, defineWorkflow } from "@arrokothi/sdk";
 import type { ObjectSchema, StructuredMemoryBinding } from "@arrokothi/core";
 import type { CapabilityExecutor, EffectAuthorizer } from "@arrokothi/core/ports";
 import {
-  FifoScheduler, InMemoryDefinitionStore, InMemoryRuntimeStore, ModelProviderRegistry,
-  ScriptedModelProvider, StaticModelResolver, createActiveOperationViewResolver,
-  createAllowListAuthorizer, createCapabilityCatalog, createCapabilityConfirmationPolicy,
-  createDeterministicIds, createFixedClock, createFunctionStageRegistry,
-  createReferenceAgentExecutor, createRuntimeOperationAuthoritySource,
-  createStructuredMemoryReadViewResolver, createStructuredMemoryWriteViewResolver, portableModelFeatures,
+  ScriptedModelProvider, createAllowListAuthorizer, createCapabilityCatalog,
+  createCapabilityConfirmationPolicy, portableModelFeatures,
 } from "@arrokothi/core/reference";
 import type { ScriptedModelStep } from "@arrokothi/core/reference";
 
@@ -75,13 +68,7 @@ export function publishingWorkflow() {
 
 /** Offline, key-free assembly. The article Map is an observable fake external system, not durability. */
 export function createPatternApp(steps: readonly ScriptedModelStep[]) {
-  const store = new InMemoryRuntimeStore();
-  const definitions = new InMemoryDefinitionStore();
   const provider = new ScriptedModelProvider({ id: "scripted", steps });
-  const providers = new ModelProviderRegistry([provider]);
-  const resolver = new StaticModelResolver({ primary: {
-    provider: provider.id, model: "offline", portableFeatures: portableModelFeatures({ capabilityCalls: true }),
-  } });
   const articles = new Map<string, string>();
   const publisherCalls: string[] = [];
   const catalog = createCapabilityCatalog([{ ...PUBLISH, consequential: true,
@@ -128,55 +115,50 @@ export function createPatternApp(steps: readonly ScriptedModelStep[]) {
       return { status: "success", observation: { id, title } };
     },
   };
-  const functions = createFunctionStageRegistry({
-    "publish-reviewed-title": (context) => {
-      const answer = context.observations.find((observation) => observation.key === "publication");
-      if (answer) {
-        if (answer.outcome !== "completed") {
-          // A settled barrier is not success. Unknown requires reconciliation, never a blind retry.
-          return { status: "failed", code: `publication_${answer.outcome}`, message: answer.error?.message ?? answer.outcome };
+  const application = createApplication({
+    functions: {
+      "publish-reviewed-title": (context) => {
+        const answer = context.observations.find((observation) => observation.key === "publication");
+        if (answer) {
+          if (answer.outcome !== "completed") {
+            // A settled barrier is not success. Unknown requires reconciliation, never a blind retry.
+            return { status: "failed", code: `publication_${answer.outcome}`, message: answer.error?.message ?? answer.outcome };
+          }
+          const receipt = JSON.stringify(answer.observation);
+          return { status: "completed", result: receipt, emissions: [{ body: { kind: "text", text: receipt } }] };
         }
-        const receipt = JSON.stringify(answer.observation);
-        return { status: "completed", result: receipt, emissions: [{ body: { kind: "text", text: receipt } }] };
-      }
-      const title = context.input?.trim();
-      if (!title || title.length < 3 || title.length > 100) {
-        return { status: "failed", code: "invalid_review", message: "The reviewer must return a title of 3–100 characters." };
-      }
-      return { status: "awaitEffects", effects: [{
-        key: "publication", ...PUBLISH, input: { title }, idempotency: "per_input", deadlineMs: 30_000,
-      }] };
+        const title = context.input?.trim();
+        if (!title || title.length < 3 || title.length > 100) {
+          return { status: "failed", code: "invalid_review", message: "The reviewer must return a title of 3–100 characters." };
+        }
+        return { status: "awaitEffects", effects: [{
+          key: "publication", ...PUBLISH, input: { title }, idempotency: "per_input", deadlineMs: 30_000,
+        }] };
+      },
     },
-  });
-  const harness = new Harness({
-    definitions, store, scheduler: new FifoScheduler(),
-    clock: createFixedClock("2026-01-01T00:00:00.000Z", 0), ids: createDeterministicIds(),
-    capabilityCatalog: catalog, capabilities, authorizer,
+    models: { providers: [provider], bindings: { primary: {
+      provider: provider.id, model: "offline", portableFeatures: portableModelFeatures({ capabilityCalls: true }),
+    } } },
+    capabilities: { catalog, executor: capabilities }, authorizer,
+    memory: { read: { readableKeys: ["title"] }, writeExposure: { writableKeys: ["title"] } },
     confirmationPolicy: createCapabilityConfirmationPolicy({ rules: [{ capability: PUBLISH.capability, operations: [PUBLISH.operation] }] }),
-    controllers: new ControllerRegistry([
-      createAgentController({
-        models: { resolver }, executor: createReferenceAgentExecutor({ providers }),
-        views: createActiveOperationViewResolver({ catalog, authority: createRuntimeOperationAuthoritySource(store) }),
-        structuredMemoryReadView: createStructuredMemoryReadViewResolver({ store, grants: { readableKeys: ["title"] } }),
-        structuredMemoryWriteView: createStructuredMemoryWriteViewResolver({ store, grants: { writableKeys: ["title"] } }),
-      }),
-      createWorkflowController({ functions, models: { resolver, providers } }),
-    ]),
   });
+  const { harness } = application;
   return {
-    harness, provider, articles, publisherCalls,
+    application, harness, provider, articles, publisherCalls,
     async startConversation(text: string, maxModelCalls = 12) {
-      const definition = await definitions.save(draftingAgent(maxModelCalls));
-      const { executionId } = await harness.createExecution({ definition, structuredMemory: MEMORY, operationAuthority: { operations: [PUBLISH] } });
-      await harness.deliverExternalInput({ destination: executionId, label: "user", payload: text });
+      const { executionId } = await application.start({
+        definition: draftingAgent(maxModelCalls), structuredMemory: MEMORY,
+        operationAuthority: { operations: [PUBLISH] }, input: { label: "user", payload: text },
+      });
       return executionId;
     },
     async startWorkflow(topic: string, structuralSpawnBudget = 1) {
-      await definitions.save(reviewerAgent());
-      const definition = await definitions.save(publishingWorkflow());
-      const { executionId } = await harness.createExecution({ definition, structuralSpawnBudget, operationAuthority: { operations: [PUBLISH] } });
-      // Deliver start input BEFORE running: the stock Workflow starts even without an input.
-      await harness.deliverExternalInput({ destination: executionId, label: "topic", payload: topic });
+      await application.register(reviewerAgent());
+      const { executionId } = await application.start({
+        definition: publishingWorkflow(), structuralSpawnBudget,
+        operationAuthority: { operations: [PUBLISH] }, input: { label: "topic", payload: topic },
+      });
       return executionId;
     },
   };

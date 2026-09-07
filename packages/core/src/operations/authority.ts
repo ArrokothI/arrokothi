@@ -31,7 +31,7 @@
  */
 
 import type { OperationRef } from "./refs.ts";
-import { compareOperationRefs, formatOperationRef, isSameOperationRef } from "./refs.ts";
+import { compareOperationRefs, operationRefKey, isSameOperationRef } from "./refs.ts";
 
 /**
  * A typed reference to a stored authority record.
@@ -93,7 +93,7 @@ export function createEffectiveOperationAuthority(input: CreateOperationAuthorit
   const seen = new Set<string>();
   const operations: OperationRef[] = [];
   for (const ref of input.grant.operations) {
-    const key = formatOperationRef(ref);
+    const key = operationRefKey(ref);
     if (seen.has(key)) continue;
     seen.add(key);
     operations.push({ capability: ref.capability, operation: ref.operation });
@@ -131,7 +131,7 @@ export function attenuateChildOperations(
   const seen = new Set<string>();
   const attenuated: OperationRef[] = [];
   for (const ref of requestedOperations) {
-    const key = formatOperationRef(ref);
+    const key = operationRefKey(ref);
     if (seen.has(key)) continue;
     if (!parent.operations.some((candidate) => isSameOperationRef(candidate, ref))) continue;
     seen.add(key);
@@ -163,7 +163,7 @@ export function createDelegatedOperationAuthority(
   const seen = new Set<string>();
   const operations: OperationRef[] = [];
   for (const ref of input.operations) {
-    const key = formatOperationRef(ref);
+    const key = operationRefKey(ref);
     if (seen.has(key)) continue;
     seen.add(key);
     operations.push({ capability: ref.capability, operation: ref.operation });
