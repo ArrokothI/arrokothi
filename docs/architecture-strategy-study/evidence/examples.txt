@@ -1,0 +1,32 @@
+
+> arrokothi-agent-kernel@0.8.1 test:example:execution-kernel
+> node --test --experimental-strip-types examples/execution-kernel-minimal/*.test.ts
+
+▶ the minimal Execution-kernel example
+  ✔ the definition is portable authored data with no deployment identity in it (21.517958ms)
+  ✔ authorized: the Effect is proposed, authorized, dispatched, and settles (37.827125ms)
+  ✔ deny-by-default: with no authorizer the same request is refused and nothing dispatches (2.365875ms)
+  ✔ the two runs differ ONLY in policy: same script, same answer, different journal (9.633208ms)
+  ✔ an identical confident answer proves nothing; the journal does (7.485209ms)
+✔ the minimal Execution-kernel example (80.103875ms)
+✔ a bounded LLM Stage selects the declared ready branch and records an exact category (38.722083ms)
+✔ a bounded LLM Stage selects the declared needs_review branch and records an exact category (9.895125ms)
+✔ multiple turns: committed memory reaches context, exact approval publishes once, responses keep the Agent alive (86.8295ms)
+✔ a publish before a committed title is denied even when the model claims success (4.200333ms)
+✔ a changed title is checked within the turn, without a stale host gate flag (9.054ms)
+✔ invalid memory values are rejected and never become application facts (2.10425ms)
+✔ declining a conversational action leaves the world unchanged and allows another turn (6.409125ms)
+✔ maxModelCalls is an Execution-wide budget, not a fresh budget on each user turn (3.546291ms)
+✔ Workflow calls a terminal Agent child, then a Function Stage awaits actual publication (12.619416ms)
+✔ Workflow decline is handled as a failed business step, not successful barrier completion (6.638ms)
+✔ child calls need lineage spawn credits as well as spawn permission (2.068375ms)
+✔ Gemini provider wiring via referenceExecutor executes offline with a fake HTTP transport (32.633791ms)
+✔ Gemini provider wiring via strandsExecutor executes offline with a fake HTTP transport (28.833667ms)
+ℹ tests 18
+ℹ suites 1
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1284.357042

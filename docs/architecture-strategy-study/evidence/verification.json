@@ -1,0 +1,31 @@
+{
+  "localLinksChecked": 134,
+  "repositories": {
+    "agent-kernel": {
+      "headMatches": true,
+      "status": "?? docs/architecture-strategy-study/"
+    },
+    "benchmark": {
+      "headMatches": true,
+      "status": ""
+    },
+    "OpenClaw": {
+      "headMatches": true,
+      "status": ""
+    },
+    "Hermes Agent": {
+      "headMatches": true,
+      "status": ""
+    },
+    "Dify": {
+      "headMatches": true,
+      "status": ""
+    },
+    "CrewAI": {
+      "headMatches": true,
+      "status": ""
+    }
+  },
+  "issues": [],
+  "result": "PASS"
+}

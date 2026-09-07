@@ -1,0 +1,62 @@
+{
+  "studyDate": "2026-09-07",
+  "repositories": {
+    "agent-kernel": {
+      "workspaceDirectory": "agent-kernel",
+      "commit": "3bdc4f68152c108ceea776f92f519d891cd0ac24",
+      "commitDate": "2026-09-07T20:59:52+08:00",
+      "commitTitle": "feat(sdk): add supported application bootstrap and preflight",
+      "trackedStatusAtCapture": ""
+    },
+    "benchmark": {
+      "workspaceDirectory": "benchmark",
+      "commit": "04148be7e4419a340293d7b76161e173e93ee936",
+      "commitDate": "2026-09-06T20:47:22-04:00",
+      "commitTitle": "canary: neutral-change-request-v3 PASSED on non-canonical host \u2014 evidence",
+      "trackedStatusAtCapture": ""
+    },
+    "OpenClaw": {
+      "workspaceDirectory": "openclaw",
+      "commit": "7cabf654ef59339b9dd3cf9a7993a9cb26725d0d",
+      "commitDate": "2026-09-07T06:22:48-07:00",
+      "commitTitle": "refactor(gateway): share plugin approval request delivery (#140684)",
+      "trackedStatusAtCapture": ""
+    },
+    "Hermes Agent": {
+      "workspaceDirectory": "hermes-agent",
+      "commit": "50d7a756d8feebff4d0e8c2de8c59d9c7ed75b83",
+      "commitDate": "2026-09-07T06:21:44-07:00",
+      "commitTitle": "fix(desktop): scope separator highlighting to model searches",
+      "trackedStatusAtCapture": ""
+    },
+    "Dify": {
+      "workspaceDirectory": "dify",
+      "commit": "8fc11b2927fb8b2957cdde7bf805614370d2d50a",
+      "commitDate": "2026-09-07T13:28:20+00:00",
+      "commitTitle": "refactor(web): retire provider context plan state (#41925)",
+      "trackedStatusAtCapture": ""
+    },
+    "CrewAI": {
+      "workspaceDirectory": "crewAI",
+      "commit": "1f3e6113d75cd12b2899943faffbc729130d200b",
+      "commitDate": "2026-09-07T16:27:15+05:30",
+      "commitTitle": "docs(streaming): fix streaming output docstring examples (#7286)",
+      "trackedStatusAtCapture": ""
+    }
+  },
+  "host": {
+    "os": "macOS-15.7.9-arm64-arm-64bit-Mach-O",
+    "node": "v25.2.1"
+  },
+  "scope": "Architecture-focused source and test inspection; upstream suites and live comparative campaigns not executed.",
+  "supplementaryPrimaryDocumentation": {
+    "retrieved": "2026-09-07",
+    "scope": "Documentation-level architectural baselines, not source audits or tested integrations.",
+    "urls": [
+      "https://docs.temporal.io/activity-definition",
+      "https://docs.restate.dev/develop/ts/durable-steps",
+      "https://docs.restate.dev/references/architecture",
+      "https://docs.langchain.com/oss/python/langgraph/interrupts"
+    ]
+  }
+}

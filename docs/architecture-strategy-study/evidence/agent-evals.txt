@@ -1,0 +1,28 @@
+
+> arrokothi-agent-kernel@0.8.1 test:evals
+> node --test --experimental-strip-types tests/evals/*/*.eval.test.ts
+
+▶ an imported MCP operation is indistinguishable from a native one at the Agent layer
+  ✔ the same Agent configuration produces the same behaviour over either executor (49.6545ms)
+✔ an imported MCP operation is indistinguishable from a native one at the Agent layer (50.1505ms)
+▶ reference Agent behavioural baseline
+  ✔ 01 selects the operation the task needs (28.042125ms)
+  ✔ 02 passes semantically correct arguments (2.814167ms)
+  ✔ 03 does not call an operation the task does not need (1.201417ms)
+  ✔ 04 a succeeding operation changes the world (2.684ms)
+  ✔ 05 recovers and reports when the operation fails (2.13225ms)
+  ✔ 06 recovers and reports when policy denies the operation (2.713208ms)
+  ✔ 07 does not claim success after an unknown outcome (1.734875ms)
+  ✔ 08 an operation outside the exposed set is never selected (1.735709ms)
+  ✔ 09 exhausting the model-call budget is a reported failure, not a loop (4.461334ms)
+  ✔ 10 a confident claim with an unchanged world is graded as a failure (1.065584ms)
+  ✔ the trial abstraction repeats, and a deterministic case repeats identically (5.286792ms)
+✔ reference Agent behavioural baseline (55.285ms)
+ℹ tests 12
+ℹ suites 2
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 544.812625
