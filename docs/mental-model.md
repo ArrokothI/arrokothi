@@ -50,8 +50,7 @@ An Execution is `READY`, `RUNNING`, `WAITING`, or terminal (`COMPLETED`, `FAILED
 Creating it atomically makes it `READY`; a separate externally visible `CREATED` phase is unnecessary.
 `RUNNING` means an Activation is unresolved, including when its host is lost and recovery is held.
 `WAITING` means an accepted Outcome registered a Kernel-visible dependency. A model call or native
-polling promise stays inside the Runtime. A held recovery is visible operationally; it is not an
-invented human wait or a successful result.
+polling promise stays inside the Runtime. If recovery cannot safely proceed, keep the Execution semantically RUNNING because its Activation remains unresolved, but expose an operational recovery-held condition. Do not pretend the Runtime intentionally entered WAITING, and do not pretend the unresolved Activation succeeded.
 
 One Execution has at most one **current Activation authorized to commit progress**. Unrelated
 Executions can compute concurrently. An obsolete host can remain physically alive; Kernel fencing
