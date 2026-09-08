@@ -1,7 +1,9 @@
 # Children, data flow, and concurrency
 
-[Guide home](README.md). Canonical owners: [composition](../../composition.md),
-[runtime](../../execution-runtime.md), [authority](../../authority.md), [memory](../../memory.md).
+[Guide home](README.md). Current target semantics are owned by [Kernel](../../kernel.md) and
+[Execution](../../execution.md), with [composition detail](../../detail-design/composition-and-communication.md),
+[authority detail](../../detail-design/authority-and-actions.md), and [memory/state detail](../../detail-design/memory-and-state.md).
+This page describes the implemented 0.8.x authoring surface.
 
 ## Call a child when it needs independent runtime identity
 
@@ -52,9 +54,9 @@ The last row is a real limitation. A computed receipt emitted by the final Funct
 become the Workflow's return value. If a host wants that output, consume the emission or an external
 record. Do not claim that this gives a called parent the same result automatically. Consider a
 same-Execution Stage sequence, a text-returning Agent child, or explicit application storage when a
-reusable computed-return Workflow hits this limit. The canonical suggestion to pass structured data
-via memory is also narrower in practice because Stages cannot read committed memory. Both issues are
-recorded in [findings](../../development/003-evidence-and-findings.md).
+reusable computed-return Workflow hits this limit. The older recommendation to pass structured data
+through memory is narrower in the implemented surface because Stages cannot read committed memory.
+Both issues are recorded in [findings](../../development/003-evidence-and-findings.md).
 
 ## Parallel Workflow branches
 
