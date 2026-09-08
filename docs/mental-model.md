@@ -1,440 +1,307 @@
-# Mental Model
+# Mental model
 
-> **Status: canonical conceptual overview for ArrokothI.**
->
-> This document should be enough to understand the shape of the system. It defines the major concepts and the boundaries between them, but deliberately leaves tricky semantics to the dedicated concept documents. It does not define TypeScript APIs, storage layouts, scheduler algorithms, provider SDK behavior, or protocol wire formats.
->
-> Go deeper in [`execution-runtime.md`](execution-runtime.md) for runtime/lifecycle/concurrency, [`composition.md`](composition.md) for Agent/Workflow composition and Skill, [`authority.md`](authority.md) for permission/delegation/exposure, [`memory.md`](memory.md) for retained information/context/provenance, [`interoperability.md`](interoperability.md) for portable interfaces/protocols, and [`security-guarantees.md`](security-guarantees.md) for trust/deployment guarantees. Unresolved/future questions belong in [`future-plan.md`](future-plan.md). The document map and ownership rules are in [`README.md`](README.md).
+ArrokothI is an **execution kernel**. Its job is to manage long-lived Executions while allowing the code that performs each Execution to remain a black box.
 
-## 1. The core idea
+An Execution may be implemented by an ArrokothI Agent, an ArrokothI Workflow, Hermes, OpenClaw, Dify, CrewAI, or another provider. The Kernel does not need to understand the runtime's reasoning loop, graph, context engine, model calls, native tools, or checkpoint format.
 
-ArrokothI is an **execution kernel for long-lived Agents and Workflows**.
-
-The central runtime entity is an **Execution**:
-
-> **An Execution is a logically independent unit of runtime work with its own identity, lifecycle, authority, state/memory view, pending work, and runtime management.**
-
-In 0.8.x, the primary Execution kinds are:
+The boundary is simple:
 
 ```text
-ExecutionDefinition
-├── AgentDefinition
-└── WorkflowDefinition
-        ↓ instantiate
-     Execution
+                    ArrokothI Kernel
+              ┌─────────────────────────┐
+              │ Execution identity      │
+              │ lifecycle               │
+              │ Events and mailboxes    │
+              │ authority and Effects   │
+              │ scheduling              │
+              │ communication           │
+              │ history and recovery    │
+              └────────────┬────────────┘
+                           │
+                    Execution Driver
+                           │
+          ExecutionActivation ↓  ↑ ExecutionOutcome
+                           │
+              ┌────────────┴────────────┐
+              │   Execution Runtime     │
+              │                         │
+              │ Agent / Workflow        │
+              │ model / graph / code    │
+              │ context / native memory │
+              │ internal async work     │
+              └─────────────────────────┘
 ```
 
-A Definition describes reusable work. An Execution is one live runtime instance of that definition.
+The central design rule is:
 
-Functions, LLM calls, retrieval, parsing, Adapters, and Workflow Stages do **not** become Executions merely because they are runnable or complex.
+> **The Kernel owns execution. The Execution Runtime owns how the work is done.**
 
-> **Composition does not imply an Execution boundary. Independent runtime identity does.**
+## 1. Execution
 
-A useful test is: does this piece of work need to keep existing as something the runtime may independently wait for, resume, message, cancel, supervise, recover, give separate authority to, or address later? If yes, it probably deserves an Execution. Otherwise it should usually remain local computation inside one.
+An **Execution** is a logical unit of independently managed work.
 
----
+It has:
 
-## 2. Agent and Workflow are complementary
+- an `execution_id`;
+- a lifecycle;
+- accepted inputs and Events;
+- bounded authority for Kernel-mediated actions;
+- progress needed to continue;
+- a terminal result or failure when finished;
+- Kernel-owned history and recovery obligations.
 
-Agent and Workflow differ mainly in **who owns semantic progression**.
+An Execution is not a process. One process may host many Executions; one Execution may survive the loss of a process and continue on another host.
 
-### Workflow
+An Agent run is an Execution. A Workflow run is an Execution. When one Execution creates or calls another independently managed Agent or Workflow, the child is another Execution with its own identity and lifecycle.
 
-> **A Workflow has system-defined semantic topology.**
+Internal functions, model calls, graph nodes, context compaction, and other local substeps do not become Executions merely because they are asynchronous or complex.
 
-The application defines the possible Stages and transitions. An LLM may classify, branch, retrieve, revise, or loop inside those predefined possibilities without turning the Workflow into an Agent.
+## 2. Execution Runtime
+
+The **Execution Runtime** is the implementation behind one Execution.
+
+It owns semantic progression. For an Agent, that may include model-directed reasoning, context construction, tools, skills, delegation, and native memory. For a Workflow, that may include graph traversal, branching, joins, deterministic computation, and human steps.
+
+The Kernel treats these details as opaque. It only needs the Runtime to speak the Execution protocol through an **Execution Driver**.
+
+This allows a provider runtime to retain behavior that contributes to its quality. Hermes may retain its context and environment lifecycle. OpenClaw may retain its native session/runtime machinery. Dify may retain its application graph and human-pause state. CrewAI may retain its Crew/Flow programming model.
+
+## 3. Activation and Outcome
+
+The Execution protocol is repeated and asynchronous, not a one-shot request/response.
+
+A conceptual Activation is:
 
 ```text
-collect → evaluate → revise
-              │         │
-              └→ publish┘
+ExecutionActivation
+  execution_id
+  activation_id
+  writer_epoch / base_progress_revision
+  events[]
+  execution_view
+  authority/exposure_view
+  cancellation
+  deadline/budget
+  pinned_definition/runtime_identity
 ```
 
-A **Stage** is Workflow structure inside one Workflow Execution. It is not a smaller Execution.
-
-### Agent
-
-> **An Agent has model-directed open-ended semantic progression inside hard runtime boundaries.**
-
-The model repeatedly chooses what semantic action to take next from the observations and options made available to it.
+A conceptual Outcome is:
 
 ```text
-observe
-  ↓
-model decides
-  ↓
-action requests / child calls / messages
-  ↓
-new observations
-  ↓
-model decides again
+ExecutionOutcome
+  execution_id
+  activation_id
+  writer_epoch / base_progress_revision
+  progress/checkpoint
+  emissions[]
+  effects[]
+  next:
+    continue
+    await(condition)
+    complete(result)
+    fail(error)
 ```
 
-The number of LLM calls does not define Agent-ness. What matters is whether the model owns an open-ended continuation space.
+The exact wire schema is an implementation/API decision. The semantic requirements are more important:
 
-The same task may be expressed as a Workflow or an Agent. The distinction describes **control ownership**, not the output.
+- an Outcome belongs to one specific Activation;
+- stale Outcomes can be rejected after takeover or newer progress;
+- progress needed for continuation is durable for profiles that claim recovery;
+- the Execution Runtime cannot directly mutate Kernel lifecycle or authority;
+- Kernel-mediated actions are proposals until the Kernel accepts them.
 
----
+## 4. Running and waiting
 
-## 3. Events in, Effects out
+`RUNNING` means an Activation has been dispatched and an accepted Outcome has not yet ended that Activation.
 
-An Execution advances through a controller appropriate to its kind:
+The Kernel does not need to know whether the Runtime is currently:
+
+- waiting on an LLM request;
+- executing Python;
+- traversing a native graph;
+- compacting context;
+- running an internal tool;
+- sleeping inside provider code.
+
+Those are internal Runtime facts.
+
+`WAITING` has a narrower semantic meaning: the Runtime has returned an Outcome saying it has no runnable local work and needs a Kernel-visible condition before it can continue.
+
+Example:
 
 ```text
-Workflow Execution → Workflow controller
-Agent Execution    → Agent controller
+Outcome.next = await(human_approval_42)
 ```
 
-The controller may perform local computation directly. When it needs the runtime or outside world to do something, it proposes an **Effect**.
+The Kernel records that dependency and makes the Execution `WAITING`. When the matching Event arrives, the Kernel makes it `READY` and can dispatch another Activation.
 
-Results and other observations enter an Execution as **Events**.
+## 5. Kernel event loop
+
+A simple Kernel may process Kernel-owned state transitions one at a time.
+
+Conceptually it has three structures:
+
+| Structure | Purpose |
+|---|---|
+| Kernel inbound queue | Outcomes, external inputs, Effect settlements, timers, cancellation, host/worker liveness signals |
+| Per-Execution mailbox | Semantic Events waiting for delivery to that Execution |
+| Ready queue | Executions eligible for another Activation |
+
+These may share one physical implementation at first.
+
+The important concurrency rule is not “the whole system is single threaded.” It is:
+
+> **At most one accepted in-flight Activation writes progress for one Execution at a time. Different Executions may compute concurrently.**
+
+A first Kernel implementation may use one coordinator loop because it is easier to test. Future Kernel Workers may process independent Executions in parallel without changing Execution semantics.
+
+If Events arrive while an Execution is `RUNNING`, the Kernel stores them in its mailbox. It does not dispatch another concurrent Activation for that same Execution. After the current Outcome is accepted, the next Activation can receive the queued Events.
+
+## 6. Event
+
+An **Event** is a semantic observation delivered by the Kernel to an Execution.
+
+Examples include:
+
+- application input;
+- an Effect result;
+- a human response;
+- a child result;
+- a peer message;
+- a timer or deadline observation when modeled semantically.
+
+The Kernel owns Event acceptance, routing, correlation, and delivery history. The Runtime decides what an Event means to its internal logic.
+
+Worker heartbeats and transport-level liveness are not Events. They belong to the operational hosting plane and should not enter Agent context or Workflow semantics unless an application deliberately exposes them.
+
+## 7. Effect
+
+An **Effect** is a proposal for a Kernel-mediated interaction.
+
+An Execution may propose an Effect, but the proposal does not make the action happen. The Kernel validates the concrete request, checks current authority, obtains exact consent when policy requires it, records the attempt, dispatches through a trusted boundary, and later delivers the observed outcome as an Event.
+
+This is the main path through which the Kernel can make a strong action-governance claim.
+
+If trusted native code directly uses its filesystem, network, terminal, or credentials without crossing the Kernel, that action is outside Kernel mediation. This is allowed in the **Trusted Execution** deployment mode, but the Kernel must not claim it authorized or prevented the native action.
+
+## 8. Authority and exposure
+
+**Authority** is what Kernel-mediated actions an Execution may request.
+
+An **Exposure View** is what part of that already-authorized universe is shown to the Runtime for the current boundary or Activation.
+
+The Runtime can request narrower access or choose not to use what it sees. It cannot create additional authority by changing its prompt, graph, native configuration, or Outcome.
+
+Current authorization is checked again at concrete action dispatch. An old Activation or old exposure snapshot is not a permanent grant.
+
+## 9. History, progress, and memory
+
+The Kernel and the Execution Runtime retain different kinds of information.
+
+| Kernel | Execution Runtime |
+|---|---|
+| Execution History: accepted input, Activation, Effect, settlement, lifecycle, communication, recovery evidence | Context, conversation state, Working Notes, native memory, planning state, provider-native checkpoints |
+| Governed resource bindings and access decisions | How retrieved information is selected or transformed for reasoning |
+| Opaque or declared progress/checkpoint needed to resume | Meaning and internal structure of native progress |
+
+Execution History is evidence about what happened. It is not automatically Agent memory or model context.
+
+The Kernel may expose governed memory/resource services when applications need them. The Runtime uses those services through the declared boundary; it may also keep private/native memory that the Kernel does not interpret.
+
+## 10. Agent and Workflow
+
+Agent and Workflow are execution-side concepts.
+
+| Agent | Workflow |
+|---|---|
+| Semantic progression is substantially model/intelligence directed at runtime | Allowed semantic progression/topology is primarily system defined |
+| Often owns context, model loop, tools, planning | Often owns graph/state, branching, deterministic transforms, joins |
+| May be ArrokothI-native or provided by another framework | May be ArrokothI-native or provided by another framework |
+
+Both use the same Kernel Execution semantics. The Kernel does not need separate fundamental runtime machines for Agent and Workflow.
+
+CrewAI is useful evidence here: its current Agent execution path uses Flow infrastructure, showing that different semantic control styles can share execution machinery. Dify shows that substantial Workflow state and human pause/resume can remain native. Hermes shows that Agent context/environment lifecycle can be part of cognition rather than Kernel glue. OpenClaw shows that host/runtime capability and delivery ownership can be separated from native cognition.
+
+## 11. Driver
+
+An **Execution Driver** adapts the Kernel protocol to one Runtime.
+
+A Driver may be:
+
+- an in-process function adapter;
+- a subprocess protocol;
+- an HTTP/gRPC service adapter;
+- a queue/worker adapter;
+- a provider-specific remote-job adapter.
+
+The Driver is responsible for faithful translation. It must not silently invent stronger guarantees than the Runtime provides.
+
+For example, if a Hermes integration cannot mediate native terminal/network actions, the Driver may still expose Hermes as a trusted Execution, but ArrokothI cannot advertise those ambient actions as Kernel-authorized Effects.
+
+## 12. Worker and host failure
+
+A **Kernel Worker** performs Kernel coordination work. An **Execution Host** runs an Execution Runtime. They may be the same process, but they are different roles.
+
+A host can disappear while an Execution remains logically alive.
+
+The durable model therefore treats liveness operationally:
 
 ```text
-Event(s)
-   ↓
-Execution
-   ↓
-controller
-   ├── local computation
-   │
-   └── Effect proposal(s)
-              ↓
-           Harness
-      authorize / coordinate
-              ↓
-       runtime / outside world
-              ↓
-            Event(s)
+Execution E1: RUNNING
+Activation A14: assigned to host H3
+H3 lease expires
+A14 attempt becomes lost/stale
+Kernel fences H3
+Kernel reconciles or safely retries according to recorded evidence
+Execution E1 continues, waits, fails, or enters an explicit unknown/manual-recovery condition
 ```
 
-An **Event** says something was observed by an Execution.
+“Worker died” is not automatically “Execution died.”
 
-Examples include user input, a capability result, a child result, a peer message, a timer, or cancellation.
+Heartbeats or lease renewal may be used to observe host liveness. They do not replace action reconciliation: a lost host may have completed an external action immediately before disappearing.
 
-An **Effect** is a request for runtime-mediated interaction. The 0.8.x vocabulary is intentionally small:
+## 13. Trust modes
 
-```text
-UseCapability
-WriteMemory
-SpawnExecution
-SendMessage
-RequestUserInput
-```
+There are two primary execution trust modes:
 
-Effects are proposals, not claims that something already happened.
+| Mode | Meaning |
+|---|---|
+| **Trusted Execution** | Runtime code may use host capabilities that the deployment intentionally makes ambient, such as filesystem, terminal, or network. Kernel guarantees apply to Kernel-mediated paths. |
+| **Isolated Execution** | Runtime code is placed behind an isolation boundary that restricts filesystem, network, process, secret, and resource access according to the deployment claim. |
 
-> **Controllers request. The Harness authorizes and coordinates. Executors and the environment establish reality.**
+Trust mode is separate from the interaction path. In either mode an operation may be **Kernel-mediated**; Trusted Execution may additionally perform **native/ambient** operations that the Kernel does not govern.
 
-This is why a failed tool call normally becomes an observation the program can react to rather than automatically meaning the whole Execution failed.
+## 14. What this subtracts from the previous model
 
----
+The current 0.8.x code calls the coordinator `Harness` and synchronously awaits `ExecutionController.activate(...)`. Because a model call or other controller-local operation can be slow, it introduced `ControllerResumption` so the Kernel can stop waiting on a live Promise and later resume the controller.
 
-## 4. Semantic control and operational control are different
+The new boundary removes that reason from Kernel semantics.
 
-The controller owns **semantic control**:
+An Activation is dispatched asynchronously to an Execution Runtime. The Kernel does not care whether the Runtime spends ten milliseconds or ten minutes on internal model calls. When the Runtime reaches a semantic boundary, it returns an Outcome. Native async work, model calls, context compaction, and similar resumptions stay inside the Runtime.
 
-```text
-Workflow controller
-  follows system-defined topology
+The migration therefore preserves the useful parts—Execution identity, Events, Effects, lifecycle, authority, scheduling, history, correlation, recovery—and moves controller-local asynchronous machinery out of the Kernel contract.
 
-Agent controller
-  interprets model-directed progression
-```
+## 15. Benchmark attribution
 
-The **Harness** owns operational control for all Executions:
+The architecture should make failures attributable.
 
-```text
-lifecycle
-scheduling
-Event delivery
-Effect authorization and coordination
-pending work
-wake-up
-budgets / deadlines
-cancellation / supervision
-persistence / recovery
-routing
-mechanical confirmation
-```
+| Domain | Typical failure |
+|---|---|
+| Kernel | lost accepted input, stale Outcome accepted, unauthorized Effect dispatched, bad recovery, wrong lifecycle/history |
+| Agent Runtime | wrong reasoning, tool choice, context management, planning, answer |
+| Workflow Runtime | wrong route, branch, join, deterministic transform, workflow-level state decision |
+| Driver | correct Runtime behavior translated incorrectly across the Kernel boundary |
+| Isolation | supposedly isolated Runtime bypasses the Kernel through filesystem/network/process access |
 
-Executions do not each own a separate Harness.
+Kernel conformance should use deterministic fake Executions whenever possible. Agent and Workflow quality benchmarks should hold the Kernel fixed. This prevents a safe laboratory harness from receiving credit for an unsafe Agent, or an Agent from receiving blame for a Kernel recovery failure.
 
-```text
-                 one logical Harness
-          ┌────────────┼────────────┐
-          ▼            ▼            ▼
-      Execution    Execution    Execution
-```
+## 16. Invariants
 
-The Harness may be implemented in one process or distributed across workers. Physical placement does not change the meaning of Execution, Event, Effect, `spawn`, or `call`.
-
-The detailed runtime semantics live in [`execution-runtime.md`](execution-runtime.md). Authority decisions performed by the Harness are defined in [`authority.md`](authority.md), while security guarantees around bypass/containment live in [`security-guarantees.md`](security-guarantees.md).
-
----
-
-## 5. Local composition, child composition, and peer communication
-
-There are three different ways work combines:
-
-```text
-local composition
-  function / LLM / Adapter / Stage-local work
-  stays inside the current Execution
-
-child composition
-  spawn / call
-  creates another Execution
-
-peer communication
-  send / ask
-  talks to an already-existing Execution
-```
-
-`spawn` creates a child Agent or Workflow Execution.
-
-`call` is conceptually:
-
-```text
-spawn
-+ wait for the child's terminal result
-```
-
-`send` communicates with an existing peer. `ask` adds correlation and waits for a reply.
-
-Ownership and communication are separate graphs:
-
-```text
-owns X      ≠ may message X
-may message X ≠ may cancel X
-may message X ≠ may inspect X memory
-```
-
-A future/reusable **Skill** is also a composition/package concept, not an Execution kind. A Skill may package instructions, resources, scripts, bindings, and optionally a root Agent/Workflow composition. Activating a Skill may create a child Execution when its composition requires one, or may simply enrich the current Agent when it is instruction-only.
-
-The deeper composition rules belong in [`composition.md`](composition.md). Memory visibility at those boundaries belongs in [`memory.md`](memory.md); the authority to spawn/message/use resources belongs in [`authority.md`](authority.md).
-
----
-
-## 6. Authority is not exposure
-
-An Execution receives **authority**, not ambient privilege.
-
-Authority answers:
-
-> What may this Execution do or access?
-
-It can cover capabilities/operations, resources, spawning, messaging, and other runtime-controlled powers.
-
-The model should usually see much less than the full authorized universe.
-
-Conceptually:
-
-```text
-Catalog
-  what exists
-      ↓
-Effective Authority
-  what this Execution may use
-      ↓
-Active / Exposed View
-  what is relevant and intentionally exposed now
-      ↓
-Model Invocation Projection
-  what this exact model call receives
-```
-
-Each step may narrow the previous one. None of the later layers may enlarge authority.
-
-This is important when an application knows about thousands of tools, resources, memory interfaces, Skills, or Agent/Workflow services. ArrokothI should discover and expose a small relevant subset instead of placing the whole catalog into model context.
-
-> **Discovery, description, or model exposure never grants permission.**
-
-The Harness still authorizes the resulting Effect at execution time.
-
-Runtime identity is also not automatically application identity:
-
-> **Execution identity ≠ application security principal identity.**
-
-Application policy may consider a human, tenant, world, service identity, an Agent acting on behalf of someone, or other authenticated domain facts. Those facts may influence authority, but they do not redefine what an Execution is.
-
-The detailed authority, delegation, Active View, discovery, evidence, and confirmation model is defined in [`authority.md`](authority.md). Deployment/security consequences are defined in [`security-guarantees.md`](security-guarantees.md).
-
----
-
-## 7. Memory is not context
-
-**Memory** is retained information.
-
-**Context** is the selected information presented to the current computation or model call.
-
-```text
-memory / Events / resources / instructions
-                 ↓
-          context selection
-                 ↓
-          current model context
-```
-
-ArrokothI distinguishes different forms of retained information because they have different trust and lifecycle semantics:
-
-```text
-Structured Memory
-  explicit, schema-bound state
-
-Derived Semantic Memory
-  inferred/retrieval-oriented knowledge with provenance
-
-Working Notes
-  temporary scratch reasoning state
-
-Artifacts / Files
-  larger durable work products
-```
-
-Execution history—Events, Effects, messages, lifecycle transitions, traces—is important provenance, but history is not automatically semantic memory.
-
-A derived claim is also not automatically authoritative structured state. In particular:
-
-```text
-retrieved/model/tool content
-        ↓ may influence
-Derived Semantic Memory
-        ↓ may influence
-future reasoning
-
-but does not automatically become
-  authority / consent / trusted Structured Memory
-```
-
-Cross-Execution visibility is explicit. A child does not see all parent memory or notes merely because it is a descendant.
-
-The detailed memory forms, scopes, provenance, visibility, supersession, promotion, retrieval, and context-compilation rules are defined in [`memory.md`](memory.md). Permission to read/write those views belongs in [`authority.md`](authority.md).
-
----
-
-## 8. Response is not completion
-
-A long-lived Execution is not necessarily an `input → output` function.
-
-An Agent may respond many times while remaining alive:
-
-```text
-message
-  ↓
-Agent responds
-  ↓
-waits
-  ↓
-next message
-```
-
-A **response/message** is communication.
-
-A **terminal result** is the optional final result of a completed Execution.
-
-```text
-response ≠ terminal result
-```
-
-This distinction also matters for child composition: a peer or child may send messages without terminating.
-
----
-
-## 9. Interoperability is a projection boundary
-
-ArrokothI's kernel semantics should remain independent of any one external protocol while mapping naturally to standard interfaces.
-
-```text
-kernel semantics
-  Execution / Event / Effect / authority / memory / lifecycle
-        ↓
-portable interface and composition semantics
-  operations / resources / services / Skills /
-  interaction templates / async handles / change signals
-        ↓
-protocol and client bindings
-  MCP / A2A / Agent Skills / HTTP / SDK / UI protocols / future standards
-```
-
-The same semantic operation should be describable once and projected into multiple environments.
-
-Examples:
-
-```text
-portable Operation
-  → model tool
-  → MCP Tool
-  → HTTP/SDK operation
-
-exported Agent/Workflow service
-  → MCP service operation
-  → A2A Agent/Task interaction
-  → ordinary API
-
-Skill
-  → native ArrokothI composition package
-  → Agent Skills-compatible profile where possible
-```
-
-External protocol objects do not replace kernel identities:
-
-```text
-Effect           ≠ protocol operation
-Event            ≠ protocol notification
-Execution        ≠ external task/job
-PendingOperation ≠ external async handle
-```
-
-And protocol discovery/authentication does not grant ArrokothI authority.
-
-External standards are design references, not masters of the kernel. When they reveal a genuinely more general concept, ArrokothI should adopt the concept at the correct layer without making the wire format core truth.
-
-Detailed portable semantics/mappings belong in [`interoperability.md`](interoperability.md). Authority filtering before exposure belongs in [`authority.md`](authority.md); protocol/control-plane security consequences belong in [`security-guarantees.md`](security-guarantees.md).
-
----
-
-## 10. Core invariants
-
-The architecture should protect these distinctions aggressively:
-
-```text
-Definition         ≠ Execution
-Workflow           ≠ Agent
-Stage              ≠ Execution
-Capability         ≠ Execution
-Event              ≠ Effect
-response           ≠ terminal result
-semantic control   ≠ operational control
-authority          ≠ exposure
-Execution identity ≠ application principal identity
-memory             ≠ context
-explicit memory    ≠ derived semantic memory
-ownership          ≠ communication
-Skill              ≠ Execution
-Effect             ≠ protocol operation
-Event              ≠ protocol notification
-Execution          ≠ external task/job handle
-protocol exposure  ≠ authority grant
-```
-
-And these positive rules summarize the system:
-
-> **Execution means independent runtime identity.**
-
-> **Workflow progression is system-defined; Agent progression is model-directed and open-ended.**
-
-> **Events are observations; Effects are proposals for runtime-mediated interaction.**
-
-> **The Harness owns operational reality and authority enforcement.**
-
-> **Composition alone does not create an Execution boundary.**
-
-> **Authority is broader than what the model currently sees.**
-
-> **Memory is broader than the current context, and inferred memory is not automatically trusted state.**
-
-> **Ownership, communication, application identity, and authority are related but distinct.**
-
-> **Kernel semantics are protocol-independent but intentionally projectable to standard interfaces.**
-
-This is the whole picture. Use [`README.md`](README.md) to find the canonical owner of each deeper concept rather than relying on another document to redefine it.
+1. The Kernel owns Execution identity, lifecycle, authority, communication, governed Effects, history, and recovery semantics.
+2. The Execution Runtime owns semantic progression and may remain internally opaque.
+3. One Execution has at most one accepted progress-writing Activation in flight at a time; unrelated Executions may compute concurrently.
+4. Internal Runtime delay is `RUNNING`; Kernel `WAITING` begins only after an accepted `await(...)` Outcome.
+5. Events go into an Execution; Effects are proposals coming out for Kernel mediation.
+6. An Outcome is accepted only for the Activation/progress epoch it was issued against.
+7. Kernel action guarantees cover Kernel-mediated actions. Native/ambient actions require trust or isolation and must be labeled honestly.
+8. Worker or host failure does not erase Execution identity; recovery is based on durable Kernel evidence, not on assuming unfinished work did nothing.

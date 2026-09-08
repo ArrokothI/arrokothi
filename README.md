@@ -1,95 +1,81 @@
 # ArrokothI Agent Kernel
 
-ArrokothI is a provider-neutral execution kernel for Agents and Workflows with explicit authority,
-memory, waiting, and composition. Workspace packages use the `@arrokothi/*` scope.
+ArrokothI is a provider-neutral **execution kernel** for long-lived Agent and Workflow runs.
 
-## Build an application
+The Kernel manages a logical **Execution**—identity, lifecycle, Events, governed Effects, authority, communication, history, and recovery—while treating the code that performs the work as an opaque **Execution Runtime** behind an asynchronous Activation/Outcome protocol.
 
-**Start with [the application builder guide](docs/guides/agent-workflow-composition/README.md).**
-It takes ordinary product requirements through API choice, a runnable application, state, actions,
-provider wiring, and testing. Coding agents enter through [AGENTS.md](AGENTS.md) and the
-[builder skill](.agents/skills/arrokothi-agent-builder/SKILL.md); all routes lead to the same guide.
+An Execution Runtime may be ArrokothI-native or provided by Hermes, OpenClaw, Dify, CrewAI, or another system.
+
+## Architecture
+
+Start with [`docs/mental-model.md`](docs/mental-model.md).
+
+| Document | Purpose |
+|---|---|
+| [`docs/kernel.md`](docs/kernel.md) | Kernel-owned Execution semantics |
+| [`docs/execution.md`](docs/execution.md) | Agent/Workflow and provider Runtime/Driver semantics |
+| [`docs/deployment.md`](docs/deployment.md) | Embedding, processes, trust/isolation, MCP/protocol placement |
+| [`docs/development/`](docs/development/README.md) | Current implementation and migration evidence |
+
+The previous root-level architecture is preserved under [`docs/mental-model-legacy/`](docs/mental-model-legacy/).
+
+## Core boundary
+
+```text
+Kernel
+  │
+  │ ExecutionActivation
+  ▼
+Execution Driver
+  ▼
+Execution Runtime
+  │
+  │ ExecutionOutcome
+  ▼
+Kernel
+```
+
+The Runtime owns reasoning, graph traversal, model calls, context, native memory, tools, and internal asynchronous work. The Kernel owns whether an Outcome is accepted and what it means operationally.
+
+One Execution has at most one accepted progress-writing Activation in flight at a time; different Executions may compute concurrently.
+
+## Trust
+
+There are two primary execution trust modes:
+
+- **Trusted Execution** — Runtime may intentionally use ambient filesystem/network/process capabilities; Kernel guarantees apply to Kernel-mediated paths.
+- **Isolated Execution** — Runtime runs behind a physical isolation boundary appropriate to the deployment claim.
+
+Kernel authority does not magically contain arbitrary trusted code. Strong prevention requires Kernel mediation or isolation.
+
+## Current implementation
+
+The repository is migrating from the previous 0.8.x architecture. Current code still uses the concrete name `Harness`, synchronously awaits `ExecutionController.activate(...)`, and uses `ControllerResumption` for slow controller-local work. Those are implemented-baseline facts, not the target Kernel boundary.
+
+Current SDK, examples, and conformance tests remain useful while migration proceeds.
 
 From this checkout, with Node 22.9+:
 
 ```sh
 npm install
-npm run example:execution-kernel
-npm run example:application-patterns
-npm run test:example:execution-kernel
+npm test
 npm run typecheck
+npm run test:conformance
+npm run test:sdk
 ```
 
-These examples are offline and need no key. They run the real Harness/controllers against scripted
-models and fake external systems. The [quick start](docs/guides/agent-workflow-composition/quick-start.md)
-explains workspace setup, assembly and the host loop.
+For current application-building APIs, start at [`docs/guides/agent-workflow-composition/README.md`](docs/guides/agent-workflow-composition/README.md). For architecture work, use [`docs/README.md`](docs/README.md) instead.
 
-**New applications use [`@arrokothi/sdk`](packages/sdk/README.md).** `createApplication` assembles
-one Harness and both stock controllers; `register`, preflighted `start`, and `runUntilBlocked` cover
-the ordinary lifecycle. Policy, operation ceilings, memory grants and spawn credits stay explicit.
-`@arrokothi/core`, `/ports`, and `/reference` remain available for advanced composition.
-Current Gemini and Strands wiring is in
-[the provider guide](docs/guides/agent-workflow-composition/providers-and-integrations.md).
-
-## Current scope
-
-An Execution is independently managed runtime identity. A Workflow declares semantic topology;
-an Agent lets a model choose progression within configured bounds. Functions and LLM calls can stay
-local to an Execution. Controllers propose Effects; the Harness authorizes and coordinates them;
-executors/environment report what happened. Exposure does not grant authority, and a response is not
-necessarily completion.
-
-The experimental package line is **0.8.1**. It has real enforcement and conformance coverage, but has not
-met the [supported 1.0 boundary](docs/development/001-current-status-and-roadmap.md#what-100-means). In particular:
-
-- Stock Agent/Stage authoring is narrower than the full Effect vocabulary.
-- Structured Memory is Execution-local; Artifact/File has no current API.
-- The Execution runtime store/scheduler are in memory; there is no crash-recovery adapter.
-- Current security is trusted-local, not hosted hostile-code containment.
-- MCP integration covers synchronous Tools; broader services/discovery remain future work.
-
-Consult the [surface matrix](docs/guides/agent-workflow-composition/current-authoring-surface.md) and
-[known builder concerns](docs/development/003-evidence-and-findings.md) before making
-application guarantees. Confirmed capability approvals now obey the same in-runtime `per_input`
-duplicate/unresolved guard as direct dispatch, including concurrent approvals. Consequential external
-systems still need durable application-owned idempotency and unknown-outcome reconciliation.
-
-## Verify and diagnose
-
-```sh
-npm test                     # package tests and semantic conformance
-npm run test:conformance      # semantic conformance only
-npm run test:sdk              # bootstrap/preflight/lifecycle integration
-npm run check:builder-docs    # builder links, anchors, public imports
-npm run test:evals            # separate reference-Agent behavioral baseline
-```
-
-Runtime tests do not grade your application's model quality. Use your own deterministic world-state
-tests and behavior cases. The [diagnosis guide](docs/guides/agent-workflow-composition/evaluation-and-diagnosis.md)
-maps common symptoms to Harness evidence and likely configuration mistakes.
-
-Copy [`.env.example`](.env.example) only for optional live provider work. `canary:gemini`,
-`canary:workflow`, and `canary:mcp:gemini` require configured credentials; offline validation does not
-establish live provider availability or quality.
-
-## Framework development and architecture
-
-[docs/README.md](docs/README.md) assigns canonical concept ownership. Start there when changing or
-investigating kernel semantics, then read the owning document. [docs/development](docs/development/README.md)
-records the implemented baseline, roadmap and engineering findings; it does not override architecture.
-External engineering/research notes are background references rather than implementation promises.
+## Repository layout
 
 | Directory | Role |
 |---|---|
-| `packages/sdk` | Supported application bootstrap, preflight and bounded host driving |
-| `packages/core` | Current contracts, runtime, and reference mechanisms |
-| `packages/agents/strands` | Strands Agent-executor adapter |
-| `packages/models/gemini` | Gemini model-provider adapter |
-| `packages/retrieval/local` | Local retrieval/resource/capability implementations |
-| `packages/interoperability/mcp` | MCP Tool import/export boundary |
-| `examples/execution-kernel-minimal` | Current public-surface application examples |
-| `tests/conformance` | Semantic behavior and boundary tests |
-| `docs/guides/agent-workflow-composition` | Single application builder guide |
+| `packages/core` | Current Kernel + legacy Agent/Workflow implementation while migration is in progress |
+| `packages/sdk` | Current application bootstrap/control surface |
+| `packages/agents/*` | Provider/native Agent integration packages |
+| `packages/interoperability/*` | Protocol boundary packages such as MCP |
+| `tests/conformance` | Semantic and boundary tests |
+| `docs/development` | Implemented baseline, roadmap/evidence, migration status |
+| `docs/architecture-strategy-study` | Comparative architecture diagnosis that informed the redesign |
 
-Dependencies flow from applications to implementations/adapters to core-owned contracts. Provider and
-protocol types stay at their boundaries; they do not define kernel semantics.
+The target dependency direction is application/SDK → Kernel + Execution Drivers → Execution Runtimes/providers. Provider-specific concepts should not become Kernel semantics merely because one integration exposes them.

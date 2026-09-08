@@ -1,29 +1,49 @@
 # Development
 
-This is the front door for current kernel development. Planning documents do not own architecture
-semantics; start with the [canonical map](../README.md) for those. Application builders should use
-the [builder guide](../guides/agent-workflow-composition/README.md).
+This directory describes **current implementation and migration work**. It does not define architecture.
 
-| Question | Current owner |
+Current architecture is owned by:
+
+- [`../mental-model.md`](../mental-model.md)
+- [`../kernel.md`](../kernel.md)
+- [`../execution.md`](../execution.md)
+- [`../deployment.md`](../deployment.md)
+
+## Current implementation documents
+
+| Document | Purpose |
 |---|---|
-| What is implemented today? | [Implemented baseline](002-implemented-kernel-baseline.md) |
-| What does 1.0 mean, what is next, and what gates it? | [Active roadmap](001-current-status-and-roadmap.md) |
-| Which bugs, evidence gaps and decisions remain? | [Evidence and findings](003-evidence-and-findings.md) |
-| Where are the old plans and detailed implementation reviews? | [Legacy index](legacy/README.md) |
-| Where are architecture hypotheses and longer-term directions? | [Strategy study](../architecture-strategy-study/README.md), [research](../research/README.md), [future questions](../future-plan.md) |
+| [`002-implemented-kernel-baseline.md`](002-implemented-kernel-baseline.md) | What the current 0.8.x code actually implements |
+| [`003-evidence-and-findings.md`](003-evidence-and-findings.md) | Active defects, evidence, benchmark findings, and migration-relevant observations |
+| [`001-current-status-and-roadmap.md`](001-current-status-and-roadmap.md) | Pre-redesign P1–P7/B1–B3 roadmap and gates; useful planning input, but **must be reconciled with the new Kernel/Execution boundary before being treated as the next architecture migration sequence** |
+| [`legacy/`](legacy/) | Older completed/historical development plans |
 
-**Next: P1 — close the concrete action contract.** Begin with the current concrete dispatch paths,
-known schema/allow-list findings and public acceptance fixtures. Its exit gate is consistent
-validation, authority and exact consent across supported callers, with an explicit compatibility
-decision. Do not start broad portable descriptors or protocol expansion first.
+## Architecture migration note — 2026-09-08
 
-The SDK bootstrap and local conformance are implemented. Durable restart, typed computed composition,
-final distribution and attributable comparative evidence are not. The package number is not a release
-readiness verdict. The roadmap integrates benchmark work as B1–B3; this repository owns framework
-changes, while the standalone benchmark repository owns private cases, construction and scoring.
-Benchmark details are in the evidence register, outside the application-builder reading path.
+The canonical architecture has changed from the previous synchronous `Harness -> ExecutionController.activate(...)` model to an asynchronous **Kernel -> ExecutionActivation -> Execution Runtime -> ExecutionOutcome -> Kernel** boundary.
 
-There are three current planning/evidence documents above. Completed slice reports belong in legacy;
-new findings go in the live register, and accepted semantic changes must update their canonical owner,
-implementation and conformance together. Neither the archived H–N sequence nor the study's proposed
-stages is a second active roadmap.
+This changes the ownership of several existing implementation concepts:
+
+| Current implementation | Target ownership |
+|---|---|
+| `Harness` coordinator | Kernel implementation; new architecture uses the noun **Kernel** |
+| `ExecutionController` | Predecessor of the generic Execution Driver/Runtime boundary |
+| `ControllerResumption` | Remove from Kernel semantics; internal Runtime async work should stay inside the Runtime |
+| stock Agent/Workflow controllers in core | Execution-side Runtime implementations above Kernel contracts |
+| model calls / Workflow local async waits | Runtime-internal work, not Kernel-visible waits |
+| scheduler exclusion per Execution | Preserve; evolve to durable writer epoch/fencing where claimed |
+| Events / Effects / authority / lifecycle / history | Preserve as Kernel semantics, adjusted to the async Activation/Outcome protocol |
+
+The existing P1–P7/B1–B3 roadmap still contains valuable requirements: concrete action validation, typed values, accepted-work/recovery linearization, process-death proof, long-lived operability, provider-native application proof, benchmark attribution, and release evidence. However, the new architecture may **subtract or move** work that assumed Kernel-owned Agent/Workflow/controller internals.
+
+Do not start broad protocol, Machine/ABI, multi-Agent, Studio/Cloud, or new Agent/Workflow feature expansion merely because the architecture changed. The immediate planning task after this documentation redesign is to derive the smallest migration sequence that proves the new Kernel boundary with deterministic fake Executions before rebuilding execution-side features.
+
+## Development rule
+
+When code and current architecture differ:
+
+1. describe the code honestly using `002`/`003`;
+2. treat the canonical docs as the target semantic contract;
+3. classify the change as **preserve**, **move above Kernel**, **replace**, or **delete**;
+4. add conformance at the new Kernel boundary before depending on Agent/Workflow behavior;
+5. keep behavioral Agent/Workflow evaluation separate from Kernel correctness.
