@@ -56,7 +56,7 @@ For ArrokothI this leads to a strong default direction:
 6. **Authority and memory-read caches must fail closed on uncertainty.** A stale Active View can leak existence even if final Effect authorization later denies execution; a stale memory view can leak data directly.
 7. **Instrument first.** Cache hit rate, saved work, invalidation causes, provider cached tokens, and cold-path cost should justify each cache.
 
-This fits the active 0.8.x efficiency guidance in [`../development/004-efficiency-and-developer-ergonomics.md`](../development/004-efficiency-and-developer-ergonomics.md): optimize the mechanism at the owning layer, preserve semantic equivalence, and do not collapse architectural distinctions merely because one implementation is expensive.
+This fits the active 0.8.x efficiency guidance in [`../development/004-efficiency-and-developer-ergonomics.md`](../development/legacy/2026-09-baseline/004-efficiency-and-developer-ergonomics.md): optimize the mechanism at the owning layer, preserve semantic equivalence, and do not collapse architectural distinctions merely because one implementation is expensive.
 
 ---
 

@@ -23,7 +23,7 @@ and `npm run test:example:execution-kernel` for state, confirmation, and child e
 Keep kernel semantics unchanged during application work. Use supported composition, host logic,
 and application-supplied ports when they fit. SDK bootstrap lives in `packages/sdk`, above core;
 it never grants permissions from definitions or catalogs. Record larger/ambiguous framework concerns in
-[`docs/development/007-application-builder-ergonomics-findings.md`](docs/development/007-application-builder-ergonomics-findings.md)
+[`docs/development/003-evidence-and-findings.md`](docs/development/003-evidence-and-findings.md)
 and continue supported work; a missing stock convenience is not by itself a reason to stop or to
 invent a kernel contract.
 

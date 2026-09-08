@@ -1,6 +1,6 @@
 # ArrokothI Architecture Documents
 
-This directory contains the canonical architecture for ArrokothI plus implementation working documents, one cross-repository product-vision document, one retained research dossier, and focused non-canonical research notes.
+This directory contains the canonical architecture for ArrokothI plus implementation working documents, one cross-repository product-vision document, an architecture strategy study, and focused non-canonical research notes.
 
 The canonical documents intentionally have **non-overlapping ownership**:
 
@@ -26,7 +26,8 @@ Supporting material:
 | Path | Role |
 |---|---|
 | [`product-vision.md`](product-vision.md) | cross-repository ArrokothI product direction: heterogeneous Agent application composition, Studio/Cloud direction, ecosystem/adoption/business posture; **not canonical kernel architecture** |
-| [`development/`](development/) | current implementation synthesis, active roadmap, and specialized engineering guidance |
+| [`development/`](development/) | implemented baseline, one active three-horizon roadmap, and unresolved findings; completed plans/reviews are in legacy |
+| [`architecture-strategy-study/`](architecture-strategy-study/README.md) | source-backed strategy research; recommendations are not accepted semantics or a second roadmap |
 | [`guides/`](guides/README.md) | application/developer guidance for building **on** the kernel — decision procedures for composing Agents and Workflows from application requirements; **not canonical kernel architecture** |
 | [`agent-engineering/`](agent-engineering/README.md) | framework-neutral external engineering guidance synthesized from public Anthropic material; a design reference for agent/workflow engineering, **never ArrokothI semantics** |
 | [`research/`](research/) | focused, non-canonical protocol/system comparisons and experiment directions outside the active implementation sequence; includes MCP semantic mapping and Agent caching research |

@@ -1,8 +1,10 @@
 # Application SDK bootstrap: design and findings
 
+> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../001-current-status-and-roadmap.md) and [findings register](../../003-evidence-and-findings.md) for current decisions.
+
 Implementation evidence for `@arrokothi/sdk` 0.8.1. This note owns the rationale and scoped findings,
-not kernel semantics or a second builder procedure. Use the [builder guide](../guides/agent-workflow-composition/README.md)
-for applications and [canonical ownership](../README.md) for meaning.
+not kernel semantics or a second builder procedure. Use the [builder guide](../../../guides/agent-workflow-composition/README.md)
+for applications and [canonical ownership](../../../README.md) for meaning.
 
 ## Chosen boundary
 
@@ -18,7 +20,7 @@ preflighted start make definition pinning and initial-input order ordinary opera
 surfaces lifecycle/human boundaries and returns pending status on finite limits. Full Harness evidence
 and ingress remain available; there is no opaque chat session or alternate execution engine.
 
-The [API and exact defaults](../guides/agent-workflow-composition/quick-start.md) are documented in the
+The [API and exact defaults](../../../guides/agent-workflow-composition/quick-start.md) are documented in the
 builder guide. SDK diagnostics do not probe authorization, invoke models, or synthesize missing grants.
 Overrides are explicit trusted ports; dynamic behavior remains runtime-checked. No persistent worker,
 implicit provider fallback, universal tool registry, automatic retry, permissive preset, or fluent
@@ -54,7 +56,7 @@ The in-memory constructor called `void this.save(definition)`. Since `save` is a
 duplicate seed definitions rejected a discarded promise rather than throwing at construction.
 Construction now shares a synchronous private insertion routine with `save`: constructor failures
 throw synchronously, while the public async save contract remains unchanged. Regression evidence:
-[constructor tests](../../packages/core/tests/definition-store-constructor.test.ts).
+[constructor tests](../../../../packages/core/tests/definition-store-constructor.test.ts).
 
 ### Colon-delimited operation indexes merged distinct identities
 
@@ -66,21 +68,21 @@ selection could silently drop one of two valid operations.
 These internal indexes now encode the full tuple as JSON. Operation identity remains the original
 pair, grant records/projection records keep their formats, and human display `formatOperationRef`
 remains unchanged (explicitly documented as unsuitable for unique indexing). Coverage:
-[catalog conformance](../../tests/conformance/agent/operation-catalog.test.ts) and
-[SDK authority/view integration](../../packages/sdk/tests/operation-identity.test.ts).
+[catalog conformance](../../../../tests/conformance/agent/operation-catalog.test.ts) and
+[SDK authority/view integration](../../../../packages/sdk/tests/operation-identity.test.ts).
 
 An initial broader concern included idempotency keys. Investigation found that
-[duplicate comparison](../../packages/core/src/effects/duplicate-detection.ts) and the
-[dispatch guard](../../packages/core/src/runtime/effect-processor.ts) compare the full persisted
+[duplicate comparison](../../../../packages/core/src/effects/duplicate-detection.ts) and the
+[dispatch guard](../../../../packages/core/src/runtime/effect-processor.ts) compare the full persisted
 request after key lookup. A key collision there only broadens candidate search; it does not establish
 identity or cause false replay. That format was deliberately left unchanged.
 
 ## Remaining correctness and architectural concerns
 
 1. **Composition data flow is the highest-value design issue.** Canonical
-   [composition §4](../composition.md#4-stage-transition-contract) recommends Structured Memory for
-   later Stages, but the [Stage port](../../packages/core/src/ports/stage.ts) has no committed-memory
-   reader. Edges carry only string/null, and [terminal proposals](../../packages/core/src/workflow/spec.ts)
+   [composition §4](../../../composition.md#4-stage-transition-contract) recommends Structured Memory for
+   later Stages, but the [Stage port](../../../../packages/core/src/ports/stage.ts) has no committed-memory
+   reader. Edges carry only string/null, and [terminal proposals](../../../../packages/core/src/workflow/spec.ts)
    can only be literals/none. A computed child Workflow result cannot be returned directly. Consider
    an explicit validated terminal selector together with bounded structured Stage values or authorized
    Stage resource/memory views. These need a coordinated contract decision; the SDK preserves today's

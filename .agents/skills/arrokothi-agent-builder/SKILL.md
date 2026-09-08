@@ -49,7 +49,7 @@ evaluate a new application.
 
 If a stock surface is insufficient, consider supported composition, host orchestration or an
 application-supplied port and continue the expressible work. Record larger or ambiguous issues in
-[builder findings](../../../docs/development/007-application-builder-ergonomics-findings.md).
+[builder findings](../../../docs/development/003-evidence-and-findings.md).
 Do not invent kernel contracts or bypass Harness Effects to force the design through. A separately
 authorized kernel-semantic change uses `arrokothi-architecture`; implementing a new external adapter
 uses `arrokothi-provider-integration`. Merely using an existing adapter does not need that workflow.

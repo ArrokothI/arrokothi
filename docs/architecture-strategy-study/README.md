@@ -2,6 +2,15 @@
 
 **Study date: 2026-09-07. Status: non-canonical research and proposed roadmap.** This study does not accept architectural changes, replace the active development plan, or establish new guarantees. Accepted changes must subsequently update their canonical owners, implementation, and conformance tests together.
 
+## Current routing and source availability
+
+The [adopted development plan](../development/001-current-status-and-roadmap.md) owns current
+sequence and release gates; this study remains research. Its pinned upstream source links require
+the sibling checkouts named in [the original manifest](evidence/source-manifest.json). Those four
+upstream checkouts are absent from the current two-repository workspace, so their local source links
+cannot be validated here. The manifest and recorded study results are preserved unchanged; the
+study verifier checks the original capture environment and is not a current roadmap validation.
+
 ## Recommendation
 
 **Continue ArrokothI as a bounded experiment in governed execution across independent engines. Do not yet commit to a general Agent platform, a universal Agent machine, or a new distributed runtime.** The current kernel has a defensible semantic foundation and an unusually explicit conformance discipline for its age. It has not demonstrated a differentiated product advantage. Several of its proposed differentiators already have substantial analogues in the surrounding systems.

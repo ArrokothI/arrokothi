@@ -54,7 +54,7 @@ record. Do not claim that this gives a called parent the same result automatical
 same-Execution Stage sequence, a text-returning Agent child, or explicit application storage when a
 reusable computed-return Workflow hits this limit. The canonical suggestion to pass structured data
 via memory is also narrower in practice because Stages cannot read committed memory. Both issues are
-recorded in [findings](../../development/007-application-builder-ergonomics-findings.md).
+recorded in [findings](../../development/003-evidence-and-findings.md).
 
 ## Parallel Workflow branches
 

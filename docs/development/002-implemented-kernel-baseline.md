@@ -1,6 +1,7 @@
 # Implemented kernel baseline
 
-> **Status:** current implementation evidence for the 0.8.1 Execution-kernel package line.
+> **Status:** current implementation map, inspected at `e96e513` on 2026-09-07; SDK implementation at `3bdc4f6`.
+> Package `0.8.1` is not an exact experimental identity or a durability/release verdict.
 > **Role:** compact engineering map, not canonical architecture.
 
 This document answers one question: **What does the current ArrokothI kernel demonstrably
@@ -323,8 +324,8 @@ normalization; consequential outcome-certainty protection.
 authority. Import/export must preserve the accepted input set and honest `success | failure |
 unknown` certainty.
 
-**Canonical owner.** [`../interoperability.md`](../interoperability.md), with active engineering
-constraints in [`005`](005-interoperability-baseline-and-next-constraints.md).
+**Canonical owner.** [`../interoperability.md`](../interoperability.md), with retained proof
+constraints in [`005`](legacy/2026-09-baseline/005-interoperability-baseline-and-next-constraints.md).
 
 **Representative source.** `packages/interoperability/mcp/src/import/importer.ts`,
 `import/identity.ts`, `import/result.ts`, `schema/from-json-schema.ts`, `export/tools.ts`.
@@ -368,8 +369,8 @@ canaries. Cross-framework benchmark subjects and their evaluation live in the st
 measurement ≠ live integration health. A passing category cannot substitute for another.
 
 **Canonical owner.** No architecture concept is created here; the owning docs define the
-invariants being tested. Engineering discipline is in [`003`](003-agent-effectiveness-guidance.md)
-and [`004`](004-efficiency-and-developer-ergonomics.md).
+invariants being tested. Historical engineering guidance is in [`003`](legacy/2026-09-baseline/003-agent-effectiveness-guidance.md)
+and [`004`](legacy/2026-09-baseline/004-efficiency-and-developer-ergonomics.md).
 
 **Representative commands.** `npm test`, `npm run test:conformance`, `npm run test:mcp`,
 `npm run test:evals`, `npm run typecheck`.
@@ -388,9 +389,17 @@ requirements or catalogs. Core remains directly available.
 
 **Evidence.** `packages/sdk/src/`, `packages/sdk/tests/`, the SDK-backed
 `examples/execution-kernel-minimal/`, and `scripts/check-builder-docs.ts`.
-The [SDK design/findings note](009-sdk-bootstrap-design-and-findings.md) records defaults, limits,
+The [SDK design/findings note](legacy/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md) records defaults, limits,
 constructor-validation and operation-index bug repairs, and unresolved architectural concerns.
 
 **Boundaries.** This is application composition, not new kernel semantics. Preflight is advisory for
 permissions and dynamic services; runtime remains authoritative. Default stores are in memory;
 host waiting limits do not interrupt arbitrary trusted code or supply provider cancellation/durability.
+
+## Current gaps and next work
+
+The [active roadmap](001-current-status-and-roadmap.md) replaces H–N. Begin with P1 concrete
+action validation, then typed composition and recovery. [F01–F19](003-evidence-and-findings.md)
+record schema enforcement asymmetry, text/literal result limits, live-promise and activation recovery
+gaps, scheduler fencing, physical store cost, long-lived state and distribution concerns. They are
+not implemented fixes. The benchmark canary predates SDK HEAD and does not establish durability.

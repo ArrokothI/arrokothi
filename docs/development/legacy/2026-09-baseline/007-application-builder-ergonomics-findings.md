@@ -1,24 +1,26 @@
 # Application-builder findings
 
+> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../001-current-status-and-roadmap.md) and [findings register](../../003-evidence-and-findings.md) for current decisions.
+
 Engineering observations from the current public Execution surface, not architecture changes or a
-new roadmap. The [builder guide](../guides/agent-workflow-composition/README.md) documents usable paths.
+new roadmap. The [builder guide](../../../guides/agent-workflow-composition/README.md) documents usable paths.
 This review used repository implementation, canonical documents and ordinary conformance/examples.
 No domain-specific evaluation requirements informed the guidance.
 
 ## Fixed during the earlier builder-guidance work
 
 **Confirmation rule shadowing — bounded implementation defect.**
-[createCapabilityConfirmationPolicy](../../packages/core/src/reference/confirmation-policy.ts)
+[createCapabilityConfirmationPolicy](../../../../packages/core/src/reference/confirmation-policy.ts)
 selected the first matching capability, then returned “not required” if its operation list did not
 match. With rules for `world.trade/cancel` followed by `world.trade/execute`, execute bypassed its
 listed confirmation. The lookup now matches capability and operation together, preserving first
 matching-rule precedence and wildcard rules. The new
-[mechanical confirmation regression](../../tests/conformance/interaction/mechanical-confirmation.test.ts)
+[mechanical confirmation regression](../../../../tests/conformance/interaction/mechanical-confirmation.test.ts)
 failed before the fix (executor called before approval) and passes after it. No Effect or authority
 contract changed.
 
 **Confirmed capability redispatch — runtime correctness defect.**
-[effect-processor.ts](../../packages/core/src/runtime/effect-processor.ts) previously ran the
+[effect-processor.ts](../../../../packages/core/src/runtime/effect-processor.ts) previously ran the
 prior-operation guard only on direct capability dispatch, while approval entered through the
 `resume` path. Distinct confirmed `per_input` proposals could therefore bypass success replay and
 the unresolved/unknown consequential-operation blocks. The repair performs an early guard before
@@ -47,23 +49,23 @@ cancellation settlement without cascade or configured child-result deadlines.
 | Observation and evidence | Builder impact | Assessment / promising direction |
 |---|---|---|
 | Manual core assembly needs many independently deny-by-default collaborators | Missing wiring can look like model inaction | Addressed by the supported `@arrokothi/sdk` composition and preflight; [design and evidence](009-sdk-bootstrap-design-and-findings.md). Independent grants remain explicit |
-| Stock controllers omit spawn/message/user-input actions that generic Effects support: [Agent controller](../../packages/core/src/controllers/agent/controller.ts), [Stage requests](../../packages/core/src/workflow/observations.ts) | Natural application compositions require host/port work | Authoring coverage gap, not absent kernel vocabulary. Consider explicit stock controller action interfaces with conformance |
-| Agent `maxModelCalls` defaults to 8 and `state.step` accumulates across turns: [spec](../../packages/core/src/agent/spec.ts), [controller](../../packages/core/src/controllers/agent/controller.ts) | A healthy conversation eventually fails; no public budget-renewal operation | Internally consistent. Decide deliberate continuity/budget policy; possible future bounded renewal needs abuse/spend analysis |
-| Compiler slices model-visible messages, but Agent state retains the full transcript: [compiler](../../packages/core/src/controllers/agent/information.ts), [state](../../packages/core/src/agent/control-state.ts) | Long-lived chat grows retained state; message count does not bound per-message bytes | Strategy/ergonomics concern. Measure serialized progress and introduce explicit compaction/retention policy without losing pending invocation truth |
-| Stock Workflow completion accepts only literal terminal values or none: [TerminalProposal](../../packages/core/src/workflow/spec.ts), [transitions](../../packages/core/src/controllers/workflow/transitions.ts) | Computed final Stage output cannot be returned directly by a child Workflow | Internally consistent but composition-limiting. Evaluate an explicit validated result selector, keeping Stage output separate from terminal commitment |
-| Child Stages accept only text/null; Agent completion forwards response text, not parsed objects: [Workflow controller](../../packages/core/src/controllers/workflow/controller.ts), [Agent completion](../../packages/core/src/controllers/agent/controller.ts) | Typed terminal schema vocabulary overpromises stock structured-return ergonomics | Do not silently coerce. Consider explicit adapters/typed output selection at the boundary in a separate design |
-| Structured Memory fields start unset, host has no public setter, Stage context has no reader, spawned children have no binding: [binding](../../packages/core/src/execution/structured-memory.ts), [Stage](../../packages/core/src/ports/stage.ts), [spawn](../../packages/core/src/runtime/effect-processor.ts) | Initialization, deterministic gates and reusable child state require substantial host wiring | Some boundaries are intentional. Evaluate an explicit authorized initialization/read-view story rather than passing ambient stores into Stages |
-| [Canonical composition §4](../composition.md#4-stage-transition-contract) recommends later Stages read Structured Memory; stock Stages cannot. Artifact/File is canonical but has no API | Small edge values plus unavailable shared-state readers leave awkward data-flow choices | Coverage/design tension, not resolved here. Reconsider Stage value restrictions together with explicit resource/memory views; never treat the canonical sketch as executable today |
-| Forks accept one adapter-free Stage per branch and a Function join successor: [validation](../../packages/core/src/workflow/validation.ts) | Natural nested/multi-step plans are rejected | Deliberate implementation scope. Expand only with clear branch-state, failure, cancellation and result contracts |
-| Derived queries are authored; closed claim records have no supersession/currentness metadata: [spec](../../packages/core/src/agent/spec.ts), [claims](../../packages/core/src/execution/derived-semantic-memory.ts) | Dynamic retrieval/currentness needs capability/application policy | Replaceable strategy/API limits. No new claim fields or memory semantics introduced |
-| Allow-list policy chooses first matching capability, not first matching capability+operation: [authorizer](../../packages/core/src/reference/allow-list-authorizer.ts) | Multiple operation-specific grant entries unexpectedly deny later operations | Unlike confirmation, combining grants/constraints can widen authority, so not changed casually. Consolidate one capability rule or use a custom policy; define overlap semantics before improving helper |
+| Stock controllers omit spawn/message/user-input actions that generic Effects support: [Agent controller](../../../../packages/core/src/controllers/agent/controller.ts), [Stage requests](../../../../packages/core/src/workflow/observations.ts) | Natural application compositions require host/port work | Authoring coverage gap, not absent kernel vocabulary. Consider explicit stock controller action interfaces with conformance |
+| Agent `maxModelCalls` defaults to 8 and `state.step` accumulates across turns: [spec](../../../../packages/core/src/agent/spec.ts), [controller](../../../../packages/core/src/controllers/agent/controller.ts) | A healthy conversation eventually fails; no public budget-renewal operation | Internally consistent. Decide deliberate continuity/budget policy; possible future bounded renewal needs abuse/spend analysis |
+| Compiler slices model-visible messages, but Agent state retains the full transcript: [compiler](../../../../packages/core/src/controllers/agent/information.ts), [state](../../../../packages/core/src/agent/control-state.ts) | Long-lived chat grows retained state; message count does not bound per-message bytes | Strategy/ergonomics concern. Measure serialized progress and introduce explicit compaction/retention policy without losing pending invocation truth |
+| Stock Workflow completion accepts only literal terminal values or none: [TerminalProposal](../../../../packages/core/src/workflow/spec.ts), [transitions](../../../../packages/core/src/controllers/workflow/transitions.ts) | Computed final Stage output cannot be returned directly by a child Workflow | Internally consistent but composition-limiting. Evaluate an explicit validated result selector, keeping Stage output separate from terminal commitment |
+| Child Stages accept only text/null; Agent completion forwards response text, not parsed objects: [Workflow controller](../../../../packages/core/src/controllers/workflow/controller.ts), [Agent completion](../../../../packages/core/src/controllers/agent/controller.ts) | Typed terminal schema vocabulary overpromises stock structured-return ergonomics | Do not silently coerce. Consider explicit adapters/typed output selection at the boundary in a separate design |
+| Structured Memory fields start unset, host has no public setter, Stage context has no reader, spawned children have no binding: [binding](../../../../packages/core/src/execution/structured-memory.ts), [Stage](../../../../packages/core/src/ports/stage.ts), [spawn](../../../../packages/core/src/runtime/effect-processor.ts) | Initialization, deterministic gates and reusable child state require substantial host wiring | Some boundaries are intentional. Evaluate an explicit authorized initialization/read-view story rather than passing ambient stores into Stages |
+| [Canonical composition §4](../../../composition.md#4-stage-transition-contract) recommends later Stages read Structured Memory; stock Stages cannot. Artifact/File is canonical but has no API | Small edge values plus unavailable shared-state readers leave awkward data-flow choices | Coverage/design tension, not resolved here. Reconsider Stage value restrictions together with explicit resource/memory views; never treat the canonical sketch as executable today |
+| Forks accept one adapter-free Stage per branch and a Function join successor: [validation](../../../../packages/core/src/workflow/validation.ts) | Natural nested/multi-step plans are rejected | Deliberate implementation scope. Expand only with clear branch-state, failure, cancellation and result contracts |
+| Derived queries are authored; closed claim records have no supersession/currentness metadata: [spec](../../../../packages/core/src/agent/spec.ts), [claims](../../../../packages/core/src/execution/derived-semantic-memory.ts) | Dynamic retrieval/currentness needs capability/application policy | Replaceable strategy/API limits. No new claim fields or memory semantics introduced |
+| Allow-list policy chooses first matching capability, not first matching capability+operation: [authorizer](../../../../packages/core/src/reference/allow-list-authorizer.ts) | Multiple operation-specific grant entries unexpectedly deny later operations | Unlike confirmation, combining grants/constraints can widen authority, so not changed casually. Consolidate one capability rule or use a custom policy; define overlap semantics before improving helper |
 
 ## Capability schema validation boundary
 
 **Observed API/enforcement asymmetry.**
-[Model response validation](../../packages/core/src/model/validation.ts) checks callable arguments
+[Model response validation](../../../../packages/core/src/model/validation.ts) checks callable arguments
 against projected schemas; the Function/custom-controller `UseCapability` path in
-[EffectProcessor](../../packages/core/src/runtime/effect-processor.ts) checks proposal shape and
+[EffectProcessor](../../../../packages/core/src/runtime/effect-processor.ts) checks proposal shape and
 permission but does not validate input against `CapabilityCatalog.input`. Agent controller binding
 also does not itself replace provider schema validation. An executor cannot assume every caller
 passed the model-provider path.
@@ -84,8 +86,8 @@ validation utility and clearly owned dispatch-validation contract.
   in-memory store is not process recovery. Durable action IDs and reconciliation belong in the
   application.
 - UseCapability deadlines do not cover child results, peer replies, user-input or confirmation waits.
-  Cancellation does not cascade. See [child cancellation tests](../../tests/conformance/composition/child-cancellation.test.ts)
-  and [child deadlines](../../tests/conformance/composition/child-call-deadline.test.ts).
+  Cancellation does not cascade. See [child cancellation tests](../../../../tests/conformance/composition/child-cancellation.test.ts)
+  and [child deadlines](../../../../tests/conformance/composition/child-call-deadline.test.ts).
 - Stock Stages cannot hand off notes or return child scratch. Cross-Execution Structured Memory and
   Artifact/File storage are unavailable. Application storage is the supported integration route.
 - Trusted-local execution supplies semantic mediation, not physical containment or general

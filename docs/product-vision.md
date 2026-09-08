@@ -12,6 +12,10 @@
 
 ---
 
+The [active development roadmap](development/001-current-status-and-roadmap.md) selects the release
+boundary and investment gates. This vision preserves possibilities; Studio, Cloud, deep adapters and
+a universal Machine are not mandatory 1.0 deliverables.
+
 ## 1. Product thesis
 
 ArrokothI should not require the world to standardize on one Agent framework.
@@ -585,8 +589,8 @@ Do **not** claim:
 without the corresponding written authorization.
 
 Third-party source code, SDKs, protocols, names, and logos each have their own license/terms. Before
-shipping or marketing an integration, run the current checklist in
-[`development/006-ecosystem-integration-brand-and-license-checklist.md`](development/006-ecosystem-integration-brand-and-license-checklist.md).
+shipping or marketing an integration, use the retained checklist through the active roadmap’s P7 release gate:
+[ecosystem integration checklist](development/legacy/2026-09-baseline/006-ecosystem-integration-brand-and-license-checklist.md).
 
 The ecosystem strategy should prefer technical interoperability that does not require a bilateral
 contract, while remaining open to formal partnerships when co-marketing, certification, private APIs,

@@ -1,6 +1,7 @@
 # Future Plan
 
 > **Status: unresolved/future questions only. Not canonical current semantics or an active roadmap.**
+> Work scheduling is owned solely by the [active roadmap](development/001-current-status-and-roadmap.md); its [findings register](development/003-evidence-and-findings.md) assigns these questions to release gates or later horizons. Historical H–N and prototype sequences below are context, not parallel commitments.
 >
 > Read the canonical documents first: [`mental-model.md`](mental-model.md), [`execution-runtime.md`](execution-runtime.md), [`composition.md`](composition.md), [`authority.md`](authority.md), [`memory.md`](memory.md), [`interoperability.md`](interoperability.md), and [`security-guarantees.md`](security-guarantees.md).
 >
@@ -1398,13 +1399,13 @@ later.
 
 That separation does **not** remove the need for a coherent SDK surface. Studio should be able to
 build on ordinary supported SDK contracts rather than requiring private knowledge of test helpers or
-kernel internals. The questions below track SDK/DX evolution only; they are not an active pre-H
+kernel internals. The questions below track SDK/DX evolution only; they are not an independent active
 roadmap tranche and do not by themselves justify new kernel semantics.
 
 ### 14.1 Application-facing bootstrap/composition API
 
 The optional application layer is now implemented in `packages/sdk` as `@arrokothi/sdk`.
-See the [decision and evidence](development/009-sdk-bootstrap-design-and-findings.md) and
+See the [decision and evidence](development/legacy/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md) and
 [builder quick start](guides/agent-workflow-composition/quick-start.md). It composes existing stores,
 controllers, models and authority-backed views above core without granting permissions.
 
@@ -1472,7 +1473,7 @@ interop mapping
 failure/durability guarantees
 ```
 
-Do not assume H, M, or protocol Artifact terminology automatically answers this SDK decision.
+Neither the retired H/M slices nor protocol Artifact terminology answers this SDK decision.
 
 ### 14.5 Child interaction, state, and handoff ergonomics
 

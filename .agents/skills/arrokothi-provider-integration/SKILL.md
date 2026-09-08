@@ -27,7 +27,7 @@ incomplete, and never infer permanent policy from implementation observations.
 1. **Find the exact contract first.** Locate the current port or projection the integration
    implements, then use `docs/README.md` to find and read its canonical owner and any adjacent
    owners the map identifies. Read `docs/development/002-implemented-kernel-baseline.md` and
-   `docs/development/005-interoperability-baseline-and-next-constraints.md` for current evidence;
+   `docs/development/legacy/2026-09-baseline/005-interoperability-baseline-and-next-constraints.md` for current evidence;
    consult `docs/development/001-current-status-and-roadmap.md` for planned work.
 2. **Preserve provider neutrality.** Do not add a core field, enum, lifecycle, or identity merely
    because one vendor, framework, database, or protocol has it. Admit a native concept into kernel

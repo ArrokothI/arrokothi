@@ -19,7 +19,7 @@ The [runnable application](../../../examples/execution-kernel-minimal/patterns.t
 Catalogs are descriptors, not credential stores, executors, or a universal input validation gateway.
 Conforming ModelProviders validate projected arguments, but a Function/custom-controller capability request does not
 receive equivalent catalog-schema enforcement in the Effect processor. Validate at the executor or
-trusted domain boundary too; see [findings](../../development/007-application-builder-ergonomics-findings.md).
+trusted domain boundary too; see [findings](../../development/003-evidence-and-findings.md).
 
 `createAllowListAuthorizer` is a reference static policy. It selects the **first capability-matching
 grant**, then checks that grant's operations/resources. Consolidate operations for one capability in

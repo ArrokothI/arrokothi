@@ -1,564 +1,405 @@
-# Current status and roadmap
+# Development roadmap
 
-> **Status:** primary active development plan for the ArrokothI agent-kernel 0.8.x line.
-> **Kernel baseline:** the capability baseline summarized in
-> [`002-implemented-kernel-baseline.md`](002-implemented-kernel-baseline.md).
-> **Role:** engineering roadmap, not canonical architecture.
+> **Active plan adopted 2026-09-07.** Replaces H–N and the older slice sequences.
+> Planning authority only: this adopts the work and its gates, not proposed semantic/API changes.
+> Implementation starting point: `agent-kernel` commit `e96e513`; benchmark commit `04148be`.
 
-Canonical semantics remain in the documents indexed by [`../README.md`](../README.md). This plan
-starts from the implementation evidenced in [`002-implemented-kernel-baseline.md`](002-implemented-kernel-baseline.md)
-and converts unresolved work into dependency-ordered vertical proofs.
+Read the [implemented baseline](002-implemented-kernel-baseline.md) for shipped behavior and the
+[evidence and findings register](003-evidence-and-findings.md) for source links, benchmark status,
+known defects and disposition. [Canonical ownership](../README.md) continues to decide meaning.
+The [architecture strategy study](../architecture-strategy-study/README.md) remains research.
+Its R1–R11 findings inform this plan; its stage sequence and numerical experiment margins are not
+adopted wholesale. No comparative advantage or production recovery is established today.
 
-## 1. Version and release-gate convention
+## What 1.0.0 means
 
-```text
-Project/package development version:  ArrokothI agent-kernel 0.8.1
-Architecture-complete release gate:    separate; not implied by the package version
-```
+**A small, supported execution foundation for trusted application code that composes Agents and
+Workflows, mediates concrete actions, and recovers long-lived work truthfully on one declared
+persistent deployment profile.** A release must include:
 
-`0.8.1` is the clean Execution-kernel package baseline under the `arrokothi` /
-`@arrokothi/*` identity. It does not claim architecture completeness.
+- a usable, versioned public SDK and installable packages; typed local/child results and an explicit
+  application-owned artifact path; supported stock Agent/Workflow behavior documented accurately;
+- consistent concrete-operation validation, current authorization, exact consent and honest
+  `success / failure / unknown` handling across supported entry paths;
+- a selected durable execution implementation with real process-death tests, recoverable input,
+  progress, action and local-invocation attempts, wakes, human waits, child/peer obligations and
+  bounded state; migration and unsupported-checkpoint behavior;
+- two public application proofs, one native-engine integration experiment, independent builder
+  evidence for the final public surface, and a small attributable comparison campaign;
+- explicit failure, security, performance and compatibility limits with reproducible release evidence.
 
-### Release-readiness verdict
+The default production claim is **single administrative trust domain, trusted/cooperative code,
+one persistent store and a fenced active writer per Execution**. A stale process must be rejected
+after takeover even on a single host. Host/storage destruction, distributed availability,
+multi-tenant hostile code and arbitrary external exactly-once effects are outside that claim.
+Persisted state alone is not recovery; a reference store alone is not a production profile.
 
-**NO — the current kernel is not ready to claim architecture completeness.**
+The in-memory profile remains supported for tests and embedded work with its own limits. Basic
+child/peer composition, existing Gemini/Strands paths and synchronous MCP Tools remain supported;
+1.0 does not require filling every concept in the canonical architecture inventory. The native
+integration may remain experimental or an application-owned external job if that is the honest
+boundary. We will not stabilize a universal adapter API from one consumer.
 
-The current kernel has substantial, conformance-backed execution, composition, memory, authority,
-provider, and narrow MCP foundations. The following architecture-completion work still lacks an
-integrated reference proof:
+If the application and substrate gates show that a normal database/queue or mature runtime is
+simpler at equal assurance, narrow ArrokothI to the useful facade/action boundary. That branch
+requires an explicit revised release boundary before calling the smaller product 1.0; it is not
+permission to skip failed gates while retaining the original claims.
 
-- portable public schemas and service/resource descriptors;
-- MCP expansion beyond synchronous Tools and an A2A/service projection;
-- heterogeneous progressive discovery and lazy descriptor hydration;
-- explicit hosted execution profiles and one credible isolated backend;
-- durable restart/recovery of real waiting and in-flight state;
-- an end-to-end campaign exercising the architecture together.
+## Decision basis and scope
 
-The verdict is based on current source/tests and canonical unresolved constraints, not the package
-version.
+The current semantics already separate identity, semantic control, authority, information and
+external reality usefully. Preserve those distinctions. Current text-only Stage edges, closed
+Agent/Workflow progress, schema enforcement asymmetry and live-promise recovery mechanics are
+implementation/contract choices to evaluate, not reasons to discard the entire kernel.
 
-## 2. Completed baseline
+Choose these public synthetic applications as the initial acceptance fixtures, independent of
+private benchmark cases:
 
-The implemented baseline is organized by capability:
+1. **Reviewed artifact publication:** structured extraction → deterministic validation → child
+   computed result → exact human-approved publication → independently stored receipt. A native
+   specialist later supplies the artifact, retaining its own context and tool workflow.
+2. **Restartable service request:** corrections to asserted state, two separately owned service
+   jobs, duplicate/out-of-order callbacks, a human wait across worker death, cancellation and a
+   terminal result. Start with deterministic services; models are not needed to establish recovery.
 
-- Execution identity, lifecycle, mailbox, scheduler, Harness mediation, Events, Effects,
-  PendingOperations, and ControllerResumptions;
-- provider-neutral model resolution/invocation plus Gemini and Strands boundary packages;
-- Catalog → Effective Authority → Active View → immutable model projection;
-- reference Agent and staged Workflow controllers;
-- recursive child execution, peer messaging, user input, exact-payload confirmation, and
-  cancellation/lineage controls;
-- Structured Memory, Working Notes and explicit handoff, Derived Semantic Memory with provenance
-  and explicit promotion;
-- optimistic Structured Memory conflicts and system-defined parallel Workflow fork/join with
-  branch Effects/resumptions and versioned branch writes;
-- narrow MCP synchronous Tool import/export with strict identity, schema, result, authority, and
-  outcome-certainty rules.
+For each, record a direct application baseline with the same validator, policy, fake services and
+fault model. Measure duplicated ownership, implementation/repair effort, verified outcomes and
+operating cost. These are engineering proofs, not evidence of customer demand. Actual repeated
+adoption gates Studio/Cloud investment after 1.0.
 
-The optional `@arrokothi/sdk` application bootstrap now composes this baseline; see
-[SDK design and findings](009-sdk-bootstrap-design-and-findings.md). It does not change the H–N
-architecture-completion sequence or deployment claims.
+## Dependency order
 
-The exact implementation/test map and intentional deferrals are in
-[`002`](002-implemented-kernel-baseline.md).
-
-## 3. Dependency order
-
-```text
-H  Portable schema + service descriptor foundation
-       ↓
-I  MCP expansion beyond synchronous Tool proof
-       ↓
-J  A2A / exported Agent-Workflow service projection
-       ↓
-K  Heterogeneous progressive discovery + lazy descriptor exposure
-       ↓
-L  Hosted execution + executable security profiles
-       ↓
-M  Durable restart/recovery semantics
-       ↓
-N  Whole-architecture integration + release-readiness campaign
-```
-
-Some investigation may overlap, but each minimum vertical proof depends on the accepted contracts
-above it. Structured concurrency is part of the implemented baseline; extend it only through an
-explicit architectural decision.
-
-## 4. H — Portable schema and service-descriptor foundation
-
-### Goal
-
-Define the smallest provider- and protocol-neutral public description layer required to describe
-operations, resources, Agent/Workflow services, interaction requirements, asynchronous external
-handles, Skills, and public inputs/outputs.
-
-### Why it is still needed
-
-The current `ValueSchema` / `ObjectSchema` vocabulary supports internal validation and the narrow MCP
-Tool proof, but it is not yet a declared portable service contract. The kernel has no complete
-portable `Resource`, Agent/Workflow service descriptor, interaction/input requirement, async handle,
-or Skill descriptor/profile surface.
-
-### Canonical owner
-
-[`../interoperability.md`](../interoperability.md), with Definition/Execution consequences owned by
-[`../execution-runtime.md`](../execution-runtime.md), composition consequences by
-[`../composition.md`](../composition.md), and authority/exposure consequences by
-[`../authority.md`](../authority.md).
-
-### Existing substrate
-
-- `packages/core/src/schema/value-schema.ts` and schema-bound validation;
-- `CapabilityOperationDescriptor`, `CapabilityCatalog`, `OperationRef`, and active-view projection;
-- MCP's strict accepted-subset importer and recursive `toJsonSchema` exporter;
-- current Definition validation and Agent/Workflow public input/terminal-result shapes.
-
-### First schema decision to test
-
-Start with an explicitly declared **ArrokothI portable schema profile** whose accepted forms map
-losslessly to a documented subset of JSON Schema 2020-12. Do not claim support for all of JSON
-Schema merely because protocol payloads use it, and do not freeze a larger custom schema language
-than current interop proofs require. The proof must state:
+Every slice below is **planned, not started**. P1 is next. B slices are owned in `benchmark` but
+belong to this same sequence. Dependency means the preceding gate passed, not merely code merged.
 
 ```text
-accepted schema set
-normalization rules
-round-trip / acceptance-set fidelity
-unsupported-keyword refusal
-version/dialect identifier
+P1 concrete action contract ──→ P2 typed composition ──→ P3 recovery protocol
+  │                                                       │
+  └──→ B1 attribution diagnostics                          ↓
+                                                    P4 durable substrate
+                                                          ↓
+                                                    P5 long-lived operation
+                                                          ↓
+                                                    P6 application/native proof
+                                                          │
+                      B1 + P5 + P6 ──→ B2 sealed construction/readiness
+                                              ↓
+                                    B3 comparative campaign
+                                              ↓
+                                    P7 distribution and release
 ```
 
-The choice between retaining `ValueSchema`, replacing it, or layering a public dialect over it is
-an explicit design decision for H; it is not predetermined by MCP wire types.
-
-### Minimum vertical proof
-
-One portable descriptor bundle that can:
-
-1. describe one Operation and one Resource with public input/output schemas;
-2. describe one Agent or Workflow service with required interaction/input and an optional
-   long-running external handle contract;
-3. carry one Skill descriptor/profile without turning the profile into runtime authority;
-4. validate and round-trip through a protocol-neutral JSON form;
-5. project into one existing native capability path without changing Effect semantics.
-
-### Explicit non-goals
-
-- full JSON Schema 2020-12 support before evidence requires it;
-- protocol-native types in core;
-- universal resource, claim, or entity ontology;
-- a new Effect/Event kind or Execution lifecycle;
-- hosted containment or durable backend implementation.
-
-### Exit criteria
-
-- the portable schema/dialect boundary and versioning rule are documented;
-- unsupported schemas fail closed rather than widen acceptance;
-- Operation, Resource, service, input-requirement, async-handle, and Skill descriptor shapes have
-  conformance coverage as plain provider-neutral data;
-- authority is absent from or explicitly distinct from discovery metadata;
-- existing runtime and MCP Tool behavior remains compatible.
-
-### Dependencies
-
-Current implementation baseline only.
-
-## 5. I — MCP expansion beyond the synchronous Tool proof
-
-### Goal
-
-Extend the MCP adapter only where H's portable contracts can represent the semantics honestly.
-
-### Why it is still needed
-
-The current proof covers synchronous Tool list/call import and explicit Tool export. It does not
-cover Resources, Prompts/templates, long-running Tasks/handles, elicitation/input-required, or
-notifications/change signals.
-
-### Canonical owner
-
-[`../interoperability.md`](../interoperability.md), with Event/Effect and waiting semantics from
-[`../execution-runtime.md`](../execution-runtime.md), and authority/exposure from
-[`../authority.md`](../authority.md).
-
-### Existing substrate
-
-- `packages/interoperability/mcp` import/export boundary;
-- accepted synchronous Tool identity/schema/result/outcome rules summarized in
-  [`005`](005-interoperability-baseline-and-next-constraints.md);
-- kernel `Resource`-adjacent local-resource ports, PendingOperation, user-input, and wait machinery;
-- H's accepted portable descriptors and schemas.
-
-### Minimum vertical proof
-
-Select the smallest two additions supported by evidence—likely one read-only Resource projection
-and one long-running/input-required path—and prove both import and/or export mappings without
-collapsing protocol objects into kernel objects.
-
-Required mapping constraints:
-
-```text
-MCP Task          != Execution
-MCP notification  != Event automatically
-MCP authorization != Execution authority
-MCP elicitation   maps only through an explicit ArrokothI interaction requirement
-```
-
-### Explicit non-goals
-
-- implementing every MCP capability at once;
-- treating protocol session state as an Execution;
-- treating annotations or discovery metadata as grants;
-- silently converting uncertain remote outcomes to definite failure;
-- moving the MCP SDK into core.
-
-### Exit criteria
-
-- every supported MCP object has a written import/export mapping and refusal behavior;
-- change signals become Events only through an explicit runtime mapping;
-- long-running handles preserve honest outcome certainty and do not impersonate Execution identity;
-- schema mappings retain the H acceptance set;
-- adapter-specific conformance tests and at least one end-to-end canary pass.
-
-### Dependencies
-
-H.
-
-## 6. J — A2A and exported Agent/Workflow service projection
-
-### Goal
-
-Project portable ArrokothI Agent/Workflow services into A2A or an equivalent service boundary while
-keeping the kernel ontology authoritative.
-
-### Why it is still needed
-
-Current external interoperability proves capability Tools, not the publication or invocation of
-an Agent/Workflow service with inputs, progress, waiting, terminal result, and cancellation.
-
-### Canonical owner
-
-[`../interoperability.md`](../interoperability.md), with Agent/Workflow/Execution meaning from
-[`../composition.md`](../composition.md) and [`../execution-runtime.md`](../execution-runtime.md).
-
-### Existing substrate
-
-- Agent and Workflow Definitions plus independent Execution identity;
-- terminal results, child-call links, messages, user input, cancellation, and lifecycle state;
-- H portable service descriptors and I's protocol-boundary lessons.
-
-### Minimum vertical proof
-
-Export one Agent and one Workflow service, invoke each through the protocol boundary, correlate
-progress and one input-required interaction, and obtain an honest terminal result/cancellation
-outcome.
-
-Preserve:
-
-```text
-A2A Task    != Execution
-A2A Message != SendMessage Effect
-service descriptor != Definition authority
-```
-
-### Explicit non-goals
-
-- replacing Agent/Workflow/Execution with A2A ontology;
-- universal federation, routing, registry, or trust model;
-- automatic authority grants from an agent card/service descriptor;
-- durable restart or hostile-code containment.
-
-### Exit criteria
-
-- protocol and kernel identities remain separately inspectable and correlated;
-- exported service input/output and status mappings are lossless for the supported subset;
-- protocol messages request kernel communication only through explicit mapped operations;
-- authorization is evaluated by ArrokothI before consequential work;
-- unsupported protocol states fail closed and are documented.
-
-### Dependencies
-
-H and the boundary discipline proven in I.
-
-## 7. K — Heterogeneous progressive discovery and lazy descriptor exposure
-
-### Goal
-
-Scale discovery across Operations, Resources, Agent/Workflow services, and Skills while preserving
-the authority/exposure narrowing chain and bounded model context.
-
-### Why it is still needed
-
-The current catalog and active-view mechanism is strong for a known capability universe, but no
-reference path proves heterogeneous discovery, ranking, lazy descriptor/schema hydration, and a
-small immutable Active View over a large authorized universe.
-
-### Canonical owner
-
-[`../authority.md`](../authority.md), with descriptor meaning from
-[`../interoperability.md`](../interoperability.md) and context/memory selection boundaries from
-[`../memory.md`](../memory.md).
-
-### Existing substrate
-
-```text
-Catalog → Effective Authority → Active View → immutable model projection
-```
-
-plus content-derived view/projection identities, identity-only narrowing, deterministic local
-retrieval, and H/J heterogeneous descriptors.
-
-### Minimum vertical proof
-
-```text
-authorized descriptor universe
-  → cheap deterministic retrieval/ranking
-  → small heterogeneous Active View
-  → lazy describe/schema hydration
-  → immutable projection
-  → call
-```
-
-Use a deterministic non-LLM selector first. Measure recall, latency, hydrated descriptor count,
-and model-token cost before considering an LLM selector.
-
-### Explicit non-goals
-
-- discovery granting authority;
-- exposing the whole catalog merely because it is discoverable;
-- mandatory embeddings, vector database, or extra model call;
-- one opaque component that combines authorization, ranking, context compilation, and projection;
-- mutable model projections during an in-flight invocation.
-
-### Exit criteria
-
-- discovered-but-unauthorized descriptors cannot enter an Active View;
-- only selected descriptors hydrate expensive schemas/details;
-- view/projection membership is deterministic and reconstructable;
-- a returned alias resolves only through the persisted immutable projection;
-- scale and token-cost evidence covers representative small and large catalogs.
-
-### Dependencies
-
-H and at least one heterogeneous protocol/service source from I or J.
-
-## 8. L — Hosted execution and executable security profiles
-
-### Goal
-
-Make deployment trust profiles explicit and prove one real containment boundary.
-
-### Why it is still needed
-
-The local SDK enforces semantic boundaries but does not provide physical isolation from hostile
-code. A hosted product must say what runs where, under which identity, with which credentials,
-network/filesystem access, resource limits, and failure behavior.
-
-### Canonical owner
-
-[`../security-guarantees.md`](../security-guarantees.md), with execution mechanics from
-[`../execution-runtime.md`](../execution-runtime.md) and authority limits from
-[`../authority.md`](../authority.md).
-
-### Existing substrate
-
-- Effect mediation, reauthorization, exact-payload confirmation, authority attenuation;
-- provider/capability ports and serializable controller progress;
-- explicit distinction between semantic enforcement and physical containment.
-
-### Required profiles
-
-```text
-trusted local         in-process code; semantic controls, no hostile-code containment claim
-hosted declarative    controlled definitions/adapters; explicit service/credential boundary
-hostile-code isolated untrusted code behind a real isolation backend and resource policy
-```
-
-### Minimum vertical proof
-
-Define an `ExecutionEnvironment`/isolation seam and run one untrusted capability or controller
-extension in a credible isolated backend with explicit filesystem, network, secret, CPU/memory,
-timeout, termination, and audit behavior. Prove fail-closed behavior when isolation is unavailable.
-The proof must also demonstrate that the physical environment is replaceable infrastructure rather
-than runtime identity: one logical Execution can release, lose, or replace its isolated environment
-and later reacquire a suitable environment without becoming a different Execution. Backing
-credentials remain outside the hostile environment and are exercised only through mediated,
-authorized operations.
-
-### Explicit non-goals
-
-- claiming ordinary Node process separation is a sandbox;
-- silently falling back from isolated to trusted-local execution;
-- making every embedded workload pay hosted/sandbox costs;
-- provider-specific isolation types in core;
-- a complete multi-tenant control plane.
-
-### Exit criteria
-
-- each profile has executable configuration and accurate guarantees/non-guarantees;
-- the isolated proof prevents at least the declared filesystem/network/secret escapes;
-- resource exhaustion, timeout, cancellation, and audit behavior are tested;
-- identity and credential boundaries are distinct from Execution identity;
-- an Execution can replace/reacquire an isolated environment without changing logical identity;
-- the hostile environment never receives raw backing credentials for mediated operations;
-- disabled isolation adds no external round trip to the trusted-local path.
-
-### Dependencies
-
-H for declarative contracts and K for governed exposure; I/J where the hosted proof crosses a
-protocol boundary.
-
-## 9. M — Durable restart and recovery semantics
-
-### Goal
-
-Prove process restart/recovery for real pending execution state, not merely reconstruction from an
-in-memory object graph.
-
-### Why it is still needed
-
-Current in-memory/reference-store and fresh-controller reconstruction tests prove serializable
-state boundaries, but they do not prove durable transactions, lease/requeue behavior, external
-idempotency, or recovery of uncertain in-flight outcomes after a process crash.
-
-### Canonical owner
-
-[`../execution-runtime.md`](../execution-runtime.md), with memory references from
-[`../memory.md`](../memory.md), security consequences from
-[`../security-guarantees.md`](../security-guarantees.md), and composition links from
-[`../composition.md`](../composition.md).
-
-### Existing substrate
-
-- `RuntimeStore`, scheduler, serializable Execution/controller state and wait conditions;
-- Effect journal/idempotency keys, PendingOperations, ControllerResumptions;
-- child/peer/user-input/confirmation links;
-- no complete durable kernel backend.
-
-### Minimum durable reference path
-
-One durable store/scheduler implementation must survive an actual process stop/restart with:
-
-```text
-Execution + lifecycle                 controller progress
-mailbox + Event cursor                PendingOperations
-ControllerResumptions                 dependency waits
-confirmations + user-input requests   child/peer links
-Effect journal + idempotency          memory/resource references
-in-flight uncertain outcomes          scheduler/requeue state
-```
-
-`PendingOperation` and `ControllerResumption` remain semantically distinct even if one backend
-shares transaction or storage machinery.
-
-The durable implementation must also preserve the authoritative source facts and references needed
-for later authorized context/reconstruction strategies after restart. This is an optionality
-requirement, not a unified-log requirement: model trace or rendered invocation context must not
-become recovery-critical, and runtime Events/history, Effect journal, controller progress, memory,
-resources, and trace retain their distinct meanings even if one backend shares storage machinery.
-
-### Explicit non-goals
-
-- choosing a universal durable platform for every deployment;
-- treating reconstruction over the same in-memory store as crash durability;
-- retrying uncertain consequential work as if it definitely failed;
-- collapsing Events, Effect journal, controller progress, and trace into one log;
-- requiring model trace or previously rendered prompt/context for correctness or restart;
-- redesigning controller semantics for backend convenience.
-
-### Exit criteria
-
-- kill/restart tests recover each listed pending-state class;
-- transaction boundaries prevent lost wake-ups and partial dependency registration;
-- replay/dispatch policy preserves honest `success | failure | unknown` certainty;
-- duplicate external consequences are prevented or surfaced according to declared guarantees;
-- recovery does not merge PendingOperation with ControllerResumption meaning;
-- durable source facts remain available for an authorized fresh-context reconstruction strategy
-  without depending on model trace as semantic state;
-- reference durability cost/write amplification is measured.
-
-### Dependencies
-
-L's deployment/identity boundary and the completed runtime substrate. Protocol-handle recovery from
-I/J should be included when available.
-
-## 10. N — Whole-architecture integration and release-readiness campaign
-
-### Goal
-
-Exercise the implemented architecture as one system and turn evidence into an explicit release
-decision.
-
-### Why it is still needed
-
-Independent conformance slices do not prove that composition, memory, discovery, protocols,
-containment, and restart work together within usable cost and authoring complexity.
-
-### Canonical owner
-
-All canonical owners through the precedence map in [`../README.md`](../README.md). This tranche may
-identify contradictions but must not resolve them by silently editing one owner.
-
-### Existing substrate
-
-Everything accepted in H–M plus the baseline in [`002`](002-implemented-kernel-baseline.md), the
-quality discipline in [`003`](003-agent-effectiveness-guidance.md), and the efficiency/ergonomics
-checks in [`004`](004-efficiency-and-developer-ergonomics.md).
-
-### Minimum integrated program
-
-A single reproducible program must include:
-
-- multiple Executions with recursive Agent/Workflow composition;
-- parallel Workflow branches and an explicit join;
-- shared Structured Memory with at least one observed conflict and deliberate handling;
-- Working Notes local use and explicit handoff;
-- Derived Semantic Memory retrieval with provenance and explicit promotion;
-- user input and mechanical confirmation;
-- heterogeneous discovered capabilities/services through a small Active View;
-- MCP and/or A2A projection;
-- one hosted/isolated execution path;
-- restart/recovery while real pending state exists;
-- at least one long-lived Execution that survives process restart after its prior isolated
-  environment is gone, reacquires a fresh environment, receives a bounded freshly compiled model
-  context from retained authorized sources rather than its entire lifetime history, and continues
-  under the same logical Execution identity.
-
-### Explicit non-goals
-
-- declaring readiness from version numbers or test count alone;
-- adding new ontology during the integration campaign without separate architecture review;
-- hiding unsupported combinations behind demos;
-- conflating conformance, performance, security, and behavioral quality.
-
-### Exit criteria
-
-- semantic conformance, behavioral eval, performance, security, and restart evidence are reported
-  separately and all meet declared gates;
-- the integrated program completes across a process restart and contains at least one genuine
-  protocol boundary and isolated path;
-- optional guarantees have measured, attributable cost;
-- common Agent and Workflow authoring paths remain understandable and documented;
-- every remaining gap is explicitly experimental/deferred;
-- an independent architecture/documentation review accepts the evidence.
-
-### Dependencies
-
-H–M.
-
-## 11. Roadmap discipline
-
-Every tranche should begin with a fresh audit of its canonical owner, current source, and
-conformance tests. Each implementation review must state:
-
-```text
-semantic guarantee added
-simple-path physical work added
-provider/protocol boundary affected
-security and durability consequences
-explicit deferrals
-evidence that disabled paths remain low cost where architecture permits
-```
-
-If source, tests, and a canonical owner genuinely conflict, stop and report the ambiguity for an
-explicit architecture decision. Development history is evidence, never authority by recency.
+B1's cheap diagnostic work can run alongside P2–P5 after P1. Read-only comparator review and Linux
+host preparation need not wait for P6; final candidate freezing and comparative claims do. P7
+packaging prototypes can begin after P2, but release acceptance waits for every mandatory gate.
+Maintain one main implementation line; use disposable comparisons only to decide a live question.
+Do not add calendar estimates or complete every research experiment before proceeding.
+
+## P1 — Close the concrete action contract
+
+**Purpose/dependency:** first slice; prevent bypasses of declared schema expectations before adding
+new data paths or foreign callers. Uses the current implementation only.
+
+**Work:** create the two small public acceptance fixtures above, initially with current APIs and
+explicitly recorded limitations. Reproduce valid/invalid `UseCapability` inputs through a custom
+controller, Function Stage, stock Agent/provider, Strands and MCP boundary. Record an ownership
+and contract decision for validation at actual dispatch: accepted dialect/subset, unsupported
+keywords, no implicit coercion/default mutation, operation revision, output validation and
+unknown-catalog operations. Unknown operations are not universally forbidden today; select an
+explicit registration/validator rule and compatibility policy rather than silently changing them.
+Reuse a mature validator behind the selected contract if its acceptance set is suitable.
+
+Implement the accepted validation boundary and synchronize `authority.md`, `interoperability.md`
+and runtime semantics/tests only where the accepted decision changes them. Final policy still
+checks the concrete request; validation is not permission. Bind consent to the validated exact
+payload and contract revision, with a clear result for schema changes during a wait. Decide the
+reference allow-list overlap rule (reject ambiguous rules or documented precedence); do not union
+constraints into wider authority. Keep current fail-closed alias collision behavior; improve
+allocation only if needed, preserving immutable invocation bindings.
+
+**Touchpoints:** `runtime/effect-processor.ts`, `ports/capability-catalog.ts`, `schema/`,
+`reference/allow-list-authorizer.ts`, operation projection, SDK preflight; conformance for Effects,
+confirmation, action binding and MCP schema fidelity. See register F01–F03.
+
+**Exit:** malformed inputs reach no executor through any supported path; unknown-operation and
+unsupported-schema outcomes are explicit; malformed outputs never become validated business facts;
+a bad response payload does not turn a possibly successful external action into definite failure or
+automatically permit redispatch;
+revocation and consent mismatch still deny; overlapping grants cannot accidentally widen permission;
+existing confirmation replay and identity regressions pass. Publish the decision, compatibility
+examples and test commands so P2 can consume a settled payload contract.
+
+**Do not build:** a universal service/resource/Skill descriptor hierarchy, every JSON Schema feature,
+new protocol support, or an authorization product. If central validation cannot preserve a necessary
+legacy path, explicitly version/narrow that path before proceeding.
+
+## P2 — Make ordinary composition carry values
+
+**Purpose/dependency:** P1. Settle the data contract before persisting new checkpoints.
+
+**Work:** test the canonical text/none hypothesis against the public extraction → validation → child
+result path and a bounded fork → deterministic join. Implement the smallest typed JSON result and
+computed-terminal selection surface that passes. Keep Stage result distinct from terminal commitment.
+Determine whether SDK/controller changes suffice; change core Stage/result semantics explicitly if
+required. Validate child, join and final values; specify old-definition/progress compatibility.
+
+Provide an explicit authorized initialization/read-view path for asserted state needed by these
+applications. Children do not inherit a parent's memory binding automatically. Local values should
+not require a memory write just to cross an edge. Use application-owned artifact storage with a
+versioned reference, owner/access check, retention responsibility and missing/stale result behavior;
+a first-class universal Artifact store is not required. Keep large payloads outside model context
+and small runtime progress. Add only stock action authoring actually needed by the two fixtures;
+record remaining custom-controller/host paths in the public authoring matrix.
+
+**Touchpoints:** `ports/stage.ts`, `workflow/{stage-result,spec,observations,validation}.ts`, both
+controllers, terminal validation, SDK and examples; canonical `composition.md` §4 and `memory.md`.
+Register F04–F06.
+
+**Exit:** public imports express computed child results without JSON-as-text conventions, gratuitous
+LLM transforms or a shared-memory detour; invalid and cross-owner values fail at the declared
+boundary; literal/none behavior has an explicit compatibility story; offline examples and builder
+docs pass. If the proposal adds more machinery than it removes, reduce it to the demonstrated values
+and selectors. General graph languages and nested fork expansion wait.
+
+## P3 — Specify accepted work and recovery before choosing storage
+
+**Purpose/dependency:** P2. A database adapter cannot repair an incomplete acceptance protocol.
+
+**Work:** write and test a state-transition/linearization decision over accepted ingress identity,
+input reservation/acknowledgment, activation identity and writer epoch, progress revision, all action
+intents, local invocation attempts, terminal state, durable wake intent and acknowledgment. Specify
+which records commit together, including SDK start/root creation and initial-input acceptance.
+Include parent/child creation plus root budget, peer send/request,
+confirmation and memory settlement; an Execution scope is not automatically a shard boundary.
+
+Reproduce failure between two Effects and correct the misleading `applyOutcome` rollback comment
+when implementing this slice. Prior dispatches do not roll back with a later Effect. Decide how
+partial activation outcomes are recorded and resumed without losing effects or fabricating success.
+For controller-local model work, specify pinned input/projection and code/provider identity,
+retry/reconcile rules, duplicated billable-attempt accounting and stale completion. It remains
+semantically distinct from a public Effect even if private attempt mechanics are shared.
+
+**Touchpoints:** `runtime/harness.ts`, `effect-processor.ts`, `resumption-processor.ts`,
+`ports/{runtime-store,scheduler,controller-resumption}.ts`; execution-runtime owner. F07–F10.
+
+**Exit:** a fault table gives a unique recovery action or explicit manual/unknown state for every
+commit/dispatch boundary; deterministic failure injection covers partial Effects, lost wakes and
+stale writers. Define stable IDs, checkpoint/runner versions and old-data refusal or migration.
+Do not promise recovery yet. If this cannot map coherently onto one owner, stop P4 and narrow the
+contract; do not add an adapter to hide duplicate lifecycle/retry ownership.
+
+## P4 — Select and prove the durable substrate
+
+**Purpose/dependency:** P3. Establish recovery before long human waits, hosted claims or protocol expansion.
+
+**Work:** implement one minimal transactional persistent path and compare the same public fault
+fixture with one mature durable-runtime facade. Choose the comparator for the required semantics
+and manageable deployment, not popularity; the study's Temporal/Restate suggestions and the older
+DBOS candidate are research inputs, not accepted dependencies. Use supported upstream interfaces;
+do not modify upstream projects or build a database/consensus engine.
+
+Kill an actual worker and start a new process after input acceptance/reservation, during local model
+work, after intent, after external success before receipt, after settlement before enqueue, and
+during progress/terminal commit. Keep the external service's durable action ledger independent.
+Exercise takeover while the old worker completes, duplicate/late callbacks, revoked authority,
+missing code and incompatible/corrupt checkpoint versions. Recover readiness from durable truth.
+Cover child links/root budget, peer correlation, confirmation and user-input waits, Structured Memory,
+parallel branches and invocation snapshots for every mode claimed durable. An unsupported mode
+must fail preflight explicitly and cannot be used in a release proof.
+
+**Exit:** no lost accepted input, no accepted stale writer, no invented outcome, no blind retry of
+an unresolved consequential effect, no orphan wake; unknown work remains inspectable/reconcilable.
+Record raw process-kill traces, scripts, failure model and repeated-cost accounting. Select the
+backend on correctness, maintenance/deployment burden and measured transition cost. If the mature
+substrate is simpler, use it and retire custom scheduler/storage expansion. Zero observed faults
+in this matrix is a bounded claim, not arbitrary exactly-once or host-loss assurance.
+
+## P5 — Make the durable profile operable over time
+
+**Purpose/dependency:** P4. A restart proof with unbounded histories, expired authority or stuck waits
+is insufficient for long-lived work.
+
+**Work:** define per-wait deadlines, expiry wakeups, cancellation/child ownership and late-result
+handling. Preserve the distinction between cancelling a waiter, preventing new actions, stopping
+physical work and undoing an external action. Provide inspection and explicit reconcile/resume
+operations for unknown/stuck work with trusted ingress checks. Verify principal restoration,
+revocation before dispatch and reads, credential rotation and resource loss; no secrets in checkpoints.
+
+Bound transcript/progress, events, invocation snapshots, handoffs, artifacts and deduplication
+retention. Document when deletion/tombstones cease replay guarantees; preserve snapshots necessary
+for pending invocations and first child activation. Choose bounded conversation continuation/budget
+renewal or a documented new-execution handoff; do not silently reset `maxModelCalls` or grant spend.
+Measure actual cloned bytes, transaction cost, dormant state, wake delay, queue/backpressure and
+optional-feature overhead. Replace or restrict global whole-store copying for the selected profile;
+keep the in-memory reference explicitly small if optimization is unwarranted.
+
+**Exit:** both public applications survive a human wait/restart/correction/cancellation cycle;
+selected operating limits and retention policy are reproducible; old checkpoints migrate or fail
+clearly, including an upgrade/restart drill; disabled features add no external calls. Run bounded
+history/load tests with fake dependencies, not a heavyweight model campaign. F11–F14 apply.
+
+**Do not build:** multi-region scheduling, multi-tenant identity infrastructure, arbitrary hostile-code
+hosting or a full operator UI. Trusted host ingress must still be documented and exercised.
+
+## P6 — Prove useful applications and an honest native boundary
+
+**Purpose/dependency:** P5 (a disposable trusted external-job probe can start after P2). Determine
+whether heterogeneity adds value without prematurely rewriting the core around a generic runner.
+
+**Work:** finish both applications against their competent direct baselines. Select one independently
+valuable specialist engine and integrate as an external task/service first. It owns native model,
+context, tools and internal checkpointing; ArrokothI owns only the enclosing obligations declared in
+an ownership table. Test artifact/result acceptance, human action, cancellation, late completion,
+principal restoration and recovery. Keep the existing Strands step bridge accurately labeled.
+
+Record an assurance vector: identity, native resume mode, context/model ownership, mediated and
+ambient action paths, credentials, cancellation/termination, usage and artifacts. Compare native-only,
+direct composition and the thin ArrokothI bridge. Test one upstream-version change. Introduce an
+opaque versioned runner envelope or revise the Agent/Workflow discriminator only if an actual
+consumer cannot be represented honestly; that is a separate explicit semantic/migration decision
+inside this gate. Two independent consumers are required before a generic adapter contract is stable.
+
+**Exit:** a recurring correctness/integration obligation is reduced in both application shapes;
+every advertised assurance is tested, native useful behavior is retained within predeclared quality
+and cost margins, and maintenance is credible. Record counterexamples and failures. If black-box
+jobs suffice, retain them and delete deep-adapter work. If only action governance adds value, take
+the smaller product branch explicitly. An external job with ambient access provides no all-tools
+mediation claim; containment would be a separately gated deployment investment.
+
+## B1 — Make evidence attributable before comparing frameworks
+
+**Purpose/dependency:** P1; implemented in benchmark. The current harness supplies some confirmation,
+authorization, deduplication and checkpoint protection itself.
+
+**Work:** define protection ownership per claim and capture separately raw subject proposals,
+framework/application-native validation/authorization/consent decisions, laboratory interventions,
+attempted dispatch and observed external outcome. Identify the actual store read by `inspect`;
+self-reported state is not independently verified persistence. Keep current normalized evidence
+valid for what it measures. Add a separately versioned native-boundary diagnostic track where a
+controlled sink records an unsafe attempted action as failure even when the lab prevents real harm.
+
+Use deliberately unsafe and safe subjects as controls: both may leave the final world safe because
+of the lab, but their subject-native assurance verdicts must differ. Separate application-supplied
+policy/validator credit from framework enforcement credit. Do the analogous negative control for a
+subject that loses state while the harness checkpoint survives. Do not change private cases to
+teach ArrokothI how to pass. Construction and runtime identities must include relevant protocol and
+harness changes; pinned canaries are never silently repurposed.
+
+**Exit:** attribution controls distinguish native behavior from lab repair, required evidence comes
+from the actual boundary, future outcomes remain hidden until dispatch, and subject attempts are
+preserved even on harness denial. P1/P3/P4 deterministic tests can proceed without this infrastructure;
+framework safety/recovery comparison claims cannot.
+
+## B2 — Complete only the construction and execution path the campaign needs
+
+**Purpose/dependency:** B1, P5, P6 for final freeze; read-only comparator review and host preparation
+may proceed earlier. Detailed current status is in the [benchmark register](003-evidence-and-findings.md#benchmark-current-state).
+
+**Work:** obtain the canonical Linux/AppArmor rerun of the exact v3 canary if retaining that claim.
+Its non-canonical success is already real; do not repeat Desktop runs to seek a stronger label.
+Changed construction bytes require a new generation. Freeze the final SDK/kernel by exact commit
+and builder-visible tree under a new framework identity; v3's old core-only freeze cannot validate
+new SDK ergonomics. Use a new predeclared public canary for the final candidate.
+
+Choose one strong comparator plus the direct baseline from the public application evidence.
+Declare identical public construction requirements, BuildValidationSpecs, budgets and supported
+runtime features. Build/review/freeze subjects through the existing isolated machinery. Keep a
+bounded coding-agent build track distinct from an expert-reviewed native-runtime track. No private
+rubric enters builder material. Re-review the framework builder-surface policy: this roadmap, the
+findings register, historical plans and strategy study contain benchmark-informed material and must
+be excluded or explicitly sanitized, including routes from public guidance. Validate the resulting
+builder-visible link graph; do not reuse the old all-files policy by version label. Revalidate installed/packed public imports and classify framework,
+builder, task, sandbox, provider and judge failures separately.
+
+Wire the existing generation-unit, subject-process, quota/gateway and checkpoint primitives to the
+actual `run/smoke/suite` commands; implement evaluation/re-evaluation orchestration and durable
+artifact inspection for the selected scope. The current CLI stubs are not solved by flipping task
+readiness. Record an explicit versioned readiness transition referencing the frozen corpus without
+editing old evidence in place. Calibrate semantic/hybrid judgments and missing-evidence behavior;
+freeze model/prompt/rubric before scoring. Prefer per-requirement verdicts; aggregate weights are
+necessary only if publishing an aggregate and must be predeclared.
+
+**Exit:** offline end-to-end controls, isolation and leakage checks pass; exact build identities,
+real transport/state evidence, independent re-evaluation and budget-safe interrupted runs work;
+canonical claims have physical enforcement on the selected host. No missing host/provider access
+blocks cheap local kernel diagnosis, but it blocks the corresponding sealed claim.
+
+## B3 — Run the minimum credible comparative campaign
+
+**Purpose/dependency:** B2 and release-candidate contracts. Decide whether the supported foundation
+is useful and whether a release claim survives a fair comparison.
+
+**Work:** pilot the two public application shapes with the direct baseline and one strong alternative;
+freeze quality, cost and recovery margins and a repeat/sample plan before confirmatory results.
+Use matched model/resources where meaningful, label native capability differences, retain failed
+builds and all exclusions, report uncertainty and severity. Execute the B1 native-boundary controls
+alongside runtime comparison and retain deterministic P4/P5 fault evidence separately.
+
+Use a predeclared relevant subset of the existing P01–P04 corpus only for supported conversational
+behavior/DX questions; choose at requirement/task level before observing scores. P01 computation/
+answering and a justified state/action task may suffice. Run all 112 only for a stated all-P01–P04
+claim. Corpus quantity is not a recovery or architectural validation gate. Preserve all excluded
+families and evidence residuals from the review register. No leaderboard is required.
+
+**Exit:** ordinary builders can construct the supported applications; no unresolved critical semantic
+failure or unsupported safety/recovery claim remains; any claimed benefit has attributable evidence
+and acceptable cost. An inconclusive comparison narrows the published claim or triggers another
+focused experiment; a failed value proposition reopens P6's product branch. Release does not require
+winning every quality score, but does require a demonstrated reason to use the extra foundation.
+
+## P7 — Stabilize distribution, documentation and release evidence
+
+**Purpose/dependency:** P1–P6 and B1–B3. Packaging prototypes may start after P2 to expose problems early.
+
+**Work:** publishable compiled JS/types and supported exports across SDK/core/adapters; clean packed
+consumer install, typecheck and execution on supported Node versions without workspace symlink or
+TypeScript stripping assumptions. Review dependency pins, notices and actual integration terms at
+release time. Review terminology/public imports once using observed builder confusion; any accepted
+rename includes code/schema/definition migration and explicit compatibility notes.
+
+Synchronize canonical owners only for changes accepted in completed slices. Update baseline,
+quick starts, skills, package docs and unsupported-profile matrix; keep completed decisions/evidence
+in legacy and this roadmap current. Bundle repeatable install, fault/upgrade, provider/MCP canary,
+builder and benchmark evidence with exact source/config identities. Offline provider fakes do not
+replace live adapter evidence when compatibility is claimed. Revalidate current release terms and
+branding; do not infer partnership from technical compatibility.
+
+**Exit:** package/conformance/typecheck, SDK/examples/evals, builder/link checks, packed consumer,
+selected profile recovery/migration/security/load checks and the scoped benchmark campaign pass.
+Every active finding is closed, explicitly excluded with an honest supported-surface restriction,
+or assigned to a later horizon without undermining 1.0. Fresh contributors can find the current API,
+next work, evidence and history. Publish the supported boundary, not “architecture complete.”
+
+## Between 1.0.0 and 2.0.0
+
+A credible 1.0 allows a few major investments, selected by repeated application evidence:
+
+| Investment | Entry evidence and decision branch |
+|---|---|
+| Deeper heterogeneous integration | P6 value, two independent consumers and upgrade cost. Retain native cognition and a single lifecycle owner. Keep opaque jobs when sufficient; prefer supported upstream APIs over extracted runtimes. |
+| Portable services and selected MCP/A2A/Skill bindings | A real consumer needs resources, async handles, input-required or service export. Design only the portable subset required; prove identity, schema, consent, cancellation and outcome mapping. Full protocol parity is not a milestone. |
+| Environment boundary and progressive discovery | Demonstrated shared operation/resource needs or catalog cost. Compare eager projection, deterministic retrieval and native search/describe/call before hierarchy or scouts. Test metadata non-disclosure, freshness and all added model cost. |
+| Bounded suspendable Program / Machine / ABI experiments | P2/P4 stable value/attempt contracts and measured model-turn overhead. Compare functions, batching and native code tools first. Environment, discovery, program execution and shared IR are independent hypotheses; only promote winning parts. |
+| Selected deployment profiles | Actual need for remote workers, stronger isolation or multiple tenants. Reuse managed storage, sandboxes and auth; prove credential/egress/resource containment, identity restoration, leases, cleanup and economics in the real deployment. |
+| Multi-Agent composition and richer workflows | Equal-total-budget experiments beat a single strong agent and ordinary fan-out. Only then extend branch subgraphs, supervision, shared resources or join policies demanded by the workload. |
+| Context/memory/provider strategies | Compare simple retrieval/windowing against version-aware caches, context IR, queryable history and native compaction; preserve provenance, currentness and revocation. No compulsory extra inference on the minimal path. |
+| Operator/product surface | Repeated application adoption and incident needs. Start with read-oriented execution/authority inspection and delivery correlation. Studio authoring/Cloud require demonstrated recurring use and supportable operations. |
+
+2.0 is a compatibility/architecture decision after these experiments, not a promise to ship a
+Machine. A mature upstream runtime may increasingly own mechanics while ArrokothI owns the useful
+contract. A successful external-task product may need no universal runner at all.
+
+## After 2.0.0: optionality, not scheduled backlog
+
+| Classification | Preserved direction | Evidence required or retirement reason |
+|---|---|---|
+| Plausible future | Cross-runtime environment portability; broader service federation; richer resource/provenance and delivery projections | Repeated independent integrations and a concrete trust/lifecycle ownership problem. Federation requires an explicit trust model. |
+| Conditional hypothesis | Shared Agent/Workflow Program substrate, logical machine with application mounts and alternate ACIs | Bounded-program and environment experiments must reduce total complexity; native engines may remain opaque forever. No automatic IR migration. |
+| Conditional hypothesis | Hierarchical knowledge/capability namespaces, read-only Context Scouts and automatic model-tier routing | Flat retrieval and simple routing must lose on verified quality/cost; measure omissions, provenance loss and scout cost. |
+| Speculative, worth preserving | Formal information-flow/declassification, portable shared-state semantics, richer inferred-memory currentness/contradiction handling, learned/dynamic composition | Needs earlier authority, data, deployment and evaluation evidence. General claim/entity ontologies and federated autonomous teams remain research. |
+| Retired as product obligations | POSIX clone, universal graph importer, mandatory all-engine IR, custom sandbox/browser/database platform, feature parity with mature suites, broad marketplace/Studio/Cloud by default | No demonstrated need; high permanent maintenance and ownership duplication. Reopening requires a new decision with evidence, not an old roadmap checkbox. |
+
+The [future questions](../future-plan.md), [research notes](../research/README.md) and
+[product vision](../product-vision.md) preserve the arguments. Their historical experiment sequences
+are not additional active plans. New research should identify what could falsify it and what work
+would be deleted if it fails.

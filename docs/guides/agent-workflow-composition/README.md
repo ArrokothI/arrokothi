@@ -53,7 +53,7 @@ A kernel Effect existing does not mean every stock controller can propose it.
 | Real model, Strands, retrieval, or MCP integration? | [Provider and integration wiring](providers-and-integrations.md) |
 | Show a correct real-world pattern | [Worked patterns](worked-examples.md) |
 | Nothing happened, it hangs, or it claimed a false success | [Testing and diagnosis](evaluation-and-diagnosis.md) |
-| Is this awkwardness a known framework concern? | [Builder findings](../../development/007-application-builder-ergonomics-findings.md) |
+| Is this awkwardness a known framework concern? | [Builder findings](../../development/003-evidence-and-findings.md) |
 
 You do not need to read every topic, the roadmap, or the external engineering dossier before coding.
 Load a canonical owner when the meaning of a contract matters; use

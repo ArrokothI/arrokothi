@@ -39,8 +39,8 @@ local to an Execution. Controllers propose Effects; the Harness authorizes and c
 executors/environment report what happened. Exposure does not grant authority, and a response is not
 necessarily completion.
 
-The experimental package line is **0.8.1**. It has real enforcement and conformance coverage, but not
-an architecture-complete production deployment stack. In particular:
+The experimental package line is **0.8.1**. It has real enforcement and conformance coverage, but has not
+met the [supported 1.0 boundary](docs/development/001-current-status-and-roadmap.md#what-100-means). In particular:
 
 - Stock Agent/Stage authoring is narrower than the full Effect vocabulary.
 - Structured Memory is Execution-local; Artifact/File has no current API.
@@ -49,7 +49,7 @@ an architecture-complete production deployment stack. In particular:
 - MCP integration covers synchronous Tools; broader services/discovery remain future work.
 
 Consult the [surface matrix](docs/guides/agent-workflow-composition/current-authoring-surface.md) and
-[known builder concerns](docs/development/007-application-builder-ergonomics-findings.md) before making
+[known builder concerns](docs/development/003-evidence-and-findings.md) before making
 application guarantees. Confirmed capability approvals now obey the same in-runtime `per_input`
 duplicate/unresolved guard as direct dispatch, including concurrent approvals. Consequential external
 systems still need durable application-owned idempotency and unknown-outcome reconciliation.

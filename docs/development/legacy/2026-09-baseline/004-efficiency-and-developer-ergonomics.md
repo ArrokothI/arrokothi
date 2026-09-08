@@ -1,5 +1,7 @@
 # Efficiency and developer ergonomics
 
+> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../001-current-status-and-roadmap.md) and [findings register](../../003-evidence-and-findings.md) for current decisions.
+
 > **Status:** active cross-cutting engineering guidance for the ArrokothI 0.8.x line.
 > **Role:** performance, cost, and authoring validation; not canonical architecture.
 

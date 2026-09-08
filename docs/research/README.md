@@ -20,6 +20,10 @@ listed in [`../README.md`](../README.md); accepted implementation decisions rema
 
 `TBD` is intentional. A plausible analogy is not an architectural decision.
 
+The [active roadmap](../development/001-current-status-and-roadmap.md) owns horizon placement.
+Machine/ABI and JIT prototype sequences remain hypotheses; a 2.0 Machine is not committed.
+The [strategy study](../architecture-strategy-study/README.md) independently reviews these directions.
+
 ## Notes
 
 | Note | Scope |

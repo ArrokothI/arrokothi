@@ -90,6 +90,6 @@ actually occurred.
 Reproduce a suspected defect with public APIs, inspect the owning contract and relevant conformance,
 and separate application misuse from missing ergonomics and semantic uncertainty. Fix a bounded,
 unambiguous defect with regression coverage when authorized. Record larger issues in
-[builder findings](../../development/007-application-builder-ergonomics-findings.md); do not alter
+[builder findings](../../development/003-evidence-and-findings.md); do not alter
 kernel semantics just to make an application test green. Continue application work using documented
 supported paths. A model quality failure alone is not evidence of a kernel bug.

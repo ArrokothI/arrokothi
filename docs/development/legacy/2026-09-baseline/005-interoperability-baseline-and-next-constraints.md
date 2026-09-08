@@ -1,9 +1,11 @@
 # Interoperability baseline and next constraints
 
+> **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../001-current-status-and-roadmap.md) and [findings register](../../003-evidence-and-findings.md) for current decisions.
+
 > **Status:** active engineering baseline for interoperability work in the ArrokothI 0.8.x line.
 > **Role:** implementation evidence and boundary constraints, not canonical architecture.
 
-Canonical interoperability semantics remain in [`../interoperability.md`](../interoperability.md).
+Canonical interoperability semantics remain in [`../interoperability.md`](../../../interoperability.md).
 This document summarizes what the current MCP proof demonstrates and what future MCP/A2A/service
 work must preserve.
 

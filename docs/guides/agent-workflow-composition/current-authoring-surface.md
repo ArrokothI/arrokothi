@@ -111,5 +111,5 @@ does not create a kernel child relationship.
 Replace a port when the need belongs at that boundary: information compiler, view resolver, policy,
 capability executor, model adapter. Use a custom `ExecutionController` only when you need semantic
 progression the stock controllers cannot express, with tests for resumptions, correlation, outcomes,
-and cancellation. Record missing/awkward contracts in [findings](../../development/007-application-builder-ergonomics-findings.md)
+and cancellation. Record missing/awkward contracts in [findings](../../development/003-evidence-and-findings.md)
 and continue supported application work; do not redesign the kernel to make a diagram runnable.
