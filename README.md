@@ -18,7 +18,6 @@ Start with [`docs/mental-model.md`](docs/mental-model.md).
 | [`docs/detail-design/`](docs/detail-design/) | Current detailed authority, memory/state, composition, and interoperability design |
 | [`docs/development/`](docs/development/README.md) | Current implementation and migration evidence |
 
-The previous root-level architecture is preserved under [`docs/mental-model-legacy/`](docs/mental-model-legacy/). Old architecture filenames were removed from the docs root rather than kept as compatibility symlinks.
 
 ## Core boundary
 
