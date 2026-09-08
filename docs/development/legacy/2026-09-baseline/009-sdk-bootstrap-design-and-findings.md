@@ -80,7 +80,7 @@ identity or cause false replay. That format was deliberately left unchanged.
 ## Remaining correctness and architectural concerns
 
 1. **Composition data flow is the highest-value design issue.** Canonical
-   [composition §4](../../../composition.md#4-stage-transition-contract) recommends Structured Memory for
+   [composition §4](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/composition.md#4-stage-transition-contract) recommends Structured Memory for
    later Stages, but the [Stage port](../../../../packages/core/src/ports/stage.ts) has no committed-memory
    reader. Edges carry only string/null, and [terminal proposals](../../../../packages/core/src/workflow/spec.ts)
    can only be literals/none. A computed child Workflow result cannot be returned directly. Consider

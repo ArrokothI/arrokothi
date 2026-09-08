@@ -4,6 +4,10 @@ This document owns processes, trust, containment, transport placement and physic
 The [Kernel contract](kernel.md) defines accepted state; [Execution](execution.md) defines Runtime and
 Driver behavior. Deployments implement those contracts with explicitly tested limits.
 
+[Resource lifetime and isolation](detail-design/resources-and-isolation.md) defines allocation,
+attachment, cleanup and enforcement detail. [Recovery](detail-design/recovery-and-compatibility.md)
+and [evidence](detail-design/evidence-and-observability.md) define version/retention and inspection rules.
+
 ## Roles and first profile
 
 A **Kernel Worker** processes Kernel state transitions. An **Execution Host** runs Runtime code.
@@ -83,7 +87,9 @@ progress; terminating a process tree or remote job is a separate backend operati
 A persistent workspace/session can outlive one host attachment. Acquire/release of a client or lease
 must not imply create/delete of its backing resource. If a required workspace or checkpoint is lost,
 report loss instead of silently supplying an empty replacement. Cleanup must preserve resources owned
-by another run/application, and be safe after retries and partial allocation.
+by another run/application, and be safe after retries and partial allocation. Allocation-before-handle
+loss requires provider query/idempotency or scoped reconciliation. Cleanup debt has an owner; deletion
+that removes required recovery data must explicitly narrow the supported guarantee.
 
 Prior art: Dify's [binding backend](../../dify/dify-agent/src/dify_agent/runtime_backend/protocols.py)
 separates stable bindings, immutable home snapshots and invocation-local leases, and explicitly

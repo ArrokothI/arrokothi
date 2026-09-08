@@ -5,7 +5,7 @@
 > **Status:** active engineering baseline for interoperability work in the ArrokothI 0.8.x line.
 > **Role:** implementation evidence and boundary constraints, not canonical architecture.
 
-Canonical interoperability semantics remain in [`../interoperability.md`](../../../interoperability.md).
+Canonical interoperability semantics remain in [`../interoperability.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/interoperability.md).
 This document summarizes what the current MCP proof demonstrates and what future MCP/A2A/service
 work must preserve.
 

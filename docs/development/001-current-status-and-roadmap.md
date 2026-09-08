@@ -7,6 +7,18 @@ The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the
 [review](004-architecture-review.md) records decisions and the disposition of P1–P7/B1–B3.
 The old plan is [historical](legacy/2026-09-pre-redesign-roadmap.md), not an additional checklist.
 
+The [detail-design review](005-detail-design-review.md) refines these gates without marking a slice
+implemented. Use this design routing when implementing:
+
+| Slice | Design to implement/test |
+|---|---|
+| K0/K1 | [Protocol](../detail-design/execution-protocol.md): equality/receipt scope, eligible batches, wait generations, terminal disposition |
+| K2 | [Authority](../detail-design/authority-and-actions.md) + [actions](../detail-design/action-lifecycle.md): policy freshness, correction/withdrawal order, certainty versus responsibility |
+| R1/K3 | [Driver](../detail-design/runtime-integration.md) + [recovery](../detail-design/recovery-and-compatibility.md): native submit/checkpoint gaps, pin/delete races, safe takeover |
+| K4 | [Composition](../detail-design/composition-and-communication.md): durable reply closure, required children, transitive revocation, nonrenewable total spawn credits |
+| R2 | [Runtime composition](../detail-design/runtime-composition.md), [state/memory](../detail-design/memory-and-state.md), [context](../detail-design/context-and-projections.md): typed values, barriers, freshness and scratch isolation |
+| K5/D1/S1 | [Resources](../detail-design/resources-and-isolation.md) + [evidence](../detail-design/evidence-and-observability.md): cleanup/retention debt, compatibility/refusal, physical and public support claims |
+
 ## Sequence and ownership
 
 Build a fake Runtime and one accepted asynchronous exchange before improving Agent/Workflow features.
@@ -50,7 +62,10 @@ claim boundaries and expected fault observations before candidate implementation
 Resolve exact accepted IDs/receipts, any-of wait correlation, duplicate/conflicting Outcome behavior,
 terminal obligations, cancellation ordering and checkpoint forms. Classify 0.8.x persisted data as
 migratable, legacy-only or refused; do not require compatibility with a live closure. Document the
-atomic boundaries in Kernel terms and map each to an assertion. No database or model is needed.
+atomic boundaries in Kernel terms and map each to an assertion. Distinguish wait deadlines, Execution
+deadlines and leases; fix wait-generation identity and eligible
+batch accounting. Separate action disposition, outcome certainty and completion responsibility. Define
+the local policy ordering/freshness profile before promising remote revocation. No database or model is needed.
 
 **Exit:** each input/Outcome/Effect/wake/cancel boundary has one authoritative owner and an observable
 acceptance/rejection result; E0's unsafe/lost-state controls are specified. If explaining the contract
@@ -93,7 +108,10 @@ Decide overlapping allow-list rules without widening grants. Keep operation alia
 Record physical attempts and success/failure/unknown independently of progress. Deny stale dispatch
 ownership, recheck authority after approval, and refuse automatic retry of unresolved non-idempotent
 work. Validate response data without converting possible external success to definite failure.
-Reject completion with required unresolved work. No external action rollback claim.
+Reject completion with required unresolved work. Test explicit withdrawal/consent invalidation against
+admission; queued correction text alone does not
+stop dispatch. Unknown evidence can be refined by new immutable observations but cannot discharge
+ownership merely by being acknowledged. No external action rollback claim.
 
 **Touchpoints:** `runtime/{harness,effect-processor}.ts`, catalog/schema/policy ports,
 `tests/conformance/effects/`, confirmation, reauthorization and MCP boundary regressions.
@@ -139,7 +157,9 @@ Kill actual worker/host processes at accepted input, reserved dispatch, native s
 checkpoint before Outcome, accepted Outcome before Effect dispatch, external success before receipt,
 settlement before wake and terminal output before delivery. Include lease expiry with the old host
 still alive, duplicate callbacks, corrupted/missing checkpoints and unavailable code. Keep the store
-and external ledger outside the killed process. No exception-injection substitute for this gate.
+and external ledger outside the killed process. Include delayed checkpoint acceptance racing deletion,
+revoked disclosure on replay and resource
+allocation success before handle persistence. No exception-injection substitute for this gate.
 
 **Exit / E4 core matrix:** zero lost accepted inputs, accepted stale writers, fabricated outcomes,
 blind unsafe redispatch or lost wakes in the declared matrix. Unknown work has an explicit inspect/
@@ -160,7 +180,9 @@ operation, including crash between parent intent and child creation. Add address
 only for the two public applications. Persist human/input waits, any-of matching and deadlines.
 A parent waiting for a child can subscribe to that child's clarification without a second writer;
 the Runtime owns multi-result joins and conflict handling. Specify child cancellation/late delivery,
-required versus independently owned work and terminal input disposition.
+required versus independently owned work and terminal input disposition. Default children remain
+required; arbitrary detachment can be refused. Total lineage credits do not renew on child completion;
+active slots release exactly once. Test durable reply closure and transitive delegation revocation.
 
 **Exit / E4 composition matrix:** restart with human wait, early/duplicate/out-of-order callbacks,
 parent/child death, authority revocation, cancellation and late results preserves ownership and
@@ -192,7 +214,9 @@ by the public applications. E5 follows E2 attribution and E4 fault evidence.
 Bound mailbox/output/history/deduplication retention, active-host admission and dormant-state cost.
 Expose current wait, unresolved attempts, recovery holds and explicit authenticated reconciliation.
 Test principal restoration, resource loss, secret rotation, code/checkpoint upgrades, retention expiry
-and cancellation. Keep model budgets in the Runtime or metered provider boundary; retain uncertain
+and cancellation. Add expired output cursors, cleanup debt and privacy deletion that explicitly
+invalidates recovery; inspect unknown obligations after terminal cancellation. Keep model budgets in
+the Runtime or metered provider boundary; retain uncertain
 usage rather than silently resetting it after restart.
 
 Complete two public synthetic applications: (1) specialist artifact → validation → exact approval →

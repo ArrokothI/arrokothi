@@ -1,61 +1,46 @@
 # Detail design
 
-This directory preserves useful **current detailed design** below the small canonical architecture.
+This is the current implementation-oriented design beneath [Kernel](../kernel.md),
+[Execution](../execution.md) and [Deployment](../deployment.md). Read [the mental model](../mental-model.md)
+first. The top-level owners define meaning; each page below owns the detailed rules for its topic.
+If they disagree, fix the conflict in the same change rather than maintaining competing contracts.
 
-The canonical owners remain:
+**All pages describe targets or optional designs, not newly implemented APIs.** Current 0.8.x behavior,
+source/tests and migration gaps are in [development](../development/README.md). K0–K5, R1/R2, D1 and S1
+remain the only active implementation sequence. More design depth does not add every documented
+facility to 1.0. [Future plan](../future-plan.md) holds unresolved hypotheses and experiment gates.
 
-- [`../kernel.md`](../kernel.md) for Kernel/Execution semantics;
-- [`../execution.md`](../execution.md) for Execution Runtime/Driver semantics;
-- [`../deployment.md`](../deployment.md) for process, trust, containment, and deployment semantics.
+## Design map
 
-Files here do not create a second architecture or restore the previous mental-model ontology. They expand concrete designs that are useful when implementing ArrokothI, especially designs that previously lived in the old authority, memory, composition, and interoperability documents.
+| Page | Detailed responsibility | Implementation connection |
+|---|---|---|
+| [Execution protocol](execution-protocol.md) | Identity, immutable exchanges, receipts, input acknowledgment, wait/timer races and completion checks | K0/K1; K2/K4 extensions |
+| [Principals, authority and consent](authority-and-actions.md) | Authenticated facts, grants/delegation, disclosure, exact approval, revocation ordering | K0/K2/K4/K5 |
+| [Action lifecycle and delivery](action-lifecycle.md) | Request disposition, attempts, outcome certainty, evidence revisions, result publication | K2/K3/K5 |
+| [Recovery and compatibility](recovery-and-compatibility.md) | Native/Kernel crash windows, checkpoint pinning, re-execution, version migration/refusal | R1/K3/K5/S1 |
+| [Children and communication](composition-and-communication.md) | Child obligations, finite lineage budgets, supervision, messages/replies and human waits | K4 |
+| [Runtime composition](runtime-composition.md) | Agent/Workflow shared machinery, local Stages, typed values, barriers/joins, Skills | Optional R2 |
+| [State and memory](memory-and-state.md) | Asserted/derived/scratch/artifact distinctions, views, promotion, concurrency and provenance | Optional R2; K2/K3/K5 boundaries |
+| [Context and projections](context-and-projections.md) | Information selection, callable bindings, native context, cache/snapshot distinction, discovery | Optional R2; R1 fidelity |
+| [Runtime integration](runtime-integration.md) | Per-Driver assurance, native identity/submit, tool bridges, pause semantics and fidelity | R1, K3, S1 |
+| [Interoperability](interoperability.md) | Import/export, schema acceptance, MCP/A2A/service/task mappings and versioned refusal | Existing MCP regressions; demanded integrations |
+| [Resources and isolation](resources-and-isolation.md) | Binding/attachment/cleanup, native writers, host limits, credentials and physical containment | R1/K3/K5; optional D1 |
+| [Evidence and observability](evidence-and-observability.md) | Accepted facts vs traces, inspection, privacy/retention, attribution and reproducibility | K0 onward; benchmark E0–E6 |
 
-When a detail here conflicts with a canonical owner, the canonical owner wins.
+## How to use this layer
 
-## Why this layer exists
+For K1 implementation, start with protocol and its counterexamples. For an action gateway, read
+authority → action lifecycle → recovery. For a native Driver, read integration → native recovery →
+resources, adding protocol mapping only when needed. For an Agent/Workflow library, read Runtime
+composition → state/memory → context. All paths use evidence/observability for the claimed guarantees.
 
-The redesign intentionally removed many concepts from the Kernel. Some of those concepts are still useful for ArrokothI's own Runtime, SDK, integrations, or advanced applications.
+Each page labels its owner, target/optional status and slice. Conceptual record shapes and algorithms
+state obligations without freezing TypeScript types, storage layouts or mandatory services. A richer
+record is justified where it prevents a concrete ambiguity; no requirement forces foreign Runtimes
+to adopt the reference Runtime's memory, graph or package vocabulary.
 
-Without a detail-design layer there are two bad choices:
-
-1. put all of that material back into the small top-level architecture and make the Kernel look larger than it is; or
-2. leave useful design knowledge only in `mental-model-legacy/`, where future engineers cannot tell what is still intended.
-
-This directory is the middle layer.
-
-```text
-canonical architecture
-  mental-model / kernel / execution / deployment
-        ↓
-detail-design
-  accepted concrete designs and optional ArrokothI-native facilities
-        ↓
-development
-  implemented baseline, migration roadmap, findings
-        ↓
-guides
-  current application-facing usage
-```
-
-## Topics
-
-| Document | Preserves |
-|---|---|
-| [`authority-and-actions.md`](authority-and-actions.md) | principals, authority, exposure, delegation, exact consent, dispatch, revocation, native/ambient actions |
-| [`memory-and-state.md`](memory-and-state.md) | Kernel History vs Runtime memory/context, Structured/Derived/Working Notes, artifacts, provenance, views, concurrency |
-| [`composition-and-communication.md`](composition-and-communication.md) | local work vs child Execution, Agent/Workflow composition, messages, waits, joins, ownership, cancellation, Skills |
-| [`interoperability.md`](interoperability.md) | Driver fidelity, operation/resource boundaries, MCP/A2A/HTTP mapping, schemas, external async handles and Skills |
-
-Each topic is split into **Kernel side** and **Execution side** so that a useful Runtime facility does not accidentally become a Kernel requirement.
-
-## Status categories
-
-A detail may be one of three things:
-
-- **Kernel detail** — required to preserve a canonical Kernel guarantee;
-- **ArrokothI Runtime design** — useful design for ArrokothI's own Agent/Workflow Runtime, optional for foreign Runtimes;
-- **Integration design** — a boundary/mapping rule whose exact API is allowed to vary by Driver or protocol.
-
-Implementation names and current package locations belong in [`../development/`](../development/README.md), not here.
-
-Unresolved or evidence-gated ideas belong in [`../future-plan.md`](../future-plan.md). Historical designs, including concepts intentionally removed from the target, remain in [`../mental-model-legacy/`](../mental-model-legacy/).
+Cross-repository links are source-inspection prior art, pinned in the
+[detail-design review](../development/005-detail-design-review.md). They indicate mechanisms worth
+learning from, not installed dependencies or passed upstream tests. Current design is self-contained:
+future engineers do not need the legacy mental-model directory to recover intended semantics.
+The review records retained, relocated and rejected legacy ideas by topic and source section.

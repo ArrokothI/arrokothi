@@ -12,7 +12,11 @@ Current architecture has three detailed owners:
 - [`docs/execution.md`](docs/execution.md) — Execution Runtime/Driver, Agent, Workflow, context/native memory/tools, internal async work, provider runtimes;
 - [`docs/deployment.md`](docs/deployment.md) — process topology, Kernel Workers, Execution Hosts, trusted vs isolated execution, embedding, CLI/service/MCP placement, observability.
 
-[`docs/detail-design/`](docs/detail-design/) expands current authority/action, memory/state, composition/communication, and interoperability design without creating extra top-level architecture owners. Read the relevant detail page when implementing one of those topics.
+[`docs/detail-design/`](docs/detail-design/) is the implementation-oriented design map beneath those
+three owners. It routes protocol, authority/consent, action lifecycle/delivery, recovery/compatibility,
+children/communication, Runtime composition, state/memory, context/projections, Driver fidelity,
+interoperability, resource lifetime/isolation and evidence. Read the relevant page before implementing
+its contract. Optional Runtime designs are not mandatory Kernel types or automatic release commitments.
 
 `docs/mental-model-legacy/` preserves the previous architecture. Old root architecture files such as `docs/authority.md` and `docs/execution-runtime.md` were removed; use the legacy directory for historical comparison.
 
@@ -55,13 +59,13 @@ For provider integrations, prefer a narrow `Execution Driver` that preserves the
 ## Before an architecture change
 
 1. Read `docs/mental-model.md` and the one canonical owner for the concept.
-2. If the task involves authority, memory/state, composition, or interoperability, read the corresponding `docs/detail-design/` page.
+2. Use `docs/detail-design/README.md` to read the relevant protocol, action, recovery, Runtime, resource or evidence design and its counterexamples.
 3. Read `docs/development/002-implemented-kernel-baseline.md` and the development front door to understand current code/migration status.
 4. Inspect affected implementation and conformance tests.
 5. State whether the change belongs to Kernel, Execution Runtime/Driver, or deployment.
-6. Prefer subtraction: if Kernel correctness does not depend on knowing a concept exists, keep it on the Execution side.
+6. Keep ownership precise: if Kernel correctness does not depend on a concept, keep it on the Execution side. Preserve useful deeper design in detail pages; introduce richer contracts when concrete correctness obligations justify them.
 7. Keep provider/protocol types out of Kernel semantics unless multiple real consumers prove a portable contract is needed.
-8. Update architecture/detail docs, migration notes, code, and tests together when semantics actually move.
+8. When implementing semantic changes, update architecture/detail docs, migration notes, code, and tests together. A documentation-only redesign must state the target/implementation gap and assign acceptance tests to roadmap slices; it must not imply that the new behavior shipped.
 
 ## Benchmark attribution
 

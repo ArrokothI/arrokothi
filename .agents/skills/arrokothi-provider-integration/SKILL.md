@@ -29,6 +29,10 @@ incomplete, and never infer permanent policy from implementation observations.
    owners the map identifies. Read `docs/development/002-implemented-kernel-baseline.md` and
    `docs/development/legacy/2026-09-baseline/005-interoperability-baseline-and-next-constraints.md` for current evidence;
    consult `docs/development/001-current-status-and-roadmap.md` for planned work.
+   Use `docs/detail-design/runtime-integration.md` for Driver assurance,
+   `interoperability.md` for protocol/schema mapping and `recovery-and-compatibility.md` for native
+   submit/checkpoint/upgrade windows (all under `docs/detail-design/`). Read resource lifetime design
+   when the integration owns a workspace/session. Never use a legacy step bridge as proof of whole-Runtime fidelity.
 2. **Preserve provider neutrality.** Do not add a core field, enum, lifecycle, or identity merely
    because one vendor, framework, database, or protocol has it. Admit a native concept into kernel
    semantics only through an explicitly authorized architectural decision.

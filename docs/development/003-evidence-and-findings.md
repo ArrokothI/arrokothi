@@ -44,6 +44,22 @@ of them. Current validation for the reorganization is recorded under [historical
 | F18 | Comparison can reward safety/recovery supplied by the benchmark harness; `inspect` is adapter-reported state. [benchmark harness](../../../benchmark/src/runtime/harness.ts), [authorization](../../../benchmark/src/runtime/authorization.ts), [checkpoint](../../../benchmark/src/runtime/checkpoint.ts). | **E2/E5**: native/subject/lab ownership, unsafe-control distinction and independent state/dispatch observations. Retain normalized track without relabeling it native conformance. |
 | F19 | Public names and root versus `/execution` imports need a single pre-compatibility review; definitions, resource handles and ingress IDs are not credentials. [S1 release gate](001-current-status-and-roadmap.md#s1--credible-10-not-architecture-completeness). | **S1**: comprehension-based naming/export review and migration once; **K4/K5/S1** trusted control-plane ingress examples and supported security profile. No wholesale rename for fashion. |
 
+## Detail-design review findings — target contract debt
+
+These are design gaps closed in documentation by [005](005-detail-design-review.md), not new claims
+of executed failure or implementation repairs. All corresponding roadmap gates remain planned.
+
+| ID | Ambiguity / correction | Implementation obligation |
+|---|---|---|
+| F20 | A single cursor/unspecified batch can acknowledge unmatched input; old timers can satisfy a new wait. | K0/K1: eligible batch accounting, whole-batch acknowledgment, wait-generation IDs and terminal disposition. |
+| F21 | Unknown was easy to confuse with discharged work; retries stopped is not external failure. | K2/K3: separate disposition/certainty/responsibility; immutable evidence refinements; completion refusal for unknown obligations. |
+| F22 | Queued correction text does not cancel an accepted action; remote policy has no implicit instantaneous freshness. | K2: explicit withdrawal/invalidation ordering, final input binding and a tested policy freshness profile. |
+| F23 | Parent attenuation at creation alone does not define child revocation lifetime. | K4: retain delegating constraints through descendants; separate parent termination from grant validity. |
+| F24 | Durable checkpoint before Outcome still races orphan deletion; allocation before handle can leak resources. | R1/K3/K5: pin/delete coordination, stable allocation identity, scoped reconciliation and cleanup owner. |
+| F25 | A notify receipt, reply and child terminal result discharge different obligations. | K4: durable correlated reply closure, default required children and no credit refund that permits unbounded sequential spawning. |
+| F26 | Pinned snapshots and current disclosure can conflict on replay; privacy deletion can remove recovery evidence. | R1/K3/K5: explicit hold/refusal or new exchange, expired cursor/dedupe behavior and documented loss of recovery after deletion. |
+| F27 | Optional memory/context/Stage design risked disappearing with legacy files or being mistaken for Kernel requirements. | R2: current semantic homes, native fidelity, typed dataflow, explicit promotion/notes handoff and separate Runtime tests. |
+
 ## Capability schema validation boundary
 
 Until K2 is implemented, capability implementations and application policy must validate domain input.

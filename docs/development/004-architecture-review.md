@@ -4,6 +4,10 @@ This review changes the target documentation and development sequence, not imple
 [canonical owners](../README.md) define the resulting contract. No new runtime, upstream adapter,
 benchmark campaign or production guarantee is implemented here.
 
+Subsequent refinement: [detail-design review](005-detail-design-review.md) preserves deeper legacy
+knowledge and sharpens deadline, action-obligation, disclosure, retention and reply contracts. The
+historical observations and validation below remain this earlier review's record.
+
 ## Evidence inspected
 
 | Repository | Checkout inspected |

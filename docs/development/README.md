@@ -10,6 +10,7 @@ and [Deployment](../deployment.md).
 | [Implemented baseline](002-implemented-kernel-baseline.md) | Actual 0.8.x surface and useful source/tests; no target recovery claim |
 | [Findings](003-evidence-and-findings.md) | Existing implementation defects, historical results and current disposition |
 | [Architecture review](004-architecture-review.md) | 2026-09-08 decisions, inspected prior art, unresolved questions and old-plan disposition |
+| [Detail-design review](005-detail-design-review.md) | Preserved legacy knowledge, refined contracts, future-question disposition and implementation gates |
 | [Legacy](legacy/) | Superseded plans; historical evidence, never an additional active sequence |
 
 The target uses asynchronous Activation/Outcome exchange with opaque Runtime progress. Current code

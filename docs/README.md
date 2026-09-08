@@ -13,16 +13,16 @@ The Kernel owns acceptance and governance, the Runtime owns how work is done, an
 
 ## Detail design
 
-[`detail-design/`](detail-design/) preserves useful current design below the small canonical model. It is where concrete authority, memory/state, composition/communication, and interoperability rules live when they are still useful but should not become additional top-level Kernel concepts.
+[The detail-design map](detail-design/README.md) routes twelve focused pages: Execution protocol;
+principals/authority/consent; action lifecycle/delivery; recovery/compatibility; children/communication;
+Runtime composition; state/memory; context/projections; Runtime integration; interoperability;
+resource lifetime/isolation; and evidence/observability.
 
-| Detail | Purpose |
-|---|---|
-| [Authority and actions](detail-design/authority-and-actions.md) | principals, exposure, delegation, exact consent, revocation, mediated vs ambient actions |
-| [Memory and state](detail-design/memory-and-state.md) | Kernel History vs Runtime memory/context, optional Structured/Derived/Working Notes design, artifacts/provenance/concurrency |
-| [Composition and communication](detail-design/composition-and-communication.md) | local work vs child Execution, Agent/Workflow composition, messaging, waits, ownership and Skills |
-| [Interoperability](detail-design/interoperability.md) | Driver fidelity, protocol/schema mapping, MCP/A2A/external-task boundaries |
-
-The canonical owner always wins if a detail document conflicts with it. Implementation names and package locations belong in `development/`, not in detail design.
+These pages preserve implementation-useful semantics beneath the three owners. They distinguish
+required boundary contracts from optional Runtime designs, name the relevant development slices,
+and include counterexamples and practical prior-art links. They do not claim new implementation.
+The [detail-design review](development/005-detail-design-review.md) records legacy knowledge disposition
+and changes to the target contract. Current design does not depend on the legacy directory remaining.
 
 ## Supporting material
 

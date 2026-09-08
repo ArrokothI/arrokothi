@@ -1,155 +1,138 @@
-# Memory, state, and context
+# State, memory, artifacts and provenance
 
-This document preserves useful memory/state design under the current [`Kernel`](../kernel.md) and [`Execution`](../execution.md) split.
+**Owner:** application/resource services for shared truth; Runtime for continuation, memory and scratch;
+Kernel for accepted progress and History only. **Status:** optional Runtime/service design for R2,
+with authority/recovery requirements in K2/K3/K5. Foreign Runtimes do not adopt this taxonomy.
 
-The Kernel does not require one universal memory ontology. ArrokothI's own Runtime may still use a richer vocabulary because it helps Agent/Workflow engineering.
+## Information roles
 
-## Kernel side
+| Role | Meaning | Typical owner and lifetime |
+|---|---|---|
+| Accepted progress | Runtime continuation accepted at a Kernel revision | Runtime meaning; Kernel reference and retention pin |
+| Execution History | Accepted decisions, inputs, action evidence and routing | Kernel; declared audit/recovery period |
+| Structured state / Structured Memory | Deliberately asserted schema-bound application values | Application service; explicit revisions/retention |
+| Derived Semantic Memory | Inferred claims, potentially wrong, conflicting or stale | Runtime/provider; provenance and correction policy |
+| Working Notes | Bounded scratch plans, hypotheses and continuity notes | Runtime/branch; limited visibility/lifetime |
+| Artifact/file | Durable source material or work product too large for ordinary values | Application/native store; immutable version when relied on |
+| Context | Selection for one computation | Runtime; not retained information by default |
 
-### Kernel History
+“Structured” means intentionally asserted with application meaning, not merely JSON. A schema-valid
+model inference remains an inference until the application explicitly accepts it. History is not a
+business database or an automatically searchable transcript. Artifacts may be authoritative objects,
+but reading a file does not automatically promote its contents into application truth.
 
-**Execution History** is Kernel-owned evidence about managed work:
+## Structured state service contract
 
-- accepted inputs;
-- Activation dispatch/acceptance;
-- lifecycle transitions;
-- Effect intents, admission, attempts, settlement, and uncertainty;
-- child/message correlation;
-- cancellation and recovery decisions;
-- accepted result/emission identities.
+Use ordinary state services before a new Kernel memory product. A supported state operation declares
+schema/version, readable/writable fields, owner, revision/preconditions, exact update semantics and
+result certainty. Reads and writes have separate permissions. Govern them through Effects where a
+Kernel action claim is needed; a native trusted read can remain native with its access owner declared.
+The old “a read is never an Effect” rule is not a target restriction.
 
-History is for correctness, audit, inspection, and recovery. It is not automatically Agent memory, user profile, model context, or a deterministic replay transcript.
+A useful baseline is snapshot read + compare-and-set write. Given revision 17, a write conditional on
+17 either commits the value/provenance and new revision together or returns conflict without mutation.
+The Runtime can reread/recompute or fail; no automatic last-write-wins, merge or new consent. If the
+payload changes after conflict resolution, it is a new action. Multi-field invariants use the owning
+database's transaction; independent Effects do not supply a multi-resource transaction.
 
-### Progress
+A whole-view revision can reveal that hidden fields changed. Keep internal preconditions out of
+field-limited model context, and use selected-field/view-scoped versions or a trusted internal binding
+when needed. Do not pass opaque tokens to a model merely because they are called metadata; their
+changes may disclose private activity. The reference 0.8.x read-view tests already protect this case.
 
-**Progress** is Runtime-owned continuation data accepted by the Kernel. The Kernel may store it as structured data or an opaque/checkpoint reference, but does not infer semantic memory from it.
+Allow commutative updates, field-level preconditions or resource leases only where they preserve the
+actual service invariant. Per-Execution single-writer progress never serializes other Executions'
+writes to a shared store. Long-lived exclusivity requires service-enforced fencing, not a mutex held
+while an Agent waits for a human.
 
-A checkpoint is a resumable snapshot under a declared Runtime contract. A mutable session locator alone is not a checkpoint.
+## Derived claims and provenance
 
-### Shared/application state
+A minimum useful claim has stable claim identity, statement, one or more source/version references,
+derivation method/version and observed/derived time. Application-specific fields can add subject,
+confidence, valid time, contradiction and supersession links. These are useful optional provider
+features, not a universal graph or confidence semantics in the Kernel.
 
-Business state, application databases, artifacts, files, indexes, and other shared resources remain ordinary application services.
+Source observation, derived claim and asserted state are separate nodes in a provenance graph:
 
-When the application wants Kernel governance over their access, expose the relevant operation/resource through Effects. The Kernel does not need to turn every application database into a built-in memory subsystem.
+```text
+trusted API result ───────────────→ explicit application assertion
+messages/documents → inferred claim → optional verified promotion → assertion
+raw source ───────────→ corrected extraction (old claim remains attributable)
+```
 
-Resource-specific correctness may require revisions, preconditions, transactions, leases, or conflict rules. Those semantics belong to the resource/service contract unless a repeated cross-resource requirement justifies a portable Kernel facility.
+There is no mandatory raw → derived → structured pipeline. A deterministic Workflow can directly
+assert a verified source value; an inferred claim may remain useful indefinitely without promotion.
+Source IDs must resolve under access policy; they are not authority evidence simply because they exist.
 
-### Visibility and authority
+Promotion is an explicit application decision with validation, authority and provenance. It may require
+human review or independent verification. Do not treat a memory extractor's “user approves all payments”
+as a grant. Even promoted state becomes policy evidence only under a separate trusted policy contract.
+Correction of a source/claim does not silently rewrite already accepted business actions or past consent.
 
-Scope or ownership metadata does not itself grant read/write permission. Reads and writes must follow the application's access policy and the relevant Kernel-mediated boundary when governance is claimed.
+Prefer additive correction/supersession history when useful: “lived in Taipei in 2025” and “moved to
+New York in 2026” may both be valid. Distinguish observation time, derivation time and the time the
+claim describes. Retrieval chooses current relevant evidence without deleting conflicting history by
+accident. A corrected claim should identify affected promoted values for application review; automatic
+rollback is not implied. Deletion policy can remove payloads while retaining permitted provenance
+metadata and an explicit unavailable-source state.
 
-A child Execution does not inherit private state merely because it has a parent link.
+## Views, retrieval and disclosure
 
-## Execution side
+Memory form is orthogonal to scope: organization-scoped asserted state, user-scoped artifacts and
+Execution-local notes are all possible. Scope labels locate data; they do not authorize it. A view
+selects readable fields/collections/objects and writable targets under current principal policy.
+Children, shared sessions and matching folder prefixes do not automatically share a view.
 
-ArrokothI's own Agent/Workflow Runtime may use the following **optional Runtime vocabulary**. Foreign Runtimes do not need to adopt it.
+Authorize retrieval scope before calling a provider, including query disclosure to remote embedding/
+ranking services. Filter results and provenance metadata before returning them; avoid unauthorized
+counts, snippets or ranking influence where claiming non-disclosure. A cached index needs an access/
+freshness contract and final resource reads must recheck permission. Revocation cannot retract text
+already disclosed; retention and model-provider data handling are separately declared.
 
-| Runtime concept | Meaning |
-|---|---|
-| Structured state/memory | Explicitly asserted, schema-bound state whose application meaning is known |
-| Derived Semantic Memory | Inferred claims retained with provenance; may be stale, wrong, or conflicting |
-| Working Notes | Temporary Runtime-owned scratch state for planning/reasoning continuity |
-| Artifact/File reference | Reference to larger durable application-owned content rather than forcing it through prompt/state text |
+Lexical, embedding, graph, temporal and hybrid ranking are replaceable. CrewAI's
+[MemoryScope/MemorySlice](../../../crewAI/lib/crewai/src/crewai/memory/memory_scope.py) demonstrate scoped
+views and runtime rebinding; [memory types/scoring](../../../crewAI/lib/crewai/src/crewai/memory/types.py)
+combine semantic relevance, recency and importance. Those are useful Runtime mechanisms, not proof
+of a security boundary or one correct retrieval strategy. Test native memory fidelity before imposing
+ArrokothI's terms on an integrated Crew.
 
-These categories are useful because they have different epistemic and lifecycle properties, not because the Kernel needs four memory types.
+## Working Notes and handoff
 
-### Memory and context
+Notes are optional local scratch, not required reasoning transcripts. Bound size and lifetime; separate
+read enablement from write enablement. Do not persist private internal reasoning merely to fill an
+observability schema. Store concise task state/evidence where that suffices for continuity.
 
-**Memory** is retained information. **Context** is information selected for one computation.
+Parent/child handoff selects authorized information into an immutable inherited view plus the child's
+own writable frame. No implicit child-to-parent note copy occurs on completion. Sequential Stages
+and parallel branches default to separate scratch frames; explicit handoff/join selects retained facts.
+Important data flows through typed results or application state, not a hidden growing notes stack.
+A retained snapshot need not be copied into every model request or Activation transport.
 
-A Runtime may compile context from:
+If notes are recovery-critical, the Runtime includes them in its native checkpoint contract; otherwise
+losing them is an explicit quality limitation, not loss of Kernel truth. Hermes'
+[memory tool](../../../hermes-agent/tools/memory_tool.py) distinguishes persistent file writes from a
+frozen session-start prompt snapshot. Learn the lifetime distinction; ArrokothI should not require
+that particular prompt-cache strategy or adopt those files as asserted policy state.
 
-- current Events;
-- native transcript/session state;
-- Structured state;
-- retrieved Derived claims or documents;
-- Working Notes;
-- application resources;
-- provider-native caches or summaries.
+## Artifacts and files
 
-Context compilation may filter, retrieve, rank, summarize, redact, and format. It does not grant authority.
+A cross-boundary reference declares store/namespace, object identity, immutable version or digest when
+required, media/schema hint, size bounds, owner/access method and retention responsibility. These are
+contract requirements, not a mandatory universal Artifact class. A URL, path or content hash alone
+neither grants access nor guarantees availability. Resolve signed access links freshly through an
+authorized service; do not persist expiring credential-bearing URLs as the only recovery reference.
 
-The Runtime should preserve the distinction between source material and conclusions derived from it. Observing text does not automatically create durable semantic memory.
+Keep local temporary files native. Before a result or action relies on durable content, publish it,
+verify availability/integrity and pin its version under [resource lifetime](resources-and-isolation.md).
+Check retention before transferring a reference to a child. A copied reference does not transfer
+ownership or prolong lifetime automatically. A missing object is unavailable evidence, not an empty
+valid artifact. Workspace Git undo is not an Execution checkpoint or remote action rollback.
 
-### Structured state
+## Acceptance examples
 
-Structured state represents explicit asserted values. Useful rules for ArrokothI's reference Runtime include:
-
-- validate writes against the declared schema;
-- preserve revision/history when concurrency matters;
-- expose only fields the current read policy permits;
-- reject or surface stale optimistic writes rather than silently last-write-wins;
-- do not expose storage/concurrency metadata to a model unless it is semantically useful.
-
-A Runtime may choose an application-owned state service instead of ArrokothI's current Structured Memory implementation.
-
-### Derived Semantic Memory
-
-Derived memory is inference, not authoritative state.
-
-A retained claim should keep enough provenance to answer where it came from and how it was derived. Useful fields may include source references, derivation method/version, and time. Confidence, temporal validity, supersession, entity models, and graph structure remain provider/application choices until evidence justifies portability.
-
-Derived claims do not automatically become:
-
-- application truth;
-- authority evidence;
-- exact consent;
-- Structured state.
-
-Promotion into asserted state is an explicit application/Runtime action and should retain provenance.
-
-### Working Notes
-
-Working Notes are bounded Runtime-owned scratch state. They are useful for preserving planning state without treating every internal thought as application memory.
-
-They should not automatically cross:
-
-- parent/child Execution boundaries;
-- independent Workflow branches;
-- Runtime/provider boundaries.
-
-When a handoff is useful, make it explicit and copy/select the intended information. The receiving Runtime owns its new writable state.
-
-### Artifacts and large values
-
-Local values should pass directly between Runtime steps. Do not use memory writes merely to move an object from one node to the next.
-
-Large or durable values may cross boundaries through application-owned references. A useful reference contract identifies the object/version plus enough ownership/access/retention information to detect missing or stale data.
-
-ArrokothI does not require one universal Artifact store.
-
-### Scope, views, and sharing
-
-Memory location, application scope, and permission are separate concerns.
-
-A Runtime/application may define views such as selected fields, task-local state, organization knowledge, or child handoff. Each view should be explicit about what is visible; ancestry or shared scope must not bypass authorization.
-
-### Concurrency
-
-Avoid timing-dependent last-write-wins when multiple branches/Executions can update the same resource.
-
-Use the weakest mechanism that preserves the resource contract:
-
-- optimistic revision/precondition;
-- field/key-level conflict detection;
-- reducer/commutative update;
-- transaction;
-- resource-specific lease/fencing.
-
-The Kernel's one-Activation-writer rule protects accepted Execution progress; it does not by itself serialize an external shared database or native session.
-
-## Preserve vs retire from the previous model
-
-| Previous idea | Current treatment |
-|---|---|
-| Memory is different from context | Preserve |
-| Inferred information is different from asserted state | Preserve |
-| Provenance matters for derived claims | Preserve |
-| Working Notes are temporary and not authority | Preserve as optional Runtime design |
-| Explicit child/view sharing | Preserve |
-| Structured Memory optimistic conflict handling | Useful reference Runtime/service design |
-| Four memory forms as mandatory Kernel ontology | Retire |
-| Universal cross-Execution memory scope ontology | Not required; application/service-specific until proven otherwise |
-| Universal graph/vector memory backend | Retire as requirement; optional integration |
-
-Current implementation evidence is indexed in [`../development/002-implemented-kernel-baseline.md`](../development/002-implemented-kernel-baseline.md). The full historical memory design remains in [`../mental-model-legacy/memory.md`](../mental-model-legacy/memory.md).
+R2: direct assertion from verified source; inferred claim refused as approval; explicit promotion with
+provenance; two writers at revision 17 yield one conflict; hidden-field changes do not alter permitted
+model context; branch notes do not leak; typed dataflow requires no memory detour. K3/K5: referenced
+object deleted during recovery, access revoked before retrieval, source correction after promotion,
+child handoff after parent cleanup and native memory binding missing on restore. Attribution separates
+resource-service behavior, Runtime quality, Kernel action admission and physical containment.

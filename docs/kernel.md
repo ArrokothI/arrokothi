@@ -4,6 +4,11 @@ The Kernel owns the acceptance of Execution state, addressed inputs and mediated
 not implement Agent reasoning or Workflow progression. This is the **target contract**, not a claim
 that the current 0.8.x Harness implements it. See the [migration roadmap](development/001-current-status-and-roadmap.md).
 
+Implementation-level acceptance and race rules live in [Execution protocol](detail-design/execution-protocol.md).
+[Authority](detail-design/authority-and-actions.md), [action lifecycle](detail-design/action-lifecycle.md),
+[composition](detail-design/composition-and-communication.md), [recovery](detail-design/recovery-and-compatibility.md)
+and [evidence](detail-design/evidence-and-observability.md) expand their respective boundaries.
+
 ## Execution and lifecycle
 
 An Execution record needs identity, pinned Runtime/definition contract, authority binding, lifecycle,
@@ -28,8 +33,10 @@ Terminal states do not reopen; starting again is an explicit new Execution.
 
 Completion records a result, not its delivery to a person or external system. Nonterminal emissions
 are output, not completion. Completion must reject newly proposed Effects and unresolved owned
-Effects or required child results. The Runtime must first observe settlement, or the application must
-explicitly transfer/abandon the obligation under policy. Failure/cancellation may leave external work
+Effects or required child results. An acknowledged uncertainty Event does not discharge unknown work;
+request disposition, external certainty and responsibility are distinct. The Runtime must account for
+required settlement/results in previously acknowledged Events or the current batch, or the application
+must explicitly transfer/abandon the obligation under policy. Failure/cancellation may leave external work
 unknown; the Kernel retains it for reconciliation rather than deleting evidence with the Execution.
 Detached work is optional: do not introduce it until another durable owner can be named.
 
@@ -101,7 +108,8 @@ An Event has an identity, destination, kind, payload and trusted ingress provena
 when needed. The Kernel assigns an acceptance order per Execution, without promising causal order
 across transports. It records duplicate acceptance consistently; same ID with different content is a
 conflict. Delivery may repeat after a lost attempt. Processing is acknowledged only by accepted
-Outcome or an explicit recorded terminal disposition, never merely by reading the mailbox.
+Outcome or an explicit recorded terminal disposition, never merely by reading the mailbox. An Outcome
+acknowledges its whole reserved batch; unselected unmatched input retains its own disposition.
 
 The Runtime cannot mint Effect settlements, child completions or consent by submitting an Event-like
 payload. Application input, trusted adapter settlement and operator control have separately scoped
@@ -120,7 +128,9 @@ Unmatched Events remain queued under the declared retention policy; they do not 
 a busy loop. Fast/slow settlement uses the same Event/result contract. A new Activation receives a
 bounded batch; no second writer is dispatched while the current one is unresolved.
 
-Timers wake from persisted deadlines. Timeouts, human replies and cancellation races follow Kernel
+Timers wake from persisted deadlines and name the wait generation; stale timers cannot wake a
+replacement wait. Wait expiry does not settle an external action or necessarily end the Execution.
+Timeouts, human replies and cancellation races follow Kernel
 acceptance order. Parent/peer cyclic waits can still deadlock: expose correlations and deadlines;
 do not promise general deadlock prevention. Local Runtime promises are never Kernel waits.
 
@@ -155,12 +165,17 @@ resource revision and authenticated approver. Changed payload or contract requir
 or refusal. Recheck policy after approval and at dispatch admission. Revocation and admission have a
 defined ordering: revocation accepted first blocks admission; it cannot recall an already admitted
 external request. Enforce the current dispatcher epoch at admission, not only at Outcome acceptance.
-Do not imply a local authorization transaction atomically commits with a remote service.
+Do not imply a local authorization transaction atomically commits with a remote service. Remote policy
+freshness requires an explicit integration contract. Ordinary correction input cannot itself withdraw
+an action: an application claiming retraction must order explicit withdrawal/consent invalidation
+against admission. Transitive child grants retain their delegating constraints under revocation.
 
 Record logical action ID separately from physical attempts. Retry only under the operation's
 idempotency/reconciliation contract; all retries keep the logical request identity. A lost receipt,
 timeout or malformed response after possible execution is `unknown`, not definite failure.
-Reconciliation uses trusted external evidence; Runtime prose cannot settle an Effect. Compensating
+Reconciliation uses trusted external evidence; Runtime prose cannot settle an Effect. Refinement of
+unknown work appends a new evidence revision/Event rather than editing an already consumed Event.
+Stopping retries or abandoning responsibility is not proof of external failure. Compensating
 an action is a new authorized action, not automatic rollback.
 
 Prior art: OpenClaw's [unknown-send reconciliation](../../openclaw/src/infra/outbound/delivery-queue-reconciliation.ts)

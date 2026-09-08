@@ -402,6 +402,6 @@ contract. A successful external-task product may need no universal runner at all
 | Retired as product obligations | POSIX clone, universal graph importer, mandatory all-engine IR, custom sandbox/browser/database platform, feature parity with mature suites, broad marketplace/Studio/Cloud by default | No demonstrated need; high permanent maintenance and ownership duplication. Reopening requires a new decision with evidence, not an old roadmap checkbox. |
 
 The [future questions](../../future-plan.md), [research notes](../../research/README.md) and
-[product vision](../../product-vision.md) preserve the arguments. Their historical experiment sequences
+[product vision](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/product-vision.md) preserve the arguments. Their historical experiment sequences
 are not additional active plans. New research should identify what could falsify it and what work
 would be deleted if it fails.

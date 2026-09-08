@@ -89,6 +89,13 @@ content. Its Kernel-owned `ControllerResumption`, closed Agent/Workflow kind uni
 model budgets and mandatory memory vocabulary do not. Required external work still needs an owner;
 removing Stage semantics does not permit terminal completion to silently discard action obligations.
 
+## Design depth
+
+The [detail-design layer](detail-design/README.md) expands protocol races, action obligations, native
+recovery, composition, memory/context, resources and evidence. Optional Runtime concepts have useful
+current homes there without becoming mandatory Kernel types. [Future questions](future-plan.md)
+remain hypotheses; only [development](development/README.md) owns implementation sequence.
+
 ## Evidence and scope
 
 [Execution](execution.md#prior-art-navigation) links the concrete CrewAI, OpenClaw, Hermes and Dify

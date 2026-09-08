@@ -103,10 +103,10 @@ or Skill descriptor/profile surface.
 
 ### Canonical owner
 
-[`../interoperability.md`](../../../interoperability.md), with Definition/Execution consequences owned by
-[`../execution-runtime.md`](../../../execution-runtime.md), composition consequences by
-[`../composition.md`](../../../composition.md), and authority/exposure consequences by
-[`../authority.md`](../../../authority.md).
+[`../interoperability.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/interoperability.md), with Definition/Execution consequences owned by
+[`../execution-runtime.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/execution-runtime.md), composition consequences by
+[`../composition.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/composition.md), and authority/exposure consequences by
+[`../authority.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/authority.md).
 
 ### Existing substrate
 
@@ -179,9 +179,9 @@ notifications/change signals.
 
 ### Canonical owner
 
-[`../interoperability.md`](../../../interoperability.md), with Event/Effect and waiting semantics from
-[`../execution-runtime.md`](../../../execution-runtime.md), and authority/exposure from
-[`../authority.md`](../../../authority.md).
+[`../interoperability.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/interoperability.md), with Event/Effect and waiting semantics from
+[`../execution-runtime.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/execution-runtime.md), and authority/exposure from
+[`../authority.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/authority.md).
 
 ### Existing substrate
 
@@ -240,8 +240,8 @@ an Agent/Workflow service with inputs, progress, waiting, terminal result, and c
 
 ### Canonical owner
 
-[`../interoperability.md`](../../../interoperability.md), with Agent/Workflow/Execution meaning from
-[`../composition.md`](../../../composition.md) and [`../execution-runtime.md`](../../../execution-runtime.md).
+[`../interoperability.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/interoperability.md), with Agent/Workflow/Execution meaning from
+[`../composition.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/composition.md) and [`../execution-runtime.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/execution-runtime.md).
 
 ### Existing substrate
 
@@ -297,9 +297,9 @@ small immutable Active View over a large authorized universe.
 
 ### Canonical owner
 
-[`../authority.md`](../../../authority.md), with descriptor meaning from
-[`../interoperability.md`](../../../interoperability.md) and context/memory selection boundaries from
-[`../memory.md`](../../../memory.md).
+[`../authority.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/authority.md), with descriptor meaning from
+[`../interoperability.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/interoperability.md) and context/memory selection boundaries from
+[`../memory.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/memory.md).
 
 ### Existing substrate
 
@@ -358,9 +358,9 @@ network/filesystem access, resource limits, and failure behavior.
 
 ### Canonical owner
 
-[`../security-guarantees.md`](../../../security-guarantees.md), with execution mechanics from
-[`../execution-runtime.md`](../../../execution-runtime.md) and authority limits from
-[`../authority.md`](../../../authority.md).
+[`../security-guarantees.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/security-guarantees.md), with execution mechanics from
+[`../execution-runtime.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/execution-runtime.md) and authority limits from
+[`../authority.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/authority.md).
 
 ### Existing substrate
 
@@ -425,10 +425,10 @@ idempotency, or recovery of uncertain in-flight outcomes after a process crash.
 
 ### Canonical owner
 
-[`../execution-runtime.md`](../../../execution-runtime.md), with memory references from
-[`../memory.md`](../../../memory.md), security consequences from
-[`../security-guarantees.md`](../../../security-guarantees.md), and composition links from
-[`../composition.md`](../../../composition.md).
+[`../execution-runtime.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/execution-runtime.md), with memory references from
+[`../memory.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/memory.md), security consequences from
+[`../security-guarantees.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/security-guarantees.md), and composition links from
+[`../composition.md`](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/composition.md).
 
 ### Existing substrate
 

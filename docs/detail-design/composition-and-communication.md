@@ -1,157 +1,136 @@
-# Composition and communication
+# Child Executions and addressed communication
 
-This document preserves detailed composition rules under the current [`Kernel`](../kernel.md) / [`Execution`](../execution.md) boundary.
+**Owner:** Kernel relationships, routing and obligations; application supervision policy.
+**Status:** target K4; [protocol](execution-protocol.md) and [authority](authority-and-actions.md) are
+prerequisites. Local graphs, branches, Agents and Skills live in [Runtime composition](runtime-composition.md).
 
-The Kernel manages independently addressable Executions. Agent/Workflow graph structure and local composition remain Runtime concerns unless they cross that boundary.
+## Choosing an Execution boundary
 
-## Kernel side
+Independent addressability, authority, lifecycle, recovery, cancellation or result inspection can
+justify a child Execution. Complexity, a model call, a parallel function or foreign implementation
+alone does not. A whole Crew or Dify application can be one Execution. A remote service call may be
+an ordinary Effect with a provider task handle rather than a child.
 
-### When composition creates an Execution
+Keep three graphs distinct: ownership (who created/owns work), communication (who sends to whom),
+and waits (which observation permits progress). An ownership tree can have arbitrary peer messaging
+and cyclic waits. The application's principal relationship graph is a fourth, separately authenticated
+source. No edge grants every permission represented by the others.
 
-Create a child Execution when the child needs independent management such as:
+## Child creation and required results
 
-- its own identity/address;
-- independent lifecycle or cancellation;
-- independently bounded authority;
-- durable wait/recovery ownership;
-- separately inspectable progress/result;
-- communication that must survive the caller's current Activation.
+Child creation is an immutable mediated request. Pin definition/Runtime revision, explicit input,
+delegated authority, requested limits and selected resource/context handoff. The Kernel binds a stable
+request to one child ID, parent correlation and root budget reservation. Creation receipt means the
+child exists; it does not mean the child completed. A `call` helper combines creation with required
+terminal-result handling; a `spawn` helper omits immediate waiting, not ownership obligations.
 
-Do not create an Execution merely because work is complex, asynchronous, model-driven, parallel, or implemented by another function/node.
+First K4 profile should keep these records in one transactional authority domain. If fulfillment is
+asynchronous, atomically record the creation/link/budget obligation, then fulfill it idempotently with
+the preallocated child ID. Neither timeout nor retry may create another child or double-charge the
+budget. Do not promise sharded atomic creation before a real cross-domain protocol exists.
 
-| Local Runtime work | Child Execution |
-|---|---|
-| function/model/graph node | independently managed Agent/Workflow/job |
-| internal retry/compaction | independently recoverable task |
-| branch-local value | separately addressable result |
-| same Runtime authority/lifecycle | separately delegated authority/lifecycle |
+Children default to required owned work until their terminal result is accounted for. A parent may
+continue other work but cannot complete while the required child remains unresolved. Child failure
+or cancellation is an observation; it does not automatically fail the parent. Any optional detachment
+must name a durable owner with accepted responsibility before releasing the parent's obligation.
+The minimum release can refuse arbitrary detachment. Parent failure/cancellation still leaves
+application reconciliation/supervision responsible for live children and their actions.
 
-### Child creation
+Terminal child result and Kernel-to-parent routing obligation commit together. A lost notification
+is retried; it does not cause child execution again. If the parent is already terminal, preserve the
+result and record terminal delivery disposition under the declared policy. Do not route it into the
+next unrelated parent/user session. Late results cannot reopen either lifetime.
 
-Child creation is a Kernel-mediated operation with stable identity/correlation. In a durable profile, accepted creation intent, authority/budget reservation, parent correlation, and resulting child identity must survive retry without duplicate ownership or duplicate budget consumption.
+## Structural limits and supervision
 
-A child is a real Execution. Parent and child progress remain separate.
+Recursion is legal: a Definition appearing in ancestry is not a semantic error. Bound autonomous
+expansion with root-scoped finite total spawn credits, plus optional maximum active descendants and
+depth. Total credits are consumed once per accepted child creation and are not refunded when that
+child finishes; otherwise infinite sequential spawning evades the bound. Active slots are released
+exactly once on the relevant terminal/resource disposition. Rejected creation releases reservations
+without minting credits. Descendants subdivide the same root allowance rather than resetting it.
 
-### Ownership and authority
+Supervision policy specifies report/continue, cancel siblings, request child cancellation or start a
+new retry Execution. Retry intensity and total work are bounded; restarting does not reopen terminal
+identity or renew grants/budgets automatically. Keep policy in application/Runtime composition until
+repeated use justifies a helper. Defaults must be explicit at creation; ancestry alone implies neither
+a cascade kill nor immunity from one. Native grandchildren remain the native Runtime's responsibility.
 
-Parent/child ownership is an operational relationship for causation, delegation, budgets, result routing, and cancellation policy. It does not imply:
+## Messages and replies
 
-- read access to private Runtime memory;
-- ambient credential inheritance;
-- peer impersonation;
-- automatic cascade cancellation;
-- authority wider than explicit attenuation.
+An addressed message carries stable sender/destination, input identity, content, causation and optional
+request correlation. Authorize destination-scoped send before exposing target/request details.
+Accepted routing means the destination mailbox accepted it, **not** that a model read it or the
+application acted. A sender requiring application completion must request a reply/result explicitly.
 
-### Messaging
+For request/reply, retain a correlation record scoped to requester, permitted responder, destination,
+expected reply contract, open/closed state and optional deadline. This can be a narrow record behind
+ordinary Effects/Events rather than a general conversation service. `expectsReply` is valid only when
+that record exists. A reply references the open request and authenticated responder; guessed IDs,
+wrong peers and new replies after closure cannot settle it. An authenticated exact retry returns its
+original receipt without settling twice; conflicting reuse of its identity is refused. A reply is a
+reply observation, not an action settlement or a grant of authority.
 
-Addressed communication is separate from ownership.
+Acceptance of the valid reply, closure of its request dependency and recoverable requester delivery
+must be atomic or backed by an idempotent durable routing obligation. `send` completion and `ask`
+completion are therefore different. A notify-only message settles at mailbox acceptance; an ask
+remains required until reply, explicit expiry or abandonment. Expiry does not prove the peer did no
+work. Reply content may still be untrusted or semantically wrong.
 
-A message/request/reply uses stable sender/destination/correlation identities and is delivered as accepted Events. A request that expects a reply needs a real open correlation/ownership record; text that merely looks like a question does not create a Kernel wait.
+A compound `reply_and_ask` is optional library convenience. It must not advertise a second reply
+expectation without creating a new correlation. Two ordered operations are the baseline. If an
+atomic compound form is demanded, test close-old/open-new/deliver under one idempotent command;
+do not add a Kernel session ontology to conceal missing request records.
 
-Knowing a message or correlation ID does not grant permission to reply, settle an Effect, or inspect another Execution.
+## Waits, interleaving and human participation
 
-### Waits and joins
+A parent waiting for B can subscribe to clarification from B. Then:
 
-The Kernel provides bounded waits for Kernel-visible dependencies such as correlated Events, child results, human replies, Effect settlements, or deadlines.
+```text
+A creates B and waits for B result + declared clarification input
+B asks A about a missing parameter
+A accepts a new Activation, answers, retains B as unresolved, waits again
+B completes; A accounts for the result and can complete
+```
 
-General graph joins belong to the Runtime. For all-of behavior, the Runtime can retain already observed members in progress and wait on the remaining finite set.
+Only one current Activation writes A's progress. Runtime continuation assumptions must be revalidated
+against new input; storing an old promise does not make its answer current. General all-of joins
+retain seen results in Runtime progress and wait on remaining correlations. A wait cycle is a diagnostic
+candidate, not proof of deadlock; timeouts, human replies or eligible messages may break it.
 
-Registering a wait and checking already accepted mailbox Events must not create a lost-wake window.
+A human request binds recipient eligibility, input schema, request revision, expiry and one resume
+owner. The application owns form UI, notifications and external authentication. Input acceptance and
+request closure are ordered; exact retries return their receipt, while conflicting or new late
+submissions are refused consistently. Typed feedback
+is distinct from [exact action consent](authority-and-actions.md#exact-consent). Native forms should
+retain their native owner; a Driver maps one subscription, not a second independently resumable form.
 
-### Completion obligations
+Long-lived conversational Executions can emit many responses and wait without completing. Applications
+may instead create one Execution per job/turn and keep session grouping outside the Kernel. Choose
+lifetime deliberately; never reset authority/spend merely because a chat turn ended.
 
-Completion is allowed only after work still owned by the Execution is settled, explicitly transferred to another durable owner, or explicitly abandoned under policy.
+## Handoff and cancellation
 
-This preserves the useful part of the old Stage/effect barrier without requiring the Kernel to understand Stages.
+A child receives explicit values or authorized resource references, not the parent's RuntimeStore,
+private mailbox, transcript or credentials. Notes are selected copies/read-only views with a separate
+child writable frame. Returned output is a contract, not implicit copying of child memory back into the
+parent. [Memory/state](memory-and-state.md) owns visibility and revision semantics.
 
-Failure or cancellation may leave external actions `unknown`; their evidence remains inspectable after the Execution becomes terminal.
+Cancelling a wait, asking to cancel a child and physically stopping it are independent operations.
+Cancellation control fences future parent progress/admission; the chosen supervision policy decides
+what happens to descendants and peer requests. Already admitted external work remains potentially
+live. Preserve receipts, cleanup and unknown obligations after terminal cancellation.
 
-### Cancellation
+## Prior art and K4 proof
 
-Cancellation is ordered Kernel control, not an ordinary model message. It fences new accepted progress and new Effect admission after cancellation wins the acceptance race.
+Hermes [async delegation](../../../hermes-agent/tools/async_delegation.py) separates child completion,
+parent-turn delivery and owner-loss uncertainty. Its
+[restored ownership tests](../../../hermes-agent/tests/tools/test_restored_delegation_ownership.py)
+are concrete counterexamples to routing by a remembered session string alone. OpenClaw
+[task records](../../../openclaw/src/tasks/task-registry.types.ts) similarly distinguish owner,
+requester, run identity and delivery status. Preserve native routing when integrating those products.
 
-Child cancellation, peer-request abandonment, native process termination, and external compensation are separate policies/actions. A parent link does not imply all of them automatically.
-
-### Structural budgets
-
-Limits such as child depth/count can be useful to bound recursive expansion when the Kernel owns child creation. They are operational limits, not authority grants and not model-call budgets.
-
-## Execution side
-
-### Agent and Workflow
-
-Agent and Workflow remain useful semantic authoring styles:
-
-- **Agent:** progression is substantially chosen at runtime by a model/intelligent policy;
-- **Workflow:** allowed progression/topology is primarily system-defined.
-
-Both may share one Runtime implementation or substrate. The Kernel does not branch on these kinds.
-
-### Stages and local nodes
-
-ArrokothI's own Workflow Runtime may keep Stage/node abstractions for authoring. A Stage remains local Runtime composition unless it explicitly creates/calls a child Execution.
-
-Useful local Stage kinds may include function, model, Agent call wrapper, Workflow call wrapper, validation/transform, or provider-native node. These are library choices, not Kernel vocabulary.
-
-### Typed local dataflow
-
-Local values should move directly between Runtime steps in structured form. Text is one value representation, not the universal edge contract.
-
-A Stage/node result is not automatically the Execution's terminal result. The Runtime selects/validates the final result separately.
-
-Large durable outputs may use application-owned artifact references rather than memory writes or prompt text.
-
-### Parallel work
-
-Parallel branches may overlap computation while Runtime state mutation remains controlled.
-
-Prefer structured concurrency:
-
-- branch-local progress/results;
-- explicit join;
-- deterministic/authored ordering where order matters;
-- no uncontrolled concurrent mutation of shared Runtime state;
-- explicit conflict/reducer semantics for shared external resources.
-
-A complex branch does not become a child Execution until independent Kernel management is needed.
-
-### Adapters/transforms
-
-A Runtime-local Adapter/transform should remain local if it only maps/validates values. If it performs governed external work, it is no longer merely a transform and should use an Effect or another declared integration boundary.
-
-### Skills/packages
-
-A Skill/package is reusable instructions/code/resources/composition, not an Execution and not authority.
-
-A Skill may declare requested/recommended operations or resources for composition/preflight. Those declarations do not grant them.
-
-Foreign Runtime packages do not need to be translated into an ArrokothI Skill format unless a real portability use case justifies it.
-
-### Native composition
-
-Prefer a provider's own composition machinery when it is already good at the job:
-
-- CrewAI Crew/Flow;
-- Dify graph/application;
-- Hermes delegation/context machinery;
-- OpenClaw task/session/channel ownership.
-
-The Driver should expose only the independently managed boundary that ArrokothI needs, rather than flattening every native node/worker into Kernel Executions.
-
-## Preserve vs retire from the previous model
-
-| Previous idea | Current treatment |
-|---|---|
-| Stage is different from Execution | Preserve |
-| Child Execution for independent lifecycle/authority/addressability | Preserve and make provider-neutral |
-| Ownership separate from communication | Preserve |
-| Recursive child Executions | Preserve |
-| Explicit waits/correlation | Preserve |
-| Required-work barrier before terminal completion | Preserve narrowly as Execution-owned obligations |
-| Agent vs Workflow distinction | Preserve as Runtime authoring semantics, not Kernel kind |
-| Stage graph/barrier/join as Kernel semantics | Retire; Runtime-owned |
-| Text/none universal Stage result | Retire |
-| Local Adapter as effectful integration point | Retire; local transforms stay local, governed work crosses boundary |
-| Skill as Kernel primitive | Retire; optional Runtime/package concept |
-
-Current implementation evidence is indexed in [`../development/002-implemented-kernel-baseline.md`](../development/002-implemented-kernel-baseline.md). Historical composition detail remains in [`../mental-model-legacy/composition.md`](../mental-model-legacy/composition.md).
+K4/E4 tests crash between intent and child fulfillment, completion before parent wait, clarification
+while waiting, duplicate/wrong-owner replies, expired request plus late reply, transitive grant
+revocation, terminal parent delivery, recursive credit exhaustion and cancellation with a live child.
+Failures must identify routing, authority, Runtime interpretation or native cleanup as the owner.

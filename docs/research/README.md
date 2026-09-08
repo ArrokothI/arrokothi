@@ -21,6 +21,8 @@ listed in [`../README.md`](../README.md); accepted implementation decisions rema
 `TBD` is intentional. A plausible analogy is not an architectural decision.
 
 The [active roadmap](../development/001-current-status-and-roadmap.md) owns horizon placement.
+The [future questions](../future-plan.md) select current hypotheses and negative gates; the
+[detail-design map](../detail-design/README.md) holds accepted boundary rules and optional Runtime designs.
 Machine/ABI and JIT prototype sequences remain hypotheses; a 2.0 Machine is not committed.
 The [strategy study](../architecture-strategy-study/README.md) independently reviews these directions.
 
@@ -31,7 +33,7 @@ The [strategy study](../architecture-strategy-study/README.md) independently rev
 | [`mcp-arrokothi-semantic-mapping.md`](mcp-arrokothi-semantic-mapping.md) | MCP 2026-07-28 protocol-surface inventory and provisional mapping in both import and export directions. |
 | [`agent-caching-semantics-and-strategy.md`](agent-caching-semantics-and-strategy.md) | Agent caching survey across OpenClaw, Hermes Agent, Dify, LangGraph, and model providers; distinguishes optional caches, deterministic derived views, and invocation/recovery snapshots, then maps cache candidates and invalidation requirements onto ArrokothI. |
 | [`jit-capability-namespace-and-context-scouts.md`](jit-capability-namespace-and-context-scouts.md) | Research direction for hierarchical JIT discovery over authorized capabilities/knowledge/resources, progressive materialization, and read-only Context Scouts that use cheaper models to assemble provenance-preserving context for stronger primary Agents. |
-| [`arrokothi-machine-abi-and-program-model.md`](arrokothi-machine-abi-and-program-model.md) | Post-1.0 / 2.0 research target: present Agents with a logical ArrokothI machine, progressive manuals and workspace views, system-call-like operations, model-authored suspendable programs, and a possible shared Program/ABI substrate for Agents and Workflows while explicitly seeking simplification rather than adapter layering. |
+| [`arrokothi-machine-abi-and-program-model.md`](arrokothi-machine-abi-and-program-model.md) | Conditional research sketch (no scheduled 2.0 target): present Agents with a logical ArrokothI machine, progressive manuals and workspace views, system-call-like operations, model-authored suspendable programs, and a possible shared Program/ABI substrate for Agents and Workflows while explicitly seeking simplification rather than adapter layering. |
 
 ## Promotion rule
 

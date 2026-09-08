@@ -12,7 +12,7 @@ A second issue is scope. The core combines lifecycle and authority machinery wit
 
 ### Existing invariants used as the starting state
 
-The owners are [execution runtime](../execution-runtime.md), [authority](../authority.md), [composition](../composition.md), [memory](../memory.md), [security guarantees](../security-guarantees.md), and [interoperability](../interoperability.md). The [mental model](../mental-model.md) provides the strongest shared distinctions.
+The owners are [execution runtime](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/execution-runtime.md), [authority](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/authority.md), [composition](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/composition.md), [memory](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/memory.md), [security guarantees](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/security-guarantees.md), and [interoperability](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/interoperability.md). The [mental model at that revision](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/mental-model.md) provides the strongest shared distinctions.
 
 - An Execution has independent identity, lifecycle, pinned definition, progress, and addressed interaction. An Activation is temporary work advancing it. One controller writes progress at a time; multiple dependencies may be in flight.
 - Controllers propose Effects and report progress. The Harness decides authorization and coordinates outcomes; executors and external systems establish what happened.
@@ -101,7 +101,7 @@ A smaller fallback product may own only the action/authority rows plus their cor
 
 **Observation plus product/implementation gap; high priority.** [AgentExecutor](../../packages/core/src/ports/agent-executor.ts) receives a resolved model, compiled information, projections, and model-shaped observations. [Execution progress](../../packages/core/src/execution/context.ts) and [definitions](../../packages/core/src/definitions/types.ts) are closed around Agent/Workflow. The [Strands executor](../../packages/agents/strands/src/agent-executor.ts) intercepts native tool calls and resumes from supplied observations. That is substantive integration evidence, but it proves a constrained step bridge.
 
-The [product vision](../product-vision.md) permits engines retaining their own cognition and context behavior. Treat this as an intended integration level, not a shipped property of every adapter.
+The [product vision](https://github.com/ArrokothI/Agent_SDK/blob/9fc2b4472d41e35402bfbfb24f7a62ee21c2e2f3/docs/product-vision.md) permits engines retaining their own cognition and context behavior. Treat this as an intended integration level, not a shipped property of every adapter.
 
 **Proposal:** retain `AgentExecutor` for its current purpose and test a separate versioned native-runner envelope with opaque progress, optional mediation, and explicit capabilities. Only generalize the kernel discriminator if a concrete independent runner cannot be represented honestly. Do not add a second universal interface merely to repair marketing language.
 

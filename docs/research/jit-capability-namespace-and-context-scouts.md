@@ -1,8 +1,10 @@
 # JIT Capability Namespace and Context Scouts
 
+> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q7 and the [detail-design map](../detail-design/README.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
+
 > **Status: focused non-canonical research note.**
 >
-> This document records a research direction for scaling knowledge/resource discovery and tool exposure without placing every authorized descriptor into every model context. It does **not** redefine current kernel semantics. Canonical authority/exposure ownership remains with [`../authority.md`](../authority.md); memory/context semantics remain with [`../memory.md`](../memory.md); child Execution composition and delegation remain with [`../composition.md`](../composition.md).
+> This document records a research direction for scaling knowledge/resource discovery and tool exposure without placing every authorized descriptor into every model context. It does **not** redefine current kernel semantics. Canonical authority/exposure ownership remains with [authority detail](../detail-design/authority-and-actions.md); memory/context semantics remain with [state/memory detail](../detail-design/memory-and-state.md); child Execution composition and delegation remain with [composition detail](../detail-design/composition-and-communication.md).
 >
 > Research date: **2026-09-04**.
 >

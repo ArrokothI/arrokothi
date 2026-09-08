@@ -5,6 +5,11 @@ Agent or Workflow, or a native Hermes, OpenClaw, Dify or CrewAI runtime. It owns
 state, tools, internal asynchronous work and the meaning of its continuation data. The [Kernel](kernel.md)
 owns whether an Outcome is accepted. This document owns execution-side behavior and Driver fidelity.
 
+Detailed designs: [Runtime composition](detail-design/runtime-composition.md),
+[state/memory](detail-design/memory-and-state.md), [context/projections](detail-design/context-and-projections.md),
+[Driver fidelity](detail-design/runtime-integration.md) and [recovery compatibility](detail-design/recovery-and-compatibility.md).
+These expand optional Runtime facilities and boundary obligations without prescribing foreign internals.
+
 ## Agent and Workflow
 
 An Agent's progression is substantially chosen by a model at runtime. A Workflow's allowed
@@ -71,7 +76,9 @@ after submission still has a lost-acknowledgment gap. If the provider cannot clo
 and reconcile or require explicit restart-from-input. Do not advertise seamless recovery.
 
 For stored checkpoints, make the checkpoint durable before proposing its reference; Kernel acceptance
-then pins it. Failed/unaccepted proposals may leave orphan blobs for later cleanup. Never delete the
+then pins it. Failed/unaccepted proposals may leave orphan blobs for later cleanup. Reference acceptance/
+pinning must coordinate with deletion so a delayed Outcome cannot accept an already-collected checkpoint.
+Never delete the
 last accepted checkpoint while an Activation/recovery obligation can still reference it. If native
 persistence and Kernel acceptance cannot commit together, test the two-store crash windows rather
 than assuming a distributed transaction. Missing versions/resources cause explicit refusal.

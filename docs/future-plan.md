@@ -1,176 +1,231 @@
-# Future plan
+# Future questions and experiments
 
-> **Status:** unresolved or evidence-gated work only. This is not the active implementation roadmap.
->
-> Current architecture is owned by [`mental-model.md`](mental-model.md), [`kernel.md`](kernel.md), [`execution.md`](execution.md), and [`deployment.md`](deployment.md). The active sequence is [`development/001-current-status-and-roadmap.md`](development/001-current-status-and-roadmap.md). Detailed accepted designs live in [`detail-design/`](detail-design/).
+**Status:** unresolved thinking, not accepted architecture or a second roadmap. The active sequence
+is [K0–K5/R1/R2/D1/S1](development/001-current-status-and-roadmap.md). Current contracts live in the
+[architecture map](README.md) and [detail design](detail-design/README.md). This file replaces the old
+feature inventory with questions that can change an investment decision.
 
-This file records questions that should **not** be frozen into the current Kernel merely because they were part of the previous architecture or are attractive future features.
+A question can be investigated cheaply before a release if its prerequisites exist. “Future” does
+not mean everything waits until 1.0, and an experiment is not a commitment to support its prototype.
+For each experiment record owner, public workload, baseline, exact versions, predeclared acceptance
+criteria, evidence and adopt/narrow/reuse/defer/delete decision. Do not inherit numerical margins or
+old H–N/P1–P7/experimental sequences as current release promises.
 
-## 1. Kernel extensions after current roadmap evidence
+## Thinking already given a current home
 
-### Richer waits and supervision
+| Previously unresolved family | Current decision / remaining uncertainty |
+|---|---|
+| PendingOperation versus ControllerResumption | Kernel owns action/wait records; Runtime owns internal async work. No generic Kernel suspension hierarchy. Native recoverability is still Driver-specific. |
+| Stale continuation, output vs completion, timeout races | [Protocol](detail-design/execution-protocol.md), [Runtime composition](detail-design/runtime-composition.md), [action lifecycle](detail-design/action-lifecycle.md). Native conflict/re-evaluation strategy remains replaceable. |
+| Exact consent, delegation, revocation and evidence | [Authority](detail-design/authority-and-actions.md). Policy representation/scaling and remote freshness need concrete implementations. |
+| Typed Stage/child results, local joins, notes and Skills | [Runtime composition](detail-design/runtime-composition.md); optional R2, not Kernel graph types. |
+| Structured/Derived/Working/Artifact semantics and promotion | [State/memory](detail-design/memory-and-state.md). Optional application/Runtime vocabulary, not four Kernel stores. |
+| Context compilation, historical retrieval, immutable snapshots | [Context/projections](detail-design/context-and-projections.md); advanced strategies below remain experiments. |
+| Native jobs, forms, checkpoints, resource lifetime and delivery | [Integration](detail-design/runtime-integration.md), [recovery](detail-design/recovery-and-compatibility.md), [resources](detail-design/resources-and-isolation.md). Specific support awaits R1/K3 evidence. |
+| Telemetry, raw model requests, privacy, attribution | [Evidence](detail-design/evidence-and-observability.md); no mandatory raw prompt journal. |
+| Service/schema/Task mapping and imported package permission | [Interoperability](detail-design/interoperability.md); protocol breadth remains demand-gated. |
 
-The current target starts with finite correlated any-of waits plus deadlines. Revisit only if real applications require:
+## Q1 — Does an Execution Kernel earn its cost?
 
-- bounded all-of optimizations;
-- richer peer request/reply helpers;
-- supervision/restart policy;
-- wait-for graph diagnostics;
-- deadlock-candidate reporting;
-- fairness/admission sophistication.
+**Owner / trigger:** product and Kernel, now through E0/E5. Compose a native specialist, deterministic
+validator, human decision and external action; separately test two independently useful jobs with
+corrections/restart. Compare competent direct services plus database/policy, and one mature substrate.
+Measure verified outcomes, recurring coordination obligations, repair effort, total latency/cost and
+ongoing maintenance. Seek actual user adoption, not only internal demos.
 
-General Workflow graph semantics remain Runtime-owned.
+**Decision:** continue the Kernel only if its shared boundary repeatedly helps. If only action/authority
+helps, ship a smaller facade/conformance kit. If direct native composition suffices, stop broad Kernel
+investment. A coherent ontology or large framework compatibility list is not product evidence.
 
-### Shared-resource concurrency
+## Q2 — Which persistence and native recovery contracts are supportable?
 
-Applications may eventually justify portable support for:
+**Owner / trigger:** Kernel/Driver/deployment; R1 before K3 freezes. Compare one transactional path
+with one mature durable substrate using the same fault fixture. Test submit-before-handle,
+checkpoint-before-Outcome, external-success-before-receipt, stale native writer, incompatible code,
+resource loss and cancellation. Include duplicated native/model billing and unknown spend.
 
-- fine-grained preconditions/versions;
-- reducers or commutative updates;
-- leases/permits/fencing;
-- transactional multi-resource operations;
-- conflict observations.
+**Decision:** choose the simpler adequate mechanism; remove the losing scheduler/journal prototype.
+For a provider without query/idempotent submit or writer exclusion, expose unknown/refuse takeover.
+Do not invent a per-model Kernel ledger or claim a mutable session is a checkpoint. Native checkpoint
+migration and restore-before-disclosure need explicit provider evidence, not a universal retry flag.
 
-Prefer resource-specific mechanisms first. Do not add one universal shared-state model without repeated consumers.
+## Q3 — Are richer supervision, waits or detached services necessary?
 
-### Policy and discovery scale
+**Owner / trigger:** application/Runtime; after K4 examples expose a missing pattern. Baseline is
+finite any-of waits, explicit reply correlations, authored failure policy and required owned children.
+Test wait-all helpers versus repeated any-of, basic send/reply versus compound reply-and-ask, and
+application retry policy versus a shared supervision library.
 
-Current authority/action semantics do not require a specific policy engine or discovery product.
+Measure wake/dispatch overhead, clarification liveness, duplicate work, debugging and cancellation
+burden. Test true blocked cycles separately from cycles with eligible external escape. Detached work
+must transfer responsibility atomically to an accepting durable owner; no fire-and-forget escape from
+unknown actions. Long-lived sessions can remain application grouping rather than immortal Executions.
 
-Future evidence may justify:
+**Decision:** add only repeated useful helpers. Keep general graph joins Runtime-local. Defer a Kernel
+wait-expression engine, global deadlock solver and arbitrary ownership transfer if explicit records
+and application policy suffice.
 
-- Cedar/OpenFGA/application-policy adapters;
-- efficient filter/enumerate APIs for large authorized catalogs;
-- deterministic lexical/embedding/hybrid discovery;
-- provider-native deferred tool loading;
-- lazy schema hydration;
-- model-visible search/describe flows.
+## Q4 — What resource/state concurrency actually needs portability?
 
-Discovery can narrow what is visible; it must not create authority.
+**Owner / trigger:** application services/R2, after a shared-state workload. Compare whole-view versus
+field-level preconditions, branch-local deltas with authored merge, commutative operations and native
+transactions. Test conflicts under real interleavings and reapproval when conflict resolution changes
+an exact payload. Measure false conflicts, metadata leakage, retries and lost updates.
 
-### Distributed Kernel profiles
+**Decision:** keep resource-specific semantics when they suffice. Promote a common version/precondition
+or lease contract only for multiple consumers. Do not build universal multi-resource transactions,
+CRDTs, a global mutex or a distributed database. A lease without target-side fencing is not exclusivity.
 
-After one persistent single-domain profile is proven, evaluate demand for:
+## Q5 — Which memory and historical-context policies improve useful work?
 
-- multiple Kernel Workers;
-- remote Execution Hosts;
-- partitions and takeover across machines;
-- stronger fencing/leases;
-- backup/restore and storage-disaster profiles;
-- multi-region availability;
-- federation across administrative domains.
+**Owner / trigger:** Runtime/application, with fixed Kernel and tasks that need continuity. Compare
+simple asserted state + artifacts/recent history against optional derived memory and authorized historical
+retrieval. Test source correction, temporal validity, supersession/contradiction, explicit promotion,
+revocation and deleted sources. Compare simple lexical retrieval with native/vector/graph backends.
 
-Do not turn these into 1.0 obligations without deployment evidence.
+Measure verified task quality, stale-claim errors, provenance completeness, information disclosure,
+retrieval latency and full extraction/storage cost. A claim provider may expose confidence/entities/
+temporal fields, but use at least two consumers before defining a portable claim schema.
 
-## 2. Execution Runtime experiments
+**Decision:** preserve the epistemic distinctions regardless of backend. If derived memory adds stale
+beliefs without value, keep simpler state/history. Do not require extraction before every explicit
+write or automatic promotion. Data deletion must truthfully reduce recovery/reproducibility claims.
 
-### ArrokothI-native Agent and Workflow facilities
+## Q6 — Is a semantic context representation better than native context?
 
-The Kernel does not require a new Agent loop or graph engine. ArrokothI may still improve its optional Runtime when applications need it:
+**Owner / trigger:** Runtime/provider, after two rendering strategies need comparable inputs. Compare
+native request-only selection/compaction with typed selected sections and provider-specific renderers.
+Separate selection identity from rendering identity; include raw observations, notes, evidence,
+instructions and examples only as needed. Test prompt caching, context editing, retained provider state,
+fresh-context handoff and long-horizon progress files/ledgers.
 
-- typed local/child results;
-- richer Workflow branches/joins;
-- provider-native tool discovery;
-- Agent planning/delegation policies;
-- model/context optimization;
-- reusable Skills/packages;
-- clearer Runtime-level budgets and usage reporting.
+Measure quality, omitted evidence, coherence after correction/restart, total tokens/latency and
+warm/cold cache behavior. Record hosted hidden scaffolding as unobservable; compare API requests
+without pretending to know their exact final tokens. Self-hosted chat templates may expose more.
 
-Compare against mature runtimes before expanding a custom engine.
+**Decision:** standardize a small Runtime context shape only if it preserves native behavior and
+simplifies at least two uses. Otherwise retain native engines and a trace seam. A cached view is
+replaceable; an in-flight binding/checkpoint is recovery truth and cannot be evicted on the same policy.
 
-### Memory/context systems
+## Q7 — Do discovery, virtual namespaces or scouts justify extra steps?
 
-The optional Runtime designs in [`detail-design/memory-and-state.md`](detail-design/memory-and-state.md) may evolve through experiments with:
+**Owner / trigger:** Runtime/integration; actual catalog pressure after K2. Compare eager essentials,
+flat deterministic retrieval, native search/describe/call, provider deferred loading, virtual category
+views and an optional bounded read-only scout. Vary ambiguous/rare operations, permissions and model
+capability. Resolve all views to stable typed refs; no canonical folder tree is required.
 
-- production retrieval backends;
-- claim confidence/temporal validity/supersession;
-- promotion policy;
-- field/key-level conflicts and merge;
-- explicit handoff between branches/children;
-- context caching and compression.
+Measure task success, tool recall/wrong-tool rate, unauthorized metadata exposure, total scout/model
+cost, hydration latency and extra turns. Keep essential controls visible. Scope frequency/ranking
+signals and cache invalidation to avoid cross-principal leakage. Test dynamic provider hydration
+against exact invocation bindings.
 
-Do not make one memory taxonomy or vector/graph backend a Kernel requirement.
+**Decision:** use native or flat search if it matches the richer design. A scout must preserve sources
+and beat equivalent-budget direct retrieval. Its instructions and privileges remain application
+composition, never a Kernel Scout primitive. See the [namespace research](research/jit-capability-namespace-and-context-scouts.md)
+for optional sketches, not another implementation sequence.
 
-### Native recovery
+## Q8 — Does code-mediated work need a new Program representation?
 
-Driver-specific questions remain open until real providers are tested:
+**Owner / trigger:** Runtime, after K2 action contracts; durable experiments after K3. Compare ordinary
+tool turns, a developer function/Workflow, existing native code execution and a bounded suspendable
+program for dependent reads/transforms/actions. Hold actual powers and containment constant. Test
+revocation/schema change between calls, partial completion, unknown action and resource exhaustion.
 
-- safe reattachment after lost submit acknowledgment;
-- immutable checkpoint versus mutable session behavior;
-- stale native-writer exclusion;
-- provider job idempotency/query semantics;
-- upgrade/checkpoint compatibility;
-- repeated native model/tool cost under retry.
+Measure model turns, construction/repair rate, end-to-end cost, debugging and recovery burden. Each
+resumed call needs current admission; batching does not make a transaction. General model-generated
+code needs the declared trust/isolation profile. A bounded interpreter still needs fuel and size limits.
 
-Unsupported recovery modes should remain explicit rather than hidden behind generic retry.
+**Decision:** if ordinary code or native tools explain the win, reuse them and abandon a new language.
+A shared Agent/Workflow substrate needs a separate simplification result from two control modes.
+Universal foreign-graph compilation, portable ABI and Machine ontology do not follow automatically.
+The [Machine research](research/arrokothi-machine-abi-and-program-model.md) is optional background.
 
-## 3. Interoperability
+## Q9 — Which Agent and multi-Agent scaffolds should survive?
 
-Demand may justify additional Driver/protocol work for:
+**Owner / trigger:** Runtime/evaluation, anytime a fixed Kernel supports the task. Compare domain ACI
+names/schemas, raw versus concise result projections, planning, generator/verifier loops, structured
+notes, fresh-context workers and native strategies. Compare one strong Agent at equal total budget,
+deterministic fan-out, homogeneous workers and a heterogeneous pair.
 
-- MCP Resources/Tasks/elicitation/subscriptions beyond current Tool proof;
-- A2A client/server boundaries;
-- external Agent/service catalogs;
-- richer portable operation/resource descriptors;
-- package/Skill import/export;
-- protocol-neutral long-running service handles.
+Verify environment outcomes; count failed trials, evaluator calls, handoff loss, duplicated work,
+shared-state conflicts and cancellation cost. Hold model/config where testing a scaffold; separate
+model changes from scaffold changes. Repeat stochastic trials and predeclare useful margins. An Agent
+claiming success or a self-evaluator approving it is not independent evidence or exact consent.
 
-Promote a portable abstraction only after at least two independently designed integrations need the same semantics. Prefer native provider APIs and existing protocol SDKs first.
+**Decision:** promote a successful technique to application pattern or optional Runtime strategy first.
+Delete mandatory planning/extra evaluators/resets when improved models no longer need them. No new
+Planner/Evaluator Execution kinds, universal team model or fixed reasoning budget in Kernel semantics.
 
-## 4. Deployment and isolation
+## Q10 — Which policy/discovery mechanisms need a shared adapter?
 
-The active roadmap keeps physical isolation optional unless claimed. Future profiles may explore:
+**Owner / trigger:** application/policy; repeated relationship or catalog-scale needs. Compare direct
+policy checks with a mature policy backend and optional bulk filtering/enumeration. Test transitive
+revocation, changing ownership, metadata disclosure and remote decision freshness. Evaluate grant
+reference/expiry/provenance representations without requiring one token format.
 
-- container/sandbox/microVM backends;
-- controlled egress/filesystem/secret bridges;
-- resource quotas and process-tree termination;
-- persistent workspace lifecycle;
-- hostile multi-tenant hosting.
+**Decision:** choose the simpler adequate policy implementation. Keep model-visible discovery below
+current disclosure permissions. If remote policy cannot supply the promised ordering, constrain the
+profile or state the freshness limit; do not let a stale cache masquerade as instantaneous revocation.
+Federated attenuation proofs/key infrastructure require actual administrative trust boundaries.
 
-Reuse mature isolation infrastructure. ArrokothI does not need to become a sandbox, browser, database, or hosting platform.
+## Q11 — Which protocol and package surfaces deserve support?
 
-## 5. Agent effectiveness and evaluation
+**Owner / trigger:** Driver/SDK, a concrete integration need. Extend MCP Tools toward Resources,
+Tasks, input/elicitation or subscriptions only with a versioned mapping and round-trip/refusal tests.
+Test opaque A2A/service handles for identity, pause/auth requirements, output, cancellation and expiry.
+Prefer native APIs when their fidelity is stronger. Optional UI/telemetry bindings project accepted
+truth and cannot redefine it.
 
-Keep effectiveness work separate from Kernel correctness:
+For Skills compare native packaging with a narrow common manifest; preserve input/default bindings,
+requested powers, assets and exact versions. Composition-backed export may be lossy. Publisher identity,
+signatures, lockfiles and revocation improve supply-chain provenance, not action authority.
 
-- context/tool interface design;
-- retrieval and memory policies;
-- planning/delegation strategies;
-- multi-Agent coordination;
-- prompt/program techniques;
-- provider/model selection;
-- cost/latency/quality tradeoffs.
+**Decision:** stabilize shared descriptors after two independent consumers; refuse unsupported rich
+content/schema semantics. Do not build a marketplace, full protocol parity or universal package importer
+before useful demand. Use supported libraries and check actual distribution/support obligations at S1.
 
-These belong in Runtime experiments and benchmark/evaluation work with the Kernel held fixed where possible.
+## Q12 — Which deployment guarantees justify additional infrastructure?
 
-## 6. Conditional research only
+**Owner / trigger:** deployment, after K3 for a demonstrated profile; D1 only if containment is claimed.
+Test binding loss versus temporary unavailability, allocate-before-handle leaks, cleanup, persistent
+workspace ownership, credential rotation, active/dormant cost and fairness. Compare an existing native
+backend/managed sandbox with the minimum integration; avoid a custom host fleet.
 
-The following remain research hypotheses, not scheduled architecture:
+Multiple workers/remote hosts, partitions, backup/restore, storage disaster and multi-region recovery
+need distinct fault models. Federation, workload identity, remote attestation and hostile multi-tenancy
+must name who is trusted and what can be enforced. Information-flow/declassification experiments need
+explicit read-to-output threat models; ordinary authority does not prevent all authorized exfiltration.
 
-- universal Program/Machine/ABI;
-- compilation/import of arbitrary foreign graphs;
-- one shared execution IR for every Agent framework;
-- capability hierarchy/context scouts as Kernel primitives;
-- broad information-flow/federation models;
-- Studio/Cloud/marketplace/channel product;
-- custom consensus/database/sandbox platform.
+**Decision:** keep trusted single-domain operation if adequate. Reuse infrastructure or narrow the
+market/profile if maintaining it requires a platform beyond the team's capacity. Resource retention,
+privacy deletion and recovery promises cannot all be unlimited; publish their tested intersection.
 
-Reopen one only when a concrete problem survives simpler Runtime, Driver, application-service, or mature-substrate solutions.
+## Q13 — What needs to stabilize in the public SDK and operator surface?
 
-## Decision rule
+**Owner / trigger:** SDK/S1, after selected R2/K4/K5 applications exist. Maintain public import and
+stock-authoring matrices; test clean packed consumers and explicit static preflight. Compare helpers
+against ordinary functions before adding a first-class artifact store, mandatory session or graph API.
+Dynamic policy remains runtime truth and preflight must not auto-grant missing permissions.
 
-Future work should answer a concrete question and name what happens if the answer is negative.
+Review concept, public API, model-facing and protocol/UI names separately through comprehension and
+operation-selection examples. Fix confusing names once before compatibility commitments; do not
+rename for industry fashion. Preserve a deterministic offline SDK example and explicit migration/refusal.
 
-Useful outcomes include:
+A read-oriented inspector should help explain waiting, unknown work, exact approval and retention
+without exposing private prompts by default. Test incident-resolution value before visual authoring.
+Studio/Cloud/enterprise controls belong to demand-driven product work behind supported APIs, not Kernel
+release obligations. OSS/hosted packaging and pricing remain product choices requiring cost/adoption
+evidence; no commercial feature is a new semantic primitive.
 
-```text
-adopt     evidence supports the abstraction/mechanism
-narrow    only a smaller boundary is useful
-defer     real demand/evidence is missing
-reuse     an existing runtime/substrate is better
-delete    the hypothesis adds cost without demonstrated value
-```
+## Questions deliberately closed or rejected
 
-Failed evidence gates should simplify ArrokothI rather than automatically generate more architecture.
+Do not reopen these merely because a legacy term disappears: CREATED as a ceremonial lifecycle;
+Kernel-owned live-promise resumptions; closed Agent/Workflow kinds; text-only local dataflow; mandatory
+four-form Kernel memory; automatic ancestor note/credential sharing; a separate hosted-declarative
+trust category; a protocol Task equated with Execution; signatures or exposure treated as grants;
+retrospective cancellation/rollback of arbitrary external work.
 
-The complete previous future plan is preserved unchanged in [`mental-model-legacy/future-plan.md`](mental-model-legacy/future-plan.md).
+A demonstrated counterexample may change an accepted contract through architecture review. It must
+name the missing guarantee and simpler alternatives, not only an appealing abstraction. The
+[detail-design review](development/005-detail-design-review.md) records legacy knowledge disposition
+so future work does not depend on that directory remaining in the repository.
