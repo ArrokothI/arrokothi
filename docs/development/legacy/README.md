@@ -4,6 +4,10 @@ Use the [active roadmap](../001-current-status-and-roadmap.md) for work and the
 [findings register](../003-evidence-and-findings.md) for unresolved issues. Archived status/next-step
 language is checkpoint history, not current authority.
 
+## Pre-redesign roadmap
+
+[2026-09 P1–P7/B1–B3](2026-09-pre-redesign-roadmap.md) preserves the plan preceding the asynchronous Kernel review. Its [disposition](../004-architecture-review.md#previous-roadmap-disposition) maps requirements to the current sequence.
+
 ## September 2026 baseline
 
 [2026-09-baseline](2026-09-baseline/README.md) preserves the previous front door and these retired
@@ -11,13 +15,13 @@ planning/review documents. Content is retained with historical banners and repai
 
 | Historical document | Current disposition |
 |---|---|
-| [001 H–N roadmap](2026-09-baseline/001-current-status-and-roadmap.md) | Superseded by the three-horizon roadmap; no architecture-completeness gate. |
-| [003 Agent effectiveness](2026-09-baseline/003-agent-effectiveness-guidance.md) | Useful evaluation method; current obligations in P5/B3 and later strategy experiments. |
-| [004 efficiency/DX](2026-09-baseline/004-efficiency-and-developer-ergonomics.md) | Measurements retained; P4/P5/P7 own active limits and validation. |
+| [001 H–N roadmap](2026-09-baseline/001-current-status-and-roadmap.md) | Superseded by the current Kernel/Runtime/evidence roadmap; no architecture-completeness gate. |
+| [003 Agent effectiveness](2026-09-baseline/003-agent-effectiveness-guidance.md) | Useful evaluation method; current obligations in R2/K5/E5 and later strategy experiments. |
+| [004 efficiency/DX](2026-09-baseline/004-efficiency-and-developer-ergonomics.md) | Measurements retained; K3/K5/S1 own active limits and validation. |
 | [005 interoperability](2026-09-baseline/005-interoperability-baseline-and-next-constraints.md) | Detailed synchronous MCP proof/constraints; expansion is demand-gated. |
-| [006 ecosystem/license](2026-09-baseline/006-ecosystem-integration-brand-and-license-checklist.md) | Release reference, consumed by P7 and any future hosting decision. |
+| [006 ecosystem/license](2026-09-baseline/006-ecosystem-integration-brand-and-license-checklist.md) | Release reference, consumed by S1 and any future hosting decision. |
 | [007 builder review](2026-09-baseline/007-application-builder-ergonomics-findings.md) | Completed guidance/fixes retained; remaining issues mapped to F01–F19. |
-| [008 external gates](2026-09-baseline/008-external-validation-gates.md) | Superseded by actual v3 canary status and B1–B3. |
+| [008 external gates](2026-09-baseline/008-external-validation-gates.md) | Superseded by actual v3 canary status and E0–E6. |
 | [009 SDK design/review](2026-09-baseline/009-sdk-bootstrap-design-and-findings.md) | Completed SDK rationale and regression evidence; open items carried into the live register. |
 
 The implemented baseline (002) stays active and is updated as capabilities ship. The architecture

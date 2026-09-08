@@ -2,7 +2,7 @@
 
 > **Status:** current implementation map, inspected at `e96e513` on 2026-09-07; SDK implementation at `3bdc4f6`.
 > Package `0.8.1` is not an exact experimental identity or a durability/release verdict.
-> **Role:** compact engineering map, not canonical architecture.
+> **Role:** compact engineering map, not canonical architecture. Target ownership reconciled 2026-09-08; the asynchronous protocol is not implemented by this documentation change.
 
 This document answers one question: **What does the current ArrokothI kernel demonstrably
 implement?** Canonical meaning remains in the documents indexed by [`../README.md`](../README.md).
@@ -19,7 +19,7 @@ results; cancellation; transactional runtime-store operations; deterministic tes
 distinct. Only independent runtime identity creates an Execution boundary. One Execution has one
 active controller-state writer even when independent work is in flight.
 
-**Canonical owner.** [`../execution-runtime.md`](../execution-runtime.md).
+**Target owner.** [`../kernel.md`](../kernel.md).
 
 **Representative source.** `packages/core/src/execution/context.ts`, `execution/lifecycle.ts`,
 `runtime/harness.ts`, `runtime/activation.ts`, `ports/runtime-store.ts`,
@@ -44,8 +44,8 @@ interleaving; dependency-set waits over Events plus multiple resumptions.
 PendingOperation ≠ ControllerResumption. A model call does not become an Effect merely because it
 is slow. A dependency wait keeps Event and resumption members typed and separate.
 
-**Canonical owner.** [`../execution-runtime.md`](../execution-runtime.md), with confirmation and
-authority consequences in [`../authority.md`](../authority.md).
+**Target owner.** [`../kernel.md`](../kernel.md), with confirmation and
+authority consequences in [`../kernel.md`](../kernel.md).
 
 **Representative source.** `interaction/events.ts`, `effects/types.ts`, `effects/pending.ts`,
 `effects/journal.ts`, `execution/resumption.ts`, `runtime/effect-processor.ts`,
@@ -77,7 +77,7 @@ Controller-local model controls do not cross an Execution/runtime boundary and a
 outside this authority-governed action chain; their origin remains explicit when provider callables
 are merged.
 
-**Canonical owner.** [`../authority.md`](../authority.md).
+**Target owner.** [`../kernel.md`](../kernel.md).
 
 **Representative source.** `operations/authority.ts`, `operations/active-view.ts`,
 `operations/model-action-view.ts`, `operations/projection.ts`,
@@ -100,8 +100,8 @@ Agent-executor integration outside core.
 **Non-obvious invariant.** Controllers depend on ArrokothI ports and portable features, never a
 vendor client. Provider-native tools/errors/caching do not define kernel semantics.
 
-**Canonical owner.** [`../execution-runtime.md`](../execution-runtime.md) and
-[`../interoperability.md`](../interoperability.md).
+**Target owner.** [`../execution.md`](../execution.md) and
+[`../deployment.md`](../deployment.md).
 
 **Representative source.** `packages/core/src/ports/model-provider.ts`, `model-resolver.ts`,
 `reference/static-model-resolver.ts`, `packages/models/gemini/src/index.ts`,
@@ -126,7 +126,7 @@ Memory actions; local Working Notes control; recursive composition through runti
 authority source. Information compilation is separate from action exposure. Re-entry uses the
 persisted invocation snapshot rather than rebuilding views or context.
 
-**Canonical owner.** [`../composition.md`](../composition.md), with runtime, authority, and memory
+**Target owner.** [`../execution.md`](../execution.md), with runtime, authority, and memory
 details owned by their respective canonical documents.
 
 **Representative source.** `agent/spec.ts`, `agent/control-state.ts`,
@@ -150,8 +150,8 @@ barriers; provider resumptions; child calls; terminal results; bounded topology/
 Execution's progress are different artifacts. Effects remain Harness-mediated regardless of Stage
 kind.
 
-**Canonical owner.** [`../composition.md`](../composition.md), with execution mechanics in
-[`../execution-runtime.md`](../execution-runtime.md).
+**Target owner.** [`../execution.md`](../execution.md), with execution mechanics in
+[`../kernel.md`](../kernel.md).
 
 **Representative source.** `workflow/spec.ts`, `workflow/control-state.ts`,
 `controllers/workflow/controller.ts`, `controllers/workflow/llm-stage.ts`,
@@ -175,8 +175,8 @@ terminal-dependency abandonment; explicit Working Notes handoff.
 merely from ancestry; the child receives only explicit attenuation/transfer. A Stage remains
 same-Execution composition unless it explicitly calls a child.
 
-**Canonical owner.** [`../composition.md`](../composition.md) and
-[`../authority.md`](../authority.md).
+**Target owner.** [`../execution.md`](../execution.md) and
+[`../kernel.md`](../kernel.md).
 
 **Representative source.** `effects/types.ts`, `execution/child-link.ts`,
 `execution/structural-budget.ts`, `runtime/effect-processor.ts`,
@@ -200,8 +200,8 @@ resolution; safe decline/deny/reject settlement across Agent and Workflow contro
 Confirmation verifies consent to one exact proposal; it is not authorization and does not widen
 authority. User input, peer reply, and child result remain distinct interactions.
 
-**Canonical owner.** [`../composition.md`](../composition.md),
-[`../authority.md`](../authority.md), and [`../security-guarantees.md`](../security-guarantees.md).
+**Target owner.** [`../execution.md`](../execution.md),
+[`../kernel.md`](../kernel.md), and [`../deployment.md`](../deployment.md).
 
 **Representative source.** `execution/peer-request-link.ts`, `execution/user-input-request.ts`,
 `execution/confirmation-request.ts`, `confirmation/resolver.ts`, `runtime/effect-processor.ts`.
@@ -225,8 +225,8 @@ Semantic Memory.
 authorization are independent. Whole-view revision is runtime/concurrency data and is not exposed
 to a field-limited model reader. A stale versioned write conflicts; it never silently overwrites.
 
-**Canonical owner.** [`../memory.md`](../memory.md), with Effect/authorization rules in
-[`../execution-runtime.md`](../execution-runtime.md) and [`../authority.md`](../authority.md).
+**Target owner.** [`../execution.md`](../execution.md), with Effect/authorization rules in
+[`../kernel.md`](../kernel.md).
 
 **Representative source.** `execution/structured-memory.ts`,
 `execution/structured-memory-read.ts`, `execution/structured-memory-write-view.ts`,
@@ -249,7 +249,7 @@ parent→child handoff; immutable inherited handoff plus independent child-owned
 authority evidence, or ambient shared memory. Semantic retention of the inherited handoff does not
 require it to be rendered or transported on every hot-path step.
 
-**Canonical owner.** [`../memory.md`](../memory.md) and [`../composition.md`](../composition.md).
+**Target owner.** [`../execution.md`](../execution.md).
 
 **Representative source.** `execution/working-notes.ts`, `agent/control-state.ts`,
 `operations/local-model-control.ts`, `operations/model-invocation-interface.ts`,
@@ -272,8 +272,8 @@ bounded Agent information view; persisted invocation snapshot; explicit promotio
 They are not authority evidence and never promote automatically. Reference lexical ranking and the
 claim shape are implementation evidence, not universal semantics.
 
-**Canonical owner.** [`../memory.md`](../memory.md) and
-[`../authority.md`](../authority.md).
+**Target owner.** [`../execution.md`](../execution.md) and
+[`../kernel.md`](../kernel.md).
 
 **Representative source.** `execution/derived-semantic-memory.ts`,
 `ports/derived-memory-extractor.ts`, `ports/derived-semantic-memory-provider.ts`,
@@ -299,8 +299,7 @@ independent work overlaps. Fork, branch completion, join, and downstream Stage e
 distinct. An unversioned branch memory write fails before the Harness; a conflict is an observation
 for the branch, not an automatic retry or merge.
 
-**Canonical owner.** [`../composition.md`](../composition.md),
-[`../execution-runtime.md`](../execution-runtime.md), and [`../memory.md`](../memory.md).
+**Target owner.** [`../execution.md`](../execution.md) with boundary acceptance in [`../kernel.md`](../kernel.md).
 
 **Representative source.** `workflow/control-state.ts`, `workflow/resumption-keys.ts`,
 `controllers/workflow/controller.ts`, `runtime/harness.ts`, `runtime/resumption-processor.ts`.
@@ -324,7 +323,7 @@ normalization; consequential outcome-certainty protection.
 authority. Import/export must preserve the accepted input set and honest `success | failure |
 unknown` certainty.
 
-**Canonical owner.** [`../interoperability.md`](../interoperability.md), with retained proof
+**Target owner.** [`../deployment.md`](../deployment.md), with retained proof
 constraints in [`005`](legacy/2026-09-baseline/005-interoperability-baseline-and-next-constraints.md).
 
 **Representative source.** `packages/interoperability/mcp/src/import/importer.ts`,
@@ -347,7 +346,7 @@ integration.
 mechanisms canonical. No durable implementation of the complete Execution-kernel `RuntimeStore`
 ships in this repository.
 
-**Canonical owner.** The port's relevant concept owner through [`../README.md`](../README.md).
+**Target owner.** The port's relevant concept owner through [`../README.md`](../README.md).
 
 **Representative source.** `packages/core/src/reference/`, `packages/retrieval/local/src/`,
 `packages/models/gemini/src/`, `packages/agents/strands/src/`.
@@ -368,7 +367,7 @@ canaries. Cross-framework benchmark subjects and their evaluation live in the st
 **Non-obvious invariant.** Semantic conformance ≠ behavioral quality evaluation ≠ performance
 measurement ≠ live integration health. A passing category cannot substitute for another.
 
-**Canonical owner.** No architecture concept is created here; the owning docs define the
+**Target owner.** No architecture concept is created here; the owning docs define the
 invariants being tested. Historical engineering guidance is in [`003`](legacy/2026-09-baseline/003-agent-effectiveness-guidance.md)
 and [`004`](legacy/2026-09-baseline/004-efficiency-and-developer-ergonomics.md).
 
@@ -398,8 +397,7 @@ host waiting limits do not interrupt arbitrary trusted code or supply provider c
 
 ## Current gaps and next work
 
-The [active roadmap](001-current-status-and-roadmap.md) replaces H–N. Begin with P1 concrete
-action validation, then typed composition and recovery. [F01–F19](003-evidence-and-findings.md)
+The [active roadmap](001-current-status-and-roadmap.md) replaces P1–P7/B1–B3. Begin with K0 contract fixtures, then K1 asynchronous acceptance and K2 actions; R1 challenges native fidelity before K3 persistence. [F01–F19](003-evidence-and-findings.md)
 record schema enforcement asymmetry, text/literal result limits, live-promise and activation recovery
 gaps, scheduler fencing, physical store cost, long-lived state and distribution concerns. They are
 not implemented fixes. The benchmark canary predates SDK HEAD and does not establish durability.

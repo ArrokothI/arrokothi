@@ -6,9 +6,7 @@
 
 The [adopted development plan](../development/001-current-status-and-roadmap.md) owns current
 sequence and release gates; this study remains research. Its pinned upstream source links require
-the sibling checkouts named in [the original manifest](evidence/source-manifest.json). Those four
-upstream checkouts are absent from the current two-repository workspace, so their local source links
-cannot be validated here. The manifest and recorded study results are preserved unchanged; the
+the sibling checkouts named in [the original manifest](evidence/source-manifest.json). Those four upstream checkouts are available in the current six-repository workspace; the [2026-09-08 review](../development/004-architecture-review.md) pins its own inspected revisions. Their availability does not change the original study capture. The manifest and recorded study results are preserved unchanged; the
 study verifier checks the original capture environment and is not a current roadmap validation.
 
 ## Recommendation

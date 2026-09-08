@@ -2,7 +2,7 @@
 
 ArrokothI is a provider-neutral **execution kernel** for long-lived Agent and Workflow runs.
 
-The Kernel manages a logical **Execution**—identity, lifecycle, Events, governed Effects, authority, communication, history, and recovery—while treating the code that performs the work as an opaque **Execution Runtime** behind an asynchronous Activation/Outcome protocol.
+The target Kernel manages a logical **Execution**—identity, lifecycle, Events, governed Effects, authority, communication, history, and recovery—while treating the code that performs the work as an opaque **Execution Runtime** behind an asynchronous Activation/Outcome protocol.
 
 An Execution Runtime may be ArrokothI-native or provided by Hermes, OpenClaw, Dify, CrewAI, or another system.
 
@@ -37,7 +37,7 @@ Kernel
 
 The Runtime owns reasoning, graph traversal, model calls, context, native memory, tools, and internal asynchronous work. The Kernel owns whether an Outcome is accepted and what it means operationally.
 
-One Execution has at most one accepted progress-writing Activation in flight at a time; different Executions may compute concurrently.
+One Execution has at most one current Activation authorized to commit progress; different Executions may compute concurrently.
 
 ## Trust
 
@@ -52,7 +52,7 @@ Kernel authority does not magically contain arbitrary trusted code. Strong preve
 
 The repository is migrating from the previous 0.8.x architecture. Current code still uses the concrete name `Harness`, synchronously awaits `ExecutionController.activate(...)`, and uses `ControllerResumption` for slow controller-local work. Those are implemented-baseline facts, not the target Kernel boundary.
 
-Current SDK, examples, and conformance tests remain useful while migration proceeds.
+The implemented [`@arrokothi/sdk`](packages/sdk/README.md), examples, and conformance tests remain useful while migration proceeds. The [active roadmap](docs/development/001-current-status-and-roadmap.md) begins with deterministic protocol fixtures; no foreign Runtime Driver or production recovery is implied by the target diagram.
 
 From this checkout, with Node 22.9+:
 

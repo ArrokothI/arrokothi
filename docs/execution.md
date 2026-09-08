@@ -1,375 +1,149 @@
 # Execution Runtime
 
-An **Execution Runtime** is the black-box implementation that performs the semantic work of an ArrokothI Execution.
-
-The Kernel does not require one universal Agent loop or Workflow engine. An Execution Runtime may be an ArrokothI-native Agent or Workflow, Hermes, OpenClaw, Dify, CrewAI, or another provider. The Kernel interacts with it through an **Execution Driver** and the Activation/Outcome protocol defined in [`kernel.md`](kernel.md).
-
-This document owns execution-side concepts. It does not redefine Kernel lifecycle, authority, Effect settlement, scheduling, or recovery.
-
-## 1. Execution Runtime responsibilities
-
-The Runtime owns everything the Kernel can safely treat as opaque, including:
-
-- semantic progression;
-- internal control logic;
-- model calls and provider routing;
-- graph traversal;
-- context construction and compaction;
-- native memory and working state;
-- local tools and functions;
-- internal asynchronous work;
-- native checkpoints/session state;
-- typed values moving between internal steps;
-- local retries that do not cross a Kernel-owned action or recovery boundary.
-
-The Runtime reports only what the Kernel needs to remain correct: accepted progress/checkpoint, emissions, Effect proposals, and what should happen next.
-
-## 2. Execution Driver
-
-An **Execution Driver** adapts one Runtime to the Kernel protocol.
-
-Conceptually:
-
-```text
-Kernel
-  ↓ ExecutionActivation
-Execution Driver
-  ↓ provider/native input
-Execution Runtime
-  ↑ provider/native result
-Execution Driver
-  ↑ ExecutionOutcome
-Kernel
-```
-
-The Driver may be in-process, subprocess-based, HTTP/gRPC-based, queue-backed, or a remote-job adapter. Its implementation is not Kernel semantics.
-
-A Driver has two jobs:
-
-1. translate Kernel-owned Activation data into the native Runtime's input/session/resume mechanism;
-2. translate the Runtime's result/progress/action requests into a valid Kernel Outcome.
-
-The Driver should preserve provider-native behavior instead of rebuilding it in ArrokothI unless a specific Kernel guarantee requires mediation.
-
-## 3. Agent
-
-An **Agent** is an Execution Runtime whose semantic progression is substantially decided at runtime by a model or other intelligent decision process.
-
-Typical Agent-owned concepts include:
-
-- system/instruction state;
-- model selection and routing;
-- conversation/context construction;
-- retrieval and memory selection;
-- planning/reflection loops;
-- tool selection;
-- skills;
-- delegation strategies;
-- native session state.
-
-An Agent run becomes a Kernel **Execution** when it crosses the Kernel boundary and needs independently managed identity, lifecycle, authority, communication, history, or recovery.
-
-The Kernel does not need to know how many model calls the Agent makes, whether it uses ReAct, planner/executor, compaction, recursive prompting, code execution, or another internal strategy.
-
-## 4. Workflow
-
-A **Workflow** is an Execution Runtime whose allowed semantic progression is primarily system-defined.
-
-Typical Workflow-owned concepts include:
-
-- graph or state-machine topology;
-- nodes/stages;
-- routing conditions;
-- deterministic transforms;
-- parallel branches;
-- joins/reducers;
-- human steps;
-- workflow-local retries and checkpoints.
-
-A Workflow run is also a Kernel Execution. The Kernel does not need a fundamentally different lifecycle or scheduler merely because the semantic controller is a graph rather than a model.
-
-Agent and Workflow remain useful authoring/control concepts, but they are not separate Kernel runtime machines.
-
-## 5. Agent and Workflow comparison
-
-| Question | Agent | Workflow |
-|---|---|---|
-| Who mainly decides semantic progression? | Model/intelligent controller at runtime | Authored topology/policy |
-| Typical internal state | Context, plans, native memory, tool observations | Graph position, branch values, join state |
-| Kernel lifecycle | Same Execution lifecycle | Same Execution lifecycle |
-| Kernel protocol | Same Activation/Outcome protocol | Same Activation/Outcome protocol |
-| Can provider-native implementation remain opaque? | Yes | Yes |
-
-A Runtime may combine both styles. The Kernel does not need a third execution primitive when a provider mixes a graph with model-directed substeps.
-
-## 6. Local computation
-
-Internal work stays inside the Runtime unless it needs an independent Kernel Execution boundary.
-
-Examples that normally remain local:
-
-- an LLM call;
-- a Python/TypeScript function;
-- context compression;
-- retrieval over Runtime-owned data;
-- graph-node execution;
-- deterministic validation;
-- parsing and ranking;
-- one Agent's internal planner;
-- provider-native tool calls that the deployment intentionally treats as ambient/trusted.
-
-Local work may be asynchronous or long-running. That alone does not make it a Kernel-visible wait.
-
-The Runtime can spend minutes inside one Activation and remain `RUNNING`. It returns `await(condition)` only when it has reached a semantic boundary and needs a Kernel-visible Event to continue.
-
-## 7. Child Executions
-
-Create another Kernel Execution when the child needs independent runtime identity or management.
-
-Typical reasons include:
-
-- independent lifecycle;
-- separate authority;
-- separate cancellation;
-- independent recovery;
-- later addressability/messages;
-- independently meaningful result/history;
-- execution on another host/provider.
-
-Example:
-
-```text
-Workflow Execution W1
-  ├─ local deterministic transform
-  ├─ call Agent Execution A1 [Hermes]
-  ├─ call Workflow Execution W2 [Dify]
-  └─ local join
-```
-
-The Kernel sees W1, A1, and W2 as independent Executions. It does not need to flatten Hermes' internal delegation or Dify's internal graph into additional ArrokothI Executions.
-
-## 8. Values and dataflow
-
-Execution-side composition should carry typed values directly when the Runtime needs them.
-
-For ArrokothI-native Workflows, a reasonable value model is JSON-compatible structured data plus explicit artifact/resource references for large or external data.
-
-```text
-internal step
-  ↓ typed value
-next step / branch / child input
-  ↓ typed value
-join / final selector
-```
-
-Do not require writing Kernel-governed memory merely to move an ordinary intermediate value between local Workflow steps.
-
-A Runtime may use a richer native type system internally. The Driver only needs to translate values that cross the Kernel boundary.
-
-## 9. Runtime progress and checkpoints
-
-The Runtime owns the meaning of its continuation state.
-
-The Kernel may store:
-
-- portable structured progress;
-- an opaque checkpoint blob;
-- a provider session/snapshot reference;
-- an external task/job handle plus versioned metadata.
-
-The Kernel needs enough information to know which Runtime/version can resume the progress and whether a stale Outcome should be rejected. It does not need to interpret the Runtime's reasoning state.
-
-Provider-native checkpointing can therefore coexist with Kernel Execution recovery:
-
-```text
-Kernel owns:
-  Execution identity
-  accepted input
-  Activation attempt
-  authority
-  external Effect evidence
-  child/peer obligations
-
-Runtime owns:
-  native session/checkpoint semantics
-  context/model state
-  graph state
-```
-
-A Driver must not claim that a provider-native checkpoint gives stronger crash/external-action guarantees than it actually provides.
-
-## 10. Context, memory, and history
-
-Use three categories clearly.
-
-| Category | Owner | Meaning |
-|---|---|---|
-| **Execution History** | Kernel | Operational evidence: inputs, Activations, Effects, settlements, lifecycle, communication, recovery |
-| **Runtime memory/state** | Execution Runtime | Native information retained to continue or improve semantic work |
-| **Context** | Execution Runtime | Information selected for one model/tool/internal computation |
-
-An ArrokothI-native Agent may implement Working Notes, conversation state, structured app-memory views, retrieval, or semantic-memory helpers. These are execution-side strategies unless a particular read/write crosses a Kernel-governed resource boundary.
-
-A Kernel-governed memory/resource service controls access and records governed changes. The Runtime decides how returned data is used in context or reasoning.
-
-## 11. Tools and Effects
-
-A Runtime can interact with the world in two ways.
-
-### Kernel-mediated interaction
-
-The Runtime returns an Effect proposal in its Outcome. The Kernel validates, authorizes, dispatches, records, and later returns the observed result as an Event.
-
-Use this path when ArrokothI needs to claim action governance, exact consent, correlation, or recovery semantics.
-
-### Native/ambient interaction
-
-A Trusted Execution Runtime may directly use filesystem, terminal, network, provider tools, or native credentials made available by its deployment.
-
-The Kernel may observe some of this through telemetry, but it does not authorize the action merely because the Runtime is an Execution.
-
-This is a valid integration mode when trust assumptions are explicit. Strong mediation claims require routing the relevant operation through the Kernel or physically isolating ambient paths.
-
-## 12. Runtime-internal asynchronous work
-
-Model calls, provider jobs, compaction, local subprocesses, and other Runtime-internal asynchronous operations belong to the Runtime.
-
-The Kernel does not need a separate semantic record for each one unless that operation itself becomes a Kernel-managed child Execution or governed Effect.
-
-This is the major subtraction from the current 0.8.x controller model. `ControllerResumption` exists because the current Kernel synchronously awaits controller code and needs to yield long local promises. Under the asynchronous Activation/Outcome boundary, that local suspension mechanism moves inside the Runtime.
-
-The Runtime may implement its own promises, coroutines, task ledger, native checkpoint, or polling loop. The Kernel only sees the Activation remaining in flight until an Outcome arrives or the Execution Host is considered lost.
-
-## 13. ArrokothI-native Agent Runtime
-
-ArrokothI may provide a reference/native Agent Runtime, but it is not the Kernel itself.
-
-A useful native Agent Runtime may include:
-
-- model-provider abstraction;
-- context compiler;
-- working notes;
-- tool/Effect projection;
-- retrieval/memory helpers;
-- child-execution calls;
-- model-directed continuation policy.
-
-These facilities should live above the Kernel boundary so their evolution does not redefine Execution lifecycle or durability.
-
-The native Agent is valuable for examples, testing, and users who want one integrated implementation. It is not evidence that every foreign Agent should be translated into the same internal loop.
-
-## 14. ArrokothI-native Workflow Runtime
-
-Likewise, ArrokothI may provide a reference/native Workflow Runtime with:
-
-- typed local values;
-- deterministic/function nodes;
-- model nodes;
-- child Agent/Workflow calls;
-- branching and bounded parallelism;
-- joins/reducers;
-- terminal-value selection.
-
-Workflow Stages/nodes remain Workflow-Runtime concepts. A Stage is not automatically a Kernel Execution.
-
-The native Workflow should reuse Kernel Executions for independently managed children rather than reimplementing lifecycle/authority/recovery inside each Stage.
-
-## 15. Provider runtimes
-
-The following systems are useful conceptual references because they concentrate different responsibilities inside their native runtimes.
-
-### Hermes
-
-Hermes treats context construction, session history, compaction, tools, environment state, delegation, and working-directory behavior as meaningful parts of Agent quality. ArrokothI should therefore prefer a native Hermes Execution Driver that preserves those facilities instead of rebuilding the Hermes loop inside the Kernel.
-
-Its native asynchronous/delegation facilities may remain internal unless a delegated job needs to become an independently governed ArrokothI Execution.
-
-### OpenClaw
-
-OpenClaw combines persistent sessions, gateway/channel behavior, native execution environments, host capabilities, policy layers, tasks, and delivery recovery. It is evidence that a native Agent product can already own substantial runtime/session semantics.
-
-A clean ArrokothI integration should therefore define exactly which boundary ArrokothI owns. A scoped task/service or native runtime Driver is preferable to duplicating OpenClaw's whole gateway/session control plane.
-
-### Dify
-
-Dify owns authored applications, graph execution, tenant-scoped resources, human-input pause/resume, and newer Agent/runtime snapshot machinery. A published Dify application or Workflow can therefore participate as an opaque Execution Runtime while Dify continues to own its internal graph and application state.
-
-ArrokothI should not reconstruct every Dify node as a Kernel Execution merely to claim integration.
-
-### CrewAI
-
-CrewAI's current Agent execution path uses Flow infrastructure, which is useful evidence that Agent and Workflow control styles can share one underlying execution substrate.
-
-Crews/Flows can participate as native Runtime implementations while the Kernel provides independent Execution identity, authority, communication, and recovery at the chosen boundary.
-
-## 16. Driver fidelity and assurance
-
-A Driver should declare what it preserves and what ArrokothI can honestly guarantee.
-
-Useful dimensions include:
-
-| Dimension | Question |
+An Execution Runtime performs the work of an Execution. It may be ordinary code, an ArrokothI
+Agent or Workflow, or a native Hermes, OpenClaw, Dify or CrewAI runtime. It owns algorithms, local
+state, tools, internal asynchronous work and the meaning of its continuation data. The [Kernel](kernel.md)
+owns whether an Outcome is accepted. This document owns execution-side behavior and Driver fidelity.
+
+## Agent and Workflow
+
+An Agent's progression is substantially chosen by a model at runtime. A Workflow's allowed
+progression is primarily system-defined. Both can combine functions, models, parallel work and
+human interaction. These are useful authoring styles, not Kernel kinds, separate schedulers, or
+mutually exclusive runtime implementations.
+
+ArrokothI's existing controllers can become optional Runtimes. Preserve useful behavior while
+moving dependencies: model resolution, context compiler, Working Notes, inferred-memory helpers,
+Stage graphs and joins belong here. Internal values should pass directly between functions/nodes;
+typed JSON results and application-owned artifact references cross the Kernel boundary. A native
+Runtime may use richer types internally. No memory write or model call should be necessary merely
+to transfer an object to the next step.
+
+Local graph nodes, model calls, compaction, retries and delegated workers remain inside the Runtime.
+Create a child Kernel Execution only for independent authority, addressability, lifecycle or recovery.
+A whole Crew or Dify application can therefore be one Execution without flattening its internals.
+
+## Driver contract
+
+An Execution Driver translates the [Activation/Outcome protocol](kernel.md#activation-and-outcome)
+to a specific Runtime. It may be a function, subprocess client or remote-job adapter. It is not a
+second scheduler or mandatory deployable component. Keep provider-specific identifiers/configuration
+in the Driver's versioned data, not in Kernel unions.
+
+Every supported integration needs a small tested declaration:
+
+| Dimension | Declare before use |
 |---|---|
-| Identity | What native run/session/job corresponds to one Execution? |
-| Resume | Can the Runtime resume after host loss, and from what checkpoint? |
-| Context/model ownership | Does the provider retain its native context/model loop? |
-| Actions | Which actions are Kernel-mediated and which remain ambient/native? |
-| Credentials | Who owns backing secrets and how are they restored/rotated? |
-| Cancellation | Can ArrokothI stop logical progress, native work, or both? |
-| Results | How are values, artifacts, streaming output, and terminal results mapped? |
-| Recovery | What happens after an uncertain native job/action outcome? |
-| Upgrade | What happens when the provider/runtime version changes? |
+| Identity | Mapping of Execution, Activation and native run/session/job; whether sessions are shared and who serializes them |
+| Input acceptance | How duplicate dispatch and lost submit acknowledgment are detected; exact native input/config pinned |
+| Progress | Codec/version, checkpoint or live-job reference, retention owner, compatible code, missing-state behavior |
+| Recovery | Reattach, safe replay, same-process continuation only, or unsupported; internal action/cost uncertainty |
+| Actions | Concrete mediated paths, native paths, credentials and hook coverage |
+| Interaction/output | Pause versus completion, correlated input, typed results, provisional versus accepted output, delivery owner |
+| Cancellation | Logical cancellation, native interrupt/termination support, lost-host and late-result behavior |
+| Resources | Native workspace/session ownership, restoration, cleanup and resource-loss detection |
+| Upgrade | Versions exercised; explicit migration or refusal on incompatible state |
 
-The Driver is part of the assurance boundary. If translation is lossy or a native path bypasses Kernel mediation, documentation and benchmarks should say so.
+Declarations are claims to test, not a new generic capability registry. An application preflight must
+refuse unsupported durability or mediation requirements. Start with one useful Driver; stabilize a
+portable extension only after a second independently designed Runtime needs it.
 
-## 17. Driver failure attribution
+## Progress and native recovery
 
-A Driver failure is distinct from a Kernel or Runtime failure.
+Progress is Runtime-owned continuation information. It can be inline structured data, an immutable
+checkpoint blob/reference, or a reference to a still-running native job. These have different guarantees.
 
-Example:
+A **checkpoint** identifies a specific resumable state and compatible code. A mutable session ID is
+only a locator. If the native Runtime advances that session outside the Kernel's accepted revision,
+Kernel compare-and-set does not protect it. Use native exclusive ownership, immutable checkpoint
+versions, or a demonstrated reconciliation protocol. Otherwise refuse automatic takeover.
 
-```text
-Hermes chooses the correct native action
-  ↓
-Driver maps its payload incorrectly
-  ↓
-Kernel receives the wrong Effect
-```
+The Kernel need not inspect native messages or graph state, but the Driver must answer:
 
-The Kernel can correctly validate/deny what it received while the integration is still wrong.
+1. Could dispatch have started a native job even though its handle was never reported?
+2. Can the same Activation be re-delivered without starting a duplicate job or repeating a native action?
+3. Can accepted progress be resumed if the old process, workspace or provider checkpoint is gone?
+4. Can an old host continue writing the same native state after a newer attempt starts?
 
-Tests should therefore include Driver-level fixtures between native Runtime behavior and Kernel-facing protocol behavior.
+Pin a stable submit identity before remote work starts, and use native idempotent submission/query
+when available. A private Driver ledger may map that identity to a native job; a ledger written only
+after submission still has a lost-acknowledgment gap. If the provider cannot close it, expose unknown
+and reconcile or require explicit restart-from-input. Do not advertise seamless recovery.
 
-## 18. Trust and isolation from the Runtime side
+For stored checkpoints, make the checkpoint durable before proposing its reference; Kernel acceptance
+then pins it. Failed/unaccepted proposals may leave orphan blobs for later cleanup. Never delete the
+last accepted checkpoint while an Activation/recovery obligation can still reference it. If native
+persistence and Kernel acceptance cannot commit together, test the two-store crash windows rather
+than assuming a distributed transaction. Missing versions/resources cause explicit refusal.
 
-A Runtime does not decide its own security guarantees.
+Runtime retry policy owns internal model calls and their possible repeated billing. Kernel recovery
+chooses whether an Activation may be retried at all; the Driver supplies the proof. Do not build a
+Kernel ledger for every LLM call to compensate for a Runtime that cannot recover. A same-process-only
+Driver is useful when honestly restricted to an ephemeral profile.
 
-In a **Trusted Execution** deployment, Runtime code may have ambient access intentionally provided by the host. It may use that access without Kernel mediation.
+## Native tools and human interaction
 
-In an **Isolated Execution** deployment, the hosting environment restricts ambient filesystem/network/process/secret access. Kernel-mediated operations can then be the controlled bridge to privileged systems.
+A native tool can either remain ambient under the deployment's trust policy or be explicitly mediated.
+For a mediated call, the Runtime/Driver yields an Outcome containing the Effect and continuation,
+then consumes the result Event in a later Activation. The Kernel does not call back into a partially
+committed Runtime while it is accepting that Outcome.
 
-The detailed deployment boundary is owned by [`deployment.md`](deployment.md).
+A native tool API that awaits a callback may be bridged by a live coroutine between Activations, but
+that is same-process continuation unless the provider also supplies a durable suspension mechanism.
+If the Runtime cannot yield/checkpoint faithfully, retain its tools as native and govern the outer
+artifact/action handoff, or reject the stronger integration claim. Do not add an unversioned second
+Effect RPC during an Activation just to make an adapter appear complete.
 
-## 19. Current implementation migration
+Human feedback is not automatically exact-action consent. A native Dify form or CrewAI feedback step
+can keep its native owner. The Driver may represent the enclosing pause as a correlated Kernel wait
+when a durable callback/subscription exists. A polling implementation can remain inside a `RUNNING`
+Activation; the Kernel does not inspect native pause details. Never duplicate the form and let both
+systems independently resume the same native run. Authenticate and bind forwarded replies.
 
-The current 0.8.x repository places substantial Agent and Workflow implementation inside `packages/core`, including stock controllers, model access, Workflow Stage semantics, Working Notes, Derived Semantic Memory, and local-resumption machinery.
+Cancellation is signaled separately from immutable Activation input. The Runtime should cooperate,
+but Kernel cancellation does not imply physical termination or undo. A correct native result that
+arrives after cancellation may remain diagnostic evidence without becoming accepted progress.
 
-The new architecture does not declare those features wrong. It changes their ownership:
+## Context, memory and resources
 
-- Kernel-level semantics remain in core Kernel contracts;
-- ArrokothI-native Agent/Workflow implementations become execution-side runtimes layered above those contracts;
-- provider integrations should target the generic Execution Driver boundary before introducing deeper provider-specific Kernel concepts;
-- `ControllerResumption` and model-provider waiting should leave the Kernel semantic surface when asynchronous Runtime execution is implemented.
+Context is selected information for a computation; memory is retained Runtime information. Kernel
+History is evidence of Kernel decisions. None is a substitute for the others. Inferred notes and
+retrieved content do not become authorization, consent or asserted business state automatically.
 
-Physical package movement can happen incrementally. The conceptual boundary should guide tests and future API design even before every file is relocated.
+Keep native transcripts, compaction state, graph position, output filters and provider caches native.
+When a resource is shared, the application defines access, versions, conflicts and retention; the
+Kernel may mediate reads/writes through ordinary Effects. It need not implement a vector store,
+claim ontology, shared notes system or universal artifact repository.
 
-## 20. Execution Runtime invariants
+Native model budgets require Runtime enforcement or a metered provider boundary. Report estimates
+as estimates. Moving cost tracking out of the Kernel does not make unobserved consumption zero.
 
-1. The Runtime owns how an Outcome is produced; the Kernel owns whether that Outcome is accepted.
-2. Agent and Workflow share Kernel Execution semantics even though their internal control models differ.
-3. Internal async work, model calls, graph nodes, context, and native memory do not require Kernel concepts unless Kernel correctness depends on them.
-4. Another Kernel Execution is created only for independently managed work, not merely for every internal substep.
-5. Runtime-native progress may be opaque, but its version/identity must be sufficient for safe resume or explicit refusal.
-6. Typed internal dataflow should not require Kernel-governed memory as a transport workaround.
-7. Native/ambient actions are not automatically Kernel-authorized actions.
-8. A Driver must preserve the guarantees it advertises and expose limitations honestly.
+## Prior-art navigation
+
+These are observations of the sibling checkouts pinned in [the architecture review](development/004-architecture-review.md).
+Selected tests were inspected, not executed. Paths are practical entry points, not adopted dependencies.
+
+| System and source | Lesson and reuse decision |
+|---|---|
+| CrewAI [AgentExecutor](../../crewAI/lib/crewai/src/crewai/experimental/agent_executor.py), [Flow runtime](../../crewAI/lib/crewai/src/crewai/flow/runtime/__init__.py) | `AgentExecutor` subclasses Flow. Share machinery if it simplifies native Agent/Workflow implementation; do not force foreign graphs into a common IR. Use the Crew/Flow API before extracting its executor. |
+| CrewAI [SQLite persistence](../../crewAI/lib/crewai/src/crewai/flow/persistence/sqlite.py), [checkpoint runtime](../../crewAI/lib/crewai/src/crewai/state/runtime.py) | State and pending feedback are saved together; checkpoint restoration includes runtime associations/version migration. Reuse native persistence and feedback. A saved snapshot alone does not prove atomic external side effects. |
+| OpenClaw [harness types](../../openclaw/src/agents/harness/types.ts), [host capabilities](../../openclaw/src/agents/harness/host-capability-types.ts) | Native model/auth ownership can coexist with host-fixed tool/approval facilities and compatibility refusal. Treat this as a reference for a scoped bridge, not a portable Kernel ABI. |
+| OpenClaw [task access](../../openclaw/src/tasks/task-owner-access.ts), [delivery recovery](../../openclaw/src/infra/outbound/delivery-queue-recovery.ts) | Preserve the gateway's session/channel ownership. Integrate a scoped task/service and correlate results instead of mirroring its control plane. |
+| Hermes [context engine](../../hermes-agent/agent/context_engine.py), [Agent](../../hermes-agent/run_agent.py), [tool dispatch](../../hermes-agent/model_tools.py) | Session lifecycle and request-only context selection differ from transcript mutation. Tool middleware resolves underlying bridge calls. Preserve native context/tools; audit indirect paths before claiming mediation. |
+| Hermes [async delegation](../../hermes-agent/tools/async_delegation.py), [filesystem checkpoints](../../hermes-agent/tools/checkpoint_manager.py) | Abandoned delegates can be unknown while recorded partial results survive. A shadow Git workspace snapshot is file undo, not general Execution recovery. Use native jobs and their explicit limits. |
+| Dify [pause persistence](../../dify/api/core/app/layers/pause_state_persist_layer.py), [human-input service](../../dify/api/services/human_input_service.py) | Persist graph and response-stream filter together; map engine pause IDs to application-owned forms. Preserve published application/graph and form semantics. |
+| Dify [Agent runner](../../dify/dify-agent/src/dify_agent/runtime/runner.py), [dependencies](../../dify/dify-agent/pyproject.toml) | A successful run can return deferred human work plus a snapshot, rather than final output. Translate meaning, not a status string. Dify itself reuses Pydantic AI; investigate the independent library before recreating cognition. |
+
+## Migration and tests
+
+The current `AgentExecutor`/Strands bridge supplies resolved model/context/operation projections.
+It is a useful step adapter, not proof of whole-native-runtime fidelity. Preserve its documented
+scope while adding the generic boundary. `ControllerResumption` can remain a private compatibility
+mechanism inside a legacy Runtime adapter; it must cease to drive Kernel wait types and stores.
+Do not rename files and call that an asynchronous migration.
+
+Kernel tests use fakes. Runtime tests check reasoning/graph behavior with Kernel contracts fixed.
+Driver tests compare native input/output/pause/cancellation before and after translation and inject
+lost acknowledgments and stale native writers. Test tool fallback/delegation and one upstream upgrade
+for every strong supported claim. The [roadmap](development/001-current-status-and-roadmap.md) sets
+when a native comparison should delete unnecessary ArrokothI machinery.

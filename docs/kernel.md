@@ -1,462 +1,231 @@
 # Kernel
 
-The **Kernel** is ArrokothI's execution coordinator. It manages logical Executions and treats the code performing each Execution as a black box behind the Execution protocol.
+The Kernel owns the acceptance of Execution state, addressed inputs and mediated actions. It does
+not implement Agent reasoning or Workflow progression. This is the **target contract**, not a claim
+that the current 0.8.x Harness implements it. See the [migration roadmap](development/001-current-status-and-roadmap.md).
 
-This document owns Kernel semantics. It does not define how an Agent reasons, how a Workflow traverses a graph, how a provider compacts context, or how an Execution Runtime implements its native checkpoint.
+## Execution and lifecycle
 
-## 1. Kernel responsibilities
-
-The Kernel owns:
-
-- Execution identity and creation;
-- accepted input and Event delivery;
-- lifecycle and scheduling;
-- Activation dispatch and Outcome acceptance;
-- authority and exposure for Kernel-mediated actions;
-- Effect validation, authorization, consent, dispatch, settlement, and uncertainty;
-- parent/child and peer communication;
-- deadlines, cancellation, and Kernel-visible waits;
-- Execution History;
-- durable recovery semantics, stale-writer rejection, and reconciliation;
-- governed resource and memory access when applications choose to expose such services.
-
-The Kernel does not own Agent cognition or Workflow orchestration internals.
-
-## 2. Execution record
-
-The Kernel maintains one logical record per Execution. A conceptual record contains:
+An Execution record needs identity, pinned Runtime/definition contract, authority binding, lifecycle,
+accepted progress revision, mailbox, current Activation or wait, result/failure and history references.
+Parent relationships and action obligations are present only when used. Agent/Workflow tags, native
+session formats, model settings and memory categories do not belong in the generic record.
 
 ```text
-ExecutionRecord
-  execution_id
-  definition/runtime_identity
-  lifecycle
-  progress_revision
-  authority
-  owner/root relationships
-  mailbox
-  current_activation? 
-  wait_condition?
-  terminal_result/failure?
-  history references
+create + initial input → READY → dispatch intent → RUNNING
+RUNNING + accepted continue → READY
+RUNNING + accepted await    → WAITING (or READY if already satisfied)
+RUNNING + accepted complete → COMPLETED
+RUNNING + accepted fail     → FAILED
+WAITING + matching Event   → READY
+nonterminal + cancel       → CANCELLED
 ```
 
-The exact storage layout is not architecture. A database, durable runtime, embedded in-memory store, or other substrate may implement it as long as the semantics remain true.
+`RUNNING` means an Activation remains unresolved, not that a process is currently making progress.
+If its attempt is lost, inspection shows the recovery reason and whether retry is permitted. It can
+remain held without inventing a semantic wait. `READY` work may be delayed by admission/backpressure.
+Terminal states do not reopen; starting again is an explicit new Execution.
 
-## 3. Lifecycle
+Completion records a result, not its delivery to a person or external system. Nonterminal emissions
+are output, not completion. Completion must reject newly proposed Effects and unresolved owned
+Effects or required child results. The Runtime must first observe settlement, or the application must
+explicitly transfer/abandon the obligation under policy. Failure/cancellation may leave external work
+unknown; the Kernel retains it for reconciliation rather than deleting evidence with the Execution.
+Detached work is optional: do not introduce it until another durable owner can be named.
 
-The minimal lifecycle is:
+## Activation and Outcome
+
+The minimal conceptual exchange is data, not a portable program:
 
 ```text
-CREATED
-  ↓
-READY
-  ↓ Activation dispatched
-RUNNING
-  ├─ Outcome.continue ──> READY
-  ├─ Outcome.await ─────> WAITING
-  ├─ Outcome.complete ──> COMPLETED
-  ├─ Outcome.fail ──────> FAILED
-  └─ cancellation ──────> CANCELLED
+Activation:
+  execution_id, activation_id, writer_epoch, base_progress_revision
+  runtime_contract_revision, definition_revision
+  accepted_progress, events[]
+  permitted execution view, deadline/limits if applicable
 
-WAITING
-  └─ matching Event ────> READY
+Outcome:
+  execution_id, activation_id, writer_epoch, base_progress_revision
+  progress, emissions[], effects[]
+  next: continue | await(wait) | complete(result) | fail(error)
 ```
 
-`RUNNING` means one Activation is in flight. It does not mean the Kernel thread is synchronously executing the Runtime.
+Runtime identity and progress version must select compatible code or fail explicitly. Small boundary
+values are JSON-compatible and schema-checked where a contract is declared; large payloads use
+application-owned references with access and retention contracts. No universal artifact type system
+or provider transcript is required.
 
-`WAITING` means the Runtime has reached a semantic boundary and declared a Kernel-visible dependency. Internal waiting inside a model call, graph engine, or native tool remains `RUNNING` from the Kernel's point of view.
+An Activation ID identifies the exchange. A writer epoch fences its attempt. Retransmission uses
+the same immutable input and identity; a takeover changes the epoch before any replacement attempt
+can commit. One current Activation may commit for an Execution. An epoch is not a credential and
+host liveness is not proof of ownership; authenticated ingress and the authoritative store decide.
 
-Worker/host loss is not a terminal lifecycle state. It is an operational condition on an Activation attempt. Recovery may return the Execution to `READY`, preserve `WAITING`, establish an `unknown` action state requiring reconciliation, or fail/cancel the Execution according to policy.
+Dispatch does not synchronously await native work in the coordinator loop. The Driver eventually
+submits an Outcome. Dispatch acknowledgment, heartbeat, cancellation signaling and diagnostic
+streaming are operational traffic, not additional progress-writing Outcomes.
 
-## 4. Activation
+### Acceptance and atomicity
 
-An **Activation** is one Kernel-issued unit of semantic work for an Execution.
+These are semantic atomic boundaries; a database transaction, journal or durable substrate may
+implement them. Queues may be derived from durable records instead of a second source of truth.
 
-A conceptual shape is:
+| Boundary | Accepted together | Not implied |
+|---|---|---|
+| Creation/input ingress | Execution plus initial input; subsequent input ID, payload and mailbox entry, with readiness when applicable | Process received bytes means input accepted |
+| Activation dispatch intent | Exact Event batch reservation, progress revision, pinned inputs, current epoch and dispatch intent | Runtime started or finished |
+| Outcome acceptance | Validate current Activation/epoch/revision; acknowledge its Event batch; commit progress, accepted emissions, all Effect intents, next state and recoverable readiness | Effects happened or were authorized |
+| Effect admission | Current concrete policy/consent decision and attempt intent under current dispatch ownership | External success |
+| Effect settlement | Authenticated evidence, action state, result Event and recoverable readiness | Runtime has processed the Event |
+| Child/message operation | Idempotent creation/routing obligation and parent correlation/budget reservation; fulfillment cannot lose the link | Cross-Execution operations are local to one storage shard |
+
+Validate the entire Outcome envelope and its references before acceptance. A wait may reference an Effect proposed in that same Outcome by its stable local key; validate and bind both together. Malformed or stale
+Outcomes create no Effects, acknowledge no Events and commit no progress. An exact duplicate of an
+accepted Outcome returns its original receipt; a conflicting duplicate is rejected. Rejection is
+recorded; an invalid current Runtime response causes an explicit protocol failure/inspection result,
+not an endless silent retry. In a durable profile, the accepted receipt survives restart.
+
+Effect proposals may be denied individually after acceptance, yielding denial Events. Their inputs
+are immutable, and IDs are stable within the Execution (for example an Activation plus proposal key).
+Reusing an ID with different content is a conflict. Already recorded intents are dispatched by their
+own state, never by re-running an accepted Outcome. A failure on Effect 2 cannot roll back Effect 1.
+Dependent actions belong in separate Outcomes after their prerequisite result; an array of Effects
+is not a distributed transaction or an execution order guarantee.
+
+Accepted emissions have stable IDs and replay positions. A streaming transport may additionally
+show provisional output, but must label it as such; it cannot authorize an action or certify a result.
+Output publication intent and acceptance must not leave a lost-output gap after a committed result.
+
+## Events and waits
+
+An Event has an identity, destination, kind, payload and trusted ingress provenance, with correlation
+when needed. The Kernel assigns an acceptance order per Execution, without promising causal order
+across transports. It records duplicate acceptance consistently; same ID with different content is a
+conflict. Delivery may repeat after a lost attempt. Processing is acknowledged only by accepted
+Outcome or an explicit recorded terminal disposition, never merely by reading the mailbox.
+
+The Runtime cannot mint Effect settlements, child completions or consent by submitting an Event-like
+payload. Application input, trusted adapter settlement and operator control have separately scoped
+ingress. Knowing a correlation ID gives no settlement authority.
+
+Start with a wait on **any of a finite set of correlated Events**, optionally with a durable deadline.
+An explicit input subscription can allow corrections/peer questions while waiting. Unknown action
+IDs and unrelated destination references are refused; application-input waits require a declared
+subscription. Conditions use envelope identity/kind/correlation, not arbitrary code or model-text
+predicates. A Runtime can implement an all-of join by retaining observed results in progress and
+waiting for the remaining set. No Kernel graph language or universal wait-expression engine is needed.
+
+Register the wait and check unacknowledged mailbox Events atomically. A result accepted before the
+wait, during the current Activation, or after wait registration must wake the same continuation.
+Unmatched Events remain queued under the declared retention policy; they do not disappear or force
+a busy loop. Fast/slow settlement uses the same Event/result contract. A new Activation receives a
+bounded batch; no second writer is dispatched while the current one is unresolved.
+
+Timers wake from persisted deadlines. Timeouts, human replies and cancellation races follow Kernel
+acceptance order. Parent/peer cyclic waits can still deadlock: expose correlations and deadlines;
+do not promise general deadlock prevention. Local Runtime promises are never Kernel waits.
+
+## Effects and authority
+
+An Effect requests a Kernel-mediated operation: an external service action, input request, child
+creation, message, or an explicitly offered resource service. Pending action state is necessary;
+a separate universal `PendingOperation` abstraction is not required beyond these records.
+
+The supported action contract specifies operation identity/revision, accepted schema subset, exact
+input, output validation and outcome certainty. Unknown operations and unsupported schema features
+fail explicitly. No silent coercion/default insertion after consent. Use a mature schema validator;
+provider-facing tool schemas do not substitute for validation at the actual action boundary.
 
 ```text
-ExecutionActivation
-  execution_id
-  activation_id
-  writer_epoch
-  base_progress_revision
-  events[]
-  execution_view
-  authority/exposure_view
-  cancellation
-  deadline/budget
-  pinned_definition/runtime_identity
+accepted Effect intent → validate concrete operation/input → current policy and consent
+                      → record attempt → trusted dispatch → success / failure / unknown
+                      → recorded settlement + Event
 ```
 
-### `execution_id`
-
-Identifies the logical Execution. It is a routing identity, not an authorization credential.
-
-### `activation_id`
-
-Identifies this specific unit of dispatched work. Every Outcome must name the Activation it answers.
-
-### `writer_epoch`
-
-Identifies the current accepted writer/ownership epoch for a durable profile. A previous host that returns after takeover cannot commit an Outcome under an obsolete epoch.
-
-### `base_progress_revision`
-
-States which accepted progress the Runtime is continuing from. The Kernel rejects a stale Outcome that attempts to overwrite newer progress.
-
-### `events[]`
-
-The semantic observations being delivered for this Activation. Events are removed/acknowledged according to the durable acceptance protocol, not simply because a process read them.
-
-### `execution_view`
-
-Read-only Kernel-owned information the Runtime is allowed to know about its own Execution. Keep this small and stable; do not leak arbitrary Kernel internals.
-
-### `authority/exposure_view`
-
-A snapshot of currently exposed Kernel-mediated operations/resources. It is useful to the Runtime when choosing actions, but final dispatch always rechecks current authority.
-
-### `cancellation`
-
-A Kernel signal that cancellation has been requested. It does not imply arbitrary native work can be physically stopped unless the Execution Host supports termination.
-
-### `deadline/budget`
-
-Bounds or advisory limits for this Activation/Execution according to the declared deployment. Budget is not authority.
-
-### `pinned_definition/runtime_identity`
-
-Identifies the exact execution contract/runtime version expected to interpret progress and Events. Durable recovery must not silently resume incompatible state with arbitrary new code.
-
-## 5. Outcome
-
-An **Outcome** is the Runtime's response to one Activation.
-
-```text
-ExecutionOutcome
-  execution_id
-  activation_id
-  writer_epoch
-  base_progress_revision
-  progress/checkpoint
-  emissions[]
-  effects[]
-  next:
-    continue
-    await(condition)
-    complete(result)
-    fail(error)
-```
-
-An Outcome is a proposal to advance Kernel state. The Runtime cannot directly mutate the Execution record.
-
-### `progress/checkpoint`
-
-Continuation data needed for a later Activation. It may be a portable structure or an opaque provider/runtime reference. The Kernel must know enough to version, persist, and reject incompatible/stale progress; it does not need to understand native reasoning state.
-
-### `emissions[]`
-
-Nonterminal application-visible output. Emitting data does not complete the Execution.
-
-### `effects[]`
-
-Kernel-mediated action proposals. They are validated and authorized after the Outcome is accepted according to the action contract.
-
-### `next`
-
-`continue` means local semantic work remains and the Execution should become `READY` again.
-
-`await(condition)` means no local work can proceed until a Kernel-visible condition is met.
-
-`complete(result)` proposes semantic completion with a terminal result.
-
-`fail(error)` proposes semantic failure.
-
-## 6. Mailboxes and queues
-
-The architecture distinguishes three logical queues even if one implementation combines them.
-
-### Kernel inbound queue
-
-Carries things the Kernel must process as state transitions:
-
-- Execution Outcomes;
-- external input;
-- Effect settlements;
-- timers/deadlines;
-- cancellation requests;
-- Execution Host or Kernel Worker liveness/lease signals.
-
-### Per-Execution mailbox
-
-Carries semantic Events waiting for delivery to that Execution.
-
-### Ready queue
-
-Carries Executions eligible for another Activation.
-
-A simple first implementation may process Kernel transitions one at a time. This is an implementation simplification, not a permanent global-serialization requirement.
-
-The durable concurrency invariant is:
-
-> **One Execution has at most one accepted progress-writing Activation in flight at a time. Different Executions may run concurrently.**
-
-If Events arrive while an Execution is `RUNNING`, they stay in the mailbox until the current Activation ends. The Kernel does not issue a second concurrent progress-writing Activation for that Execution.
-
-## 7. Event
-
-An **Event** is a semantic observation delivered into an Execution.
-
-A conceptual Event envelope contains:
-
-```text
-Event
-  event_id
-  destination_execution_id
-  kind/label
-  payload
-  correlation_id?
-  causation_id?
-  observed_at
-  provenance
-```
-
-The Kernel owns acceptance, routing, deduplication/correlation where promised, mailbox persistence, and delivery history.
-
-Typical Events include application input, Effect result, human input, child completion, peer messages, and semantic timers.
-
-Operational heartbeat/lease traffic is not an Event and does not enter the Runtime's semantic input unless an application deliberately models it that way.
-
-## 8. Effect and the concrete action contract
-
-An **Effect** is a proposal for a Kernel-mediated interaction.
-
-The action path is:
-
-```text
-Execution Outcome
-  ↓ Effect proposal
-Kernel validates operation identity + input
-  ↓
-current authority check
-  ↓
-exact consent if policy requires it
-  ↓
-record action intent/attempt
-  ↓
-dispatch through trusted adapter/provider
-  ↓
-observe success / failure / unknown
-  ↓
-record settlement
-  ↓
-Event delivered back to Execution
-```
-
-For a supported action contract, the Kernel must define:
-
-- stable operation identity and revision;
-- accepted input-schema dialect/subset;
-- no silent coercion or default mutation unless explicitly part of the contract;
-- output validation;
-- behavior for unknown operations;
-- current authorization at dispatch;
-- exact consent binding when required;
-- idempotency/attempt identity where available;
-- truthful `success`, `failure`, and `unknown` outcomes.
-
-A malformed response does not prove an external action failed. If the world may have changed but the Kernel cannot establish the result, the action remains `unknown` until reconciled or explicitly abandoned under policy.
-
-## 9. Authority
-
-**Authority** is the bounded set of Kernel-mediated operations/resources an Execution is permitted to request.
-
-The Kernel may compute authority from application policy, parent delegation, deployment policy, authenticated principals, and resource ownership. The concrete policy backend is replaceable.
-
-A useful narrowing model is:
-
-```text
-available catalog
-  ↓ policy/delegation
-Effective Authority
-  ↓ deterministic exposure selection
-Exposure View
-  ↓ provider/runtime-specific rendering if needed
-Execution-facing projection
-```
-
-Each step narrows; none enlarges authority.
-
-The Runtime may see only an Exposure View while deciding what to request. Final Effect dispatch is checked against current authority, not merely the snapshot the Runtime saw earlier.
-
-### Delegation
-
-When one Execution creates a child, child authority is attenuated:
-
-```text
-requested child authority
-  ∩ creator-delegable authority
-  ∩ application/deployment policy
-  = child effective authority
-```
-
-A child cannot mint power the parent/application did not delegate.
-
-### Exact consent
-
-Standing authority and exact approval are separate. When a policy requires human confirmation, consent binds the validated concrete payload and relevant operation/contract revision. If the contract changes while waiting, the Kernel must revalidate/reconfirm or reject rather than silently applying stale consent.
-
-## 10. Communication and composition
-
-The Kernel knows relationships between Executions without knowing their internal Agent/Workflow structure.
-
-### Child composition
-
-An Execution may request creation/call of another Execution. The child has its own identity, lifecycle, authority, mailbox, progress, and history.
-
-The parent may wait for a child result, continue independently, or interact through messages according to the declared operation.
-
-### Peer communication
-
-Existing Executions may send/request/reply through Kernel-routed messages when authority permits it.
-
-### Local composition
-
-Anything that does not need independent identity/lifecycle/authority/recovery may remain internal to one Execution Runtime. A Workflow node, model call, or Agent substep is not automatically another Kernel Execution.
-
-## 11. Memory and resources
-
-The Kernel does not own Agent memory semantics. It may own **governed resource services** that Executions can read/write through declared boundaries.
-
-Examples:
-
-- asserted structured application state;
-- artifact references;
-- application-owned files/resources;
-- shared database/service operations;
-- externally maintained semantic-memory service.
-
-The Kernel's responsibilities are boundary concerns: identity, access, schema/contract validation where promised, authority, version/conflict semantics where promised, and history/provenance of governed changes.
-
-The Execution Runtime decides how retrieved information becomes context, notes, native memory, or reasoning state. Those execution-side concepts are defined in [`execution.md`](execution.md).
-
-Ordinary typed dataflow between steps inside a Workflow should not require writing Kernel-governed memory merely to move a value.
-
-## 12. History
-
-**Execution History** is Kernel-owned operational evidence.
-
-It should be sufficient to answer questions such as:
-
-- what input was accepted and when;
-- which Activation was issued against which progress revision;
-- which Outcome was accepted or rejected;
-- which Effects were proposed, authorized, denied, confirmed, dispatched, settled, or left unknown;
-- which Events were routed/delivered;
-- which child/peer obligations were created and settled;
-- which lifecycle transitions occurred;
-- which worker/host attempt owned an Activation;
-- what happened during recovery or reconciliation.
-
-History is not automatically model context or Agent memory.
-
-A durable profile may compact/snapshot history, but retention rules must state when deletion ends replay, deduplication, or reconciliation guarantees.
-
-## 13. Worker, host, heartbeat, and fencing
-
-A **Kernel Worker** processes Kernel state transitions. An **Execution Host** runs Execution Runtime code. One process may perform both roles in an embedded deployment.
-
-For durable/remote execution, Activation ownership should use leases or equivalent fencing rather than assuming a process remains alive.
-
-Conceptually:
-
-```text
-Activation A7
-  writer_epoch = 12
-  assigned_host = H2
-  lease_until = T
-```
-
-H2 renews the lease while it is still processing. If the lease expires, the Kernel may fence epoch 12, establish a newer owner, and reject any late Outcome from the stale epoch.
-
-Heartbeat proves only that a host recently responded. It does not prove whether an external side effect happened immediately before host loss.
-
-Recovery therefore relies on durable action intent/attempt/outcome evidence, not heartbeat alone.
-
-## 14. Recovery
-
-Recovery is a Kernel responsibility for deployment profiles that claim it.
-
-The Kernel must have a defined answer at each important boundary:
-
-- input accepted but Activation not dispatched;
-- Activation dispatched and host lost before Outcome;
-- Effect intent recorded but dispatch uncertain;
-- external action succeeded but receipt was lost;
-- Effect settlement recorded but wake was lost;
-- progress committed but ready enqueue was lost;
-- stale host completes after takeover;
-- code/runtime version needed by progress is missing or incompatible.
-
-The answer may be safe retry, replay from durable result, reconcile with the external system, wait for evidence, manual intervention, explicit `unknown`, migration, or failure. It must not fabricate certainty.
-
-Persisted state by itself is not recovery. A supported durable profile must prove recovery through actual process/host loss tests.
-
-## 15. Cancellation and deadlines
-
-Keep several operations distinct:
-
-| Operation | Meaning |
+Authority is an upper bound; application policy decides whether this concrete action is permitted
+now. Exposed metadata must also respect read/disclosure policy. Model aliases must resolve through
+the immutable invocation binding the Runtime used, then submit the real operation identity.
+A prompt, advertised tool, native config or identifier never grants authority.
+
+Child delegation is the intersection of requested power, delegable parent authority and application
+policy. Messaging, inspection, cancellation and resource access are separate permissions. Children
+do not inherit private state or ambient credentials merely through ancestry.
+
+Exact consent, when required, binds the validated payload, operation/contract revision, relevant
+resource revision and authenticated approver. Changed payload or contract requires renewed consent
+or refusal. Recheck policy after approval and at dispatch admission. Revocation and admission have a
+defined ordering: revocation accepted first blocks admission; it cannot recall an already admitted
+external request. Enforce the current dispatcher epoch at admission, not only at Outcome acceptance.
+Do not imply a local authorization transaction atomically commits with a remote service.
+
+Record logical action ID separately from physical attempts. Retry only under the operation's
+idempotency/reconciliation contract; all retries keep the logical request identity. A lost receipt,
+timeout or malformed response after possible execution is `unknown`, not definite failure.
+Reconciliation uses trusted external evidence; Runtime prose cannot settle an Effect. Compensating
+an action is a new authorized action, not automatic rollback.
+
+Prior art: OpenClaw's [unknown-send reconciliation](../../openclaw/src/infra/outbound/delivery-queue-reconciliation.ts)
+uses transport-specific evidence and exact prepared delivery information. Reuse that boundary lesson,
+not its entire messaging control plane. The supporting [review](development/004-architecture-review.md)
+pins the inspected checkout.
+
+## Recovery and cancellation
+
+Recovery has two distinct duties: reconstruct accepted Kernel truth and decide whether the Driver
+can safely continue native work. The Driver's [recovery contract](execution.md#progress-and-native-recovery)
+constrains the latter. Opaque work is never presumed pure, idempotent or free.
+
+| Interrupted boundary | Required recovery behavior |
 |---|---|
-| Cancel Execution | Request that the logical Execution stop progressing |
-| Cancel wait | Stop waiting for one dependency |
-| Prevent new Effects | Refuse future governed actions |
-| Cancel child | Request cancellation of another Execution under allowed ownership/control |
-| Terminate host work | Physically interrupt a process/task if the hosting backend supports it |
-| Undo external action | A new domain action, not a consequence of cancellation |
+| Input accepted before dispatch | Reconstruct readiness and reserved input |
+| Dispatch may have started native work | Reattach/query by stable identity, safely replay under a declared contract, or hold for reconciliation |
+| Native progress saved, Outcome not accepted | Preserve accepted Kernel revision; reconcile native revision before resuming |
+| Outcome accepted, dispatch/wake notification lost | Recreate dispatch/readiness from accepted intents |
+| External action may have happened, receipt absent | Reconcile, use provider-enforced idempotency if valid, or retain unknown; no blind replay |
+| Old host/worker returns after takeover | Reject stale progress and new dispatch; retain independently authenticated evidence of already attempted actions |
+| Checkpoint/code/resource unavailable | Explicit recovery hold/refusal, migration or failure; never silently restart as if restored |
 
-A late result may still arrive after logical cancellation or physical termination attempts. The Kernel records and handles it according to the action/hosting contract.
+Fencing protects Kernel acceptance; it does not prevent an obsolete process mutating a native
+session or filesystem. A Driver must prevent concurrent mutation there or refuse takeover. A lost
+lease alone cannot justify replay. Repeated internal calls and their possible cost remain Runtime
+recovery responsibilities; Kernel-enforced quotas cover only observable/mediated consumption.
 
-## 16. Budgets
+Cancellation is a Kernel control operation independent of the Runtime inbox. Accepted cancellation
+fences further progress and blocks new Effect admissions. It requests host/native cancellation
+through the Driver without waiting for cooperation. If completion committed first, cancellation
+reports that terminal result; if cancellation committed first, a late Outcome cannot reopen it.
+Late external results remain evidence on the original attempts. Physical stop, child cancellation,
+wait abandonment and compensation have separately declared policies. Deadline expiry uses this
+same ordered control path; a time limit in an Activation alone cannot stop native code.
 
-Budgets bound consumption; authority bounds permission. They are independent.
+## History and retention
 
-Examples include model-call count, token/spend budget, wall-clock deadline, child-creation budget, CPU/memory limits in an isolated host, or application-specific quotas.
+Execution History records accepted input, dispatch intent, Outcome acceptance/rejection, progress
+revision, action decisions/attempts/results, communication, lifecycle and recovery decisions. It is
+audit and recovery evidence, not an automatic deterministic replay engine, business database or
+Agent memory. Native traces can be linked without becoming authoritative Kernel facts.
 
-Recovery must not silently reset a consumed budget. Renewal or handoff to a new Execution should be explicit.
+The persistent profile states what survives acknowledgment, how records are compacted, how pending
+obligations pin required data, and when deduplication/replay guarantees expire. Bound mailbox size,
+output, histories and wait count; reject excess ingress before acknowledging it. Limits, deletion,
+credential rotation and unsupported upgrades must be inspectable. Model token budgets belong in
+the Runtime unless every relevant call crosses an enforced metering boundary.
 
-## 17. Kernel persistence and scheduling mechanism
+Completion versus delivery is deliberately separate. Internal child/result delivery is a durable
+Kernel routing obligation; user-facing channel delivery belongs to an application/transport adapter.
+See OpenClaw's [task versus delivery status](../../openclaw/src/tasks/task-registry.types.ts) and Hermes'
+[restored result ownership tests](../../hermes-agent/tests/tools/test_restored_delegation_ownership.py).
+No universal channel/session subsystem is implied.
 
-The Kernel owns semantics, not necessarily a custom database or scheduler implementation.
+## Implementation boundary
 
-A mature durable runtime may provide timers, queues, journals, leases, and replay mechanics. ArrokothI may use those mechanisms if they faithfully implement the Kernel contract.
+Use one coordinator and an in-memory store to establish the protocol, then prove one persistent
+profile with real process kills. Persistence/scheduling may come from a mature durable substrate;
+the Kernel owns semantics without requiring a custom journal, queue or consensus implementation.
+Kernel Worker and Execution Host deployment details are owned by [Deployment](deployment.md).
 
-The architecture does not require ArrokothI to build its own consensus system, database, distributed queue, or workflow runtime.
-
-## 18. Current implementation migration
-
-The current 0.8.x code implements many useful semantics but uses the older shape:
-
-- the Kernel coordinator is named `Harness`;
-- `Harness.runOnce()` synchronously awaits `ExecutionController.activate(...)`;
-- slow controller-local work uses `ControllerResumption` and an inline wait budget;
-- the scheduler is currently a claim-based in-memory reference implementation;
-- durable writer epochs, host leases, and real process-death recovery are not yet the supported production path.
-
-The target architecture changes the boundary to asynchronous Activation dispatch + Outcome delivery. `ControllerResumption` should not remain a Kernel semantic concept when the Execution Runtime can own its own internal async work.
-
-The migration must preserve existing Kernel truths—Events, Effects, authority, lifecycle, correlation, child/peer relationships, and truthful outcomes—while subtracting Agent/Workflow-specific local execution machinery from Kernel ownership.
-
-## 19. Kernel invariants
-
-1. Kernel state changes come from validated Kernel inputs: accepted external input, accepted Outcomes, settlements, timers, cancellation, and operational host/worker signals.
-2. The Runtime cannot directly set lifecycle, grant authority, mutate the Kernel store, or settle its own Effects merely by knowing an identifier.
-3. One Execution has at most one accepted progress-writing Activation in flight at a time.
-4. Different Executions may execute concurrently.
-5. Internal Runtime async work is opaque to the Kernel.
-6. `WAITING` requires an accepted Kernel-visible dependency; slow internal computation alone is not `WAITING`.
-7. Effect proposal is not dispatch permission, and dispatch is not proof of outcome.
-8. Old authority/exposure snapshots do not bypass current authorization.
-9. Stale Activation Outcomes are rejected after newer progress/takeover.
-10. Worker/host loss does not erase Execution identity or justify assuming external work did nothing.
+Current migration touchpoints are `packages/core/src/runtime/{harness,effect-processor,resumption-processor}.ts`,
+`execution/context.ts` and `ports/{runtime-store,scheduler}.ts`. In particular, current `applyOutcome`
+dispatches Effects before later progress commit; its catch comment does not establish whole-Outcome
+rollback. The existing tests preserve useful behavior but do not prove the target acceptance protocol.
+[The baseline](development/002-implemented-kernel-baseline.md) and [review](development/004-architecture-review.md)
+track that gap; this documentation revision implements no runtime change.

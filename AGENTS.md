@@ -33,7 +33,7 @@ Kernel <- ExecutionOutcome    <- Execution Runtime
 
 An Activation is asynchronous. Slow model/provider/local work stays inside the Runtime. `WAITING` means an accepted Outcome declared a Kernel-visible dependency; it does not mean the Runtime happens to be waiting on an internal promise.
 
-One Execution has at most one accepted progress-writing Activation in flight at a time. Different Executions may compute concurrently.
+One Execution has at most one current Activation authorized to commit progress. Kernel fencing does not by itself prevent stale native-session mutation; Drivers must prove safe takeover or refuse it. Different Executions may compute concurrently.
 
 ## Security and trust
 
@@ -46,7 +46,7 @@ Do not claim that Kernel authority prevents ambient native actions. Prevention r
 
 ## Application development
 
-The current SDK/guides/examples describe the implemented 0.8.x surface and remain useful while migration is in progress. Start application work from [`docs/guides/agent-workflow-composition/README.md`](docs/guides/agent-workflow-composition/README.md) and [`packages/sdk`](packages/sdk/README.md), but distinguish current API behavior from target architecture when discussing Kernel internals.
+The current SDK/guides/examples describe the implemented 0.8.x surface and remain useful while migration is in progress. Start application work from [`docs/guides/agent-workflow-composition/README.md`](docs/guides/agent-workflow-composition/README.md) and [`@arrokothi/sdk`](packages/sdk/README.md), but distinguish current API behavior from target architecture when discussing Kernel internals.
 
 For provider integrations, prefer a narrow `Execution Driver` that preserves the provider's native runtime. Do not translate an entire Hermes/OpenClaw/Dify/CrewAI runtime into Kernel concepts unless a demonstrated Kernel guarantee requires it.
 
