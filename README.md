@@ -15,9 +15,10 @@ Start with [`docs/mental-model.md`](docs/mental-model.md).
 | [`docs/kernel.md`](docs/kernel.md) | Kernel-owned Execution semantics |
 | [`docs/execution.md`](docs/execution.md) | Agent/Workflow and provider Runtime/Driver semantics |
 | [`docs/deployment.md`](docs/deployment.md) | Embedding, processes, trust/isolation, MCP/protocol placement |
+| [`docs/detail-design/`](docs/detail-design/) | Current detailed authority, memory/state, composition, and interoperability design |
 | [`docs/development/`](docs/development/README.md) | Current implementation and migration evidence |
 
-The previous root-level architecture is preserved under [`docs/mental-model-legacy/`](docs/mental-model-legacy/).
+The previous root-level architecture is preserved under [`docs/mental-model-legacy/`](docs/mental-model-legacy/). Old architecture filenames were removed from the docs root rather than kept as compatibility symlinks.
 
 ## Core boundary
 
@@ -75,6 +76,7 @@ For current application-building APIs, start at [`docs/guides/agent-workflow-com
 | `packages/agents/*` | Provider/native Agent integration packages |
 | `packages/interoperability/*` | Protocol boundary packages such as MCP |
 | `tests/conformance` | Semantic and boundary tests |
+| `docs/detail-design` | Current detailed designs below the canonical architecture |
 | `docs/development` | Implemented baseline, roadmap/evidence, migration status |
 | `docs/architecture-strategy-study` | Comparative architecture diagnosis that informed the redesign |
 

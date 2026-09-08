@@ -1,7 +1,6 @@
 # ArrokothI architecture
 
-Start with [the mental model](mental-model.md). The canonical documents describe the target
-architecture; current 0.8.x implementation remains behind it.
+Start with [the mental model](mental-model.md). The canonical documents describe the target architecture; current 0.8.x implementation remains behind it.
 
 | Document | Sole detailed owner |
 |---|---|
@@ -10,22 +9,34 @@ architecture; current 0.8.x implementation remains behind it.
 | [Execution](execution.md) | Runtime/Driver, Agent/Workflow, progress/checkpoint meaning, native tools/context/memory and integration fidelity |
 | [Deployment](deployment.md) | Processes, physical trust/isolation, resources, protocol placement and operating profiles |
 
-The Kernel owns acceptance and governance, the Runtime owns how work is done, and deployment owns
-physical enforcement. A concept has one detailed owner; other documents link instead of redefining it.
-Add a Kernel concept only when a demonstrated correctness obligation requires it. Opaque work still
-needs an explicit recovery contract; opacity never establishes replay safety.
+The Kernel owns acceptance and governance, the Runtime owns how work is done, and deployment owns physical enforcement. A concept has one canonical owner; other documents link instead of redefining it. Add a Kernel concept only when a demonstrated correctness obligation requires it. Opaque work still needs an explicit recovery contract; opacity never establishes replay safety.
+
+## Detail design
+
+[`detail-design/`](detail-design/) preserves useful current design below the small canonical model. It is where concrete authority, memory/state, composition/communication, and interoperability rules live when they are still useful but should not become additional top-level Kernel concepts.
+
+| Detail | Purpose |
+|---|---|
+| [Authority and actions](detail-design/authority-and-actions.md) | principals, exposure, delegation, exact consent, revocation, mediated vs ambient actions |
+| [Memory and state](detail-design/memory-and-state.md) | Kernel History vs Runtime memory/context, optional Structured/Derived/Working Notes design, artifacts/provenance/concurrency |
+| [Composition and communication](detail-design/composition-and-communication.md) | local work vs child Execution, Agent/Workflow composition, messaging, waits, ownership and Skills |
+| [Interoperability](detail-design/interoperability.md) | Driver fidelity, protocol/schema mapping, MCP/A2A/external-task boundaries |
+
+The canonical owner always wins if a detail document conflicts with it. Implementation names and package locations belong in `development/`, not in detail design.
+
+## Supporting material
 
 | Supporting material | Role |
 |---|---|
 | [Development](development/README.md) | Active roadmap, implemented baseline and evidence; not an alternative architecture |
 | [Architecture review](development/004-architecture-review.md) | Decisions, migration consequences and pinned prior-art navigation |
+| [Future plan](future-plan.md) | Unresolved/evidence-gated work only; not the active roadmap |
 | [Architecture strategy study](architecture-strategy-study/README.md) | Historical research/evidence that informed the redesign |
 | [Research](research/README.md) | Conditional hypotheses, not a release checklist |
 | [Agent engineering](agent-engineering/README.md) | Framework-neutral engineering guidance |
 | [Guides](guides/README.md) | Implemented SDK/application behavior; distinguish it from the target |
 | [Legacy mental model](mental-model-legacy/) | Preserved historical architecture, never edited to match the target |
 
-Old root names such as `authority.md`, `composition.md`, `execution-runtime.md`, `memory.md`,
-`interoperability.md`, `product-vision.md` and `security-guarantees.md` route to historical material.
-They are not current concept owners. When sources disagree, the canonical owner decides target
-meaning, development records what is implemented, and historical research/guides do not override either.
+The old root architecture files such as `authority.md`, `composition.md`, `execution-runtime.md`, `memory.md`, `interoperability.md`, `product-vision.md`, and `security-guarantees.md` have been removed from the docs root. Their historical versions live under [`mental-model-legacy/`](mental-model-legacy/). They are not current concept owners.
+
+When sources disagree, the canonical owner decides target meaning; detail design expands that meaning without overriding it; development records what is implemented; historical research/guides/legacy material do not override current architecture.
