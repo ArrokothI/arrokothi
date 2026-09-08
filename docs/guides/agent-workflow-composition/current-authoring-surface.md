@@ -1,9 +1,9 @@
 # Current authoring surface and API map
 
-[Guide home](README.md) · [Quick start](quick-start.md). Semantics belong to
-[composition](../../composition.md), [runtime](../../execution-runtime.md), and [memory](../../memory.md).
-The `@arrokothi/sdk` bootstrap composes these stock controllers without expanding their semantics.
-This table describes the stock implementation, not everything the kernel can represent.
+[Guide home](README.md) · [Quick start](quick-start.md). Target semantics are owned by
+[Execution](../../execution.md) and [Kernel](../../kernel.md), with current composition and memory detail in
+[`detail-design/`](../../detail-design/). The `@arrokothi/sdk` bootstrap composes the existing 0.8.x
+stock controllers; this table describes implemented behavior, not the full target architecture.
 
 ## What each surface can do
 
