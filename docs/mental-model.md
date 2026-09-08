@@ -78,8 +78,7 @@ Isolation, transport credentials and physical termination are deployment respons
 
 Agent reasoning, Workflow graphs/joins, context compaction, Working Notes, inferred memory, native
 checkpoints, local asynchronous tasks, tool discovery strategies and typed local dataflow belong to
-Runtimes. Shared application state and artifact stores are ordinary services; their access may be
-mediated as Effects without a Kernel memory product. Create a child Execution only when it needs
+Runtimes. If Agents need persistent/shared data or files, let normal application services store them. When access to those services needs ArrokothI's authorization, auditing, recovery, or consent guarantees, route the access through the Kernel's Effect mechanism. Create a child Execution only when it needs
 independent management. A human form, graph node or internal delegated worker need not become one.
 
 The legacy model's useful distinctions survive: proposals versus observations, consent versus
