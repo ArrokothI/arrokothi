@@ -1,6 +1,8 @@
 # Choose control and Stages
 
-[Guide home](README.md). Canonical owner: [composition](../../composition.md).
+[Guide home](README.md). Current target semantics are owned by [Execution](../../execution.md), with
+[current composition detail](../../detail-design/composition-and-communication.md). This page describes
+the implemented 0.8.x Agent/Workflow/Stage authoring surface.
 
 Use ordinary deterministic code when the answer is computable. Put it in a Function Stage only when
 it belongs to an explicitly managed process. Use a Workflow when you can declare the possible semantic
