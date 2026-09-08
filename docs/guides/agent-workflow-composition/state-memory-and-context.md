@@ -1,7 +1,8 @@
 # State, memory, and context
 
-[Guide home](README.md). Canonical owner: [memory](../../memory.md). Read this to choose storage;
-use [the wiring reference](current-authoring-surface.md#structured-memory-wiring) to implement it.
+[Guide home](README.md). Current target semantics are owned by [Execution](../../execution.md), with
+[current memory/state detail](../../detail-design/memory-and-state.md). This page describes the
+implemented 0.8.x storage/context surface; use [the wiring reference](current-authoring-surface.md#structured-memory-wiring) to implement it.
 
 ## Choose by ownership and meaning
 
