@@ -1,61 +1,40 @@
 ---
 name: arrokothi-architecture
 description: >-
-  Use when a task changes or reasons about ArrokothI architectural semantics or core abstractions —
-  Execution/Definition, Event/Effect, Harness, authority vs exposure, memory vs context,
-  composition (spawn/call/send/ask), Workflow vs Agent, Stage, Adapter, provider boundaries, or
-  interoperability projections. Applies to editing kernel contracts in packages/core, changing a
-  canonical doc under docs/, or answering "how does ArrokothI model X". Not for routine bug fixes,
-  formatting, or adapter-only work that preserves the core contract (use arrokothi-provider-integration
-  for the latter).
+  Use when a task changes or reasons about ArrokothI Kernel, Execution, Execution Runtime/Driver,
+  Activation/Outcome, Event/Effect, authority, lifecycle/recovery, deployment, trust/isolation,
+  Agent/Workflow boundaries, or provider/runtime integration semantics. Not for routine bug fixes.
 ---
 
 # ArrokothI architecture changes
 
-ArrokothI is a provider-neutral execution kernel. Its value is a small set of protected
-distinctions; treat them as load-bearing, not stylistic. `docs/README.md` is the canonical map and
-assigns each concept a single owning document.
+ArrokothI separates a provider-neutral **Kernel** from opaque **Execution Runtimes**.
 
 ## Source of truth
 
-This skill defines workflow, not architecture. Resolve the current concept owner through
-`docs/README.md` before relying on architecture-specific wording or examples here; the canonical
-owner overrides stale skill text. Using this skill does not justify editing it. Update it only when
-an accepted architecture or workflow change makes it materially false, obsolete, misleading, or
-incomplete, and never infer permanent policy from implementation observations.
+Read [`docs/README.md`](../../../docs/README.md) and [`docs/mental-model.md`](../../../docs/mental-model.md), then the one detailed owner:
+
+- `docs/kernel.md` for Kernel/Execution semantics;
+- `docs/execution.md` for Runtime/Driver/Agent/Workflow semantics;
+- `docs/deployment.md` for process topology, trust/isolation, embedding, and protocol placement.
+
+`docs/mental-model-legacy/` is historical. Current implementation still contains legacy names and mechanisms; consult `docs/development/` for migration status rather than promoting implementation observations into architecture.
 
 ## Procedure
 
-1. **Identify the affected abstraction and contracts.** Name the concepts in play using current
-   repository terminology, and locate the code contracts that encode them. Treat the examples in
-   this skill's description as representative, not exhaustive or permanently frozen.
-2. **Find and read the normative doc that owns the concept.** Use the ownership table in
-   `docs/README.md`. Read the whole relevant section, plus `docs/mental-model.md` for the
-   system-wide invariants. Then read `docs/development/002-implemented-kernel-baseline.md` for
-   current evidence and `docs/development/001-current-status-and-roadmap.md` for planned work.
-   Load a specialized active note only when relevant.
-3. **Inspect the implementation and its tests.** Locate the affected implementation under
-   `packages/` and its coverage under `tests/conformance/` or `packages/*/tests/`. Read the tests
-   that currently pin the behavior.
-4. **State the existing invariant before editing it.** Write down what is guaranteed today and
-   where that guarantee is asserted. For ordinary implementation, treat it as a constraint. When
-   the task explicitly authorizes evaluating or changing it, treat it as the starting contract,
-   identify the consequences, and do not let stale skill wording veto the change. If docs, code,
-   and tests disagree, report the ambiguity rather than silently choosing one.
-5. **Classify the change.** Separate a genuine semantic/API change from an implementation-only,
-   naming, packaging, or backend change. Genuine semantic changes require the owning canonical doc
-   and conformance coverage to move together. Implementation fixes may add regression coverage
-   while preserving the existing documented contract.
-6. **Check provider-neutrality and cross-provider implications.** Verify the change does not pull
-   a provider's, framework's, or protocol's native concept into core merely because one boundary
-   exposes it. Use the current canonical interoperability contract to decide the correct layer.
-7. **Synchronize docs and tests.** When semantics genuinely change, update the owning normative
-   doc and the conformance tests in the same change. Keep code, docs, and tests consistent.
-8. **Validate proportionally.** For code changes, use targeted conformance tests during iteration,
-   then `npm run typecheck` and `npm test`; run `npm run test:evals` when Agent behaviour could be
-   affected. For analysis or documentation-only work, validate the cited contracts and changed
-   artifacts without running unrelated suites.
-9. **Do not import assumptions from similar systems.** Other systems use overlapping words with
-   different meanings. Ground every rule in current ArrokothI docs and tests. Do not freeze
-   terminology beyond what the canonical docs currently establish; put speculative vocabulary in
-   `docs/future-plan.md`.
+1. **Classify the concept.** Decide whether Kernel correctness depends on it. If not, prefer keeping it inside the Execution Runtime or deployment/integration layer.
+2. **Read the canonical owner.** Do not reconstruct architecture from old `Harness`, controller-resumption, Agent-controller, Workflow-stage, or provider-specific implementation names.
+3. **Inspect current code and tests.** Identify which behavior is useful Kernel truth and which behavior is migration debt from the previous model.
+4. **Protect the boundary.** Kernel owns Execution identity/lifecycle, Events, governed Effects, authority, scheduling, communication, history, and recovery. Runtime owns semantic progression, model/graph/context/native memory/internal async work.
+5. **Keep Activation asynchronous.** Slow Runtime work does not need a Kernel resumption concept. `WAITING` is only a Kernel-visible dependency reported in an accepted Outcome.
+6. **Preserve single-writer semantics per Execution.** One accepted progress-writing Activation at a time; unrelated Executions may compute concurrently.
+7. **Separate mediation from containment.** Trusted Runtime ambient actions are outside Kernel governance; isolated deployments require physical containment. Telemetry is not enforcement.
+8. **Keep providers native when possible.** Prefer an `Execution Driver` for Hermes/OpenClaw/Dify/CrewAI rather than importing native cognition/graphs into Kernel semantics.
+9. **Attribute tests correctly.** Separate Kernel, Agent Runtime, Workflow Runtime, Driver, and isolation failures.
+10. **Synchronize migration artifacts.** Semantic changes should update canonical docs, development migration notes, implementation, and conformance tests together.
+
+## Subtraction rule
+
+> If the Kernel can remain correct without knowing a component or operation exists, it should normally stay outside the Kernel contract.
+
+This rule is especially important for model calls, provider retries, graph nodes, context compaction, working notes, native memory, and runtime-local asynchronous work.
