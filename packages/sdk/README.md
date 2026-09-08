@@ -1,8 +1,8 @@
 # @arrokothi/sdk
 
 Application bootstrap over `@arrokothi/core`. Start with the repository's
-[single builder guide](../../docs/guides/agent-workflow-composition/README.md), then the
-[SDK quick start and lifecycle](../../docs/guides/agent-workflow-composition/quick-start.md).
+[single builder guide](../../docs/guides/execution/native/README.md), then the
+[SDK quick start and lifecycle](../../docs/guides/deployment/quick-start.md).
 
 `createApplication` assembles one Harness, both stock controllers, reference runtime services,
 shared model services and store-backed operation/memory views. `defineAgent` and `defineWorkflow`
@@ -14,7 +14,7 @@ Use `application.harness` for input, confirmation, cancellation and evidence. No
 from a definition, catalog entry, memory binding, or provider.
 
 Public types and defaults live in [src/types.ts](src/types.ts) and
-[src/application.ts](src/application.ts); the [API map](../../docs/guides/agent-workflow-composition/current-authoring-surface.md)
+[src/application.ts](src/application.ts); the [API map](../../docs/guides/execution/native/current-authoring-surface.md)
 links to the underlying kernel ports. This README routes to those owners rather than maintaining a
 second builder manual.
 

@@ -23,7 +23,7 @@ own architecture semantics.
 | Where is cross-framework benchmark design and execution? | the standalone **`ArrokothI/benchmark`** repository. |
 
 To build an application **on** the kernel rather than change the kernel, start from
-[`../guides/agent-workflow-composition/README.md`](../../../guides/agent-workflow-composition/README.md).
+[native application guide](../../../guides/execution/native/README.md).
 
 ## Routing
 

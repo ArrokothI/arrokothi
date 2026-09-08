@@ -22,7 +22,7 @@ These pages preserve implementation-useful semantics beneath the three owners. T
 required boundary contracts from optional Runtime designs, name the relevant development slices,
 and include counterexamples and practical prior-art links. They do not claim new implementation.
 The [detail-design review](development/005-detail-design-review.md) records legacy knowledge disposition
-and changes to the target contract. Current design does not depend on the legacy directory remaining.
+and changes to the target contract. Current design is self-contained after removal of the legacy directory.
 
 ## Supporting material
 
@@ -33,10 +33,11 @@ and changes to the target contract. Current design does not depend on the legacy
 | [Future plan](future-plan.md) | Unresolved/evidence-gated work only; not the active roadmap |
 | [Architecture strategy study](architecture-strategy-study/README.md) | Historical research/evidence that informed the redesign |
 | [Research](research/README.md) | Conditional hypotheses, not a release checklist |
-| [Agent engineering](agent-engineering/README.md) | Framework-neutral engineering guidance |
 | [Guides](guides/README.md) | Implemented SDK/application behavior; distinguish it from the target |
-| [Legacy mental model](mental-model-legacy/) | Preserved historical architecture, never edited to match the target |
 
-The old root architecture files such as `authority.md`, `composition.md`, `execution-runtime.md`, `memory.md`, `interoperability.md`, `product-vision.md`, and `security-guarantees.md` have been removed from the docs root. Their historical versions live under [`mental-model-legacy/`](mental-model-legacy/). They are not current concept owners.
+The legacy mental-model directory and old root architecture files have been removed. Historical
+versions remain in Git history; the [detail-design review](development/005-detail-design-review.md)
+records the current homes of retained concepts. `agent-engineering/` was also retired: its reusable
+principles are covered by detail design, future questions and the relevant implementation guides.
 
 When sources disagree, the canonical owner decides target meaning; detail design expands that meaning without overriding it; development records what is implemented; historical research/guides/legacy material do not override current architecture.

@@ -42,7 +42,7 @@ never rely on a description to enforce a threshold. Credentials remain in deploy
 A Function Stage **returns** an `awaitEffects` request; it never calls the executor. LLM inference,
 parsing, and local transformations are computation. Structured Memory writes, external capabilities,
 child creation, peer communication, and typed user-input requests are the five Effect kinds; check
-[which surface can emit them](current-authoring-surface.md).
+[which surface can emit them](../execution/native/current-authoring-surface.md).
 
 ## Confirmation and outcomes
 
@@ -77,7 +77,7 @@ when a factual status must be exact.
 
 - `UseCapability.deadlineMs` (or policy `maxDeadlineMs`) bounds that operation. The activation wait
   budget only determines whether to yield; it is not an operation timeout. The host must continue
-  driving the runtime for deadline handling. See [diagnosis](evaluation-and-diagnosis.md).
+  driving the runtime for deadline handling. See [diagnosis](../execution/native/evaluation-and-diagnosis.md).
 - Child result, peer reply, typed user input, and confirmation waits have no configured deadline.
   Own their timeout policy in host code; cancel explicitly when appropriate.
 - `cancelExecution` does not cascade to descendants or siblings. Enumerate child links and cancel

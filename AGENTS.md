@@ -18,7 +18,9 @@ children/communication, Runtime composition, state/memory, context/projections, 
 interoperability, resource lifetime/isolation and evidence. Read the relevant page before implementing
 its contract. Optional Runtime designs are not mandatory Kernel types or automatic release commitments.
 
-`docs/mental-model-legacy/` preserves the previous architecture. Old root architecture files such as `docs/authority.md` and `docs/execution-runtime.md` were removed; use the legacy directory for historical comparison.
+The legacy mental-model directory has been removed. Use current detail design and the legacy
+knowledge disposition in `docs/development/005-detail-design-review.md`; use Git history only for
+historical comparison. Do not recreate old architecture aliases or depend on removed files.
 
 `docs/development/` describes current implementation and migration work. It does not override architecture. The current 0.8.x code still contains the previous `Harness`, synchronous `ExecutionController.activate(...)`, and `ControllerResumption` design; do not infer the target architecture from those implementation names.
 
@@ -52,7 +54,7 @@ Do not claim that Kernel authority prevents ambient native actions. Prevention r
 
 ## Application development
 
-The current SDK/guides/examples describe the implemented 0.8.x surface and remain useful while migration is in progress. Start application work from [`docs/guides/agent-workflow-composition/README.md`](docs/guides/agent-workflow-composition/README.md) and [`@arrokothi/sdk`](packages/sdk/README.md), but distinguish current API behavior from target architecture when discussing Kernel internals.
+The current SDK/guides/examples describe the implemented 0.8.x surface and remain useful while migration is in progress. Start application work from [the guide map](docs/guides/README.md) and [`@arrokothi/sdk`](packages/sdk/README.md), but distinguish current API behavior from target architecture when discussing Kernel internals.
 
 For provider integrations, prefer a narrow `Execution Driver` that preserves the provider's native runtime. Do not translate an entire Hermes/OpenClaw/Dify/CrewAI runtime into Kernel concepts unless a demonstrated Kernel guarantee requires it.
 
@@ -98,3 +100,24 @@ Current tests largely exercise the implemented 0.8.x architecture. During migrat
 ## Repository skills
 
 `.agents/skills/` contains coding-agent workflow skills. They are not ArrokothI runtime Skills. Use `arrokothi-architecture` for Kernel/Execution/deployment semantic changes and provider-integration guidance for Driver-only work.
+
+## Third-party code and license review
+
+For every implementation change, distinguish learning from prior art, using a dependency/service,
+and copying or adapting source. A documentation reference or reuse recommendation is not license
+clearance. Apply this to code, tests, scripts, assets and bundled dependencies from all providers.
+
+Before incorporating third-party material, inspect the exact revision's LICENSE, NOTICE, file/module
+headers and applicable dependency or service terms. Check compatibility with ArrokothI's intended
+commercial use and distribution, including any non-commercial, source-available, copyleft, hosted-service
+or multi-tenant restrictions. Do not infer permission from a public repository or a familiar license
+name; different modules may have different terms.
+
+Record the source/version, applicable terms, reuse method and required notices or other obligations
+in the implementation/PR notes, and preserve required attribution. If compatibility is unclear or the
+intended use is restricted, do not copy, adapt, vendor or add that dependency pending a resolved review
+or appropriate license. Continue with an independently implemented contract or a compatible alternative
+where possible. A service boundary or superficial rewrite does not automatically remove obligations.
+Do not make unsupported legal-clearance claims; identify the specific unresolved terms when review is needed.
+
+These instructions apply to Codex and Claude Code; `CLAUDE.md` imports this file.

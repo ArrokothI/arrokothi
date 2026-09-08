@@ -9,13 +9,14 @@ description: >-
 
 # Build on ArrokothI
 
-Read [the builder front door](../../../docs/guides/agent-workflow-composition/README.md) first.
-It is the single application guide: runnable start, current API map, topic routing, patterns and
-diagnosis. Resolve these paths from the repository root as `docs/guides/agent-workflow-composition/`;
+Read [the builder front door](../../../docs/guides/execution/native/README.md) first.
+It covers current native Agent/Workflow authoring. The guide map in `docs/guides/README.md`
+also routes Kernel actions, external Runtime integration and deployment/bootstrap. Resolve these paths from the repository root as `docs/guides/execution/native/`;
 the Markdown links here are relative to this skill directory.
 
 Use the quick start and current authoring surface before committing to a composition. Then read only
-the topic needed. The roadmap and external engineering notes are not prerequisite manuals.
+the topic needed. The roadmap is not a prerequisite manual. Respect the third-party reuse/license review in `AGENTS.md`
+before copying provider code or adding dependencies.
 
 ## Decisions that prevent expensive wrong turns
 

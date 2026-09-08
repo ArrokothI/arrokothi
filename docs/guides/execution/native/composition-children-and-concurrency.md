@@ -1,8 +1,8 @@
 # Children, data flow, and concurrency
 
-[Guide home](README.md). Current target semantics are owned by [Kernel](../../kernel.md) and
-[Execution](../../execution.md), with [composition detail](../../detail-design/composition-and-communication.md),
-[authority detail](../../detail-design/authority-and-actions.md), and [memory/state detail](../../detail-design/memory-and-state.md).
+[Guide home](README.md). Current target semantics are owned by [Kernel](../../../kernel.md) and
+[Execution](../../../execution.md), with [composition detail](../../../detail-design/composition-and-communication.md),
+[authority detail](../../../detail-design/authority-and-actions.md), and [memory/state detail](../../../detail-design/memory-and-state.md).
 This page describes the implemented 0.8.x authoring surface.
 
 ## Call a child when it needs independent runtime identity
@@ -13,7 +13,7 @@ Stock child composition is an Agent or Workflow Stage: it creates and awaits exa
 `call`. The stock Agent cannot call/spawn. Detached spawn and peer `send`/`ask`/`reply` need an
 application controller; knowing an Execution ID does not grant messaging rights.
 
-A runnable child call is in [patterns.ts](../../../examples/execution-kernel-minimal/patterns.ts):
+A runnable child call is in [patterns.ts](../../../../examples/execution-kernel-minimal/patterns.ts):
 
 1. `await app.register(childDefinition)`; the SDK already registers both stock controller kinds.
 2. Put `child: { definitionId, definitionVersion }` on the parent Stage. `ChildDefinitionRef` has
@@ -30,7 +30,7 @@ A runnable child call is in [patterns.ts](../../../examples/execution-kernel-min
 
 If a child returns an object, the stock child Stage rejects it: it accepts text/null. If a child emits
 text but stays in `respond_and_wait`, the parent keeps waiting; a response is not a terminal result.
-The [Agent Stage conformance tests](../../../tests/conformance/workflow/agent-stage.test.ts) cover
+The [Agent Stage conformance tests](../../../../tests/conformance/workflow/agent-stage.test.ts) cover
 one child per call, text return, no-value return, failure, cancellation, and attenuation.
 
 ## State does not automatically travel
@@ -56,7 +56,7 @@ record. Do not claim that this gives a called parent the same result automatical
 same-Execution Stage sequence, a text-returning Agent child, or explicit application storage when a
 reusable computed-return Workflow hits this limit. The older recommendation to pass structured data
 through memory is narrower in the implemented surface because Stages cannot read committed memory.
-Both issues are recorded in [findings](../../development/003-evidence-and-findings.md).
+Both issues are recorded in [findings](../../../development/003-evidence-and-findings.md).
 
 ## Parallel Workflow branches
 
@@ -72,8 +72,8 @@ Effects, child calls, and model resumptions are correlated independently.
 
 Prefer pure branch results merged by the join. Concurrent branch memory writes require whole-view
 `expectedRevision` and explicit `conflicted` handling; there is no automatic merge/retry. Use
-[fork/join tests](../../../tests/conformance/workflow/parallel-fork-join.test.ts) and
-[parallel memory tests](../../../tests/conformance/workflow/parallel-branch-structured-memory.test.ts)
+[fork/join tests](../../../../tests/conformance/workflow/parallel-fork-join.test.ts) and
+[parallel memory tests](../../../../tests/conformance/workflow/parallel-branch-structured-memory.test.ts)
 for exact topology shapes.
 
 ## Liveness and cancellation

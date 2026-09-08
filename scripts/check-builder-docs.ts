@@ -4,15 +4,15 @@ import { dirname, extname, join, relative, resolve, sep } from "node:path";
 import ts from "typescript";
 
 const root = resolve(import.meta.dirname, "..");
-const guide = "docs/guides/agent-workflow-composition";
+const guide = "docs/guides";
 const example = "examples/execution-kernel-minimal";
 const sources = [
   "docs/development/README.md",
-  "README.md", "AGENTS.md", "docs/README.md", "docs/guides/README.md",
+  "README.md", "AGENTS.md", "docs/README.md",
   "packages/sdk/README.md", "docs/development/legacy/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md",
   "docs/development/legacy/2026-09-baseline/007-application-builder-ergonomics-findings.md",
   ".agents/skills/arrokothi-agent-builder/SKILL.md",
-  ...(await readdir(join(root, guide))).filter((name) => name.endsWith(".md")).map((name) => `${guide}/${name}`),
+  ...(await readdir(join(root, guide), { recursive: true })).filter((name) => name.endsWith(".md")).sort().map((name) => `${guide}/${name}`),
   `${example}/README.md`,
 ];
 const errors: string[] = [];

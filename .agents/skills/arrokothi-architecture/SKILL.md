@@ -33,7 +33,8 @@ Each detail page expands its canonical owner and labels target/optional status a
 Current design must remain understandable without legacy files. `docs/future-plan.md` preserves
 unresolved hypotheses; it is not another implementation sequence.
 
-`docs/mental-model-legacy/` is historical. Current implementation still contains legacy names and mechanisms; consult `docs/development/` for migration status rather than promoting implementation observations into architecture.
+The legacy mental-model directory was removed; current detail design preserves retained concepts,
+and Git history supplies historical comparison. Current implementation still contains legacy names and mechanisms; consult `docs/development/` for migration status rather than promoting implementation observations into architecture.
 
 ## Procedure
 
@@ -54,3 +55,6 @@ unresolved hypotheses; it is not another implementation sequence.
 > If the Kernel can remain correct without knowing a component or operation exists, it should normally stay outside the Kernel contract.
 
 This rule protects model calls, provider retries, graph nodes, context compaction, Working Notes, native memory and Runtime-local async work. It does not mean deleting useful implementation knowledge. Preserve deeper design and introduce richer contracts when a concrete guarantee needs them. Opacity still requires a recovery contract; uncertainty, request disposition and responsibility must not collapse into one status.
+
+Before incorporating provider source or dependencies, follow the third-party code and license review
+in `AGENTS.md`; prior-art references are not clearance for commercial reuse.

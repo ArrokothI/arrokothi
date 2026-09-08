@@ -1,7 +1,7 @@
 # State, memory, and context
 
-[Guide home](README.md). Current target semantics are owned by [Execution](../../execution.md), with
-[current memory/state detail](../../detail-design/memory-and-state.md). This page describes the
+[Guide home](README.md). Current target semantics are owned by [Execution](../../../execution.md), with
+[current memory/state detail](../../../detail-design/memory-and-state.md). This page describes the
 implemented 0.8.x storage/context surface; use [the wiring reference](current-authoring-surface.md#structured-memory-wiring) to implement it.
 
 ## Choose by ownership and meaning
@@ -31,7 +31,7 @@ An Agent needs a binding, authored keys, and independent read/write-exposure gra
 wires the corresponding resolvers from `memory.read` and `memory.writeExposure`; advanced policies
 can supply their own through `controllers(services)`. A write
 also needs a fresh Effect authorization. The [complete chain](current-authoring-surface.md#structured-memory-wiring)
-and [compiled example](../../../examples/execution-kernel-minimal/patterns.ts) show each independent
+and [compiled example](../../../../examples/execution-kernel-minimal/patterns.ts) show each independent
 configuration. Read access does not imply write access, and exposing a write callable does not allow
 its proposed write.
 
@@ -62,7 +62,7 @@ Function Stage rather than concurrent writes to shared memory.
 The Agent's projected memory-write callable takes `{ value }`, not a model-authored key or
 `expectedRevision`. Do not add invented revision arguments. A custom compiler cannot recover a view
 revision that the authorized read snapshot intentionally omits. See
-[optimistic-write tests](../../../tests/conformance/memory/structured-memory-optimistic-write.test.ts).
+[optimistic-write tests](../../../../tests/conformance/memory/structured-memory-optimistic-write.test.ts).
 
 ## Notes, derived information, and promotion
 
@@ -99,3 +99,16 @@ runtime. They do **not** survive a process crash with the reference store. For l
 keep authoritative durable business state and external action IDs in your database. Reconstructing a
 new Execution requires explicit application recovery, including uncertain-outcome reconciliation;
 replaying all earlier prompts/actions is not safe recovery.
+
+## Continuity across model contexts
+
+For long tasks, keep a concise objective, verified completed work, remaining work, unresolved failures,
+artifact references and the procedure for running/checking the application outside the active model
+window. Initialize these once, then have each continuation inspect actual state, perform a bounded
+unit of work, verify it and update the handoff. This is an optional Runtime/application pattern;
+notes are not a Kernel checkpoint or proof of durable recovery.
+
+Keep tool purposes distinct and descriptions concrete. Return bounded relevant fields and actionable
+errors; preserve raw evidence separately from model-facing summaries. Start with a small useful context
+and measure discovery/compaction against it. [Context design](../../../detail-design/context-and-projections.md)
+owns invocation bindings and freshness; [future experiments](../../../future-plan.md) cover advanced strategies.

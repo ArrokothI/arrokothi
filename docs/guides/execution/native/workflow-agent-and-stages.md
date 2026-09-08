@@ -1,7 +1,7 @@
 # Choose control and Stages
 
-[Guide home](README.md). Current target semantics are owned by [Execution](../../execution.md), with
-[target Runtime composition](../../detail-design/runtime-composition.md). This page describes
+[Guide home](README.md). Current target semantics are owned by [Execution](../../../execution.md), with
+[target Runtime composition](../../../detail-design/runtime-composition.md). This page describes
 the implemented 0.8.x Agent/Workflow/Stage authoring surface.
 
 Use ordinary deterministic code when the answer is computable. Put it in a Function Stage only when
@@ -41,7 +41,7 @@ The controller does not infer a retry/merge policy for you.
 A completed Stage passes its result to the next Stage. For `always` transitions omit `transition`;
 for `labeled` transitions return one declared label. Undeclared labels fail. `progress` is Stage-local
 and does not automatically flow to the next Stage. See the compiled handler in
-[patterns.ts](../../../examples/execution-kernel-minimal/patterns.ts).
+[patterns.ts](../../../../examples/execution-kernel-minimal/patterns.ts).
 
 ## LLM Stage constraints
 
@@ -60,10 +60,10 @@ distinct. For example:
 model: { logicalRef: 'primary', requirements: { text: true, structuredOutput: 'required' } }
 ```
 
-[The compiled classifier](../../../examples/execution-kernel-minimal/classification.ts) shows the
-complete definition and host assembly; [its tests](../../../examples/execution-kernel-minimal/classification.test.ts)
+[The compiled classifier](../../../../examples/execution-kernel-minimal/classification.ts) shows the
+complete definition and host assembly; [its tests](../../../../examples/execution-kernel-minimal/classification.test.ts)
 exercise both declared branches. For a tool-using LLM Stage see
-[LLM RAG conformance](../../../tests/conformance/workflow/llm-rag.test.ts).
+[LLM RAG conformance](../../../../tests/conformance/workflow/llm-rag.test.ts).
 
 Labelled transitions use the controller's structured output for `{ transition, result }`. There is
 no arbitrary per-Stage object output schema slot. A bounded extraction can return text that a

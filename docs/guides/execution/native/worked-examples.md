@@ -6,13 +6,13 @@ choices, not additional APIs. All examples use ordinary domain requirements and 
 ## Conversation with accepted state and a confirmed action
 
 These examples use `@arrokothi/sdk`; bootstrap and bounded host-driving options are in the
-[quick start](quick-start.md).
+[quick start](../../deployment/quick-start.md).
 
 **Requirement:** collect a draft title over multiple turns, allow corrections, and publish the exact
 current title only after approval.
 
-[patterns.ts](../../../examples/execution-kernel-minimal/patterns.ts) implements `draftingAgent` and
-`createPatternApp`; [patterns.test.ts](../../../examples/execution-kernel-minimal/patterns.test.ts)
+[patterns.ts](../../../../examples/execution-kernel-minimal/patterns.ts) implements `draftingAgent` and
+`createPatternApp`; [patterns.test.ts](../../../../examples/execution-kernel-minimal/patterns.test.ts)
 proves the state/action path. Run `npm run example:application-patterns`.
 
 ```text
@@ -62,8 +62,8 @@ Workflow.
 
 ## Grounded support or investigation
 
-[app.ts](../../../examples/execution-kernel-minimal/app.ts) implements a handbook lookup Agent and
-[its tests](../../../examples/execution-kernel-minimal/app.test.ts) compare allowed and denied runs
+[app.ts](../../../../examples/execution-kernel-minimal/app.ts) implements a handbook lookup Agent and
+[its tests](../../../../examples/execution-kernel-minimal/app.test.ts) compare allowed and denied runs
 using identical model prose. Run `npm run example:execution-kernel`.
 
 For a larger investigation, expose `search` returning compact references and `read` returning bounded
@@ -74,10 +74,10 @@ provider tool loop or expose every remote endpoint without a task reason.
 
 ## Fixed classification
 
-[classification.ts](../../../examples/execution-kernel-minimal/classification.ts) shows a one-phase
+[classification.ts](../../../../examples/execution-kernel-minimal/classification.ts) shows a one-phase
 LLM Stage choosing `ready` or `needs_review`, followed by a Function Stage that emits the exact
 category and the model's explanation. The definition requests `structuredOutput: 'required'`; the
-deployment advertises that feature separately. [Tests](../../../examples/execution-kernel-minimal/classification.test.ts)
+deployment advertises that feature separately. [Tests](../../../../examples/execution-kernel-minimal/classification.test.ts)
 exercise both branches without a provider key. This is a bounded Workflow, not an Agent, and performs
 no external Effect. Supply `geminiWiring(...).workflowModels` to use the compiled real-provider wiring.
 
@@ -98,7 +98,7 @@ See [requirements](requirements-and-control.md) for acceptance and
 Use a Workflow fork for two or more independent single-Stage lookups; merge results in the Function
 join successor. The join is in authored order. Handle each branch outcome, avoid concurrent shared
 writes, and use a sequence when concurrency provides no measurable benefit. Exact authoring examples
-are in [parallel-fork-join.test.ts](../../../tests/conformance/workflow/parallel-fork-join.test.ts);
+are in [parallel-fork-join.test.ts](../../../../tests/conformance/workflow/parallel-fork-join.test.ts);
 its test harness wiring is test-specific. Current restrictions are in
 [composition](composition-children-and-concurrency.md#parallel-workflow-branches).
 
@@ -110,4 +110,4 @@ fork branches with an explicit Function join; evaluator/revision loops use decla
 bounds. Dynamic orchestrator/worker plans exceed stock Agent child authoring: keep known workers in
 Workflow child Stages, or explicitly design and test a custom controller through core. Avoid a helper
 that hides child execution in a capability. The external reference and design judgment are recorded
-in the [SDK design note](../../development/legacy/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md#external-reference-and-workflow-patterns).
+in the [SDK design note](../../../development/legacy/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md#external-reference-and-workflow-patterns).

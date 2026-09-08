@@ -15,10 +15,10 @@ Start with [`docs/mental-model.md`](docs/mental-model.md).
 | [`docs/kernel.md`](docs/kernel.md) | Kernel-owned Execution semantics |
 | [`docs/execution.md`](docs/execution.md) | Agent/Workflow and provider Runtime/Driver semantics |
 | [`docs/deployment.md`](docs/deployment.md) | Embedding, processes, trust/isolation, MCP/protocol placement |
-| [`docs/detail-design/`](docs/detail-design/) | Current detailed authority, memory/state, composition, and interoperability design |
+| [`docs/detail-design/`](docs/detail-design/) | Protocol, actions, recovery, Runtime, resource and evidence design |
 | [`docs/development/`](docs/development/README.md) | Current implementation and migration evidence |
 
-The previous root-level architecture is preserved under [`docs/mental-model-legacy/`](docs/mental-model-legacy/). Old architecture filenames were removed from the docs root rather than kept as compatibility symlinks.
+The previous architecture is available in Git history. The [detail-design review](docs/development/005-detail-design-review.md) records where its useful concepts now live; removed architecture files are not compatibility aliases.
 
 ## Core boundary
 
@@ -65,7 +65,7 @@ npm run test:conformance
 npm run test:sdk
 ```
 
-For current application-building APIs, start at [`docs/guides/agent-workflow-composition/README.md`](docs/guides/agent-workflow-composition/README.md). For architecture work, use [`docs/README.md`](docs/README.md) instead.
+For implementation guidance, start at the [Kernel, Execution and Deployment guides](docs/guides/README.md). For architecture work, use [`docs/README.md`](docs/README.md) instead.
 
 ## Repository layout
 

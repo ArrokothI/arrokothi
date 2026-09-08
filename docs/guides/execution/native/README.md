@@ -1,8 +1,8 @@
 # Build an application on ArrokothI
 
-Start here when you have product requirements and need working application code. This is the single
-builder guide for the current Execution kernel. It is implementation guidance, not architecture:
-[canonical owners](../../README.md) define semantics; source and conformance tests establish which
+Start here when you have product requirements and need working application code. These pages cover
+ArrokothI-native Agent, Workflow and composition authoring in 0.8.x. This is implementation guidance:
+[canonical owners](../../../README.md) define semantics; source and conformance tests establish which
 parts are executable. A mismatch is a finding to investigate, not permission to invent an API.
 
 ## Start with a running application
@@ -19,8 +19,8 @@ npm run test:example:execution-kernel
 All four commands need no provider key. The examples run real controllers and Harness Effects with a
 scripted model; their outputs demonstrate wiring and enforcement, not model quality.
 
-Read [quick start](quick-start.md), then copy the relevant portion of
-[the runnable example](../../../examples/execution-kernel-minimal/README.md). **Start applications with `@arrokothi/sdk`.** It assembles the runtime while keeping definitions,
+Read [quick start](../../deployment/quick-start.md), then copy the relevant portion of
+[the runnable example](../../../../examples/execution-kernel-minimal/README.md). **Start applications with `@arrokothi/sdk`.** It assembles the runtime while keeping definitions,
 policy, operation ceilings, and domain handlers explicit. Core ports/reference implementations
 remain available for advanced composition.
 
@@ -43,23 +43,21 @@ A kernel Effect existing does not mean every stock controller can propose it.
 
 | Question | Read |
 |---|---|
-| How do I bootstrap, preflight and drive an application? Which imports? | [Quick start](quick-start.md) |
+| How do I bootstrap, preflight and drive an application? Which imports? | [Quick start](../../deployment/quick-start.md) |
 | Can this surface express my design? Where are the public types? | [Authoring surface and API map](current-authoring-surface.md) |
 | Which requirements need code, acceptance, or a model? | [Requirements and control](requirements-and-control.md) |
 | Agent, Workflow, LLM Stage, or Function Stage? | [Control and Stages](workflow-agent-and-stages.md) |
 | Where does state live, and how does the model see it? | [State, memory, context](state-memory-and-context.md) |
-| How do operations, policies, confirmation, and retries fit? | [Capabilities and authority](capabilities-effects-and-authority.md) |
+| How do operations, policies, confirmation, and retries fit? | [Capabilities and authority](../../kernel/capabilities-effects-and-authority.md) |
 | Child input/results, data flow, parallel branches? | [Composition and concurrency](composition-children-and-concurrency.md) |
-| Real model, Strands, retrieval, or MCP integration? | [Provider and integration wiring](providers-and-integrations.md) |
+| Real model, Strands, retrieval, or MCP integration? | [Provider and integration wiring](../providers/current-wiring.md) |
 | Show a correct real-world pattern | [Worked patterns](worked-examples.md) |
 | Nothing happened, it hangs, or it claimed a false success | [Testing and diagnosis](evaluation-and-diagnosis.md) |
-| Is this awkwardness a known framework concern? | [Builder findings](../../development/003-evidence-and-findings.md) |
+| Is this awkwardness a known framework concern? | [Builder findings](../../../development/003-evidence-and-findings.md) |
 
-You do not need to read every topic, the roadmap, or the external engineering dossier before coding.
-Load a canonical owner when the meaning of a contract matters; use
-[the implemented baseline](../../development/002-implemented-kernel-baseline.md) for broader coverage.
-[External engineering notes](../../agent-engineering/README.md) are optional background, not another
-ArrokothI manual or a prerequisite.
+The [Execution guide](../README.md) also routes external Runtime integration. Use the
+[implemented baseline](../../../development/002-implemented-kernel-baseline.md) for broader coverage;
+load a canonical owner when a contract's meaning matters.
 
 ## Build and verify
 

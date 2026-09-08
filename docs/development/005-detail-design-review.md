@@ -1,5 +1,8 @@
 # Detail-design and future-plan review — 2026-09-08
 
+> Subsequent repository cleanup removed the legacy mental-model directory. Preservation statements
+> below describe the review snapshot; retained design is now in current detail pages and Git history.
+
 This review changes documentation/planning, not runtime implementation. The twelve-page
 [detail-design map](../detail-design/README.md) expands the same three canonical owners. All roadmap
 slices remain planned. It supersedes the four-page layer's insufficient detail, not the useful 0.8.x

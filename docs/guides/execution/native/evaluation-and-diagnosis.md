@@ -17,7 +17,7 @@ npm test                             # package + semantic conformance tests
 Run your application's own tests first. Use a scripted/deferred `ModelProvider` to control decisions
 and timing, and a fake external system whose records you can assert. `/testing` scaffolds are useful
 in tests; inspect what authority and controllers a helper supplies rather than copying its default
-behavior into your runtime. [patterns.test.ts](../../../examples/execution-kernel-minimal/patterns.test.ts)
+behavior into your runtime. [patterns.test.ts](../../../../examples/execution-kernel-minimal/patterns.test.ts)
 uses the same public assembly as the example.
 
 Cover required facts, schema rejection, exact calculations, action denial, confirmation pending and
@@ -37,7 +37,7 @@ understanding. Live canaries are optional and require deployment credentials.
 Start with `await app.preflight(startOptions)` and inspect `started.preflight.diagnostics`.
 Configuration errors prevent SDK Execution creation; missing-grant warnings describe intentional deny-by-default
 behavior. Check `runUntilBlocked(...).reason` before interpreting an idle or timed-out run as success.
-The [quick start](quick-start.md#preflight-without-granting-anything) defines diagnostic scope;
+The [quick start](../../deployment/quick-start.md#preflight-without-granting-anything) defines diagnostic scope;
 runtime evidence below remains authoritative for what actually happened.
 
 | Symptom | Inspect first | Likely cause / next step |
@@ -90,6 +90,15 @@ actually occurred.
 Reproduce a suspected defect with public APIs, inspect the owning contract and relevant conformance,
 and separate application misuse from missing ergonomics and semantic uncertainty. Fix a bounded,
 unambiguous defect with regression coverage when authorized. Record larger issues in
-[builder findings](../../development/003-evidence-and-findings.md); do not alter
+[builder findings](../../../development/003-evidence-and-findings.md); do not alter
 kernel semantics just to make an application test green. Continue application work using documented
 supported paths. A model quality failure alone is not evidence of a kernel bug.
+
+## Evaluate optional Agent scaffolding
+
+Keep held-out tasks when tuning prompts, tools or orchestration. Calibrate subjective graders against
+human-reviewed examples and give evaluators access to actual artifacts/environment state. A second
+model is not automatically an independent or accurate judge. Compare planning, worker delegation and
+generator/evaluator loops against simpler configurations at equal total budget, counting evaluator
+and failed-attempt costs. Repeat this comparison after model changes; remove scaffolding that no
+longer helps. Keep quality, efficiency and forbidden-action checks separate.

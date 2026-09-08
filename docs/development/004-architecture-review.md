@@ -1,5 +1,8 @@
 # Architecture review — 2026-09-08
 
+> Subsequent repository cleanup removed the legacy mental-model directory. Preservation statements
+> below describe the review snapshot; retained design is now in current detail pages and Git history.
+
 This review changes the target documentation and development sequence, not implementation. The
 [canonical owners](../README.md) define the resulting contract. No new runtime, upstream adapter,
 benchmark campaign or production guarantee is implemented here.

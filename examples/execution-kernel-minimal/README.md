@@ -1,6 +1,6 @@
 # Execution-kernel application examples
 
-Start from the [builder guide](../../docs/guides/agent-workflow-composition/README.md).
+Start from the [builder guide](../../docs/guides/execution/native/README.md).
 These examples run offline using `@arrokothi/sdk` over the current public Execution API. The Harness, controllers,
 authorization, state commits, child creation and confirmation are real; the model and external
 publisher are deterministic fakes. They demonstrate implementation behavior, not language quality.

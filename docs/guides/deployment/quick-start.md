@@ -1,7 +1,7 @@
 # Quick start: from checkout to application
 
 [Guide home](README.md). Use **`@arrokothi/sdk`** for ordinary application bootstrap. It sits above
-`@arrokothi/core`; definitions and runtime semantics still belong to the kernel. Copy the relevant
+`@arrokothi/core`; the SDK currently assembles the 0.8.x Harness and stock controllers. Copy the relevant
 [runnable example](../../../examples/execution-kernel-minimal/README.md), then replace its domain code.
 
 ## Setup and imports
@@ -90,7 +90,7 @@ These are trusted deployment extension points; arbitrary custom controller imple
 Memory grants in `memory.read` and `memory.writeExposure` apply to all Executions unless explicitly
 scoped with `memory.executions`. They are deployment policy, never inferred from authored keys. For
 per-user/current-state rules supply narrow resolvers through `controllers(services)`. Final
-WriteMemory authorization remains independent. See the [memory chain](current-authoring-surface.md#structured-memory-wiring).
+WriteMemory authorization remains independent. See the [memory chain](../execution/native/current-authoring-surface.md#structured-memory-wiring).
 
 ## Preflight without granting anything
 

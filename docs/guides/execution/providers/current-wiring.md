@@ -1,7 +1,7 @@
 # Provider and integration wiring
 
 [Guide home](README.md). Provider choice belongs in deployment code. Existing integrations implement
-kernel-owned [ports](../../../packages/core/src/ports/index.ts); adding a new adapter is separate from
+kernel-owned [ports](../../../../packages/core/src/ports/index.ts); adding a new adapter is separate from
 using one in an application.
 
 ## Model provider versus Agent executor
@@ -47,9 +47,9 @@ Keep definitions unchanged. In the composition root:
    problem to test, not evidence that policy should be loosened.
 5. Use SDK `runUntilBlocked` in a bounded host worker loop, inspect its reason, and configure provider timeouts separately.
 
-[provider-wiring.ts](../../../examples/execution-kernel-minimal/provider-wiring.ts) contains compiled
+[provider-wiring.ts](../../../../examples/execution-kernel-minimal/provider-wiring.ts) contains compiled
 factories for both executors and Workflow model access. Its
-[offline test](../../../examples/execution-kernel-minimal/provider-wiring.test.ts) exercises the Gemini
+[offline test](../../../../examples/execution-kernel-minimal/provider-wiring.test.ts) exercises the Gemini
 adapter with a fake HTTP transport; no key or network is needed. For a real deployment, run a separate
 live canary with your configured model before relying on feature claims. Offline scripts cannot
 measure language quality or live service availability.
@@ -64,7 +64,7 @@ For standing inferred knowledge use `DerivedSemanticMemoryProvider`, extractor, 
 `AgentSpec.derivedMemory.read.query` is a fixed authored query, not a query generated each turn.
 `@arrokothi/core/reference` supplies the in-memory derived provider and read resolver.
 `@arrokothi/retrieval-local` supplies lexical retrieval, record queries, resources, and a
-capability executor. See [state guidance](state-memory-and-context.md).
+capability executor. See [state guidance](../native/state-memory-and-context.md).
 
 Function Stages can read pre-materialized local resources via declared `resourceViews` and a
 `LocalResourceEnvironment`. This is explicit read-only access, not a general database handle or a
@@ -80,18 +80,11 @@ capability routing.
 
 The current import/export is synchronous Tools only. Do not promise Resources, Prompts, Tasks,
 elicitation, notifications, A2A services, or durable external handles. Use the
-[adapter exports](../../../packages/interoperability/mcp/src/index.ts) and
-[imported Tool Agent test](../../../tests/conformance/mcp/imported-operation-agent-path.test.ts) for
+[adapter exports](../../../../packages/interoperability/mcp/src/index.ts) and
+[imported Tool Agent test](../../../../tests/conformance/mcp/imported-operation-agent-path.test.ts) for
 exact assembly; the tests may use `/testing` because they are tests.
 
 ## Storage and service boundaries
 
-`InMemoryRuntimeStore` and `FifoScheduler` are useful reference mechanisms, not production crash
-recovery. No durable `RuntimeStore` implementation ships in this repository. Keep durable business
-facts, idempotency records, and uncertain-outcome reconciliation
-in your application storage. Recreating an Execution after a crash is a new run, not automatic replay
-or recovery of in-flight Effects.
-
-Your web/API boundary authenticates users and binds them to owned Execution IDs and confirmation
-requests. Kernel Execution identity is not the application's user identity; do not expose the trusted
-Harness entrypoints as unauthenticated HTTP endpoints.
+See [current hosting limits](../../deployment/current-hosting.md) for persistence, identity and
+authenticated application boundaries.

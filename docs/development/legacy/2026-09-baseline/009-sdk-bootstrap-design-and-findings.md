@@ -3,7 +3,7 @@
 > **Historical snapshot, retired 2026-09-07.** Its status and next-step language describe the earlier checkpoint. Use the [active development plan](../../001-current-status-and-roadmap.md) and [findings register](../../003-evidence-and-findings.md) for current decisions.
 
 Implementation evidence for `@arrokothi/sdk` 0.8.1. This note owns the rationale and scoped findings,
-not kernel semantics or a second builder procedure. Use the [builder guide](../../../guides/agent-workflow-composition/README.md)
+not kernel semantics or a second builder procedure. Use the [builder guide](../../../guides/execution/native/README.md)
 for applications and [canonical ownership](../../../README.md) for meaning.
 
 ## Chosen boundary
@@ -20,7 +20,7 @@ preflighted start make definition pinning and initial-input order ordinary opera
 surfaces lifecycle/human boundaries and returns pending status on finite limits. Full Harness evidence
 and ingress remain available; there is no opaque chat session or alternate execution engine.
 
-The [API and exact defaults](../../../guides/agent-workflow-composition/quick-start.md) are documented in the
+The [API and exact defaults](../../../guides/deployment/quick-start.md) are documented in the
 builder guide. SDK diagnostics do not probe authorization, invoke models, or synthesize missing grants.
 Overrides are explicit trusted ports; dynamic behavior remains runtime-checked. No persistent worker,
 implicit provider fallback, universal tool registry, automatic retry, permissive preset, or fluent
