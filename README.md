@@ -18,7 +18,6 @@ Start with [`docs/mental-model.md`](docs/mental-model.md).
 | [`docs/detail-design/`](docs/detail-design/) | Protocol, actions, recovery, Runtime, resource and evidence design |
 | [`docs/development/`](docs/development/README.md) | Current implementation and migration evidence |
 
-The previous architecture is available in Git history. The [detail-design review](docs/development/005-detail-design-review.md) records where its useful concepts now live; removed architecture files are not compatibility aliases.
 
 ## Core boundary
 
