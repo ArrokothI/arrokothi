@@ -32,8 +32,7 @@ remain held without inventing a semantic wait. `READY` work may be delayed by ad
 Terminal states do not reopen; starting again is an explicit new Execution.
 
 Completion records a result, not its delivery to a person or external system. Nonterminal emissions
-are output, not completion. Completion must reject newly proposed Effects and unresolved owned
-Effects or required child results. An acknowledged uncertainty Event does not discharge unknown work;
+are output, not completion. Completion must be rejected if there are newly proposed Effects, unresolved owned Effects, or missing required child results. An acknowledged uncertainty Event does not discharge unknown work;
 request disposition, external certainty and responsibility are distinct. The Runtime must account for
 required settlement/results in previously acknowledged Events or the current batch, or the application
 must explicitly transfer/abandon the obligation under policy. Failure/cancellation may leave external work
