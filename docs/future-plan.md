@@ -168,6 +168,56 @@ claiming success or a self-evaluator approving it is not independent evidence or
 Delete mandatory planning/extra evaluators/resets when improved models no longer need them. No new
 Planner/Evaluator Execution kinds, universal team model or fixed reasoning budget in Kernel semantics.
 
+### Supervisory multi-Execution coordination
+
+Evaluate an AI supervisor over delegated coding workers as an application/Runtime experiment with the
+Kernel fixed, not a K4/K5/S1 gate or a new Kernel role. The existing
+[output-to-input bridge](detail-design/composition-and-communication.md#child-output-observation)
+provides the boundary: UI observers read independently; an authorized application adapter selects
+worker observations and submits explicit addressed input to the supervisor for a later eligible
+Activation. Observation alone never wakes it. No Kernel subscription actor is needed.
+
+The experiment must declare bounded filtering/aggregation and omission policy. Retain source
+Execution/output IDs (or source sets for aggregates), actual producer provenance, causation and
+selection/aggregation revision; a summary remains derived evidence. Persist the selected immutable
+input and retry identity before sending, and advance the forwarding checkpoint only with mailbox
+acceptance or recoverable pending delivery. Test bridge and supervisor restart, lost receipts,
+deduplication-window expiry, bounded queues/coalescing and explicit replay gaps. Do not silently
+regenerate a different summary under a retried input identity. Supervisor input acceptance remains
+separate from processing acknowledged by its Outcome. Recheck source disclosure and destination
+input authority, including disclosure to the supervisor's model, on restore/forwarding.
+
+Treat delayed observations as historical claims: bind the target Execution lifetime and relevant
+resource revision, inspect current state before intervention, and use resource-enforced preconditions
+where required; inspection alone cannot close a mutation race. Bound feedback with explicit source/
+destination selection, causation-aware echo suppression and finite forwarding/intervention budgets.
+Test a worker emitting in response to each correction; input deduplication alone cannot stop a loop
+that creates fresh output identities.
+
+Use existing message/correction and authenticated cancellation paths with separate permissions;
+a Runtime decision does not itself grant control authority. An application adapter may execute an
+authorized cancellation request through the existing control plane; no generic cancellation Effect
+or supervisor-control API is assumed. Correction is queued input, not preemption; cancellation fences
+Kernel progress/admission but does not prove native work stopped or undo an admitted action. General
+pause/resume, preemption and reassignment remain future questions, not capabilities of this experiment's
+baseline. Resource inspection uses the owning service's permitted interface.
+
+Intelligent supervision is advisory/strategic detection and intervention. Hard concurrency safety
+remains [native/resource ownership and exclusion](detail-design/resources-and-isolation.md#shared-mutation-and-takeover),
+including across different Executions. A worker's `file_write: planned | started | completed` can be
+structured Emission content; acceptance proves that it reported the activity, not file mutation,
+completion or ownership. Permitted diagnostic/tool traces retain their own evidence limits and do
+not inherit accepted-output replay guarantees. Authoritative resource state requires evidence from
+the owning/enforcing service. Use intentionally exposed accepted progress, public reasoning summaries,
+permitted traces and resource state; correctness must never require private hidden model reasoning.
+
+Compare against no supervisor and deterministic conflict checks with the same native writer exclusion,
+permissions and total budget. Measure verified outcomes, harmful/missed interventions, stale decisions,
+reaction latency, repeated work and cost while a UI observes concurrently. Promote useful behavior to
+an application pattern first; propose a Kernel extension only if repeated applications demonstrate an
+invariant that output reads, authenticated routing and existing controls cannot express. No universal
+pub/sub, supervisor hierarchy, event-processing engine or resource-lock system follows from the trial.
+
 ## Q10 — Which policy/discovery mechanisms need a shared adapter?
 
 **Owner / trigger:** application/policy; repeated relationship or catalog-scale needs. Compare direct
