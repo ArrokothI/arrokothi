@@ -56,7 +56,7 @@ Outcome:
   next: continue | await(wait) | complete(result) | fail(error)
 ```
 
-Runtime identity and progress version must select compatible code or fail explicitly. Small boundary
+When the Kernel resumes an Execution, it must know exactly which Runtime/definition can understand the saved continuation state, and what format/version that state uses. If compatible code is unavailable, it must report that rather than silently starting over. Small boundary
 values are JSON-compatible and schema-checked where a contract is declared; large payloads use
 application-owned references with access and retention contracts. No universal artifact type system
 or provider transcript is required.
