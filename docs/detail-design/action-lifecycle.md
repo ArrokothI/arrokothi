@@ -1,7 +1,7 @@
 # Action admission, settlement and delivery
 
 **Owner:** Kernel for mediated action records; trusted adapters for external evidence; application
-transports for delivery. **Status:** target K2/K3/K5. [Authority](authority-and-actions.md) owns consent
+transports for delivery. **Status:** target K2/K3/K4/K5. [Authority](authority-and-actions.md) owns consent
 and policy. This is not a new universal PendingOperation hierarchy.
 
 ## One request, several kinds of fact
@@ -98,17 +98,55 @@ emission. An application may show provisional text but cannot use it as an autho
 asserted terminal outcome. On failed attempts it may retract/mark provisional text; do not silently
 splice two attempt streams into one apparently accepted transcript.
 
-A Runtime proposing completion has no new Effects. Kernel-to-parent result routing is a Kernel
-obligation created with terminal acceptance. External delivery is separately owned by an application
-adapter; accepted result and output-publication intent must not have a lost-output gap. Delivery may
-remain pending or unknown after COMPLETED. If business success requires a delivery receipt, the Runtime
-must request that action and observe its result **before** completion, then return the receipt.
+**Output/publication obligation** means making every accepted nonterminal Emission and terminal
+result available for authorized observation/replay under the declared retention profile. The older
+phrase “publication intent” means this obligation, not an automatic message send, public disclosure,
+or user-facing channel action. Commit the output record and obligation with Outcome acceptance;
+the retained record itself can fulfill the obligation without a separate publisher queue. A lost
+notification or duplicate Outcome must neither lose output nor mint another output identity.
 
-Subscriptions use stable output IDs/cursors and may redeliver after disconnect. Consumers deduplicate.
+A Runtime proposing completion has no new Effects. Kernel-to-parent terminal-result routing is a
+separate obligation created with terminal acceptance. External/channel delivery is separately owned
+by an application adapter with its own durable intent if promised; its creation must not leave a gap
+with the accepted output it undertakes to deliver. Delivery may remain pending or unknown after
+COMPLETED. If business success requires a delivery receipt, the Runtime must request that Effect
+and observe its result **before** completion, then return the receipt.
+
+### Authorized output subscriptions
+
+The Kernel supports authorized reads/resumption over accepted output for any permitted Execution.
+The application/output layer owns subscription connections, UI, transport and consumer cursor storage;
+it can implement a subscription using bounded reads plus notifications. No durable per-subscriber
+Kernel actor, mailbox or general pub/sub broker is required. Child observation uses this same boundary;
+[composition](composition-and-communication.md#child-output-observation) defines its relationship to
+parent computation. Output consumption never acknowledges an Execution's Event batch.
+
+Stable output IDs and per-Execution replay positions survive process restart in the persistent
+profile. Cursors identify the Execution/output view and position, never authority. Resume after a
+saved position returns retained accepted output in order; delivery may repeat and consumers deduplicate
+by output ID. Bridge replay to live observation without a race that skips output committed during
+reconnect. Completion does not truncate unread Emissions: expose terminal status/result and a final
+output position so consumers can drain retained output before treating observation as finished.
+There is no cross-Execution ordering guarantee.
+
+Authorize the principal's read/disclosure scope on initial read, reconnect and subsequent delivery
+under the declared policy freshness ordering. An old subscription or cursor cannot preserve revoked
+access. Filtered views must not disclose hidden content through cursor/receipt lookup. A changed view
+must explicitly rebind/refuse its cursor if safe continuation cannot be established.
+
+Declare bounded output bytes/count/age, replay and deduplication windows, and deletion behavior.
 Resume beyond retention returns an explicit gap/expired cursor, not an empty stream pretending all
-output arrived. Authorize reads and destination/account selection at reconnect and delivery admission.
-Transport-level batching/rendering has its own immutable prepared payload identity; a retry must not
-silently send a newly rendered message to a newly resolved destination.
+output arrived. Retain output through the promised window, including after child completion; after
+that window, slow/disconnected consumers have no indefinite retention claim. Explicit privacy deletion
+or access revocation may end the guarantee and must not masquerade as successful complete replay.
+A slow subscriber uses bounded buffers or is disconnected with a resumable cursor/gap disposition;
+it does not block Runtime progress or pin data indefinitely. Capacity exhaustion must reject/hold
+new Outcome acceptance explicitly before commit, never acknowledge then silently drop promised output.
+Pending routing/external-delivery obligations pin their required data separately from observer cursors.
+
+External delivery additionally authorizes destination/account selection at admission. Transport-level
+batching/rendering has its own immutable prepared payload identity; a retry must not silently send a
+newly rendered message to a newly resolved destination.
 
 Prior art: OpenClaw's [task records](../../../openclaw/src/tasks/task-registry.types.ts) separate task
 status and delivery status. [Unknown-send reconciliation](../../../openclaw/src/infra/outbound/delivery-queue-reconciliation.ts)
@@ -121,6 +159,9 @@ would discard the mechanism that makes its certainty meaningful.
 K2/E2: denied/declined/invalid input yields zero sink attempts; concurrent approvals share one action;
 malformed consequential output is not definite failure; same payload with a fresh intentional key
 remains a distinct action. K3/E4: kill after admission, after remote success, after settlement and
-before wake; query/retry only under the tested operation contract. K5: reconcile after cancellation,
+before wake; query/retry only under the tested operation contract. K4/E4 adds the child-output disconnect/replay versus explicit-message fixture in the
+[roadmap](../development/001-current-status-and-roadmap.md#k4--addressed-interaction-and-independent-children).
+K5: slow subscribers, bounded buffers, revoked reads, replay/live handoff, capacity refusal and
+post-completion retention; reconcile after cancellation,
 expire idempotency windows, replay output cursors and lose the delivery receipt. Retain independent
 sink evidence so the laboratory cannot manufacture the subject's safety/recovery result.

@@ -1,7 +1,7 @@
 # Child Executions and addressed communication
 
 **Owner:** Kernel relationships, routing and obligations; application supervision policy.
-**Status:** target K4; [protocol](execution-protocol.md) and [authority](authority-and-actions.md) are
+**Status:** target K4, with K2 action foundations and K5 output-retention hardening; [protocol](execution-protocol.md) and [authority](authority-and-actions.md) are
 prerequisites. Local graphs, branches, Agents and Skills live in [Runtime composition](runtime-composition.md).
 
 ## Choosing an Execution boundary
@@ -58,10 +58,22 @@ a cascade kill nor immunity from one. Native grandchildren remain the native Run
 
 ## Messages and replies
 
-An addressed message carries stable sender/destination, input identity, content, causation and optional
-request correlation. Authorize destination-scoped send before exposing target/request details.
-Accepted routing means the destination mailbox accepted it, **not** that a model read it or the
-application acted. A sender requiring application completion must request a reply/result explicitly.
+Message send is an ordinary mediated Effect, not another top-level Outcome concept. It needs the
+existing immutable intent, admission, denial, obligation and settlement machinery; addressed routing
+specializes that machinery without adding another progress-acceptance boundary. An addressed message
+carries stable sender/destination, input identity, immutable content, causation and optional request
+correlation. The Kernel binds sender identity to authenticated Execution context. Authorize
+destination-scoped send before exposing target/request details; ancestry and output-read permission
+grant no send authority.
+
+Accepted Effect intent creates a recoverable routing obligation; it is not send success. Success is
+recorded only when the destination mailbox durably accepts the input. Retry routing with the same
+input identity/content; a lost receipt must not create another mailbox entry. Destination acceptance
+and sender settlement use one transaction or a recoverable idempotent obligation. Refused destination
+input (including terminal or full mailbox) cannot yield a success receipt. This is one logical mailbox
+acceptance, not exactly-once transport delivery or Runtime execution. The destination receives the
+Event in a later eligible Activation under its wait/batch rules; an unmatched message need not wake it.
+A sender requiring processing, related work or a reply must request that evidence explicitly.
 
 For request/reply, retain a correlation record scoped to requester, permitted responder, destination,
 expected reply contract, open/closed state and optional deadline. This can be a narrow record behind
@@ -82,9 +94,33 @@ expectation without creating a new correlation. Two ordered operations are the b
 atomic compound form is demanded, test close-old/open-new/deliver under one idempotent command;
 do not add a Kernel session ontology to conceal missing request records.
 
+## Child-output observation
+
+A child can emit “Searching site A”, candidate counts or structured findings as accepted nonterminal
+output. Authorized application/UI/operator observers, including a parent-facing UI, use the ordinary
+[output subscription](action-lifecycle.md#authorized-output-subscriptions). Child status grants no
+implicit read permission: check the observer principal's access to that Execution and disclosed
+content, including on replay after restart. The Kernel supplies accepted identity/retention truth;
+the output layer supplies the connection. No parent-child subscription-routing record is required.
+
+Emission observation leaves the parent's mailbox, wait and progress unchanged. If a parent Runtime
+must react, the child explicitly sends a message, or an explicitly configured application adapter
+reads output and submits addressed input through authenticated ingress. Such a bridge requires both
+source read/disclosure permission and destination send/input permission, including permission to
+redisclose the content there. Bind its actual producer provenance and causation to the source output
+ID; do not impersonate the child or turn content into trusted settlement evidence. A bridge promising
+durable forwarding owns its cursor/routing checkpoint and stable destination input key across retries,
+within declared retention/deduplication windows. Read authorization alone never creates that promise.
+Automatic forwarding and a general output-to-input broker are outside the minimum profile.
+
+Child completion independently creates the terminal-result routing obligation. Retried result routing
+preserves one logical result input identity; parent Runtime delivery may repeat until acknowledged.
+Neither observing child progress nor receiving a terminal notification means the parent processed
+that result. No universal conversation, session or pub/sub abstraction follows from these boundaries.
+
 ## Waits, interleaving and human participation
 
-A parent waiting for B can subscribe to clarification from B. Then:
+A parent waiting for B can explicitly subscribe to addressed clarification input from B. Then:
 
 ```text
 A creates B and waits for B result + declared clarification input
@@ -98,12 +134,39 @@ against new input; storing an old promise does not make its answer current. Gene
 retain seen results in Runtime progress and wait on remaining correlations. A wait cycle is a diagnostic
 candidate, not proof of deadlock; timeouts, human replies or eligible messages may break it.
 
-A human request binds recipient eligibility, input schema, request revision, expiry and one resume
-owner. The application owns form UI, notifications and external authentication. Input acceptance and
-request closure are ordered; exact retries return their receipt, while conflicting or new late
-submissions are refused consistently. Typed feedback
-is distinct from [exact action consent](authority-and-actions.md#exact-consent). Native forms should
-retain their native owner; a Driver maps one subscription, not a second independently resumable form.
+A human input request remains an Effect with a narrow request record, not an Emission or a separate
+Outcome field. Accept its immutable intent and `await(request-key)` together under the existing
+protocol; subsequent authorized admission opens one durably discoverable request. Denial/refusal
+produces a correlated action observation so the wait cannot hang on a request that never opened.
+The request binds stable Effect/request identity, requesting Execution, recipient eligibility,
+response schema/revision, optional request expiry and one resume owner. Request disclosure and
+request-creation authority are separate from responder eligibility. The application owns form UI,
+notifications and external authentication; trusted ingress supplies authenticated responder facts.
+
+```text
+accepted input-request Effect + wait → authorized durable open request → application displays it
+→ authenticated/schema-valid correlated response → request closure + result Event + recoverable wake
+→ later eligible Activation → accepted Outcome acknowledges processing
+```
+
+Response acceptance atomically binds a stable response identity/content to the request, closes it,
+settles the dependency and records the Event/readiness (or a durable idempotent routing obligation).
+Restart must reconstruct the same open request and wait without redisplaying it as a new request.
+Exact authenticated retries return the original receipt/disposition within the declared deduplication
+window; conflicting responses, invalid schema, wrong responders and new submissions after request
+expiry/closure are refused. Knowing the request ID or submitting ordinary input cannot settle it.
+Displaying/delivering the form is neither a response nor Runtime processing of one.
+
+Request expiry closes the request under ordered acceptance and yields an expiry observation; it is
+separate from a wait deadline. A wait timeout alone does not close the request. The accepted response
+can wake only a current wait eligible for that correlation, including a later wait deliberately
+reusing the still-open dependency; it cannot revive a replaced unrelated wait generation. Preserve
+early responses in the mailbox for atomic wait matching. Cancellation/terminal disposition closes or
+abandons outstanding requests under policy without reopening the Execution on a late response.
+
+Typed feedback is distinct from [exact action consent](authority-and-actions.md#exact-consent):
+choosing Plan A does not approve an unbound consequential action. Native forms should retain their
+native owner; a Driver maps one dependency, not a second independently resumable form.
 
 Long-lived conversational Executions can emit many responses and wait without completing. Applications
 may instead create one Execution per job/turn and keep session grouping outside the Kernel. Choose

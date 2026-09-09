@@ -99,7 +99,11 @@ is not a distributed transaction or an execution order guarantee.
 
 Accepted emissions have stable IDs and replay positions. A streaming transport may additionally
 show provisional output, but must label it as such; it cannot authorize an action or certify a result.
-Output publication intent and acceptance must not leave a lost-output gap after a committed result.
+Acceptance records the output obligation for every accepted Emission and terminal result without a
+lost-output gap. This means authorized, retention-bounded observation/replay, not external delivery.
+Observing output does not enqueue an Event, wake another Execution or acknowledge Runtime processing.
+Application-facing subscriptions and publication terminology are defined in
+[action lifecycle](detail-design/action-lifecycle.md#results-emissions-and-delivery).
 
 ## Events and waits
 
@@ -136,7 +140,11 @@ do not promise general deadlock prevention. Local Runtime promises are never Ker
 ## Effects and authority
 
 An Effect requests a Kernel-mediated operation: an external service action, input request, child
-creation, message, or an explicitly offered resource service. Pending action state is necessary;
+creation, message, or an explicitly offered resource service. Message send remains an Effect: its
+success means destination mailbox acceptance, not Runtime processing. A human input-request Effect creates a durable correlated dependency; displaying it does
+not settle it. An authenticated accepted response supplies an Event for a later eligible Activation,
+not exact action consent. [Composition](detail-design/composition-and-communication.md) owns these
+interaction contracts and explicit output-to-input routing. Pending action state is necessary;
 a separate universal `PendingOperation` abstraction is not required beyond these records.
 
 The supported action contract specifies operation identity/revision, accepted schema subset, exact
