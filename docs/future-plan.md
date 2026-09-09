@@ -61,6 +61,14 @@ burden. Test true blocked cycles separately from cycles with eligible external e
 must transfer responsibility atomically to an accepting durable owner; no fire-and-forget escape from
 unknown actions. Long-lived sessions can remain application grouping rather than immortal Executions.
 
+**Open question:** should the Kernel expose a narrow atomic responsibility transfer/abandonment
+mechanism driven by application-supplied policy, rather than requiring each application to invent the
+mechanics? Test whether applications can register eligible Effect/child classes, allowed abandonment
+rules and named durable owners while the Kernel validates authorization, commits the responsibility
+transition, preserves evidence and rejects completion when no policy-compliant disposition exists.
+Keep retry, reconciliation, compensation and business-success semantics application-owned; the Kernel
+must not become a universal orphan supervisor merely because it provides the transfer primitive.
+
 **Decision:** add only repeated useful helpers. Keep general graph joins Runtime-local. Defer a Kernel
 wait-expression engine, global deadlock solver and arbitrary ownership transfer if explicit records
 and application policy suffice.
