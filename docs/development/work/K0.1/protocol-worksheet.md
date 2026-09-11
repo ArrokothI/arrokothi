@@ -1,8 +1,9 @@
 # K0.1 protocol worksheet — equality, receipts, batches, clocks, cancellation, progress, policy
 
-**Revision:** 4 — corrects revision 3 per a third independent review (CHANGES REQUIRED); see
-[review-03.md](review-03.md) and [implementation-04.md](implementation-04.md) for those findings and
-their disposition, and [review-02.md](review-02.md)/[implementation-03.md](implementation-03.md) and
+**Revision:** 5 — corrects revision 4 per a fourth independent review (CHANGES REQUIRED); see
+[review-04.md](review-04.md) and [implementation-05.md](implementation-05.md) for those findings and
+their disposition, and [review-03.md](review-03.md)/[implementation-04.md](implementation-04.md),
+[review-02.md](review-02.md)/[implementation-03.md](implementation-03.md) and
 [review-01.md](review-01.md)/[implementation-02.md](implementation-02.md) for the preceding rounds. **Status:** produced by packet K0.1, awaiting independent review of this revision
 per [006](../../006-development-process.md). **Owner of this document:** Kernel, except where a row is
 explicitly marked Runtime/Driver or deployment.
@@ -291,12 +292,17 @@ input): per-entry disposition, not a monotonic cursor, is the required represent
 **Decision B-2 (selection rule by lifecycle; corrected in review round 1 — [K01-REV-02](implementation-02.md)).**
 - While `READY`: select a bounded batch (implementation-owned max size) from all currently
   unacknowledged Events, in acceptance order.
-- While `WAITING`: select only Events eligible under the currently registered wait's `wake` condition
-  and, if present, its declarative `interleave` condition (§5) — both are conditions over **Kernel
-  Events only**. An eligible match is included ahead of any unrelated backlog, but unrelated backlog is
-  not force-included merely because it is old. §5 fixes that a K1 `waitingFor` registration never names
-  Runtime-local work as a thing this selection rule can be "eligible under" — there is only the
-  Event-based condition.
+- While `WAITING`: select only Events eligible under **the single eligibility rule W-1 states**
+  (corrected in review round 4, [K01-R4-01](implementation-05.md)) — an Event is eligible iff it
+  matches at least one **dependency alternative** of the currently registered wait, **or** it is
+  application input matching at least one **declared input subscription** of that same wait. Both
+  lists are conditions over **Kernel Events only**. An eligible match is included ahead of any
+  unrelated backlog, but unrelated backlog is not force-included merely because it is old. Round 3's
+  wording selected by a singular `wake` condition "and, if present, its declarative `interleave`
+  condition," which described a *different* record from the one W-1 defines; that is withdrawn —
+  there is exactly one target wait record and exactly one eligibility rule (W-1, W-5). §5 also fixes
+  that a K1 `waitingFor` registration never names Runtime-local work as a thing this selection rule
+  can be "eligible under" (W-4) — every eligible source is a Kernel Event.
 
 **Decision B-3 (whole-batch acknowledgment).** An accepted Outcome acknowledges its *entire* pinned
 batch at once. "Acknowledged" means "the Runtime is on record as having accounted for this Event",
@@ -350,39 +356,69 @@ heartbeat-renewal or a fixed TTL.
 
 ## 5. Wait registration, generations, and any-of correlation
 
-**Decision W-1 (the target wait shape: a finite any-of dependency set plus separately declared input
-subscriptions — fully stated in review round 2, [K01-R2-03](implementation-03.md)).** A registered
-`waitingFor` carries exactly two declarative lists, plus the optional wait deadline (§4). Nothing else
-is part of the record.
+**Decision W-1 (the target wait shape: dependency alternatives plus separately declared input
+subscriptions — stated in review round 2 ([K01-R2-03](implementation-03.md)), corrected in review
+round 4 ([K01-R4-01](implementation-05.md))).** A registered `waitingFor` carries exactly two
+declarative lists, plus the optional wait deadline (§4) and the generation identity every registration
+already has (W-3). Nothing else is part of the record — in particular there is **no** third list, **no**
+separate `interleave` field (W-5) and **no** Runtime-local-work arm (W-4).
 
-1. **Dependency alternatives** — a finite, enumerable, **non-empty** list. Each alternative is an
+1. **Dependency alternatives** — a finite, enumerable list, **possibly empty**. Each alternative is an
    independent declarative condition over an Event envelope: its kind (set membership) and/or its
    correlation identity. **Any one** alternative matching an eligible Event makes the Execution
    `READY`; that is the only combinator — there is no boolean expression *between* alternatives, no
-   all-of, no negation, no ordering requirement. An empty list is invalid: a wait must name what it
-   waits for. An all-of join remains a Runtime-owned accumulation in its own progress (restates
-   kernel.md's Events-and-waits section), never a second Kernel wait primitive.
-2. **Declared input subscriptions** — a finite, enumerable, possibly-empty list. Each entry names, by
-   its declared subscription identity, one class of application input that may wake this Execution
+   all-of, no negation, no ordering requirement. An all-of join remains a Runtime-owned accumulation
+   in its own progress (restates kernel.md's Events-and-waits section), never a second Kernel wait
+   primitive.
+2. **Declared input subscriptions** — a finite, enumerable list, **possibly empty**. Each entry names,
+   by its declared subscription identity, one class of application input that may wake this Execution
    while this wait is registered. This is the "explicit input subscription" execution-protocol.md
    already requires ("A wait names a finite any-of set of correlated dependencies, with optional
    explicit input subscriptions and a deadline") and that kernel.md makes mandatory for input waits
    ("application-input waits require a declared subscription").
 
+**Well-formedness: one eligible wake source across the two lists combined (corrected in review round
+4).** The registration is valid iff `dependency alternatives + declared subscriptions ≥ 1`. **Neither
+list is individually required to be non-empty.** Revision 4 required the dependency list itself to be
+non-empty, which made 001's own K0 trace unrepresentable: "accept input → delayed fake Runtime → typed
+output → **input wait** → completion" waits for one class of application input and for nothing else, so
+its dependency list is legitimately empty. Under the old rule a Runtime could spell that wait only two
+ways, both defective — invent a dependency alternative nothing will ever settle, or drop the
+subscription and let a catch-all alternative wake it for *every* `external.input` regardless of label.
+W-8 works that counterexample through and both spellings are now unnecessary. A registration with
+**both** lists empty remains invalid: a wait must name at least one Event class that can end it. A
+deadline does not rescue an empty wait — kernel.md's wait is "on any of a finite set of correlated
+Events, **optionally** with a durable deadline," so the deadline *bounds* a wait rather than being the
+thing waited for, and CL-1 keeps the three clocks separate identities rather than letting one stand in
+for a dependency.
+
 **Eligibility rule (single sentence).** While `WAITING`, an Event is eligible iff it matches at least
 one dependency alternative, **or** it is application input matching at least one declared
 subscription; every other Event is accepted into the mailbox, stays queued with its own disposition
-(B-4), and neither wakes nor is acknowledged.
+(B-4), and neither wakes nor is acknowledged. B-2 selects the `WAITING` batch by exactly this rule and
+by no other.
 
 Both lists are pure declarative data compared by equality over envelope identity, kind, correlation and
 declared-subscription name. No arbitrary predicates, no callbacks, no query language, no model-text
 matching — restating kernel.md ("Conditions use envelope identity/kind/correlation, not arbitrary code
 or model-text predicates") and the current code's own rule that a wake condition "must stay
 declarative, serializable runtime data, not a callback or a query language"
-(`packages/core/src/interaction/event-envelope.ts:66-72`). Satisfying a dependency alternative resolves
-the wait; waking through a declared input subscription does **not** satisfy any alternative — the
-dependency stays outstanding and the Runtime may report the same prospective dependency again (this is
-the same eligibility-not-satisfaction distinction W-5 draws for `interleave`).
+(`packages/core/src/interaction/event-envelope.ts:66-72`).
+
+**Any eligible wake retires the registration; the Kernel keeps no "dependency satisfied" flag
+(corrected in review round 4).** Whichever eligible Event arrives first — a dependency match or a
+subscribed input — **that registration and its generation are retired** and the Execution becomes
+`READY`. The Kernel records exactly two things: that this registration ended, and that this Event is
+eligible for the next batch. It records **nothing** about whether any other alternative's external work
+has settled, and it carries no partially-consumed wait forward. If the Runtime still needs a dependency
+after processing the Event it woke for — the ordinary case after a correction or a peer question — its
+**next Outcome registers that dependency again**, as a new registration under a new generation (W-3).
+That re-registration, not a retained flag, is how an outstanding need is carried forward, and it is
+what keeps the Kernel free of bookkeeping it cannot verify: **waking through a subscription is never
+evidence that an unrelated external dependency settled.** Round 3 phrased this as the dependency
+"staying outstanding" inside a still-live registration, which implied per-alternative Kernel state that
+neither kernel.md nor execution-protocol.md provides; the observable behaviour the Runtime sees is
+unchanged, because it re-reports the same alternatives either way.
 
 **Decision W-2 (atomic mailbox check at registration).** Registering a wait and checking already-
 accepted-but-unacknowledged Events for a match happen in the same atomic step that transitions the
@@ -435,21 +471,41 @@ K1.4 compatibility-Runtime-internal bookkeeping that a legacy controller bridge 
 has enough to finally produce an Outcome — but nothing about that bookkeeping is reflected in, or
 constrains the shape of, the new Kernel `waitingFor` record.
 
-**Decision W-5 (interleave is a declarative condition over Events, Runtime-declared, not
-Kernel-inferred).** An `interleave` condition, where present, is a second, separate `WakeCondition`
-over Kernel Events (`packages/core/src/interaction/event-envelope.ts:74-80`) — declarative data
-supplied by the Runtime's Outcome, evaluated by the Kernel exactly like the primary wake condition. It
-is not a per-arm concept tied to a Runtime-local-work case (there is no such case per W-4): both the
-primary `wake` and the optional `interleave` name only Kernel Events. The Kernel never infers on its
-own that some Event is "probably safe to interleave."
+**Decision W-5 (`interleave` is current-0.8.x legacy/compatibility semantics, not a target Kernel wait
+field — corrected in review round 4, [K01-R4-01](implementation-05.md)).** Current code carries an
+optional `interleave?: WakeCondition` on two `ExecutionWait` arms
+(`packages/core/src/execution/context.ts:102-108`, with the "Controlled interleaving" docstring at
+`:79-100` and the constructor at `:132-134`) and on the matching controller report
+(`packages/core/src/ports/controller.ts:86-92`, `:109`). Its documented meaning is a second, separate
+wake condition whose match "makes this Execution `READY` for another Activation, without the primary
+dependency being satisfied" (`context.ts:88-89`).
+
+**The target Kernel wait record has no `interleave` field.** W-1's two lists already express
+everything it expressed, and more precisely: what `interleave` calls "Events I can safely process while
+my primary dependency is unresolved" is, in the target record, either **another dependency alternative**
+(a correlated Kernel Event the Runtime is willing to be woken by) or **a declared input subscription**
+(application input). The one thing `interleave` adds beyond that — a Kernel-visible distinction between
+a wake that satisfies the primary dependency and a wake that does not — is exactly the per-registration
+"satisfied" state W-1 deliberately does not keep: any eligible wake retires the registration, and the
+Runtime re-registers whatever it still needs.
+
+Round 3's W-5 defined `interleave` as "a second, separate `WakeCondition`... evaluated by the Kernel
+exactly like the primary wake condition," which left the worksheet with **two** target wait records —
+W-1's two lists, and a singular `wake` plus `interleave` — with B-2 selecting by the second one. That
+is withdrawn. The field is legacy: §12's `REF-5` refuses adoption of the current `ExecutionWait.event`
+shape *including* this optional field as the target record, and `LC-1` keeps the current file working
+unchanged for current 0.8.x paths until they migrate. What survives is the *principle*, which W-1
+states independently: every wake source is declarative data the Runtime supplied in its own Outcome —
+the Kernel never infers on its own that some Event is "probably safe to wake for."
 
 **Decision W-6 (deterministic counterexamples, added in review round 1).**
 
 1. **Local work alone creates no `WAITING`.** A controller has only Runtime-local (native/model)
    work outstanding and no Kernel-visible dependency to report. Its Activation stays unresolved
    (`RUNNING`); the Kernel never creates a `waitingFor` record, and no wait generation is ever
-   allocated for it. Only once the Runtime produces an actual Outcome (`continue`, `await_event`,
-   `complete`, or `fail`) does the Kernel see anything.
+   allocated for it. Only once the Runtime produces an actual Outcome does the Kernel see anything —
+   in the target's own vocabulary, `continue`, `await(wait)`, `complete(result)` or `fail(error)`
+   (kernel.md's Activation/Outcome shape), not the 0.8.x controller status names.
 2. **Stale timer G1 cannot wake G2.** A wait is registered with generation G1 and a persisted timer.
    Before G1's deadline, the wait resolves and the Execution re-enters `WAITING` on a different
    dependency under generation G2. G1's timer later fires; it is a no-op against G2 (W-3).
@@ -470,9 +526,11 @@ C2 and registers wait `W` with dependency alternatives `D1` (kind `child.result`
 `D2` (kind `child.result`, correlation `c2`), and declared input subscriptions `{correction}`.
 
 1. **Two differently correlated alternatives.** `D1` and `D2` are separate entries in one finite list;
-   either one matching wakes P, and neither is privileged by list position. The current record cannot
-   express this (`MIG-5`): its single `correlationId` must be `c1`, or `c2`, or `null` — and `null`
-   over-matches, waking P for any `child.result` addressed to it, including an unrelated third child's.
+   either one matching wakes P, and neither is privileged by list position. The current record shape
+   cannot express this (`REF-5`): its single `wake` carries one `correlationId`, which must be `c1`, or
+   `c2`, or `null` — and `null` over-matches, waking P for any `child.result` addressed to it,
+   including an unrelated third child's. The *matcher* each alternative is written with does migrate
+   (`MIG-5`); the single-condition record holding it does not.
 2. **Result before wait, for either alternative.** If C2's result was accepted *before* `W` was
    registered, the atomic mailbox check at registration (W-2) finds it and P is `READY`, never
    `WAITING` — and this must hold for whichever alternative the already-accepted Event matches, not
@@ -482,10 +540,15 @@ C2 and registers wait `W` with dependency alternatives `D1` (kind `child.result`
    alternative, and `billing.question` is not in `{correction}`, so it matches no subscription: it is
    accepted into the mailbox, produces **no wake**, and is **not acknowledged**. It remains queued with
    its own disposition for a later eligible batch (B-4).
-4. **Subscribed correction input may wake.** Application input labelled `correction` arrives. It
-   matches the declared subscription, so P becomes `READY` and the Runtime sees it in the next batch —
-   but `D1`/`D2` remain **unsatisfied**: both child results are still outstanding, and the Runtime may
-   report the same two alternatives again in its next Outcome. Waking is eligibility, not satisfaction.
+4. **Subscribed correction input may wake (restated in review round 4,
+   [K01-R4-01](implementation-05.md)).** Application input labelled `correction` arrives. It matches
+   the declared subscription, so it is eligible: P becomes `READY` and the Runtime sees it in the next
+   batch. That wake **retires `W` and its generation** (W-1) — the Kernel does not hold `D1`/`D2` open
+   behind the correction and asserts nothing about whether either child result arrived. Both are in
+   fact still outstanding, so the Runtime's next Outcome **registers `D1` and `D2` again**, a new
+   registration under a new generation (W-3). Waking through a subscription is eligibility to run,
+   never evidence that an unrelated dependency settled. Note what this example does *not* need: no
+   `interleave` field, because `correction` is a declared subscription in `W` itself (W-5).
 5. **Unmatched backlog remains unacknowledged.** In the Activation that case 4 produced, the dispatched
    batch contains the `correction` input (and any other eligible Event), not the queued
    `billing.question`. The accepted Outcome acknowledges its *whole reserved batch* (B-3) — which by
@@ -494,9 +557,55 @@ C2 and registers wait `W` with dependency alternatives `D1` (kind `child.result`
    would silently acknowledge input the Runtime never saw, which is exactly why `REF-4` refuses the
    current cursor mechanism for K1.
 
+**Decision W-8 (the K0 trace's subscription-only input wait — deterministic counterexample, added in
+review round 4, [K01-R4-01](implementation-05.md)).** This is 001's own K0 trace end to end — "accept
+input → delayed fake Runtime → typed output → input wait → completion" — and it is exactly the case
+revision 4's non-empty-dependency-list rule could not express. It is also the fixture shape 007's K0.2
+must build ("the smallest public delayed-Runtime/typed-output/input-wait fixture"), so K0.1 owes it an
+unambiguous wait record.
+
+Execution X is created with its initial input. Its Runtime computes, then submits an Outcome carrying
+typed output and `await` with a wait `W₀` whose **dependency-alternatives list is empty** and whose
+**declared input subscriptions are `{continue}`**: X waits for one class of application input and for
+nothing else. `W₀` is well-formed under W-1 — one eligible wake source exists across the two lists
+combined.
+
+1. **Registration.** `W₀` is accepted and X becomes `WAITING` — or `READY` immediately if an eligible
+   `continue` input was already accepted and unacknowledged, because W-2's atomic mailbox check applies
+   to a subscription-only wait exactly as it does to a dependency wait. There is no "no dependencies, so
+   nothing to check" shortcut.
+2. **Unrelated input stays queued.** Application input labelled `billing.question` arrives. It matches
+   no dependency alternative (there are none) and `billing.question` is not in `{continue}`, so it is
+   **not eligible**: it is accepted into the mailbox, produces **no wake**, is **not acknowledged**, and
+   keeps its own per-entry disposition for a later eligible batch (B-2, B-4). This is the property that
+   makes the wait selective — an implementation that woke X here would be waking for every
+   `external.input` regardless of label.
+3. **Subscribed input wakes.** Application input labelled `continue` arrives. It matches the declared
+   subscription, so it is eligible: `W₀` and its generation are retired and X becomes `READY` (W-1).
+   The next Activation's batch contains the `continue` input and **not** the still-queued
+   `billing.question`.
+4. **Completion is permitted.** X's Runtime processes `continue`, and its next accepted Outcome may be
+   `complete`. Nothing about having waited on a subscription rather than a dependency stands in the
+   way: CX-3's completion check looks for unresolved *owned work*, and X has none — it proposed no
+   Effects (K1 refuses them outright, §8/`EF-1`) and named no dependency alternative that could still
+   be outstanding. The accepted Outcome acknowledges its whole reserved batch (B-3), which by
+   construction excludes `billing.question`; that input therefore receives an explicit recorded terminal
+   disposition when X reaches `COMPLETED` (B-5), rather than being silently treated as processed.
+
+**What this rules out.** Under revision 4's rule, "wait for application input `label=continue`" had
+only two spellings and both were defects: **invent a fake dependency alternative** nothing will ever
+settle — which makes the wait undischargeable and misreports to inspection what X actually needs — or
+**leave the subscription list empty** and let a catch-all dependency alternative over-match, waking X
+for every `external.input` addressed to it regardless of label, which is precisely the limitation the
+current matcher has (`MIG-5`). W-1's combined-source well-formedness rule removes both: the dependency
+list is legitimately empty and the subscription carries the whole wait.
+
 **Left open (implementation-owned):** exact generation representation (integer counter vs. new random
 ID per registration — either satisfies W-3 as long as it is compared, never assumed monotonic across
-process restarts unless explicitly persisted as such).
+process restarts unless explicitly persisted as such), and the exact spelling of a declared subscription
+identity (whether a subscription names the input label directly or an application-declared subscription
+name that resolves to one) — K1.3 owns that, and W-1 constrains only that it is finite, declarative and
+compared by equality.
 
 ---
 
@@ -671,13 +780,31 @@ Restates and pins [execution.md](../../../execution.md#progress-and-native-recov
 compatibility-dimensions table as binding for what "progress" must declare, independent of which
 concrete Driver is used:
 
-**Decision PC-1 (three progress forms, not one).** Runtime-owned continuation data is one of: (a)
-inline structured data the Kernel stores and returns unchanged (current code's
-`ControllerProgress`/`context.control`, `packages/core/src/execution/context.ts:57-63`, is exactly
-this form and is fully compatible — see §12 `MIG-3`); (b) an immutable checkpoint reference (a blob/
-pointer identifying a specific resumable state plus compatible code version); or (c) a reference to a
-still-running native job. These have different recovery guarantees and must not be normalized into one
-"opaque blob" type that hides which guarantee applies.
+**Decision PC-1 (three progress forms, not one; form (a)'s current-code example corrected in review
+round 4, [K01-R4-02](implementation-05.md)).** Runtime-owned continuation data is one of: (a) inline
+structured data the Kernel stores and returns unchanged — current code's **nested
+`ControllerProgress.progress: JsonObject` payload** (`packages/core/src/execution/context.ts:57-59`,
+with the docstring "The kernel stores and returns `progress` unchanged" at `:53`) is an example of
+exactly this form, and it is that nested payload, not its wrapper, which §12 `MIG-3` classifies
+migratable; (b) an immutable checkpoint reference (a blob/pointer identifying a specific resumable
+state plus compatible code version); or (c) a reference to a still-running native job. These have
+different recovery guarantees and must not be normalized into one "opaque blob" type that hides which
+guarantee applies.
+
+**What form (a) does *not* claim about the current wrapper (corrected in review round 4).** Revision 4
+said the current `ControllerProgress`/`context.control` *as a whole* "is exactly this form and is fully
+compatible." That is wrong about the enclosing wrapper and is withdrawn. `ControllerProgress` is a
+**closed two-arm union tagged `kind: "agent" | "workflow"`** (`context.ts:57-59`), and
+`ExecutionContext.control` (`context.ts:200`) stores that tagged wrapper, not a bare payload. The tag
+does **not** migrate unchanged: §12's `LEG-4` classifies it legacy-only; 001's K1 section requires
+removing "controller resumptions and closed Agent/Workflow progress discriminators from the new Kernel
+protocol"; and 007's K1.1 acceptance states plainly "no Agent/Workflow discriminator in the new
+boundary." **K1 progress compatibility is determined through the pinned Runtime/definition/codec
+contract (PC-4), never through that two-value tag.** So the three statements line up: the inner payload
+pattern migrates (`MIG-3`), the enclosing discriminated wrapper does not (`LEG-4`), and the question
+the tag was trying to answer — "which controller can understand this progress?" — is answered instead
+by the pinned definition/Runtime revision `ExecutionContext.definition` already tracks per Execution,
+kind-agnostically.
 
 **Decision PC-2 (checkpoint publish-before-reference).** Where form (b) is used, the Driver writes the
 immutable candidate checkpoint before proposing its reference in an Outcome; Kernel acceptance pins
@@ -750,7 +877,7 @@ boundary rule. This table is the direct answer to K0.1-C1.
 | 2 | Activation dispatch intent | Kernel | ID-3, ID-4, ID-9, B-1, B-2 | Two *semantically different* dispatches (a new exchange after the prior one resolved) never carry the same Activation ID; a dispatch pins one finite, enumerable Event batch that a later Outcome can be checked against exactly; an authorized takeover of a *still-unresolved* exchange advances the writer epoch under the **same** Activation ID rather than minting a new one (ID-9 cases 2–3). |
 | 3 | Outcome acceptance; duplicate/conflicting Outcome behavior | Kernel | OA-1–OA-6, ID-6 | Exact duplicate submission returns the original receipt with no re-dispatch of anything; a same-identity/different-content submission is rejected, not merged; a failure partway through acceptance leaves zero partial state (no progress, no Effect intent, no acknowledgment). |
 | 4 | Effect intents | Kernel | EF-1–EF-4 | An Outcome proposing an Effect during K1 is rejected at whole-envelope validation (OA-3) with a recorded, inspectable reason, before any Effect intent, ID or proposal-key binding ever exists; the rest of that Outcome is also rejected, not silently split; this is envelope validation, not a K1 visit to the (K2-introduced) Effect-admission boundary. |
-| 5 | Any-of wait correlation; wait-generation identity; eligible batch accounting | Kernel | W-1–W-7, B-1–B-4 | A wait registers a finite, non-empty list of Event dependency alternatives plus a separate declared input-subscription list, and atomically observes any already-accepted Event matching **any** alternative (no lost wake, whichever alternative it is); application input outside every declared subscription stays queued and unacknowledged; a stale wait-*timer* naming a superseded generation is a no-op, while an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6); an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
+| 5 | Any-of wait correlation; subscription-only input wait; wait-generation identity; eligible batch accounting | Kernel | W-1–W-8, B-1–B-4 | A wait registers a finite list of Event dependency alternatives **and** a separate finite list of declared input subscriptions, valid iff **at least one eligible wake source exists across the two combined** — so a **subscription-only input wait** (empty dependency list; 001's own K0 trace, `await` on application input `continue` and nothing else) is a first-class registration a Runtime can express directly, not something it must fake a dependency to spell (W-8), while a wait with both lists empty is rejected. The Kernel atomically observes any already-accepted Event matching **any** dependency alternative *or* **any** declared subscription (no lost wake, whichever source it is, and the check is not skipped merely because the dependency list is empty); application input outside every declared subscription stays queued and unacknowledged whether or not the wait also names dependencies; **any** eligible wake retires that registration and its generation, and a Runtime that still needs a dependency registers it again in its next Outcome rather than the Kernel holding a per-alternative satisfied flag; a stale wait-*timer* naming a superseded generation is a no-op, while an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6); an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
 | 6 | Wake / Event acceptance during computation | Kernel | B-2, B-4, W-2 | An Event accepted while an Activation is in flight does not alter that Activation's already-pinned batch; it is visible to the next eligible batch. |
 | 7 | Cancellation ordering | Kernel | CX-1, CX-2, CX-5 | A cancellation accepted before an in-flight Activation's Outcome is accepted wins: that Outcome's `complete`/`fail`/`continue` is discarded and the Execution is `CANCELLED`; a completion accepted first wins the opposite race, and neither race can be re-run by resubmitting either side. |
 | 8 | Terminal obligations; completion responsibility | Kernel | CX-3, CX-4, B-5 | `complete` is rejected outright if unresolved owned work is not accounted for in the current or a previously acknowledged batch; a terminal Execution still exposes recorded disposition for any Event that was queued but never acknowledged. |
@@ -795,6 +922,14 @@ reference-store analysis is preserved in substance and keeps its ID, but moves o
 classification table into the subsection named above. §5's W-1/W-7 target semantics, which round 3
 accepted, are unchanged by this correction.
 
+Review round 4 ([K01-R4-01](implementation-05.md)) changed the *content* of two of those rows without
+touching the vocabulary. `MIG-5`'s scope is narrowed: the kind/correlation matcher is migratable for
+W-1's **dependency alternatives** only, and revision 4's claim that it is "exactly the primitive W-1
+builds *both* of its lists from" is withdrawn — it reads `event.kind` and `event.correlationId` and
+never `ExternalInputBody.label`, so it cannot build the declared-subscription list. `REF-5` is extended
+to name explicitly what it always had to cover: the current `ExecutionWait.event` shape **including its
+optional legacy `interleave` field**, whose adoption as a target field §5's W-5 has now withdrawn.
+
 Review round 2 ([K01-R2-02](implementation-03.md), [K01-R2-03](implementation-03.md),
 [K01-R2-04](implementation-03.md)) had earlier corrected `PendingOperation` from an invalid
 no-label row to **`LEG-5`, legacy-only** with its reusable facts split out; withdrawn an overreaching
@@ -805,17 +940,17 @@ wording so the same mechanism is no longer described as both refused and retaine
 |---|---|---|---|
 | MIG-1 | Cancellation-request ordering in `Harness.activate`/`applyOutcome` (`packages/core/src/runtime/harness.ts:747-757`, `:953-965`), backed by the actual `CancellationRequest` record (`packages/core/src/execution/cancellation-request.ts:26-33`, states `"pending" \| "applied"`) | **Migratable** | The *rule* (check pending cancellation before dispatch, and again before committing the controller's reported next state) already matches CX-1/CX-2. The record's own docstring already states the target-compatible reasoning directly: a `RUNNING` Execution "cannot be interrupted mid-Activation without racing an uncontrolled context mutation, so the request is persisted here instead and the current Activation reaches a safe boundary" (`cancellation-request.ts:5-7`). The two-state shape can carry forward into K1's store as-is; no behavioral change is needed to satisfy §6. |
 | MIG-2 | `LifecycleState` transition table (`packages/core/src/execution/lifecycle.ts:46-54`), **excluding** `CREATED` (see `LEG-3` below) | **Migratable** | A pure, store-independent function already enforcing "terminal states have no outgoing edges" and "only `RUNNING` reaches `COMPLETED`/`FAILED`." This is exactly the target invariant (kernel.md's lifecycle diagram) and needs no semantic change for the `READY`/`RUNNING`/`WAITING`/`COMPLETED`/`FAILED`/`CANCELLED` states — only confirmation it stays store-independent in K1, and that `CREATED` is dropped from the state list it operates over. |
-| MIG-3 | The **opaque progress payload** pattern: `ControllerProgress.progress: JsonObject`, Kernel-stored-and-returned-unchanged (`packages/core/src/execution/context.ts:57-63`) | **Migratable** | Matches PC-1 form (a) exactly: opaque data the Kernel never interprets. No format change needed for K1 beyond adding the codec/version pin PC-4 requires (see `LEG-4` immediately below for what does *not* migrate as-is). |
+| MIG-3 | The **opaque progress payload** pattern: `ControllerProgress.progress: JsonObject`, Kernel-stored-and-returned-unchanged (`packages/core/src/execution/context.ts:57-63`) | **Migratable** | Matches PC-1 form (a) exactly: opaque data the Kernel never interprets. No format change needed for K1 beyond adding the codec/version pin PC-4 requires (see `LEG-4` immediately below for what does *not* migrate as-is). Review round 4 ([K01-R4-02](implementation-05.md)) sharpened PC-1 to agree with this row rather than overstate it: what migrates is this **nested payload**, not the enclosing `ControllerProgress` wrapper, whose closed `kind` tag is `LEG-4`. |
 | MIG-4 | `revision` counter (`packages/core/src/execution/context.ts:220`) — **corrected in review round 1** ([K01-REV-03](implementation-02.md)): previously classified plainly "Migratable ... directly usable as the base progress revision," which is wrong | **Migratable as an optimistic-concurrency mechanism; NOT equivalent to the target's semantic `base_progress_revision` without redefinition** | The current field bumps on *every* persisted context change, including pure lifecycle bookkeeping that has nothing to do with an accepted Outcome's progress content: `Harness.activate` bumps it at dispatch-claim (`READY`→`RUNNING`, `harness.ts:759`, `transitionContext(context, "RUNNING", startedAt)`) and again for a pre-Activation cancellation (`harness.ts:751`, `transitionContext(context, "CANCELLED", ...)`) — neither is an Outcome being accepted. `execution/resumption.ts`'s own docstring admits exactly this conflation in its own words: "`observedRevision` records the `ExecutionContext.revision` the suspending Activation read... the runtime deliberately does **not** use a naive `current.revision !== observedRevision` equality to detect staleness: `ExecutionContext.revision` also advances for ordinary lifecycle bookkeeping (`READY -> RUNNING`, `RUNNING -> WAITING`, `WAITING -> READY`), so that comparison would classify a normal suspension as an intervening semantic mutation" (`packages/core/src/execution/resumption.ts:23-27`). kernel.md's Activation/Outcome shape needs a `base_progress_revision` that identifies *the progress an Activation was dispatched against* and advances only when an accepted Outcome installs new progress (execution-protocol.md's Outcome-acceptance algorithm step 4: "install opaque progress and its revision"). K1 may reuse a monotonic-counter *mechanism* like this one, but must not assume the *existing field*, unmodified, already carries that exact semantic — either define a separate progress-specific revision, or prove (not merely assert) that every non-progress bump this field currently takes is harmless to the target's staleness check, the way `resumption.ts` already had to prove it for its own unrelated purpose. |
-| MIG-5 | The declarative Event **matching primitive**: `WakeCondition`'s kind/correlation equality test and its evaluator (`packages/core/src/interaction/event-envelope.ts:74-80`, `:82-86` `eventSatisfiesWake`), together with the `DeliveredEvent`/envelope identity fields it matches against (`event-envelope.ts:34-42`, `:50-54`). **Split out of revision 3's single `MIG-5` row in review round 3** ([K01-R3-02](implementation-04.md)): revision 3 labelled the whole of it "partially migratable," which K0.1-C3's vocabulary does not permit, so the primitive is classified here and the record shape that holds it is classified separately as `REF-5` | **Migratable** | Declarative matching over envelope identity, kind and correlation, evaluated as data rather than code, is exactly the primitive W-1 builds *both* of its lists from. `eventSatisfiesWake` is a pure set-membership-plus-equality test (`event-envelope.ts:82-86`) — no callback, no closure, no query language — and the file's own rule that a wake condition "must stay declarative, serializable runtime data, not a callback or a query language" (`:66-72`) is the constraint W-1 keeps rather than relaxes. The envelope's identity/provenance fields (`eventId`, `destination`, `kind`, `correlationId`, `causationId`, `occurredAt`, per-mailbox `sequence`) carry forward as the vocabulary an alternative or a subscription is written against. Nothing in this primitive needs redefinition for K1; what needs replacing is the record that currently holds it, which is `REF-5`'s subject, not this row's. |
+| MIG-5 | The declarative kind/correlation **matcher** used for ordinary correlated Event dependency alternatives: `WakeCondition` (`packages/core/src/interaction/event-envelope.ts:74-80`) and its evaluator `eventSatisfiesWake` (`:82-86`), together with the `DeliveredEvent`/envelope identity fields it matches against (`event-envelope.ts:34-42`, `:50-54`). **Split out of revision 3's single `MIG-5` row in review round 3** ([K01-R3-02](implementation-04.md)), which had labelled the whole of it "partially migratable" — a label K0.1-C3 does not permit; **scope narrowed in review round 4** ([K01-R4-01](implementation-05.md)), which found revision 4 still overclaiming what this primitive covers | **Migratable** — for W-1's **dependency alternatives** only | For an ordinary correlated Event dependency this matcher is exactly right and migrates unchanged: `eventSatisfiesWake` is a pure kind-membership-plus-correlation-equality test over the envelope (`event-envelope.ts:82-86`), declarative and serializable, with no callback, closure or query language — the constraint W-1 keeps rather than relaxes, and one the file states as its own rule (`:66-72`). The envelope's identity/provenance fields (`eventId`, `destination`, `kind`, `correlationId`, `causationId`, `occurredAt`, per-mailbox `sequence`) carry forward as the vocabulary an alternative is written against. **It does not build W-1's declared-input-subscription list, and revision 4's claim that it is "exactly the primitive W-1 builds *both* of its lists from" is withdrawn** ([K01-R4-01](implementation-05.md)). A subscription selects application input by its application-defined label, and that label lives in the Event *body* — `ExternalInputBody.label` (`packages/core/src/interaction/events.ts:334-337`) — which `eventSatisfiesWake` never reads: it inspects `event.kind` and `event.correlationId` and nothing else (`:82-86`). Against the `external.input` addressed to one Execution, `eventKinds: ["external.input"]` matches *all* of them and adding a `correlationId` matches only correlated ones; neither is "the ones labelled `continue`" (W-8 case 2). The source documents this limitation itself: "It cannot yet select `external.input` by its application-defined `label`, so an Execution waiting for one kind of application input still wakes for every other one addressed to it... Selective input matching is accepted future work and is deliberately deferred" (`event-envelope.ts:66-72`). K1's subscription matching is therefore **new work built beside this primitive**, not this primitive relabelled; what needs replacing outright is the record that holds it (`REF-5`). |
 | LEG-1 | The actual `ControllerResumption` record (`packages/core/src/execution/resumption.ts:72-101`) and the `ExecutionWait` `controller_resumption`/`dependencies` arms that name its ID (`packages/core/src/execution/context.ts:104-130`); the port's own admission that the underlying work is ephemeral, `packages/core/src/ports/controller-resumption.ts:40-41` ("Work registered by an Activation that does not return the matching wait is abandoned and can never wake the Execution") and `:61-62` (`ControllerResumptionWork` is documented "Never persisted, never inspected, never re-created by the runtime"); and the processor's own comparison against `EffectProcessor`, `packages/core/src/runtime/resumption-processor.ts:1-56` (header), specifically `:10-16` ("has a public settlement ingress / has none, deliberately") | **Legacy-only — corrected framing in review round 1** ([K01-REV-02](implementation-02.md)) | This is exactly F09's finding: the *durable record* (`ControllerResumptionId`, its state, its `observedRevision` provenance field) is Kernel-persisted, but the actual work it names is an in-process `Promise`/thunk that is, by the port's own contract, never persisted and cannot be reconstructed after a process death. Per 001's K1 section ("Remove controller resumptions and closed Agent/Workflow progress discriminators from the new Kernel protocol") and 003's F09 disposition, this whole mechanism does not migrate into the K1 Kernel protocol. **Correction:** round 1 said this record's *shape* (a Kernel-visible "local work" wait arm) was worth preserving with only its referent reclassified. That is withdrawn (§5, W-4): the target Kernel `waitingFor` record has **no** arm analogous to this at all, Kernel-visible or otherwise — this record and its `ExecutionWait` arms are legacy-only in the stronger sense that *neither the data nor the shape* informs the new Kernel wait protocol. It may continue to exist unchanged **inside** a compatibility Runtime (K1.4's "bridge existing controllers... keep its live-promise resumption private", 001 K1) as purely Runtime-private bookkeeping — legacy-only means "not part of the new Kernel contract, in data or in shape," not "delete the file." |
 | LEG-2 | `Harness.activate`'s mailbox consumption before `RUNNING`/before controller output exists (`packages/core/src/runtime/harness.ts:762`, `tx.mailboxes.consume(...)` inside the same transaction that writes `RUNNING`, prior to `runController` ever being called) | **Legacy-only** | This is F07: the current code treats "consumed from the mailbox" as equivalent to the target's "reserved in Activation," but does so as an unconditional side effect of claiming the Activation, not as part of accepting the resulting Outcome. It does not by itself satisfy B-3 (whole-batch acknowledgment tied to *Outcome acceptance*, not to dispatch). K1 must tie acknowledgment to accepted Outcome, not to the earlier consume-on-claim step, to satisfy OA-3/OA-4 and B-3 together (also connects to `REF-1`/`REF-4`). |
 | LEG-3 | The `CREATED` lifecycle state (`packages/core/src/execution/lifecycle.ts:16`, `:24-32` `LIFECYCLE_STATES`/enumeration, `:47` `CREATED: ["READY", "CANCELLED"]`), and `CancellationRequest`'s own docstring naming it as a real current phase: "For a `CREATED`, `READY`, or `WAITING` Execution the runtime transitions straight to `CANCELLED`" (`cancellation-request.ts:4-6`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Legacy-only** | 004's architecture review explicitly retires this as a mandatory Kernel state: its decisions table names the decision "Remove separate CREATED state from target," reasoning "Create, initial input and readiness can be accepted together; partial allocation is an operation attempt." The target lifecycle (kernel.md's diagram) starts directly at `READY` from one atomic `create + initial input` decision (execution-protocol.md's "Identities and immutable exchanges": "Creation binds the Runtime contract and executable definition revision, authority context and initial input in one atomic decision"). Current code's separate, externally observable `CREATED` phase — with its own transition edges and its own cancellation handling — does not migrate as a distinct target phase; K1 folds it into the atomic creation boundary (§11 row 1). The transition-table *pattern* (`MIG-2`) still applies to whatever shorter state list K1 actually uses. |
-| LEG-4 | `ControllerProgress`'s closed `kind: "agent" \| "workflow"` discriminator (`packages/core/src/execution/context.ts:57-59`), backed by the closed `DefinitionKind` union (`packages/core/src/definitions/types.ts:22`, `export type DefinitionKind = "agent" \| "workflow";`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Legacy-only** | 004's vocabulary-disposition table explicitly lists "closed Agent/Workflow union" under "Remove from mandatory Kernel model." A two-literal closed union cannot express a third Runtime kind without editing this type, which is exactly the closure 004 rejects as a Kernel concept — the opaque progress payload (`MIG-3`) is fine to keep opaque, but *tagging* it with this specific closed enum is not the target's compatibility mechanism. PC-4 already names the actual target mechanism: "versioned to the exact Runtime/definition contract revision that can understand it" — which `ExecutionContext.definition: ExecutionDefinitionRef` already tracks per Execution, kind-agnostically. K1's generic progress record should identify compatibility through that pinned Runtime/definition revision, not through a hardcoded two-value literal type; a compatibility-Runtime bridge may keep using `"agent"`/`"workflow"` as its own *internal* tag without that tag being part of the new Kernel protocol's progress-compatibility contract. |
+| LEG-4 | `ControllerProgress`'s closed `kind: "agent" \| "workflow"` discriminator (`packages/core/src/execution/context.ts:57-59`), backed by the closed `DefinitionKind` union (`packages/core/src/definitions/types.ts:22`, `export type DefinitionKind = "agent" \| "workflow";`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Legacy-only** | 004's vocabulary-disposition table explicitly lists "closed Agent/Workflow union" under "Remove from mandatory Kernel model." A two-literal closed union cannot express a third Runtime kind without editing this type, which is exactly the closure 004 rejects as a Kernel concept — the opaque progress payload (`MIG-3`) is fine to keep opaque, but *tagging* it with this specific closed enum is not the target's compatibility mechanism. PC-4 already names the actual target mechanism: "versioned to the exact Runtime/definition contract revision that can understand it" — which `ExecutionContext.definition: ExecutionDefinitionRef` already tracks per Execution, kind-agnostically. K1's generic progress record should identify compatibility through that pinned Runtime/definition revision, not through a hardcoded two-value literal type; a compatibility-Runtime bridge may keep using `"agent"`/`"workflow"` as its own *internal* tag without that tag being part of the new Kernel protocol's progress-compatibility contract. **Concordant sources, checked together in review round 4** ([K01-R4-02](implementation-05.md)): 001's K1 section ("Remove controller resumptions and closed Agent/Workflow progress discriminators from the new Kernel protocol"), 007's K1.1 acceptance ("no Agent/Workflow discriminator in the new boundary"), PC-1's corrected form-(a) statement, and `MIG-3`'s nested-payload scope now say the same thing: the payload migrates, this tag does not, and compatibility is decided by the pinned contract (PC-4). |
 | REF-1 | Effect dispatch happening in `applyOutcome` (`packages/core/src/runtime/harness.ts:890-911`, `this.effects.processActivationEffects(...)`) *before* the progress-committing transaction (`harness.ts:938` onward, `this.options.store.transact(...)`) | **Refused** | This is F10 exactly: Effects are processed and can partially fail *before* the transaction that commits next-state/progress/acknowledgment. The in-code comment at `harness.ts:904-906` ("nothing partial was committed") is not true of the whole boundary — it is true only of the effect-dispatch call itself. This ordering is refused for the target K1/K2 boundary: OA-3/OA-4 require Effect *intents* to be part of the same atomic commit as progress, with actual dispatch/settlement happening afterward from the accepted record. This is explicitly a K2-boundary pattern (Effects don't exist in K1 at all, §8) — it is listed here because the current code's *ordering pattern* (side-effect-before-commit) must not be carried forward into K1's non-Effect Outcome-acceptance path either. |
 | REF-3 | `ExecutionWait`'s `dependencies` arm as currently defined (`packages/core/src/execution/context.ts:126-130`) treated as a **Kernel wait primitive at all** — **corrected framing in review round 1** ([K01-REV-02](implementation-02.md)) | **Refused outright as a target Kernel record shape; the Event half is separately migratable as `MIG-5`, the `resumptions` half is `LEG-1`** | Round 1 framed this as "the shape is worth keeping, only the referent needs reclassifying." That is withdrawn (§5, W-4): the target Kernel `waitingFor` record is not a union with an `event`-or-`resumptions` shape at all — it is Event-only. A K1 Kernel wait record must not itself carry any field naming a `ControllerResumptionId` or equivalent local-work identifier, full stop; there is no partial-credit "shape" to preserve. If a Runtime needs "wait for any of several local jobs plus one Event," that union is assembled **entirely Runtime-side**, privately, with only the Event surfacing to the Kernel as a real `waitingFor` registration once (and only once) something is actually ready to report (§5, W-4's "does not yet submit an Outcome" resolution) — restating kernel.md's "a Runtime can implement an all-of join by retaining observed results in progress and waiting for the remaining set," generalized to this any-of case. |
 | REF-4 | The reference mailbox's single monotonic `consumed` cursor (`packages/core/src/reference/in-memory-runtime-store.ts:45-50`, `MailboxState.consumed: number`, doc-commented "How many of `events` an Activation has already consumed"; `consume()` at `:161-167` takes `box.events.slice(box.consumed)` then unconditionally sets `box.consumed = box.events.length`). **Wording corrected in review round 2** ([K01-R2-04](implementation-03.md)): revision 2 described the same mechanism as both "refused for K1+" and "retained as the K1 reference," which cannot both be true | **Refused as the mailbox mechanism of the new K1 reference; the existing file remains legacy/compatibility material for current 0.8.x paths until migration** | This cursor is F20's flagged problem in current code: one global count, not a per-entry disposition, so it cannot represent B-4's retained unmatched input (an Event not selected into a batch must stay independently accounted for, not merely "after the cursor") or B-5's per-Event terminal disposition. It also implements no eligibility filter: `consume()` takes *everything* past the cursor regardless of the registered wait's alternatives or declared subscriptions (§5, W-1), and it consumes at dispatch-claim time rather than acknowledging at Outcome acceptance (`LEG-2`, B-3). K1's reference mailbox must therefore be a **new mechanism** — per-Event disposition plus eligibility selection plus Outcome-time acknowledgment — not this one carried over. To be unambiguous about the two statements revision 2 conflated: the *cursor mechanism* does not become the K1 reference's mailbox; the *existing file* may keep running the current 0.8.x paths unchanged until those paths migrate. Being in memory is not what is refused here (see `LIM-1`) — this specific consumption mechanism is. |
-| REF-5 | Adoption of the existing `ExecutionWait.event` arm and its **single** `wake: WakeCondition` (`packages/core/src/execution/context.ts:103` `eventWait`; `packages/core/src/interaction/event-envelope.ts:74-80`) **as the new K1 target wait record**. **Split out of revision 3's `MIG-5` in review round 3** ([K01-R3-02](implementation-04.md)) | **Refused** — the record shape is refused unchanged as the target K1 Kernel wait record; the matching primitive inside it is separately classified `MIG-5` | The record holds **one** `wake` condition with **one** `correlationId`, so it cannot express W-1's finite enumerable set of *differently correlated* alternatives: a single condition must either fix one correlation and miss the other alternative, or set `correlationId: null` and over-match every Event of that kind (§5, W-7 example 1). It also has **no declared-input-subscription concept at all**, and the file's own docstring records the resulting gap rather than hiding it: "It cannot yet select `external.input` by its application-defined `label`, so an Execution waiting for one kind of application input still wakes for every other one addressed to it... Selective input matching is accepted future work and is deliberately deferred" (`:66-72`). Revision 3 read that as making the record "partially migratable"; under K0.1-C3's vocabulary the accurate statement is that this record shape is **refused** as K1's wait record and is rebuilt from the `MIG-5` primitive as two declarative lists plus the §4 deadline (§5, W-1). Refusing the shape is not a refusal of the file: it may keep serving current 0.8.x paths unchanged until they migrate (`LC-1`). |
+| REF-5 | Adoption of the current `ExecutionWait.event` **shape** as the new target Kernel wait record — its single `wake: WakeCondition` **and its optional legacy `interleave?: WakeCondition`** (`packages/core/src/execution/context.ts:102-103` the arm itself; `:79-100` the "Controlled interleaving" docstring; `:132-134` `eventWait(wake, interleave?)`; mirrored on the controller report at `packages/core/src/ports/controller.ts:86-92`). **Split out of revision 3's `MIG-5` in review round 3** ([K01-R3-02](implementation-04.md)); **extended in review round 4** ([K01-R4-01](implementation-05.md)) to name the `interleave` field explicitly, which revision 4 omitted from this row while W-5 still carried it as a *target* field | **Refused** — the whole shape, `wake` and `interleave` together, is refused unchanged as the target K1 Kernel wait record; the dependency matcher inside it is separately classified `MIG-5` | **The `wake` half.** The record holds **one** condition with **one** `correlationId`, so it cannot express W-1's finite list of *differently correlated* alternatives: a single condition must either fix one correlation and miss the other alternative, or set `correlationId: null` and over-match every Event of that kind (§5, W-7 case 1). It also has **no declared-input-subscription concept at all**, which is why the current shape cannot express W-8's subscription-only wait: there is nowhere to put `{continue}`, and the matcher could not evaluate it if there were (`MIG-5`). **The `interleave` half is refused with it.** `interleave` is a second singular `WakeCondition` whose documented meaning is a wake "without the primary dependency being satisfied" (`context.ts:88-89`) — a Kernel-visible distinction between two classes of wake, and with it an implied per-registration record of which dependency is still unsatisfied. The target record has neither: W-1 carries one list of dependency alternatives and one list of subscriptions, any eligible member of either retires the registration, and the Runtime re-registers what it still needs (W-5). Keeping the field would give the target two ways to spell one intent and would re-introduce the satisfied-flag semantics W-1 deliberately does not have. K1's wait record is therefore rebuilt from the `MIG-5` primitive plus new subscription matching, as two declarative lists plus the §4 deadline and the W-3 generation (§5, W-1). Refusing the shape is not a refusal of the file: it may keep serving current 0.8.x paths unchanged until they migrate (`LC-1`). |
 | LEG-5 | `PendingOperation` (`packages/core/src/effects/pending.ts:73-106`) as a **single universal record covering every Effect kind alike** — one shape for spawn, message, user-input request, timer and capability call, carrying `PendingOperationStatus`, `PendingDispatchState`, `PendingOutcomeState`, `idempotencyKey`, `deadline` and `resultEventId` together (its own docstring: "Generic on purpose. Nothing here mentions capabilities, because `SpawnExecution`, `SendMessage`, `RequestUserInput`, and a timer all need the same runtime record", `pending.ts:4-8`). **Classification corrected in review round 2** ([K01-R2-02](implementation-03.md)); round 1 wrongly recorded this as out-of-scope with no label, which K0.1-C3 does not permit | **Legacy-only** (the universal abstraction); individual facts inside it are reusable input to K2's own records, as split below | The *universal hierarchy* is explicitly removed from the mandatory target Kernel model: 004's vocabulary-disposition table lists "universal PendingOperation hierarchy" under "Remove from mandatory Kernel model," kernel.md states "Pending action state is necessary; a separate universal `PendingOperation` abstraction is not required beyond these records," action-lifecycle.md opens with "This is not a new universal PendingOperation hierarchy," and 007's own K2 exclusions row forbids a "universal pending hierarchy." So the record as a *generic one-size abstraction* does not migrate. **Split — facts that remain necessary and may inform K2's logical-action/attempt/responsibility records without K0.1 deciding K2's mechanics:** (a) separating *dispatch* from *outcome* (`PendingDispatchState` versus `PendingOutcomeState`, `pending.ts:14-20`) so that "dispatched with no outcome" is representable rather than inferred — the same distinction action-lifecycle.md's "Attempt evidence" dimension requires (§8, EF-3); (b) retaining `unknown` as a first-class outcome value rather than collapsing it to failure; (c) correlating a settled request to the exact result Event that delivered it (`resultEventId`); (d) an explicitly nullable deadline meaning "no deadline was configured" rather than a sentinel far-future timestamp (`pending.ts:96-101`). **Facts that are not generic Kernel material:** `conflicted` is Structured-Memory-write-specific and `declined`/`denied`/`rejected` encode confirmation/authorization specifics (`pending.ts:38-71`) — whether K2 keeps, renames or restructures those belongs to K2's admission/settlement contract, which K0.1 does not decide. **Scope note (unchanged):** K1 still refuses all Effects (§8, `EF-1`/`EF-2`), so no pending record of any shape is created in K1's boundary; that is a scope fact about K1, not a substitute for this record's legacy classification. |
 
 **Decision LC-1 (no legacy record is deleted by this packet).** Every classification above describes
@@ -894,10 +1029,13 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   of application input still wakes for every other one addressed to it," while kernel.md requires that
   "application-input waits require a declared subscription." **Resolution:** the canonical requirement
   wins. This is a *code-versus-target gap*, not a conflict between canonical sources: the code already
-  labels it "accepted future work... deliberately deferred," and §12 now classifies the record shape as
+  labels it "accepted future work... deliberately deferred," and §12 classifies the record shape as
   **refused** unchanged for exactly this reason (`REF-5`, split out of revision 3's `MIG-5` in review
   round 3, [K01-R3-02](implementation-04.md)), while the matching primitive it contains stays
-  **migratable** (`MIG-5`). K1 supplies the declared-subscription list (§5, W-1); nothing in the
+  **migratable for dependency-alternative matching only** (`MIG-5`, scope narrowed in review round 4,
+  [K01-R4-01](implementation-05.md): it reads `event.kind` and `event.correlationId` and never
+  `ExternalInputBody.label`, so it cannot build the subscription list). K1 supplies declared-subscription
+  matching as **new work beside** that primitive (§5, W-1, and W-8's counterexample); nothing in the
   canonical set needs changing.
 - **Re-checked in review round 2 ([K01-R2-04](implementation-03.md)) and withdrawn as a contradiction:**
   revision 2 asserted that the reference store's global serialization contradicted mental-model.md's
@@ -920,13 +1058,30 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   leaves the choice to this packet ("Object key ordering need not create a different logical payload.
   K0 selects one canonical value encoding and limits"). This was a defect in K0.1's own drafting, not a
   dispute between canonical sources.
+- **Contradiction internal to this worksheet (found in review round 4,
+  [K01-R4-01](implementation-05.md)):** revision 4 described **two** target wait records at once. W-1
+  defined the registration as a list of dependency alternatives plus a list of declared input
+  subscriptions; W-5 simultaneously defined a singular `wake` plus a separate target `interleave`
+  field; and B-2 selected the `WAITING` batch by W-5's shape rather than W-1's. A K1.1 implementer
+  reading §3 and §5 together could not tell which record to build. **Resolution:** W-1 is the single
+  target record, B-2 selects by W-1's eligibility rule alone, and `interleave` is reclassified as
+  current-0.8.x legacy/compatibility semantics (W-5) whose adoption §12 `REF-5` refuses. No canonical
+  owner is overridden: kernel.md names exactly the two sources W-1 keeps — "a wait on **any of a
+  finite set of correlated Events**" plus "an explicit input subscription [that] can allow
+  corrections/peer questions while waiting" — and no canonical page contains an `interleave` concept
+  at all. A second defect of the same drafting: W-1 required the dependency list to be non-empty,
+  which contradicted 001's own K0 trace (an input wait) and 007's K0.2 fixture scope; W-1's
+  combined-source well-formedness rule and W-8 resolve it in the canonical trace's favour.
 - **No contradiction found** between kernel.md/detail-design and 001/005/003 on any of §1–§10's
-  decisions, re-checked after round 2's §1 (E-7 canonical encoding) and §5 (W-1 wait shape) additions
-  and again after round 3's rule-4 realignment and §12 vocabulary split: each decision restates or
-  narrowly resolves an explicitly-flagged open item (004's "Open questions and decision points"
-  section, K0/K1 bullet), not a dispute between canonical sources. The other entries above are a
-  code-versus-target gap, a withdrawn self-inflicted claim and a self-inflicted internal inconsistency
-  respectively — none of them a conflict *between* canonical owners.
+  decisions, re-checked after round 2's §1 (E-7 canonical encoding) and §5 (W-1 wait shape) additions,
+  after round 3's rule-4 realignment and §12 vocabulary split, and again after round 4's wait-protocol
+  and PC-1 corrections: each decision restates or narrowly resolves an explicitly-flagged open item
+  (004's "Open questions and decision points" section, K0/K1 bullet), not a dispute between canonical
+  sources. The other entries above are one code-versus-target gap, one withdrawn self-inflicted claim
+  and two self-inflicted internal inconsistencies (E-7's ordering profile, and the two wait records) —
+  none of them a conflict *between* canonical owners. The pattern is worth naming for K0.2: every
+  contradiction this worksheet has actually had was introduced by its own drafting, not inherited from
+  the canonical set.
 
 ---
 
@@ -1032,3 +1187,31 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   - **K01-R3-03** and **K01-R3-04** concern the packet's commit identity, round-4 evidence path and
     historical review metadata rather than this worksheet's content; they are dispositioned in
     [implementation-04.md](implementation-04.md) and [review-03.md](review-03.md).
+- **Revision 5** (this document): corrects revision 4 per [review-04.md](review-04.md)'s CHANGES
+  REQUIRED findings K01-R4-01 and K01-R4-02, disposed in
+  [implementation-05.md](implementation-05.md):
+  - **K01-R4-01** — the wait contract is repaired **cumulatively**, so §3 and §5 describe one record.
+    **W-1**: dependency alternatives are no longer required to be non-empty; the registration is valid
+    iff at least one eligible wake source exists across dependency alternatives **+** declared input
+    subscriptions, which makes 001's K0-trace input-only wait expressible; and **any** eligible wake
+    now retires the registration and its generation, with the Runtime re-registering what it still
+    needs, replacing revision 4's implied per-alternative "satisfied" state. **B-2** selects the
+    `WAITING` batch by W-1's eligibility rule alone, not by singular `wake` plus `interleave`.
+    **W-5** no longer defines `interleave` as a target Kernel wait field: it is reframed as current
+    0.8.x legacy/compatibility semantics, with the surviving principle folded into W-1. **W-7** cases
+    1 and 4 are restated under the corrected protocol (`REF-5` for the record shape; correction wake
+    expressed through subscriptions and re-registration, with no `interleave`). **W-8** is new: the
+    deterministic K0-trace counterexample — typed output, then a wait whose only wake source is the
+    `continue` input subscription — with unrelated input queued, the subscribed input waking, and
+    completion permitted. **§11 row 5** now covers subscription-only input waits explicitly. **§12**:
+    `MIG-5` is narrowed to dependency-alternative matching and no longer claims `eventSatisfiesWake`
+    builds both lists (it cannot read `ExternalInputBody.label`), and `REF-5` explicitly covers the
+    current `ExecutionWait.event` shape **including its optional legacy `interleave` field**. **§13**
+    records the two-wait-records contradiction and its resolution. No controller resumption or
+    Runtime-local promise is reintroduced as a Kernel wait (W-4 unchanged).
+  - **K01-R4-02** — **PC-1** no longer calls current `ControllerProgress`/`context.control` as a whole
+    "fully compatible": form (a)'s example is the **nested `ControllerProgress.progress: JsonObject`
+    payload**, the enclosing closed-`kind` wrapper does not migrate unchanged (`LEG-4`), and K1
+    compatibility is decided by the pinned Runtime/definition/codec contract (PC-4), not the two-value
+    tag. `MIG-3` and `LEG-4` were re-checked against PC-1, 001 K1 and 007 K1.1 so all four state the
+    same rule.

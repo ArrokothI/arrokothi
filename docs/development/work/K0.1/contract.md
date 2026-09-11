@@ -23,6 +23,17 @@ validated, so round 4 restores 006's commit-identity convention: an administrati
 commit, then payload C4, then validation on the clean C4 tree, then a candidate H4 carrying only the
 report and the status-row edit. H3 is not rewritten to achieve that.
 
+Round 4 (C4 `2286106`, H4 `a068e2f`) received a fourth independent review, again **CHANGES
+REQUIRED**: see [review-04.md](review-04.md) (findings K01-R4-01 P1 and K01-R4-02 P2, with round-4
+criterion verdicts and an explicit inspected-versus-rerun record). Round 5's correction is reported in
+[implementation-05.md](implementation-05.md); sections marked "corrected in review round 4" reflect
+it. Round 4's two defects were both **internal to the worksheet** rather than disputes with a
+canonical owner: §3/§5 described two different target wait records at once, and PC-1 overstated how
+much of the current progress wrapper migrates. Round 4 also confirmed that the commit-identity
+convention restored in round 4 is correct, and that round 4's in-report raw evidence is adequate —
+round 5 follows the same pattern. E-7 and its RFC 8785 alignment were re-checked against the RFC
+itself and are not reopened.
+
 Every prior commit, report and review is preserved unedited — each round corrects forward rather than
 rewriting the record it was reviewed against.
 
@@ -116,6 +127,28 @@ Validation is link/anchor/scope hygiene plus proof that no runtime files changed
 1. `npm run check:builder-docs` — guide-inventory link/anchor/import check (does not cover
    `docs/development/`, but must still pass unchanged).
 2. `git diff --check` on the cumulative branch diff — whitespace/conflict-marker hygiene.
+
+   **Historical-evidence exception (recorded in review round 5; owner-approved before round 5's
+   validation ran).** From round 4 onward this packet's reports reproduce raw command output verbatim
+   in tracked Markdown, as review round 3 required ([K01-R3-03](review-03.md)). A faithful unified diff
+   contains blank *context* lines, which `diff -u` emits as a single space, so `git diff --check`'s
+   `blank-at-eol` rule flags them — content, not accident. `implementation-04.md:227` and `:235` are
+   exactly that, and they are **preserved byte-for-byte**: a delivered, reviewed report is not edited
+   to satisfy a hygiene check. The gate is therefore run three ways and all three results are recorded
+   in the round's report:
+
+   - `git diff --check <base> <C>` under the **default strict rules**. Its only permitted failures are
+     already-known `blank-at-eol` lines inside immutable verbatim diff evidence, each named by file and
+     line. A finding of any other class, or a `blank-at-eol` finding anywhere else, fails the packet.
+   - `git -c core.whitespace=-blank-at-eol diff --check <base> <C>` — **must pass**, proving no conflict
+     marker, carriage return, space-before-tab or indent-with-tab anywhere in the cumulative diff.
+   - `git diff --check <previous reviewed candidate H> <C>` — the round's **own delta**, which **must
+     pass under the default strict rule with no exceptions**. New work is never granted this exception.
+
+   No repository configuration and no `.gitattributes` file is changed: the middle run is a
+   command-line override for that invocation only. The exception is narrow, retrospective and
+   self-limiting — it reaches only lines already committed in a reviewed report, and the third run holds
+   every new line to the strict rule.
 3. Manual link/anchor audit of new/changed Markdown (relative links resolve; anchors match target headings).
 4. `git diff --stat <base> HEAD` reviewed by hand to confirm only `docs/development/work/K0.1/**`
    (and this contract) changed — no `packages/`, `tests/`, or other canonical doc touched.
