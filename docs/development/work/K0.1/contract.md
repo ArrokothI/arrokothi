@@ -58,6 +58,22 @@ later-arrival path with no boundary at all; and the empty-kind-set rule sat in a
 row instead of in the normative grammar. Round 6 again **accepted and closed** the historical
 blank-at-EOL exception, the round-5 findings and E-7/JCS.
 
+Round 7 (C7 `fdac4cc`, H7 `6bdc53a`) received a seventh independent review, again **CHANGES
+REQUIRED**: see [review-07.md](review-07.md) (findings K01-R7-01 P1, K01-R7-02 P1 and K01-R7-03 P2,
+with C1/C3/C4 passing and C2/C5/C6 failing; the reviewed artifacts are again pinned by **blob** SHA,
+which the correction verified against H7's tree). Round 8's correction is reported in
+[implementation-08.md](implementation-08.md); sections marked "corrected in review round 7" reflect it.
+Round 7's three defects are a different mix from earlier rounds: one **contradiction of a canonical
+owner** (a dependency alternative could wake ordinary application input, bypassing kernel.md's
+"application-input waits require a declared subscription"), one **gap against this worksheet's own §4**
+(the wait-deadline clock was named but its expiry had no accepted-fact, delivery or batch semantics,
+so a timeout could be displaced by backlog exactly as a wake Event once could), and one **over-reach**
+into a K4-owned routing mechanism. The first is worth recording as a pattern: making the selector
+grammar exact in round 5 did not create the bypass, it made it reachable — precision can convert a
+harmless imprecision into a live defect. Round 7 again **accepted and closed** the historical
+blank-at-EOL exception, the round-6 findings, E-7/JCS, the Activation-ID identity, the Effect-refusal
+boundary, the progress decisions and the three-label vocabulary.
+
 Every prior commit, report and review is preserved unedited — each round corrects forward rather than
 rewriting the record it was reviewed against.
 
