@@ -273,7 +273,7 @@ there is no second editable “done” checkbox in 001.
 
 | Packet | Status | Report / review / candidate |
 |---|---|---|
-| K0.1 | CHANGES_REQUESTED | [work/K0.1/review-02.md](work/K0.1/review-02.md) — reviewed H2 `cc61e74455534abf896c46632246615185219b92` (payload C2 `fc84664a873d6a4cfaf1d86d57fb9bcba34a6f04`, base `6464be1`); reviewer GPT-5.6 Sol High, GitHub pinned-source access; findings K01-R2-01..06; round-3 correction in progress, see [work/K0.1/implementation-03.md](work/K0.1/implementation-03.md) |
+| K0.1 | WAITING_FOR_REVIEW | Round 3: [work/K0.1/implementation-03.md](work/K0.1/implementation-03.md), base `6464be1`; prior reviewed candidates H `857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc` and H2 `cc61e74455534abf896c46632246615185219b92`, both CHANGES REQUIRED ([review-01.md](work/K0.1/review-01.md) K01-REV-01..05, [review-02.md](work/K0.1/review-02.md) K01-R2-01..06); correction payload C3 `2b252b05eaf7020fec1e2b4a342d5fea86bad66e`, raw validation evidence at [work/K0.1/evidence/round-3/](work/K0.1/evidence/round-3/), candidate H3 = this status commit (SHA in handoff) |
 | K0.2 | PLANNED | — |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
