@@ -1,5 +1,13 @@
 # Packet contract — K0.1: Protocol decisions and legacy disposition
 
+## Correction history
+
+Round 1 (base `6464be1`, C `b08577c`, H `857fa05`) received an independent review with outcome
+**CHANGES REQUIRED**: see [review-01.md](review-01.md) (findings K01-REV-01 through K01-REV-05).
+This contract and the worksheet were corrected in round 2 on top of that history (not by amending
+it); the correction's own report is [implementation-02.md](implementation-02.md). Sections below
+marked "corrected in review round 1" reflect that correction, not the original round-1 text.
+
 ## Identity
 
 - Packet: **K0.1**, parent milestone **K0** (roadmap [001](../../001-current-status-and-roadmap.md#k0--state-the-contract-and-create-the-smallest-counterexample)).
@@ -44,6 +52,7 @@ itself:
 | [003-evidence-and-findings.md](../../003-evidence-and-findings.md) F07, F08, F09, F10, F13, F14, F20 | Concrete current-code gaps the boundary assertions and legacy classification must account for, not silently repeat |
 | [004-architecture-review.md](../../004-architecture-review.md) "Open questions" K0/K1 row | Explicit unresolved items this packet is scoped to close: "exact protocol schema, receipt representation and legacy-data refusal/migration" |
 | [005-detail-design-review.md](../../005-detail-design-review.md) legacy-disposition table | Prior legacy→home mapping; K0.1 narrows this to concrete current record types, not concepts |
+| [action-lifecycle.md](../../../detail-design/action-lifecycle.md) (added in review round 1, [K01-REV-04](review-01.md)) | Owns the four action dimensions (request disposition, attempt evidence, result contract, responsibility) K0.1 must *name* at the conceptual level without deciding K2's admission/settlement mechanics — see worksheet §8, EF-3/EF-4 |
 
 ## Acceptance criteria (007's K0.1 row)
 
@@ -55,9 +64,9 @@ Decomposed into stable IDs, checked in [implementation-01.md](implementation-01.
 | ID | Criterion |
 |---|---|
 | K0.1-C1 | Every 001 K0 boundary (creation/input, dispatch, Outcome acceptance, Effect intent refusal until K2, wait/cancel, terminal, checkpoint form) has exactly one worksheet entry with an owner and an assertion phrased as an observable pass/fail, not prose intent. |
-| K0.1-C2 | Equality/limits, scoped receipts, batches, three clocks, cancellation/terminal obligations and progress compatibility are each a dedicated worksheet section with decisions, not open questions restated. |
-| K0.1-C3 | Every current legacy record type touched by K0/K1 (`ExecutionContext.control`, `ExecutionWait` incl. `controller_resumption`/`dependencies`, `ControllerResumption`, mailbox/Event records, lifecycle transitions, pending operations, revision counters) is classified migratable / legacy-only / refused, with the current file/line evidence for the classification. |
-| K0.1-C4 | No decision invents a new mandatory Kernel concept beyond what kernel.md/detail-design already name (no wire codec, no storage engine, no new entity) — storage/wire choices are left open and explicitly marked implementation-owned. |
+| K0.1-C2 | Equality/limits, scoped receipts, batches, three clocks, cancellation/terminal obligations and progress compatibility are each a dedicated worksheet section with decisions, not open questions restated. **"Limits" means K0.1 states concrete units and a counting rule for each finite bound the semantic canonical-value model needs (corrected in review round 1, [K01-REV-04](review-01.md)) — e.g. "string length in Unicode scalar values," "array/object entries," "canonical envelope bytes" — so K1 fixtures can test an exact pass/fail boundary; only the wire-byte encoding and storage/schema layout that carry those semantic values stay implementation-owned (C4).** |
+| K0.1-C3 | Every current legacy record type touched by K0/K1 (`ExecutionContext.control`, the `ControllerProgress` kind discriminator, `ExecutionWait` incl. `controller_resumption`/`dependencies`, the `ControllerResumption` record itself, the mailbox/Event delivery representation, lifecycle transitions incl. `CREATED`, `PendingOperation`, `CancellationRequest`, and the `revision` counter versus the target's semantic progress revision) is classified migratable / legacy-only / refused — splitting a record into parts with different classifications where a single label would misrepresent it (corrected in review round 1, [K01-REV-03](review-01.md)) — with current file/line evidence for each classification. |
+| K0.1-C4 | No decision invents a new mandatory Kernel concept beyond what kernel.md/detail-design already name (no wire codec, no storage engine, no new entity). This applies to **transport/storage mechanics only** — the wire-byte encoding, database schema and storage-engine choice stay implementation-owned — and does not exempt the semantic canonical-value/equality profile and its finite limits (C2), which 001 K0 requires K0.1 to actually state. |
 | K0.1-C5 | Contradictions between sources (e.g. current code vs. target contract) are called out explicitly and resolved in the Kernel's favor per AGENTS.md, never silently resolved by picking whichever the current implementation already does. |
 | K0.1-C6 | The worksheet is versioned (revision marker) and self-contained: a K1.1 implementer can read it without also reading this contract or the full canonical set again for the decisions it covers. |
 
@@ -67,7 +76,7 @@ Documentation-only packet; "touchpoints" below are read-only evidence, not edite
 
 - `docs/kernel.md`, `docs/execution.md` (Driver contract, Progress and native recovery), `docs/mental-model.md`, `docs/README.md`, `docs/detail-design/README.md`, `docs/detail-design/execution-protocol.md`, `docs/detail-design/recovery-and-compatibility.md`, `docs/detail-design/evidence-and-observability.md`, `docs/future-plan.md` (Q3 skim only — confirmed non-blocking per 010).
 - `docs/development/{README,001,002,003,004,005}.md`, `006`–`010` (this packet's own governing process).
-- Code (read-only): `packages/core/src/execution/{lifecycle,context}.ts`; `packages/core/src/ports/{controller,controller-resumption,scheduler,runtime-store}.ts`; `packages/core/src/runtime/{harness,resumption-processor}.ts` (targeted sections: `activate`, `runController`, `applyOutcome`); `packages/core/src/reference/in-memory-runtime-store.ts` (`structuredClone`-based `transact`).
+- Code (read-only): `packages/core/src/execution/{lifecycle,context,resumption,cancellation-request}.ts`; `packages/core/src/ports/{controller,controller-resumption,scheduler,runtime-store}.ts`; `packages/core/src/runtime/{harness,resumption-processor}.ts` (targeted sections: `activate`, `runController`, `applyOutcome`); `packages/core/src/reference/in-memory-runtime-store.ts` (`structuredClone`-based `transact`; the `MailboxState`/`consumed`-cursor mailbox facet, added in review round 1); `packages/core/src/effects/pending.ts` (`PendingOperation`, added in review round 1); `packages/core/src/interaction/event-envelope.ts` (`WakeCondition`, added in review round 1); `packages/core/src/definitions/types.ts` (`DefinitionKind`, added in review round 1).
 
 ## Non-goals
 

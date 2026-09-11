@@ -1,8 +1,10 @@
 # K0.1 protocol worksheet — equality, receipts, batches, clocks, cancellation, progress, policy
 
-**Revision:** 1 (first version; no prior revision exists). **Status:** produced by packet K0.1,
-awaiting independent review per [006](../../006-development-process.md). **Owner of this document:**
-Kernel, except where a row is explicitly marked Runtime/Driver or deployment.
+**Revision:** 2 — corrects revision 1 per an independent review (CHANGES REQUIRED); see
+[review-01.md](review-01.md) and [implementation-02.md](implementation-02.md) for the findings and
+disposition. **Status:** produced by packet K0.1, awaiting independent review of this revision per
+[006](../../006-development-process.md). **Owner of this document:** Kernel, except where a row is
+explicitly marked Runtime/Driver or deployment.
 
 This worksheet is a **decision record**, not new architecture: every decision below already follows
 from [kernel.md](../../../kernel.md), [execution-protocol.md](../../../detail-design/execution-protocol.md),
@@ -50,15 +52,38 @@ is never itself treated as proof of authenticity, consent, or permission — res
 [execution-protocol.md](../../../detail-design/execution-protocol.md#identities-and-immutable-exchanges)
 ("Compare the full identity/content binding; a hash alone is neither authentication nor permission").
 
-**Decision E-6 (bounded values).** Every boundary value has a declared size/depth limit (implementation-
-owned exact numbers; K1.1/K1.2 pick them), and an over-limit value is rejected at the same "malformed
-envelope" boundary as a structurally invalid one (§7), not truncated silently. Large payloads
-(checkpoints, artifacts) never travel as inline boundary values; they travel as application-owned
-references per kernel.md's Activation/Outcome shape ("large payloads use application-owned references").
+**Decision E-6 (bounded values — semantic limits stated with units, corrected in review round 1;
+[K01-REV-04](implementation-02.md)).** Every boundary value has a declared, finite bound, stated here
+at the semantic level so a K1 fixture can construct an exact pass/fail boundary case without waiting
+for a wire codec:
 
-**Left open (implementation-owned):** exact wire encoding (JSON text vs. a binary envelope codec),
-exact numeric size/depth ceilings, and the canonicalization algorithm used for E-3's sort. K0.1 fixes
-only that these choices must exist and must be versioned (§9); it does not pick among them.
+| Bound | Unit / what is counted | K0.1 limit |
+|---|---|---|
+| String field length | Unicode scalar values (code points), not UTF-16 code units or wire bytes — avoids surrogate-pair/byte-encoding ambiguity | ≤ 65,536 per individual string field |
+| Array/object entry count | direct children of one array or one object (not a recursive total across the whole value) | ≤ 4,096 entries |
+| Container nesting depth | number of array/object boundaries from the value's root to its deepest scalar, inclusive of the root | ≤ 32 levels |
+| Canonical envelope size | UTF-8 byte length of the value in its canonicalized form (E-3: sorted keys, no insignificant whitespace) — this is a semantic size bound, not a claim about the actual wire encoding's byte count | ≤ 1,048,576 bytes (1 MiB) |
+
+An over-limit value is rejected at the same "malformed envelope" boundary as a structurally invalid
+one (§7), not truncated silently. The canonical-envelope-size bound is also E-6's operative definition
+of "large" for the payload-reference rule below: large payloads (checkpoints, artifacts) never travel
+as inline boundary values; they travel as application-owned references per kernel.md's Activation/
+Outcome shape ("large payloads use application-owned references") once they would exceed it.
+
+These four numbers are K0.1's semantic decision — a K1 fixture tests exactly at and one past each
+bound — not placeholders; they are revisable only through an explicit versioned amendment to this
+worksheet (recovery-and-compatibility.md's compatibility-dimensions table: "Protocol/codec | Supported
+envelope fields and equality rules; refuse unknown required semantics"), the same way any other
+protocol/codec compatibility dimension changes. What stays implementation-owned is different in kind,
+not degree: **the wire encoding that carries these same semantic values** (JSON text vs. a binary
+envelope codec) and **the canonicalization algorithm's concrete implementation** (any sort that is
+total and deterministic over the value's keys satisfies E-3) — those may vary by transport/storage
+choice without touching the four numbers above, because the numbers bound the *logical* value, not
+its bytes on a particular wire.
+
+**Left open (implementation-owned):** exact wire encoding, and the canonicalization algorithm's
+concrete implementation (both distinguished from the four semantic limits above, which are decided,
+not open).
 
 ---
 
@@ -72,8 +97,8 @@ an implementation must actively enforce, not merely avoid by convention:
 |---|---|---|
 | Execution ID | one logical lifetime, never reused after terminal deletion | **ID-1**: an Execution ID is never reissued to a new logical Execution even after the original is deleted/GC'd. A store that recycles primary keys must remap through a separate never-reused logical ID. |
 | Input ID | authenticated producer namespace + destination + producer request key | **ID-2**: input identity is a triple (producer principal/namespace, destination Execution ID, producer-supplied request key), not a bare string. Two different producers may legitimately reuse the same request-key text without colliding. |
-| Activation ID | one exchange against a pinned accepted progress revision + Event batch | **ID-3**: an Activation ID is minted at dispatch and is never reused for a second, logically different exchange — including a takeover, which mints a new Activation ID under a new writer epoch (§4/§6) rather than reusing the old one. |
-| Writer epoch | current attempt allowed to submit progress for that exchange | **ID-4**: the epoch is a monotonically increasing integer (or equivalent total order) per Execution, bumped only by an authenticated takeover decision, never by ordinary retry of the same attempt. |
+| Activation ID | one exchange against a pinned accepted progress revision + Event batch | **ID-3** (corrected in K0.1 review round 1 — see [implementation-02.md](implementation-02.md), K01-REV-01): an Activation ID identifies **one immutable semantic exchange** — its pinned accepted progress revision, Event batch and input — for as long as that exchange remains unresolved. Ordinary Driver redelivery of the same dispatch preserves **both** the Activation ID **and** the writer epoch: it is not a new attempt. An authorized takeover (recovery has decided the prior attempt may no longer commit) preserves the **same** Activation ID and the **same** immutable exchange input — it does not invent new mailbox content under it — but **advances the writer epoch**: this is a new attempt at the same exchange, not a new exchange. A **new** Activation ID is minted only when a genuinely new semantic exchange begins, i.e. after the preceding exchange is resolved (an Outcome was accepted for it, or the Execution reached a terminal state) and a fresh dispatch is created. Restates [execution-protocol.md](../../../detail-design/execution-protocol.md#identities-and-immutable-exchanges)'s "A takeover changes only the attempt envelope/epoch after recovery permission has been established; it cannot replace input with new mailbox content under the old Activation ID" precisely: the Activation ID does *not* change on takeover, only the epoch does. |
+| Writer epoch | current attempt allowed to submit progress for that exchange | **ID-4**: the epoch is a monotonically increasing integer (or equivalent total order), bumped only by an authenticated takeover decision — including a takeover **within** the current unresolved Activation ID/exchange (ID-3) — never by ordinary retry of the same attempt. Whether the counter is reset or continues across a later, genuinely new Activation ID is an implementation choice (see this section's "Left open" note); either satisfies ID-3/ID-4 as long as a stale epoch for the *current* exchange is always rejected. |
 | Effect ID | one immutable logical request; proposal key bound at acceptance | **ID-5 (K2-scoped, recorded here for completeness):** not allocated by K0/K1, since K1 refuses Effects (§8). K0.1 fixes only that when K2 introduces it, it must follow this same "immutable logical request, proposal key bound at acceptance" shape — no separate physical-attempt-numbered identity at this layer. |
 | Receipt / acceptance position | evidence a specific request was accepted at a specific boundary | **ID-6**: a receipt names exactly one of the six atomic boundaries in kernel.md's Acceptance/atomicity table (§7's boundary list) plus the accepted revision/position within it. A receipt is never evidence of anything past that boundary (e.g. an Outcome-acceptance receipt is not evidence any Effect in it succeeded). |
 
@@ -91,6 +116,31 @@ see before returning anything, including a "not found" — a receipt lookup must
 "doesn't exist" from "exists but you can't see it" through response shape/timing in a way that leaks
 existence to an unauthorized caller.
 
+**Decision ID-9 (Activation-identity counterexamples, added in review round 1).** Deterministic
+schedules ID-3/ID-4 must satisfy, coherent with the duplicate/conflicting-Outcome rules in §7 and the
+stale-writer rule kernel.md states directly ("An epoch is not a credential and host liveness is not
+proof of ownership; authenticated ingress and the authoritative store decide"):
+
+1. **Ordinary redelivery.** The Driver resends the same dispatch (network retry, no takeover decided).
+   Same Activation ID, same writer epoch. The Kernel treats it as the identical in-flight exchange —
+   an Outcome later submitted for it is evaluated normally; no stale-writer rejection applies merely
+   because delivery repeated.
+2. **Lost-host takeover.** The scheduler/lease layer decides the original host may no longer commit
+   (§4's scheduler-lease clock, not the wait/Execution deadlines) and authorizes a replacement attempt.
+   Same Activation ID, same pinned input — the writer epoch advances. The replacement attempt may now
+   submit an Outcome for that Activation ID at the new epoch.
+3. **Stale old-epoch Outcome after takeover.** The original (now-superseded) host later submits an
+   Outcome for that same Activation ID at its old epoch. It is rejected as a stale-writer conflict
+   (OA-3/OA-5) *because the epoch no longer matches*, not because the Activation ID is wrong — the
+   Activation ID is still correct; only that writer's authority to commit under it has lapsed. This is
+   the case ID-3/ID-4's earlier (round-1) drafting got backwards by minting a new Activation ID on
+   takeover instead of advancing the epoch under the same one.
+4. **Next semantic Activation.** The prior exchange resolves (an Outcome is accepted, e.g. `continue`
+   or a satisfied wait) and the Kernel dispatches again. This dispatch — pinning the newly accepted
+   progress revision and a new Event batch — gets a **new** Activation ID. An Outcome submitted against
+   the old Activation ID is now stale for a different reason (superseded exchange, not superseded
+   epoch) and is rejected the same way: no partial acceptance, no silent revival of the old exchange.
+
 **Left open (implementation-owned):** exact receipt serialization (opaque token vs. structured
 tuple), exact epoch representation (integer vs. fencing token), exact request-key hashing.
 
@@ -103,13 +153,15 @@ explicit, finite, enumerable set of Event references pinned at dispatch time —
 global position N." This directly fixes F20 (a single cursor can silently acknowledge unmatched
 input): per-entry disposition, not a monotonic cursor, is the required representation.
 
-**Decision B-2 (selection rule by lifecycle).**
+**Decision B-2 (selection rule by lifecycle; corrected in review round 1 — [K01-REV-02](implementation-02.md)).**
 - While `READY`: select a bounded batch (implementation-owned max size) from all currently
   unacknowledged Events, in acceptance order.
-- While `WAITING`: select only Events eligible under the currently registered wait (its `wake` and, if
-  present, `interleave` condition for the `event`/`controller_resumption` arms, or its `event`
-  condition for the `dependencies` arm — see §5) — an eligible match is included ahead of any
-  unrelated backlog, but unrelated backlog is not force-included merely because it is old.
+- While `WAITING`: select only Events eligible under the currently registered wait's `wake` condition
+  and, if present, its declarative `interleave` condition (§5) — both are conditions over **Kernel
+  Events only**. An eligible match is included ahead of any unrelated backlog, but unrelated backlog is
+  not force-included merely because it is old. §5 fixes that a K1 `waitingFor` registration never names
+  Runtime-local work as a thing this selection rule can be "eligible under" — there is only the
+  Event-based condition.
 
 **Decision B-3 (whole-batch acknowledgment).** An accepted Outcome acknowledges its *entire* pinned
 batch at once. "Acknowledged" means "the Runtime is on record as having accounted for this Event",
@@ -174,27 +226,79 @@ Execution to `WAITING` (or keeps it `READY` if already satisfied). This is the f
 precedes wait" race in execution-protocol.md's race table; it must not be split into "register" then
 "separately notice."
 
-**Decision W-3 (wait generation identity).** Every `waitingFor` registration has its own generation
-identity, distinct from the Execution ID and from the Activation ID that created it. A timer or a
-late settlement names the generation it belongs to; a wake attempt for a generation that has since
-been replaced (the Execution moved on to a new wait, or resolved and re-entered `WAITING` on a
-different dependency) is a no-op, never a wake of the current wait. This directly fixes the "stale
-timers cannot wake a replacement wait" requirement and generalizes it to late settlements, not only timers.
+**Decision W-3 (wait-generation identity is scoped to wait-*created artifacts*, corrected in review
+round 1 — [K01-REV-02](implementation-02.md)).** Every `waitingFor` registration has its own generation
+identity, distinct from the Execution ID and from the Activation ID that created it. **Generation
+fencing applies to artifacts the wait registration itself created for its own bookkeeping — concretely,
+a timer scheduled against that specific registration.** A timer naming a generation that has since been
+replaced (the Execution moved on to a new wait, or resolved and re-entered `WAITING` on a different
+dependency) is a no-op, never a wake of the current wait: this is exactly kernel.md's "stale timers
+cannot wake a replacement wait." **Generation fencing does *not* apply to authenticated Kernel Events.**
+An accepted result/settlement Event is a durable mailbox fact the instant it is accepted, independent
+of which wait generation happened to be live at that moment (execution-protocol.md's atomic-mailbox-
+check applies at *whatever* wait is current when the check runs, per W-2) — it is never discarded or
+treated as belonging to an obsolete generation merely because an intervening wait replaced the one that
+was active when the Event arrived. Round 1 wrongly generalized generation-fencing from "stale timers"
+to "a timer or a late settlement," which would have let a currently-registered, explicitly correlated
+wait miss an Event it should be able to observe (see W-6's counterexamples 3–4).
 
-**Decision W-4 (current `ExecutionWait` shapes are the K0/K1 union, unchanged in kind, reframed in
-ownership).** The current code already carries a three-armed union — `event`, `controller_resumption`,
-`dependencies` (`packages/core/src/execution/context.ts:102-130`) — that structurally matches "wait on
-one Event, or one local dependency, or a finite any-of set." K0.1 keeps the *shape* of this
-distinction (an Event-wait is categorically different from a Runtime-local-work-wait) but reclassifies
-what may occupy the local-work arm: see §12 — the current `controller_resumption`/`dependencies`
-arms name a **Kernel-persisted** `ControllerResumptionId`, which is legacy-only for the target Kernel
-protocol (§12, ID `LEG-1`). The target K1 wait registration must express "Runtime-local work
-outstanding" without the Kernel persisting a reference to live, unrecoverable process state.
+**Decision W-4 (the target Kernel `waitingFor` record has no Runtime-local-work arm at all;
+corrected in review round 1 — replaces round 1's W-4 entirely).** Round 1 proposed keeping the current
+three-armed `ExecutionWait` union's *shape* — `event` / a Runtime-local-work arm / `dependencies` — and
+reclassifying only what occupies the local-work arm. That framing is wrong and is withdrawn: the
+target Kernel wait record is defined **only** in terms of a finite, enumerable set of correlated
+**Kernel Events**, with an optional explicit input subscription (kernel.md's Events-and-waits section:
+"Start with a wait on any of a finite set of correlated Events... An explicit input subscription can
+allow corrections/peer questions while waiting"). There is no second arm for "Runtime-local work" in
+this record at all — not a Kernel-visible one, not a legacy-classified one, not a placeholder. Runtime-
+local promises/jobs that have not crossed a Kernel dependency boundary (i.e. were never proposed as a
+Kernel-mediated Effect) are **entirely Runtime/Driver-private**: the Kernel never learns their identity
+and never fences a wait generation against them, because no `waitingFor` registration is created for
+them in the first place.
 
-**Decision W-5 (interleave is Runtime-declared, not Kernel-inferred).** Where an `interleave`-style
-condition exists (current code: `ExecutionWait`'s optional `interleave` field), it remains
-declarative data supplied by the Runtime's Outcome, evaluated by the Kernel exactly like the primary
-wake condition — the Kernel never infers on its own that some Event is "probably safe to interleave."
+The consequence for an Activation whose only outstanding work is such local work: it simply **does not
+yet submit an Outcome**. From the Kernel's side that Activation remains `RUNNING` — "an Activation
+remains unresolved, not that a process is currently making progress" (mental-model.md) — because
+"Dispatch does not synchronously await native work in the coordinator loop. The Driver eventually
+submits an Outcome" (kernel.md). There is no third lifecycle state and no Kernel-visible dependency
+record for this case; it is exactly the same `RUNNING`-is-unresolved concept K3/recovery already uses
+for a lost/slow attempt, applied here to an attempt that is merely slow rather than lost.
+
+This is why the current `ExecutionWait` `controller_resumption`/`dependencies` arms and the backing
+`ControllerResumption` record (§12, `LEG-1`) do not inform the target wait record's *shape* at all —
+not even as a withdrawn/legacy-labeled arm. They may continue to exist, privately and unchanged, as
+K1.4 compatibility-Runtime-internal bookkeeping that a legacy controller bridge uses to decide when it
+has enough to finally produce an Outcome — but nothing about that bookkeeping is reflected in, or
+constrains the shape of, the new Kernel `waitingFor` record.
+
+**Decision W-5 (interleave is a declarative condition over Events, Runtime-declared, not
+Kernel-inferred).** An `interleave` condition, where present, is a second, separate `WakeCondition`
+over Kernel Events (`packages/core/src/interaction/event-envelope.ts:74-80`) — declarative data
+supplied by the Runtime's Outcome, evaluated by the Kernel exactly like the primary wake condition. It
+is not a per-arm concept tied to a Runtime-local-work case (there is no such case per W-4): both the
+primary `wake` and the optional `interleave` name only Kernel Events. The Kernel never infers on its
+own that some Event is "probably safe to interleave."
+
+**Decision W-6 (deterministic counterexamples, added in review round 1).**
+
+1. **Local work alone creates no `WAITING`.** A controller has only Runtime-local (native/model)
+   work outstanding and no Kernel-visible dependency to report. Its Activation stays unresolved
+   (`RUNNING`); the Kernel never creates a `waitingFor` record, and no wait generation is ever
+   allocated for it. Only once the Runtime produces an actual Outcome (`continue`, `await_event`,
+   `complete`, or `fail`) does the Kernel see anything.
+2. **Stale timer G1 cannot wake G2.** A wait is registered with generation G1 and a persisted timer.
+   Before G1's deadline, the wait resolves and the Execution re-enters `WAITING` on a different
+   dependency under generation G2. G1's timer later fires; it is a no-op against G2 (W-3).
+3. **Timeout/replacement, then a late result, retains the result.** G1 times out (or is replaced by
+   G2 as in case 2) and *afterward* an authenticated result Event correlated to G1's original
+   dependency is accepted. That Event is retained as a durable mailbox fact (kernel.md: "Wait timeout
+   versus action success: preserve both facts") — it is not deleted or invalidated merely because the
+   wait that originally asked for it moved on.
+4. **A later, explicitly correlated wait can consume an already-accepted eligible result.** Continuing
+   case 3: if the Execution's *current* wait (G2, or a still-later G3) explicitly correlates to that
+   already-accepted Event (same correlation ID/kind), the atomic mailbox check at that wait's
+   registration (W-2) finds and consumes it — generation fencing (W-3) never blocks this, because the
+   Event itself was never generation-scoped; only the now-superseded G1 timer was.
 
 **Left open (implementation-owned):** exact generation representation (integer counter vs. new random
 ID per registration — either satisfies W-3 as long as it is compared, never assumed monotonic across
@@ -295,21 +399,74 @@ real, not merely "usually fast enough."
 **Decision EF-1.** K1 (and therefore K0.1) does not implement Effect admission, dispatch or
 settlement — 007's design table states this exclusion explicitly for K0/K1
 ("K1 initially refuses Effects until K2"). K0.1's obligation is narrower: an Outcome that proposes an
-Effect during K1 must be **explicitly refused** (a recorded rejection, per OA-5/OA-6), never silently
-accepted-and-ignored and never silently stripped from an otherwise-accepted Outcome. Silently dropping
-a proposed Effect while accepting the rest of the Outcome would let a controller believe it requested
-external work that nothing recorded.
+Effect during K1 must be **explicitly refused**, never silently accepted-and-ignored and never
+silently stripped from an otherwise-accepted Outcome. Silently dropping a proposed Effect while
+accepting the rest of the Outcome would let a controller believe it requested external work that
+nothing recorded.
 
-**Decision EF-2 (boundary still exists in the acceptance table).** kernel.md's Acceptance/atomicity
-table already lists "Effect admission" and "Effect settlement" as their own boundaries, separate from
-"Outcome acceptance." K0.1 confirms this separation is correct and that K1's refusal is a *placeholder
-rejection at the Effect-admission boundary*, not evidence that boundary doesn't exist — K2 fills it in
-without renegotiating where it sits.
+**Decision EF-2 (corrected in review round 1 — [K01-REV-04](implementation-02.md): K1's refusal is
+envelope validation, not an admission decision).** Round 1 called K1's refusal "a placeholder rejection
+*at the Effect-admission boundary*." That is wrong and is withdrawn: **there is no Effect-admission
+boundary in K1 at all**, because admission (kernel.md's Acceptance/atomicity table) is something that
+happens to an *already-accepted immutable Effect intent* — and in K1 no Effect intent is ever created,
+because the whole Outcome containing it is rejected one step earlier, during whole-envelope validation
+(§7, OA-3), precisely because K1's schema does not yet recognize Effect proposals as an acceptable
+Outcome field. Concretely: an Outcome proposing an Effect fails OA-3's "valid next step"/structural
+check before step 4 (OA-4's atomic commit) ever runs, so no Effect ID is minted, no proposal key is
+bound, and nothing exists for a later admission decision to apply to. This is the same "envelope/
+reference errors reject the entire proposal" path kernel.md already describes for any other malformed
+Outcome field — proposing an Effect in K1 is treated as exactly that kind of malformed field, not as a
+new kind of boundary event. The Effect-admission and Effect-settlement boundaries kernel.md's table
+names remain real, but they are **K2-introduced** boundaries that do not exist yet, not boundaries K1
+visits and declines.
 
-**Non-decision (explicitly K2-owned, not resolved here):** action disposition, outcome certainty,
-consent binding, policy freshness ordering for remote services. §10 addresses only the narrow "local
-policy ordering" precondition 001 K0 explicitly asks for before K2 promises remote revocation; it does
-not implement K2's admission/settlement contract.
+**Decision EF-3 (naming the four action dimensions at K0 level, without deciding their mechanics —
+added in review round 1, [K01-REV-04](implementation-02.md)).**
+[action-lifecycle.md](../../../detail-design/action-lifecycle.md#one-request-several-kinds-of-fact)
+already owns four distinct dimensions of an accepted action and warns against compressing them into
+one ambiguous `status`:
+
+| Dimension | Facts to distinguish (action-lifecycle.md's own wording) |
+|---|---|
+| Request disposition | Proposed/accepted; waiting for consent; eligible; denied/refused/declined/expired/withdrawn; no further attempts |
+| Attempt evidence | No attempt admitted; admitted and may have run; observed success; definite failure; unknown |
+| Result contract | Validated value; invalid/missing value; partial evidence |
+| Responsibility | Still required by Execution; transferred to a named durable owner; deliberately abandoned under policy |
+
+K0.1 does **not** decide how K2 represents or transitions these — that remains K2's admission/
+settlement contract, unchanged as a non-goal here. What K0.1 fixes at the conceptual level, so K1's
+design does not quietly foreclose them, is only this: **nothing in K1's Outcome-acceptance algorithm
+(§7) may conflate these four dimensions into a single accepted/rejected boolean once Effects exist**,
+and K1 itself produces none of these four facts (§8 has no Effects yet) — so K0/K1 correctly has
+*nothing* to say about their mechanics, only an obligation not to build a boundary shape in K1 that
+would make representing all four impossible in K2.
+
+**Decision EF-4 (K0-level negative cases, named from action-lifecycle.md, not newly decided —
+added in review round 1).** These restate action-lifecycle.md's own text; K0.1 does not implement or
+test them (K2 does) — it records them so K1's Outcome/envelope boundary is not accidentally built in a
+way that would contradict them later:
+
+- Denial/refusal of an action **without a physical attempt** is not evidence of external failure —
+  "Waiting for consent consumes no physical attempt" and a denial can happen before any attempt exists
+  (action-lifecycle.md).
+- Work that was **admitted but not yet confirmed one way or the other** is `unknown`, not a guess at
+  success or failure — "Until proved otherwise, a lost admitted attempt may have executed"
+  (action-lifecycle.md).
+- An acknowledged `unknown` Event does **not** discharge the Execution's completion obligation for
+  that work — restates action-lifecycle.md's "Evidence revisions and reconciliation" section directly.
+- An operator or Runtime **choosing to stop retrying** is a responsibility/disposition decision, not
+  proof that the external action failed — "An operator choosing 'stop trying' changes responsibility/
+  disposition, not proof of external failure" (action-lifecycle.md).
+- **K1-specific case, actually decided here:** an Outcome containing K1-unsupported Effect content
+  causes whole-Outcome refusal at envelope validation (EF-2); it never creates an Effect intent, so
+  none of the four dimensions above are ever instantiated for it — there is no "denied" or "unknown"
+  action record for a K1-refused Effect, because no action record exists at all.
+
+**Non-decision (explicitly K2-owned, not resolved here):** the concrete mechanics of consent binding
+and policy freshness ordering for remote services. §10 addresses only the narrow "local policy
+ordering" precondition 001 K0 explicitly asks for before K2 promises remote revocation; it does not
+implement K2's admission/settlement contract, and EF-3/EF-4 above name dimensions/cases without
+deciding their K2 representation.
 
 ---
 
@@ -396,10 +553,10 @@ boundary rule. This table is the direct answer to K0.1-C1.
 | # | 001 K0 boundary | Owner | Decisions | Observable assertion |
 |---|---|---|---|---|
 | 1 | Creation/input ingress accepted IDs/receipts | Kernel | ID-1, ID-2, ID-6, ID-7 | A create request replayed with the same request key returns the same Execution ID and receipt; a create with the same key but different content is rejected as a conflict, never silently accepted as an edit. |
-| 2 | Activation dispatch intent | Kernel | ID-3, ID-4, B-1, B-2 | Two dispatches for the same Execution never carry the same Activation ID; a dispatch pins one finite, enumerable Event batch that a later Outcome can be checked against exactly. |
+| 2 | Activation dispatch intent | Kernel | ID-3, ID-4, ID-9, B-1, B-2 | Two *semantically different* dispatches (a new exchange after the prior one resolved) never carry the same Activation ID; a dispatch pins one finite, enumerable Event batch that a later Outcome can be checked against exactly; an authorized takeover of a *still-unresolved* exchange advances the writer epoch under the **same** Activation ID rather than minting a new one (ID-9 cases 2–3). |
 | 3 | Outcome acceptance; duplicate/conflicting Outcome behavior | Kernel | OA-1–OA-6, ID-6 | Exact duplicate submission returns the original receipt with no re-dispatch of anything; a same-identity/different-content submission is rejected, not merged; a failure partway through acceptance leaves zero partial state (no progress, no Effect intent, no acknowledgment). |
-| 4 | Effect intents (admission boundary) | Kernel | EF-1, EF-2 | An Outcome proposing an Effect during K1 is rejected with a recorded, inspectable reason; the rest of that Outcome is also rejected (whole-envelope, per OA-3), not silently split. |
-| 5 | Any-of wait correlation; wait-generation identity; eligible batch accounting | Kernel | W-1–W-5, B-1–B-4 | A wait registered against a finite dependency set atomically observes any already-accepted matching Event (no lost wake); a timer/settlement naming a superseded generation is a no-op against the current wait. |
+| 4 | Effect intents | Kernel | EF-1–EF-4 | An Outcome proposing an Effect during K1 is rejected at whole-envelope validation (OA-3) with a recorded, inspectable reason, before any Effect intent, ID or proposal-key binding ever exists; the rest of that Outcome is also rejected, not silently split; this is envelope validation, not a K1 visit to the (K2-introduced) Effect-admission boundary. |
+| 5 | Any-of wait correlation; wait-generation identity; eligible batch accounting | Kernel | W-1–W-6, B-1–B-4 | A wait registered against a finite set of correlated Kernel Events atomically observes any already-accepted matching Event (no lost wake); a stale wait-*timer* naming a superseded generation is a no-op against the current wait, but an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6); an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
 | 6 | Wake / Event acceptance during computation | Kernel | B-2, B-4, W-2 | An Event accepted while an Activation is in flight does not alter that Activation's already-pinned batch; it is visible to the next eligible batch. |
 | 7 | Cancellation ordering | Kernel | CX-1, CX-2, CX-5 | A cancellation accepted before an in-flight Activation's Outcome is accepted wins: that Outcome's `complete`/`fail`/`continue` is discarded and the Execution is `CANCELLED`; a completion accepted first wins the opposite race, and neither race can be re-run by resubmitting either side. |
 | 8 | Terminal obligations; completion responsibility | Kernel | CX-3, CX-4, B-5 | `complete` is rejected outright if unresolved owned work is not accounted for in the current or a previously acknowledged batch; a terminal Execution still exposes recorded disposition for any Event that was queued but never acknowledged. |
@@ -420,26 +577,38 @@ for K0–K4" enumeration.
 Every current 0.8.x persisted record type the K0/K1 boundary touches, classified per 001's K0
 requirement. "Current" = base commit `6464be1`, package `packages/core`. This is not an exhaustive
 inventory of every field in the codebase — it covers exactly the record types the boundary table in
-§11 depends on.
+§11 depends on, **plus every record family review round 1 named as required** (`ExecutionContext.control`
+and its `kind` discriminator; `ExecutionWait`; the actual `ControllerResumption` record; the mailbox/
+Event delivery representation; lifecycle transitions including `CREATED`; `PendingOperation`;
+`CancellationRequest`; the `revision` counter versus the target's progress revision — corrected/
+completed in review round 1, [K01-REV-03](implementation-02.md)). A record is **split** into more than
+one row below wherever a single migratable/legacy-only/refused label would misrepresent part of it.
 
 | ID | Record / field (current file:line) | Classification | Reasoning |
 |---|---|---|---|
-| MIG-1 | Cancellation-request ordering in `Harness.activate`/`applyOutcome` (`packages/core/src/runtime/harness.ts:747-757`, `:953-965`) | **Migratable** | The *rule* (check pending cancellation before dispatch, and again before committing the controller's reported next state) already matches CX-1/CX-2. The concrete `CancellationRequest` record shape can carry forward into K1's store as-is or with trivial renaming; no behavioral change is needed to satisfy §6. |
-| MIG-2 | `LifecycleState` transition table (`packages/core/src/execution/lifecycle.ts:46-54`) | **Migratable** | A pure, store-independent function already enforcing "terminal states have no outgoing edges" and "only `RUNNING` reaches `COMPLETED`/`FAILED`." This is exactly the target invariant (kernel.md's lifecycle diagram) and needs no semantic change, only confirmation it stays store-independent in K1. |
-| MIG-3 | `ControllerProgress` / `ExecutionContext.control` (`packages/core/src/execution/context.ts:57-63`) | **Migratable** | Matches PC-1 form (a) exactly: opaque, Kernel-stored-and-returned-unchanged, tagged by kind so a restart can tell which controller understands it. No format change needed for K1; K2+ only needs to add the codec/version pin required by PC-4 if it is not already implicit in the tagged shape. |
-| MIG-4 | `revision` counter (`packages/core/src/execution/context.ts:220`, incremented in `transitionContext`/`withControllerProgress`) | **Migratable** | Directly usable as the "base progress revision" kernel.md's Activation/Outcome shape requires, and already satisfies "every persisted change increments it exactly once." |
-| MIG-5 | `ExecutionWait` `event` arm (`packages/core/src/execution/context.ts:103`, `eventWait`) | **Migratable** | A Kernel-visible Event dependency with an optional declarative `interleave` condition is exactly what W-1/W-5 need; no live process-local reference is involved. |
-| LEG-1 | `ExecutionWait` `controller_resumption` / `dependencies` arms naming `ControllerResumptionId` (`packages/core/src/execution/context.ts:104-130`); the port's own admission that the underlying work is ephemeral, `packages/core/src/ports/controller-resumption.ts:40-41` ("Work registered by an Activation that does not return the matching wait is abandoned and can never wake the Execution") and `:61-62` (`ControllerResumptionWork` is documented "Never persisted, never inspected, never re-created by the runtime"); and the processor's own comparison against `EffectProcessor`, `packages/core/src/runtime/resumption-processor.ts:1-56` (header), specifically `:10-16` ("has a public settlement ingress / has none, deliberately") and `:53-55` ("A registration the controller never waited on is abandoned: the promise keeps running to completion, its result is discarded, and no record ever names it") | **Legacy-only** | This is exactly F09's finding: the *durable record* (`ControllerResumptionId`, its state) is Kernel-persisted, but the actual work it names is an in-process `Promise`/thunk that is, by the port's own contract, never persisted and cannot be reconstructed after a process death. Per 001's K1 section ("Remove controller resumptions and closed Agent/Workflow progress discriminators from the new Kernel protocol") and 003's F09 disposition ("remove resumptions from the new Kernel contract; retain legacy machinery only inside a compatibility Runtime... Kernel never persists model thunks or promises"), this whole mechanism does not migrate into the K1 Kernel protocol. Its *useful behavior* — a controller doing slow local work and reporting a dependency on it — must be re-expressed in K1 as Runtime-private bookkeeping that never becomes a Kernel-persisted identity, or (if it must survive process death) as a real Effect once K2 exists. It may continue to exist unchanged **inside** a compatibility Runtime (K1.4's "bridge existing controllers... keep its live-promise resumption private", 001 K1) — legacy-only means "not part of the new Kernel contract," not "delete the file." |
-| LEG-2 | `Harness.activate`'s mailbox consumption before `RUNNING`/before controller output exists (`packages/core/src/runtime/harness.ts:762`, `tx.mailboxes.consume(...)` inside the same transaction that writes `RUNNING`, prior to `runController` ever being called) | **Legacy-only** | This is F07: the current code treats "consumed from the mailbox" as equivalent to the target's "reserved in Activation," but does so as an unconditional side effect of claiming the Activation, not as part of accepting the resulting Outcome. It works today only because the same process usually completes the Activation soon after; it does not by itself satisfy B-3 (whole-batch acknowledgment tied to *Outcome acceptance*, not to dispatch). The *behavior* — Events selected at dispatch time become "reserved," `activate`, `harness.ts:762` — can inform K1.1's design, but the exact current transaction boundary does not migrate unchanged: K1 must tie acknowledgment to accepted Outcome, not to the earlier consume-on-claim step, to satisfy OA-3/OA-4 and B-3 together (also connects to REF-1 below). |
-| REF-1 | Effect dispatch happening in `applyOutcome` (`packages/core/src/runtime/harness.ts:890-911`, `this.effects.processActivationEffects(...)`) *before* the progress-committing transaction (`harness.ts:938` onward, `this.options.store.transact(...)`) | **Refused** | This is F10 exactly: Effects are processed and can partially fail *before* the transaction that commits next-state/progress/acknowledgment. The in-code comment at `harness.ts:904-906` ("nothing partial was committed") is not true of the whole boundary — it is true only of the effect-dispatch call itself, not of the composite operation. This ordering is refused for the target K1/K2 boundary: OA-3/OA-4 require Effect *intents* to be part of the same atomic commit as progress, with actual dispatch/settlement happening afterward from the accepted record (kernel.md's Acceptance/atomicity table, "Effect admission" row: "Not implied: External success"). Note this is explicitly a K2 boundary (Effects don't exist in K1 at all, §8) — it is listed here because the current code's *ordering pattern* (side-effect-before-commit) must not be carried forward into K1's non-Effect Outcome-acceptance path either; K1.2 must commit progress/emissions/next-state atomically with nothing "processed" beforehand outside that transaction. |
-| REF-2 | `InMemoryRuntimeStore.transact` (`packages/core/src/reference/in-memory-runtime-store.ts:455-468`): the scope parameter is named `_scope: ExecutionId` (leading underscore — declared but unused) and every transaction does `const draft = structuredClone(this.state)` (`:457`) against the *entire* store's `RuntimeState`, then installs the whole draft back (`:459`) after serializing all transactions through one `queue` (`:453,462-466`) | **Refused as a K1+ mechanism; retained only as a reference/testing store** | This is F13 exactly: the store accepts a scope argument and then ignores it, cloning and single-queuing the whole aggregate on every transaction rather than isolating by Execution. It works for an in-memory reference implementation and conformance tests, but "clone the whole aggregate and serialize all transactions globally" is not the scoped, concurrently-progressing contract the target requires (mental-model.md: "Unrelated Executions can compute concurrently"; kernel.md's "Child/message operation" row). K3's persistent profile explicitly must not inherit it (003's F13 disposition: "measure actual cost and choose bounded persistent mechanism"). K0.1 does not need this store to change — K1 may keep using it as its in-memory reference for single-Execution conformance tests — but no K0.1/K1 assertion may depend on "the store happens to globally serialize and deep-clone everything" as a substitute for a real per-Execution scope/concurrency contract; that would silently reintroduce global serialization as if it were the target mechanism. |
-| REF-3 | `ExecutionWait`'s `dependencies` arm as currently defined (`packages/core/src/execution/context.ts:126-130`) treated as a **general Kernel wait primitive** | **Refused in that framing; the Event half is migratable (MIG-5), the `resumptions` half inherits LEG-1's classification** | The shape correctly keeps `event` and `resumptions` distinct (W-1), which is worth keeping structurally, but a K1 Kernel wait record must not itself carry a list of `ControllerResumptionId`s as a first-class Kernel dependency type, since those ids name LEG-1 material. If a Runtime needs "wait for any of several local jobs plus one Event" behavior in the target design, that union must be assembled Runtime-side (accumulated in opaque `control` progress, MIG-3) with only the `event` half surfacing as a real `waitingFor` registration — restating kernel.md's "a Runtime can implement an all-of join by retaining observed results in progress and waiting for the remaining set" — the same accumulation-in-progress pattern applies to this any-of union. |
+| MIG-1 | Cancellation-request ordering in `Harness.activate`/`applyOutcome` (`packages/core/src/runtime/harness.ts:747-757`, `:953-965`), backed by the actual `CancellationRequest` record (`packages/core/src/execution/cancellation-request.ts:26-33`, states `"pending" \| "applied"`) | **Migratable** | The *rule* (check pending cancellation before dispatch, and again before committing the controller's reported next state) already matches CX-1/CX-2. The record's own docstring already states the target-compatible reasoning directly: a `RUNNING` Execution "cannot be interrupted mid-Activation without racing an uncontrolled context mutation, so the request is persisted here instead and the current Activation reaches a safe boundary" (`cancellation-request.ts:5-7`). The two-state shape can carry forward into K1's store as-is; no behavioral change is needed to satisfy §6. |
+| MIG-2 | `LifecycleState` transition table (`packages/core/src/execution/lifecycle.ts:46-54`), **excluding** `CREATED` (see `LEG-3` below) | **Migratable** | A pure, store-independent function already enforcing "terminal states have no outgoing edges" and "only `RUNNING` reaches `COMPLETED`/`FAILED`." This is exactly the target invariant (kernel.md's lifecycle diagram) and needs no semantic change for the `READY`/`RUNNING`/`WAITING`/`COMPLETED`/`FAILED`/`CANCELLED` states — only confirmation it stays store-independent in K1, and that `CREATED` is dropped from the state list it operates over. |
+| MIG-3 | The **opaque progress payload** pattern: `ControllerProgress.progress: JsonObject`, Kernel-stored-and-returned-unchanged (`packages/core/src/execution/context.ts:57-63`) | **Migratable** | Matches PC-1 form (a) exactly: opaque data the Kernel never interprets. No format change needed for K1 beyond adding the codec/version pin PC-4 requires (see `LEG-4` immediately below for what does *not* migrate as-is). |
+| MIG-4 | `revision` counter (`packages/core/src/execution/context.ts:220`) — **corrected in review round 1** ([K01-REV-03](implementation-02.md)): previously classified plainly "Migratable ... directly usable as the base progress revision," which is wrong | **Migratable as an optimistic-concurrency mechanism; NOT equivalent to the target's semantic `base_progress_revision` without redefinition** | The current field bumps on *every* persisted context change, including pure lifecycle bookkeeping that has nothing to do with an accepted Outcome's progress content: `Harness.activate` bumps it at dispatch-claim (`READY`→`RUNNING`, `harness.ts:759`, `transitionContext(context, "RUNNING", startedAt)`) and again for a pre-Activation cancellation (`harness.ts:751`, `transitionContext(context, "CANCELLED", ...)`) — neither is an Outcome being accepted. `execution/resumption.ts`'s own docstring admits exactly this conflation in its own words: "`observedRevision` records the `ExecutionContext.revision` the suspending Activation read... the runtime deliberately does **not** use a naive `current.revision !== observedRevision` equality to detect staleness: `ExecutionContext.revision` also advances for ordinary lifecycle bookkeeping (`READY -> RUNNING`, `RUNNING -> WAITING`, `WAITING -> READY`), so that comparison would classify a normal suspension as an intervening semantic mutation" (`packages/core/src/execution/resumption.ts:23-27`). kernel.md's Activation/Outcome shape needs a `base_progress_revision` that identifies *the progress an Activation was dispatched against* and advances only when an accepted Outcome installs new progress (execution-protocol.md's Outcome-acceptance algorithm step 4: "install opaque progress and its revision"). K1 may reuse a monotonic-counter *mechanism* like this one, but must not assume the *existing field*, unmodified, already carries that exact semantic — either define a separate progress-specific revision, or prove (not merely assert) that every non-progress bump this field currently takes is harmless to the target's staleness check, the way `resumption.ts` already had to prove it for its own unrelated purpose. |
+| MIG-5 | `ExecutionWait` `event` arm (`packages/core/src/execution/context.ts:103`, `eventWait`), and the `WakeCondition` it carries (`packages/core/src/interaction/event-envelope.ts:74-80`) | **Migratable** | A Kernel-visible Event dependency (`eventKinds`, `correlationId`) with an optional declarative `interleave` condition is exactly what W-1/W-5 need; no live process-local reference is involved, and matching is already declarative data, not a callback (`event-envelope.ts:66-72`'s own docstring: "a wake condition must stay declarative, serializable runtime data, not a callback or a query language"). |
+| LEG-1 | The actual `ControllerResumption` record (`packages/core/src/execution/resumption.ts:72-101`) and the `ExecutionWait` `controller_resumption`/`dependencies` arms that name its ID (`packages/core/src/execution/context.ts:104-130`); the port's own admission that the underlying work is ephemeral, `packages/core/src/ports/controller-resumption.ts:40-41` ("Work registered by an Activation that does not return the matching wait is abandoned and can never wake the Execution") and `:61-62` (`ControllerResumptionWork` is documented "Never persisted, never inspected, never re-created by the runtime"); and the processor's own comparison against `EffectProcessor`, `packages/core/src/runtime/resumption-processor.ts:1-56` (header), specifically `:10-16` ("has a public settlement ingress / has none, deliberately") | **Legacy-only — corrected framing in review round 1** ([K01-REV-02](implementation-02.md)) | This is exactly F09's finding: the *durable record* (`ControllerResumptionId`, its state, its `observedRevision` provenance field) is Kernel-persisted, but the actual work it names is an in-process `Promise`/thunk that is, by the port's own contract, never persisted and cannot be reconstructed after a process death. Per 001's K1 section ("Remove controller resumptions and closed Agent/Workflow progress discriminators from the new Kernel protocol") and 003's F09 disposition, this whole mechanism does not migrate into the K1 Kernel protocol. **Correction:** round 1 said this record's *shape* (a Kernel-visible "local work" wait arm) was worth preserving with only its referent reclassified. That is withdrawn (§5, W-4): the target Kernel `waitingFor` record has **no** arm analogous to this at all, Kernel-visible or otherwise — this record and its `ExecutionWait` arms are legacy-only in the stronger sense that *neither the data nor the shape* informs the new Kernel wait protocol. It may continue to exist unchanged **inside** a compatibility Runtime (K1.4's "bridge existing controllers... keep its live-promise resumption private", 001 K1) as purely Runtime-private bookkeeping — legacy-only means "not part of the new Kernel contract, in data or in shape," not "delete the file." |
+| LEG-2 | `Harness.activate`'s mailbox consumption before `RUNNING`/before controller output exists (`packages/core/src/runtime/harness.ts:762`, `tx.mailboxes.consume(...)` inside the same transaction that writes `RUNNING`, prior to `runController` ever being called) | **Legacy-only** | This is F07: the current code treats "consumed from the mailbox" as equivalent to the target's "reserved in Activation," but does so as an unconditional side effect of claiming the Activation, not as part of accepting the resulting Outcome. It does not by itself satisfy B-3 (whole-batch acknowledgment tied to *Outcome acceptance*, not to dispatch). K1 must tie acknowledgment to accepted Outcome, not to the earlier consume-on-claim step, to satisfy OA-3/OA-4 and B-3 together (also connects to `REF-1`/`REF-4`). |
+| LEG-3 | The `CREATED` lifecycle state (`packages/core/src/execution/lifecycle.ts:16`, `:24-32` `LIFECYCLE_STATES`/enumeration, `:47` `CREATED: ["READY", "CANCELLED"]`), and `CancellationRequest`'s own docstring naming it as a real current phase: "For a `CREATED`, `READY`, or `WAITING` Execution the runtime transitions straight to `CANCELLED`" (`cancellation-request.ts:4-6`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Legacy-only** | 004's architecture review explicitly retires this as a mandatory Kernel state: its decisions table names the decision "Remove separate CREATED state from target," reasoning "Create, initial input and readiness can be accepted together; partial allocation is an operation attempt." The target lifecycle (kernel.md's diagram) starts directly at `READY` from one atomic `create + initial input` decision (execution-protocol.md's "Identities and immutable exchanges": "Creation binds the Runtime contract and executable definition revision, authority context and initial input in one atomic decision"). Current code's separate, externally observable `CREATED` phase — with its own transition edges and its own cancellation handling — does not migrate as a distinct target phase; K1 folds it into the atomic creation boundary (§11 row 1). The transition-table *pattern* (`MIG-2`) still applies to whatever shorter state list K1 actually uses. |
+| LEG-4 | `ControllerProgress`'s closed `kind: "agent" \| "workflow"` discriminator (`packages/core/src/execution/context.ts:57-59`), backed by the closed `DefinitionKind` union (`packages/core/src/definitions/types.ts:22`, `export type DefinitionKind = "agent" \| "workflow";`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Legacy-only** | 004's vocabulary-disposition table explicitly lists "closed Agent/Workflow union" under "Remove from mandatory Kernel model." A two-literal closed union cannot express a third Runtime kind without editing this type, which is exactly the closure 004 rejects as a Kernel concept — the opaque progress payload (`MIG-3`) is fine to keep opaque, but *tagging* it with this specific closed enum is not the target's compatibility mechanism. PC-4 already names the actual target mechanism: "versioned to the exact Runtime/definition contract revision that can understand it" — which `ExecutionContext.definition: ExecutionDefinitionRef` already tracks per Execution, kind-agnostically. K1's generic progress record should identify compatibility through that pinned Runtime/definition revision, not through a hardcoded two-value literal type; a compatibility-Runtime bridge may keep using `"agent"`/`"workflow"` as its own *internal* tag without that tag being part of the new Kernel protocol's progress-compatibility contract. |
+| REF-1 | Effect dispatch happening in `applyOutcome` (`packages/core/src/runtime/harness.ts:890-911`, `this.effects.processActivationEffects(...)`) *before* the progress-committing transaction (`harness.ts:938` onward, `this.options.store.transact(...)`) | **Refused** | This is F10 exactly: Effects are processed and can partially fail *before* the transaction that commits next-state/progress/acknowledgment. The in-code comment at `harness.ts:904-906` ("nothing partial was committed") is not true of the whole boundary — it is true only of the effect-dispatch call itself. This ordering is refused for the target K1/K2 boundary: OA-3/OA-4 require Effect *intents* to be part of the same atomic commit as progress, with actual dispatch/settlement happening afterward from the accepted record. This is explicitly a K2-boundary pattern (Effects don't exist in K1 at all, §8) — it is listed here because the current code's *ordering pattern* (side-effect-before-commit) must not be carried forward into K1's non-Effect Outcome-acceptance path either. |
+| REF-2 | `InMemoryRuntimeStore.transact` (`packages/core/src/reference/in-memory-runtime-store.ts:455-468`): the scope parameter is named `_scope: ExecutionId` (leading underscore — declared but unused) and every transaction does `const draft = structuredClone(this.state)` (`:457`) against the *entire* store's `RuntimeState`, then installs the whole draft back (`:459`) after serializing all transactions through one `queue` (`:453,462-466`) | **Refused as a K1+ mechanism; retained only as a reference/testing store** | This is F13 exactly, and stronger than F13's own wording: the store accepts a scope argument and then ignores it entirely, cloning and single-queuing the whole aggregate on every transaction rather than isolating by Execution — no two Executions can compute concurrently against this store (contradicting mental-model.md's "Unrelated Executions can compute concurrently") regardless of clone cost. K0.1 does not need this store to change — K1 may keep using it as its in-memory reference for single-Execution conformance tests — but no K0.1/K1 assertion may depend on "the store happens to globally serialize and deep-clone everything" as a substitute for a real per-Execution scope/concurrency contract. |
+| REF-3 | `ExecutionWait`'s `dependencies` arm as currently defined (`packages/core/src/execution/context.ts:126-130`) treated as a **Kernel wait primitive at all** — **corrected framing in review round 1** ([K01-REV-02](implementation-02.md)) | **Refused outright as a target Kernel record shape; the Event half is separately migratable as `MIG-5`, the `resumptions` half is `LEG-1`** | Round 1 framed this as "the shape is worth keeping, only the referent needs reclassifying." That is withdrawn (§5, W-4): the target Kernel `waitingFor` record is not a union with an `event`-or-`resumptions` shape at all — it is Event-only. A K1 Kernel wait record must not itself carry any field naming a `ControllerResumptionId` or equivalent local-work identifier, full stop; there is no partial-credit "shape" to preserve. If a Runtime needs "wait for any of several local jobs plus one Event," that union is assembled **entirely Runtime-side**, privately, with only the Event surfacing to the Kernel as a real `waitingFor` registration once (and only once) something is actually ready to report (§5, W-4's "does not yet submit an Outcome" resolution) — restating kernel.md's "a Runtime can implement an all-of join by retaining observed results in progress and waiting for the remaining set," generalized to this any-of case. |
+| REF-4 | The reference mailbox's single monotonic `consumed` cursor (`packages/core/src/reference/in-memory-runtime-store.ts:45-50`, `MailboxState.consumed: number`, doc-commented "How many of `events` an Activation has already consumed"; `consume()` at `:161-167` does `box.events.slice(box.consumed)` then unconditionally `box.consumed = box.events.length`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Refused as a K1+ mechanism; retained only as a reference/testing store** | This is F20's flagged problem embodied directly in the reference store: a single global cursor, not a per-entry disposition set, so it cannot represent B-4's "unmatched retention" (an Event not selected into the current batch must remain independently queryable, not just "before the cursor" versus "after it") or B-5's "terminal disposition per unconsumed Event." It also does not implement B-2's WAITING-time eligibility filter at all: `consume()` unconditionally takes *everything* past the cursor regardless of the currently registered wait's `wake`/`interleave` condition — there is no mechanism here to select only eligible Events during `WAITING`. K1's mailbox representation needs an explicit per-Event disposition (consumed-in-which-batch, or an equivalent set-membership structure), not a single advancing count. |
+| OOS-1 | `PendingOperation` (`packages/core/src/effects/pending.ts:73-106`) — **added in review round 1** ([K01-REV-03](implementation-02.md)), inventoried to confirm exclusion, not to pre-decide its shape | **Out of K0/K1 scope — no migratable/legacy-only/refused label applies** | This record is Effect-admission/settlement bookkeeping (`PendingOperationStatus`, `PendingDispatchState`, and a `PendingOutcomeState` that already includes confirmation/authorization-specific values — `denied`, `declined`, `conflicted` — that only make sense once K2's consent/policy machinery exists). Since K1 refuses all Effects outright (§8, `EF-1`/`EF-2`), no `PendingOperation` is ever created in K1's boundary, so K0.1 has nothing to classify here as migratable, legacy-only, or refused — those labels describe a K0/K1-boundary disposition, and this record's boundary is K2's. Recording it here satisfies K0.1-C3's completeness requirement without deciding K2's admission/settlement contract (a stated non-goal). |
 
 **Decision LC-1 (no legacy record is deleted by this packet).** Every classification above describes
 what the **new K1 Kernel contract** may depend on; it is not an instruction to remove any file. `LEG-1`
 material specifically is expected to keep working, unchanged, as private machinery inside the K1.4
 compatibility Runtime (001 K0's own instruction: "Bridge existing controllers inside a compatibility
-Runtime where feasible; keep its live-promise resumption private").
+Runtime where feasible; keep its live-promise resumption private"). `LEG-3`/`LEG-4` similarly describe
+what the *target Kernel protocol* does not need, not files to delete — a compatibility Runtime may keep
+using an internal `CREATED`-like phase or an internal `"agent"`/`"workflow"` tag for its own bridging
+purposes.
 
 ---
 
@@ -454,10 +623,13 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   finding (F10) in 003, not invented by this worksheet.
 - **Contradiction:** the current `ExecutionWait.dependencies` arm reads, at first glance, like exactly
   the Kernel-owned "finite any-of set" W-1 asks for — but it names `ControllerResumptionId`s, which
-  §12 classifies legacy-only. **Resolution:** W-1's requirement (a finite, Kernel-visible dependency
-  set) is satisfied by the *shape*, not by this specific field's current referent; K1 must re-anchor
-  the "local work" half of that union to something that is not a Kernel-persisted live-promise
-  reference (REF-3), even though the union *pattern* is worth keeping.
+  §12 classifies legacy-only. **Resolution, corrected in review round 1** ([K01-REV-02](implementation-02.md)):
+  round 1 resolved this by keeping the union *shape* and reclassifying only the referent, i.e. "W-1's
+  requirement is satisfied by the shape, not by this field's current referent." That resolution was
+  itself wrong and is withdrawn: W-1's finite-any-of-set requirement is satisfied entirely by Kernel
+  Events (kernel.md's Events-and-waits section), with no local-work arm in the target record at all
+  (§5, W-4). The target Kernel `waitingFor` record simply does not have a shape for "local work" to
+  occupy, reclassified or otherwise; any such union is assembled Runtime-side, privately (`REF-3`).
 - **No contradiction found** between kernel.md/detail-design and 001/005/003 on any of §1–§10's
   decisions; each decision restates or narrowly resolves an explicitly-flagged open item (004's "Open
   questions and decision points" section, K0/K1 bullet), not a dispute between canonical sources.
@@ -483,4 +655,27 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
 
 ## Revision history
 
-- **Revision 1** (this document): initial worksheet produced by packet K0.1.
+- **Revision 1**: initial worksheet produced by packet K0.1 (candidate H `857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc`).
+- **Revision 2** (this document): corrects revision 1 per [review-01.md](review-01.md)'s CHANGES
+  REQUIRED findings K01-REV-01 through K01-REV-05, disposed in
+  [implementation-02.md](implementation-02.md):
+  - **K01-REV-01** — §2 ID-3/ID-4 rewritten: a takeover advances the writer epoch under the *same*
+    Activation ID rather than minting a new one; a new Activation ID is minted only for a genuinely
+    new semantic exchange. Added §2 Decision ID-9's four counterexamples. Updated §11 row 2.
+  - **K01-REV-02** — §5 rewritten: withdrew the "Kernel-visible Runtime-local-work wait" framing
+    (old W-4) entirely; the target `waitingFor` record is Event-only. Corrected W-3's generation
+    scope to wait-created artifacts (timers), not authenticated result Events. Added W-6's four
+    counterexamples. Rewrote §12's `REF-3` and §13's second contradiction to match. Updated §3 B-2
+    and §11 row 5.
+  - **K01-REV-03** — §12 rebuilt: added `LEG-3` (`CREATED`), `LEG-4` (closed `kind` discriminator),
+    `REF-4` (mailbox monotonic-cursor consumption), `OOS-1` (`PendingOperation`, out of K0/K1 scope);
+    corrected `MIG-4` (the `revision` counter is not equivalent to the target `base_progress_revision`
+    without redefinition); split `MIG-3`; strengthened `LEG-1`'s citations with the actual
+    `ControllerResumption` record. Updated `contract.md`'s K0.1-C3.
+  - **K01-REV-04** — §1 E-6 rewritten with concrete semantic limits (units/counting rules stated,
+    wire/storage still open); §8 EF-2 corrected (K1's refusal is envelope validation, not a visit to
+    a K2-introduced Effect-admission boundary); added EF-3 (naming action-lifecycle.md's four
+    dimensions) and EF-4 (named negative cases). Updated `contract.md`'s K0.1-C2/C4 and source table.
+    Updated §11 row 4.
+  - **K01-REV-05** — this revision's validation evidence is in
+    [implementation-02.md](implementation-02.md), run fresh against the corrected payload commit.
