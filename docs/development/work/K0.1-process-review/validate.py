@@ -7,6 +7,7 @@ It does not execute historical evidence scripts or access external websites.
 """
 from pathlib import Path
 import re
+import json
 import subprocess
 from urllib.parse import unquote
 
@@ -21,11 +22,14 @@ DOCS = [PREFIX + name for name in (
     'README.md', '001-current-status-and-roadmap.md', '006-development-process.md',
     '007-work-packets.md', '008-implementation-report.md', '009-universal-prompts.md',
     '010-pipeline-planning-assessment.md', '011-k0.1-process-retrospective.md',
-    '012-review-methods.md', 'work/K0.1/integration-01.md',
+    '012-review-methods.md', '013-structure-and-evidence-sequencing.md', 'work/K0.1/integration-01.md',
     'work/K0.1-process-review/contract.md',
-)]
-REPORT = PREFIX + 'work/K0.1-process-review/implementation-01.md'
-ALLOWED = set(DOCS + [REPORT, PREFIX + 'work/K0.1-process-review/validate.py'])
+)] + ['README.md']
+REPORT = PREFIX + 'work/K0.1-process-review/implementation-02.md'
+INTERIM = PREFIX + 'work/K0.1-process-review/implementation-01.md'
+INTERIM_COMMIT = '88236083e52c1a006077653482cae3f71eb213df'
+BENCHMARK = '98756f8c10bd806125da8318f1a129bc030aca61'
+ALLOWED = set(DOCS + [REPORT, INTERIM, 'packages/sdk/package.json', PREFIX + 'work/K0.1-process-review/validate.py'])
 failures = []
 
 
@@ -80,15 +84,57 @@ for name in historical:
               f'Historical K0.1 file altered: {name}')
 print(f'Historical preservation: {len(historical)} pre-existing K0.1 files compared by Git blob')
 check(not (ROOT / PREFIX / 'work/K0.2').exists(), 'K0.2 directory exists')
+check(not (ROOT / PREFIX / 'work/K1.0').exists(), 'K1.0 implementation directory exists')
+check(git('hash-object', INTERIM) == git('rev-parse', INTERIM_COMMIT + ':' + INTERIM),
+      'Interim process report altered')
 ledger = (ROOT / PREFIX / '007-work-packets.md').read_text()
 rows = re.findall(r'^\| ([KRDS]\d+\.\d+) \| ([A-Z_]+) \|', ledger, re.M)
-check(len(rows) == 34 and len(dict(rows)) == 34, 'Expected 34 unique status rows')
+check(len(rows) == 35 and len(dict(rows)) == 35, 'Expected 35 unique status rows')
 check(dict(rows).get('K0.1') == 'ACCEPTED', 'K0.1 not ACCEPTED')
 check(all(status == 'PLANNED' for packet, status in rows if packet != 'K0.1'),
       'Successor state changed')
 check('Integration is pending owner merge' not in ledger, 'Stale current integration claim')
 check('next_release: none' in ledger, 'Missing explicit release hold')
-print('Ledger: 34 packets; K0.1 ACCEPTED, 33 successors PLANNED; no K0.2 directory')
+definitions = re.findall(r'^### ([KRDS]\d+\.\d+) .+?\n\n\*\*Dependencies:\*\* ([^\n]+)', ledger, re.M)
+dependencies = {name: re.findall(r'[KRDS]\d+\.\d+', body.split('**Scope:**')[0])
+                for name, body in definitions}
+check(set(dependencies) == set(dict(rows)), 'Packet definitions/status rows mismatch')
+for packet, deps in dependencies.items():
+    check(all(dep in dependencies for dep in deps), f'Unknown prerequisite of {packet}')
+
+def visit(packet, active, done):
+    if packet in active:
+        failures.append(f'Dependency cycle at {packet}')
+        return
+    if packet in done or packet not in dependencies:
+        return
+    for dep in dependencies[packet]:
+        visit(dep, active | {packet}, done)
+    done.add(packet)
+
+completed = set()
+for packet in dependencies:
+    visit(packet, set(), completed)
+check(dependencies.get('K1.0') == ['K0.2'], 'K1.0 must follow K0.2')
+check(dependencies.get('K1.1') == ['K1.0'], 'K1.1 must follow K1.0')
+check('| K1 | K1.0–K1.4 | K1.4 ACCEPTED, structural obligations plus full E1 |' in ledger,
+      'K1 aggregate closure lost structural/E1 obligation')
+print('Ledger: 35 unique packets/definitions; K0.1 ACCEPTED, 34 PLANNED; acyclic dependencies')
+print('Sequence: K0.2 -> K1.0 -> K1.1; K1.4 retains full gate; no K0.2/K1.0 implementation directories')
+
+old_sdk = json.loads(git('show', BASE + ':packages/sdk/package.json'))
+new_sdk = json.loads((ROOT / 'packages/sdk/package.json').read_text())
+old_sdk['repository']['url'] = 'git+https://github.com/ArrokothI/arrokothi.git'
+check(new_sdk == old_sdk, 'SDK metadata change exceeds repository URL')
+print('SDK metadata: only repository URL changed; package name/version/exports/dependencies preserved')
+benchmark = ROOT.parent / 'benchmark'
+check(benchmark.is_dir(), 'Read-only benchmark checkout unavailable')
+if benchmark.is_dir():
+    actual = subprocess.check_output(['git', '-C', str(benchmark), 'rev-parse', 'HEAD'], text=True).strip()
+    dirty = subprocess.check_output(['git', '-C', str(benchmark), 'status', '--porcelain=v1'], text=True)
+    check(actual == BENCHMARK and not dirty, 'Benchmark identity/clean state differs')
+print('Benchmark: read-only HEAD/clean-state check at ' + BENCHMARK)
+print('Interim process report: preserved byte-for-byte at ' + INTERIM_COMMIT)
 
 for older, newer in [(PLANNING, H12), (H12, A12), (A12, BASE)]:
     result = subprocess.run(['git', 'merge-base', '--is-ancestor', older, newer], cwd=ROOT)
@@ -106,7 +152,7 @@ for older, newer, record in [(C12, H12, 'implementation-12.md'), (H12, A12, 'rev
           f'Administrative ledger edit exceeds K0.1 row at {newer}')
 print('Integration: 3 ancestry checks; exact merge parents; A12/full merge tree equality; C12/H12/A12 scope')
 
-files = DOCS + ([REPORT] if (ROOT / REPORT).exists() else [])
+files = DOCS + [INTERIM] + ([REPORT] if (ROOT / REPORT).exists() else [])
 links = 0
 external = 0
 for name in files:

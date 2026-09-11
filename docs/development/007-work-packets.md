@@ -7,7 +7,8 @@ binding: splitting work does not remove any exit requirement or change canonical
 K0.1 is independently **ACCEPTED**, integrated and owner-closed; see the
 [integration receipt](work/K0.1/integration-01.md). All successors remain **PLANNED**. The owner
 holds K0.2 pending review and improvement of the coding/review workflow; this process work does not
-release it. No benchmark acceptance or E0–E6 status is changed here.
+release it. Proposed sequence: K0.2 → K1.0 structural preparation → K1.1; K1.0 is also
+unimplemented and unreleased. No benchmark acceptance or E0–E6 status is changed here.
 
 ## How to read a packet
 
@@ -74,9 +75,26 @@ relative to `docs/detail-design/`; source hints are relative to repository root.
 
 **Acceptance:** All K0 exit requirements and E0 ownership observations covered; fixture preparation is explicitly distinguished from later K1 candidate success.
 
+### K1.0 — Target boundary and legacy quarantine
+
+**Dependencies:** K0.2. **Scope:** Establish an enforced landing zone for target Kernel work and an
+explicit quarantine for the current 0.8.x implementation. Inventory source/export ownership and
+cross-boundary dependencies; record concrete paths and allowed imports. Add meaningful transitive
+import guards with forbidden-edge controls, preserve existing public imports/behavior and useful
+regressions, and identify later extraction/bridge owners. See the
+[structure assessment](013-structure-and-evidence-sequencing.md) for the bounded approach.
+
+**Acceptance:** New Kernel work cannot depend on legacy/native Runtime internals through direct,
+type-only or barrel imports. Guards demonstrate rejection on representative forbidden edges rather
+than passing only an empty graph. Current SDK/examples/consumer behavior and existing tests remain
+working and explicitly legacy; every deferred extraction is assigned. No new protocol implementation,
+no-op target API, wholesale native Runtime rewrite, E1 pass or package-release claim. K1.4 rechecks
+these structural obligations with actual behavior. This packet is PLANNED and requires separate owner
+release after K0.2; adding it here is not release.
+
 ### K1.1 — Create, reserve and asynchronous dispatch
 
-**Dependencies:** K0.2. **Scope:** Implement atomic create/initial input, scoped identity, opaque pinned progress, reservation and Driver dispatch; expose minimum inspection. Refuse unsupported next forms until their packet lands.
+**Dependencies:** K1.0. **Scope:** Implement atomic create/initial input, scoped identity, opaque pinned progress, reservation and Driver dispatch; expose minimum inspection. Refuse unsupported next forms until their packet lands.
 
 **Acceptance:** Delayed fake A does not prevent B dispatch on the same coordinator; retries preserve identity/batch, reservation does not acknowledge input, no Agent/Workflow discriminator in the new boundary.
 
@@ -96,7 +114,7 @@ relative to `docs/detail-design/`; source hints are relative to repository root.
 
 **Dependencies:** K1.3. **Scope:** Integrate the new boundary with SDK host driving; bridge viable existing controllers as private Runtime machinery. Port useful conformance and document unsupported legacy features.
 
-**Acceptance:** Full K1/E1 matrix passes, including actual accepted asynchronous exchange through the supported entry; legacy resumptions do not drive new Kernel types/stores. Existing supported behavior is preserved or explicitly migrated/refused.
+**Acceptance:** Full K1/E1 matrix and K1.0 structural obligations pass, including actual accepted asynchronous exchange through the supported entry; legacy resumptions do not drive new Kernel types/stores. Existing supported behavior is preserved or explicitly migrated/refused.
 
 ### K2.1 — Atomic Effect intents
 
@@ -279,6 +297,7 @@ there is no second editable “done” checkbox in 001.
 |---|---|---|
 | K0.1 | ACCEPTED | Round 12 accepted by [review-12.md](work/K0.1/review-12.md), OpenAI GPT-5.6 Sol (High), 2026-09-11. Accepted H12 `bab7bf6635781e6d2f9b0e8e333f58440ae0b047`; clean-validated C12 `7a51801afcdf5c13d481e92c5d219a8c9be7c0eb`; base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`. K0.1-C1–C6 PASS; no findings. Reviewer inspected pinned GitHub source/diffs and implementation-12 evidence; no shell commands independently rerun. Acceptance is for H12 only. Integrated on main as `42731300266eea00a9a24d867d5e82d9887c280d` (PR #19); owner considers K0.1 merged/closed. [Integration and discussion receipt](work/K0.1/integration-01.md) separately verifies A12 and the merge. `next_release: none`; workflow review/improvement precedes any K0.2 release. |
 | K0.2 | PLANNED | Unimplemented and unreleased. Owner hold: review/improve workflow before a separate explicit release; see K0.1 integration receipt. |
+| K1.0 | PLANNED | Target boundary/legacy quarantine proposal; K0.2 prerequisite and separate explicit owner release required. No implementation. |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
 | K1.3 | PLANNED | — |
@@ -317,7 +336,7 @@ there is no second editable “done” checkbox in 001.
 | Existing milestone | New packets | Milestone closes only after |
 |---|---|---|
 | K0 | K0.1–K0.2 | K0.2 ACCEPTED, including E0 |
-| K1 | K1.1–K1.4 | K1.4 ACCEPTED, full E1 |
+| K1 | K1.0–K1.4 | K1.4 ACCEPTED, structural obligations plus full E1 |
 | K2 | K2.1–K2.4 | K2.4 ACCEPTED, full E2 |
 | R1 | R1.1–R1.2 initial; R1.3 supported profile | R1.2 unlocks K3; R1.3 is separately required for shipped Driver claims |
 | K3 | K3.1–K3.4 | K3.4 ACCEPTED, full E4 core and owner substrate decision |

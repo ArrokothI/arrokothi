@@ -1,4 +1,8 @@
-# ArrokothI Agent Kernel
+# ArrokothI
+
+Current repository: [ArrokothI/arrokothi](https://github.com/ArrokothI/arrokothi). Historical
+`agent-kernel`/`Agent_SDK` locators and commit identities are preserved; the repository rename does
+not change package names, versions or the local checkout directory.
 
 ArrokothI is a provider-neutral **execution kernel** for long-lived Agent and Workflow runs.
 
@@ -78,5 +82,9 @@ For implementation guidance, start at the [Kernel, Execution and Deployment guid
 | `docs/detail-design` | Current detailed designs below the canonical architecture |
 | `docs/development` | Implemented baseline, roadmap/evidence, migration status |
 | `docs/architecture-strategy-study` | Comparative architecture diagnosis that informed the redesign |
+
+The [structure/evidence assessment](docs/development/013-structure-and-evidence-sequencing.md)
+plans K1.0 boundary preparation after K0.2, before K1.1; no structural migration is implemented or
+released by that plan. Current layout above remains the implemented layout.
 
 The target dependency direction is application/SDK → Kernel + Execution Drivers → Execution Runtimes/providers. Provider-specific concepts should not become Kernel semantics merely because one integration exposes them.

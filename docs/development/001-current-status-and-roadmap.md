@@ -88,7 +88,14 @@ requires model or Stage concepts, subtract them before K1. Keep the wire codec/s
 
 ## K1 — One asynchronous Execution with opaque progress
 
-**Owner:** Kernel. **Entry:** K0; E1 fixtures begin before implementation.
+**Owner:** Kernel. **Entry:** K0; E1 fixture specifications begin before behavioral implementation.
+The planned sequence is **K0.2 → K1.0 structural preparation → K1.1 asynchronous implementation**.
+K1.0 establishes a narrow target-code boundary and quarantines the working legacy implementation,
+with import guards and preserved consumer regressions; it does not implement the new protocol or
+pass E1. K1.4 retains the full K1/E1 gate, including these structural obligations. See the
+[structure/evidence assessment](013-structure-and-evidence-sequencing.md) and
+[packet contract seed](007-work-packets.md#k10--target-boundary-and-legacy-quarantine).
+This is a planned dependency amendment, not a release of K0.2 or K1.0.
 
 Implement create+initial-input, dispatch intent, asynchronous Driver delivery, Outcome validation and
 acceptance, Event reservation/acknowledgment, typed progress/result, continue/wait/complete/fail and

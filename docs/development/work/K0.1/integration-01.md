@@ -45,3 +45,10 @@ merge. The remaining concern is avoidable serial defect discovery; the
 [retrospective](../../011-k0.1-process-retrospective.md) and proposed workflow changes address it.
 Any later release needs an explicit owner decision recorded separately. The historical ACCEPT,
 all implementation/review records and their as-of integration wording remain unchanged.
+
+## Subsequent owner rename update
+
+During this process review the owner identified the current hosted repository as
+[ArrokothI/arrokothi](https://github.com/ArrokothI/arrokothi). Its advertised main was independently
+checked and also equals the integration commit above. The earlier URL observations remain historical
+facts; no remote configuration, accepted candidate identity or tree changed because of the rename.
