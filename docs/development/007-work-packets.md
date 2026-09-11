@@ -273,7 +273,7 @@ there is no second editable “done” checkbox in 001.
 
 | Packet | Status | Report / review / candidate |
 |---|---|---|
-| K0.1 | PLANNED | — |
+| K0.1 | WAITING_FOR_REVIEW | [work/K0.1/implementation-01.md](work/K0.1/implementation-01.md), base `6464be1`, payload C `b08577c7e85204b1bb3af35500129aab772cdac2`, candidate H = this status commit (SHA in handoff) |
 | K0.2 | PLANNED | — |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
