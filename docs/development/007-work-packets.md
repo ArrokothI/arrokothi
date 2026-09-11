@@ -273,7 +273,7 @@ there is no second editable “done” checkbox in 001.
 
 | Packet | Status | Report / review / candidate |
 |---|---|---|
-| K0.1 | CHANGES_REQUESTED | Round-10 independent review: [review-10.md](work/K0.1/review-10.md), GPT-5.6 Sol High, September 11, 2026; base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`, C10 `7f68df367d05641dfdcfca932a1f4c533b5ace3d`, reviewed H10 `012ca92574319aa099a91c845f8fb4375c081f34`. CHANGES REQUIRED: K01-R10-01 (P2), stale WAITING-batch selection claims in W-1 and §11 row 5 contradict B-2. C1/C5/C6 FAIL; C2/C3/C4 PASS; evidence availability, C/H identity and review-09 provenance repair PASS. Prior reviewed history preserved; correction remains K0.1 only. K0.2 remains unreleased. |
+| K0.1 | WAITING_FOR_REVIEW | Revision 11: [implementation-11.md](work/K0.1/implementation-11.md); base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`, reviewed H10 `012ca92574319aa099a91c845f8fb4375c081f34`, [review-10.md](work/K0.1/review-10.md) administrative commit `5d726684f2911882c22762dcab61f001cd680847`, clean-validated C11 `b40cfe968c8e0d2111a88df68c68f64fd02a4be3`; H11 is this report/status commit (SHA in handoff). K01-R10-01 corrected by citing retirement/readiness and READY-only selection; implementer-discovered K01-I11-01 corrects early-result consumption wording. Builder/typecheck/link checks pass; strict cumulative whitespace remains red only for the two approved historical implementation-04 lines; exception-limited cumulative and strict H10..C11 checks pass. Raw outputs in report, no new evidence file. Prior reviewed history immutable. Awaiting independent review; no acceptance. K0.2 was not started and remains unreleased. |
 | K0.2 | PLANNED | — |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
