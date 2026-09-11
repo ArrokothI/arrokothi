@@ -1,8 +1,16 @@
 # K0.1 protocol worksheet — equality, receipts, batches, clocks, cancellation, progress, policy
 
-**Revision:** 8 — corrects revision 7 per a seventh independent review (CHANGES REQUIRED); see
-[review-07.md](review-07.md) and [implementation-08.md](implementation-08.md) for those findings and
-their disposition, and [review-06.md](review-06.md)/[implementation-07.md](implementation-07.md),
+**Revision:** 9 — a consolidation revision. It corrects revision 8 per an eighth independent review
+(CHANGES REQUIRED), and it reconstructs the whole wait / batch / clock protocol as **one state machine**
+rather than patching four findings in place, because four of the last five rounds found a defect created
+by an earlier *correct* correction that a neighbouring rule still contradicted. §3 and §5 are rewritten:
+eligibility, wait-ended batch selection and wait registration are each stated exactly once and cited
+everywhere else, and §3 carries one normative table covering every way a wait can end. Eleven further
+internal defects that the reconstruction exposed — none of them named by any review — are fixed in the
+same revision and are recorded in §13 as implementer-discovered. See
+[review-08.md](review-08.md) and [implementation-09.md](implementation-09.md) for this round's findings
+and their disposition, and [review-07.md](review-07.md)/[implementation-08.md](implementation-08.md),
+[review-06.md](review-06.md)/[implementation-07.md](implementation-07.md),
 [review-05.md](review-05.md)/[implementation-06.md](implementation-06.md),
 [review-04.md](review-04.md)/[implementation-05.md](implementation-05.md),
 [review-03.md](review-03.md)/[implementation-04.md](implementation-04.md),
@@ -287,107 +295,132 @@ tuple), exact epoch representation (integer vs. fencing token), exact request-ke
 
 ## 3. Eligible batches and input accounting
 
-**Decision B-1 (batch is a set, not a cursor).** The batch an Activation is dispatched with is an
-explicit, finite, enumerable set of Event references pinned at dispatch time — not "everything after
-global position N." This directly fixes F20 (a single cursor can silently acknowledge unmatched
-input): per-entry disposition, not a monotonic cursor, is the required representation.
+**Decision B-1 (a batch is a finite set of accepted Event references, not a cursor).** The batch an
+Activation is dispatched with is an explicit, finite, enumerable set of **accepted Event references**,
+pinned at the Activation-dispatch-intent boundary ("reservation") — not "everything after global
+position N." This directly fixes F20 (a single cursor can silently acknowledge unmatched input):
+per-entry disposition, not a monotonic cursor, is the required representation.
 
-**Decision B-2 (selection rule by lifecycle *and by how readiness arose*; corrected in review round 1
-([K01-REV-02](implementation-02.md)), round 4 ([K01-R4-01](implementation-05.md)) and round 5
-([K01-R5-01](implementation-06.md))).** There are **three** cases, not two. The middle one was missing
-through revision 5 and its absence let the first case silently override §5's stated behaviour:
+Two consequences are normative and are relied on throughout §3 and §5:
 
-- While `READY` **with no wake-triggered readiness outstanding** (*ordinary readiness*): select a
-  bounded batch (implementation-owned max size) from all currently unacknowledged Events, in
-  acceptance order. This is execution-protocol.md's "While READY, select a bounded batch in acceptance
-  order."
-- While `READY` **because a registered wait ended** (*wait-ended readiness*; corrected in review round
-  7, [K01-R7-02](implementation-08.md), to cover both ways a wait can end): select the batch **only**
-  from Events eligible under that **retired** wait's rule — W-1's source-category rule as that wait
-  spelled it — in deterministic acceptance order among those eligible Events, subject to the same
-  implementation-owned bound. Older **ineligible** backlog **must not** displace what the Execution was
-  woken for, at any bound, including 1. Ineligible Events stay queued and unacknowledged (B-4). The
-  case governs exactly one exchange, and it has two species differing only in what the batch **must**
-  contain:
-  - **Event-triggered** (`B-6`): an eligible Event ended the wait; the batch must contain at least one
-    Event eligible under the retired rule (§5 W-8 case 4).
-  - **Deadline-triggered** (`B-7`): a current-generation wait deadline expired; the batch must contain
-    the **timeout observation** for that expired generation (§5 W-9 case 1).
-- While `WAITING`: select only Events eligible under **the single eligibility rule W-1 states**
-  (corrected in review round 4, [K01-R4-01](implementation-05.md)) — an Event is eligible iff it
-  matches at least one **dependency alternative** of the currently registered wait, **or** it is
-  application input matching at least one **declared input subscription** of that same wait. Both
-  lists are conditions over **Kernel Events only**. An eligible match is included ahead of any
-  unrelated backlog, but unrelated backlog is not force-included merely because it is old. Round 3's
-  wording selected by a singular `wake` condition "and, if present, its declarative `interleave`
-  condition," which described a *different* record from the one W-1 defines; that is withdrawn —
-  there is exactly one target wait record and exactly one eligibility rule (W-1, W-5). §5 also fixes
-  that a K1 `waitingFor` registration never names Runtime-local work as a thing this selection rule
-  can be "eligible under" (W-4) — every eligible source is a Kernel Event.
+- **Every member of a batch is an accepted Event.** There is no second kind of batch member. The
+  **timeout Event** §5 W-9 defines is an Event precisely so that this stays true; `B-7`'s mandatory
+  member is therefore an ordinary member of `B-1`'s set, acknowledged by B-3 and disposed by B-5 like
+  any other. Revision 8 left the timeout's semantic home open and so had a mandatory batch member that
+  `B-1` had no room for (§13, `K01-R8-02`).
+- **The implementation-owned batch bound is at least 1.** A bound of 0 would make `B-6`'s and `B-7`'s
+  mandatory members unsatisfiable and would dispatch a Runtime that cannot learn why it was activated.
 
-**Why the middle case is load bearing (added in review round 5,
-[K01-R5-01](implementation-06.md)).** W-1 retires the registration on *any* eligible wake, so by the
-time a dispatch happens the Execution is always `READY` and the `WAITING` bullet never runs at
-dispatch time. With only two cases, the first bullet therefore applied to every wake, and an older
-**ineligible** Event could displace the very Event that caused the wake whenever the bound was small —
-with a bound of 1 it always would. That contradicted §5's W-7 case 5 and W-8 case 3, which asserted
-the correct batch without any rule producing it, and it contradicted execution-protocol.md directly:
-"While WAITING, select only Events eligible under the registered wait/subscriptions, **with an
-eligible wake included before unrelated backlog**." The canonical sentence is written from the
-`WAITING` side because it predates W-1's retire-on-wake refinement; `B-6` carries its guarantee across
-the retirement, which is where revision 5 dropped it. §13 records this as a contradiction internal to
-this worksheet.
+**Decision B-2 (selection depends on lifecycle *and on how readiness arose*).** There are exactly
+**two** selection cases, plus one state in which nothing is selected:
+
+- **Ordinary readiness** — `READY` with no wait-ended readiness outstanding: select a bounded batch
+  from all currently unacknowledged Events, in per-Execution acceptance order. This is
+  execution-protocol.md's "While READY, select a bounded batch in acceptance order."
+- **Wait-ended readiness** — `READY` because a registered wait ended: select by *The wait-ended batch*
+  rule below. The genus has exactly two species, `B-6` (an eligible Event ended the wait) and `B-7`
+  (the wait's own deadline ended it), differing only in what the batch **must** contain.
+- **`WAITING` — no batch is selected at all.** A `WAITING` Execution is not dispatched, so there is
+  nothing to select. What §5 W-1's source-category eligibility rule decides while `WAITING` is which
+  accepted Events are **eligible**; an eligible Event *ends the wait* (`B-6` path B) rather than being
+  selected into a batch from a `WAITING` state, and the resulting dispatch is the wait-ended case
+  above. §3 therefore states no eligibility rule of its own: W-1 states it once and §3 cites it.
+  Revision 8 paraphrased it here instead, in the superseded "matches a dependency alternative **or** is
+  application input matching a subscription" form, which reopened exactly the application-input bypass
+  W-1 had just closed — in the one section a K1.1 implementer reads for batch selection
+  (§13, `K01-R8-01`).
+
+**Where execution-protocol.md's `WAITING`-side sentence lands.** It reads "While WAITING, select only
+Events eligible under the registered wait/subscriptions, **with an eligible wake included before
+unrelated backlog**," which is phrased as a selection rule from the `WAITING` side because it predates
+W-1's retire-on-wake refinement. Under W-1 the Execution is already `READY` by the time any dispatch
+happens, so that guarantee has to **survive the retirement** rather than be applied before it — and
+carrying it across is exactly what the wait-ended case does. Revision 5 lost the guarantee by having
+only two cases and letting every wake fall into ordinary readiness; the canonical sentence is not
+amended here, it is given the mechanism it needs.
+
+**The wait-ended batch (normative).** For the one dispatch that consumes a wait-ended readiness, the
+batch is
+
+```text
+{ the species' mandatory member, if it has one }  ∪  { Events eligible under the retired wait's rule }
+```
+
+selected over the Events **unacknowledged at reservation** — not at the moment the readiness was
+created. "Eligible under the retired wait's rule" means W-1's rule as *that* wait spelled it.
+Ineligible backlog is never a candidate at any bound, however old it is, and stays queued and
+unacknowledged (B-4).
+
+Three details make that rule deterministic rather than merely directional:
+
+- **Truncation is defined.** Retain the species' mandatory member first, then fill the remaining slots
+  with the earliest-accepted remaining candidates. So at bound 1 a `B-7` batch is exactly the timeout
+  Event even if a result was accepted before it, and a `B-6` batch is the earliest-accepted eligible
+  Event. Retaining the mandatory member is a **selection** rule, not an ordering rule: the batch is
+  **presented** in per-Execution acceptance order regardless of which member was mandatory.
+- **The mandatory member is always available at reservation.** Only an accepted Outcome acknowledges an
+  Event (B-3), and no Outcome can intervene between a wait-ended readiness and the reservation it
+  produces — there is no Activation in that interval. An accepted terminal decision produces no
+  reservation at all. So a wait-ended batch can never be short of its mandatory member.
+- **A wait-ended batch is never empty; an ordinary one may be.** `READY` after a `continue` Outcome
+  with an empty mailbox dispatches an empty batch, which is correct — the Runtime was asked to
+  continue, not to read something. A wait-ended batch always carries at least its mandatory member,
+  which is exactly what tells the Runtime *why* it was activated.
+
+The four ways a wait can end, and what each one commits, is the whole protocol in one table. Rows 5 and
+6 are the contrast cases that stop the first four from being over-read.
+
+| # | Trigger, and the boundary that accepts it | Accepted together in that one transaction | Lifecycle result | Readiness | Mandatory next-batch member | Other members | Consumed at | Crash before reservation (recovery-and-compatibility.md row) |
+|---|---|---|---|---|---|---|---|---|
+| 1 | **`B-6` path A** — `await(wait)` is accepted and W-2 step 2 finds an already-accepted, still-unacknowledged Event eligible under the wait just proposed. **Outcome acceptance.** | this Outcome's own batch acknowledgment, progress, emissions and Effect intents; creation **and immediate retirement** of the registration/generation; the readiness | `READY` — never `WAITING` | Event-triggered (`B-6`) | at least one Event eligible under the retired rule | further eligible Events, acceptance order, to the bound | reservation | *Outcome accepted before receipt* — the readiness is part of the accepted Outcome and replays with it |
+| 2 | **`B-6` path B** — the Execution is `WAITING` and an Event eligible under the live wait is accepted. **That Event's own acceptance boundary**; there is **no Outcome**. | the Event/mailbox fact, retirement of the registration/generation, and the readiness | `READY` | Event-triggered (`B-6`) | at least one Event eligible under the retired rule | further eligible Events, acceptance order, to the bound | reservation | *Input commit before scheduler notification* / *Settlement committed before wake* — both facts are accepted truth and are reconstructed together |
+| 3 | **`B-7` path A** — `await(wait)` is accepted, W-2 step 2 finds no eligible Event, and W-2 step 3 observes the wait's deadline **already due**. **Outcome acceptance.** | as row 1, plus **exactly one timeout Event** for the generation being retired | `READY` — durable `WAITING` is **never** persisted for this generation | deadline-triggered (`B-7`) | **that timeout Event** | Events eligible under the retired rule, acceptance order, to the bound | reservation | *Outcome accepted before receipt* |
+| 4 | **`B-7` path B** — the Execution is `WAITING` and the **current** generation's deadline expires. **The Kernel's own Event-acceptance boundary** (Kernel timer provenance, W-9); there is **no Outcome**. | **exactly one timeout Event** for that generation, retirement of the registration/generation, and the readiness | `READY` | deadline-triggered (`B-7`) | **that timeout Event** | Events eligible under the retired rule, acceptance order, to the bound | reservation | *Input commit before scheduler notification*, read for an accepted **timeout** rather than an accepted input |
+| 5 | *(contrast)* **Ordinary readiness** — `READY` with no wait-ended readiness outstanding | — | `READY` | ordinary | **none** | all unacknowledged Events, acceptance order, to the bound | n/a | readiness is derivable from the accepted input/lifecycle records |
+| 6 | *(contrast)* **No wait was live** — an Event is accepted while the Execution is `READY`, `RUNNING` or terminal (W-3: no generation is live in those states) | the Event/mailbox fact **only** | unchanged | **none created** (`B-8`) | — | it is an ordinary candidate for a later batch (B-4), or takes a terminal disposition (B-5) | n/a | the accepted Event survives; nothing else was promised |
+
+Rows 1–4 are exhaustive: W-2 fixes that a registration is retired in its own transaction only by row 1
+or row 3, and W-3 fixes that a live generation exists only while `WAITING`, where only rows 2 and 4 can
+retire it. An accepted terminal decision (§6 CX-2) can also end a live wait; it produces no readiness
+and no next Activation, and every unacknowledged Event — a timeout Event included — takes a terminal
+disposition under B-5.
 
 **Decision B-3 (whole-batch acknowledgment).** An accepted Outcome acknowledges its *entire* pinned
-batch at once. "Acknowledged" means "the Runtime is on record as having accounted for this Event",
-never "the Runtime obeyed it." A Runtime that intentionally ignores one Event in an acknowledged
-batch must have recorded that choice in its own progress; the Kernel does not parse the Outcome to
-verify semantic compliance (restates execution-protocol.md's input-reservation section).
+batch at once, timeout Event included. "Acknowledged" means "the Runtime is on record as having
+accounted for this Event", never "the Runtime obeyed it." A Runtime that intentionally ignores one
+Event in an acknowledged batch must have recorded that choice in its own progress; the Kernel does not
+parse the Outcome to verify semantic compliance (restates execution-protocol.md's input-reservation
+section).
 
-**Decision B-4 (unmatched retention, not disappearance).** An Event not in the current batch (arrived
-during `RUNNING`, or ineligible during `WAITING`) remains queued with its own independent disposition.
-It is included in a later batch when it becomes eligible; it is never silently dropped, never merged
-into "the Runtime must have seen everything up to here," and never requires the Runtime to replay
-history to notice it — restates B-1/F20's fix directly.
+**Decision B-4 (unmatched retention, not disappearance).** An Event not in the current batch — it
+arrived during `RUNNING`, it arrived while the Execution was `READY` and the bound was already spent,
+or it was ineligible during `WAITING` — remains queued with its own independent disposition. It is
+included in a later batch when it becomes eligible; it is never silently dropped, never merged into
+"the Runtime must have seen everything up to here," and never requires the Runtime to replay history to
+notice it — restates B-1/F20's fix directly.
 
-**Decision B-5 (terminal disposition of unconsumed input).** When an Execution reaches a terminal
-state with Events still queued/unacknowledged, each of those Events gets an explicit recorded terminal
+**Decision B-5 (terminal disposition of unconsumed input).** When an Execution reaches a terminal state
+with Events still queued/unacknowledged, each of those Events gets an explicit recorded terminal
 disposition ("Execution terminated before this Event was acknowledged") rather than being deleted
 without record or silently treated as processed.
 
-**Decision B-6 (wake-triggered readiness: a retired wait's eligibility rule survives for exactly one
-dispatch — added in review round 5, [K01-R5-01](implementation-06.md)).**
-
-*When it is created — two paths, at two different acceptance boundaries (corrected in review round 6,
-[K01-R6-01](implementation-07.md)).* An eligible Event ends a registered wait in exactly two ways.
-Revision 6 said both "create wake-triggered readiness identically" and that it is committed "with the
-accepted Outcome." That is true only of path A; path B has **no Outcome at all**, and describing it
-that way would leave a K1.1 implementer with nowhere to commit the readiness and an obvious wrong
-answer available (write it after the Event lands). The two paths differ in *which* boundary commits
-the readiness, and are identical only in *what* it contains and what it then does.
-
-**In both paths, whichever boundary applies does all three of the following in one transaction:**
+**Decision B-6 (Event-triggered wait-ended readiness).** An eligible Event ends a registered wait in
+exactly two ways — rows 1 and 2 of the table above — and they differ only in **which boundary** commits
+the readiness. In both, that boundary does all of the following **in one transaction**:
 
 1. retires the wait registration and its generation, exactly as W-1 requires — no live wait remains;
 2. sets the Execution `READY`;
 3. records, as part of the **recoverable readiness** that boundary already commits, enough to re-apply
-   **that retired wait's eligibility rule** to the next dispatch.
+   **that retired wait's eligibility rule** at the next reservation.
 
-**Path A — the eligible Event already exists when the Outcome registering the wait is accepted.**
-The Outcome-acceptance transaction runs W-2's mailbox check over already-accepted, unacknowledged
-Events. If it finds an eligible one, it retires the just-proposed wait, sets `READY`, and commits the
-wake-triggered readiness **in that Outcome-acceptance boundary** — the Execution never reaches
-`WAITING`. This is the boundary kernel.md's Acceptance/atomicity table already defines for Outcome
-acceptance ("commit progress, accepted emissions, all Effect intents, next state and **recoverable
-readiness**") and execution-protocol.md's acceptance step 4 ("record accepted emissions, all Effect
-intents, next state, wait/deadline and **recoverable readiness**"). Nothing new is added to it.
+**Path A** (row 1) is committed in the **Outcome-acceptance** boundary, which kernel.md's
+Acceptance/atomicity table already defines as committing "progress, accepted emissions, all Effect
+intents, next state and **recoverable readiness**", and which execution-protocol.md's acceptance step 4
+spells the same way. Nothing is added to it.
 
-**Path B — no eligible Event existed at registration, so the Execution became `WAITING`, and an
-eligible Event is accepted later.** **There is no new Outcome at this point** — the Runtime is not
-running and submits nothing. The authoritative acceptance boundary is therefore **the boundary that
-accepts that Event**, and it must accept the Event/mailbox fact **and** the wake-triggered readiness
-**atomically together**. Which boundary that is depends on the Event's ingress, and each already
-carries readiness in kernel.md's Acceptance/atomicity table:
+**Path B** (row 2) has **no Outcome** — the Runtime is not running and submits nothing. The
+authoritative boundary is **the one that accepts that Event**, and it must accept the Event/mailbox
+fact and the readiness **atomically together**:
 
 | Event that ends the wait | Authoritative acceptance boundary | What that boundary already commits together |
 |---|---|---|
@@ -400,21 +433,16 @@ Two rules bind every row of that table:
 
 - **Never accept the Event durably and then depend on a later unjournaled wake write.** That is the
   exact failure execution-protocol.md forbids — "Never rely on an unjournaled enqueue after commit" —
-  and it is what makes the difference between a crash losing a notification (recoverable) and a crash
-  losing the *reason* the next batch must be selective (not recoverable).
+  and it is the difference between a crash losing a notification (recoverable) and a crash losing the
+  *reason* the next batch must be selective (not recoverable).
 - **No later Runtime Outcome is needed to make this `READY` state durable.** Path B completes without
   the Runtime being involved at all; the next Outcome is a *consequence* of the readiness, never a
   precondition for it.
 
-**Routing obligation is not destination Event acceptance (corrected in review round 7,
-[K01-R7-03](implementation-08.md)).** Revision 7 collapsed child results, messages and other routed
-results into one row whose boundary was "the fulfillment/routing obligation and the resulting Event,
-with readiness, in one accepted decision." That describes **one conforming profile as if it were the
-rule**, and round 7's own report flagged the reading as the likeliest error in it. The rule is
-narrower, and it is the only thing K0.1 states here:
+**Routing obligation is not destination Event acceptance.** Obligation creation and destination Event
+acceptance may be **two distinct accepted facts**:
 
-- **Obligation creation and destination Event acceptance may be two distinct accepted facts.** A
-  child's terminal boundary may commit the terminal result **plus a durable Kernel-to-parent routing
+- A child's terminal boundary may commit the terminal result **plus a durable Kernel-to-parent routing
   obligation** without yet accepting any Event into the parent's mailbox. kernel.md permits exactly
   this: "Kernel-to-parent result routing is committed with the terminal result **or a durable routing
   intent**." In that profile the parent is **not** `B-6`-ready merely because the obligation exists —
@@ -423,150 +451,110 @@ narrower, and it is the only thing K0.1 states here:
 - **Recovery replays or idempotently fulfils the obligation; it never fabricates readiness.**
   recovery-and-compatibility.md's *Terminal result before routing/delivery acknowledgment* requires
   "Replay durable routing/publication intent with the same identity," and *Parent intent before child
-  creation/link* requires "Idempotent fulfillment binds one child and one budget debit." A restart
-  therefore re-drives the obligation to fulfilment; it does not mark the parent ready on the strength
-  of an obligation alone.
+  creation/link* requires "Idempotent fulfillment binds one child and one budget debit."
 - **`B-6` starts for the parent only when fulfilment actually accepts the resulting Event into the
   parent's mailbox**, and that destination-Event acceptance must atomically record the applicable
-  wake/readiness — the same rule as every other path-B row, applied at whichever boundary accepts the
-  Event.
+  readiness — the same rule as every other path-B row.
 - **A single-transaction profile is equally conforming.** Committing the child's terminal result and
   the parent's Event acceptance together is **permitted, not required**. K0.1 mandates neither shape.
 - **Never fabricate destination readiness before the destination Event exists.** This is the invariant,
-  and it generalizes past children: for *any* routed Event, obligation creation and destination
-  acceptance may be distinct accepted facts, and readiness attaches to the **latter**.
+  and it generalizes past children to *any* routed Event: readiness attaches to acceptance, never to
+  the obligation. **K4 owns the mechanism** ([007](../../007-work-packets.md);
+  composition-and-communication.md owns the interaction contracts), which is why the table above names
+  a *boundary role* rather than a mechanism.
 
-**K4 owns the mechanism.** Child/message durability, routing and delivery belong to K4
-([007](../../007-work-packets.md)); composition-and-communication.md owns the interaction contracts.
-K0.1 states only the cross-cutting Event/readiness invariant `B-6` depends on and deliberately freezes
-no concrete routing implementation — which is also why the row above names a *boundary role* ("the
-destination's Event-acceptance boundary") rather than a mechanism.
-
-*What it does.* The next dispatch for this Execution is the wake-triggered one in B-2's middle case:
-its batch is selected only from Events eligible under the retired rule, it **must** contain at least
-one such Event, and ineligible backlog cannot displace it however old that backlog is.
-
-*Lifetime — exactly one exchange (sharpened in review round 6,
-[K01-R6-01](implementation-07.md)).* Three statements fix it end to end:
-
-- **It survives a crash before reservation.** Having been committed by the authoritative acceptance
-  boundary above, it is accepted truth; a restart reconstructs it rather than losing it (*Recovery*
-  below).
-- **It is consumed when the wake-triggered Activation's batch is *durably reserved*** — B-1's
-  "explicit, finite, enumerable set of Event references pinned at dispatch time," at the
-  Activation-dispatch-intent boundary. Reservation, not Outcome acceptance and not an in-memory
-  hand-off, is the consumption point.
-- **After reservation it must not re-arm.** The pinned dispatch intent and its reserved batch are
-  themselves sufficient for replay or takeover — recovery-and-compatibility.md's *Dispatch intent
-  before send* window requires the "same immutable Activation," so a redelivery or an authorized
-  takeover re-sends that batch rather than re-selecting one. Re-arming `B-6` after reservation would
-  let a takeover recompute a batch, which is precisely what that window forbids.
-
-Afterwards the Execution is ordinarily `READY` (B-2's first case) and ordinary acceptance-order backlog
-handling resumes — unless that exchange's accepted Outcome registers another wait, in which case the
-`WAITING` case governs again. It never spans two exchanges, and nothing re-arms it except a fresh
-eligible wake of a fresh registration (path A or path B).
-
-*What this is **not**.*
-
-- **Not a revived wait, and not a second wait type.** The retired registration stays retired. The
-  Execution is `READY`, not `WAITING`; the retired generation is dead, and a timer naming it remains a
-  no-op (W-3). No new lifecycle state, no new wait record and no new Kernel entity is introduced.
-- **Not a persistent per-alternative "satisfied" flag.** What survives is the **selector** — the
-  retired wait's own dependency/subscription rule — not a record of which alternative matched, and not
-  any claim about whether external work settled. W-1's prohibition stands unchanged: the Kernel still
-  records only that the registration ended and which Events the next batch may draw from.
-- **Not an addressable record.** It is a property of readiness, which the acceptance boundary already
-  commits and which recovery already rebuilds, not an object with its own identity and lifecycle.
-
-*Recovery (corrected in review round 6, [K01-R6-01](implementation-07.md)).* Because the readiness is
-committed by **the authoritative acceptance boundary that creates it** — not written afterwards — a
-crash between that boundary and dispatch cannot downgrade a wake-triggered readiness into an ordinary
-one and let backlog displace the wake Event. Revision 6 justified this by saying it is committed "with
-the accepted Outcome," which only covers path A. recovery-and-compatibility.md's crash-window table
-already supplies the rule for each path, and this is K0.1 naming which row governs which:
-
-| Crash window (recovery-and-compatibility.md) | Path | Required behaviour here |
-|---|---|---|
-| *Input commit before scheduler notification* — "Reconstruct READY from accepted input/wait state" | B, ordinary application input | The accepted input and the retired-wait state are both durable, so the restart reconstructs a **wake-triggered** `READY`, selective under the retired selector — not a generic `READY` |
-| *Settlement committed before wake* — "Reconstruct Event/readiness from accepted records" | B, Effect settlement | The result Event and its readiness were accepted together, so the restart rebuilds both; the wake is not lost and is not downgraded |
-| *Outcome accepted before receipt* — "Replay receipt; never rerun accepted Effects" | A | The Outcome that registered-and-immediately-retired the wait is accepted, so its committed readiness is replayed with the rest of that acceptance |
-| *Dispatch intent before send* — "Same immutable Activation" | both, after reservation | The batch is already pinned; redelivery or takeover re-sends it and `B-6` does not re-arm (*Lifetime* above) |
-
-The common rule underneath all four is execution-protocol.md's "Readiness notifications may be rebuilt
-from accepted records. **Never rely on an unjournaled enqueue after commit**," applied to this exact
-field — which is why point 3 is inside the same transaction as points 1 and 2 in **both** paths, rather
-than a follow-up write in either.
-
-*Deterministic case (batch bound = 1).* Worked through end to end as §5 **W-8 case 4**: X is `WAITING`
-on subscription `{continue}` with an older, ineligible `billing.question` already queued; `continue` is
-accepted and wakes X; the immediately resulting Activation contains `continue` and **never**
-`billing.question`, even though the bound admits exactly one Event and `billing.question` is older;
-`billing.question` stays queued and unacknowledged; and after that exchange, if X is ordinarily
-`READY`, normal acceptance-order backlog handling may resume — at which point `billing.question` is an
-ordinary candidate again.
-
-**Left open (implementation-owned):** exact bounded-batch max size; the exact per-entry disposition
-storage shape (a per-Event flag vs. a set-difference against acknowledged IDs); and the storage
-representation of `B-6`'s wake-triggered readiness — a flag plus a copy of the retired selector, a
-pointer to the retired registration retained for one exchange, or a materialized eligible-Event set are
-all conforming.
-
-**A representation may not weaken the selector semantics (added in review round 6,
-[K01-R6-01](implementation-07.md)).** Whichever is chosen, it must preserve **B-2's exact observable
-selection semantics through reservation**. The materialized-set option is the one that can go wrong
-quietly, so it is worth stating what it owes: an eligible Event may be accepted *after* the readiness
-is created and *before* the batch is reserved, and B-2's rule is defined over the Events unacknowledged
-**at selection time**, not at wake time. A set materialized once at wake and never updated would
-silently exclude that later eligible Event and could, at a small bound, produce a different batch than
-the selector would — a weaker, implementation-visible semantics. So a materialized set must be
-maintained as further eligible Events are accepted, or the selector must simply be re-evaluated at
-reservation; either is conforming, and a stale snapshot is not. K0.1 fixes only which Events the next
-batch **may** and **must** contain, that the information survives a crash before reservation, that no
-representation may narrow or widen that set, and — once `B-7` applies — that no representation may drop
-the mandatory timeout member.
-
-**Decision B-7 (deadline-triggered wait-ended readiness — added in review round 7,
-[K01-R7-02](implementation-08.md)).** `B-6` gave an *Event*-ended wait crash-safe next-batch semantics
-and left a *deadline*-ended wait with none. Expiry retired the wait and set `READY`, B-2's **first**
-case then applied, and older unrelated backlog could displace the timeout observation exactly as it
-could once have displaced a wake Event — the same defect `B-6` was created to fix, surviving in the
-half of the problem `B-6` did not reach. The two are one problem and now have one protocol:
-**wait-ended readiness** is the genus (B-2's middle case), `B-6` and `B-7` are its species.
-
-*When it is created.* Acceptance of a **current-generation** wait-deadline expiry (§5 W-9) — a
-Kernel-owned accepted fact, not a Runtime submission and not an Outcome, so there is no Outcome
-boundary available any more than there is on `B-6` path B — does all of the following in **one
-transaction**:
+**Decision B-7 (deadline-triggered wait-ended readiness).** A wait can also end because its own
+deadline ended it, and that must be as crash-safe and as undisplaceable as an Event wake. `B-7` is
+`B-6`'s rule with one substitution: the mandatory member is **the timeout Event** (§5 W-9) for the
+generation being retired, rather than an Event eligible under the retired rule. There are likewise two
+paths, at two boundaries — rows 3 and 4 of the table above — and in both the accepting transaction
+does **all four** of the following together:
 
 1. retires that wait registration and its generation (W-1's retirement rule, reached through the other
    door);
-2. records the **timeout observation** tied to that expired wait generation (W-9 fixes its logical
-   identity and its generation correlation);
+2. creates **exactly one** timeout Event for that generation (W-9 fixes its identity, its generation
+   correlation and its provenance);
 3. sets the Execution `READY`;
-4. records recoverable readiness sufficient to deliver that timeout observation in the **immediately
+4. records recoverable readiness sufficient to deliver that timeout Event in the **immediately
    resulting** Activation.
 
-*What the next batch must contain.* The timeout observation is **mandatory** — it is the thing the
-Runtime is being activated to learn, and a batch without it would activate a Runtime that cannot tell
-why. Beyond that member the batch is selected exactly as `B-6`'s is: from Events eligible under the
-**retired** wait's rule, in deterministic acceptance order among them, subject to the normal bound.
-Events that would have been eligible under the retired wait and are accepted **after the expiry and
-before reservation** remain eligible for this same batch — the selection is evaluated at reservation,
-not frozen at expiry (§3's representation constraint). Unrelated backlog stays queued and unacknowledged
-(B-4) and cannot displace the timeout observation at any bound.
+**Path A** (row 3) is W-2 step 3: the deadline was already due when the `await` registering it was
+accepted, so the generation is retired inside the **Outcome-acceptance** boundary and durable `WAITING`
+is never persisted for it. **Path B** (row 4) is the ordinary asynchronous case: the Execution reached
+`WAITING` and the **current** generation's deadline later expired; the accepting boundary is the
+Kernel's own (W-9). A timer naming a **superseded** generation is a no-op and reaches neither path
+(W-3).
 
-*Lifetime, consumption and recovery are `B-6`'s, unchanged.* The readiness survives a crash before
-reservation; it is consumed when the batch is **durably reserved**; it must not re-arm afterwards,
-because the pinned Activation and its batch govern replay and takeover. The governing crash window is
-recovery-and-compatibility.md's *Input commit before scheduler notification* — "Reconstruct READY from
-accepted input/wait state" — read for an accepted **timeout** rather than an accepted input: the expiry
-and its readiness are accepted truth, so a restart reconstructs a **timeout-triggered** `READY`, never
-a generic one that could lose the observation behind backlog.
+**Why the timeout Event is mandatory and not merely eligible.** It is the thing the Runtime is being
+activated to learn; a batch without it would activate a Runtime that cannot tell why. It is **not**
+selected by matching — it satisfies no dependency alternative and no declared subscription, and it does
+not need to (W-1's category table, W-9). This is the point revision 8 could not state consistently: its
+B-2 selected the wait-ended batch "**only** from Events eligible under the retired wait's rule" while
+`B-7` made the timeout mandatory, and its W-1 listed the timeout among the Events that need a dependency
+alternative — so for a **subscription-only** wait (W-8's `W₀`, whose dependency list is legitimately
+empty) the mandatory member was, by the same document, ineligible. *The wait-ended batch* rule above
+resolves it: the mandatory member is a union term, not a filter result (§13, `K01-R8-02`).
 
-*What this does not introduce.* No new wait type, no new lifecycle state, no per-alternative
-satisfaction state and no second readiness mechanism. `B-7` is `B-6`'s rule with one additional
-mandatory member, and it introduces no Kernel entity that §4's wait clock did not already imply.
+At bound 1 the timeout Event takes the slot, and any correlated result that also became eligible stays
+queued, durable and unacknowledged (W-9 case 3). Neither fact is rewritten into the other: a timeout is
+never proof the awaited action failed (§4 CL-2).
+
+**Decision B-8 (readiness is created only by a wait ending).** No boundary creates wait-ended readiness
+except one that retires a **live** wait generation — rows 1–4 above and nothing else. In particular, an
+Event accepted while the Execution is `READY` (ordinarily or with a wait-ended readiness already
+outstanding), `RUNNING`, or terminal creates **no** readiness: it is an accepted mailbox fact and
+nothing more (row 6). Two failures this forecloses: a second readiness arming behind the first and
+silently re-selecting a batch after reservation; and an implementation treating "an interesting Event
+arrived" as a wake for an Execution that never asked to be woken.
+
+**Lifetime, consumption and recovery of a wait-ended readiness (both species).**
+
+- **It survives a crash before reservation.** It is committed by the authoritative acceptance boundary
+  that creates it, so it is accepted truth and a restart reconstructs it rather than losing it — which
+  is why point 3 (`B-6`) and point 4 (`B-7`) are inside the same transaction as the others, in **every**
+  path, rather than a follow-up write in any of them. The governing crash window per row is in the
+  table's last column; the common rule underneath all four is execution-protocol.md's "Readiness
+  notifications may be rebuilt from accepted records. **Never rely on an unjournaled enqueue after
+  commit**."
+- **It is consumed when that Activation's batch is *durably reserved***, at the
+  Activation-dispatch-intent boundary — not at Outcome acceptance and not at an in-memory hand-off.
+- **It must not re-arm after reservation.** The pinned dispatch intent and its reserved batch are
+  themselves sufficient for replay or takeover: recovery-and-compatibility.md's *Dispatch intent before
+  send* window requires the "same immutable Activation," so a redelivery or an authorized takeover
+  re-sends that batch rather than re-selecting one. Re-arming would let a takeover recompute a batch,
+  which is precisely what that window forbids.
+- **It never spans two exchanges.** Once that exchange's Outcome is accepted, the Execution is either
+  `WAITING` again (that Outcome registered a new wait), terminal, or *ordinarily* `READY` — at which
+  point B-2's first case resumes and previously ineligible backlog is an ordinary candidate again.
+  Nothing re-arms a wait-ended readiness except a fresh eligible wake or a fresh deadline expiry of a
+  fresh registration.
+
+**What a wait-ended readiness is *not*.**
+
+- **Not a revived wait, and not a second wait type.** The retired registration stays retired, the
+  Execution is `READY` rather than `WAITING`, the retired generation is dead, and a timer naming it
+  remains a no-op (W-3). No new lifecycle state, no new wait record and no new Kernel entity.
+- **Not a per-alternative "satisfied" flag.** What survives is the **selector** — the retired wait's
+  own eligibility rule — not a record of which alternative matched, and not any claim about whether
+  external work settled (W-1).
+- **Not an addressable record.** It is a property of readiness, which the acceptance boundary already
+  commits and which recovery already rebuilds, not an object with its own identity and lifecycle.
+
+**Left open (implementation-owned):** the exact bounded-batch max size (≥ 1, `B-1`); the exact per-entry
+disposition storage shape (a per-Event flag vs. a set-difference against acknowledged IDs); and the
+storage representation of a wait-ended readiness — a flag plus a copy of the retired selector, a pointer
+to the retired registration retained for one exchange, or a materialized candidate set are all
+conforming.
+
+**A representation may not weaken the selector semantics.** Whichever is chosen, it must preserve *The
+wait-ended batch* rule's exact observable result **through reservation**. The materialized-set option is
+the one that can go wrong quietly: an eligible Event may be accepted *after* the readiness is created
+and *before* the batch is reserved, and the rule is defined over the Events unacknowledged **at
+reservation**. A set materialized once at wake and never updated would silently exclude that later
+eligible Event and could, at a small bound, produce a different batch than the selector would. So a
+materialized set must be maintained as further eligible Events are accepted, or the selector must simply
+be re-evaluated at reservation; either is conforming, a stale snapshot is not, and no representation may
+narrow the set, widen it, or drop the species' mandatory member.
 
 ---
 
@@ -578,7 +566,7 @@ flag:
 
 | Clock | What it bounds | Expiry means | Expiry does **not** mean |
 |---|---|---|---|
-| **Wait deadline** | one specific `waitingFor` registration (§5) | that dependency wait ends; the Runtime gets a timeout fact in its next eligible batch | the external action it was waiting on failed, or the Execution itself ends |
+| **Wait deadline** | one specific `waitingFor` registration (§5) | that registration ends and exactly one **timeout Event** (W-9) is created for its generation; the Runtime receives that Event as the **mandatory** member of the immediately resulting Activation's batch (`B-7`) | the external action it was waiting on failed, or the Execution itself ends |
 | **Execution deadline** | the whole Execution's permitted lifetime | ordered logical cancellation (§6) begins | native work is interrupted — cancellation still goes through the same Driver-mediated cancellation path as an explicit cancel |
 | **Scheduler lease** | one worker's exclusive claim on a READY→RUNNING Execution | the claim is eligible for release/reassignment; a recovery inspection is triggered | that the previous holder's process is dead, that its native work stopped, or that a new attempt may write without checking accepted state |
 
@@ -593,19 +581,26 @@ table ("Wait timeout versus action success: preserve both facts"). This is a K2+
 specifically, but the *clock* distinction is a K0/K1 boundary because `ExecutionWait` (§5) already
 carries a deadline concept in the target design.
 
-**Left open (implementation-owned):** exact deadline units/precision, and whether lease expiry uses a
-heartbeat-renewal or a fixed TTL.
+**Decision CL-3 (the wait clock is read at two points, and only two).** A wait deadline is evaluated
+**at registration**, inside the Outcome-acceptance transaction that creates the generation (W-2 step 3,
+`B-7` path A), and **while the Execution is `WAITING`**, when the current generation's deadline expires
+(`B-7` path B). W-3 fixes that a generation is live only while `WAITING`, so there is no third reading
+point and no window in which a deadline belongs to a generation that is not live. A superseded
+generation's timer is a no-op at either point (W-3).
+
+**Left open (implementation-owned):** exact deadline units/precision, the instant source, and whether
+lease expiry uses a heartbeat-renewal or a fixed TTL. W-2 step 3 constrains only that a registration
+transaction takes **one** accepted-time observation and that the due comparison is non-strict.
 
 ---
 
 ## 5. Wait registration, generations, and any-of correlation
 
 **Decision W-1 (the target wait shape: dependency alternatives plus separately declared input
-subscriptions — stated in review round 2 ([K01-R2-03](implementation-03.md)), corrected in review
-round 4 ([K01-R4-01](implementation-05.md))).** A registered `waitingFor` carries exactly two
-declarative lists, plus the optional wait deadline (§4) and the generation identity every registration
-already has (W-3). Nothing else is part of the record — in particular there is **no** third list, **no**
-separate `interleave` field (W-5) and **no** Runtime-local-work arm (W-4).
+subscriptions).** A registered `waitingFor` carries exactly two declarative lists, plus the optional
+wait deadline (§4) and the generation identity every registration has (W-3). Nothing else is part of
+the record — in particular there is **no** third list, **no** separate `interleave` field (W-5) and
+**no** Runtime-local-work arm (W-4).
 
 1. **Dependency alternatives** — a finite, enumerable list, **possibly empty**. Each alternative is
    one independent declarative selector over an Event envelope, written in the exact grammar fixed
@@ -621,63 +616,67 @@ separate `interleave` field (W-5) and **no** Runtime-local-work arm (W-4).
    explicit input subscriptions and a deadline") and that kernel.md makes mandatory for input waits
    ("application-input waits require a declared subscription").
 
-**Well-formedness: one eligible wake source across the two lists combined (corrected in review round
-4).** The registration is valid iff `dependency alternatives + declared subscriptions ≥ 1`. **Neither
-list is individually required to be non-empty.** Revision 4 required the dependency list itself to be
-non-empty, which made 001's own K0 trace unrepresentable: "accept input → delayed fake Runtime → typed
-output → **input wait** → completion" waits for one class of application input and for nothing else, so
-its dependency list is legitimately empty. Under the old rule a Runtime could spell that wait only two
-ways, both defective — invent a dependency alternative nothing will ever settle, or drop the
-subscription and let a catch-all alternative wake it for *every* `external.input` regardless of label.
-W-8 works that counterexample through and both spellings are now unnecessary. A registration with
-**both** lists empty remains invalid: a wait must name at least one Event class that can end it. A
-deadline does not rescue an empty wait — kernel.md's wait is "on any of a finite set of correlated
-Events, **optionally** with a durable deadline," so the deadline *bounds* a wait rather than being the
-thing waited for, and CL-1 keeps the three clocks separate identities rather than letting one stand in
-for a dependency.
+**Well-formedness: one eligible wake source across the two lists combined.** The registration is valid
+iff `dependency alternatives + declared subscriptions ≥ 1`. **Neither list is individually required to
+be non-empty.** Requiring the dependency list itself to be non-empty would make 001's own K0 trace
+unrepresentable: "accept input → delayed fake Runtime → typed output → **input wait** → completion"
+waits for one class of application input and for nothing else, so its dependency list is legitimately
+empty (W-8). A registration with **both** lists empty remains invalid: a wait must name at least one
+Event class that can end it. A deadline does not rescue an empty wait — kernel.md's wait is "on any of
+a finite set of correlated Events, **optionally** with a durable deadline," so the deadline *bounds* a
+wait rather than being the thing waited for, and CL-1 keeps the three clocks separate identities rather
+than letting one stand in for a dependency.
 
-**Eligibility rule — by source category first (corrected in review round 7,
-[K01-R7-01](implementation-08.md)).** Revision 7 read "matches at least one dependency alternative,
-**or** it is application input matching at least one declared subscription" as two *independent
-sufficient* conditions. Under the now-exact selector grammar that is a bypass: a dependency alternative
-spelled `kind = external.input` makes ordinary application input eligible with **no subscription at
-all**, which is precisely what kernel.md forbids — "application-input waits require a declared
-subscription." Eligibility is therefore decided by the Event's **source category** first, and only then
-by the matching rule belonging to that category:
+### Eligibility while `WAITING` — by source category first
 
-| Source category | What makes it eligible while `WAITING` | What does **not** |
-|---|---|---|
-| **Ordinary application input** — an Event accepted through the application-input ingress path. The category is fixed by **trusted ingress provenance**, not by a kind's spelling; in the current vocabulary `external.input` is the one kind in it ("an observation delivered from outside the kernel", `packages/core/src/interaction/events.ts:28`, and, at `:58-60`, "an application observation ... externally mintable through the generic delivery path - a `user.input` is not deliverable that way"), and `user.input` is *not* (it is runtime-established and settles a specific Effect) | **Only** a declared input subscription (item 2) naming its class | A dependency alternative, however written. An alternative whose selector happens to match this Event's identity, kind or correlation does **not** make it eligible |
-| **Every other Kernel Event** — runtime-established results and settlements, child results, peer messages, memory observations, and the current-generation timeout observation (W-9) | A **dependency alternative** matching under the selector grammar below | A declared input subscription is not how these are named |
+An Event's **source category** decides which matching rule, if any, can make it eligible. The category
+is fixed by **trusted ingress/mint provenance**, never by how a kind happens to be spelled.
+
+| Source category | How the category is fixed | Eligible while `WAITING` when | Never made eligible by |
+|---|---|---|---|
+| **Ordinary application input** | accepted through the application-input ingress path. In the current vocabulary `external.input` is the one kind in it ("an observation delivered from outside the kernel", `packages/core/src/interaction/events.ts:28`, and, at `:58-60`, "an application observation ... externally mintable through the generic delivery path - a `user.input` is not deliverable that way"); `user.input` is *not* in it (runtime-established, and it settles a specific Effect) | it matches at least one **declared input subscription** (item 2) of the live wait | a dependency alternative, however written. An alternative whose selector happens to match this Event's identity, kind or correlation is **inert** — it neither wakes nor acknowledges (W-7 cases 6–7) |
+| **The Kernel timeout Event** (W-9) | minted by the Kernel from its own persisted deadline; no external party can supply it | **never** — it cannot exist while its own wait is live, because the same transaction that creates it retires that wait. It reaches the Runtime as the **mandatory member** of exactly one wait-ended batch (`B-7`), by construction rather than by matching | a dependency alternative **or** a declared subscription. A dependency alternative naming a timeout kind is **inert**, exactly as an alternative naming an application-input kind is |
+| **Every other Kernel Event** — runtime-established results and settlements, child results, peer messages, memory observations | accepted through a trusted settlement, routing or runtime-established ingress | it matches at least one **dependency alternative** under the selector grammar below | a declared input subscription, which names application-input classes only (see *This rule is closed for K0/K1* below) |
 
 **The rule.** While `WAITING`, an Event is eligible **iff**: it is ordinary application input **and**
-matches at least one declared input subscription; **or** it is not application input **and** matches at
-least one dependency alternative. Every other Event is accepted into the mailbox, stays queued with its
-own disposition (B-4), and neither wakes nor is acknowledged — and that stays true of application input
-outside every declared subscription **even when the wait also carries dependency alternatives** (W-7
-cases 6–7). B-2 selects the `WAITING` batch by exactly this rule and by no other, and wherever `B-6`
-or `B-7` speak of "the retired wait's eligibility rule" they mean exactly this rule as that wait
-spelled it.
+matches at least one declared input subscription; **or** it is a Kernel Event of neither of the other
+two categories **and** matches at least one dependency alternative. Nothing else is eligible. Every
+other Event is accepted into the mailbox, stays queued with its own disposition (B-4), and neither
+wakes nor is acknowledged — and that stays true of application input outside every declared
+subscription **even when the wait also carries dependency alternatives** (W-7 cases 6–7). §3's B-2
+selects the `WAITING` batch by exactly this rule and by no other, and wherever `B-6` or `B-7` speak of
+"the retired wait's eligibility rule" they mean exactly this rule as that wait spelled it.
 
 **The two lists stay separate in both directions.** A subscription is not a fourth selector field on a
 dependency alternative, and the source-category rule is not a back door for putting an application
 label into the grammar: a subscription names a declared subscription identity (item 2), an alternative
 names identity/kind/correlation (grammar below), and neither reaches into the other's category. This is
-also why `MIG-5`'s matcher is a *component* of target eligibility rather than the whole of it — the
-category test happens around it, not inside it.
+also why §12's `MIG-5`'s matcher is a *component* of target eligibility rather than the whole of it —
+the category test happens around it, not inside it.
 
-*Scope note.* K0.1 fixes the rule for **ordinary application input**, which is the case kernel.md makes
-normative. Whether a declared subscription may *additionally* name a non-input class — kernel.md's
-Events-and-waits section mentions "corrections/peer questions" in one breath — is left to K1.3. Either
-answer leaves this rule intact, because it could only ever add a path for a *non-input* category and
-never gives application input a second one.
+**This rule is closed for K0/K1; no part of it is conditional on a later packet.** The mapping above is
+exact and complete for K0 and K1: application input → declared subscription; every other ordinary
+Kernel Event → dependency alternative; timeout Event → neither. Nothing canonical is lost by that
+closure. kernel.md's "An explicit input subscription can allow corrections/peer questions while
+waiting" is satisfied under this rule as written, because the two classes it names arrive in different
+categories: a **correction** is ordinary application input and is named by a subscription (W-7 case 4),
+while a **peer question** is a `peer.message` — a non-application Kernel Event — and is named by a
+dependency alternative on its kind and/or the asking correlation. Both can therefore wake a waiting
+Execution today, which is the capability the canonical sentence asserts.
 
-**The dependency-alternative selector grammar (exact — stated in review round 5,
-[K01-R5-02](implementation-06.md)).** Revision 5 said in one place that an alternative is over "kind
-(set membership) and/or its correlation identity," and in another that both lists are "compared by
-equality over envelope identity, kind, correlation and declared-subscription name." Those describe two
-different grammars, and a K1.1 implementer could not tell whether exact Event identity was selectable.
-This is the one grammar.
+composition-and-communication.md's richer form — "A parent waiting for B can explicitly subscribe to
+addressed clarification input from B" — sits on a page whose own status line reads **target K4**. If K4
+decides that addressed clarification/peer input should *also* be nameable by a declared subscription,
+that is a **versioned extension of the interaction contract**, introduced under
+recovery-and-compatibility.md's *Protocol/codec* compatibility dimension ("Supported envelope fields and
+equality rules; refuse unknown required semantics") with an explicit protocol revision and a refusal
+path — not a reinterpretation of this rule and not a K1.3 option left open here. Any such extension
+could only ever add a second path for a **non-application** category; it can never give ordinary
+application input a path other than a declared subscription, because kernel.md forbids that outright.
+Revision 8 left this open as a K1.3 choice, which made the supposedly exact current rule conditional on
+a future decision (§13, `K01-R8-03`).
+
+### The dependency-alternative selector grammar (exact)
 
 One alternative supplies **any non-empty subset** of exactly three optional selector fields, each a
 canonical dimension kernel.md already names ("Conditions use envelope identity/kind/correlation, not
@@ -697,20 +696,22 @@ arbitrary code or model-text predicates"):
   for "anything." It is exactly the over-matching spelling W-8's *What this rules out* rejects, and
   accepting it would let a wait that means "any application input labelled `continue`" be spelled as
   "any Event at all."
-- **An empty finite kind set is not a valid supplied Kind selector (added in review round 6,
-  [K01-R6-02](implementation-07.md)).** `[]` is rejected here, before any matching is attempted. It is
-  neither "a Kind selector that matches nothing" nor a spelling of "Kind selector absent": the target
-  grammar expresses absence by *not supplying the field*, and an empty set supplied as a value is
-  simply malformed. This rule is normative **here**, in W-1, because W-1 is the grammar; §12's
-  `MIG-5` describes only how the current 0.8.x encoding maps onto it, and carries no validation rule
-  of its own. Revision 6 had it the other way round, which put a normative constraint in a legacy
-  classification row.
+- **An empty finite kind set is not a valid supplied Kind selector.** `[]` is rejected here, before any
+  matching is attempted. It is neither "a Kind selector that matches nothing" nor a spelling of "Kind
+  selector absent": the target grammar expresses absence by *not supplying the field*, and an empty set
+  supplied as a value is simply malformed. This rule is normative **here**, in W-1, because W-1 is the
+  grammar; §12's `MIG-5` describes only how the current 0.8.x encoding maps onto it and carries no
+  validation rule of its own.
 - **Between alternatives the only combinator is ANY-OF**, over the finite list in item 1.
 - **Every comparison is equality**: identity equality, kind equality or finite-set membership,
   correlation equality. Nothing else — no ordering or range comparison, no prefix, glob or regular
   expression, no negation, no arbitrary predicate, callback, query language or model-text condition,
   and no field outside the three above. In particular an Event's **payload/body is not selectable at
   all** by a dependency alternative.
+- **A well-formed alternative can still be inert.** Validity is structural; *eligibility* is decided by
+  the category rule above. An alternative naming an application-input kind, or a timeout kind, is a
+  valid alternative that matches nothing in those categories. It is not rejected at registration — the
+  Kernel does not audit a Runtime's intent — it simply contributes nothing (W-7 cases 6–7).
 
 **Application-input subscriptions are not dependency alternatives and do not use this grammar.** A
 subscription selects a class of application input by its declared subscription identity (item 2),
@@ -726,73 +727,128 @@ kernel.md as quoted above, and the current code's own rule that a wake condition
 declarative, serializable runtime data, not a callback or a query language"
 (`packages/core/src/interaction/event-envelope.ts:66-72`).
 
-**Any eligible wake retires the registration; the Kernel keeps no "dependency satisfied" flag
-(corrected in review round 4).** Whichever eligible Event arrives first — a dependency match or a
-subscribed input — **that registration and its generation are retired** and the Execution becomes
-`READY`. **The authoritative acceptance boundary that creates that readiness records exactly two
-things** (`B-6`; the boundary is the Outcome-acceptance transaction on path A, and the Event's own
-ingress/settlement/routing boundary on path B, where no Outcome exists): that this registration ended,
-and — as **recoverable readiness** — the *retired wait's own eligibility rule*, so that the next
-dispatch is selected by it (B-2's wake-triggered case) instead of by ordinary acceptance order. Carrying the
-selector is what makes "this Event is eligible for the next batch" an enforceable statement rather
-than an aspiration; revision 5 asserted the consequence in W-7/W-8 without stating the rule that
-produces it ([K01-R5-01](implementation-06.md)). The Kernel still records **nothing** about whether
-any other alternative's external work has settled, and it carries no partially-consumed wait
-forward — `B-6` preserves a *selector*, never a satisfaction flag. If the Runtime still needs a dependency
-after processing the Event it woke for — the ordinary case after a correction or a peer question — its
-**next Outcome registers that dependency again**, as a new registration under a new generation (W-3).
-That re-registration, not a retained flag, is how an outstanding need is carried forward, and it is
-what keeps the Kernel free of bookkeeping it cannot verify: **waking through a subscription is never
-evidence that an unrelated external dependency settled.** Round 3 phrased this as the dependency
-"staying outstanding" inside a still-live registration, which implied per-alternative Kernel state that
-neither kernel.md nor execution-protocol.md provides; the observable behaviour the Runtime sees is
-unchanged, because it re-reports the same alternatives either way.
+### Any eligible wake retires the registration; the Kernel keeps no "dependency satisfied" flag
 
-**Decision W-2 (atomic mailbox check at registration; extended in review round 5,
-[K01-R5-01](implementation-06.md)).** Registering a wait and checking already-accepted-but-
-unacknowledged Events for a match happen in the same atomic step that transitions the Execution to
-`WAITING` (or keeps it `READY` if already satisfied). This is the fix for the "result precedes wait"
-race in execution-protocol.md's race table; it must not be split into "register" then "separately
-notice."
+Whichever eligible Event arrives first — a dependency match or a subscribed input — **that registration
+and its generation are retired** and the Execution becomes `READY`. The authoritative acceptance
+boundary that creates that readiness records exactly two things (`B-6`; the boundary is the
+Outcome-acceptance transaction on path A, and the Event's own ingress/settlement/routing boundary on
+path B, where no Outcome exists): that this registration ended, and — as **recoverable readiness** —
+the *retired wait's own eligibility rule*, so that the next dispatch is selected by it (§3's wait-ended
+batch rule) instead of by ordinary acceptance order. Carrying the selector is what makes "this Event is
+eligible for the next batch" an enforceable statement rather than an aspiration.
 
-**The `READY` outcome of this check is a *wake-triggered* readiness, not an ordinary one.** The Event
-the check found is the wake, and the wait it just registered is immediately retired, so `B-6` applies
-in full: the just-retired wait's eligibility rule is recorded as recoverable readiness and the next
-dispatch is selected by it (B-2's middle case). Without that, the result-before-wait race would be
-"fixed" only in the weakest sense — the Execution would become `READY`, and the Runtime could then be
-handed a bounded batch of older **ineligible** backlog that excluded the very result it had just
-declared it was waiting for. That is the lost-wake failure in a different costume, and it is why
-`B-6`'s two creation paths (i) and (ii) are specified identically rather than only the `WAITING` one.
+The Kernel records **nothing** about whether any other alternative's external work has settled, and it
+carries no partially-consumed wait forward — a wait-ended readiness preserves a *selector*, never a
+satisfaction flag. If the Runtime still needs a dependency after processing the Event it woke for — the
+ordinary case after a correction or a peer question — its **next Outcome registers that dependency
+again**, as a new registration under a new generation (W-3). That re-registration, not a retained flag,
+is how an outstanding need is carried forward, and it is what keeps the Kernel free of bookkeeping it
+cannot verify: **waking through a subscription is never evidence that an unrelated external dependency
+settled.**
 
-**Decision W-3 (wait-generation identity is scoped to wait-*created artifacts*, corrected in review
-round 1 — [K01-REV-02](implementation-02.md)).** Every `waitingFor` registration has its own generation
-identity, distinct from the Execution ID and from the Activation ID that created it. **Generation
-fencing applies to artifacts the wait registration itself created for its own bookkeeping — concretely,
-a timer scheduled against that specific registration.** A timer naming a generation that has since been
-replaced (the Execution moved on to a new wait, or resolved and re-entered `WAITING` on a different
-dependency) is a no-op, never a wake of the current wait: this is exactly kernel.md's "stale timers
-cannot wake a replacement wait." **Generation fencing does *not* apply to authenticated Kernel Events.**
-An accepted result/settlement Event is a durable mailbox fact the instant it is accepted, independent
-of which wait generation happened to be live at that moment (execution-protocol.md's atomic-mailbox-
-check applies at *whatever* wait is current when the check runs, per W-2) — it is never discarded or
-treated as belonging to an obsolete generation merely because an intervening wait replaced the one that
-was active when the Event arrived. Round 1 wrongly generalized generation-fencing from "stale timers"
-to "a timer or a late settlement," which would have let a currently-registered, explicitly correlated
-wait miss an Event it should be able to observe (see W-6's counterexamples 3–4).
+**Decision W-2 (registering a wait: one ordered algorithm, inside one transaction).** Registering a
+wait and deciding the Execution's next state is a single atomic step, and its internal order is fixed
+here so that two implementers cannot reach different next states for the same accepted facts. The
+Outcome has already passed §7's OA-1–OA-3, so the wait is well-formed under W-1.
 
-**Decision W-4 (the target Kernel `waitingFor` record has no Runtime-local-work arm at all;
-corrected in review round 1 — replaces round 1's W-4 entirely).** Round 1 proposed keeping the current
-three-armed `ExecutionWait` union's *shape* — `event` / a Runtime-local-work arm / `dependencies` — and
-reclassifying only what occupies the local-work arm. That framing is wrong and is withdrawn: the
+The four steps below are ordered **evaluation** inside **one** transaction, not four commits. Nothing
+between them is externally observable and nothing partially commits (OA-4, OA-5); "stop" means the
+transaction's next state is decided, not that it ends early. Inside the Outcome-acceptance transaction,
+in this order:
+
+1. **Acknowledge this Outcome's own reserved batch first** (B-3). Those Events are now acknowledged and
+   are therefore **not** candidates in step 2: a wait can never be woken by the batch the Outcome
+   registering it just accounted for. The current code's own docstring already states this
+   prospectivity — the condition "describes what is still needed *after* the controller's semantic
+   work, so Events already delivered into the Activation that reported it can never satisfy it"
+   (`packages/core/src/interaction/event-envelope.ts:57-60`). Without this ordering a wait would
+   re-wake on its own input forever.
+2. **Create the registration and its generation, then check the mailbox.** Test every
+   **already-accepted, still-unacknowledged** Event against the new wait's eligibility rule (W-1). If
+   at least one is eligible: retire the registration and its generation, set `READY`, and commit
+   **Event-triggered** wait-ended readiness (`B-6` path A, §3 row 1). **No timeout Event is created**
+   for that generation, and a timer scheduled for it is stale on arrival (W-3). Stop. This is the fix
+   for the "result precedes wait" race in execution-protocol.md's race table; it must not be split into
+   "register" then "separately notice," and it is not skipped merely because the dependency list is
+   empty (W-8 case 1).
+3. **Otherwise, if the wait carries a deadline, evaluate it now** against **one accepted-time
+   observation taken in this transaction**. The deadline is **due** iff that observation is at or after
+   the deadline instant (the comparison is non-strict: equal instants are due). If it is due: retire
+   the registration and its generation, create **exactly one timeout Event** for it (W-9), set `READY`,
+   and commit **deadline-triggered** wait-ended readiness (`B-7` path A, §3 row 3). **Durable
+   `WAITING` is never persisted for this generation.** Stop.
+4. **Otherwise persist `WAITING`** with the live registration, its generation and its deadline. A later
+   expiry follows `B-7` path B (§3 row 4).
+
+**Why this order, and why the alternative is refused.** Revision 8 stated the mailbox check itself and
+nothing else about this transaction: it fixed neither the batch-acknowledgment ordering (step 1), nor
+what a deadline does here (step 3), nor how the two interact. Three things are therefore decided here.
+
+- **Step 2 precedes step 3** because the Event was an accepted fact *before* this wait existed, so
+  treating it as the wake is the same "no lost wake" guarantee execution-protocol.md requires — and
+  because minting a timeout for a wait that an already-accepted Event had ended would record a timeout
+  that never semantically happened. Since step 3 runs only when step 2 found nothing, an Execution can
+  never hold both an Event-triggered and a deadline-triggered readiness for one generation, and §3's
+  four wait-ended rows stay mutually exclusive.
+- **Step 3 collapses rather than persisting `WAITING`.** The alternative — persist `WAITING` and let
+  the deadline machinery fire immediately as an ordinary `B-7` path B — reaches the same eventual state
+  but makes the observable next state depend on timer latency: a K1 fixture registering an already-past
+  deadline could see `WAITING` for an unbounded interval and could not assert an exact outcome, and an
+  implementation whose timer only scans periodically would be conforming while visibly sitting past its
+  own deadline. K0.1-C2/C6 need one answer, and this is it. Revision 8 left the case undecided with
+  "two defensible answers" (§13, `K01-R8-04`).
+- **This does not contradict execution-protocol.md.** Its "If one is already present, next state is
+  READY; otherwise it is WAITING" resolves the *Event-presence* branch — which is exactly step 2 — and
+  says nothing about a deadline, which CL-1 keeps as a separate identity evaluated at the same boundary.
+  kernel.md's own lifecycle line already admits an `await` whose accepted next state is `READY`
+  ("RUNNING + accepted await → WAITING (or READY if already satisfied)"). The invariant K0.1 states is
+  the narrower and stronger one both are instances of: **a wait that cannot be live at the moment of
+  its own registration is never persisted as live**, and steps 2 and 3 are the only two ways that
+  happens.
+
+**One clock reading per transaction.** Step 3 must use a single accepted-time observation for the whole
+transaction; two reads inside one transaction could disagree and make the outcome depend on which line
+of code asked. The units, precision and source of that observation stay implementation-owned (§4's
+"Left open"), and nothing here makes the wait clock the Execution clock or the lease clock (CL-1).
+
+**Decision W-3 (wait-generation identity is scoped to wait-*created artifacts*).** Every `waitingFor`
+registration has its own generation identity, distinct from the Execution ID and from the Activation ID
+that created it.
+
+**Generation fencing applies to artifacts the wait registration itself created for its own bookkeeping
+— concretely, a timer scheduled against that specific registration.** A timer naming a generation that
+has since been replaced (the Execution moved on to a new wait, or resolved and re-entered `WAITING` on
+a different dependency) is a no-op, never a wake of the current wait: this is exactly kernel.md's
+"stale timers cannot wake a replacement wait."
+
+**Generation fencing does *not* apply to authenticated Kernel Events.** An accepted result/settlement
+Event is a durable mailbox fact the instant it is accepted, independent of which wait generation
+happened to be live at that moment (the atomic mailbox check applies at *whatever* wait is current when
+it runs, per W-2 step 2) — it is never discarded or treated as belonging to an obsolete generation
+merely because an intervening wait replaced the one that was active when the Event arrived. Round 1
+wrongly generalized generation fencing from "stale timers" to "a timer or a late settlement," which
+would have let a currently-registered, explicitly correlated wait miss an Event it should be able to
+observe (W-6 counterexamples 3–4).
+
+**A generation is live exactly while the Execution is `WAITING`.** It is created inside an
+Outcome-acceptance transaction and is either retired in that same transaction (W-2 step 2 or step 3) or
+persisted together with `WAITING` (step 4) until it is retired by `B-6` path B, `B-7` path B, or an
+accepted terminal decision (§6 CX-2). There is therefore **never** a live generation while the
+Execution is `READY`, `RUNNING` or terminal, which is why §3 row 6 creates no readiness and why a
+"current-generation deadline expiry" (`B-7` path B) can only be accepted while the Execution is
+`WAITING`.
+
+**Decision W-4 (the target Kernel `waitingFor` record has no Runtime-local-work arm at all).** The
 target Kernel wait record is defined **only** in terms of a finite, enumerable set of correlated
-**Kernel Events**, with an optional explicit input subscription (kernel.md's Events-and-waits section:
+**Kernel Events**, with optional explicit input subscriptions (kernel.md's Events-and-waits section:
 "Start with a wait on any of a finite set of correlated Events... An explicit input subscription can
 allow corrections/peer questions while waiting"). There is no second arm for "Runtime-local work" in
-this record at all — not a Kernel-visible one, not a legacy-classified one, not a placeholder. Runtime-
-local promises/jobs that have not crossed a Kernel dependency boundary (i.e. were never proposed as a
-Kernel-mediated Effect) are **entirely Runtime/Driver-private**: the Kernel never learns their identity
-and never fences a wait generation against them, because no `waitingFor` registration is created for
-them in the first place.
+this record at all — not a Kernel-visible one, not a legacy-classified one, not a placeholder.
+Runtime-local promises/jobs that have not crossed a Kernel dependency boundary (i.e. were never
+proposed as a Kernel-mediated Effect) are **entirely Runtime/Driver-private**: the Kernel never learns
+their identity and never fences a wait generation against them, because no `waitingFor` registration is
+created for them in the first place.
 
 The consequence for an Activation whose only outstanding work is such local work: it simply **does not
 yet submit an Outcome**. From the Kernel's side that Activation remains `RUNNING` — "an Activation
@@ -810,58 +866,55 @@ has enough to finally produce an Outcome — but nothing about that bookkeeping 
 constrains the shape of, the new Kernel `waitingFor` record.
 
 **Decision W-5 (`interleave` is current-0.8.x legacy/compatibility semantics, not a target Kernel wait
-field — corrected in review round 4, [K01-R4-01](implementation-05.md)).** Current code carries an
-optional `interleave?: WakeCondition` on two `ExecutionWait` arms
+field).** Current code carries an optional `interleave?: WakeCondition` on two `ExecutionWait` arms
 (`packages/core/src/execution/context.ts:102-108`, with the "Controlled interleaving" docstring at
 `:79-100` and the constructor at `:132-134`) and on the matching controller report
 (`packages/core/src/ports/controller.ts:86-92`, `:109`). Its documented meaning is a second, separate
 wake condition whose match "makes this Execution `READY` for another Activation, without the primary
 dependency being satisfied" (`context.ts:88-89`).
 
-**The target Kernel wait record has no `interleave` field.** W-1's two lists already express
-everything it expressed, and more precisely: what `interleave` calls "Events I can safely process while
-my primary dependency is unresolved" is, in the target record, either **another dependency alternative**
-(a correlated Kernel Event the Runtime is willing to be woken by) or **a declared input subscription**
+**The target Kernel wait record has no `interleave` field.** W-1's two lists already express everything
+it expressed, and more precisely: what `interleave` calls "Events I can safely process while my primary
+dependency is unresolved" is, in the target record, either **another dependency alternative** (a
+correlated Kernel Event the Runtime is willing to be woken by) or **a declared input subscription**
 (application input). The one thing `interleave` adds beyond that — a Kernel-visible distinction between
 a wake that satisfies the primary dependency and a wake that does not — is exactly the per-registration
 "satisfied" state W-1 deliberately does not keep: any eligible wake retires the registration, and the
 Runtime re-registers whatever it still needs.
 
-Round 3's W-5 defined `interleave` as "a second, separate `WakeCondition`... evaluated by the Kernel
-exactly like the primary wake condition," which left the worksheet with **two** target wait records —
-W-1's two lists, and a singular `wake` plus `interleave` — with B-2 selecting by the second one. That
-is withdrawn. The field is legacy: §12's `REF-5` refuses adoption of the current `ExecutionWait.event`
-shape *including* this optional field as the target record, and `LC-1` keeps the current file working
+The field is legacy: §12's `REF-5` refuses adoption of the current `ExecutionWait.event` shape
+*including* this optional field as the target record, and `LC-1` keeps the current file working
 unchanged for current 0.8.x paths until they migrate. What survives is the *principle*, which W-1
 states independently: every wake source is declarative data the Runtime supplied in its own Outcome —
 the Kernel never infers on its own that some Event is "probably safe to wake for."
 
-**Decision W-6 (deterministic counterexamples, added in review round 1).**
+**Decision W-6 (deterministic counterexamples: local work, generations and late results).**
 
-1. **Local work alone creates no `WAITING`.** A controller has only Runtime-local (native/model)
-   work outstanding and no Kernel-visible dependency to report. Its Activation stays unresolved
-   (`RUNNING`); the Kernel never creates a `waitingFor` record, and no wait generation is ever
-   allocated for it. Only once the Runtime produces an actual Outcome does the Kernel see anything —
-   in the target's own vocabulary, `continue`, `await(wait)`, `complete(result)` or `fail(error)`
-   (kernel.md's Activation/Outcome shape), not the 0.8.x controller status names.
+1. **Local work alone creates no `WAITING`.** A controller has only Runtime-local (native/model) work
+   outstanding and no Kernel-visible dependency to report. Its Activation stays unresolved (`RUNNING`);
+   the Kernel never creates a `waitingFor` record, and no wait generation is ever allocated for it.
+   Only once the Runtime produces an actual Outcome does the Kernel see anything — in the target's own
+   vocabulary, `continue`, `await(wait)`, `complete(result)` or `fail(error)` (kernel.md's
+   Activation/Outcome shape), not the 0.8.x controller status names.
 2. **Stale timer G1 cannot wake G2.** A wait is registered with generation G1 and a persisted timer.
    Before G1's deadline, the wait resolves and the Execution re-enters `WAITING` on a different
    dependency under generation G2. G1's timer later fires; it is a no-op against G2 (W-3).
-3. **Timeout/replacement, then a late result, retains the result.** G1 times out (or is replaced by
-   G2 as in case 2) and *afterward* an authenticated result Event correlated to G1's original
-   dependency is accepted. That Event is retained as a durable mailbox fact (kernel.md: "Wait timeout
-   versus action success: preserve both facts") — it is not deleted or invalidated merely because the
-   wait that originally asked for it moved on.
+3. **Timeout/replacement, then a late result, retains the result.** G1 times out (or is replaced by G2
+   as in case 2) and *afterward* an authenticated result Event correlated to G1's original dependency
+   is accepted. That Event is retained as a durable mailbox fact (kernel.md: "Wait timeout versus
+   action success: preserve both facts") — it is not deleted or invalidated merely because the wait
+   that originally asked for it moved on. If the Execution is not `WAITING` when it arrives, its
+   acceptance creates no readiness (§3 row 6, `B-8`).
 4. **A later, explicitly correlated wait can consume an already-accepted eligible result.** Continuing
    case 3: if the Execution's *current* wait (G2, or a still-later G3) explicitly correlates to that
-   already-accepted Event (same correlation ID/kind), the atomic mailbox check at that wait's
-   registration (W-2) finds and consumes it — generation fencing (W-3) never blocks this, because the
-   Event itself was never generation-scoped; only the now-superseded G1 timer was.
+   already-accepted Event (same correlation ID/kind), W-2 step 2 finds and consumes it at that wait's
+   registration — generation fencing (W-3) never blocks this, because the Event itself was never
+   generation-scoped; only the now-superseded G1 timer was.
 
-**Decision W-7 (deterministic wait-shape examples, added in review round 2,
-[K01-R2-03](implementation-03.md)).** One scenario throughout: Execution P has spawned children C1 and
-C2 and registers wait `W` with dependency alternatives `D1` (kind `child.result`, correlation `c1`) and
-`D2` (kind `child.result`, correlation `c2`), and declared input subscriptions `{correction}`.
+**Decision W-7 (deterministic wait-shape examples).** One scenario throughout: Execution P has spawned
+children C1 and C2 and registers wait `W` with dependency alternatives `D1` (kind `child.result`,
+correlation `c1`) and `D2` (kind `child.result`, correlation `c2`), and declared input subscriptions
+`{correction}`.
 
 1. **Two differently correlated alternatives.** `D1` and `D2` are separate entries in one finite list;
    either one matching wakes P, and neither is privileged by list position. The current record shape
@@ -870,9 +923,9 @@ C2 and registers wait `W` with dependency alternatives `D1` (kind `child.result`
    including an unrelated third child's. The *matcher* each alternative is written with does migrate
    (`MIG-5`); the single-condition record holding it does not.
 2. **Result before wait, for either alternative.** If C2's result was accepted *before* `W` was
-   registered, the atomic mailbox check at registration (W-2) finds it and P is `READY`, never
-   `WAITING` — and this must hold for whichever alternative the already-accepted Event matches, not
-   only for the first one listed. Same outcome if C1's result is the early one.
+   registered, W-2 step 2 finds it and P is `READY`, never `WAITING` — and this must hold for whichever
+   alternative the already-accepted Event matches, not only for the first one listed. Same outcome if
+   C1's result is the early one.
 3. **Ordinary input outside any subscription stays queued.** Application input labelled
    `billing.question` arrives while `W` is registered. It is ordinary application input, so W-1's
    source-category rule sends it down the **subscription** branch and nowhere else; `billing.question`
@@ -881,55 +934,50 @@ C2 and registers wait `W` with dependency alternatives `D1` (kind `child.result`
    disposition for a later eligible batch (B-4). (That it also fails to be a `child.result` is true but
    no longer the operative reason — case 6 below is the same input against a wait that *does* have a
    matching alternative, and the answer is unchanged.)
-4. **Subscribed correction input may wake (restated in review round 4,
-   [K01-R4-01](implementation-05.md)).** Application input labelled `correction` arrives. It matches
-   the declared subscription, so it is eligible: P becomes `READY` and the Runtime sees it in the next
-   batch — and it is **`B-6`** that makes "the next batch" contain it rather than this example simply
-   asserting so: the boundary that accepts the `correction` input — creation/input ingress, which
-   commits "mailbox entry, **with readiness when applicable**", since P is `WAITING` and no Outcome is
-   in flight (`B-6` path B) — records `W`'s eligibility rule as wake-triggered readiness in the same
-   transaction, and B-2's middle case selects that one dispatch by it. That wake **retires `W` and its generation** (W-1) — the Kernel does not hold `D1`/`D2` open
-   behind the correction and asserts nothing about whether either child result arrived. Both are in
-   fact still outstanding, so the Runtime's next Outcome **registers `D1` and `D2` again**, a new
-   registration under a new generation (W-3). Waking through a subscription is eligibility to run,
-   never evidence that an unrelated dependency settled. Note what this example does *not* need: no
-   `interleave` field, because `correction` is a declared subscription in `W` itself (W-5).
+4. **Subscribed correction input may wake.** Application input labelled `correction` arrives. It
+   matches the declared subscription, so it is eligible: P becomes `READY` and the Runtime sees it in
+   the next batch — and it is **`B-6` path B** that makes "the next batch" contain it rather than this
+   example simply asserting so. The boundary that accepts the `correction` input — creation/input
+   ingress, which commits "mailbox entry, **with readiness when applicable**", since P is `WAITING` and
+   no Outcome is in flight — records `W`'s eligibility rule as wait-ended readiness in the same
+   transaction, and §3's wait-ended batch rule selects that one dispatch by it. That wake **retires `W`
+   and its generation** (W-1) — the Kernel does not hold `D1`/`D2` open behind the correction and
+   asserts nothing about whether either child result arrived. Both are in fact still outstanding, so
+   the Runtime's next Outcome **registers `D1` and `D2` again**, a new registration under a new
+   generation (W-3). Waking through a subscription is eligibility to run, never evidence that an
+   unrelated dependency settled. Note what this example does *not* need: no `interleave` field, because
+   `correction` is a declared subscription in `W` itself (W-5).
 5. **Unmatched backlog remains unacknowledged.** In the Activation that case 4 produced, the dispatched
    batch contains the `correction` input (and any other Event eligible under `W`'s retired rule), not
-   the queued `billing.question` — **by `B-6` and B-2's wake-triggered case**, not by assumption:
-   `billing.question` matched no alternative and no subscription of `W`, so it is ineligible under the
-   retired rule and cannot enter this batch however old it is. Revision 5 stated this outcome without
-   the rule behind it ([K01-R5-01](implementation-06.md)). The accepted Outcome acknowledges its
-   *whole reserved batch* (B-3) — which by
-   construction excludes `billing.question`, so that input keeps its own per-entry disposition and is
-   still pending afterwards. An implementation that advanced a single mailbox cursor past it instead
-   would silently acknowledge input the Runtime never saw, which is exactly why `REF-4` refuses the
-   current cursor mechanism for K1.
-6. **Negative: a dependency alternative cannot make application input eligible (added in review round
-   7, [K01-R7-01](implementation-08.md)).** Take a variant wait `W′` identical to `W` except that the
-   Runtime also wrote a dependency alternative `D3` with `kind = external.input` and no correlation,
-   and **left the subscription list empty**. Ordinary application input labelled anything at all now
-   arrives. `D3` matches it on kind — and it is still **not eligible**: W-1's source-category rule
-   routes ordinary application input through the subscription branch only, and `W′` declares no
-   subscription. The input is accepted into the mailbox, produces **no wake**, is **not acknowledged**,
-   and stays queued (B-4). This is the bypass revision 7 permitted: under its two-sufficient-conditions
-   reading, `D3` alone would have woken P, and kernel.md's "application-input waits require a declared
-   subscription" would have been satisfiable by writing no subscription at all.
+   the queued `billing.question` — by §3's wait-ended batch rule, not by assumption: `billing.question`
+   matched no alternative and no subscription of `W`, so it is ineligible under the retired rule and
+   cannot enter this batch however old it is. The accepted Outcome acknowledges its *whole reserved
+   batch* (B-3) — which by construction excludes `billing.question`, so that input keeps its own
+   per-entry disposition and is still pending afterwards. An implementation that advanced a single
+   mailbox cursor past it instead would silently acknowledge input the Runtime never saw, which is
+   exactly why `REF-4` refuses the current cursor mechanism for K1.
+6. **Negative: a dependency alternative cannot make application input eligible.** Take a variant wait
+   `W′` identical to `W` except that the Runtime also wrote a dependency alternative `D3` with
+   `kind = external.input` and no correlation, and **left the subscription list empty**. Ordinary
+   application input labelled anything at all now arrives. `D3` matches it on kind — and it is still
+   **not eligible**: W-1's source-category rule routes ordinary application input through the
+   subscription branch only, and `W′` declares no subscription. The input is accepted into the mailbox,
+   produces **no wake**, is **not acknowledged**, and stays queued (B-4). `D3` is a structurally valid
+   alternative that is simply inert.
 7. **Positive: the same input with the matching subscription wakes.** Take `W″`, identical to `W′` but
    with declared input subscriptions `{correction}`. Application input labelled `correction` arrives.
    It is ordinary application input, it matches a declared subscription, so it **is** eligible: `W″`
    and its generation are retired, P becomes `READY`, and the resulting batch is selected under `B-6`
    from Events eligible by `W″`'s rule (cases 4–5). Input labelled `billing.question` against the same
-   `W″` is still ineligible and still queued. Note what `D3` contributed in either case: **nothing**.
-   A dependency alternative naming an application-input kind is inert, and a Runtime that wants to wake
+   `W″` is still ineligible and still queued. Note what `D3` contributed in either case: **nothing**. A
+   dependency alternative naming an application-input kind is inert, and a Runtime that wants to wake
    on application input must say so with a subscription.
 
-**Decision W-8 (the K0 trace's subscription-only input wait — deterministic counterexample, added in
-review round 4, [K01-R4-01](implementation-05.md)).** This is 001's own K0 trace end to end — "accept
-input → delayed fake Runtime → typed output → input wait → completion" — and it is exactly the case
-revision 4's non-empty-dependency-list rule could not express. It is also the fixture shape 007's K0.2
-must build ("the smallest public delayed-Runtime/typed-output/input-wait fixture"), so K0.1 owes it an
-unambiguous wait record.
+**Decision W-8 (the K0 trace's subscription-only input wait — deterministic counterexample).** This is
+001's own K0 trace end to end — "accept input → delayed fake Runtime → typed output → input wait →
+completion" — and it is the case a non-empty-dependency-list rule could not express. It is also the
+fixture shape 007's K0.2 must build ("the smallest public delayed-Runtime/typed-output/input-wait
+fixture"), so K0.1 owes it an unambiguous wait record.
 
 Execution X is created with its initial input. Its Runtime computes, then submits an Outcome carrying
 typed output and `await` with a wait `W₀` whose **dependency-alternatives list is empty** and whose
@@ -937,13 +985,14 @@ typed output and `await` with a wait `W₀` whose **dependency-alternatives list
 nothing else. `W₀` is well-formed under W-1 — one eligible wake source exists across the two lists
 combined.
 
-1. **Registration.** `W₀` is accepted and X becomes `WAITING` — or `READY` immediately if an eligible
-   `continue` input was already accepted and unacknowledged, because W-2's atomic mailbox check applies
-   to a subscription-only wait exactly as it does to a dependency wait. There is no "no dependencies, so
-   nothing to check" shortcut. That immediate-`READY` outcome is `B-6` **path A**: the same
-   Outcome-acceptance transaction registers the wait, retires it and commits the wake-triggered
-   readiness. Cases 2–4 below take the other branch, where X did reach `WAITING` and the readiness is
-   created later by the input's own ingress boundary (**path B**).
+1. **Registration.** `W₀` is accepted and W-2 runs its ordered steps. If an eligible `continue` input
+   was already accepted and unacknowledged, step 2 finds it and X is `READY` immediately — W-2's
+   mailbox check applies to a subscription-only wait exactly as it does to a dependency wait, and there
+   is no "no dependencies, so nothing to check" shortcut. That immediate-`READY` outcome is `B-6`
+   **path A**: one transaction registers the wait, retires it and commits the readiness. If `W₀` also
+   carried a deadline that was already due and step 2 found nothing, step 3 applies instead and X is
+   `READY` with a timeout Event and no durable `WAITING` (`B-7` path A). Cases 2–4 take the remaining
+   branch, where X did reach `WAITING`.
 2. **Unrelated input stays queued.** Application input labelled `billing.question` arrives. It matches
    no dependency alternative (there are none) and `billing.question` is not in `{continue}`, so it is
    **not eligible**: it is accepted into the mailbox, produces **no wake**, is **not acknowledged**, and
@@ -953,116 +1002,177 @@ combined.
 3. **Subscribed input wakes.** Application input labelled `continue` arrives. It matches the declared
    subscription, so it is eligible: `W₀` and its generation are retired and X becomes `READY` (W-1),
    and the same input-ingress transaction that accepts `continue` records `W₀`'s eligibility rule as
-   wake-triggered readiness (`B-6` path B — X is `WAITING`, so there is no Outcome to carry it, and
-   the readiness must not be written afterwards). The next
-   Activation's batch is therefore selected by B-2's middle case, **only** from Events eligible under
-   the retired rule: it contains the `continue` input and **not** the still-queued `billing.question`,
-   which is ineligible under that rule. This is the enforceable statement revision 5 was missing —
-   without `B-6` the Execution would merely be ordinarily `READY` and case 4 below would go the wrong
-   way.
-4. **An older ineligible Event cannot displace the wake, even at batch bound 1 (the load-bearing case;
-   added in review round 5, [K01-R5-01](implementation-06.md)).** Re-run case 3 with the
-   implementation-owned batch bound set to its smallest legal value, **1**. Two Events are
-   unacknowledged at dispatch time: `billing.question`, accepted **earlier**, and `continue`, accepted
+   wait-ended readiness (`B-6` path B — X is `WAITING`, so there is no Outcome to carry it, and the
+   readiness must not be written afterwards). The next Activation's batch is therefore selected by §3's
+   wait-ended batch rule: it contains the `continue` input and **not** the still-queued
+   `billing.question`, which is ineligible under the retired rule.
+4. **An older ineligible Event cannot displace the wake, even at batch bound 1.** Re-run case 3 with
+   the implementation-owned batch bound set to its smallest legal value, **1** (`B-1`). Two Events are
+   unacknowledged at reservation: `billing.question`, accepted **earlier**, and `continue`, accepted
    **later**. Under an ordinary `READY` selection — a bounded batch of all unacknowledged Events *in
-   acceptance order* — the single slot would go to `billing.question`, and X would be activated
-   without the Event that woke it while `continue` waited behind the very backlog it was supposed to
-   jump. `B-6` forbids exactly that: this dispatch is wake-triggered, so the batch is drawn **only**
-   from Events eligible under `W₀`'s retired rule; `billing.question` is ineligible and is not a
-   candidate at any bound; the one slot goes to `continue`, which is also the batch's mandatory
-   at-least-one eligible Event. `billing.question` stays queued and unacknowledged with its own
-   per-entry disposition (B-4) — it is not dropped, and it is not acknowledged by the Outcome that
-   ends this exchange (B-3). Once that exchange's batch is reserved the wake-triggered readiness is
-   consumed (`B-6`): if X's next accepted Outcome registers no new wait, X is *ordinarily* `READY`
-   again and normal acceptance-order handling resumes, at which point `billing.question` is an
-   ordinary candidate like any other. This case is why `B-6` exists; it fails under revision 5's
-   two-case B-2 and passes under the three-case rule.
+   acceptance order* — the single slot would go to `billing.question`, and X would be activated without
+   the Event that woke it while `continue` waited behind the very backlog it was supposed to jump. The
+   wait-ended batch rule forbids exactly that: `billing.question` is ineligible under `W₀`'s retired
+   rule and is not a candidate at any bound; the one slot goes to `continue`, which is also the batch's
+   mandatory at-least-one eligible Event. `billing.question` stays queued and unacknowledged with its
+   own per-entry disposition (B-4) — it is not dropped, and it is not acknowledged by the Outcome that
+   ends this exchange (B-3). Once that exchange's batch is reserved the readiness is consumed; if X's
+   next accepted Outcome registers no new wait, X is *ordinarily* `READY` again and normal
+   acceptance-order handling resumes, at which point `billing.question` is an ordinary candidate like
+   any other.
 5. **Completion is permitted.** X's Runtime processes `continue`, and its next accepted Outcome may be
    `complete`. Nothing about having waited on a subscription rather than a dependency stands in the
    way: CX-3's completion check looks for unresolved *owned work*, and X has none — it proposed no
    Effects (K1 refuses them outright, §8/`EF-1`) and named no dependency alternative that could still
    be outstanding. The accepted Outcome acknowledges its whole reserved batch (B-3), which by
-   construction excludes `billing.question`; that input therefore receives an explicit recorded terminal
-   disposition when X reaches `COMPLETED` (B-5), rather than being silently treated as processed.
+   construction excludes `billing.question`; that input therefore receives an explicit recorded
+   terminal disposition when X reaches `COMPLETED` (B-5), rather than being silently treated as
+   processed.
+6. **The deadline case a subscription-only wait makes sharp.** Give `W₀` a deadline, let X reach
+   `WAITING`, and let that deadline expire with `billing.question` still queued and the batch bound at
+   **1**. `W₀` has **no dependency alternatives at all**, so nothing in it could ever "match" a timeout
+   — and the timeout Event is still the batch's **mandatory** member (`B-7`), because it is a union
+   term in §3's wait-ended batch rule rather than a filter result, and because W-1's category table
+   puts the timeout Event outside the matching rules entirely. `billing.question` remains ineligible
+   and queued. This is the exact shape revision 8 could not answer consistently: its B-2 selected the
+   wait-ended batch "only from Events eligible under the retired wait's rule" while its W-1 required a
+   dependency alternative for the timeout, which for `W₀` does not exist — so the same document made
+   the mandatory member ineligible (§13, `K01-R8-02`).
 
-**What this rules out.** Under revision 4's rule, "wait for application input `label=continue`" had
-only two spellings and both were defects: **invent a fake dependency alternative** nothing will ever
-settle — which makes the wait undischargeable and misreports to inspection what X actually needs — or
-**leave the subscription list empty** and let a catch-all dependency alternative over-match, waking X
-for every `external.input` addressed to it regardless of label, which is precisely the limitation the
-current matcher has (`MIG-5`). W-1's combined-source well-formedness rule removes both: the dependency
-list is legitimately empty and the subscription carries the whole wait.
+**What this rules out.** "Wait for application input `label=continue`" must not require either
+defective spelling: **inventing a fake dependency alternative** nothing will ever settle — which makes
+the wait undischargeable and misreports to inspection what X actually needs — or **leaving the
+subscription list empty** and letting a catch-all dependency alternative over-match, waking X for every
+`external.input` addressed to it regardless of label, which is precisely the limitation the current
+matcher has (`MIG-5`). W-1's combined-source well-formedness rule removes both: the dependency list is
+legitimately empty and the subscription carries the whole wait.
 
-**Decision W-9 (wait-deadline expiry is an accepted Kernel observation with mandatory delivery — added
-in review round 7, [K01-R7-02](implementation-08.md)).**
+**Decision W-9 (the timeout Event).**
 
-*What an expiry is.* The expiry of a **current-generation** wait deadline (§4's wait clock) is a
-Kernel-owned **accepted fact**, on the same footing as an accepted Event and unlike a bare scheduler
-tick: it is recorded, it is recoverable, and the Runtime learns it through the ordinary accepted-input
-contract rather than by inferring it from a state change it cannot interpret. Its acceptance is the
-transaction `B-7` specifies.
+*Semantic home — decided here, not left to K1.* **A wait-timeout observation is a Kernel Event.** `B-1`
+makes an Activation batch a set of accepted Event references and `B-7` makes the timeout a mandatory
+member of one; those two statements have exactly one consistent reading. Revision 8 left the home open
+— "an Event of a dedicated kind in the mailbox, a distinct field on the Activation's accepted-input
+contract, or another representation" — which left `B-7`'s mandatory member with no place in `B-1`'s
+batch (§13, `K01-R8-02`).
 
-*Three properties are decided here; the spelling is not.* K1 correctness depends on these, so they are
-fixed:
+Being an Event is also the **minimum-concept** answer, which is why it satisfies K0.1-C4 rather than
+straining it. The alternative — a batch whose members are "Events **or** timeout facts" — would add a
+second batch-member type to the Kernel and duplicate three rules behind it: B-3's whole-batch
+acknowledgment, B-4's per-entry retention and B-5's terminal disposition would each need a second form.
+execution-protocol.md already reads this way: "Timeout and a result may both be accepted facts; order
+their acceptance and let the Runtime interpret **the eligible batch**."
 
-- **Logical identity.** The timeout observation is a distinct, addressable accepted fact with its own
-  identity — not a boolean on the Execution record, and not the *absence* of data that a Runtime would
-  have to infer from an empty batch.
-- **Wait-generation correlation.** It names the exact wait generation that expired (W-3). This is what
-  lets a Runtime whose successive waits have different deadlines tell *which* one timed out, and it is
-  the same generation a timer delivery names.
-- **Mandatory delivery.** It is delivered in the **immediately resulting** Activation's batch (`B-7`),
-  not "eventually" and not best-effort. A transition to `READY` that leaves the Runtime unable to
-  distinguish "my deadline expired" from ordinary readiness is **not conforming**.
+*What it carries (normative).* A timeout Event has at least:
 
-**Left open (implementation-owned):** the transport/wire spelling — whether it is an Event of a
-dedicated kind in the mailbox, a distinct field on the Activation's accepted-input contract, or another
-representation — and the timer mechanism that detects expiry. The current vocabulary has no spelling
-for it at all: `packages/core/src/interaction/events.ts` closes its Event-kind docstring with "Timer
-kinds remain deliberately absent until the Effect/runtime work that establishes them" (`:68`, with the
-shorter "Timers remain absent" at `:62`). K1.3 chooses the spelling. It may not choose to leave the three properties above
-unspecified, because each of them is load bearing for a K1 fixture.
+- **a stable Event identity** of its own, like any accepted Event;
+- **a destination** — the Execution whose wait expired;
+- **a semantic timeout class**, distinguishing it from every ordinary Kernel Event, so a Runtime can
+  tell "my deadline expired" from an ordinary observation without inspecting a payload and without
+  inferring it from an otherwise-empty batch;
+- **exact wait-generation correlation** (W-3) — *which* wait ended. This is what lets a Runtime whose
+  successive waits carry different deadlines tell them apart, and it is the same generation a timer
+  delivery names;
+- **trusted Kernel timer/deadline provenance.** It is minted by the Kernel from its own persisted
+  deadline. No Runtime and no application-input producer can supply one — kernel.md's "The Runtime
+  cannot mint Effect settlements, child completions or consent by submitting an Event-like payload"
+  applies a fortiori, and its separately-scoped-ingress rule ("Application input, trusted adapter
+  settlement and operator control have separately scoped ingress") is a rule about *who may supply
+  which class*; a Kernel timer observation is the Kernel-only source in that same list.
+
+*Exactly one per generation, and duplicate delivery is idempotent.* At most one timeout Event exists
+for any wait generation, created by whichever of `B-7`'s two paths applies. A re-delivered or replayed
+timer for a generation whose timeout Event has **already** been accepted creates **no second timeout
+Event, no second readiness transition and no second logical timeout**; the already-accepted fact stands
+and the redelivery is recorded as the duplicate it is. A timer naming a **superseded** generation is a
+different matter entirely and is simply a no-op (W-3). Without this rule, an at-least-once timer
+transport would manufacture repeat timeouts for one wait.
+
+*It is not a dependency match.* The timeout Event does **not** have to satisfy any dependency
+alternative, and it cannot be made eligible by one: it exists because the generation's own deadline
+expired, and it reaches the Runtime as `B-7`'s mandatory member by construction. W-1's category table
+states this positively; the corollary is that a dependency alternative naming a timeout kind is
+**inert**, exactly as an alternative naming an application-input kind is. There is therefore no way to
+spell "wait for a timeout" as a dependency, and no need for one.
+
+*Which boundary accepts it.* `B-6` path B already names a **boundary role** — "the boundary that
+durably accepts that Event into the destination mailbox" — rather than a new entry in kernel.md's
+Acceptance/atomicity table; for ordinary input that role is filled by *Creation/input ingress*, for a
+settlement by *Effect settlement*, for a routed Event by whichever boundary fulfils the routing
+obligation. The Kernel's own deadline-expiry acceptance fills the same role with Kernel timer
+provenance. It is **not a seventh caller-facing boundary** in §2 ID-6/ID-7's sense and issues no
+external receipt, because no external submitter requested it: the Kernel is accepting a fact it minted
+from its own persisted deadline, recorded with the Event's own identity and the Execution's acceptance
+order.
+
+*Mandatory delivery.* The timeout Event is delivered in the **immediately resulting** Activation's
+batch (`B-7`), not "eventually" and not best-effort. A transition to `READY` that leaves the Runtime
+unable to distinguish "my deadline expired" from ordinary readiness is **not conforming**. The one
+thing that can intervene is an accepted terminal decision (§6 CX-2): if cancellation or another
+terminal disposition is accepted before that Activation is reserved, there is no resulting Activation
+and the timeout Event takes an explicit terminal disposition like any other unacknowledged Event (B-5).
+It is never silently dropped.
 
 *What an expiry is not.* It ends **one dependency wait** — not the external work, and not necessarily
 the Execution (§4; execution-protocol.md: "A wait timeout ends a dependency wait, **not** the external
 action and not necessarily the Execution"). It is never proof that the awaited action failed or did not
-happen: CL-2 and execution-protocol.md's race table ("Wait timeout versus action success: preserve both
+happen (CL-2; execution-protocol.md's race table: "Wait timeout versus action success: preserve both
 facts; **never turn timeout into proof of non-execution**"). `B-7` delivers an observation that *this
 wait ended on its deadline*, and nothing more.
 
-*Generation fencing is unchanged (W-3).* A timer naming a **superseded** generation is a no-op: it
-retires nothing, records no observation, creates no readiness and wakes nothing. Only a
-current-generation expiry is the accepted fact above — which is why `B-7` says "current-generation" in
-its first line rather than "a timer fired."
+**Left open (implementation-owned):** the concrete **wire kind token**, the TypeScript discriminant,
+the encoded schema and the storage layout of the timeout Event, and the **timer mechanism** that
+detects expiry. K1.3 chooses those. It may not reopen the five properties above, the exactly-one rule
+or the idempotency rule, because each is load bearing for a K1 fixture. The current vocabulary has no
+spelling for a timeout Event at all — `packages/core/src/interaction/events.ts` closes its Event-kind
+docstring with "Timer kinds remain deliberately absent until the Effect/runtime work that establishes
+them" (`:68`, with the shorter "Timers remain absent" at `:62`) — so K1 **adds** this kind as new work.
+That is a current-code gap, recorded in §13, not a legacy record to dispose of in §12 and not a reason
+to leave the semantic home open.
 
 *Deterministic cases.*
 
-1. **The timeout observation cannot be displaced, at batch bound 1.** Execution Y is `WAITING` under
+1. **The timeout Event cannot be displaced, at batch bound 1.** Execution Y is `WAITING` under
    generation G1 with a deadline, and an older, ineligible application input `billing.question` is
-   already queued. G1's deadline expires. The acceptance transaction retires G1, records the timeout
-   observation for G1, sets Y `READY` and commits the readiness (`B-7`). The immediately resulting
-   Activation is dispatched with a bound of 1: the single slot holds **the timeout observation**, never
+   already queued. G1's deadline expires. The acceptance transaction retires G1, creates the timeout
+   Event for G1, sets Y `READY` and commits the readiness (`B-7` path B). The immediately resulting
+   Activation is dispatched with a bound of 1: the single slot holds **the timeout Event**, never
    `billing.question`, which is ineligible under G1's retired rule and stays queued and unacknowledged
-   (B-4). Under revision 7 this dispatch fell into B-2's ordinary `READY` case and the older backlog
-   won the slot.
+   (B-4).
 2. **A stale timer cannot wake the replacement wait.** G1 is registered with a persisted timer. Before
-   G1's deadline the wait ends some other way and Y re-enters `WAITING` under a new generation G2.
-   G1's timer later fires. It is a **no-op against G2** (W-3): no retirement, no observation, no
-   readiness, no wake — G2's own deadline is the only one that can expire for G2. This is W-6 case 2
-   restated with the machinery `B-7` adds, and the answer is unchanged.
+   G1's deadline the wait ends some other way and Y re-enters `WAITING` under a new generation G2. G1's
+   timer later fires. It is a **no-op against G2** (W-3): no retirement, no timeout Event, no readiness,
+   no wake — G2's own deadline is the only one that can expire for G2.
 3. **Timeout first, then a correlated result before reservation — both facts survive.** G1 carries a
    dependency alternative correlated to `c1`. G1's deadline expires and is accepted (case 1's
    transaction). *Before* the resulting Activation's batch is reserved, an authenticated result Event
-   correlated to `c1` is accepted. Both are accepted facts and **neither is rewritten into the other**
-   (CL-2): the timeout is not retracted by the result's arrival, and the result is not reinterpreted as
-   late or void because the wait timed out. The result *was* eligible under G1's retired rule, so
-   `B-7`'s selection includes it as an ordinary candidate: **at a bound of 2 or more** the batch
-   contains the timeout observation *and* the result, in deterministic acceptance order; **at a bound
-   of 1** the timeout observation is the mandatory member and takes the slot, and the result stays
-   queued, durable and unacknowledged, an ordinary candidate for the next batch (B-4, and W-6 cases 3–4
-   for why a later explicitly correlated wait can still consume it). What must not happen at either
-   bound: the timeout being dropped because a result arrived, or the result being discarded because the
-   wait it answered had already timed out.
+   correlated to `c1` is accepted — creating **no** second readiness, because no wait is live (`B-8`,
+   §3 row 6). Both are accepted facts and **neither is rewritten into the other** (CL-2): the timeout is
+   not retracted by the result's arrival, and the result is not reinterpreted as late or void because
+   the wait timed out. The result *was* eligible under G1's retired rule, so it is an ordinary union
+   term in §3's wait-ended batch rule: **at a bound of 2 or more** the batch contains the timeout Event
+   *and* the result, in per-Execution acceptance order; **at a bound of 1** the mandatory timeout Event
+   takes the slot and the result stays queued, durable and unacknowledged, an ordinary candidate for
+   the next batch (B-4, and W-6 cases 3–4 for why a later explicitly correlated wait can still consume
+   it). What must not happen at either bound: the timeout being dropped because a result arrived, or
+   the result being discarded because the wait it answered had already timed out.
+4. **The reverse order: a result first, then the deadline.** Same G1. This time the `c1` result is
+   accepted *first*, while Y is still `WAITING`. That is an eligible Event, so `B-6` path B applies:
+   G1 is retired, Y is `READY` with Event-triggered readiness, and **no timeout Event is ever created
+   for G1**. G1's timer then fires against a retired generation and is a no-op (case 2). The two orders
+   therefore have different, fully determined outcomes, decided by Kernel acceptance order and nothing
+   else.
+5. **A deadline already due when the wait is registered.** The Runtime submits `await(W)` where `W`
+   carries a deadline in the past. W-2 step 2 finds no eligible Event, so step 3 applies: in that same
+   Outcome-acceptance transaction the generation is retired, **exactly one** timeout Event is created
+   for it, the Execution is `READY` with deadline-triggered readiness, and durable `WAITING` is never
+   persisted (`B-7` path A, §3 row 3). Change one fact — an eligible Event *was* already accepted and
+   unacknowledged — and step 2 wins instead: the wait is retired as an Event wake, and **no timeout
+   Event is created**, because the wait did not end on its deadline.
+6. **Duplicate timer delivery is idempotent.** G1's timer fires, its timeout Event is accepted (case
+   1), and the timer transport delivers the same expiry again — before reservation, after reservation,
+   or after the resulting Outcome was accepted. In every case the redelivery creates no second timeout
+   Event, no second readiness and no second logical timeout; Y is not activated twice for one expiry.
 
 **Left open (implementation-owned):** exact generation representation (integer counter vs. new random
 ID per registration — either satisfies W-3 as long as it is compared, never assumed monotonic across
@@ -1144,6 +1254,11 @@ installation, accepted emissions, all Effect *intents* (not their dispatch/settl
 next-state and any wait/deadline are one atomic step. "All Effect intents" being committed together
 with progress is what makes step 3 above enforceable — an implementation that dispatches Effects
 before or outside this transaction (current code, §12 `REF-1`) cannot claim OA-3.
+
+**When the next step is `await(wait)`, this transaction's internal order is fixed by §5 W-2** —
+acknowledge this Outcome's own batch, then check the mailbox, then evaluate an already-due deadline,
+then persist `WAITING` — and its three possible outcomes are §3's wait-ended rows 1 and 3 and a durable
+`WAITING`. §7 does not restate that algorithm; W-2 owns it.
 
 **Decision OA-5 (rejection is inert, never a partial mutation).** A rejected Outcome (malformed
 envelope, stale epoch/revision, unresolvable wait reference) creates no Effects, acknowledges no
@@ -1341,8 +1456,8 @@ boundary rule. This table is the direct answer to K0.1-C1.
 | 2 | Activation dispatch intent | Kernel | ID-3, ID-4, ID-9, B-1, B-2 | Two *semantically different* dispatches (a new exchange after the prior one resolved) never carry the same Activation ID; a dispatch pins one finite, enumerable Event batch that a later Outcome can be checked against exactly; an authorized takeover of a *still-unresolved* exchange advances the writer epoch under the **same** Activation ID rather than minting a new one (ID-9 cases 2–3). |
 | 3 | Outcome acceptance; duplicate/conflicting Outcome behavior | Kernel | OA-1–OA-6, ID-6 | Exact duplicate submission returns the original receipt with no re-dispatch of anything; a same-identity/different-content submission is rejected, not merged; a failure partway through acceptance leaves zero partial state (no progress, no Effect intent, no acknowledgment). |
 | 4 | Effect intents | Kernel | EF-1–EF-4 | An Outcome proposing an Effect during K1 is rejected at whole-envelope validation (OA-3) with a recorded, inspectable reason, before any Effect intent, ID or proposal-key binding ever exists; the rest of that Outcome is also rejected, not silently split; this is envelope validation, not a K1 visit to the (K2-introduced) Effect-admission boundary. |
-| 5 | Any-of wait correlation; subscription-only input wait; wait-generation identity; eligible batch accounting | Kernel | W-1–W-9, B-1–B-7 | A wait registers a finite list of Event dependency alternatives — each written in W-1's **exact three-field selector grammar** (exact Event identity, kind — one kind or a **non-empty** finite kind set, an empty set being invalid before matching — and correlation; supplied fields combined by AND; at least one supplied, so no match-everything alternative; alternatives combined only by ANY-OF; every comparison an equality, and the Event payload never selectable) — **and** a separate finite list of declared input subscriptions, which are **not** dependency alternatives and do not use that grammar. The registration is valid iff **at least one eligible wake source exists across the two lists combined**, so a **subscription-only input wait** (empty dependency list; 001's own K0 trace, `await` on application input `continue` and nothing else) is a first-class registration a Runtime can express directly, not something it must fake a dependency to spell (W-8), while a wait with both lists empty is rejected. Eligibility is decided by **source category** first: ordinary application input is eligible **only** through a declared subscription, and a dependency alternative naming its identity/kind/correlation does **not** make it eligible (W-7 cases 6–7); every other Kernel Event is eligible only through a dependency alternative. The Kernel atomically observes any already-accepted Event eligible under that rule (no lost wake, whichever source it is, and the check is not skipped merely because the dependency list is empty); application input outside every declared subscription stays queued and unacknowledged whether or not the wait also names dependencies, and whether or not an alternative happens to match it; **any** eligible wake retires that registration and its generation, and a Runtime that still needs a dependency registers it again in its next Outcome rather than the Kernel holding a per-alternative satisfied flag; **an older unmatched Event cannot displace what the Execution was woken for, in either way a wait can end** — a matching-Event wake (`B-6`) or a **current-generation deadline expiry** (`B-7`, W-9): that dispatch is selected only from Events eligible under the retired wait's rule, must contain at least one eligible Event when an Event ended the wait and **must** contain the generation-correlated **timeout observation** when a deadline ended it, at every batch bound including 1 (B-2's middle case, W-8 case 4, W-9 case 1), after which ordinary acceptance-order readiness resumes; a stale wait-*timer* naming a superseded generation is a no-op that retires nothing and records no timeout observation (W-3, W-9 case 2), while an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6); an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
-| 6 | Wake / Event acceptance during computation | Kernel | B-2, B-4, W-2 | An Event accepted while an Activation is in flight does not alter that Activation's already-pinned batch; it is visible to the next eligible batch. |
+| 5 | Any-of wait correlation; subscription-only input wait; wait-generation identity; eligible batch accounting; wait deadlines | Kernel | W-1–W-9, B-1–B-8, CL-1–CL-3 | Each of these is separately observable, and each is stated once by the owner named beside it. **(a) Record shape (W-1):** a wait is exactly two finite declarative lists — dependency alternatives written in W-1's three-field selector grammar, and declared input subscriptions, which are not alternatives and do not use that grammar — plus an optional deadline and a generation. It is valid iff at least one wake source exists across the two lists combined, so a **subscription-only input wait** (001's own K0 trace) is first-class (W-8) and a wait with both lists empty is rejected. **(b) Eligibility (W-1's category table):** ordinary application input is eligible only through a declared subscription and a dependency alternative matching it is inert (W-7 cases 6–7); every other ordinary Kernel Event is eligible only through a dependency alternative; the **timeout Event** is eligible through neither and arrives by construction (W-9). No other rule makes an Event eligible, and §3's B-2 selects the `WAITING` batch by this rule alone. **(c) Registration (W-2):** one ordered transaction — acknowledge this Outcome's own batch, then check already-accepted unacknowledged Events (no lost wake, and not skipped for an empty dependency list), then evaluate an already-due deadline, then persist `WAITING` — producing exactly one of §3's rows 1, 3 or a durable `WAITING`, with a past deadline **never** persisted as live. **(d) Retirement (W-1):** any eligible wake, and any current-generation deadline expiry, retires the registration and its generation; the Kernel keeps no per-alternative satisfied flag, and a Runtime that still needs a dependency re-registers it. **(e) Next batch (§3's wait-ended batch rule):** older ineligible backlog can **never** displace what the Execution was woken for, at any bound including 1, in either way a wait can end — the batch is the species' mandatory member (≥ 1 Event eligible under the retired rule for `B-6`; the generation-correlated timeout Event for `B-7`) together with the other Events eligible under that retired rule, evaluated at reservation (W-8 case 4, W-8 case 6, W-9 cases 1 and 3). **(f) Fencing (W-3, W-9):** a timer naming a superseded generation is a no-op that retires nothing and creates no timeout Event; a duplicate timer for an already-accepted expiry creates no second timeout Event, readiness or logical timeout; an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6). **(g) Runtime-local work (W-4):** an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
+| 6 | Wake / Event acceptance during computation | Kernel | B-2, B-4, B-8, W-2, W-3 | An Event accepted while an Activation is in flight does not alter that Activation's already-pinned batch; it is visible to the next eligible batch. More generally, an Event accepted while **no wait generation is live** — the Execution is `READY`, `RUNNING` or terminal (W-3) — is an accepted mailbox fact and creates **no** readiness (`B-8`, §3 row 6), so a second readiness can never arm behind the first and re-select an already-reserved batch. |
 | 7 | Cancellation ordering | Kernel | CX-1, CX-2, CX-5 | A cancellation accepted before an in-flight Activation's Outcome is accepted wins: that Outcome's `complete`/`fail`/`continue` is discarded and the Execution is `CANCELLED`; a completion accepted first wins the opposite race, and neither race can be re-run by resubmitting either side. |
 | 8 | Terminal obligations; completion responsibility | Kernel | CX-3, CX-4, B-5 | `complete` is rejected outright if unresolved owned work is not accounted for in the current or a previously acknowledged batch; a terminal Execution still exposes recorded disposition for any Event that was queued but never acknowledged. |
 | 9 | Checkpoint forms; progress compatibility | Kernel + Runtime/Driver | PC-1–PC-5 | Resuming against unavailable compatible code/resources yields an explicit hold/refusal result, never a state that looks like normal restored computation. |
@@ -1413,7 +1528,7 @@ wording so the same mechanism is no longer described as both refused and retaine
 | MIG-2 | `LifecycleState` transition table (`packages/core/src/execution/lifecycle.ts:46-54`), **excluding** `CREATED` (see `LEG-3` below) | **Migratable** | A pure, store-independent function already enforcing "terminal states have no outgoing edges" and "only `RUNNING` reaches `COMPLETED`/`FAILED`." This is exactly the target invariant (kernel.md's lifecycle diagram) and needs no semantic change for the `READY`/`RUNNING`/`WAITING`/`COMPLETED`/`FAILED`/`CANCELLED` states — only confirmation it stays store-independent in K1, and that `CREATED` is dropped from the state list it operates over. |
 | MIG-3 | The **opaque progress payload** pattern: `ControllerProgress.progress: JsonObject`, Kernel-stored-and-returned-unchanged (`packages/core/src/execution/context.ts:57-63`) | **Migratable** | Matches PC-1 form (a) exactly: opaque data the Kernel never interprets. No format change needed for K1 beyond adding the codec/version pin PC-4 requires (see `LEG-4` immediately below for what does *not* migrate as-is). Review round 4 ([K01-R4-02](implementation-05.md)) sharpened PC-1 to agree with this row rather than overstate it: what migrates is this **nested payload**, not the enclosing `ControllerProgress` wrapper, whose closed `kind` tag is `LEG-4`. |
 | MIG-4 | `revision` counter (`packages/core/src/execution/context.ts:220`) — **corrected in review round 1** ([K01-REV-03](implementation-02.md)): previously classified plainly "Migratable ... directly usable as the base progress revision," which is wrong | **Migratable as an optimistic-concurrency mechanism; NOT equivalent to the target's semantic `base_progress_revision` without redefinition** | The current field bumps on *every* persisted context change, including pure lifecycle bookkeeping that has nothing to do with an accepted Outcome's progress content: `Harness.activate` bumps it at dispatch-claim (`READY`→`RUNNING`, `harness.ts:759`, `transitionContext(context, "RUNNING", startedAt)`) and again for a pre-Activation cancellation (`harness.ts:751`, `transitionContext(context, "CANCELLED", ...)`) — neither is an Outcome being accepted. `execution/resumption.ts`'s own docstring admits exactly this conflation in its own words: "`observedRevision` records the `ExecutionContext.revision` the suspending Activation read... the runtime deliberately does **not** use a naive `current.revision !== observedRevision` equality to detect staleness: `ExecutionContext.revision` also advances for ordinary lifecycle bookkeeping (`READY -> RUNNING`, `RUNNING -> WAITING`, `WAITING -> READY`), so that comparison would classify a normal suspension as an intervening semantic mutation" (`packages/core/src/execution/resumption.ts:23-27`). kernel.md's Activation/Outcome shape needs a `base_progress_revision` that identifies *the progress an Activation was dispatched against* and advances only when an accepted Outcome installs new progress (execution-protocol.md's Outcome-acceptance algorithm step 4: "install opaque progress and its revision"). K1 may reuse a monotonic-counter *mechanism* like this one, but must not assume the *existing field*, unmodified, already carries that exact semantic — either define a separate progress-specific revision, or prove (not merely assert) that every non-progress bump this field currently takes is harmless to the target's staleness check, the way `resumption.ts` already had to prove it for its own unrelated purpose. |
-| MIG-5 | The declarative kind/correlation **matcher**: `WakeCondition` (`packages/core/src/interaction/event-envelope.ts:74-80`) and its evaluator `eventSatisfiesWake` (`:82-86`), together with the `DeliveredEvent`/envelope identity fields it matches against (`event-envelope.ts:34-42`, `:50-54`). **Split out of revision 3's single `MIG-5` row in review round 3** ([K01-R3-02](implementation-04.md)), which had labelled the whole of it "partially migratable" — a label K0.1-C3 does not permit; **scope narrowed in review round 4** ([K01-R4-01](implementation-05.md)); **reconciled with W-1's exact selector grammar in review round 5** ([K01-R5-02](implementation-06.md)); **restated as a pure encoding mapping in review round 6** ([K01-R6-02](implementation-07.md)) | **Migratable** — unchanged, as the **kind/correlation matching component** of W-1's dependency-alternative grammar | **What migrates unchanged.** W-1's grammar has three optional selector fields — exact Event identity, kind (one kind or a **non-empty** finite set) and correlation — combined within one alternative by conjunction. `eventSatisfiesWake` implements precisely two of them, by exactly the right comparisons: `wake.eventKinds` is tested by membership and `wake.correlationId` by equality (`event-envelope.ts:82-86`). For any alternative that constrains only kind and/or correlation, this matcher is the complete target matcher and needs no redefinition. It is declarative and serializable, with no callback, closure or query language — the constraint W-1 keeps and the file states as its own rule (`:66-72`). The envelope's identity/provenance fields (`eventId`, `destination`, `kind`, `correlationId`, `causationId`, `occurredAt`, per-mailbox `sequence`) carry forward as the vocabulary alternatives are written against. **The encoding mapping (review round 6).** The current type encodes *absence* by sentinel values, and the target grammar encodes it by *not supplying the field*; this row states the translation and carries **no validation rule of its own** — validity is W-1's, exclusively. Legacy `eventKinds: []` means **Kind selector absent**, because the source says so explicitly ("Empty means 'any Event addressed to me'", `event-envelope.ts:75`); legacy `correlationId: null` means **Correlation selector absent** (`eventSatisfiesWake` skips the comparison when it is null, `:84`). Worked through: **(1)** `eventKinds: []` + `correlationId: null` → no selector field supplied → **invalid** target alternative under W-1's at-least-one rule; **(2)** `eventKinds: []` + `correlationId: c1` → a valid **correlation-only** alternative, matching correlation `c1` regardless of kind; **(3)** `eventKinds: ["child.result"]` + `correlationId: null` → a valid **kind-only** alternative; **(4)** `eventKinds: ["child.result"]` + `correlationId: c1` → a valid **conjunction** of both; **(5)** a *target* Kind-set field supplied as `[]` → **invalid before matching**, since the target grammar has no empty-set encoding (W-1) — case 5 is a target-side check, not a legacy encoding, and is listed here so the two spellings of `[]` are never confused. Case 1 is the only legacy shape with no valid target alternative, and it is the over-matching spelling W-8 rejects. **It is not by itself the target eligibility predicate (review round 6 narrowed its scope; review round 7 named the second, larger gap, [K01-R7-01](implementation-08.md)).** Target eligibility is W-1's **source-category rule** applied first, and only then the matching rule for that category. `eventSatisfiesWake` implements neither half of the category test: it never inspects an Event's trusted ingress provenance, and it is called with no knowledge of whether the condition it is evaluating came from a dependency alternative or from anywhere else. **The target caller must enforce the source-category rule before or around this matcher** — running the matcher alone over an arbitrary mailbox reproduces exactly the bypass W-7 case 6 rules out. Two consequences follow. First, a legacy `WakeCondition` that happens to match `external.input` (by listing that kind, or by listing nothing) does **not** become a target application-input subscription merely by migration: subscriptions are a separate list with a separate identity (W-1 item 2), and nothing in this record can be translated into one. Second, this row's classification is unchanged and still correct — the *matcher* migrates; what does not migrate is the assumption that the matcher is the whole predicate. **It is also not** the complete target dependency matcher when an alternative constrains **exact Event identity**: `WakeCondition` has no identity field and `eventSatisfiesWake` never compares `event.eventId`. That gap is closed by **an additional ordinary equality check** — one more supplied-field comparison in the same conjunction — **not** by a new matching language, a predicate or a query construct. **It does not build W-1's declared-input-subscription list** (stated in review round 4, unchanged): a subscription selects application input by its application-defined label, that label lives in the Event *body* — `ExternalInputBody.label` (`packages/core/src/interaction/events.ts:334-337`) — and `eventSatisfiesWake` never reads it, inspecting `event.kind` and `event.correlationId` and nothing else (`:82-86`). The source concedes this: "It cannot yet select `external.input` by its application-defined `label`, so an Execution waiting for one kind of application input still wakes for every other one addressed to it... Selective input matching is accepted future work and is deliberately deferred" (`event-envelope.ts:66-72`). Subscription matching is therefore **new work built beside this primitive**, not this primitive relabelled; what needs replacing outright is the record that holds it (`REF-5`). |
+| MIG-5 | The declarative kind/correlation **matcher**: `WakeCondition` (`packages/core/src/interaction/event-envelope.ts:74-80`) and its evaluator `eventSatisfiesWake` (`:82-86`), together with the `DeliveredEvent`/envelope identity fields it matches against (`event-envelope.ts:34-42`, `:50-54`). **Split out of revision 3's single `MIG-5` row in review round 3** ([K01-R3-02](implementation-04.md)), which had labelled the whole of it "partially migratable" — a label K0.1-C3 does not permit; **scope narrowed in review round 4** ([K01-R4-01](implementation-05.md)); **reconciled with W-1's exact selector grammar in review round 5** ([K01-R5-02](implementation-06.md)); **restated as a pure encoding mapping in review round 6** ([K01-R6-02](implementation-07.md)) | **Migratable** — unchanged, as the **kind/correlation matching component** of W-1's dependency-alternative grammar | **What migrates unchanged.** W-1's grammar has three optional selector fields — exact Event identity, kind (one kind or a **non-empty** finite set) and correlation — combined within one alternative by conjunction. `eventSatisfiesWake` implements precisely two of them, by exactly the right comparisons: `wake.eventKinds` is tested by membership and `wake.correlationId` by equality (`event-envelope.ts:82-86`). For any alternative that constrains only kind and/or correlation, this matcher is the complete target matcher and needs no redefinition. It is declarative and serializable, with no callback, closure or query language — the constraint W-1 keeps and the file states as its own rule (`:66-72`). The envelope's identity/provenance fields (`eventId`, `destination`, `kind`, `correlationId`, `causationId`, `occurredAt`, per-mailbox `sequence`) carry forward as the vocabulary alternatives are written against. **The encoding mapping (review round 6).** The current type encodes *absence* by sentinel values, and the target grammar encodes it by *not supplying the field*; this row states the translation and carries **no validation rule of its own** — validity is W-1's, exclusively. Legacy `eventKinds: []` means **Kind selector absent**, because the source says so explicitly ("Empty means 'any Event addressed to me'", `event-envelope.ts:75`); legacy `correlationId: null` means **Correlation selector absent** (`eventSatisfiesWake` skips the comparison when it is null, `:84`). Worked through: **(1)** `eventKinds: []` + `correlationId: null` → no selector field supplied → **invalid** target alternative under W-1's at-least-one rule; **(2)** `eventKinds: []` + `correlationId: c1` → a valid **correlation-only** alternative, matching correlation `c1` regardless of kind; **(3)** `eventKinds: ["child.result"]` + `correlationId: null` → a valid **kind-only** alternative; **(4)** `eventKinds: ["child.result"]` + `correlationId: c1` → a valid **conjunction** of both; **(5)** a *target* Kind-set field supplied as `[]` → **invalid before matching**, since the target grammar has no empty-set encoding (W-1) — case 5 is a target-side check, not a legacy encoding, and is listed here so the two spellings of `[]` are never confused. Case 1 is the only legacy shape with no valid target alternative, and it is the over-matching spelling W-8 rejects. **It is not by itself the target eligibility predicate (review round 6 narrowed its scope; review round 7 named the second, larger gap, [K01-R7-01](implementation-08.md)).** Target eligibility is W-1's **source-category rule** applied first, and only then the matching rule for that category. `eventSatisfiesWake` implements neither half of the category test: it never inspects an Event's trusted ingress provenance, and it is called with no knowledge of whether the condition it is evaluating came from a dependency alternative or from anywhere else. **The target caller must enforce the source-category rule before or around this matcher** — running the matcher alone over an arbitrary mailbox reproduces exactly the bypass W-7 case 6 rules out. Two consequences follow. First, a legacy `WakeCondition` that happens to match `external.input` (by listing that kind, or by listing nothing) does **not** become a target application-input subscription merely by migration: subscriptions are a separate list with a separate identity (W-1 item 2), and nothing in this record can be translated into one. Second, this row's classification is unchanged and still correct — the *matcher* migrates; what does not migrate is the assumption that the matcher is the whole predicate. **It performs no part of timeout handling (added in review round 9).** The **timeout Event** (W-9) is not created by this matcher, is not selected by it, and cannot be made eligible through it: it is minted by whichever `B-7` path applies and is delivered as that batch's mandatory member by construction. A migration that routed timeouts through `eventSatisfiesWake` — for instance by having a Runtime list a timeout kind in `eventKinds` — would be selecting an Event the target grammar treats as inert (W-1), and it would still leave `B-7`'s mandatory member unproduced. Timer support is absent from the current vocabulary altogether (`packages/core/src/interaction/events.ts:68`), so this is new K1 work beside the matcher, not a translation of it. **It is also not** the complete target dependency matcher when an alternative constrains **exact Event identity**: `WakeCondition` has no identity field and `eventSatisfiesWake` never compares `event.eventId`. That gap is closed by **an additional ordinary equality check** — one more supplied-field comparison in the same conjunction — **not** by a new matching language, a predicate or a query construct. **It does not build W-1's declared-input-subscription list** (stated in review round 4, unchanged): a subscription selects application input by its application-defined label, that label lives in the Event *body* — `ExternalInputBody.label` (`packages/core/src/interaction/events.ts:334-337`) — and `eventSatisfiesWake` never reads it, inspecting `event.kind` and `event.correlationId` and nothing else (`:82-86`). The source concedes this: "It cannot yet select `external.input` by its application-defined `label`, so an Execution waiting for one kind of application input still wakes for every other one addressed to it... Selective input matching is accepted future work and is deliberately deferred" (`event-envelope.ts:66-72`). Subscription matching is therefore **new work built beside this primitive**, not this primitive relabelled; what needs replacing outright is the record that holds it (`REF-5`). |
 | LEG-1 | The actual `ControllerResumption` record (`packages/core/src/execution/resumption.ts:72-101`) and the `ExecutionWait` `controller_resumption`/`dependencies` arms that name its ID (`packages/core/src/execution/context.ts:104-130`); the port's own admission that the underlying work is ephemeral, `packages/core/src/ports/controller-resumption.ts:40-41` ("Work registered by an Activation that does not return the matching wait is abandoned and can never wake the Execution") and `:61-62` (`ControllerResumptionWork` is documented "Never persisted, never inspected, never re-created by the runtime"); and the processor's own comparison against `EffectProcessor`, `packages/core/src/runtime/resumption-processor.ts:1-56` (header), specifically `:10-16` ("has a public settlement ingress / has none, deliberately") | **Legacy-only — corrected framing in review round 1** ([K01-REV-02](implementation-02.md)) | This is exactly F09's finding: the *durable record* (`ControllerResumptionId`, its state, its `observedRevision` provenance field) is Kernel-persisted, but the actual work it names is an in-process `Promise`/thunk that is, by the port's own contract, never persisted and cannot be reconstructed after a process death. Per 001's K1 section ("Remove controller resumptions and closed Agent/Workflow progress discriminators from the new Kernel protocol") and 003's F09 disposition, this whole mechanism does not migrate into the K1 Kernel protocol. **Correction:** round 1 said this record's *shape* (a Kernel-visible "local work" wait arm) was worth preserving with only its referent reclassified. That is withdrawn (§5, W-4): the target Kernel `waitingFor` record has **no** arm analogous to this at all, Kernel-visible or otherwise — this record and its `ExecutionWait` arms are legacy-only in the stronger sense that *neither the data nor the shape* informs the new Kernel wait protocol. It may continue to exist unchanged **inside** a compatibility Runtime (K1.4's "bridge existing controllers... keep its live-promise resumption private", 001 K1) as purely Runtime-private bookkeeping — legacy-only means "not part of the new Kernel contract, in data or in shape," not "delete the file." |
 | LEG-2 | `Harness.activate`'s mailbox consumption before `RUNNING`/before controller output exists (`packages/core/src/runtime/harness.ts:762`, `tx.mailboxes.consume(...)` inside the same transaction that writes `RUNNING`, prior to `runController` ever being called) | **Legacy-only** | This is F07: the current code treats "consumed from the mailbox" as equivalent to the target's "reserved in Activation," but does so as an unconditional side effect of claiming the Activation, not as part of accepting the resulting Outcome. It does not by itself satisfy B-3 (whole-batch acknowledgment tied to *Outcome acceptance*, not to dispatch). K1 must tie acknowledgment to accepted Outcome, not to the earlier consume-on-claim step, to satisfy OA-3/OA-4 and B-3 together (also connects to `REF-1`/`REF-4`). |
 | LEG-3 | The `CREATED` lifecycle state (`packages/core/src/execution/lifecycle.ts:16`, `:24-32` `LIFECYCLE_STATES`/enumeration, `:47` `CREATED: ["READY", "CANCELLED"]`), and `CancellationRequest`'s own docstring naming it as a real current phase: "For a `CREATED`, `READY`, or `WAITING` Execution the runtime transitions straight to `CANCELLED`" (`cancellation-request.ts:4-6`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Legacy-only** | 004's architecture review explicitly retires this as a mandatory Kernel state: its decisions table names the decision "Remove separate CREATED state from target," reasoning "Create, initial input and readiness can be accepted together; partial allocation is an operation attempt." The target lifecycle (kernel.md's diagram) starts directly at `READY` from one atomic `create + initial input` decision (execution-protocol.md's "Identities and immutable exchanges": "Creation binds the Runtime contract and executable definition revision, authority context and initial input in one atomic decision"). Current code's separate, externally observable `CREATED` phase — with its own transition edges and its own cancellation handling — does not migrate as a distinct target phase; K1 folds it into the atomic creation boundary (§11 row 1). The transition-table *pattern* (`MIG-2`) still applies to whatever shorter state list K1 actually uses. |
@@ -1620,9 +1735,12 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   the exact defect `B-6` was created to fix, surviving in the half of the problem `B-6` never reached.
   **Resolution:** B-2's middle case is generalized to "a registered wait **ended**", with `B-6` and new
   **`B-7`** as its two species, and new **W-9** fixes the timeout observation's logical identity,
-  wait-generation correlation and mandatory delivery while leaving its wire spelling to K1.3. W-3 and
-  CL-2 are preserved unchanged: a superseded-generation timer is still a no-op, and a timeout and a
-  later correlated result remain two accepted facts, neither rewritten into the other (W-9 cases 2–3).
+  wait-generation correlation and mandatory delivery. W-3 and CL-2 are preserved unchanged: a
+  superseded-generation timer is still a no-op, and a timeout and a later correlated result remain two
+  accepted facts, neither rewritten into the other (W-9 cases 3–4). **Superseded in part by revision
+  9:** round 7 also left the observation's *representation* open to K1.3, which the next entry shows was
+  not a free choice — W-9 now fixes the semantic home (it **is** a Kernel Event) and leaves K1.3 only
+  the wire token, discriminant, schema, storage layout and timer mechanism.
 - **Over-reach corrected (found in review round 7, [K01-R7-03](implementation-08.md)):** revision 7's
   `B-6` path-B row collapsed child results, messages and other routed results into a single boundary
   that commits "the fulfillment/routing obligation and the resulting Event, with readiness, in one
@@ -1636,29 +1754,156 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   fulfils the obligation rather than fabricating readiness. K0.1 now states only the cross-cutting
   invariant — **never fabricate destination readiness before the destination Event exists** — and names
   a boundary role rather than a mechanism.
-- **No contradiction found** between kernel.md/detail-design and 001/005/003 on any of §1–§10's
-  decisions, re-checked after round 2's §1 (E-7 canonical encoding) and §5 (W-1 wait shape) additions,
-  after round 3's rule-4 realignment and §12 vocabulary split, after round 4's wait-protocol and PC-1
-  corrections, and again after round 5's batch-selection and selector-grammar corrections: each
-  decision restates or narrowly resolves an explicitly-flagged open item (004's "Open questions and
-  decision points" section, K0/K1 bullet), not a dispute between canonical sources. The other entries
-  above are one code-versus-target gap, one withdrawn self-inflicted claim, **five** self-inflicted
-  internal inconsistencies — E-7's ordering profile, the two wait records, the lost wake-before-backlog
-  guarantee, the two selector grammars, and `B-6`'s conflated acceptance boundaries — one
-  misplaced-normativity defect, **two contradictions of a canonical owner** (round 1's Activation-ID
-  inversion and round 7's application-input bypass, both resolved in the Kernel's favour), one gap
-  against this worksheet's own §4, and one over-reach into a K4-owned mechanism. None is a conflict
-  *between* canonical owners. The pattern is worth
-  naming for K0.2, and rounds 5 and 6 sharpen it: every contradiction this worksheet has actually had
-  was introduced by its own drafting, and most of the later ones were a *consequence* of a correct
-  earlier correction that was not carried through to every dependent decision or boundary. Round 7
-  adds the sharper version of the same lesson: making a rule **exact** can turn a previously harmless
-  imprecision into a live defect — the selector grammar did not create the application-input bypass,
-  it made it reachable and therefore visible. A fixture author should read §3 and §5 together rather
-  than either alone; should check any new mechanism against kernel.md's Acceptance/atomicity table row
-  by row rather than against "the accepted Outcome" as a catch-all; and should treat every *pair* of
-  ways one state can be entered (Event wake and deadline wake; path A and path B) as needing the same
-  guarantee, since each of the last three rounds found a defect in the half that was written second.
+- **Superseded rule left live in a second place (found in review round 8,
+  [K01-R8-01](review-08.md)):** round 7 corrected W-1's eligibility rule to decide by source category,
+  but B-2's `WAITING` bullet still carried the superseded "matches a dependency alternative **or** is
+  application input matching a subscription" form. Two sections therefore answered W-7 case 6
+  differently, and the section a K1.1 implementer reads for *batch selection* answered it the wrong
+  way, reopening the application-input bypass in the one place selection actually happens.
+  **Resolution:** §3 no longer states an eligibility rule at all. B-2's third bullet records that a
+  `WAITING` Execution is not dispatched, so there is nothing to select there; eligibility while
+  `WAITING` is W-1's rule, cited rather than restated, and the guarantee execution-protocol.md phrases
+  from the `WAITING` side is carried across the retirement by the wait-ended case. The rule now lives
+  in exactly one place. This is the
+  fourth round in which a correct correction was not carried to a dependent decision, and it is why
+  revision 9 replaces paraphrase with citation wherever one decision restated another's rule.
+- **An open semantic choice that `B-1` had already closed (found in review round 8,
+  [K01-R8-02](review-08.md); an additional live contradiction found by this round's own
+  reconstruction):** W-9 left the timeout observation's representation open — "an Event of a dedicated
+  kind in the mailbox, a distinct field on the Activation's accepted-input contract, or another
+  representation" — while B-1 defines a batch as a set of **Event** references and `B-7` makes the
+  timeout a **mandatory member** of one. Those three statements have no common model unless the timeout
+  is an Event. Reconstructing the protocol as one state machine exposed a second, sharper form of the
+  same defect that the review did not name: revision 8's B-2 selected the wait-ended batch "**only**
+  from Events eligible under the retired wait's rule," and its W-1 listed the timeout among the Events
+  that need a **dependency alternative** — so for W-8's subscription-only `W₀`, whose dependency list is
+  legitimately empty, the mandatory member was by the same document **ineligible**. W-8 case 6 is that
+  counterexample. **Resolution in the Kernel's favour:** W-9 fixes the semantic home — the timeout
+  **is** a Kernel Event, which is also the minimum-concept answer, since the alternative would add a
+  second batch-member type and duplicate B-3/B-4/B-5 behind it — and W-1's category table places it
+  outside the matching rules entirely (it is never made eligible by an alternative or a subscription,
+  and an alternative naming a timeout kind is inert). §3's wait-ended batch rule states the batch as a
+  **union** of the mandatory member and the eligible Events rather than as a filter result, which is
+  what makes `W₀` + deadline answerable at all. Only the wire token, discriminant, schema, storage
+  layout and timer mechanism stay implementation-owned. execution-protocol.md already supports the
+  reading: "order their acceptance and let the Runtime interpret **the eligible batch**."
+- **A current rule made conditional on a future packet (found in review round 8,
+  [K01-R8-03](review-08.md)):** W-1 stated the source-category rule exactly and then left open whether
+  K1.3 might let a declared subscription name a non-input peer class — so the "exact" current rule was
+  contingent on a decision nobody had made, and a K1.1 implementer could not tell which rule to build.
+  **Resolution:** the K0/K1 rule is closed and unconditional. Nothing canonical is lost by closing it:
+  kernel.md's "An explicit input subscription can allow corrections/peer questions while waiting" is
+  satisfied as written, because a **correction** is ordinary application input (subscription) and a
+  **peer question** is a `peer.message` (dependency alternative on kind and/or the asking correlation)
+  — both can wake a waiting Execution today. composition-and-communication.md's richer "subscribe to
+  addressed clarification input from B" sits on a page whose own status line reads **target K4**; if K4
+  wants that, it is a **versioned extension** of the interaction contract under
+  recovery-and-compatibility.md's *Protocol/codec* dimension, with an explicit revision and a refusal
+  path — never a reinterpretation of this rule, and never a second path for application input, which
+  kernel.md forbids outright.
+- **A K0-owned clock case left undecided (found in review round 8,
+  [K01-R8-04](review-08.md)):** a wait registered with an **already-due** deadline had no answer.
+  Revision 8's own report named the gap and recorded "two defensible answers," which is precisely what
+  K0.1-C2/C6 forbid this document to do about semantics it owns. **Resolution:** W-2 states one ordered
+  registration algorithm — acknowledge this Outcome's batch, check the mailbox, evaluate an already-due
+  deadline, otherwise persist `WAITING` — so the Event branch wins when both apply (no timeout is minted
+  for a wait an accepted Event had already ended) and an already-due deadline collapses inside the same
+  Outcome-acceptance transaction (`B-7` path A), with durable `WAITING` never persisted for that
+  generation. The refused alternative — persist `WAITING` and let the timer fire — reaches the same
+  eventual state but makes the observable next state depend on timer latency, so a K1 fixture could not
+  assert an exact outcome. **This overrides no canonical owner:** execution-protocol.md's "If one is
+  already present, next state is READY; otherwise it is WAITING" resolves the *Event-presence* branch,
+  which is W-2 step 2; the deadline is a separate identity (CL-1) evaluated at the same boundary; and
+  kernel.md's lifecycle line already admits an `await` accepted as `READY`. The invariant both are
+  instances of is stated once: **a wait that cannot be live at the moment of its own registration is
+  never persisted as live.**
+- **Consistency defects found by this round's own reconstruction, not by the review.** These are
+  recorded as **implementer-discovered**; none was named by [review-08.md](review-08.md), and none is
+  attributed to it. Each was resolved in this same revision rather than deferred.
+
+  1. **The subscription-only wait with a deadline** had two answers in one document — the counterexample
+     above, folded into `K01-R8-02`'s resolution and written out as **W-8 case 6**.
+  2. **No rule said what an Event acceptance does when no wait is live**, which left "accept an
+     interesting Event and arm a readiness" available to an implementer and could have let a second
+     readiness arm behind the first and re-select an already-reserved batch. Resolved by new **`B-8`**
+     and §3 contrast row 6.
+  3. **No ordering between a wait's registration check and the registering Outcome's own batch
+     acknowledgment**, which would have let a wait be woken by the very Events the Outcome that
+     registered it had just accounted for — a self-sustaining wake loop. Resolved by **W-2 step 1**;
+     the current code's own prospectivity docstring already states the rule
+     (`packages/core/src/interaction/event-envelope.ts:57-60`).
+  4. **No "exactly one timeout Event per generation" and no idempotency rule**, which an at-least-once
+     timer transport would have turned into repeat timeouts and repeat Activations. Resolved in **W-9**
+     with **case 6**.
+  5. **No statement of which acceptance boundary accepts a Kernel-minted timeout**, which sat awkwardly
+     against §2 ID-6/ID-7's six caller-facing boundaries. Resolved in **W-9** (*Which boundary accepts
+     it*) by naming the same **boundary role** `B-6` path B already used — no seventh boundary, no
+     external receipt.
+  6. **No terminal-race caveat on "mandatory delivery"**, which as written promised an Activation that
+     a first-accepted cancellation makes impossible. Resolved in **W-9** (*Mandatory delivery*) and B-5.
+  7. **No explicit minimum batch bound**, which would have made both species' mandatory members
+     unsatisfiable at a bound of 0. Resolved in **`B-1`**.
+  8. **No truncation rule**, so "subject to the bound" did not say *which* candidates survive it: with
+     two eligible Events and a bound of 1, two implementations could dispatch different batches.
+     Resolved in §3's wait-ended batch rule — retain the mandatory member, then fill with the
+     earliest-accepted remaining candidates, and present in acceptance order.
+  9. **No argument that the mandatory member is still available at reservation**, which the whole
+     guarantee rests on. Resolved in the same rule: only an accepted Outcome acknowledges (B-3), no
+     Outcome can intervene between a wait-ended readiness and its reservation, and a terminal decision
+     produces no reservation at all.
+  10. **No statement about empty batches**, leaving it unclear whether a `continue` with an empty
+      mailbox is dispatchable. Resolved in the same rule: an ordinary-readiness batch **may** be empty,
+      a wait-ended batch never is.
+  11. **W-2's steps could be read as four commits**, which would reintroduce exactly the
+      partial-acceptance failure OA-3/OA-5 forbid. Resolved by stating that they are ordered
+      *evaluation* inside one transaction and that "stop" decides the next state rather than ending the
+      transaction early.
+- **No contradiction found *between canonical owners*** on any decision in §1–§10, re-checked
+  cumulatively through every round and again in revision 9's full reconstruction of the wait/batch/
+  clock protocol as one state machine: each decision restates a canonical owner or narrowly resolves an
+  explicitly-flagged open item (004's "Open questions and decision points" section, K0/K1 bullet).
+  Nothing here required an owner decision, so no part of this packet is BLOCKED_ARCHITECTURE.
+
+  Counting what the entries above actually are: one **code-versus-target gap** (the current matcher
+  cannot select application input by label) and a second of the same kind added in revision 9 (the
+  current Event vocabulary has **no timer kind at all**, `packages/core/src/interaction/events.ts:62`,
+  `:68` — K1 adds one as new work); one withdrawn self-inflicted claim; **three contradictions of a
+  canonical owner**, all resolved in the Kernel's favour (round 1's Activation-ID inversion, round 7's
+  application-input bypass, and round 8's `K01-R8-01` re-entry of that same bypass through B-2); one
+  gap against this worksheet's own §4; one over-reach into a K4-owned mechanism; one
+  misplaced-normativity defect; one rule left **conditional on a future packet** (`K01-R8-03`); one
+  K0-owned semantic case left **undecided** (`K01-R8-04`); and the internal inconsistencies — E-7's
+  ordering profile, the two wait records, the lost wake-before-backlog guarantee, the two selector
+  grammars, `B-6`'s conflated acceptance boundaries, the timeout with no semantic home, and the eleven
+  gaps revision 9's own reconstruction found before committing.
+
+  **The pattern, and what revision 9 did about it.** Every contradiction this worksheet has had was
+  introduced by its own drafting, and most were a *consequence of a correct earlier correction that was
+  not carried through to every dependent decision*. Round 7 added the sharper version — making a rule
+  **exact** can turn a harmless imprecision into a live defect — and round 8 added the sharpest: a
+  corrected rule can be re-introduced in its superseded form by a **neighbouring section that
+  paraphrased it**. Revision 9 treats that as structural rather than accidental and changes the
+  document's shape to remove the failure mode:
+
+  - **One statement per rule, cited rather than paraphrased.** Eligibility is stated once (W-1) and
+    §3 cites it. The wait-ended batch is stated once (§3) and §5 cites it. Registration order is stated
+    once (W-2) and §7 cites it. Where revision 8 had the same rule in two voices, revision 9 has one
+    voice and a cross-reference.
+  - **Every *pair* of ways one state can be entered is specified together, in one table.** §3's
+    wait-ended table has all four rows — Event-at-registration, Event-while-waiting,
+    deadline-at-registration, deadline-while-waiting — plus the two contrast rows, because each of the
+    last four rounds found its defect in the half that was written second.
+  - **A defect the reviewer did not name is still a defect.** Revision 9's own adversarial pass, not
+    review-08, found all eleven defects listed above — `W₀`+deadline, the missing `B-8`, the W-2 step-1
+    ordering, the timeout idempotency rule, the timeout's acceptance boundary, the terminal-race
+    caveat, the minimum bound, the undefined truncation rule, the unargued mandatory-member
+    availability, the empty-batch question and W-2's commit granularity. They are recorded above as
+    implementer-discovered, and every one is fixed in this revision rather than left for a later
+    round.
+
+  A fixture author should read §3 and §5 together rather than either alone, and should check any new
+  mechanism against kernel.md's Acceptance/atomicity table row by row rather than against "the accepted
+  Outcome" as a catch-all.
 
 ---
 
@@ -1861,7 +2106,7 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
     identity, W-4's no-Runtime-local-wait rule, the K1 Effect-refusal boundary, `MIG-4`'s revision
     distinction, PC-1/`MIG-3`/`LEG-4`, the three-label legacy vocabulary and the accepted
     historical-evidence whitespace exception are all untouched.
-- **Revision 8** (this document): corrects revision 7 per [review-07.md](review-07.md)'s CHANGES
+- **Revision 8**: corrected revision 7 per [review-07.md](review-07.md)'s CHANGES
   REQUIRED findings K01-R7-01, K01-R7-02 and K01-R7-03, disposed in
   [implementation-08.md](implementation-08.md):
   - **K01-R7-01** — W-1's eligibility rule is rewritten as an explicit **source-category** rule,
@@ -1899,3 +2144,58 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   - **§13** gained all three entries and their resolutions. E-7/JCS, the Activation-ID takeover
     identity, W-4, the K1 Effect-refusal boundary, `MIG-4`, PC-1/`MIG-3`/`LEG-4`, the three-label
     legacy vocabulary, `REF-5` and the accepted historical-evidence whitespace exception are untouched.
+- **Revision 9** (this document): a **consolidation revision**. It corrects revision 8 per
+  [review-08.md](review-08.md)'s CHANGES REQUIRED findings K01-R8-01 through K01-R8-04, disposed in
+  [implementation-09.md](implementation-09.md), and it additionally rewrites §3 and §5 so that the
+  wait / batch / clock protocol is one state machine stated once. Prior wording that revisions 1–8
+  superseded is no longer reproduced in the live text; every earlier round's reasoning remains
+  available, unedited, in `review-01.md`–`review-08.md` and `implementation-01.md`–`implementation-08.md`.
+  - **K01-R8-01** — §3 no longer states an eligibility rule. **B-2** now has two selection cases plus
+    the statement that a `WAITING` Execution is not dispatched and therefore selects nothing;
+    eligibility while `WAITING` is W-1's, cited rather than restated, replacing the superseded
+    dependency-alternative-**or**-subscription paraphrase that had reopened the application-input
+    bypass in the one section where selection actually happens. A new note records where
+    execution-protocol.md's `WAITING`-side sentence lands under W-1's retire-on-wake rule. Every other
+    §3 reference to eligibility is a citation of W-1, not a restatement.
+  - **K01-R8-02** — **W-9** decides the timeout observation's semantic home: it **is a Kernel Event**,
+    with a stable identity, a destination, a semantic timeout class, exact wait-generation correlation
+    and trusted Kernel timer/deadline provenance; exactly one exists per generation and duplicate timer
+    delivery is idempotent. **W-1**'s category table gains a third row placing it outside the matching
+    rules entirely (never eligible through an alternative or a subscription; an alternative naming a
+    timeout kind is inert). **§3**'s wait-ended batch rule states the batch as a **union** of the
+    species' mandatory member and the Events eligible under the retired rule, which is what makes a
+    **subscription-only wait with a deadline** answerable — the case revision 8 answered two ways
+    (new **W-8 case 6**). `B-1` records that every batch member is an Event and that the bound is ≥ 1.
+    W-9 also names which boundary accepts a Kernel-minted timeout, as a boundary *role*, adding no
+    seventh boundary to §2 ID-6/ID-7 and issuing no external receipt. Only the wire token, TypeScript
+    discriminant, encoded schema, storage layout and timer mechanism stay implementation-owned.
+  - **K01-R8-03** — **W-1**'s K1.3 scope note is removed. The K0/K1 source-category rule is closed and
+    unconditional, with an explicit demonstration that nothing canonical is lost (a correction is
+    application input → subscription; a peer question is a `peer.message` → dependency alternative),
+    and any richer K4 clarification/peer-subscription semantics is named as a **versioned extension of
+    the interaction contract**, never a reinterpretation of this rule and never a second path for
+    ordinary application input.
+  - **K01-R8-04** — **W-2** is rewritten as one ordered registration algorithm inside one transaction:
+    acknowledge this Outcome's own batch; check already-accepted unacknowledged Events; evaluate an
+    already-due deadline against one accepted-time observation (due is non-strict); otherwise persist
+    `WAITING`. An already-due deadline therefore **collapses inside the Outcome-acceptance boundary**
+    (`B-7` **path A**) and durable `WAITING` is never persisted for that generation; the Event branch
+    wins when both apply, so no timeout is minted for a wait an accepted Event had already ended. The
+    refused alternative and the reason execution-protocol.md's "otherwise it is WAITING" is not
+    contradicted are both stated in W-2. **CL-3** records that the wait clock is read at exactly two
+    points.
+  - **Implementer-discovered in the same round** (§13; not reviewer findings): new **`B-8`** (readiness
+    is created only by a boundary that retires a live wait) and §3's contrast row 6; **W-2 step 1**'s
+    ordering, so a wait cannot be woken by the batch the Outcome registering it just acknowledged;
+    W-9's exactly-one/idempotency rules; W-9's acceptance-boundary role; the terminal-race caveat on
+    mandatory delivery; `B-1`'s minimum bound; §3's truncation rule, mandatory-member-availability
+    argument and empty-batch rule; W-2's "ordered evaluation, one transaction" statement; and new
+    **W-9 cases 4–6** (result-then-deadline, already-due-at-registration, duplicate timer delivery).
+    Eleven in total, listed individually in §13.
+  - **Structure.** `B-6` and `B-7` keep their IDs and become the two *species* of one **wait-ended
+    readiness**; their shared lifetime, consumption, recovery and representation rules are stated once
+    for both. §11 row 5 is restructured into seven separately observable assertions (a)–(g) instead of
+    one paragraph that restated §3 and §5. §12's `MIG-5` records that the matcher performs no part of
+    timeout handling. E-7/JCS, the Activation-ID takeover identity, W-4, the K1 Effect-refusal
+    boundary, `MIG-4`, PC-1/`MIG-3`/`LEG-4`, `REF-3`/`REF-4`/`REF-5`, `LEG-5`, `LIM-1`, the three-label
+    legacy vocabulary and the accepted historical-evidence whitespace exception are unchanged.

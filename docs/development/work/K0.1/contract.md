@@ -74,6 +74,31 @@ harmless imprecision into a live defect. Round 7 again **accepted and closed** t
 blank-at-EOL exception, the round-6 findings, E-7/JCS, the Activation-ID identity, the Effect-refusal
 boundary, the progress decisions and the three-label vocabulary.
 
+Round 8 (C8 `40feb09`, H8 `6290e68`) received an eighth independent review, again **CHANGES
+REQUIRED**: see [review-08.md](review-08.md) (findings K01-R8-01 P1, K01-R8-02 P1, K01-R8-03 P2 and
+K01-R8-04 P2, with C1/C3/C4 passing and C2/C5/C6 failing; the reviewed artifacts are again pinned by
+**blob** SHA, which the correction verified against H8's tree). Round 9's correction is reported in
+[implementation-09.md](implementation-09.md).
+
+Round 9 is deliberately a **consolidation round** rather than another four-patch round, and the reason
+is in the record above. Rounds 5, 6, 7 and 8 each found a defect created by an earlier *correct*
+correction that some neighbouring rule still contradicted: round 5's B-2 lost round 4's wake guarantee;
+round 6's `B-6` named one acceptance boundary for two paths; round 7's `B-6` left deadline expiry with
+no batch semantics; and round 8's B-2 still carried round 6's superseded eligibility wording after
+round 7 replaced it. That is a **document-shape** failure, not four unrelated slips: the same rule was
+written out in two or three voices, so correcting one voice left the others live. Round 9 therefore
+reconstructs the wait / batch / clock protocol as one state machine, verifies it scenario by scenario
+against the canonical owners before editing, and rewrites §3 and §5 of the worksheet so each rule is
+stated **once** and cited everywhere else. The revision is large by design; `git diff --stat` is not a
+measure of whether it was the right size. Round 9's own adversarial pass found **eleven** further
+internal defects that no review had named — they are listed individually in the worksheet's §13 — and
+every one is fixed in the same revision and labelled implementer-discovered rather than attributed to
+review-08.
+
+This contract's **acceptance criteria are unchanged and are not weakened** by that decision: K0.1-C1
+through C6 stand exactly as written, and a larger rewrite is held to the same criteria as a smaller one.
+The command plan, including its owner-approved historical blank-at-EOL exception, is unmodified.
+
 Every prior commit, report and review is preserved unedited — each round corrects forward rather than
 rewriting the record it was reviewed against.
 
