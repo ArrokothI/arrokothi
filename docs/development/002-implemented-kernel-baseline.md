@@ -4,6 +4,12 @@
 > Package `0.8.1` is not an exact experimental identity or a durability/release verdict.
 > **Role:** compact engineering map, not canonical architecture. Target ownership reconciled 2026-09-08; the asynchronous protocol is not implemented by this documentation change.
 
+Rechecked for pipeline planning at `f3c0a1b2a3a1cb82b295580939d0284f8d329163`: implementation
+and test files under `packages/` and `tests/` are unchanged from `e96e513`; only the SDK README
+differs in those trees. Fresh `npm test` passed 965 tests and typecheck passed. This preserves the
+baseline's scope, not target acceptance. See [the current assessment](010-pipeline-planning-assessment.md)
+for source inspection, process changes and validation limits; historical captures below remain historical.
+
 This document answers one question: **What does the current ArrokothI kernel demonstrably
 implement?** Canonical meaning remains in the documents indexed by [`../README.md`](../README.md).
 Paths below are representative rather than exhaustive; the conformance suite is the executable

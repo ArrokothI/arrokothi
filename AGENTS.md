@@ -101,6 +101,13 @@ Current tests largely exercise the implemented 0.8.x architecture. During migrat
 
 `.agents/skills/` contains coding-agent workflow skills. They are not ArrokothI runtime Skills. Use `arrokothi-architecture` for Kernel/Execution/deployment semantic changes and provider-integration guidance for Driver-only work.
 
+For roadmap implementation, follow [the development process](docs/development/006-development-process.md)
+and select one eligible packet from [the status ledger](docs/development/007-work-packets.md).
+Use the [standard report](docs/development/008-implementation-report.md). Implementers may mark
+review-ready, never self-certify acceptance. Independent acceptance is bound to an exact candidate;
+owner integration and discussion/release precede the next packet. Current audit-skill per-criterion
+PASS/FAIL/DEFERRED labels do not replace the process's overall independent-review verdict.
+
 ## Third-party code and license review
 
 For every implementation change, distinguish learning from prior art, using a dependency/service,

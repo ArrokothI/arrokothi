@@ -1,11 +1,19 @@
 # Development roadmap
 
-Adopted 2026-09-08 for the revised [architecture](../mental-model.md). **All slices below are planned;
-none is marked implemented by this documentation change. K0 is next.** Source starting point:
+Adopted 2026-09-08 for the revised [architecture](../mental-model.md). This document owns milestone
+scope and gates; the [work-packet ledger](007-work-packets.md) owns current implementation/review
+status and dependencies. All work is initially planned; no implementation is completed by the
+pipeline planning change. **K0.1 is first after owner adoption.** Source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the
 [review](004-architecture-review.md) records decisions and the disposition of P1–P7/B1–B3.
 The old plan is [historical](legacy/2026-09-pre-redesign-roadmap.md), not an additional checklist.
+
+Use the [development process](006-development-process.md) for each implementation/review cycle,
+the [standard report](008-implementation-report.md), and [reusable prompts](009-universal-prompts.md).
+K0–S1 below remain aggregate obligations, not single coding sessions. A packet may be independently
+accepted before its parent gate passes; only the mapped final gate closes that milestone. The coding
+agent cannot mark its own work accepted. Integration and owner discussion/release follow acceptance.
 
 The [detail-design review](005-detail-design-review.md) refines these gates without marking a slice
 implemented. The Emission/message/human-input review additionally makes explicit capabilities that
