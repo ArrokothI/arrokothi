@@ -34,6 +34,18 @@ convention restored in round 4 is correct, and that round 4's in-report raw evid
 round 5 follows the same pattern. E-7 and its RFC 8785 alignment were re-checked against the RFC
 itself and are not reopened.
 
+Round 5 (C5 `ab2ff6d`, H5 `d0dbc48`) received a fifth independent review, again **CHANGES REQUIRED**:
+see [review-05.md](review-05.md) (findings K01-R5-01 P1 and K01-R5-02 P2, with K0.1-C1 through C4 now
+PASSING and C5/C6 failing). Round 6's correction is reported in
+[implementation-06.md](implementation-06.md); sections marked "corrected in review round 5" reflect it.
+Both round-5 defects were again **internal to the worksheet**, and both were a *consequence of a
+correct earlier correction that was not carried through*: round 4 rightly made an eligible wake retire
+the wait, but §3's batch-selection rule was not updated to keep the canonical "eligible wake included
+before unrelated backlog" guarantee across that retirement; and round 4's wait record was described by
+two different selector grammars in the same decision. Round 5 also **accepted and closed** three things
+that are not to be reopened: the owner-approved historical blank-at-EOL exception recorded in the
+command plan below, the round-4 findings, and E-7/JCS.
+
 Every prior commit, report and review is preserved unedited — each round corrects forward rather than
 rewriting the record it was reviewed against.
 
