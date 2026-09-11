@@ -131,6 +131,19 @@ This contract's **acceptance criteria remain unchanged and are not weakened** by
 K0.1-C1 through C6 stand exactly as written, and the command plan, including its owner-approved
 historical blank-at-EOL exception, is unmodified.
 
+Round 10 (C10 `7f68df3`, H10 `012ca92`) received **CHANGES REQUIRED**:
+[review-10.md](review-10.md) records **K01-R10-01 (P2)**, with C1/C5/C6 failing and C2/C3/C4 passing.
+Validation evidence availability, C/H identity and the round-9 provenance repair passed. Revision 11
+corrects the stale selection claims in W-1 and §11 by citing the existing owners: eligibility under
+W-1, retirement/readiness under `B-6`/`B-7`, and selection once `READY` under `B-2`. The consolidated
+state machine and Revision 10's structural well-formedness rule remain unchanged.
+
+Revision 11's adversarial pass also found **K01-I11-01 (implementer-discovered)**: W-6 case 4 said
+registration "consumes" an early result. It now follows W-2's readiness algorithm and B-3's
+Outcome-time acknowledgment; W-9's cross-reference uses the same distinction. The round-11 report
+accompanies candidate H11. Acceptance criteria C1–C6 and the command plan, including the approved
+historical blank-at-EOL exception, remain unchanged. K0.2 was not started.
+
 Every prior commit, report and review is preserved unedited — each round corrects forward rather than
 rewriting the record it was reviewed against.
 
