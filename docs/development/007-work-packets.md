@@ -273,7 +273,7 @@ there is no second editable “done” checkbox in 001.
 
 | Packet | Status | Report / review / candidate |
 |---|---|---|
-| K0.1 | WAITING_FOR_REVIEW | Round 3: [work/K0.1/implementation-03.md](work/K0.1/implementation-03.md), base `6464be1`; prior reviewed candidates H `857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc` and H2 `cc61e74455534abf896c46632246615185219b92`, both CHANGES REQUIRED ([review-01.md](work/K0.1/review-01.md) K01-REV-01..05, [review-02.md](work/K0.1/review-02.md) K01-R2-01..06); correction payload C3 `2b252b05eaf7020fec1e2b4a342d5fea86bad66e`, raw validation evidence at [work/K0.1/evidence/round-3/](work/K0.1/evidence/round-3/), candidate H3 = this status commit (SHA in handoff) |
+| K0.1 | CHANGES_REQUESTED | Round 3 reviewed at candidate H3 `aef1e33ba944a0647bb2319fb97ae40b18b05924` (payload C3 `2b252b05eaf7020fec1e2b4a342d5fea86bad66e`, base `6464be1`): [review-03.md](work/K0.1/review-03.md) — CHANGES REQUIRED, findings K01-R3-01..04; report [work/K0.1/implementation-03.md](work/K0.1/implementation-03.md), evidence [work/K0.1/evidence/round-3/](work/K0.1/evidence/round-3/). Prior candidates also CHANGES REQUIRED: H `857fa05a8a72a4c6f4f294f9e775a0dc1f7919dc` ([review-01.md](work/K0.1/review-01.md) K01-REV-01..05) and H2 `cc61e74455534abf896c46632246615185219b92` ([review-02.md](work/K0.1/review-02.md) K01-R2-01..06). Correction resumes this packet; K0.2 remains unreleased. |
 | K0.2 | PLANNED | — |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
