@@ -6,7 +6,12 @@ and [Deployment](../deployment.md).
 
 | Document | Role |
 |---|---|
-| [Roadmap](001-current-status-and-roadmap.md) | Active K0–K5, R1/R2, D1 and S1 slices, linked evidence gates; K0 is next |
+| [Roadmap](001-current-status-and-roadmap.md) | K0–K5, R1/R2, D1 and S1 milestone obligations and evidence gates |
+| [Development process](006-development-process.md) | Actor permissions, review states, Git/evidence handoff and owner discussion |
+| [Work packets and status](007-work-packets.md) | Bounded sub-slices, dependencies and authoritative status ledger; K0.1 is first after owner adoption |
+| [Implementation report](008-implementation-report.md) | Standard candidate report and review record requirements |
+| [Universal prompts](009-universal-prompts.md) | Complete coding-agent and independent-reviewer prompts |
+| [Pipeline planning assessment](010-pipeline-planning-assessment.md) | Current source verification, roadmap critique, process rationale and validation limits |
 | [Implemented baseline](002-implemented-kernel-baseline.md) | Actual 0.8.x surface and useful source/tests; no target recovery claim |
 | [Findings](003-evidence-and-findings.md) | Existing implementation defects, historical results and current disposition |
 | [Architecture review](004-architecture-review.md) | 2026-09-08 decisions, inspected prior art, unresolved questions and old-plan disposition |
