@@ -1,5 +1,11 @@
 # Pipeline planning assessment
 
+Historical assessment of the 2026-09-10 planning candidate. Its observations, command results and
+PLANNED/bootstrap wording below are as-of that candidate, not current status. The
+[K0.1 retrospective](011-k0.1-process-retrospective.md) reassesses the workflow using twelve rounds;
+[007](007-work-packets.md) and the [integration receipt](work/K0.1/integration-01.md) own current
+acceptance/integration/release state. No historical validation below is a fresh process-review result.
+
 Planning inspection: 2026-09-10 (America/New_York), starting clean `main` at
 `f3c0a1b2a3a1cb82b295580939d0284f8d329163`. This is a planning proposal delivered for owner adoption,
 not an independent ACCEPT of its author, K0 implementation, or a target release verdict.

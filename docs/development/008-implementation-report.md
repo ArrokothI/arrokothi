@@ -1,62 +1,93 @@
-# Standard implementation report
+# Candidate, review and handoff records
 
-Use one versioned report per candidate under `work/<packet-id>/implementation-<round>.md`.
-Do not omit a field silently: use “none” or “not run” with a reason. Keep prose brief; link evidence.
-Follow the commit identity convention in [006](006-development-process.md).
+[006](006-development-process.md) owns policy and C/H/A identity; [012](012-review-methods.md)
+owns coverage methods. Use versioned records under `work/<packet-id>/`. Keep current facts concise,
+link raw evidence and historical findings, and say “none”, “not run” or “unknown” with a reason rather
+than silently omitting a field. Never fabricate a session/model, command result or external decision.
+
+## Implementation report
 
 ```markdown
 # Implementation report — <packet>, round <n>
 
-## Identity and status
-- Packet / parent milestone / contract path and revision:
-- State: WAITING_FOR_REVIEW | IN_PROGRESS | BLOCKED_ARCHITECTURE | BLOCKED_EXTERNAL
-- Owner release / prerequisite acceptances and integrated SHAs:
-- Base commit (full SHA):
-- Payload commit C (full SHA):
-- Candidate H: commit containing this report; full SHA supplied in handoff
-- Previous review/candidate, if correcting:
-- Branch / configured remote / push result (verified remote SHA or failure):
-- Working-tree state / patch or bundle path and SHA-256 if offline:
+## Identity
+- Packet/parent; contract path and revision; governing process baseline:
+- State; owner release; prerequisite ACCEPT and integration identities:
+- Branch/configured remote; full base and payload C; previous reviewed H/review:
+- Candidate H: commit containing this report (full SHA in external handoff).
+- Exact C..H administrative file allowlist, including any raw-output attachments:
+- Working-tree state; push status as observed, or pending external handoff:
 
-## Facts
-- Summary and changed files (link full diff; explain each logical group):
-- Canonical/detail references and ownership (Kernel, Runtime/Driver, deployment):
-- Tests added/ported/removed; justification for removed legacy assertions:
-- Compatibility/migration/refusal; baseline/guides/skills updates or why not applicable:
+## Changes and coverage
+- Change groups and full cumulative diff; ownership and governing sources:
+- Selected 012 methods; material exclusions and why:
+- Obligation/interaction coverage with expected facts, forbidden changes, source/test/trace and result:
+- Tests added/ported/removed and reasons; compatibility/refusal; baseline/guides/skills impact:
+- Semantic correction closure: changed invariant, dependent paths, counterexamples and evidence:
+- Prior findings: open IDs → disposition/evidence; closed findings → prior disposition links:
+- Additional self-found defects (separate provenance); unresolved obligations and unblock conditions:
 
-| Criterion ID and source | Assertion / independent observation | Command and evidence | Observed result |
-|---|---|---|---|
-| ... | ... | pinned log / trace and digest | PASS / FAIL / unavailable |
-
-| Command (exact cwd/arguments) | Payload/environment/config | Exit, counts, skips | Raw evidence |
-|---|---|---|---|
-| ... | Node/OS/tool versions | actual result | path/hash |
-
-- External gate: fixture prepared / gate executed / decision, each separately stated.
-- Benchmark/Driver/provider revisions, native vs lab owners, fault schedule and repeats:
-- Tests/live calls/benchmarks NOT performed and their claim limits:
-
-## Interpretation and decisions
-- Why the implementation satisfies the contract (agent interpretation, not acceptance):
-- Routine design choices and alternatives considered:
-- Roadmap deviations and owner-approved amendments; none if unchanged:
-- Reviewer focus: riskiest race, counterexample or boundary:
-- Known limitations / unresolved questions / blocked actor and unblock condition:
-- Third-party source/dependency/service: version, exact terms inspected, reuse method,
-  required notices/obligations and unresolved compatibility; “none” where applicable:
-- Prior review findings: each ID → correction evidence or explicit unresolved status:
+## Validation and interpretation
+- Exact commands/cwd, C, environment/config/tool versions, exit/counts/skips, raw paths and digests:
+- External fixture prepared / gate executed / external decision, separately; pinned owners/revisions:
+- Checks not run and resulting claim limits:
+- Why evidence supports each criterion (implementer assessment, not acceptance):
+- Design choices, owner amendments, assumptions, strongest remaining risk:
+- Third-party review under AGENTS.md, or none:
 
 ## Handoff
-- Ready for independent review, or exact remaining work/blocker:
-- No self-acceptance; no successor implementation.
+- Ready for independent review, or exact remaining work:
+- Base/C/H and verified push SHA supplied externally; offline artifact identities when applicable.
+- No self-acceptance; successor release remains owner-controlled.
 ```
 
-Raw logs may be stored outside Git when large, but must be available to the reviewer through a
-pinned artifact with digest and retention owner. Never include credentials/private prompts to make
-a report appear complete. Missing required evidence remains missing after redaction; supply an
-authorized reproducible alternative or block that claim.
+A report written before H is pushed cannot certify that future push. Supply H and verified advertised
+remote SHA in the external owner handoff after pushing; a second report commit solely to describe
+its own push is unnecessary. Raw evidence may be inline, declared output-only attachments under 006,
+or an accessible pinned external artifact with digest and retention owner. A temporary local path or
+hash of an inaccessible payload is insufficient. Keep secrets/private evaluation material out of records.
+Scripts, fixtures, configuration and evaluators are payload, never administrative attachments.
 
-An independent review record must include reviewer identity/session/model as actually used, date,
-base/H/contract/evidence identities, access limits, inspected vs rerun checks, criterion verdicts,
-severity findings with file/line/contract references, and one final outcome. ACCEPT records why the
-gate passed and an exact status edit; CHANGES REQUIRED includes a complete corrective prompt.
+## Independent review record
+
+Record actual reviewer/session/model/date; full base/C/H, contract and evidence identities; policy
+baseline; source access and limits; independently inspected versus rerun checks. Include:
+
+- Independent obligation/interaction coverage and strongest counterexamples examined, with evidence;
+  reconcile missing or weaker implementation coverage and state any unexamined obligation.
+- Per-criterion PASS/FAIL and rationale; only explicitly assigned out-of-packet work may be DEFERRED.
+- Findings: stable ID, severity, exact candidate path/line or section, governing criterion/source,
+  concrete counterexample/impact and required outcome/validation. Separate reviewer findings from
+  owner-supplied supplements. Carry prior finding dispositions by reference.
+- Exact verdict/status text for transcription, acceptance rationale or correction/blocker handoff.
+  End with the one outcome line required by 006/009. An ACCEPT names H, not its own recording commit.
+
+## Compact correction handoff
+
+The review's findings are authoritative. Supply this small standalone locator instead of duplicating
+all policy, old findings, raw logs and prior prompts. The referenced material must actually be
+available to a fresh session; when offline, include it in the source/evidence bundle.
+
+```text
+Correct the same released packet <id> on <branch>.
+Base <full SHA>; reviewed H <full SHA>; review record <pinned path/revision>.
+Open findings <IDs>; required outcomes and counterexamples are in that record.
+Owner supplemental decisions <pinned record/IDs or none>; unresolved authority <none or blocker>.
+Apply 006 and 012: close the affected semantic subsystem and its dependencies, then re-review the
+whole cumulative packet. Fix additional in-scope defects with separate provenance.
+Use 008 for the next report and 006 for new C/H plus evidence/push handoff. No successor release.
+```
+
+Preserve a delivered handoff once in its review record or a linked immutable `handoff-<n>.md`.
+Owner supplements are appended separately with source and scope, without pretending the reviewer
+supplied them. Do not paste the full accumulated conversation into each new report or live contract.
+Old records remain untouched; corrections to provenance are new explicitly superseding notes.
+
+## Integration receipt
+
+Append `integration-<n>.md` with full accepted H, acceptance-record A, integration commit, observed
+remote main and date, ancestry checks, H..A administrative scope, tree/content comparison and any
+substantive differences. Record owner's discussion provenance, understood result, remaining concern,
+merged/closed decision and `next_release`. Link it from 007; do not change the old ACCEPT. The receipt
+names already-existing commits and never needs its own SHA. A later owner decision is another dated
+record, not a silent rewrite of an earlier hold or release.

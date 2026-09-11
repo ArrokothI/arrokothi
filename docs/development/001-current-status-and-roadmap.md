@@ -2,8 +2,10 @@
 
 Adopted 2026-09-08 for the revised [architecture](../mental-model.md). This document owns milestone
 scope and gates; the [work-packet ledger](007-work-packets.md) owns current implementation/review
-status and dependencies. All work is initially planned; no implementation is completed by the
-pipeline planning change. **K0.1 is first after owner adoption.** Source starting point:
+status and dependencies. K0.1 is accepted, integrated and owner-closed; its
+[receipt](work/K0.1/integration-01.md) records the separate acceptance and merge. K0.2 remains
+unimplemented and unreleased pending the owner's workflow review and subsequent explicit release.
+The K0/E0 gate is still open. Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the
 [review](004-architecture-review.md) records decisions and the disposition of P1–P7/B1–B3.

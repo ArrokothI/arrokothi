@@ -4,16 +4,18 @@ This file is the single packet status owner. The [process](006-development-proce
 review identities and eligibility. The [milestone roadmap](001-current-status-and-roadmap.md) remains
 binding: splitting work does not remove any exit requirement or change canonical semantics.
 
-All packets below are **PLANNED**. There are no implementation or independent acceptance claims.
-Initial next packet is K0.1, only after owner adoption of the planning change. This file adds no
-benchmark acceptance and changes no E0–E6 status in the benchmark repository.
+K0.1 is independently **ACCEPTED**, integrated and owner-closed; see the
+[integration receipt](work/K0.1/integration-01.md). All successors remain **PLANNED**. The owner
+holds K0.2 pending review and improvement of the coding/review workflow; this process work does not
+release it. No benchmark acceptance or E0–E6 status is changed here.
 
 ## How to read a packet
 
-Each row is a bounded implementation contract seed, normally one coding/review cycle. Several
+Each row is a bounded implementation contract seed, without a promised review-round count. Several
 sessions may correct one packet; never claim a fixed time estimate. The packet inherits its parent
 roadmap section in full **for the responsibility assigned here**, the design/touchpoint row below,
-and the universal obligations below. Its final gate packet checks the entire parent without gaps.
+and applicable [process obligations](006-development-process.md). Its final gate packet checks
+the entire parent without gaps.
 If inspection shows even a packet is too large, propose a split preserving criterion IDs/dependencies
 and obtain owner adoption before broad implementation. Split by observable boundary, not files or
 an arbitrary line budget. K3/K5 experimental packets may take multiple sessions with one fixed contract.
@@ -25,15 +27,16 @@ blocking K3. R1.3 is deliberately later than the initial structural probe. Exter
 candidate implementation; results close the relevant gate packet. A missing benchmark artifact blocks
 the gate, not a wholly independent packet. The owner must explicitly release that alternative.
 
-Universal obligations: scoped tests and counterexamples; preserve useful existing regressions or
-justify retirement; current baseline/guides/migration/skills update where materially affected; versioned
-compatibility or explicit refusal; exact third-party review before reuse; raw evidence and a report;
-independent review. Non-goals for every packet are other packet responsibilities, provider internals
-in Kernel types, speculative future-plan extensions and unsupported durability/isolation claims.
-Scaffolding that cannot yet fulfill an API must explicitly refuse it and remain experimental.
+Apply 006's repository, evidence and acceptance obligations, selecting proof methods under
+[012](012-review-methods.md) for this packet's actual claims. Non-goals remain other packet
+responsibilities, provider internals in Kernel types, speculative future-plan extensions and
+unsupported durability/isolation claims. Scaffolding must explicitly refuse unsupported APIs.
 
 At start create `work/<id>/contract.md` with stable criterion IDs, inherited requirement mapping,
-exact sources/touchpoints found in the current tree, command plan, evidence owners and any limits.
+exact sources/touchpoints found in the current tree, selected proof methods, interacting boundaries,
+command plan, evidence owners and any limits. Map criteria to observable behavior and distinguishing
+counterexamples, not only required sections. Assign one normative home per rule and cross-packet
+interaction obligations. Keep historical findings in linked attempts rather than the live contract.
 Routine coding choices may be resolved by the agent within the settled contract. This elaboration
 cannot change semantic requirements or invent success thresholds. Owner decisions are needed for
 semantic amendments, demand/claims, experimental margins/budgets and substrate/value adoption.
@@ -267,14 +270,15 @@ relative to `docs/detail-design/`; source hints are relative to repository root.
 
 A dash means no evidence/acceptance exists. On change, replace the evidence cell with the relative
 work/report/review path and exact candidate H; acceptance must name the independent review. Keep
-integration SHA and owner discussion/release in that packet's review record. Never infer acceptance
+integration SHA and owner discussion/release in a separate integration receipt linked here; preserve
+the review as acceptance of its historical candidate. Never infer acceptance
 from this table's prose or a test count. Milestone status is derived from its final gate below;
 there is no second editable “done” checkbox in 001.
 
 | Packet | Status | Report / review / candidate |
 |---|---|---|
-| K0.1 | ACCEPTED | Round 12 accepted by [review-12.md](work/K0.1/review-12.md), OpenAI GPT-5.6 Sol (High), 2026-09-11. Accepted H12 `bab7bf6635781e6d2f9b0e8e333f58440ae0b047`; clean-validated C12 `7a51801afcdf5c13d481e92c5d219a8c9be7c0eb`; base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`. K0.1-C1–C6 PASS; no findings. Reviewer inspected pinned GitHub source/diffs and implementation-12 evidence; no shell commands independently rerun. Acceptance is for H12 only. Integration is pending owner merge/discussion; K0.2 remains PLANNED and unreleased until the owner records integration and explicitly releases it. |
-| K0.2 | PLANNED | — |
+| K0.1 | ACCEPTED | Round 12 accepted by [review-12.md](work/K0.1/review-12.md), OpenAI GPT-5.6 Sol (High), 2026-09-11. Accepted H12 `bab7bf6635781e6d2f9b0e8e333f58440ae0b047`; clean-validated C12 `7a51801afcdf5c13d481e92c5d219a8c9be7c0eb`; base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`. K0.1-C1–C6 PASS; no findings. Reviewer inspected pinned GitHub source/diffs and implementation-12 evidence; no shell commands independently rerun. Acceptance is for H12 only. Integrated on main as `42731300266eea00a9a24d867d5e82d9887c280d` (PR #19); owner considers K0.1 merged/closed. [Integration and discussion receipt](work/K0.1/integration-01.md) separately verifies A12 and the merge. `next_release: none`; workflow review/improvement precedes any K0.2 release. |
+| K0.2 | PLANNED | Unimplemented and unreleased. Owner hold: review/improve workflow before a separate explicit release; see K0.1 integration receipt. |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
 | K1.3 | PLANNED | — |
