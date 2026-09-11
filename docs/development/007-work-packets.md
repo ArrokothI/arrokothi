@@ -273,7 +273,7 @@ there is no second editable “done” checkbox in 001.
 
 | Packet | Status | Report / review / candidate |
 |---|---|---|
-| K0.1 | WAITING_FOR_REVIEW | Revision 12: [implementation-12.md](work/K0.1/implementation-12.md); base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`, reviewed H11 `9202571f21e97a51c119b0324f3d279f8772ca9c`, [review-11.md](work/K0.1/review-11.md) admin `78f628bb4d30405314e3a2437b22e64e29c45219`, clean-validated C12 `7a51801afcdf5c13d481e92c5d219a8c9be7c0eb`; H12 is this report/status commit (SHA in handoff). Claude K01-R11-01–04 and owner supplemental K01-O12-01–03 corrected; no separate implementer-discovered defect. Builder/typecheck/link and preservation checks pass. Strict cumulative whitespace exits 2 only for the two approved historical implementation-04 lines; exception-limited cumulative and strict H11..C12 checks pass. Prior history immutable; awaiting independent review, no acceptance. K0.2 remains PLANNED and unreleased. |
+| K0.1 | ACCEPTED | Round 12 accepted by [review-12.md](work/K0.1/review-12.md), OpenAI GPT-5.6 Sol (High), 2026-09-11. Accepted H12 `bab7bf6635781e6d2f9b0e8e333f58440ae0b047`; clean-validated C12 `7a51801afcdf5c13d481e92c5d219a8c9be7c0eb`; base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`. K0.1-C1–C6 PASS; no findings. Reviewer inspected pinned GitHub source/diffs and implementation-12 evidence; no shell commands independently rerun. Acceptance is for H12 only. Integration is pending owner merge/discussion; K0.2 remains PLANNED and unreleased until the owner records integration and explicitly releases it. |
 | K0.2 | PLANNED | — |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
