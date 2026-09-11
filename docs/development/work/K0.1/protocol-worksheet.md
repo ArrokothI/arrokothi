@@ -1,8 +1,9 @@
 # K0.1 protocol worksheet — equality, receipts, batches, clocks, cancellation, progress, policy
 
-**Revision:** 6 — corrects revision 5 per a fifth independent review (CHANGES REQUIRED); see
-[review-05.md](review-05.md) and [implementation-06.md](implementation-06.md) for those findings and
-their disposition, and [review-04.md](review-04.md)/[implementation-05.md](implementation-05.md),
+**Revision:** 7 — corrects revision 6 per a sixth independent review (CHANGES REQUIRED); see
+[review-06.md](review-06.md) and [implementation-07.md](implementation-07.md) for those findings and
+their disposition, and [review-05.md](review-05.md)/[implementation-06.md](implementation-06.md),
+[review-04.md](review-04.md)/[implementation-05.md](implementation-05.md),
 [review-03.md](review-03.md)/[implementation-04.md](implementation-04.md),
 [review-02.md](review-02.md)/[implementation-03.md](implementation-03.md) and
 [review-01.md](review-01.md)/[implementation-02.md](implementation-02.md) for the preceding rounds. **Status:** produced by packet K0.1, awaiting independent review of this revision
@@ -351,30 +352,77 @@ without record or silently treated as processed.
 **Decision B-6 (wake-triggered readiness: a retired wait's eligibility rule survives for exactly one
 dispatch — added in review round 5, [K01-R5-01](implementation-06.md)).**
 
-*When it is created.* An eligible Event ends a registered wait in exactly two ways, and both create
-wake-triggered readiness identically: **(i)** W-2's atomic check finds an already-accepted,
-unacknowledged eligible Event at registration time, so the Execution never reaches `WAITING`; or
-**(ii)** an eligible Event is accepted later, while the Execution is `WAITING`. In either case the
-accepting transaction does all three of the following **together**:
+*When it is created — two paths, at two different acceptance boundaries (corrected in review round 6,
+[K01-R6-01](implementation-07.md)).* An eligible Event ends a registered wait in exactly two ways.
+Revision 6 said both "create wake-triggered readiness identically" and that it is committed "with the
+accepted Outcome." That is true only of path A; path B has **no Outcome at all**, and describing it
+that way would leave a K1.1 implementer with nowhere to commit the readiness and an obvious wrong
+answer available (write it after the Event lands). The two paths differ in *which* boundary commits
+the readiness, and are identical only in *what* it contains and what it then does.
+
+**In both paths, whichever boundary applies does all three of the following in one transaction:**
 
 1. retires the wait registration and its generation, exactly as W-1 requires — no live wait remains;
 2. sets the Execution `READY`;
-3. records, as part of the **recoverable readiness** the acceptance boundary already commits alongside
-   next state — kernel.md's Acceptance/atomicity table ("commit progress, accepted emissions, all
-   Effect intents, next state and **recoverable readiness**") and execution-protocol.md's acceptance
-   step 4 ("record accepted emissions, all Effect intents, next state, wait/deadline and
-   **recoverable readiness**") — enough to re-apply **that retired wait's eligibility rule** to the
-   next dispatch.
+3. records, as part of the **recoverable readiness** that boundary already commits, enough to re-apply
+   **that retired wait's eligibility rule** to the next dispatch.
+
+**Path A — the eligible Event already exists when the Outcome registering the wait is accepted.**
+The Outcome-acceptance transaction runs W-2's mailbox check over already-accepted, unacknowledged
+Events. If it finds an eligible one, it retires the just-proposed wait, sets `READY`, and commits the
+wake-triggered readiness **in that Outcome-acceptance boundary** — the Execution never reaches
+`WAITING`. This is the boundary kernel.md's Acceptance/atomicity table already defines for Outcome
+acceptance ("commit progress, accepted emissions, all Effect intents, next state and **recoverable
+readiness**") and execution-protocol.md's acceptance step 4 ("record accepted emissions, all Effect
+intents, next state, wait/deadline and **recoverable readiness**"). Nothing new is added to it.
+
+**Path B — no eligible Event existed at registration, so the Execution became `WAITING`, and an
+eligible Event is accepted later.** **There is no new Outcome at this point** — the Runtime is not
+running and submits nothing. The authoritative acceptance boundary is therefore **the boundary that
+accepts that Event**, and it must accept the Event/mailbox fact **and** the wake-triggered readiness
+**atomically together**. Which boundary that is depends on the Event's ingress, and each already
+carries readiness in kernel.md's Acceptance/atomicity table:
+
+| Event that ends the wait | Authoritative acceptance boundary | What that boundary already commits together |
+|---|---|---|
+| Ordinary application input | **Creation/input ingress** | "subsequent input ID, payload and mailbox entry, **with readiness when applicable**" |
+| Effect settlement (K2+; K1 refuses Effects, §8 `EF-1`) | **Effect settlement** | "Authenticated evidence, action state, **result Event and recoverable readiness**" |
+| Child result, message or other routed result | that path's **authoritative accepted fulfillment/routing boundary** — Child/message operation ("Idempotent creation/routing obligation and parent correlation/budget reservation; fulfillment cannot lose the link"), read together with kernel.md's routing rule that a terminal result is "committed with the terminal result or a durable routing intent" | the fulfillment/routing obligation and the resulting Event, with readiness, in one accepted decision |
+
+Two rules bind every row of that table:
+
+- **Never accept the Event durably and then depend on a later unjournaled wake write.** That is the
+  exact failure execution-protocol.md forbids — "Never rely on an unjournaled enqueue after commit" —
+  and it is what makes the difference between a crash losing a notification (recoverable) and a crash
+  losing the *reason* the next batch must be selective (not recoverable).
+- **No later Runtime Outcome is needed to make this `READY` state durable.** Path B completes without
+  the Runtime being involved at all; the next Outcome is a *consequence* of the readiness, never a
+  precondition for it.
 
 *What it does.* The next dispatch for this Execution is the wake-triggered one in B-2's middle case:
 its batch is selected only from Events eligible under the retired rule, it **must** contain at least
 one such Event, and ineligible backlog cannot displace it however old that backlog is.
 
-*Lifetime — exactly one exchange.* The wake-triggered readiness is **consumed when that Activation's
-batch is reserved**. Afterwards the Execution is ordinarily `READY` (B-2's first case), and ordinary
-acceptance-order backlog handling resumes — unless that exchange's accepted Outcome registers another
-wait, in which case the `WAITING` case governs again. It never spans two exchanges, and nothing
-re-arms it except a fresh eligible wake of a fresh registration.
+*Lifetime — exactly one exchange (sharpened in review round 6,
+[K01-R6-01](implementation-07.md)).* Three statements fix it end to end:
+
+- **It survives a crash before reservation.** Having been committed by the authoritative acceptance
+  boundary above, it is accepted truth; a restart reconstructs it rather than losing it (*Recovery*
+  below).
+- **It is consumed when the wake-triggered Activation's batch is *durably reserved*** — B-1's
+  "explicit, finite, enumerable set of Event references pinned at dispatch time," at the
+  Activation-dispatch-intent boundary. Reservation, not Outcome acceptance and not an in-memory
+  hand-off, is the consumption point.
+- **After reservation it must not re-arm.** The pinned dispatch intent and its reserved batch are
+  themselves sufficient for replay or takeover — recovery-and-compatibility.md's *Dispatch intent
+  before send* window requires the "same immutable Activation," so a redelivery or an authorized
+  takeover re-sends that batch rather than re-selecting one. Re-arming `B-6` after reservation would
+  let a takeover recompute a batch, which is precisely what that window forbids.
+
+Afterwards the Execution is ordinarily `READY` (B-2's first case) and ordinary acceptance-order backlog
+handling resumes — unless that exchange's accepted Outcome registers another wait, in which case the
+`WAITING` case governs again. It never spans two exchanges, and nothing re-arms it except a fresh
+eligible wake of a fresh registration (path A or path B).
 
 *What this is **not**.*
 
@@ -388,11 +436,24 @@ re-arms it except a fresh eligible wake of a fresh registration.
 - **Not an addressable record.** It is a property of readiness, which the acceptance boundary already
   commits and which recovery already rebuilds, not an object with its own identity and lifecycle.
 
-*Recovery.* Because it is committed **with** the accepted Outcome rather than enqueued after it, a
-crash between acceptance and dispatch cannot downgrade a wake-triggered readiness into an ordinary one
-and let backlog displace the wake Event. This is execution-protocol.md's "Readiness notifications may
-be rebuilt from accepted records. Never rely on an unjournaled enqueue after commit" applied to this
-exact field, and it is why point 3 above is part of the same transaction rather than a follow-up write.
+*Recovery (corrected in review round 6, [K01-R6-01](implementation-07.md)).* Because the readiness is
+committed by **the authoritative acceptance boundary that creates it** — not written afterwards — a
+crash between that boundary and dispatch cannot downgrade a wake-triggered readiness into an ordinary
+one and let backlog displace the wake Event. Revision 6 justified this by saying it is committed "with
+the accepted Outcome," which only covers path A. recovery-and-compatibility.md's crash-window table
+already supplies the rule for each path, and this is K0.1 naming which row governs which:
+
+| Crash window (recovery-and-compatibility.md) | Path | Required behaviour here |
+|---|---|---|
+| *Input commit before scheduler notification* — "Reconstruct READY from accepted input/wait state" | B, ordinary application input | The accepted input and the retired-wait state are both durable, so the restart reconstructs a **wake-triggered** `READY`, selective under the retired selector — not a generic `READY` |
+| *Settlement committed before wake* — "Reconstruct Event/readiness from accepted records" | B, Effect settlement | The result Event and its readiness were accepted together, so the restart rebuilds both; the wake is not lost and is not downgraded |
+| *Outcome accepted before receipt* — "Replay receipt; never rerun accepted Effects" | A | The Outcome that registered-and-immediately-retired the wait is accepted, so its committed readiness is replayed with the rest of that acceptance |
+| *Dispatch intent before send* — "Same immutable Activation" | both, after reservation | The batch is already pinned; redelivery or takeover re-sends it and `B-6` does not re-arm (*Lifetime* above) |
+
+The common rule underneath all four is execution-protocol.md's "Readiness notifications may be rebuilt
+from accepted records. **Never rely on an unjournaled enqueue after commit**," applied to this exact
+field — which is why point 3 is inside the same transaction as points 1 and 2 in **both** paths, rather
+than a follow-up write in either.
 
 *Deterministic case (batch bound = 1).* Worked through end to end as §5 **W-8 case 4**: X is `WAITING`
 on subscription `{continue}` with an older, ineligible `billing.question` already queued; `continue` is
@@ -406,8 +467,20 @@ ordinary candidate again.
 storage shape (a per-Event flag vs. a set-difference against acknowledged IDs); and the storage
 representation of `B-6`'s wake-triggered readiness — a flag plus a copy of the retired selector, a
 pointer to the retired registration retained for one exchange, or a materialized eligible-Event set are
-all conforming. K0.1 fixes only which Events the next batch **may** and **must** contain, and that the
-information survives a crash between acceptance and dispatch.
+all conforming.
+
+**A representation may not weaken the selector semantics (added in review round 6,
+[K01-R6-01](implementation-07.md)).** Whichever is chosen, it must preserve **B-2's exact observable
+selection semantics through reservation**. The materialized-set option is the one that can go wrong
+quietly, so it is worth stating what it owes: an eligible Event may be accepted *after* the readiness
+is created and *before* the batch is reserved, and B-2's rule is defined over the Events unacknowledged
+**at selection time**, not at wake time. A set materialized once at wake and never updated would
+silently exclude that later eligible Event and could, at a small bound, produce a different batch than
+the selector would — a weaker, implementation-visible semantics. So a materialized set must be
+maintained as further eligible Events are accepted, or the selector must simply be re-evaluated at
+reservation; either is conforming, and a stale snapshot is not. K0.1 fixes only which Events the next
+batch **may** and **must** contain, that the information survives a crash before reservation, and that
+no representation may narrow or widen that set.
 
 ---
 
@@ -497,7 +570,7 @@ arbitrary code or model-text predicates"):
 | Selector field | Supplied value | The alternative matches a candidate Event when |
 |---|---|---|
 | **Event identity** | one exact Event/envelope identity | the candidate's envelope identity equals it |
-| **Kind** | one Event kind, **or** a finite set of kinds | the candidate's kind equals it / is a member of that set |
+| **Kind** | one Event kind, **or** a **non-empty** finite set of kinds | the candidate's kind equals it / is a member of that set |
 | **Correlation** | one correlation identity | the candidate's correlation identity equals it |
 
 - **Within one alternative, every supplied field must match: the combinator is conjunction (AND).** An
@@ -508,6 +581,14 @@ arbitrary code or model-text predicates"):
   for "anything." It is exactly the over-matching spelling W-8's *What this rules out* rejects, and
   accepting it would let a wait that means "any application input labelled `continue`" be spelled as
   "any Event at all."
+- **An empty finite kind set is not a valid supplied Kind selector (added in review round 6,
+  [K01-R6-02](implementation-07.md)).** `[]` is rejected here, before any matching is attempted. It is
+  neither "a Kind selector that matches nothing" nor a spelling of "Kind selector absent": the target
+  grammar expresses absence by *not supplying the field*, and an empty set supplied as a value is
+  simply malformed. This rule is normative **here**, in W-1, because W-1 is the grammar; §12's
+  `MIG-5` describes only how the current 0.8.x encoding maps onto it, and carries no validation rule
+  of its own. Revision 6 had it the other way round, which put a normative constraint in a legacy
+  classification row.
 - **Between alternatives the only combinator is ANY-OF**, over the finite list in item 1.
 - **Every comparison is equality**: identity equality, kind equality or finite-set membership,
   correlation equality. Nothing else — no ordering or range comparison, no prefix, glob or regular
@@ -532,9 +613,11 @@ declarative, serializable runtime data, not a callback or a query language"
 **Any eligible wake retires the registration; the Kernel keeps no "dependency satisfied" flag
 (corrected in review round 4).** Whichever eligible Event arrives first — a dependency match or a
 subscribed input — **that registration and its generation are retired** and the Execution becomes
-`READY`. The Kernel records exactly two things: that this registration ended, and — as **recoverable
-readiness**, per **`B-6`** — the *retired wait's own eligibility rule*, so that the next dispatch is
-selected by it (B-2's wake-triggered case) instead of by ordinary acceptance order. Carrying the
+`READY`. **The authoritative acceptance boundary that creates that readiness records exactly two
+things** (`B-6`; the boundary is the Outcome-acceptance transaction on path A, and the Event's own
+ingress/settlement/routing boundary on path B, where no Outcome exists): that this registration ended,
+and — as **recoverable readiness** — the *retired wait's own eligibility rule*, so that the next
+dispatch is selected by it (B-2's wake-triggered case) instead of by ordinary acceptance order. Carrying the
 selector is what makes "this Event is eligible for the next batch" an enforceable statement rather
 than an aspiration; revision 5 asserted the consequence in W-7/W-8 without stating the rule that
 produces it ([K01-R5-01](implementation-06.md)). The Kernel still records **nothing** about whether
@@ -683,8 +766,10 @@ C2 and registers wait `W` with dependency alternatives `D1` (kind `child.result`
    [K01-R4-01](implementation-05.md)).** Application input labelled `correction` arrives. It matches
    the declared subscription, so it is eligible: P becomes `READY` and the Runtime sees it in the next
    batch — and it is **`B-6`** that makes "the next batch" contain it rather than this example simply
-   asserting so: the wake records `W`'s eligibility rule as wake-triggered readiness, and B-2's middle
-   case selects that one dispatch by it. That wake **retires `W` and its generation** (W-1) — the Kernel does not hold `D1`/`D2` open
+   asserting so: the boundary that accepts the `correction` input — creation/input ingress, which
+   commits "mailbox entry, **with readiness when applicable**", since P is `WAITING` and no Outcome is
+   in flight (`B-6` path B) — records `W`'s eligibility rule as wake-triggered readiness in the same
+   transaction, and B-2's middle case selects that one dispatch by it. That wake **retires `W` and its generation** (W-1) — the Kernel does not hold `D1`/`D2` open
    behind the correction and asserts nothing about whether either child result arrived. Both are in
    fact still outstanding, so the Runtime's next Outcome **registers `D1` and `D2` again**, a new
    registration under a new generation (W-3). Waking through a subscription is eligibility to run,
@@ -718,7 +803,10 @@ combined.
 1. **Registration.** `W₀` is accepted and X becomes `WAITING` — or `READY` immediately if an eligible
    `continue` input was already accepted and unacknowledged, because W-2's atomic mailbox check applies
    to a subscription-only wait exactly as it does to a dependency wait. There is no "no dependencies, so
-   nothing to check" shortcut.
+   nothing to check" shortcut. That immediate-`READY` outcome is `B-6` **path A**: the same
+   Outcome-acceptance transaction registers the wait, retires it and commits the wake-triggered
+   readiness. Cases 2–4 below take the other branch, where X did reach `WAITING` and the readiness is
+   created later by the input's own ingress boundary (**path B**).
 2. **Unrelated input stays queued.** Application input labelled `billing.question` arrives. It matches
    no dependency alternative (there are none) and `billing.question` is not in `{continue}`, so it is
    **not eligible**: it is accepted into the mailbox, produces **no wake**, is **not acknowledged**, and
@@ -727,7 +815,9 @@ combined.
    `external.input` regardless of label.
 3. **Subscribed input wakes.** Application input labelled `continue` arrives. It matches the declared
    subscription, so it is eligible: `W₀` and its generation are retired and X becomes `READY` (W-1),
-   and the wake records `W₀`'s eligibility rule as wake-triggered readiness (`B-6`). The next
+   and the same input-ingress transaction that accepts `continue` records `W₀`'s eligibility rule as
+   wake-triggered readiness (`B-6` path B — X is `WAITING`, so there is no Outcome to carry it, and
+   the readiness must not be written afterwards). The next
    Activation's batch is therefore selected by B-2's middle case, **only** from Events eligible under
    the retired rule: it contains the `continue` input and **not** the still-queued `billing.question`,
    which is ineligible under that rule. This is the enforceable statement revision 5 was missing —
@@ -1043,7 +1133,7 @@ boundary rule. This table is the direct answer to K0.1-C1.
 | 2 | Activation dispatch intent | Kernel | ID-3, ID-4, ID-9, B-1, B-2 | Two *semantically different* dispatches (a new exchange after the prior one resolved) never carry the same Activation ID; a dispatch pins one finite, enumerable Event batch that a later Outcome can be checked against exactly; an authorized takeover of a *still-unresolved* exchange advances the writer epoch under the **same** Activation ID rather than minting a new one (ID-9 cases 2–3). |
 | 3 | Outcome acceptance; duplicate/conflicting Outcome behavior | Kernel | OA-1–OA-6, ID-6 | Exact duplicate submission returns the original receipt with no re-dispatch of anything; a same-identity/different-content submission is rejected, not merged; a failure partway through acceptance leaves zero partial state (no progress, no Effect intent, no acknowledgment). |
 | 4 | Effect intents | Kernel | EF-1–EF-4 | An Outcome proposing an Effect during K1 is rejected at whole-envelope validation (OA-3) with a recorded, inspectable reason, before any Effect intent, ID or proposal-key binding ever exists; the rest of that Outcome is also rejected, not silently split; this is envelope validation, not a K1 visit to the (K2-introduced) Effect-admission boundary. |
-| 5 | Any-of wait correlation; subscription-only input wait; wait-generation identity; eligible batch accounting | Kernel | W-1–W-8, B-1–B-6 | A wait registers a finite list of Event dependency alternatives — each written in W-1's **exact three-field selector grammar** (exact Event identity, kind or finite kind set, correlation; supplied fields combined by AND; at least one supplied, so no match-everything alternative; alternatives combined only by ANY-OF; every comparison an equality, and the Event payload never selectable) — **and** a separate finite list of declared input subscriptions, which are **not** dependency alternatives and do not use that grammar. The registration is valid iff **at least one eligible wake source exists across the two lists combined**, so a **subscription-only input wait** (empty dependency list; 001's own K0 trace, `await` on application input `continue` and nothing else) is a first-class registration a Runtime can express directly, not something it must fake a dependency to spell (W-8), while a wait with both lists empty is rejected. The Kernel atomically observes any already-accepted Event matching **any** dependency alternative *or* **any** declared subscription (no lost wake, whichever source it is, and the check is not skipped merely because the dependency list is empty); application input outside every declared subscription stays queued and unacknowledged whether or not the wait also names dependencies; **any** eligible wake retires that registration and its generation, and a Runtime that still needs a dependency registers it again in its next Outcome rather than the Kernel holding a per-alternative satisfied flag; **an older unmatched Event cannot displace the Event that woke the wait from the wake-triggered next batch** — that dispatch is selected only from Events eligible under the retired wait's rule and must contain at least one of them, at every batch bound including 1 (`B-6`, B-2's middle case, W-8 case 4), after which ordinary acceptance-order readiness resumes; a stale wait-*timer* naming a superseded generation is a no-op, while an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6); an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
+| 5 | Any-of wait correlation; subscription-only input wait; wait-generation identity; eligible batch accounting | Kernel | W-1–W-8, B-1–B-6 | A wait registers a finite list of Event dependency alternatives — each written in W-1's **exact three-field selector grammar** (exact Event identity, kind — one kind or a **non-empty** finite kind set, an empty set being invalid before matching — and correlation; supplied fields combined by AND; at least one supplied, so no match-everything alternative; alternatives combined only by ANY-OF; every comparison an equality, and the Event payload never selectable) — **and** a separate finite list of declared input subscriptions, which are **not** dependency alternatives and do not use that grammar. The registration is valid iff **at least one eligible wake source exists across the two lists combined**, so a **subscription-only input wait** (empty dependency list; 001's own K0 trace, `await` on application input `continue` and nothing else) is a first-class registration a Runtime can express directly, not something it must fake a dependency to spell (W-8), while a wait with both lists empty is rejected. The Kernel atomically observes any already-accepted Event matching **any** dependency alternative *or* **any** declared subscription (no lost wake, whichever source it is, and the check is not skipped merely because the dependency list is empty); application input outside every declared subscription stays queued and unacknowledged whether or not the wait also names dependencies; **any** eligible wake retires that registration and its generation, and a Runtime that still needs a dependency registers it again in its next Outcome rather than the Kernel holding a per-alternative satisfied flag; **an older unmatched Event cannot displace the Event that woke the wait from the wake-triggered next batch** — that dispatch is selected only from Events eligible under the retired wait's rule and must contain at least one of them, at every batch bound including 1 (`B-6`, B-2's middle case, W-8 case 4), after which ordinary acceptance-order readiness resumes; a stale wait-*timer* naming a superseded generation is a no-op, while an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6); an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
 | 6 | Wake / Event acceptance during computation | Kernel | B-2, B-4, W-2 | An Event accepted while an Activation is in flight does not alter that Activation's already-pinned batch; it is visible to the next eligible batch. |
 | 7 | Cancellation ordering | Kernel | CX-1, CX-2, CX-5 | A cancellation accepted before an in-flight Activation's Outcome is accepted wins: that Outcome's `complete`/`fail`/`continue` is discarded and the Execution is `CANCELLED`; a completion accepted first wins the opposite race, and neither race can be re-run by resubmitting either side. |
 | 8 | Terminal obligations; completion responsibility | Kernel | CX-3, CX-4, B-5 | `complete` is rejected outright if unresolved owned work is not accounted for in the current or a previously acknowledged batch; a terminal Execution still exposes recorded disposition for any Event that was queued but never acknowledged. |
@@ -1115,7 +1205,7 @@ wording so the same mechanism is no longer described as both refused and retaine
 | MIG-2 | `LifecycleState` transition table (`packages/core/src/execution/lifecycle.ts:46-54`), **excluding** `CREATED` (see `LEG-3` below) | **Migratable** | A pure, store-independent function already enforcing "terminal states have no outgoing edges" and "only `RUNNING` reaches `COMPLETED`/`FAILED`." This is exactly the target invariant (kernel.md's lifecycle diagram) and needs no semantic change for the `READY`/`RUNNING`/`WAITING`/`COMPLETED`/`FAILED`/`CANCELLED` states — only confirmation it stays store-independent in K1, and that `CREATED` is dropped from the state list it operates over. |
 | MIG-3 | The **opaque progress payload** pattern: `ControllerProgress.progress: JsonObject`, Kernel-stored-and-returned-unchanged (`packages/core/src/execution/context.ts:57-63`) | **Migratable** | Matches PC-1 form (a) exactly: opaque data the Kernel never interprets. No format change needed for K1 beyond adding the codec/version pin PC-4 requires (see `LEG-4` immediately below for what does *not* migrate as-is). Review round 4 ([K01-R4-02](implementation-05.md)) sharpened PC-1 to agree with this row rather than overstate it: what migrates is this **nested payload**, not the enclosing `ControllerProgress` wrapper, whose closed `kind` tag is `LEG-4`. |
 | MIG-4 | `revision` counter (`packages/core/src/execution/context.ts:220`) — **corrected in review round 1** ([K01-REV-03](implementation-02.md)): previously classified plainly "Migratable ... directly usable as the base progress revision," which is wrong | **Migratable as an optimistic-concurrency mechanism; NOT equivalent to the target's semantic `base_progress_revision` without redefinition** | The current field bumps on *every* persisted context change, including pure lifecycle bookkeeping that has nothing to do with an accepted Outcome's progress content: `Harness.activate` bumps it at dispatch-claim (`READY`→`RUNNING`, `harness.ts:759`, `transitionContext(context, "RUNNING", startedAt)`) and again for a pre-Activation cancellation (`harness.ts:751`, `transitionContext(context, "CANCELLED", ...)`) — neither is an Outcome being accepted. `execution/resumption.ts`'s own docstring admits exactly this conflation in its own words: "`observedRevision` records the `ExecutionContext.revision` the suspending Activation read... the runtime deliberately does **not** use a naive `current.revision !== observedRevision` equality to detect staleness: `ExecutionContext.revision` also advances for ordinary lifecycle bookkeeping (`READY -> RUNNING`, `RUNNING -> WAITING`, `WAITING -> READY`), so that comparison would classify a normal suspension as an intervening semantic mutation" (`packages/core/src/execution/resumption.ts:23-27`). kernel.md's Activation/Outcome shape needs a `base_progress_revision` that identifies *the progress an Activation was dispatched against* and advances only when an accepted Outcome installs new progress (execution-protocol.md's Outcome-acceptance algorithm step 4: "install opaque progress and its revision"). K1 may reuse a monotonic-counter *mechanism* like this one, but must not assume the *existing field*, unmodified, already carries that exact semantic — either define a separate progress-specific revision, or prove (not merely assert) that every non-progress bump this field currently takes is harmless to the target's staleness check, the way `resumption.ts` already had to prove it for its own unrelated purpose. |
-| MIG-5 | The declarative kind/correlation **matcher**: `WakeCondition` (`packages/core/src/interaction/event-envelope.ts:74-80`) and its evaluator `eventSatisfiesWake` (`:82-86`), together with the `DeliveredEvent`/envelope identity fields it matches against (`event-envelope.ts:34-42`, `:50-54`). **Split out of revision 3's single `MIG-5` row in review round 3** ([K01-R3-02](implementation-04.md)), which had labelled the whole of it "partially migratable" — a label K0.1-C3 does not permit; **scope narrowed in review round 4** ([K01-R4-01](implementation-05.md)); **reconciled with W-1's exact selector grammar in review round 5** ([K01-R5-02](implementation-06.md)) | **Migratable** — unchanged, as the **kind/correlation matching component** of W-1's dependency-alternative grammar | **What migrates unchanged.** W-1's grammar has three optional selector fields — exact Event identity, kind or finite kind set, and correlation — combined within one alternative by conjunction. `eventSatisfiesWake` implements precisely two of them, by exactly the right comparisons: `wake.eventKinds` is a finite kind set tested by membership and `wake.correlationId` is tested by equality, with an unsupplied field (`eventKinds: []`, `correlationId: null`) placing no constraint — which is the grammar's "conjunction over supplied fields" rule already written out in four lines (`event-envelope.ts:82-86`). It is declarative and serializable, with no callback, closure or query language, the constraint W-1 keeps and the file states as its own rule (`:66-72`). For any alternative that constrains only kind and/or correlation, this matcher is the complete target matcher and needs no redefinition. The envelope's identity/provenance fields (`eventId`, `destination`, `kind`, `correlationId`, `causationId`, `occurredAt`, per-mailbox `sequence`) carry forward as the vocabulary alternatives are written against. **What it is not.** It is **not** the complete target dependency matcher when an alternative constrains **exact Event identity**: `WakeCondition` has no identity field and `eventSatisfiesWake` never compares `event.eventId`. That gap is closed by **an additional ordinary equality check** — one more supplied-field comparison in the same conjunction — **not** by a new matching language, a predicate or a query construct; the grammar's whole point is that every dimension is an equality. Separately, K1 must **reject** the one input this matcher silently accepts that the grammar forbids: `eventKinds: []` with `correlationId: null` supplies no field and matches every Event addressed to the Execution, which W-1 declares an invalid match-everything alternative rather than a shorthand. **It does not build W-1's declared-input-subscription list** (stated in review round 4, unchanged here): a subscription selects application input by its application-defined label, that label lives in the Event *body* — `ExternalInputBody.label` (`packages/core/src/interaction/events.ts:334-337`) — and `eventSatisfiesWake` never reads it, inspecting `event.kind` and `event.correlationId` and nothing else (`:82-86`). The source concedes this: "It cannot yet select `external.input` by its application-defined `label`, so an Execution waiting for one kind of application input still wakes for every other one addressed to it... Selective input matching is accepted future work and is deliberately deferred" (`event-envelope.ts:66-72`). Subscription matching is therefore **new work built beside this primitive**, not this primitive relabelled; what needs replacing outright is the record that holds it (`REF-5`). |
+| MIG-5 | The declarative kind/correlation **matcher**: `WakeCondition` (`packages/core/src/interaction/event-envelope.ts:74-80`) and its evaluator `eventSatisfiesWake` (`:82-86`), together with the `DeliveredEvent`/envelope identity fields it matches against (`event-envelope.ts:34-42`, `:50-54`). **Split out of revision 3's single `MIG-5` row in review round 3** ([K01-R3-02](implementation-04.md)), which had labelled the whole of it "partially migratable" — a label K0.1-C3 does not permit; **scope narrowed in review round 4** ([K01-R4-01](implementation-05.md)); **reconciled with W-1's exact selector grammar in review round 5** ([K01-R5-02](implementation-06.md)); **restated as a pure encoding mapping in review round 6** ([K01-R6-02](implementation-07.md)) | **Migratable** — unchanged, as the **kind/correlation matching component** of W-1's dependency-alternative grammar | **What migrates unchanged.** W-1's grammar has three optional selector fields — exact Event identity, kind (one kind or a **non-empty** finite set) and correlation — combined within one alternative by conjunction. `eventSatisfiesWake` implements precisely two of them, by exactly the right comparisons: `wake.eventKinds` is tested by membership and `wake.correlationId` by equality (`event-envelope.ts:82-86`). For any alternative that constrains only kind and/or correlation, this matcher is the complete target matcher and needs no redefinition. It is declarative and serializable, with no callback, closure or query language — the constraint W-1 keeps and the file states as its own rule (`:66-72`). The envelope's identity/provenance fields (`eventId`, `destination`, `kind`, `correlationId`, `causationId`, `occurredAt`, per-mailbox `sequence`) carry forward as the vocabulary alternatives are written against. **The encoding mapping (review round 6).** The current type encodes *absence* by sentinel values, and the target grammar encodes it by *not supplying the field*; this row states the translation and carries **no validation rule of its own** — validity is W-1's, exclusively. Legacy `eventKinds: []` means **Kind selector absent**, because the source says so explicitly ("Empty means 'any Event addressed to me'", `event-envelope.ts:75`); legacy `correlationId: null` means **Correlation selector absent** (`eventSatisfiesWake` skips the comparison when it is null, `:84`). Worked through: **(1)** `eventKinds: []` + `correlationId: null` → no selector field supplied → **invalid** target alternative under W-1's at-least-one rule; **(2)** `eventKinds: []` + `correlationId: c1` → a valid **correlation-only** alternative, matching correlation `c1` regardless of kind; **(3)** `eventKinds: ["child.result"]` + `correlationId: null` → a valid **kind-only** alternative; **(4)** `eventKinds: ["child.result"]` + `correlationId: c1` → a valid **conjunction** of both; **(5)** a *target* Kind-set field supplied as `[]` → **invalid before matching**, since the target grammar has no empty-set encoding (W-1) — case 5 is a target-side check, not a legacy encoding, and is listed here so the two spellings of `[]` are never confused. Case 1 is the only legacy shape with no valid target alternative, and it is the over-matching spelling W-8 rejects. **What it is not.** It is **not** the complete target dependency matcher when an alternative constrains **exact Event identity**: `WakeCondition` has no identity field and `eventSatisfiesWake` never compares `event.eventId`. That gap is closed by **an additional ordinary equality check** — one more supplied-field comparison in the same conjunction — **not** by a new matching language, a predicate or a query construct. **It does not build W-1's declared-input-subscription list** (stated in review round 4, unchanged): a subscription selects application input by its application-defined label, that label lives in the Event *body* — `ExternalInputBody.label` (`packages/core/src/interaction/events.ts:334-337`) — and `eventSatisfiesWake` never reads it, inspecting `event.kind` and `event.correlationId` and nothing else (`:82-86`). The source concedes this: "It cannot yet select `external.input` by its application-defined `label`, so an Execution waiting for one kind of application input still wakes for every other one addressed to it... Selective input matching is accepted future work and is deliberately deferred" (`event-envelope.ts:66-72`). Subscription matching is therefore **new work built beside this primitive**, not this primitive relabelled; what needs replacing outright is the record that holds it (`REF-5`). |
 | LEG-1 | The actual `ControllerResumption` record (`packages/core/src/execution/resumption.ts:72-101`) and the `ExecutionWait` `controller_resumption`/`dependencies` arms that name its ID (`packages/core/src/execution/context.ts:104-130`); the port's own admission that the underlying work is ephemeral, `packages/core/src/ports/controller-resumption.ts:40-41` ("Work registered by an Activation that does not return the matching wait is abandoned and can never wake the Execution") and `:61-62` (`ControllerResumptionWork` is documented "Never persisted, never inspected, never re-created by the runtime"); and the processor's own comparison against `EffectProcessor`, `packages/core/src/runtime/resumption-processor.ts:1-56` (header), specifically `:10-16` ("has a public settlement ingress / has none, deliberately") | **Legacy-only — corrected framing in review round 1** ([K01-REV-02](implementation-02.md)) | This is exactly F09's finding: the *durable record* (`ControllerResumptionId`, its state, its `observedRevision` provenance field) is Kernel-persisted, but the actual work it names is an in-process `Promise`/thunk that is, by the port's own contract, never persisted and cannot be reconstructed after a process death. Per 001's K1 section ("Remove controller resumptions and closed Agent/Workflow progress discriminators from the new Kernel protocol") and 003's F09 disposition, this whole mechanism does not migrate into the K1 Kernel protocol. **Correction:** round 1 said this record's *shape* (a Kernel-visible "local work" wait arm) was worth preserving with only its referent reclassified. That is withdrawn (§5, W-4): the target Kernel `waitingFor` record has **no** arm analogous to this at all, Kernel-visible or otherwise — this record and its `ExecutionWait` arms are legacy-only in the stronger sense that *neither the data nor the shape* informs the new Kernel wait protocol. It may continue to exist unchanged **inside** a compatibility Runtime (K1.4's "bridge existing controllers... keep its live-promise resumption private", 001 K1) as purely Runtime-private bookkeeping — legacy-only means "not part of the new Kernel contract, in data or in shape," not "delete the file." |
 | LEG-2 | `Harness.activate`'s mailbox consumption before `RUNNING`/before controller output exists (`packages/core/src/runtime/harness.ts:762`, `tx.mailboxes.consume(...)` inside the same transaction that writes `RUNNING`, prior to `runController` ever being called) | **Legacy-only** | This is F07: the current code treats "consumed from the mailbox" as equivalent to the target's "reserved in Activation," but does so as an unconditional side effect of claiming the Activation, not as part of accepting the resulting Outcome. It does not by itself satisfy B-3 (whole-batch acknowledgment tied to *Outcome acceptance*, not to dispatch). K1 must tie acknowledgment to accepted Outcome, not to the earlier consume-on-claim step, to satisfy OA-3/OA-4 and B-3 together (also connects to `REF-1`/`REF-4`). |
 | LEG-3 | The `CREATED` lifecycle state (`packages/core/src/execution/lifecycle.ts:16`, `:24-32` `LIFECYCLE_STATES`/enumeration, `:47` `CREATED: ["READY", "CANCELLED"]`), and `CancellationRequest`'s own docstring naming it as a real current phase: "For a `CREATED`, `READY`, or `WAITING` Execution the runtime transitions straight to `CANCELLED`" (`cancellation-request.ts:4-6`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Legacy-only** | 004's architecture review explicitly retires this as a mandatory Kernel state: its decisions table names the decision "Remove separate CREATED state from target," reasoning "Create, initial input and readiness can be accepted together; partial allocation is an operation attempt." The target lifecycle (kernel.md's diagram) starts directly at `READY` from one atomic `create + initial input` decision (execution-protocol.md's "Identities and immutable exchanges": "Creation binds the Runtime contract and executable definition revision, authority context and initial input in one atomic decision"). Current code's separate, externally observable `CREATED` phase — with its own transition edges and its own cancellation handling — does not migrate as a distinct target phase; K1 folds it into the atomic creation boundary (§11 row 1). The transition-table *pattern* (`MIG-2`) still applies to whatever shorter state list K1 actually uses. |
@@ -1123,7 +1213,7 @@ wording so the same mechanism is no longer described as both refused and retaine
 | REF-1 | Effect dispatch happening in `applyOutcome` (`packages/core/src/runtime/harness.ts:890-911`, `this.effects.processActivationEffects(...)`) *before* the progress-committing transaction (`harness.ts:938` onward, `this.options.store.transact(...)`) | **Refused** | This is F10 exactly: Effects are processed and can partially fail *before* the transaction that commits next-state/progress/acknowledgment. The in-code comment at `harness.ts:904-906` ("nothing partial was committed") is not true of the whole boundary — it is true only of the effect-dispatch call itself. This ordering is refused for the target K1/K2 boundary: OA-3/OA-4 require Effect *intents* to be part of the same atomic commit as progress, with actual dispatch/settlement happening afterward from the accepted record. This is explicitly a K2-boundary pattern (Effects don't exist in K1 at all, §8) — it is listed here because the current code's *ordering pattern* (side-effect-before-commit) must not be carried forward into K1's non-Effect Outcome-acceptance path either. |
 | REF-3 | `ExecutionWait`'s `dependencies` arm as currently defined (`packages/core/src/execution/context.ts:126-130`) treated as a **Kernel wait primitive at all** — **corrected framing in review round 1** ([K01-REV-02](implementation-02.md)) | **Refused outright as a target Kernel record shape; the Event half is separately migratable as `MIG-5`, the `resumptions` half is `LEG-1`** | Round 1 framed this as "the shape is worth keeping, only the referent needs reclassifying." That is withdrawn (§5, W-4): the target Kernel `waitingFor` record is not a union with an `event`-or-`resumptions` shape at all — it is Event-only. A K1 Kernel wait record must not itself carry any field naming a `ControllerResumptionId` or equivalent local-work identifier, full stop; there is no partial-credit "shape" to preserve. If a Runtime needs "wait for any of several local jobs plus one Event," that union is assembled **entirely Runtime-side**, privately, with only the Event surfacing to the Kernel as a real `waitingFor` registration once (and only once) something is actually ready to report (§5, W-4's "does not yet submit an Outcome" resolution) — restating kernel.md's "a Runtime can implement an all-of join by retaining observed results in progress and waiting for the remaining set," generalized to this any-of case. |
 | REF-4 | The reference mailbox's single monotonic `consumed` cursor (`packages/core/src/reference/in-memory-runtime-store.ts:45-50`, `MailboxState.consumed: number`, doc-commented "How many of `events` an Activation has already consumed"; `consume()` at `:161-167` takes `box.events.slice(box.consumed)` then unconditionally sets `box.consumed = box.events.length`). **Wording corrected in review round 2** ([K01-R2-04](implementation-03.md)): revision 2 described the same mechanism as both "refused for K1+" and "retained as the K1 reference," which cannot both be true | **Refused as the mailbox mechanism of the new K1 reference; the existing file remains legacy/compatibility material for current 0.8.x paths until migration** | This cursor is F20's flagged problem in current code: one global count, not a per-entry disposition, so it cannot represent B-4's retained unmatched input (an Event not selected into a batch must stay independently accounted for, not merely "after the cursor") or B-5's per-Event terminal disposition. It also implements no eligibility filter: `consume()` takes *everything* past the cursor regardless of the registered wait's alternatives or declared subscriptions (§5, W-1), and it consumes at dispatch-claim time rather than acknowledging at Outcome acceptance (`LEG-2`, B-3). K1's reference mailbox must therefore be a **new mechanism** — per-Event disposition plus eligibility selection plus Outcome-time acknowledgment — not this one carried over. To be unambiguous about the two statements revision 2 conflated: the *cursor mechanism* does not become the K1 reference's mailbox; the *existing file* may keep running the current 0.8.x paths unchanged until those paths migrate. Being in memory is not what is refused here (see `LIM-1`) — this specific consumption mechanism is. |
-| REF-5 | Adoption of the current `ExecutionWait.event` **shape** as the new target Kernel wait record — its single `wake: WakeCondition` **and its optional legacy `interleave?: WakeCondition`** (`packages/core/src/execution/context.ts:102-103` the arm itself; `:79-100` the "Controlled interleaving" docstring; `:132-134` `eventWait(wake, interleave?)`; mirrored on the controller report at `packages/core/src/ports/controller.ts:86-92`). **Split out of revision 3's `MIG-5` in review round 3** ([K01-R3-02](implementation-04.md)); **extended in review round 4** ([K01-R4-01](implementation-05.md)) to name the `interleave` field explicitly, which revision 4 omitted from this row while W-5 still carried it as a *target* field | **Refused** — the whole shape, `wake` and `interleave` together, is refused unchanged as the target K1 Kernel wait record; the dependency matcher inside it is separately classified `MIG-5` | **The `wake` half.** The record holds **one** condition with **one** `correlationId`, so it cannot express W-1's finite list of *differently correlated* alternatives: a single condition must either fix one correlation and miss the other alternative, or set `correlationId: null` and over-match every Event of that kind (§5, W-7 case 1). It also carries **no Event-identity selector field**, so it cannot express the identity dimension of W-1's selector grammar at all — an alternative pinned to one exact Event has no home here (added in review round 5, [K01-R5-02](implementation-06.md)). And it has **no declared-input-subscription concept at all**, which is why the current shape cannot express W-8's subscription-only wait: there is nowhere to put `{continue}`, and the matcher could not evaluate it if there were (`MIG-5`). Note the asymmetry the split records: the *matcher* inside this record is migratable for the two dimensions it does implement (`MIG-5`); the *record* is refused because a single condition with no identity field and no subscription list cannot hold W-1's two lists however good its matcher is. **The `interleave` half is refused with it.** `interleave` is a second singular `WakeCondition` whose documented meaning is a wake "without the primary dependency being satisfied" (`context.ts:88-89`) — a Kernel-visible distinction between two classes of wake, and with it an implied per-registration record of which dependency is still unsatisfied. The target record has neither: W-1 carries one list of dependency alternatives and one list of subscriptions, any eligible member of either retires the registration, and the Runtime re-registers what it still needs (W-5). Keeping the field would give the target two ways to spell one intent and would re-introduce the satisfied-flag semantics W-1 deliberately does not have. K1's wait record is therefore rebuilt from the `MIG-5` primitive plus new subscription matching, as two declarative lists plus the §4 deadline and the W-3 generation (§5, W-1). Refusing the shape is not a refusal of the file: it may keep serving current 0.8.x paths unchanged until they migrate (`LC-1`). |
+| REF-5 | Adoption of the current `ExecutionWait.event` **shape** as the new target Kernel wait record — its single `wake: WakeCondition` **and its optional legacy `interleave?: WakeCondition`** (`packages/core/src/execution/context.ts:102-103` the arm itself; `:79-100` the "Controlled interleaving" docstring; `:132-134` `eventWait(wake, interleave?)`; mirrored on the controller report at `packages/core/src/ports/controller.ts:86-92`). **Split out of revision 3's `MIG-5` in review round 3** ([K01-R3-02](implementation-04.md)); **extended in review round 4** ([K01-R4-01](implementation-05.md)) to name the `interleave` field explicitly, which revision 4 omitted from this row while W-5 still carried it as a *target* field | **Refused** — the whole shape, `wake` and `interleave` together, is refused unchanged as the target K1 Kernel wait record; the dependency matcher inside it is separately classified `MIG-5` | **The `wake` half.** The record holds **one** condition with **one** `correlationId`, so it cannot express W-1's finite list of *differently correlated* alternatives: a single condition must either fix one correlation and miss the other alternative, or set `correlationId: null` and over-match every Event of that kind (§5, W-7 case 1). It also carries **no Event-identity selector field**, so it cannot express the identity dimension of W-1's selector grammar at all — an alternative pinned to one exact Event has no home here (added in review round 5, [K01-R5-02](implementation-06.md)). Its way of encoding an *absent* selector does not carry over either: the record uses in-band sentinels — `eventKinds: []` and `correlationId: null` — where the target grammar expresses absence by not supplying the field at all, which is why `MIG-5` states a translation rather than a straight adoption and why W-1 rejects a supplied empty kind set outright (added in review round 6, [K01-R6-02](implementation-07.md)). And it has **no declared-input-subscription concept at all**, which is why the current shape cannot express W-8's subscription-only wait: there is nowhere to put `{continue}`, and the matcher could not evaluate it if there were (`MIG-5`). Note the asymmetry the split records: the *matcher* inside this record is migratable for the two dimensions it does implement (`MIG-5`); the *record* is refused because a single condition with no identity field and no subscription list cannot hold W-1's two lists however good its matcher is. **The `interleave` half is refused with it.** `interleave` is a second singular `WakeCondition` whose documented meaning is a wake "without the primary dependency being satisfied" (`context.ts:88-89`) — a Kernel-visible distinction between two classes of wake, and with it an implied per-registration record of which dependency is still unsatisfied. The target record has neither: W-1 carries one list of dependency alternatives and one list of subscriptions, any eligible member of either retires the registration, and the Runtime re-registers what it still needs (W-5). Keeping the field would give the target two ways to spell one intent and would re-introduce the satisfied-flag semantics W-1 deliberately does not have. K1's wait record is therefore rebuilt from the `MIG-5` primitive plus new subscription matching, as two declarative lists plus the §4 deadline and the W-3 generation (§5, W-1). Refusing the shape is not a refusal of the file: it may keep serving current 0.8.x paths unchanged until they migrate (`LC-1`). |
 | LEG-5 | `PendingOperation` (`packages/core/src/effects/pending.ts:73-106`) as a **single universal record covering every Effect kind alike** — one shape for spawn, message, user-input request, timer and capability call, carrying `PendingOperationStatus`, `PendingDispatchState`, `PendingOutcomeState`, `idempotencyKey`, `deadline` and `resultEventId` together (its own docstring: "Generic on purpose. Nothing here mentions capabilities, because `SpawnExecution`, `SendMessage`, `RequestUserInput`, and a timer all need the same runtime record", `pending.ts:4-8`). **Classification corrected in review round 2** ([K01-R2-02](implementation-03.md)); round 1 wrongly recorded this as out-of-scope with no label, which K0.1-C3 does not permit | **Legacy-only** (the universal abstraction); individual facts inside it are reusable input to K2's own records, as split below | The *universal hierarchy* is explicitly removed from the mandatory target Kernel model: 004's vocabulary-disposition table lists "universal PendingOperation hierarchy" under "Remove from mandatory Kernel model," kernel.md states "Pending action state is necessary; a separate universal `PendingOperation` abstraction is not required beyond these records," action-lifecycle.md opens with "This is not a new universal PendingOperation hierarchy," and 007's own K2 exclusions row forbids a "universal pending hierarchy." So the record as a *generic one-size abstraction* does not migrate. **Split — facts that remain necessary and may inform K2's logical-action/attempt/responsibility records without K0.1 deciding K2's mechanics:** (a) separating *dispatch* from *outcome* (`PendingDispatchState` versus `PendingOutcomeState`, `pending.ts:14-20`) so that "dispatched with no outcome" is representable rather than inferred — the same distinction action-lifecycle.md's "Attempt evidence" dimension requires (§8, EF-3); (b) retaining `unknown` as a first-class outcome value rather than collapsing it to failure; (c) correlating a settled request to the exact result Event that delivered it (`resultEventId`); (d) an explicitly nullable deadline meaning "no deadline was configured" rather than a sentinel far-future timestamp (`pending.ts:96-101`). **Facts that are not generic Kernel material:** `conflicted` is Structured-Memory-write-specific and `declined`/`denied`/`rejected` encode confirmation/authorization specifics (`pending.ts:38-71`) — whether K2 keeps, renames or restructures those belongs to K2's admission/settlement contract, which K0.1 does not decide. **Scope note (unchanged):** K1 still refuses all Effects (§8, `EF-1`/`EF-2`), so no pending record of any shape is created in K1's boundary; that is a scope fact about K1, not a substitute for this record's legacy classification. |
 
 **Decision LC-1 (no legacy record is deleted by this packet).** Every classification above describes
@@ -1255,9 +1345,9 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   WAITING, select only Events eligible under the registered wait/subscriptions, **with an eligible wake
   included before unrelated backlog**." **Resolution in the Kernel's favour:** the canonical guarantee
   wins and is carried across the retirement rather than lost with it. `B-6` records the retired wait's
-  eligibility rule as **recoverable readiness** — a field kernel.md's Acceptance/atomicity table and
-  execution-protocol.md's acceptance step 4 already commit — and B-2 gains a third case that selects
-  that one dispatch by it. No wait is revived, no satisfaction flag is introduced and no new Kernel
+  eligibility rule as **recoverable readiness** — a field the relevant canonical acceptance boundary
+  already commits, whichever boundary applies (round 6 made that per-path precision explicit; see the
+  next entry) — and B-2 gains a third case that selects that one dispatch by it. No wait is revived, no satisfaction flag is introduced and no new Kernel
   entity is created; W-8 case 4 is the load-bearing counterexample. The canonical sentence is phrased
   from the `WAITING` side because it predates W-1's retire-on-wake refinement, so this is K0.1 owing
   the canonical rule a mechanism, not the canonical rule being amended.
@@ -1273,19 +1363,50 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   alternatives, at least one field supplied, equality-only comparison, no payload selection, and
   subscriptions kept on their own separate path. Neither reading was a canonical conflict; both were
   this worksheet under-specifying, and the resolution takes the canonical dimension list as given.
+- **Contradiction internal to this worksheet (found in review round 6,
+  [K01-R6-01](implementation-07.md)):** revision 6's `B-6` said its two creation paths "both create
+  wake-triggered readiness identically" and that it is committed "with the accepted Outcome." That is
+  true only of path A. On path B the Execution is already `WAITING`, the Runtime is not running, and
+  **no Outcome exists** — so the text named a boundary that is not there, and the only obvious way to
+  implement it was the one execution-protocol.md forbids: accept the Event, then write the readiness
+  afterwards. It also conflated three boundaries kernel.md's Acceptance/atomicity table keeps
+  distinct, each of which *already* carries readiness in its own right — Creation/input ingress
+  ("mailbox entry, **with readiness when applicable**"), Effect settlement ("**result Event and
+  recoverable readiness**") and Child/message operation ("fulfillment cannot lose the link") —
+  alongside Outcome acceptance. **Resolution in the Kernel's favour:** the canonical table wins.
+  `B-6` now states two paths with the boundary named for each, and its *Recovery* paragraph maps each
+  path onto the governing row of recovery-and-compatibility.md's crash-window table ("Input commit
+  before scheduler notification", "Settlement committed before wake", "Outcome accepted before
+  receipt", "Dispatch intent before send"). No new boundary is invented and none is merged: K0.1 only
+  names which existing one commits the readiness in which case.
+- **Normativity misplaced rather than contradicted (found in review round 6,
+  [K01-R6-02](implementation-07.md)):** revision 6 left W-1's Kind selector as "a finite set of kinds"
+  without excluding the empty set, and put the rule that the empty set must be rejected in §12's
+  `MIG-5` — a legacy-classification row carrying a pseudo-normative validation constraint. The two
+  readings did not conflict, but a K1.1 implementer reading the grammar alone would not find the rule,
+  and a reader of `MIG-5` could not tell whether it was describing the target or the legacy encoding.
+  **Resolution:** W-1 states it normatively (an empty finite kind set is not a valid supplied Kind
+  selector, rejected before matching), and `MIG-5` is restated as a pure **encoding mapping** carrying
+  no validation rule of its own — legacy `eventKinds: []` means *Kind selector absent* because the
+  source says so, legacy `correlationId: null` means *Correlation selector absent*, and the five
+  worked cases show which legacy shapes map to which valid target alternatives and which map to none.
+  This is a placement correction, not a change of rule.
 - **No contradiction found** between kernel.md/detail-design and 001/005/003 on any of §1–§10's
   decisions, re-checked after round 2's §1 (E-7 canonical encoding) and §5 (W-1 wait shape) additions,
   after round 3's rule-4 realignment and §12 vocabulary split, after round 4's wait-protocol and PC-1
   corrections, and again after round 5's batch-selection and selector-grammar corrections: each
   decision restates or narrowly resolves an explicitly-flagged open item (004's "Open questions and
   decision points" section, K0/K1 bullet), not a dispute between canonical sources. The other entries
-  above are one code-versus-target gap, one withdrawn self-inflicted claim, and **four** self-inflicted
+  above are one code-versus-target gap, one withdrawn self-inflicted claim, **five** self-inflicted
   internal inconsistencies — E-7's ordering profile, the two wait records, the lost wake-before-backlog
-  guarantee, and the two selector grammars — none of them a conflict *between* canonical owners. The
-  pattern is worth naming for K0.2, and round 5 sharpens it: every contradiction this worksheet has
-  actually had was introduced by its own drafting, and the last two were each a *consequence* of a
-  correct earlier correction that was not carried through to every dependent decision. A fixture
-  author should read §3 and §5 together rather than either alone.
+  guarantee, the two selector grammars, and `B-6`'s conflated acceptance boundaries — and one
+  misplaced-normativity defect. None is a conflict *between* canonical owners. The pattern is worth
+  naming for K0.2, and rounds 5 and 6 sharpen it: every contradiction this worksheet has actually had
+  was introduced by its own drafting, and the last three were each a *consequence* of a correct earlier
+  correction that was not carried through to every dependent decision or boundary. A fixture author
+  should read §3 and §5 together rather than either alone, and should check any new mechanism against
+  kernel.md's Acceptance/atomicity table row by row rather than against "the accepted Outcome" as a
+  catch-all.
 
 ---
 
@@ -1419,7 +1540,7 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
     compatibility is decided by the pinned Runtime/definition/codec contract (PC-4), not the two-value
     tag. `MIG-3` and `LEG-4` were re-checked against PC-1, 001 K1 and 007 K1.1 so all four state the
     same rule.
-- **Revision 6** (this document): corrects revision 5 per [review-05.md](review-05.md)'s CHANGES
+- **Revision 6**: corrects revision 5 per [review-05.md](review-05.md)'s CHANGES
   REQUIRED findings K01-R5-01 and K01-R5-02, disposed in
   [implementation-06.md](implementation-06.md):
   - **K01-R5-01** — wake-derived `READY` now preserves the retired wait's eligibility rule through the
@@ -1451,3 +1572,40 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
     two row refinements. E-7/JCS, the Activation-ID takeover identity, W-4's no-Runtime-local-wait
     rule, the K1 Effect-refusal boundary, `MIG-4`'s revision distinction, the three-label legacy
     vocabulary and the accepted historical-evidence whitespace exception are all untouched.
+- **Revision 7** (this document): corrects revision 6 per [review-06.md](review-06.md)'s CHANGES
+  REQUIRED findings K01-R6-01 and K01-R6-02, disposed in
+  [implementation-07.md](implementation-07.md):
+  - **K01-R6-01** — `B-6`'s two creation paths are now stated separately, each at its own
+    **authoritative acceptance boundary**, replacing revision 6's "both create wake-triggered readiness
+    identically … committed with the accepted Outcome". **Path A** (the eligible Event already exists
+    when the Outcome registering the wait is accepted) commits the readiness in the
+    Outcome-acceptance boundary. **Path B** (the Execution reached `WAITING` and an eligible Event is
+    accepted later) has **no Outcome**: the boundary that accepts the Event commits the mailbox fact
+    and the readiness atomically together — creation/input ingress for application input, Effect
+    settlement for settlement, and the authoritative fulfillment/routing boundary for child/message
+    results, each quoted from kernel.md's Acceptance/atomicity table. Two rules bind every case: never
+    accept the Event durably and depend on a later unjournaled wake write, and no later Runtime Outcome
+    is needed to make the `READY` state durable. *Recovery* is rewritten per path against
+    recovery-and-compatibility.md's crash-window rows (*Input commit before scheduler notification*,
+    *Settlement committed before wake*, *Outcome accepted before receipt*, *Dispatch intent before
+    send*). *Lifetime* is sharpened: the readiness survives a crash before reservation, is consumed
+    when the batch is **durably reserved**, and must **not** re-arm afterwards because the pinned
+    dispatch intent already suffices for replay or takeover. The implementation-owned representations
+    gain a constraint: a materialized eligible-Event set must be maintained (or the selector
+    re-evaluated at reservation) so that **B-2's exact observable selection semantics** survive through
+    reservation; a stale snapshot is not conforming. W-1's retire paragraph, W-2, W-7 case 4 and W-8
+    cases 1 and 3 now name the applicable path and boundary.
+  - **K01-R6-02** — the empty-kind-set rule is **normative in W-1**: the Kind selector is one kind or a
+    **non-empty** finite set, and a supplied `[]` is invalid before matching, because the grammar
+    expresses absence by not supplying the field. §12's **`MIG-5`** is restated as a pure **encoding
+    mapping** carrying no validation rule of its own — legacy `eventKinds: []` means *Kind selector
+    absent* ("Empty means 'any Event addressed to me'", `event-envelope.ts:75`), legacy
+    `correlationId: null` means *Correlation selector absent* — with five worked cases: `[]`+`null`
+    invalid, `[]`+`c1` valid correlation-only, `[child.result]`+`null` valid kind-only,
+    `[child.result]`+`c1` valid conjunction, and a target-side `[]` invalid before matching. `REF-5`
+    records that the record's sentinel-encoded absence does not carry over either, and §11 row 5 now
+    states the non-empty constraint.
+  - **§13** gained both round-6 entries and their resolutions. E-7/JCS, the Activation-ID takeover
+    identity, W-4's no-Runtime-local-wait rule, the K1 Effect-refusal boundary, `MIG-4`'s revision
+    distinction, PC-1/`MIG-3`/`LEG-4`, the three-label legacy vocabulary and the accepted
+    historical-evidence whitespace exception are all untouched.

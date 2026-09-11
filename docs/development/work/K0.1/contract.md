@@ -46,6 +46,18 @@ two different selector grammars in the same decision. Round 5 also **accepted an
 that are not to be reopened: the owner-approved historical blank-at-EOL exception recorded in the
 command plan below, the round-4 findings, and E-7/JCS.
 
+Round 6 (C6 `4a015b3`, H6 `c5bdd48`) received a sixth independent review, again **CHANGES REQUIRED**:
+see [review-06.md](review-06.md) (findings K01-R6-01 P1 and K01-R6-02 P2, with K0.1-C1 through C4
+passing again and C5/C6 failing; the reviewed artifacts are additionally pinned there by **blob** SHA,
+which the correction verified against H6's tree). Round 7's correction is reported in
+[implementation-07.md](implementation-07.md); sections marked "corrected in review round 6" reflect it.
+Both round-6 defects were once more **internal to the worksheet** and once more a *consequence of a
+correct earlier correction not carried through*: `B-6` named "the accepted Outcome" as its acceptance
+boundary, which holds only when the waking Event was already present at registration and leaves the
+later-arrival path with no boundary at all; and the empty-kind-set rule sat in a legacy-classification
+row instead of in the normative grammar. Round 6 again **accepted and closed** the historical
+blank-at-EOL exception, the round-5 findings and E-7/JCS.
+
 Every prior commit, report and review is preserved unedited — each round corrects forward rather than
 rewriting the record it was reviewed against.
 
