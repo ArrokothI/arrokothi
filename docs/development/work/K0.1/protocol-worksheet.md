@@ -1,15 +1,25 @@
 # K0.1 protocol worksheet — equality, receipts, batches, clocks, cancellation, progress, policy
 
-**Revision:** 9 — a consolidation revision. It corrects revision 8 per an eighth independent review
-(CHANGES REQUIRED), and it reconstructs the whole wait / batch / clock protocol as **one state machine**
-rather than patching four findings in place, because four of the last five rounds found a defect created
-by an earlier *correct* correction that a neighbouring rule still contradicted. §3 and §5 are rewritten:
-eligibility, wait-ended batch selection and wait registration are each stated exactly once and cited
-everywhere else, and §3 carries one normative table covering every way a wait can end. Eleven further
-internal defects that the reconstruction exposed — none of them named by any review — are fixed in the
-same revision and are recorded in §13 as implementer-discovered. See
-[review-08.md](review-08.md) and [implementation-09.md](implementation-09.md) for this round's findings
-and their disposition, and [review-07.md](review-07.md)/[implementation-08.md](implementation-08.md),
+**Revision:** 10 — a narrow correction on top of revision 9's consolidation. It corrects exactly one
+defect found by the ninth independent review (CHANGES REQUIRED): **W-1's wait-registration
+well-formedness rule and its own selector-grammar paragraph gave two different answers for the same
+record**. Well-formedness is now stated as a purely **structural** test — a *structurally non-empty wait
+declaration* — and every claim about whether an Event can actually wake an Execution stays in W-1's
+source-category table. K0.1 explicitly promises **structure, never satisfiability**, matching kernel.md
+and execution-protocol.md, which both decline to promise deadlock prevention. Revision 9's wait / batch /
+clock state machine is otherwise unchanged. See [review-09.md](review-09.md) and
+[implementation-10.md](implementation-10.md) for this round's finding and its disposition.
+
+Revision 9 was the consolidation revision: it reconstructed the whole wait / batch / clock protocol as
+**one state machine** rather than patching four findings in place, because four of the preceding five
+rounds had found a defect created by an earlier *correct* correction that a neighbouring rule still
+contradicted. §3 and §5 were rewritten so that eligibility, wait-ended batch selection and wait
+registration are each stated exactly once and cited everywhere else, with §3 carrying one normative
+table covering every way a wait can end; eleven further internal defects the reconstruction exposed,
+none named by any review, were fixed in that revision and are recorded in §13 as
+implementer-discovered. See [review-08.md](review-08.md) and
+[implementation-09.md](implementation-09.md) for that round, and
+[review-07.md](review-07.md)/[implementation-08.md](implementation-08.md),
 [review-06.md](review-06.md)/[implementation-07.md](implementation-07.md),
 [review-05.md](review-05.md)/[implementation-06.md](implementation-06.md),
 [review-04.md](review-04.md)/[implementation-05.md](implementation-05.md),
@@ -616,16 +626,64 @@ the record — in particular there is **no** third list, **no** separate `interl
    explicit input subscriptions and a deadline") and that kernel.md makes mandatory for input waits
    ("application-input waits require a declared subscription").
 
-**Well-formedness: one eligible wake source across the two lists combined.** The registration is valid
-iff `dependency alternatives + declared subscriptions ≥ 1`. **Neither list is individually required to
-be non-empty.** Requiring the dependency list itself to be non-empty would make 001's own K0 trace
-unrepresentable: "accept input → delayed fake Runtime → typed output → **input wait** → completion"
-waits for one class of application input and for nothing else, so its dependency list is legitimately
-empty (W-8). A registration with **both** lists empty remains invalid: a wait must name at least one
-Event class that can end it. A deadline does not rescue an empty wait — kernel.md's wait is "on any of
-a finite set of correlated Events, **optionally** with a durable deadline," so the deadline *bounds* a
-wait rather than being the thing waited for, and CL-1 keeps the three clocks separate identities rather
-than letting one stand in for a dependency.
+**Well-formedness: a structurally non-empty wait declaration.** Registration well-formedness is a
+**structural** test over the submitted record, and nothing more. A registration is well formed iff all
+three hold:
+
+1. **The declaration is structurally non-empty:** `dependency alternatives + declared subscriptions ≥ 1`.
+   Either list may individually be empty; they may not **both** be empty.
+2. **Every dependency alternative that is present is itself valid** under *The dependency-alternative
+   selector grammar* below — at least one supplied selector field, no supplied empty kind set, no
+   selector outside the three fields.
+3. **Every declared subscription that is present is structurally valid** — a declared subscription
+   identity in the sense of W-1 item 2. This rule fixes only that the entry *is* such an identity;
+   its exact spelling remains implementation-owned under W-9's closing *Left open* note, constrained
+   there to be finite, declarative and compared by equality.
+
+**This test does not prove that any Event will ever be eligible, and it is not trying to.** It checks
+that the Runtime submitted a well-shaped declaration; *eligibility* is decided later and elsewhere, by
+the source-category rule below, against Events that actually arrive. The two questions are deliberately
+separate, and three consequences follow that a K1.1 implementer must not blur:
+
+- **A structurally valid alternative that is inert still counts toward structural non-emptiness.** An
+  alternative naming an application-input kind, or a timeout kind, can never make an Event eligible
+  (the category table below), yet it is a valid alternative and it satisfies rule 1. The Kernel does
+  **not** audit whether a declared source can in fact wake this Execution, and **no new intent or
+  satisfiability checker is introduced** to make it do so.
+- **A well-formed wait may therefore never be woken.** If nothing that can actually wake it ever
+  arrives and it carries no deadline, the Execution remains `WAITING` until cancellation or another
+  accepted terminal decision. That is the semantics the Runtime declared, and it is consistent with
+  kernel.md: "Parent/peer cyclic waits can still deadlock: expose correlations and deadlines; do not
+  promise general deadlock prevention." **K0.1 promises no general satisfiability or deadlock
+  prevention**, here or anywhere else.
+- **Requiring an *effective* wake source would break 001's own K0 trace in the other direction.**
+  "accept input → delayed fake Runtime → typed output → **input wait** → completion" waits for one
+  class of application input and for nothing else, so its dependency list is legitimately empty (W-8).
+  Rule 1 exists so that trace is directly representable, not so that the Kernel can certify a wait is
+  dischargeable.
+
+**A deadline does not rescue a literally empty declaration.** A record with **both** lists empty is
+malformed whether or not it carries a deadline — kernel.md's wait is "on any of a finite set of
+correlated Events, **optionally** with a durable deadline," so the deadline *bounds* a wait rather than
+being the thing waited for, and CL-1 keeps the three clocks separate identities rather than letting one
+stand in for a dependency. A deadline on a **well-formed** wait is a different matter entirely: it can
+end that wait through `B-7`, including a wait whose only declared sources happen to be inert.
+
+*Deterministic cases.* Read with the source-category table below; each has exactly one answer.
+
+| # | Submitted wait record | Well-formed? | What then happens |
+|---|---|---|---|
+| 1 | `dependencies = []`, `subscriptions = []` | **No** — rule 1 fails | Rejected at envelope validation (§7 OA-3); the whole Outcome is refused, no registration exists. **A deadline does not change this**: the same record with a deadline is still malformed. |
+| 2 | `dependencies = [{kind: external.input}]`, `subscriptions = []`, no deadline | **Yes** — rule 1 satisfied by one alternative, which is itself grammar-valid | The alternative is **inert**: ordinary application input is eligible only through a declared subscription (category table), and there is none. Arriving input is accepted into the mailbox, produces no wake, is not acknowledged, and stays queued (B-4). The Execution stays `WAITING` — indefinitely, absent cancellation. The eligibility answer is W-7 case 6's; the difference is that `W′` there also carries `D1`/`D2`, which *can* wake it, whereas this record's only declared source is the inert one. |
+| 3 | Case 2 **with a deadline** | **Yes** — same structural test | Same eligibility answer while `WAITING`. If nothing else can wake it, the **current-generation deadline** ends it through `B-7`: one timeout Event, `READY`, deadline-triggered readiness. A deadline is how a Runtime bounds a wait it is not certain can be woken; it is not what makes the record valid. |
+| 4 | `dependencies = []`, `subscriptions = {continue}` | **Yes** — rule 1 satisfied by one subscription | The subscription-only input wait of W-8, behaving exactly as W-8 states: unrelated input stays queued, `continue` wakes, bound-1 backlog cannot displace it. |
+
+Cases 2 and 3 are the ones revision 9 answered two ways. Its well-formedness rule was titled "one
+**eligible** wake source across the two lists combined" and required the wait to "name at least one
+Event class that **can end it**", while its selector-grammar paragraph simultaneously permitted exactly
+such an alternative as valid-but-inert and "not rejected at registration". A K1.1 implementer could
+read either as normative (§13, `K01-R9-01`). The rule above is the structural reading revision 9's
+grammar paragraph already implied, stated in terminology that cannot be mistaken for eligibility.
 
 ### Eligibility while `WAITING` — by source category first
 
@@ -693,9 +751,11 @@ arbitrary code or model-text predicates"):
   alternative does not supply places no constraint.
 - **At least one of the three must be supplied.** An alternative supplying none would match every
   Event addressed to the Execution; that match-everything alternative is **invalid**, not a shorthand
-  for "anything." It is exactly the over-matching spelling W-8's *What this rules out* rejects, and
-  accepting it would let a wait that means "any application input labelled `continue`" be spelled as
-  "any Event at all."
+  for "anything." This is a **structural** rejection at registration (well-formedness rule 2 above),
+  and it is the one over-matching spelling the grammar does refuse: accepting it would let a wait that
+  means "any application input labelled `continue`" be spelled as "any Event at all." Note what it is
+  *not*: it is not a judgement about whether the wait can be discharged. The grammar refuses a
+  malformed selector, never a useless one.
 - **An empty finite kind set is not a valid supplied Kind selector.** `[]` is rejected here, before any
   matching is attempted. It is neither "a Kind selector that matches nothing" nor a spelling of "Kind
   selector absent": the target grammar expresses absence by *not supplying the field*, and an empty set
@@ -708,10 +768,13 @@ arbitrary code or model-text predicates"):
   expression, no negation, no arbitrary predicate, callback, query language or model-text condition,
   and no field outside the three above. In particular an Event's **payload/body is not selectable at
   all** by a dependency alternative.
-- **A well-formed alternative can still be inert.** Validity is structural; *eligibility* is decided by
-  the category rule above. An alternative naming an application-input kind, or a timeout kind, is a
-  valid alternative that matches nothing in those categories. It is not rejected at registration — the
-  Kernel does not audit a Runtime's intent — it simply contributes nothing (W-7 cases 6–7).
+- **A well-formed alternative can still be inert, and it still counts.** Validity is structural;
+  *eligibility* is decided by the category rule above. An alternative naming an application-input kind,
+  or a timeout kind, is a valid alternative that matches nothing in those categories. It is **not**
+  rejected at registration — the Kernel does not audit a Runtime's intent — it simply contributes
+  nothing to eligibility (W-7 cases 6–7) while **still satisfying** well-formedness rule 1's
+  structural non-emptiness. Those two statements are the same statement read at two different
+  boundaries, and W-1's well-formedness cases 2 and 3 work the consequence through.
 
 **Application-input subscriptions are not dependency alternatives and do not use this grammar.** A
 subscription selects a class of application input by its declared subscription identity (item 2),
@@ -982,8 +1045,8 @@ fixture"), so K0.1 owes it an unambiguous wait record.
 Execution X is created with its initial input. Its Runtime computes, then submits an Outcome carrying
 typed output and `await` with a wait `W₀` whose **dependency-alternatives list is empty** and whose
 **declared input subscriptions are `{continue}`**: X waits for one class of application input and for
-nothing else. `W₀` is well-formed under W-1 — one eligible wake source exists across the two lists
-combined.
+nothing else. `W₀` is well-formed under W-1 — its declaration is **structurally non-empty**, one
+subscription being enough, and that subscription is structurally valid.
 
 1. **Registration.** `W₀` is accepted and W-2 runs its ordered steps. If an eligible `continue` input
    was already accepted and unacknowledged, step 2 finds it and X is `READY` immediately — W-2's
@@ -1039,13 +1102,24 @@ combined.
    dependency alternative for the timeout, which for `W₀` does not exist — so the same document made
    the mandatory member ineligible (§13, `K01-R8-02`).
 
-**What this rules out.** "Wait for application input `label=continue`" must not require either
-defective spelling: **inventing a fake dependency alternative** nothing will ever settle — which makes
-the wait undischargeable and misreports to inspection what X actually needs — or **leaving the
-subscription list empty** and letting a catch-all dependency alternative over-match, waking X for every
-`external.input` addressed to it regardless of label, which is precisely the limitation the current
-matcher has (`MIG-5`). W-1's combined-source well-formedness rule removes both: the dependency list is
-legitimately empty and the subscription carries the whole wait.
+**What this makes unnecessary — and what it deliberately does not police.** The target gives "wait for
+application input `label=continue`" a **direct representation**, so neither defective spelling is
+*required* any more: a Runtime need not **invent a fake dependency alternative** that nothing will ever
+settle, and it need not **leave the subscription list empty** and let a catch-all dependency alternative
+over-match, waking X for every `external.input` addressed to it regardless of label — which is precisely
+the limitation the current matcher has (`MIG-5`). W-1's structural non-emptiness rule makes `W₀`
+expressible as written: the dependency list is legitimately empty and the subscription carries the whole
+wait.
+
+**The Kernel does not, however, reject a useless wait.** A Runtime may still submit a structurally
+valid but pointless declaration — a dependency alternative correlated to work it never started, or the
+inert `{kind: external.input}` alternative of W-1's well-formedness case 2 — and the Kernel will accept
+it and give the Runtime exactly the semantics it declared: no wake from that source, and `WAITING`
+until a deadline, a genuinely eligible Event, or cancellation ends it. The Kernel proves **structure**,
+never **satisfiability**; it audits neither a Runtime's intent nor whether the work an alternative names
+exists. Revision 9's wording here claimed more than that — it read as though the protocol ruled the fake
+dependency out — and that claim is withdrawn (§13, `K01-R9-01`). What the target removes is the
+*necessity* of the workaround, not the Runtime's ability to write a bad wait.
 
 **Decision W-9 (the timeout Event).**
 
@@ -1456,7 +1530,7 @@ boundary rule. This table is the direct answer to K0.1-C1.
 | 2 | Activation dispatch intent | Kernel | ID-3, ID-4, ID-9, B-1, B-2 | Two *semantically different* dispatches (a new exchange after the prior one resolved) never carry the same Activation ID; a dispatch pins one finite, enumerable Event batch that a later Outcome can be checked against exactly; an authorized takeover of a *still-unresolved* exchange advances the writer epoch under the **same** Activation ID rather than minting a new one (ID-9 cases 2–3). |
 | 3 | Outcome acceptance; duplicate/conflicting Outcome behavior | Kernel | OA-1–OA-6, ID-6 | Exact duplicate submission returns the original receipt with no re-dispatch of anything; a same-identity/different-content submission is rejected, not merged; a failure partway through acceptance leaves zero partial state (no progress, no Effect intent, no acknowledgment). |
 | 4 | Effect intents | Kernel | EF-1–EF-4 | An Outcome proposing an Effect during K1 is rejected at whole-envelope validation (OA-3) with a recorded, inspectable reason, before any Effect intent, ID or proposal-key binding ever exists; the rest of that Outcome is also rejected, not silently split; this is envelope validation, not a K1 visit to the (K2-introduced) Effect-admission boundary. |
-| 5 | Any-of wait correlation; subscription-only input wait; wait-generation identity; eligible batch accounting; wait deadlines | Kernel | W-1–W-9, B-1–B-8, CL-1–CL-3 | Each of these is separately observable, and each is stated once by the owner named beside it. **(a) Record shape (W-1):** a wait is exactly two finite declarative lists — dependency alternatives written in W-1's three-field selector grammar, and declared input subscriptions, which are not alternatives and do not use that grammar — plus an optional deadline and a generation. It is valid iff at least one wake source exists across the two lists combined, so a **subscription-only input wait** (001's own K0 trace) is first-class (W-8) and a wait with both lists empty is rejected. **(b) Eligibility (W-1's category table):** ordinary application input is eligible only through a declared subscription and a dependency alternative matching it is inert (W-7 cases 6–7); every other ordinary Kernel Event is eligible only through a dependency alternative; the **timeout Event** is eligible through neither and arrives by construction (W-9). No other rule makes an Event eligible, and §3's B-2 selects the `WAITING` batch by this rule alone. **(c) Registration (W-2):** one ordered transaction — acknowledge this Outcome's own batch, then check already-accepted unacknowledged Events (no lost wake, and not skipped for an empty dependency list), then evaluate an already-due deadline, then persist `WAITING` — producing exactly one of §3's rows 1, 3 or a durable `WAITING`, with a past deadline **never** persisted as live. **(d) Retirement (W-1):** any eligible wake, and any current-generation deadline expiry, retires the registration and its generation; the Kernel keeps no per-alternative satisfied flag, and a Runtime that still needs a dependency re-registers it. **(e) Next batch (§3's wait-ended batch rule):** older ineligible backlog can **never** displace what the Execution was woken for, at any bound including 1, in either way a wait can end — the batch is the species' mandatory member (≥ 1 Event eligible under the retired rule for `B-6`; the generation-correlated timeout Event for `B-7`) together with the other Events eligible under that retired rule, evaluated at reservation (W-8 case 4, W-8 case 6, W-9 cases 1 and 3). **(f) Fencing (W-3, W-9):** a timer naming a superseded generation is a no-op that retires nothing and creates no timeout Event; a duplicate timer for an already-accepted expiry creates no second timeout Event, readiness or logical timeout; an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6). **(g) Runtime-local work (W-4):** an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
+| 5 | Any-of wait correlation; subscription-only input wait; wait-generation identity; eligible batch accounting; wait deadlines | Kernel | W-1–W-9, B-1–B-8, CL-1–CL-3 | Each of these is separately observable, and each is stated once by the owner named beside it. **(a) Record shape and well-formedness (W-1):** a wait is exactly two finite declarative lists — dependency alternatives written in W-1's three-field selector grammar, and declared input subscriptions, which are not alternatives and do not use that grammar — plus an optional deadline and a generation. Well-formedness is **structural**: the declaration must be structurally non-empty (either list may be empty, not both, and a deadline does not rescue a record with both empty), every present alternative must satisfy the selector grammar, and every present subscription must be structurally valid. A **subscription-only input wait** (001's own K0 trace) is therefore first-class (W-8). The test proves **structure, never satisfiability**: a structurally valid but **inert** alternative still counts toward non-emptiness, so a well-formed wait may never be woken and may stay `WAITING` until a deadline or cancellation ends it — K0.1 promises no general satisfiability or deadlock prevention (W-1's well-formedness cases 1–4). **(b) Eligibility (W-1's category table):** ordinary application input is eligible only through a declared subscription and a dependency alternative matching it is inert (W-7 cases 6–7); every other ordinary Kernel Event is eligible only through a dependency alternative; the **timeout Event** is eligible through neither and arrives by construction (W-9). No other rule makes an Event eligible, and §3's B-2 selects the `WAITING` batch by this rule alone. **(c) Registration (W-2):** one ordered transaction — acknowledge this Outcome's own batch, then check already-accepted unacknowledged Events (no lost wake, and not skipped for an empty dependency list), then evaluate an already-due deadline, then persist `WAITING` — producing exactly one of §3's rows 1, 3 or a durable `WAITING`, with a past deadline **never** persisted as live. **(d) Retirement (W-1):** any eligible wake, and any current-generation deadline expiry, retires the registration and its generation; the Kernel keeps no per-alternative satisfied flag, and a Runtime that still needs a dependency re-registers it. **(e) Next batch (§3's wait-ended batch rule):** older ineligible backlog can **never** displace what the Execution was woken for, at any bound including 1, in either way a wait can end — the batch is the species' mandatory member (≥ 1 Event eligible under the retired rule for `B-6`; the generation-correlated timeout Event for `B-7`) together with the other Events eligible under that retired rule, evaluated at reservation (W-8 case 4, W-8 case 6, W-9 cases 1 and 3). **(f) Fencing (W-3, W-9):** a timer naming a superseded generation is a no-op that retires nothing and creates no timeout Event; a duplicate timer for an already-accepted expiry creates no second timeout Event, readiness or logical timeout; an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6). **(g) Runtime-local work (W-4):** an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
 | 6 | Wake / Event acceptance during computation | Kernel | B-2, B-4, B-8, W-2, W-3 | An Event accepted while an Activation is in flight does not alter that Activation's already-pinned batch; it is visible to the next eligible batch. More generally, an Event accepted while **no wait generation is live** — the Execution is `READY`, `RUNNING` or terminal (W-3) — is an accepted mailbox fact and creates **no** readiness (`B-8`, §3 row 6), so a second readiness can never arm behind the first and re-select an already-reserved batch. |
 | 7 | Cancellation ordering | Kernel | CX-1, CX-2, CX-5 | A cancellation accepted before an in-flight Activation's Outcome is accepted wins: that Outcome's `complete`/`fail`/`continue` is discarded and the Execution is `CANCELLED`; a completion accepted first wins the opposite race, and neither race can be re-run by resubmitting either side. |
 | 8 | Terminal obligations; completion responsibility | Kernel | CX-3, CX-4, B-5 | `complete` is rejected outright if unresolved owned work is not accounted for in the current or a previously acknowledged batch; a terminal Execution still exposes recorded disposition for any Event that was queued but never acknowledged. |
@@ -1657,7 +1731,10 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   corrections/peer questions while waiting" — and no canonical page contains an `interleave` concept
   at all. A second defect of the same drafting: W-1 required the dependency list to be non-empty,
   which contradicted 001's own K0 trace (an input wait) and 007's K0.2 fixture scope; W-1's
-  combined-source well-formedness rule and W-8 resolve it in the canonical trace's favour.
+  combined-source well-formedness rule and W-8 resolve it in the canonical trace's favour. (**Renamed in
+  revision 10**: that rule is now stated as W-1's *structurally non-empty wait declaration*, because the
+  old name implied an eligibility guarantee it never made — see `K01-R9-01` below. The round-4
+  resolution itself is unchanged.)
 - **Contradiction internal to this worksheet (found in review round 5,
   [K01-R5-01](implementation-06.md)):** revision 5's B-2 had only two cases, so after W-1 retired a
   wait on an eligible wake the Execution was plainly `READY` and the ordinary rule applied — "select a
@@ -1858,6 +1935,38 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
       partial-acceptance failure OA-3/OA-5 forbid. Resolved by stating that they are ordered
       *evaluation* inside one transaction and that "stop" decides the next state rather than ending the
       transaction early.
+- **Two answers for one wait record: structural validity versus effective wakeability (found in review
+  round 9, [K01-R9-01](review-09.md)):** revision 9's W-1 stated well-formedness as "one **eligible**
+  wake source across the two lists combined" and required a wait to "name at least one Event class that
+  **can end it**", while the selector-grammar paragraph a few lines later said a structurally valid
+  alternative may be **inert** under the source-category rule, "is not rejected at registration" and
+  "simply contributes nothing". Both were normative and they disagree on the same record: for
+  `dependencies = [{kind: external.input}]` with an empty subscription list, the first reading rejects
+  the registration (that alternative can never end the wait) and the second accepts it (one valid
+  alternative is present). A K1.1 implementer building the validator could read either.
+
+  **Resolution — the structural reading, which revision 9's grammar paragraph already implied.**
+  Well-formedness is now a purely **structural** test with three rules — the declaration is
+  structurally non-empty (either list may be empty, not both), every present alternative satisfies the
+  selector grammar, every present subscription is structurally valid — and it is stated in terminology
+  that cannot be mistaken for eligibility. Three consequences are now explicit: an inert alternative
+  **still counts** toward structural non-emptiness; a well-formed wait may therefore never be woken and
+  may stay `WAITING` until a deadline or cancellation ends it; and **no new intent or satisfiability
+  checker is introduced** to prevent that. Four deterministic cases pin it (both lists empty → rejected,
+  with or without a deadline; the inert alternative alone → valid and never woken; the same with a
+  deadline → valid and ended by `B-7`; subscription-only → valid and behaving exactly as W-8 states).
+  W-8's *What this rules out* is correspondingly narrowed to *What this makes unnecessary*: the target
+  removes the **necessity** of a fake dependency, not a Runtime's ability to write one.
+
+  **This resolves toward the canonical owner rather than away from it.** kernel.md already declines the
+  stronger promise — "Parent/peer cyclic waits can still deadlock: expose correlations and deadlines;
+  do not promise general deadlock prevention" — and execution-protocol.md repeats it ("General deadlock
+  prevention is not promised"). The rejected reading would have had K0.1 quietly promising a
+  satisfiability guarantee two canonical pages disclaim. Actual Event eligibility stays exactly where
+  revision 9 put it, in W-1's source-category table, and the round-9 wait-ended state machine — the
+  timeout Event, `B-6`/`B-7`'s two paths, W-2's ordered registration, `B-8`, the timeout/result
+  ordering and the cancellation-before-reservation disposition — is unchanged.
+
 - **No contradiction found *between canonical owners*** on any decision in §1–§10, re-checked
   cumulatively through every round and again in revision 9's full reconstruction of the wait/batch/
   clock protocol as one state machine: each decision restates a canonical owner or narrowly resolves an
@@ -1872,10 +1981,12 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   application-input bypass, and round 8's `K01-R8-01` re-entry of that same bypass through B-2); one
   gap against this worksheet's own §4; one over-reach into a K4-owned mechanism; one
   misplaced-normativity defect; one rule left **conditional on a future packet** (`K01-R8-03`); one
-  K0-owned semantic case left **undecided** (`K01-R8-04`); and the internal inconsistencies — E-7's
-  ordering profile, the two wait records, the lost wake-before-backlog guarantee, the two selector
-  grammars, `B-6`'s conflated acceptance boundaries, the timeout with no semantic home, and the eleven
-  gaps revision 9's own reconstruction found before committing.
+  K0-owned semantic case left **undecided** (`K01-R8-04`); one **over-claim** — a validity rule that
+  implied a satisfiability guarantee two canonical pages disclaim (`K01-R9-01`); and the internal
+  inconsistencies — E-7's ordering profile, the two wait records, the lost wake-before-backlog
+  guarantee, the two selector grammars, `B-6`'s conflated acceptance boundaries, the timeout with no
+  semantic home, the two readings of wait well-formedness, and the eleven gaps revision 9's own
+  reconstruction found before committing.
 
   **The pattern, and what revision 9 did about it.** Every contradiction this worksheet has had was
   introduced by its own drafting, and most were a *consequence of a correct earlier correction that was
@@ -1893,6 +2004,18 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
     wait-ended table has all four rows — Event-at-registration, Event-while-waiting,
     deadline-at-registration, deadline-while-waiting — plus the two contrast rows, because each of the
     last four rounds found its defect in the half that was written second.
+  **What revision 10 adds to that lesson.** Round 9 consolidated the wait/batch/clock protocol and
+  removed the paraphrase failure mode, and round 9's review confirmed §3's and §5's structure. The one
+  defect it left was a **different** kind: not a rule restated in two voices, but a single rule whose
+  *name* claimed more than the rule delivered. "One **eligible** wake source" sounded like a structural
+  count and read like an eligibility guarantee, and the paragraph that contradicted it was the one
+  correctly describing the weaker, true behaviour. Revision 10's response is the same discipline applied
+  to vocabulary rather than to placement: a validity rule is now named for what it checks
+  (*structurally non-empty wait declaration*), and every statement about whether an Event can actually
+  wake an Execution lives in the source-category table and nowhere else. Where the document declines to
+  promise something — satisfiability, deadlock freedom — it now says so in the same breath as the rule
+  a reader might otherwise over-read.
+
   - **A defect the reviewer did not name is still a defect.** Revision 9's own adversarial pass, not
     review-08, found all eleven defects listed above — `W₀`+deadline, the missing `B-8`, the W-2 step-1
     ordering, the timeout idempotency rule, the timeout's acceptance boundary, the terminal-race
@@ -2144,7 +2267,7 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   - **§13** gained all three entries and their resolutions. E-7/JCS, the Activation-ID takeover
     identity, W-4, the K1 Effect-refusal boundary, `MIG-4`, PC-1/`MIG-3`/`LEG-4`, the three-label
     legacy vocabulary, `REF-5` and the accepted historical-evidence whitespace exception are untouched.
-- **Revision 9** (this document): a **consolidation revision**. It corrects revision 8 per
+- **Revision 9**: a **consolidation revision**. It corrected revision 8 per
   [review-08.md](review-08.md)'s CHANGES REQUIRED findings K01-R8-01 through K01-R8-04, disposed in
   [implementation-09.md](implementation-09.md), and it additionally rewrites §3 and §5 so that the
   wait / batch / clock protocol is one state machine stated once. Prior wording that revisions 1–8
@@ -2199,3 +2322,34 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
     timeout handling. E-7/JCS, the Activation-ID takeover identity, W-4, the K1 Effect-refusal
     boundary, `MIG-4`, PC-1/`MIG-3`/`LEG-4`, `REF-3`/`REF-4`/`REF-5`, `LEG-5`, `LIM-1`, the three-label
     legacy vocabulary and the accepted historical-evidence whitespace exception are unchanged.
+- **Revision 10** (this document): a **narrow correction** of revision 9 per
+  [review-09.md](review-09.md)'s CHANGES REQUIRED finding K01-R9-01, disposed in
+  [implementation-10.md](implementation-10.md). Revision 9's wait / batch / clock state machine is
+  otherwise untouched.
+  - **K01-R9-01** — **W-1**'s registration well-formedness is restated as a purely **structural** test
+    and renamed accordingly: a *structurally non-empty wait declaration*, replacing "one **eligible**
+    wake source across the two lists combined", which read as an eligibility guarantee and contradicted
+    the selector-grammar paragraph's intentionally permitted **inert** alternatives. Three rules now
+    define it (structural non-emptiness — either list may be empty, not both; every present alternative
+    valid under the selector grammar; every present subscription structurally valid), and three
+    consequences are explicit: an inert alternative **still counts** toward non-emptiness; a well-formed
+    wait may therefore never be woken and may remain `WAITING` until a deadline or cancellation ends it;
+    and **no intent or satisfiability checker is added**, matching kernel.md's and
+    execution-protocol.md's refusal to promise general deadlock prevention. A deadline still does not
+    rescue a record with both lists literally empty. Four deterministic cases are added to W-1. The
+    **selector grammar**'s match-everything bullet now states that its rejection is structural and not a
+    judgement about dischargeability, and its inert-alternative bullet states that such an alternative
+    still satisfies structural non-emptiness. **W-8**'s registration sentence uses the new terminology,
+    and its *What this rules out* becomes *What this makes unnecessary — and what it deliberately does
+    not police*: the target removes the **necessity** of a fake dependency, not a Runtime's ability to
+    submit one, and the Kernel proves structure rather than satisfiability. **§11 row 5(a)** and **§13**
+    are updated to match, and §13's round-4 entry is annotated with the rename without rewriting its
+    record.
+  - **Unchanged and re-verified:** the timeout Event's semantic home and its exactly-one/idempotency
+    rules (W-9); `B-6`/`B-7`'s two paths and the wait-ended batch rule; **W-2**'s ordered
+    one-transaction registration algorithm, including the already-due-deadline collapse; timeout/result
+    ordering (W-9 cases 3–4); the cancellation-before-reservation terminal disposition; **`B-8`**;
+    W-1's source-category eligibility rule; the K4 versioned peer-subscription extension; ID-3/ID-4's
+    Activation-ID and writer-epoch identity; E-7/JCS; the K1 Effect-refusal boundary; PC-1–PC-5 and
+    `MIG-3`/`LEG-4`; the three-label legacy vocabulary; `MIG-5` and `REF-5`; and the owner-approved
+    historical-evidence whitespace exception.

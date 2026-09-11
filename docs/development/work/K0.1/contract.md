@@ -99,6 +99,38 @@ This contract's **acceptance criteria are unchanged and are not weakened** by th
 through C6 stand exactly as written, and a larger rewrite is held to the same criteria as a smaller one.
 The command plan, including its owner-approved historical blank-at-EOL exception, is unmodified.
 
+Round 9 (C9 `1b2ef1b`, H9 `00b30eb`) received a ninth independent review, again **CHANGES REQUIRED**:
+see [review-09.md](review-09.md) (findings K01-R9-01 P2 and K01-R9-02 P2, with C2/C3/C4 passing and
+C1/C5/C6 failing; the reviewed artifacts are again pinned by **blob** SHA, which the correction verified
+against H9's tree). Round 10's correction is reported in [implementation-10.md](implementation-10.md).
+
+Round 9's consolidation held. The review confirmed §3's and §5's rewritten structure, the timeout
+Event's semantic home, `B-6`/`B-7`, W-2's ordered registration algorithm and the commit choreography,
+and it reopened none of them. The one semantic defect it found is a **different class** from every
+earlier round: not a rule restated in two voices, but a single rule whose **name claimed more than the
+rule delivered**. W-1's well-formedness test was titled "one **eligible** wake source across the two
+lists combined" and required a wait to "name at least one Event class that **can end it**", while the
+selector-grammar paragraph a few lines below correctly permitted a structurally valid but **inert**
+alternative. Both were normative; for one concrete record they disagree. The resolution takes the
+weaker, true reading — well-formedness is **structural**, and K0.1 proves structure, never
+satisfiability — which is also what kernel.md and execution-protocol.md say when they decline to
+promise deadlock prevention.
+
+Round 9's second finding is **administrative rather than semantic**: [review-08.md](review-08.md), the
+round-8 transcription this packet committed, omitted two things [008](../../008-implementation-report.md)
+requires of a recorded review — meaningful file/section/contract references for its findings, and the
+complete corrective prompt delivered with that review. Because reviewed history is immutable,
+[review-08.md](review-08.md) is **not edited**. [review-09.md](review-09.md) instead carries a
+*Supersession of review-08 administrative transcription* section supplying both: exact H8 worksheet and
+report locations plus contract criteria for K01-R8-01 through K01-R8-04, and the complete round-8
+corrective prompt reproduced verbatim. That section is the authoritative reference record for round 8
+from this point forward, and this packet's transcription practice is corrected going forward rather than
+backwards.
+
+This contract's **acceptance criteria remain unchanged and are not weakened** by either correction:
+K0.1-C1 through C6 stand exactly as written, and the command plan, including its owner-approved
+historical blank-at-EOL exception, is unmodified.
+
 Every prior commit, report and review is preserved unedited — each round corrects forward rather than
 rewriting the record it was reviewed against.
 
