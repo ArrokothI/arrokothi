@@ -1,11 +1,11 @@
 # K0.1 protocol worksheet — equality, receipts, batches, clocks, cancellation, progress, policy
 
-**Revision:** 11 — corrects [review-10.md](review-10.md)'s **K01-R10-01**: W-1 and §11
-now distinguish eligibility while `WAITING`, wait retirement with recoverable readiness (`B-6`/`B-7`),
-and batch selection only once `READY` (`B-2`). The existing wait / batch / clock state machine is
-preserved. An **implementer-discovered** correction also removes W-6 case 4's claim that registration
-consumes an early Event; registration creates readiness, and acknowledgment remains governed by B-3.
-See §13 and the revision history for both dispositions; the round-11 report accompanies candidate H11.
+**Revision:** 12 — resolves [review-11.md](review-11.md)'s Claude Opus 5 findings
+**K01-R11-01–04** and the separately **owner-supplied K01-O12-01–03**. Cancellation request
+acceptance fences a losing Outcome in full (CX-6); B-8, ID-6 and B-4 wording is aligned with their
+existing rules. E-6 defines total depth, bounds decoded member names as strings, and measures each
+E-1 boundary-value root independently. See §13 and revision history for individual dispositions;
+the round-12 report accompanies candidate H12. K0.2 remains unreleased.
 Revision 10's structural well-formedness correction remains unchanged: K0.1 promises **structure,
 never satisfiability** (W-1; [review-09.md](review-09.md), [implementation-10.md](implementation-10.md)).
 
@@ -46,8 +46,11 @@ packet changes no runtime file. Line numbers are as of base commit `6464be1`.
 
 ## 1. Equality and value limits
 
-**Decision E-1 (canonical value model).** A boundary value (Activation/Outcome envelope field,
-Effect proposal, Event payload) is one of: `null`, boolean, finite JSON number, string, or an array/
+**Decision E-1 (canonical value model).** A **boundary-value root** is each individual
+Activation/Outcome envelope value field governed by E-1, each Effect proposal value, each Event
+payload value, or another logical value explicitly brought under E-1 by the protocol. Each such root
+is checked independently under E-6; an enclosing Activation/Outcome is not an additional aggregate
+size-accounting root. A boundary value is one of: `null`, boolean, finite JSON number, string, or an array/
 object built only from these, recursively. `NaN`, `Infinity`, `-Infinity` and any non-finite number
 are rejected before identity/equality is computed — never silently coerced to `null` or a string.
 Strings must be well-formed Unicode: a lone surrogate has no UTF-8 encoding, so it is rejected at the
@@ -83,10 +86,41 @@ for a wire codec:
 
 | Bound | Unit / what is counted | K0.1 limit |
 |---|---|---|
-| String field length | Unicode scalar values (code points), not UTF-16 code units or wire bytes — avoids surrogate-pair/byte-encoding ambiguity | ≤ 65,536 per individual string field |
+| Decoded string length (values and object member names) | Unicode scalar values of every decoded string, before E-7 escaping or UTF-8 serialization; not UTF-16 code units or wire bytes | ≤ 65,536 per individual string value or member name |
 | Array/object entry count | direct children of one array or one object (not a recursive total across the whole value) | ≤ 4,096 entries |
-| Container nesting depth | number of array/object boundaries from the value's root to its deepest scalar, inclusive of the root | ≤ 32 levels |
-| Canonical envelope size | byte length of the value's **canonical form as fully specified in E-7** — a semantic size bound computed over that exact byte sequence, never a claim about the actual wire encoding's byte count | ≤ 1,048,576 bytes (1 MiB) |
+| Container nesting depth | total recursive depth of each boundary-value root, defined below, including empty containers | ≤ 32 levels |
+| Canonical boundary-value size | byte length of **each E-1 boundary-value root** canonicalized separately under E-7; no sum of sibling envelope fields and no wire-byte claim | ≤ 1,048,576 bytes (1 MiB) per root |
+
+**Total depth definition.** For every E-1 value `v`:
+
+- a scalar (`null`, boolean, number, string) has `depth(v) = 0`;
+- an empty array or empty object has `depth(v) = 1`;
+- a non-empty array has `depth(v) = 1 + max(depth(element))`;
+- a non-empty object has `depth(v) = 1 + max(depth(member value))`.
+
+Object member **names do not add a nesting level**. The root container counts as one; there is
+no implicit envelope wrapper in this count. The limit is `depth(v) <= 32`.
+
+**Independent size roots.** Canonicalize each root E-1 identifies and check its byte length against
+1,048,576. Do **not** sum sibling Activation/Outcome fields or add envelope metadata to an Event
+payload's size. An Outcome with progress of about 700 KiB and an emissions field of about 700 KiB
+is **not rejected solely because the complete Outcome exceeds 1 MiB**: each root must pass
+independently, together with all other structural/schema bounds. This is no aggregate message-size
+guarantee. Transport framing and wire byte length remain implementation-owned. A deployment may
+impose smaller transport/request limits, but those cannot change K0 semantic equality or value
+validity unless versioned into the protocol.
+
+**Exact boundary cases** (all four limits apply simultaneously):
+
+| Value construction | Result |
+|---|---|
+| `A1 = []`; `A(n+1) = [An]`. Thus A32 is one empty innermost array wrapped in exactly 31 singleton arrays: 32 opening and 32 closing brackets, no scalar leaf | depth 32, **PASS** |
+| A33: the empty innermost array wrapped in exactly 32 singleton arrays | depth 33, **REJECT** |
+| `T1 = {}`; for n ≥ 1, wrap Tn as `[Tn]` when n is odd and as `{"x": Tn}` when n is even | depth(Tn) = n; T32 **PASS**, T33 **REJECT**; array/object spelling does not change counting |
+| Object with one member whose name is exactly 65,536 repetitions of `a`, value `null` | decoded name length 65,536, **PASS** (65,545 canonical bytes) |
+| Same, but name has 65,537 repetitions | **REJECT** for decoded string length |
+| One Event payload whose canonical form is exactly 1,048,576 bytes and otherwise satisfies E-1/E-6/schema | **PASS** for size; envelope metadata is not added to this root |
+| One Event payload whose canonical form is 1,048,577 bytes | **REJECT** before acceptance |
 
 Two different Unicode units appear deliberately in this section and are not in tension: a **string's
 length** is counted in Unicode scalar values (first row above), while **object key ordering** compares
@@ -94,7 +128,7 @@ UTF-16 code units (E-7 rule 4, aligned to RFC 8785). The first is a counting rul
 second is a comparison rule for a total order. Neither follows from the other, and each is fixed here.
 
 An over-limit value is rejected at the same "malformed envelope" boundary as a structurally invalid
-one (§7), not truncated silently. The canonical-envelope-size bound is also E-6's operative definition
+one (§7), not truncated silently. The canonical-boundary-value-size bound is also E-6's operative definition
 of "large" for the payload-reference rule below: large payloads (checkpoints, artifacts) never travel
 as inline boundary values; they travel as application-owned references per kernel.md's Activation/
 Outcome shape ("large payloads use application-owned references") once they would exceed it.
@@ -256,7 +290,7 @@ an implementation must actively enforce, not merely avoid by convention:
 | Activation ID | one exchange against a pinned accepted progress revision + Event batch | **ID-3** (corrected in K0.1 review round 1 — see [implementation-02.md](implementation-02.md), K01-REV-01): an Activation ID identifies **one immutable semantic exchange** — its pinned accepted progress revision, Event batch and input — for as long as that exchange remains unresolved. Ordinary Driver redelivery of the same dispatch preserves **both** the Activation ID **and** the writer epoch: it is not a new attempt. An authorized takeover (recovery has decided the prior attempt may no longer commit) preserves the **same** Activation ID and the **same** immutable exchange input — it does not invent new mailbox content under it — but **advances the writer epoch**: this is a new attempt at the same exchange, not a new exchange. A **new** Activation ID is minted only when a genuinely new semantic exchange begins, i.e. after the preceding exchange is resolved (an Outcome was accepted for it, or the Execution reached a terminal state) and a fresh dispatch is created. Restates [execution-protocol.md](../../../detail-design/execution-protocol.md#identities-and-immutable-exchanges)'s "A takeover changes only the attempt envelope/epoch after recovery permission has been established; it cannot replace input with new mailbox content under the old Activation ID" precisely: the Activation ID does *not* change on takeover, only the epoch does. |
 | Writer epoch | current attempt allowed to submit progress for that exchange | **ID-4**: the epoch is a monotonically increasing integer (or equivalent total order), bumped only by an authenticated takeover decision — including a takeover **within** the current unresolved Activation ID/exchange (ID-3) — never by ordinary retry of the same attempt. Whether the counter is reset or continues across a later, genuinely new Activation ID is an implementation choice (see this section's "Left open" note); either satisfies ID-3/ID-4 as long as a stale epoch for the *current* exchange is always rejected. |
 | Effect ID | one immutable logical request; proposal key bound at acceptance | **ID-5 (K2-scoped, recorded here for completeness):** not allocated by K0/K1, since K1 refuses Effects (§8). K0.1 fixes only that when K2 introduces it, it must follow this same "immutable logical request, proposal key bound at acceptance" shape — no separate physical-attempt-numbered identity at this layer. |
-| Receipt / acceptance position | evidence a specific request was accepted at a specific boundary | **ID-6**: a receipt names exactly one of the six atomic boundaries in kernel.md's Acceptance/atomicity table (§7's boundary list) plus the accepted revision/position within it. A receipt is never evidence of anything past that boundary (e.g. an Outcome-acceptance receipt is not evidence any Effect in it succeeded). |
+| Receipt / acceptance position | evidence a specific request was accepted at a specific boundary | **ID-6**: a receipt names exactly one of the six atomic boundaries in kernel.md's Acceptance/atomicity table (the six atomic boundaries enumerated in ID-7 below) plus the accepted revision/position within it. A receipt is never evidence of anything past that boundary (e.g. an Outcome-acceptance receipt is not evidence any Effect in it succeeded). |
 
 **Decision ID-7 (receipt scope is per-boundary, not per-Execution).** "The receipt" is not a single
 value per Execution; each of the six boundaries (creation/input ingress, dispatch intent, Outcome
@@ -386,7 +420,7 @@ The four ways a wait can end, and what each one commits, is the whole protocol i
 | 3 | **`B-7` path A** — `await(wait)` is accepted, W-2 step 2 finds no eligible Event, and W-2 step 3 observes the wait's deadline **already due**. **Outcome acceptance.** | as row 1, plus **exactly one timeout Event** for the generation being retired | `READY` — durable `WAITING` is **never** persisted for this generation | deadline-triggered (`B-7`) | **that timeout Event** | Events eligible under the retired rule, acceptance order, to the bound | reservation | *Outcome accepted before receipt* |
 | 4 | **`B-7` path B** — the Execution is `WAITING` and the **current** generation's deadline expires. **The Kernel's own Event-acceptance boundary** (Kernel timer provenance, W-9); there is **no Outcome**. | **exactly one timeout Event** for that generation, retirement of the registration/generation, and the readiness | `READY` | deadline-triggered (`B-7`) | **that timeout Event** | Events eligible under the retired rule, acceptance order, to the bound | reservation | *Input commit before scheduler notification*, read for an accepted **timeout** rather than an accepted input |
 | 5 | *(contrast)* **Ordinary readiness** — `READY` with no wait-ended readiness outstanding | — | `READY` | ordinary | **none** | all unacknowledged Events, acceptance order, to the bound | n/a | readiness is derivable from the accepted input/lifecycle records |
-| 6 | *(contrast)* **No wait was live** — an Event is accepted while the Execution is `READY`, `RUNNING` or terminal (W-3: no generation is live in those states) | the Event/mailbox fact **only** | unchanged | **none created** (`B-8`) | — | it is an ordinary candidate for a later batch (B-4), or takes a terminal disposition (B-5) | n/a | the accepted Event survives; nothing else was promised |
+| 6 | *(contrast)* **No wait was live** — an Event is accepted while the Execution is `READY`, `RUNNING` or terminal (W-3: no generation is live in those states) | the Event/mailbox fact **only** | unchanged | **none created** (`B-8`) | — | it remains queued for later selection under B-2/B-4, or takes a terminal disposition (B-5) | n/a | the accepted Event survives; nothing else was promised |
 
 Rows 1–4 are exhaustive: W-2 fixes that a registration is retired in its own transaction only by row 1
 or row 3, and W-3 fixes that a live generation exists only while `WAITING`, where only rows 2 and 4 can
@@ -399,19 +433,25 @@ batch at once, timeout Event included. "Acknowledged" means "the Runtime is on r
 accounted for this Event", never "the Runtime obeyed it." A Runtime that intentionally ignores one
 Event in an acknowledged batch must have recorded that choice in its own progress; the Kernel does not
 parse the Outcome to verify semantic compliance (restates execution-protocol.md's input-reservation
-section).
+section). A cancellation-fenced losing Outcome is rejected under CX-6 and acknowledges **none**
+of that batch; reservation alone never constitutes acknowledgment.
 
 **Decision B-4 (unmatched retention, not disappearance).** An Event not in the current batch — it
 arrived during `RUNNING`, it arrived while the Execution was `READY` and the bound was already spent,
 or it was ineligible during `WAITING` — remains queued with its own independent disposition. It is
-included in a later batch when it becomes eligible; it is never silently dropped, never merged into
+a later ordinary candidate under B-2's ordinary-READY rule, or, when a wait-ended readiness is
+being consumed, a candidate only if eligible under that retired wait's rule. It is never silently dropped,
+never merged into
 "the Runtime must have seen everything up to here," and never requires the Runtime to replay history to
 notice it — restates B-1/F20's fix directly.
 
 **Decision B-5 (terminal disposition of unconsumed input).** When an Execution reaches a terminal state
 with Events still queued/unacknowledged, each of those Events gets an explicit recorded terminal
 disposition ("Execution terminated before this Event was acknowledged") rather than being deleted
-without record or silently treated as processed.
+without record or silently treated as processed. This includes the still-unacknowledged reserved
+batch of a losing Outcome rejected under CX-6: when cancellation reaches terminal `CANCELLED`,
+those Events receive this disposition, not an acknowledgment. Rejection itself installs no Runtime
+state, and retry cannot change the cancellation winner or these Event dispositions.
 
 **Decision B-6 (Event-triggered wait-ended readiness).** An eligible Event ends a registered wait in
 exactly two ways — rows 1 and 2 of the table above — and they differ only in **which boundary** commits
@@ -509,8 +549,9 @@ queued, durable and unacknowledged (W-9 case 3). Neither fact is rewritten into 
 never proof the awaited action failed (§4 CL-2).
 
 **Decision B-8 (readiness is created only by a wait ending).** No boundary creates wait-ended readiness
-except one that retires a **live** wait generation — rows 1–4 above and nothing else. In particular, an
-Event accepted while the Execution is `READY` (ordinarily or with a wait-ended readiness already
+except one that retires a wait generation — either a live generation while `WAITING`, or a generation
+created and retired within its own registration transaction — rows 1–4 above and nothing else.
+In particular, an Event accepted while the Execution is `READY` (ordinarily or with a wait-ended readiness already
 outstanding), `RUNNING`, or terminal creates **no** readiness: it is an accepted mailbox fact and
 nothing more (row 6). Two failures this forecloses: a second readiness arming behind the first and
 silently re-selecting a batch after reservation; and an implementation treating "an interesting Event
@@ -997,7 +1038,7 @@ correlation `c1`) and `D2` (kind `child.result`, correlation `c2`), and declared
    source-category rule sends it down the **subscription** branch and nowhere else; `billing.question`
    is not in `{correction}`, so it matches no subscription and is **not eligible**. It is accepted into
    the mailbox, produces **no wake**, and is **not acknowledged**, remaining queued with its own
-   disposition for a later eligible batch (B-4). (That it also fails to be a `child.result` is true but
+   disposition for later selection under B-2 (B-4). (That it also fails to be a `child.result` is true but
    no longer the operative reason — case 6 below is the same input against a wait that *does* have a
    matching alternative, and the answer is unchanged.)
 4. **Subscribed correction input may wake.** Application input labelled `correction` arrives. It
@@ -1062,7 +1103,7 @@ subscription being enough, and that subscription is structurally valid.
 2. **Unrelated input stays queued.** Application input labelled `billing.question` arrives. It matches
    no dependency alternative (there are none) and `billing.question` is not in `{continue}`, so it is
    **not eligible**: it is accepted into the mailbox, produces **no wake**, is **not acknowledged**, and
-   keeps its own per-entry disposition for a later eligible batch (B-2, B-4). This is the property that
+   keeps its own per-entry disposition for later selection under B-2 (B-4). This is the property that
    makes the wait selective — an implementation that woke X here would be waking for every
    `external.input` regardless of label.
 3. **Subscribed input wakes.** Application input labelled `continue` arrives. It matches the declared
@@ -1262,20 +1303,21 @@ compared by equality.
 
 ## 6. Cancellation and terminal obligations
 
-**Decision CX-1 (cancel is a Kernel control operation, not a mailbox message).** Restates kernel.md:
-an accepted cancellation is processed at its own boundary, independent of whatever batch the current
-Activation is holding. Current code already implements this shape correctly at the ordering level
-(`Harness.activate`, `packages/core/src/runtime/harness.ts:747-757`, checks a pending
-`cancellationRequest` before ever dispatching a controller, and `applyOutcome`,
-`harness.ts:953-965`, re-checks it before committing the controller's reported next state) — see §12,
-classified `MIG-1` (migratable: the *ordering rule* survives, the concrete record shape may change).
+**Decision CX-1 (cancel is a Kernel control operation, not a mailbox message).** Cancellation
+**request acceptance** is the semantic ordering point, independent of the current Activation's batch.
+At that boundary it fences further Runtime progress and blocks new Effect admissions. Driver/native
+interruption may happen later at a safe boundary; it does not defer this semantic fence. The Kernel
+requests Driver cancellation without waiting for Runtime cooperation. Current safe-boundary checks
+are migration evidence only (§12 MIG-1), not permission to install a losing Outcome's progress (CX-6).
 
-**Decision CX-2 (first accepted terminal decision wins).** Cancel-vs-complete is resolved by
-acceptance order, not submission order: whichever terminal disposition (cancellation applied,
-completion accepted) is *accepted* first at the Kernel wins; the other cannot reopen a terminal
-Execution. Current code already encodes "terminal states have no outgoing edges"
-(`packages/core/src/execution/lifecycle.ts:51-53`) as a pure transition-table invariant independent of
-any store — this is directly reusable (see §12, `MIG-2`).
+**Decision CX-2 (first accepted terminal decision wins).** Order cancellation **request acceptance**
+against Outcome acceptance, never submission time or later physical application. If cancellation
+acceptance is first, CX-6 rejects the later Outcome even while physical interruption is pending. If
+Outcome acceptance commits first, it commits atomically under OA-4; later cancellation is ordered
+against that resulting state. An accepted completion/failure remains terminal and cancellation reports
+that terminal result without reopening it. For a nonterminal accepted Outcome, cancellation applies
+to the resulting nonterminal state. Current code's terminal-no-outgoing-edges invariant
+(`packages/core/src/execution/lifecycle.ts:51-53`) remains reusable (§12 MIG-2).
 
 **Decision CX-3 (terminal completion obligations).** An Outcome proposing `complete` must have: no
 newly proposed Effects in that same Outcome, and every previously-owned required Effect/child
@@ -1296,9 +1338,35 @@ admitted before cancellation is still recorded as evidence against the original 
 even though the owning Execution is terminal. It never reopens the Execution and never becomes a new
 unrelated Effect.
 
-**Left open (implementation-owned):** exact cancellation-request record shape and whether "applied"
-vs. "pending" is a two-state or richer state machine (current code's two states, `packages/core/src/execution/cancellation-request.ts`
-pattern implied by `markCancellationApplied` in `harness.ts`, are adequate evidence this can stay simple).
+**Decision CX-6 (cancellation-fenced Outcome rejection and exact retry).** After OA-1 authentication
+and OA-2's check for an **already accepted** Outcome, cancellation acceptance preceding this new
+Outcome's acceptance makes the **entire** Outcome lose, regardless of `continue`, `await`, `complete`
+or `fail`. Record and return an inspectable rejection classification **cancellation/terminal-conflict**,
+with reason **cancellation accepted before Outcome acceptance**, bound to the submitted
+Execution/Activation/epoch/base revision and canonical content. The winning cancellation is recorded
+at its accepted boundary; physical interruption and any pending/applied bookkeeping cannot postpone
+or remove this fence.
+
+The losing Outcome acknowledges **none** of its reserved Event batch, installs **no** Runtime
+progress or progress revision, accepts **no** emissions and **no** Effect intents, and creates **no**
+wait, deadline, readiness or next-state transition. It is never partly accepted with an overridden
+next state and never reopens or alters the cancellation winner. The cancellation control path, not
+the rejected Outcome, brings the Execution to `CANCELLED`; all still-unacknowledged reserved Events
+then receive B-5 terminal disposition. Cancellation after wait retirement but before reservation
+suppresses that Activation entirely, retaining the same B-5 rule.
+
+An authenticated exact resubmission of this rejected identity/content returns the **same recorded
+rejection classification and reason**, including after terminal cancellation. OA-2's accepted-receipt
+rule does not apply: no Outcome was accepted. Record lookup remains scoped by OA-1/ID-8; E-7 equality
+is used for content. Recovery preserves the fence and recorded rejection under the declared retention
+profile; expiration never makes a cancelled Execution accept the Outcome. There is no automatic retry
+and no acceptance receipt manufactured by replay. Conversely, an exact retry of an Outcome that
+**was accepted first** still returns its original accepted receipt under OA-2, without new mutations,
+even after a later cancellation of the resulting nonterminal state.
+
+**Left open (implementation-owned):** cancellation-request storage, rejection encoding and physical
+interruption mechanics. A pending/applied marker may track operational handling, but it cannot change
+CX-1/CX-2/CX-6's semantic acceptance order, defer the fence, or add a lifecycle state.
 
 ---
 
@@ -1317,9 +1385,11 @@ Effect dispatch, or publication. A same-identity Outcome with *different* conten
 rejected, never merged/patched. This check happens *before* full envelope validation (step 2 precedes
 step 3), so a duplicate of an Outcome that would now fail validation under updated policy still
 replays its original (already-accepted) receipt rather than re-validating against current rules.
+A never-accepted cancellation loser instead replays CX-6's recorded rejection, not this receipt rule.
 
 **Decision OA-3 (whole-envelope validation, all-or-nothing).** Current Activation ID, writer epoch,
-and base progress revision are checked together; any wait reference to a same-Outcome Effect proposal
+and base progress revision are checked together with the cancellation fence and terminal state
+(CX-2/CX-6); any wait reference to a same-Outcome Effect proposal
 is resolved and bound in the same pass. A failure anywhere in this step accepts nothing: no partial
 progress commit, no partial Effect intent, no partial acknowledgment. This is the direct fix for F10
 (`applyOutcome`'s current ordering, §12 `REF-1`, dispatches Effects in a step separate from — and
@@ -1328,7 +1398,9 @@ before — the transaction that commits next-state/progress, so a failure betwee
 
 **Decision OA-4 (atomic commit of the whole accepted set).** Acknowledgment of the batch, progress
 installation, accepted emissions, all Effect *intents* (not their dispatch/settlement — see §8),
-next-state and any wait/deadline are one atomic step. "All Effect intents" being committed together
+next-state and any wait/deadline are one atomic step. The cancellation-fence/terminal check and
+this commit must be ordered atomically against cancellation acceptance: checking before a concurrent
+cancel and committing afterward cannot evade CX-6. "All Effect intents" being committed together
 with progress is what makes step 3 above enforceable — an implementation that dispatches Effects
 before or outside this transaction (current code, §12 `REF-1`) cannot claim OA-3.
 
@@ -1338,9 +1410,11 @@ then persist `WAITING` — and its three possible outcomes are §3's wait-ended 
 `WAITING`. §7 does not restate that algorithm; W-2 owns it.
 
 **Decision OA-5 (rejection is inert, never a partial mutation).** A rejected Outcome (malformed
-envelope, stale epoch/revision, unresolvable wait reference) creates no Effects, acknowledges no
-Events, commits no progress, and is recorded as a rejection with its reason — not silently dropped and
-not retried automatically by the Kernel.
+envelope, stale epoch/revision, unresolvable wait reference, or cancellation/terminal conflict under
+CX-2/CX-6) creates no Effects, acknowledges no Events, commits no progress, accepts no emissions and
+creates no wait/deadline/readiness/next-state transition. It is recorded as a rejection with its reason,
+not silently dropped or retried automatically by the Kernel. CX-6 owns exact replay of a recorded
+cancellation rejection; it cannot mutate the cancellation winner.
 
 **Decision OA-6 (protocol failure is inspectable, not a hidden retry loop).** An invalid response from
 the current Runtime attempt (one that cannot even be classified as reject-with-reason) ends or holds
@@ -1531,12 +1605,12 @@ boundary rule. This table is the direct answer to K0.1-C1.
 |---|---|---|---|---|
 | 1 | Creation/input ingress accepted IDs/receipts | Kernel | ID-1, ID-2, ID-6, ID-7 | A create request replayed with the same request key returns the same Execution ID and receipt; a create with the same key but different content is rejected as a conflict, never silently accepted as an edit. |
 | 2 | Activation dispatch intent | Kernel | ID-3, ID-4, ID-9, B-1, B-2 | Two *semantically different* dispatches (a new exchange after the prior one resolved) never carry the same Activation ID; a dispatch pins one finite, enumerable Event batch that a later Outcome can be checked against exactly; an authorized takeover of a *still-unresolved* exchange advances the writer epoch under the **same** Activation ID rather than minting a new one (ID-9 cases 2–3). |
-| 3 | Outcome acceptance; duplicate/conflicting Outcome behavior | Kernel | OA-1–OA-6, ID-6 | Exact duplicate submission returns the original receipt with no re-dispatch of anything; a same-identity/different-content submission is rejected, not merged; a failure partway through acceptance leaves zero partial state (no progress, no Effect intent, no acknowledgment). |
+| 3 | Outcome acceptance; duplicate/conflicting Outcome behavior | Kernel | OA-1–OA-6, ID-6 | Exact duplicate submission of an already-accepted Outcome returns the original receipt with no re-dispatch of anything; a same-identity/different-content submission is rejected, not merged; a failure partway through acceptance leaves zero partial state (no progress, no Effect intent, no acknowledgment). |
 | 4 | Effect intents | Kernel | EF-1–EF-4 | An Outcome proposing an Effect during K1 is rejected at whole-envelope validation (OA-3) with a recorded, inspectable reason, before any Effect intent, ID or proposal-key binding ever exists; the rest of that Outcome is also rejected, not silently split; this is envelope validation, not a K1 visit to the (K2-introduced) Effect-admission boundary. |
 | 5 | Any-of wait correlation; subscription-only input wait; wait-generation identity; eligible batch accounting; wait deadlines | Kernel | W-1–W-9, B-1–B-8, CL-1–CL-3 | Each of these is separately observable, and each is stated once by the owner named beside it. **(a) Record shape and well-formedness (W-1):** a wait is exactly two finite declarative lists — dependency alternatives written in W-1's three-field selector grammar, and declared input subscriptions, which are not alternatives and do not use that grammar — plus an optional deadline and a generation. Well-formedness is **structural**: the declaration must be structurally non-empty (either list may be empty, not both, and a deadline does not rescue a record with both empty), every present alternative must satisfy the selector grammar, and every present subscription must be structurally valid. A **subscription-only input wait** (001's own K0 trace) is therefore first-class (W-8). The test proves **structure, never satisfiability**: a structurally valid but **inert** alternative still counts toward non-emptiness, so a well-formed wait may never be woken and may stay `WAITING` until a deadline or cancellation ends it — K0.1 promises no general satisfiability or deadlock prevention (W-1's well-formedness cases 1–4). **(b) Eligibility (W-1's category table):** ordinary application input is eligible only through a declared subscription and a dependency alternative matching it is inert (W-7 cases 6–7); every other ordinary Kernel Event is eligible only through a dependency alternative; the **timeout Event** is eligible through neither and arrives by construction (W-9). No other rule makes an Event eligible; eligibility does not select a batch. See `B-6`/`B-7` for wait retirement and recoverable readiness, and `B-2` for selection only once `READY`. **(c) Registration (W-2):** one ordered transaction — acknowledge this Outcome's own batch, then check already-accepted unacknowledged Events (no lost wake, and not skipped for an empty dependency list), then evaluate an already-due deadline, then persist `WAITING` — producing exactly one of §3's rows 1, 3 or a durable `WAITING`, with a past deadline **never** persisted as live. **(d) Retirement (W-1):** any eligible wake, and any current-generation deadline expiry, retires the registration and its generation; the Kernel keeps no per-alternative satisfied flag, and a Runtime that still needs a dependency re-registers it. **(e) Next batch (`B-2`, once `READY`):** older ineligible backlog can **never** displace what the Execution was woken for, at any bound including 1, in either way a wait can end — the batch is the species' mandatory member (≥ 1 Event eligible under the retired rule for `B-6`; the generation-correlated timeout Event for `B-7`) together with the other Events eligible under that retired rule, evaluated at reservation (W-8 case 4, W-8 case 6, W-9 cases 1 and 3). **(f) Fencing (W-3, W-9):** a timer naming a superseded generation is a no-op that retires nothing and creates no timeout Event; a duplicate timer for an already-accepted expiry creates no second timeout Event, readiness or logical timeout; an authenticated result Event is never generation-fenced and remains observable by a later wait that explicitly correlates to it (W-6). **(g) Runtime-local work (W-4):** an Activation with only Runtime-local work outstanding creates no `waitingFor` record at all and simply stays `RUNNING`. |
-| 6 | Wake / Event acceptance during computation | Kernel | B-2, B-4, B-8, W-2, W-3 | An Event accepted while an Activation is in flight does not alter that Activation's already-pinned batch; it is visible to the next eligible batch. More generally, an Event accepted while **no wait generation is live** — the Execution is `READY`, `RUNNING` or terminal (W-3) — is an accepted mailbox fact and creates **no** readiness (`B-8`, §3 row 6), so a second readiness can never arm behind the first and re-select an already-reserved batch. |
-| 7 | Cancellation ordering | Kernel | CX-1, CX-2, CX-5 | A cancellation accepted before an in-flight Activation's Outcome is accepted wins: that Outcome's `complete`/`fail`/`continue` is discarded and the Execution is `CANCELLED`; a completion accepted first wins the opposite race, and neither race can be re-run by resubmitting either side. |
-| 8 | Terminal obligations; completion responsibility | Kernel | CX-3, CX-4, B-5 | `complete` is rejected outright if unresolved owned work is not accounted for in the current or a previously acknowledged batch; a terminal Execution still exposes recorded disposition for any Event that was queued but never acknowledged. |
+| 6 | Wake / Event acceptance during computation | Kernel | B-2, B-4, B-8, W-2, W-3 | An Event accepted while an Activation is in flight does not alter that Activation's already-pinned batch; it remains queued for later B-2 selection or B-5 terminal disposition. More generally, an Event accepted while **no wait generation is live** — the Execution is `READY`, `RUNNING` or terminal (W-3) — is an accepted mailbox fact and creates **no** readiness (`B-8`, §3 row 6), so a second readiness can never arm behind the first and re-select an already-reserved batch. |
+| 7 | Cancellation ordering | Kernel | CX-1, CX-2, CX-5, CX-6, OA-3–OA-5 | Cancellation request acceptance first: the later in-flight Outcome is rejected with CX-6's cancellation/terminal-conflict reason; zero acknowledgment, progress, emissions, Effect intents or wait/deadline/next-state changes. The cancellation control path reaches `CANCELLED` and its reserved Events receive B-5 disposition. Exact retry returns the recorded rejection. Outcome acceptance first: normal atomic commit; later cancellation orders against that state and cannot reopen accepted completion/failure. |
+| 8 | Terminal obligations; completion responsibility | Kernel | CX-3, CX-4, CX-6, B-3, B-5 | `complete` is rejected outright if unresolved owned work is not accounted for in the current or a previously acknowledged batch; a terminal Execution exposes B-5 disposition for every unacknowledged Event, including the reserved batch of a cancellation loser under CX-6. A rejected losing Outcome never acknowledges that batch. |
 | 9 | Checkpoint forms; progress compatibility | Kernel + Runtime/Driver | PC-1–PC-5 | Resuming against unavailable compatible code/resources yields an explicit hold/refusal result, never a state that looks like normal restored computation. |
 | 10 | Local policy ordering/freshness profile | Kernel | LP-1–LP-3 | A policy check against just-accepted local state reads that exact write with no staleness window; no K0/K1 document or test asserts an instantaneous remote-revocation guarantee. |
 
@@ -1545,7 +1619,11 @@ actual fixture, but K0.1 fixes which controls that fixture must exercise, direct
 row 3's duplicate/conflicting-Outcome case, row 5's stale-timer/lost-wake case, row 7's cancel-vs-
 complete race, and row 9's missing-checkpoint-code case are the four **unsafe/state-loss controls**
 K0.2's fixture must include as negative tests, matching execution-protocol.md's "Acceptance examples
-for K0–K4" enumeration.
+for K0–K4" enumeration. Row 7's control must assert CX-6's full rejection for both `continue` and
+`complete` submitted after cancellation acceptance, zero acknowledgment of the reserved batch and
+no change to accepted progress/emissions, B-5 disposition at `CANCELLED`, and deterministic recorded rejection on
+exact retry. It must also assert the reverse order: accepted completion remains terminal. Suppressing
+only next state while installing losing progress is a failing control, not a conforming variant.
 
 ---
 
@@ -1601,7 +1679,8 @@ wording so the same mechanism is no longer described as both refused and retaine
 
 | ID | Record / field (current file:line) | Classification | Reasoning |
 |---|---|---|---|
-| MIG-1 | Cancellation-request ordering in `Harness.activate`/`applyOutcome` (`packages/core/src/runtime/harness.ts:747-757`, `:953-965`), backed by the actual `CancellationRequest` record (`packages/core/src/execution/cancellation-request.ts:26-33`, states `"pending" \| "applied"`) | **Migratable** | The *rule* (check pending cancellation before dispatch, and again before committing the controller's reported next state) already matches CX-1/CX-2. The record's own docstring already states the target-compatible reasoning directly: a `RUNNING` Execution "cannot be interrupted mid-Activation without racing an uncontrolled context mutation, so the request is persisted here instead and the current Activation reaches a safe boundary" (`cancellation-request.ts:5-7`). The two-state shape can carry forward into K1's store as-is; no behavioral change is needed to satisfy §6. |
+| MIG-1 | Safe-boundary cancellation checks in `Harness.activate`/`applyOutcome` (`packages/core/src/runtime/harness.ts:747-757`, `:953-965`), backed by `CancellationRequest` (`packages/core/src/execution/cancellation-request.ts:26-33`, pending/applied states) | **Migratable** | Only the mechanism for recording pending control and checking cancellation before dispatch and at a safe boundary is reusable. Physical interruption may wait for safety; the target semantic fence starts at request acceptance (CX-1/CX-6). The current docstring's mid-Activation mutation concern (`cancellation-request.ts:5-7`) explains current mechanics, not target acceptance semantics. The losing-Outcome progress write is separately refused in REF-6; pending/applied storage alone does not satisfy §6. |
+| REF-6 | Installing `outcome.control` despite a winning pending cancellation (`packages/core/src/runtime/harness.ts:953-965`, `:1112-1122`, especially `:1119`) | **Refused** | Current `applyOutcome` suppresses reported next state/emissions when cancellation is pending, yet carries `outcome.control` into the cancelled context. CX-6 rejects the entire losing Outcome, allowing no progress installation or batch acknowledgment. K1 must change that acceptance behavior; the MIG-1 safe-boundary mechanism is reusable only when it enforces the request-acceptance fence. |
 | MIG-2 | `LifecycleState` transition table (`packages/core/src/execution/lifecycle.ts:46-54`), **excluding** `CREATED` (see `LEG-3` below) | **Migratable** | A pure, store-independent function already enforcing "terminal states have no outgoing edges" and "only `RUNNING` reaches `COMPLETED`/`FAILED`." This is exactly the target invariant (kernel.md's lifecycle diagram) and needs no semantic change for the `READY`/`RUNNING`/`WAITING`/`COMPLETED`/`FAILED`/`CANCELLED` states — only confirmation it stays store-independent in K1, and that `CREATED` is dropped from the state list it operates over. |
 | MIG-3 | The **opaque progress payload** pattern: `ControllerProgress.progress: JsonObject`, Kernel-stored-and-returned-unchanged (`packages/core/src/execution/context.ts:57-63`) | **Migratable** | Matches PC-1 form (a) exactly: opaque data the Kernel never interprets. No format change needed for K1 beyond adding the codec/version pin PC-4 requires (see `LEG-4` immediately below for what does *not* migrate as-is). Review round 4 ([K01-R4-02](implementation-05.md)) sharpened PC-1 to agree with this row rather than overstate it: what migrates is this **nested payload**, not the enclosing `ControllerProgress` wrapper, whose closed `kind` tag is `LEG-4`. |
 | MIG-4 | `revision` counter (`packages/core/src/execution/context.ts:220`) — **corrected in review round 1** ([K01-REV-03](implementation-02.md)): previously classified plainly "Migratable ... directly usable as the base progress revision," which is wrong | **Migratable as an optimistic-concurrency mechanism; NOT equivalent to the target's semantic `base_progress_revision` without redefinition** | The current field bumps on *every* persisted context change, including pure lifecycle bookkeeping that has nothing to do with an accepted Outcome's progress content: `Harness.activate` bumps it at dispatch-claim (`READY`→`RUNNING`, `harness.ts:759`, `transitionContext(context, "RUNNING", startedAt)`) and again for a pre-Activation cancellation (`harness.ts:751`, `transitionContext(context, "CANCELLED", ...)`) — neither is an Outcome being accepted. `execution/resumption.ts`'s own docstring admits exactly this conflation in its own words: "`observedRevision` records the `ExecutionContext.revision` the suspending Activation read... the runtime deliberately does **not** use a naive `current.revision !== observedRevision` equality to detect staleness: `ExecutionContext.revision` also advances for ordinary lifecycle bookkeeping (`READY -> RUNNING`, `RUNNING -> WAITING`, `WAITING -> READY`), so that comparison would classify a normal suspension as an intervening semantic mutation" (`packages/core/src/execution/resumption.ts:23-27`). kernel.md's Activation/Outcome shape needs a `base_progress_revision` that identifies *the progress an Activation was dispatched against* and advances only when an accepted Outcome installs new progress (execution-protocol.md's Outcome-acceptance algorithm step 4: "install opaque progress and its revision"). K1 may reuse a monotonic-counter *mechanism* like this one, but must not assume the *existing field*, unmodified, already carries that exact semantic — either define a separate progress-specific revision, or prove (not merely assert) that every non-progress bump this field currently takes is harmless to the target's staleness check, the way `resumption.ts` already had to prove it for its own unrelated purpose. |
@@ -1985,13 +2064,48 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   through registration and reservation. W-9 case 3's reference to that example now says "find" rather
   than "consume". This corrects the example to the existing algorithm; it changes neither W-2 nor B-3.
 
+- **Round 12 — Claude reviewer findings** ([review-11.md](review-11.md)):
+  - **K01-R11-01 (P2):** CX-2's application wording, §11 row 7's discarded next state and OA-4/OA-5
+    left whole-Outcome acceptance ambiguous; MIG-1 treated current code as the answer. CX-1/CX-2 now
+    order by cancellation request acceptance. CX-6 states full rejection, inspectable reason, zero
+    accepted Runtime mutations and recorded-rejection replay. OA-3/OA-4 fence atomically; OA-5,
+    B-3/B-5, §11 rows 3/7/8 and M-1 agree. MIG-1 is narrowed to the safe-boundary mechanism and
+    REF-6 refuses current losing-progress installation. Governing sources: kernel.md Recovery and
+    cancellation/Acceptance and atomicity, recovery-and-compatibility.md Cancellation and operational
+    recovery, and execution-protocol.md Outcome acceptance. Physical interruption timing does not
+    decide the semantic winner.
+  - **K01-R11-02 (P3):** B-8's live-only qualifier contradicted rows 1/3 and W-3. B-8 now includes
+    generations created and retired in their own registration transaction; W-3 and rows 1–4 unchanged.
+  - **K01-R11-03 (P3):** ID-6's bad §7 pointer now names ID-7's six atomic boundaries.
+  - **K01-R11-04 (P3):** B-4's eligibility wording implied a gate on ordinary READY. B-4 now cites
+    both B-2 selection cases; §3 contrast row 6, W-7 case 3, W-8 case 2 and §11 row 6 use the same
+    distinction. Ordinary candidates need no wait eligibility; wait-ended candidates use the retired
+    selector. No cursor or selection algorithm changes.
+
+- **Round 12 — owner-supplied supplemental adversarial findings**, supplied after the independent
+  review and resolved in the same round; **not Claude findings** ([review-11.md](review-11.md)):
+  - **K01-O12-01 (P2):** deepest-scalar depth was undefined for empty-container trees. E-6 now gives
+    total recursive depth over every E-1 value, with explicit 32/33 empty-array and alternating cases.
+  - **K01-O12-02 (P2):** E-6 now bounds every decoded string value and object member name before
+    escaping/serialization, with exact 65,536/65,537-name cases. E-7 key ordering is unchanged.
+  - **K01-O12-03 (P2):** E-1/E-6 and contract C2 now identify canonical bytes of each E-1
+    boundary-value root as the accounting unit. Sibling fields are not summed. The 700 KiB + 700 KiB
+    Outcome is not rejected solely for its aggregate size; exactly 1 MiB Event payloads pass size,
+    one byte more rejects. No canonical owner imposes a 1 MiB aggregate envelope cap. No wire-size
+    guarantee or transport choice is added.
+
+- **Round 12 implementer-discovered issues:** none separate from these seven findings. The broader
+  duplicate assertion and retained-input examples were aligned as dependent occurrences of
+  K01-R11-01 and K01-R11-04, respectively, rather than left with their old ambiguous wording.
+
 - **No contradiction found *between canonical owners*** on any decision in §1–§10, re-checked
   cumulatively through every round and again in revision 9's full reconstruction of the wait/batch/
   clock protocol as one state machine: each decision restates a canonical owner or narrowly resolves an
   explicitly-flagged open item (004's "Open questions and decision points" section, K0/K1 bullet).
   Nothing here required an owner decision, so no part of this packet is BLOCKED_ARCHITECTURE.
 
-  Counting what the entries above actually are: one **code-versus-target gap** (the current matcher
+  Before the seven Round-12 corrections recorded above, the accumulated entries comprised: one
+  **code-versus-target gap** (the current matcher
   cannot select application input by label) and a second of the same kind added in revision 9 (the
   current Event vocabulary has **no timer kind at all**, `packages/core/src/interaction/events.ts:62`,
   `:68` — K1 adds one as new work); one withdrawn self-inflicted claim; **three contradictions of a
@@ -2372,7 +2486,7 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
     `MIG-3`/`LEG-4`; the three-label legacy vocabulary; `MIG-5` and `REF-5`; and the owner-approved
     historical-evidence whitespace exception.
 
-- **Revision 11** (this document): corrects [review-10.md](review-10.md)'s CHANGES REQUIRED finding
+- **Revision 11**: corrects [review-10.md](review-10.md)'s CHANGES REQUIRED finding
   **K01-R10-01** and the separately **implementer-discovered K01-I11-01** (§13).
   - W-1 and §11 row 5(b)/(e) now cite retirement/readiness (`B-6`/`B-7`) and selection once `READY`
     (`B-2`); W-7 case 7's selection citation also points to B-2. No batch is selected while `WAITING`.
@@ -2381,3 +2495,17 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   - The consolidated state machine, structural well-formedness, source categories, selector grammar,
     timeout semantics, W-2 algorithm, generation fencing, cancellation and backlog guarantees remain
     unchanged, as do all other protocol decisions and the contract's acceptance criteria.
+
+- **Revision 12** (this document): corrections to H11; the round-12 report accompanies H12.
+  - **Claude K01-R11-01:** CX-1/CX-2 fix request acceptance as the cancellation ordering point;
+    CX-6 defines full losing-Outcome rejection and exact recorded-rejection replay. OA-3–OA-5,
+    B-3/B-5, §11 and M-1 align; MIG-1 preserves only reusable checks, REF-6 refuses losing progress.
+  - **Claude K01-R11-02–04:** B-8 includes registration-transaction retirement, ID-6 points to ID-7,
+    B-4 and dependent retained-input examples distinguish ordinary from wait-ended candidates.
+  - **Owner supplemental K01-O12-01–03:** E-6 defines total depth including empty containers, decoded
+    string limits including member names, and per-E-1-root canonical size. E-1 and contract C2 agree;
+    exact depth/string/size cases and the aggregate-Outcome counterexample are explicit.
+  - §13 records the separate provenance of all seven findings. No separate implementer-discovered
+    defect. E-7/JCS, finite limit numbers, W-1/W-2/W-3, B-6/B-7, Runtime-local work, takeover identity,
+    Effect refusal, progress compatibility, MIG-5/REF-5 and historical whitespace policy are preserved.
+    No runtime behavior shipped, no lifecycle state added, no K0.2 work or acceptance claimed.
