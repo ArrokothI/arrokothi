@@ -1,0 +1,15 @@
+# ArrokothI K0.1 round-3 validation evidence
+# command : git diff --stat cc61e74 2b252b05eaf7020fec1e2b4a342d5fea86bad66e
+# cwd     : /Users/rex-shih/Documents/Codex/projects/agent-kernel
+# commit  : 2b252b05eaf7020fec1e2b4a342d5fea86bad66e
+# tree    : clean
+# node    : v25.2.1  npm: 11.6.2
+# os      : Darwin 24.6.0  date(UTC): 2026-09-11T03:41:11Z
+# ---------------- raw output below ----------------
+ docs/development/007-work-packets.md             |   2 +-
+ docs/development/work/K0.1/contract.md           |  17 +-
+ docs/development/work/K0.1/protocol-worksheet.md | 274 ++++++++++++++++++++---
+ docs/development/work/K0.1/review-02.md          | 134 +++++++++++
+ 4 files changed, 388 insertions(+), 39 deletions(-)
+# ---------------- end of raw output ----------------
+# exit code: 0

@@ -1,0 +1,14 @@
+# ArrokothI K0.1 round-3 validation evidence
+# command : npm run typecheck
+# cwd     : /Users/rex-shih/Documents/Codex/projects/agent-kernel
+# commit  : 2b252b05eaf7020fec1e2b4a342d5fea86bad66e
+# tree    : clean
+# node    : v25.2.1  npm: 11.6.2
+# os      : Darwin 24.6.0  date(UTC): 2026-09-11T03:41:08Z
+# ---------------- raw output below ----------------
+
+> arrokothi-agent-kernel@0.8.1 typecheck
+> tsc --noEmit -p tsconfig.json
+
+# ---------------- end of raw output ----------------
+# exit code: 0
