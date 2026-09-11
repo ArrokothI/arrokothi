@@ -1,9 +1,9 @@
 # K0.1 protocol worksheet — equality, receipts, batches, clocks, cancellation, progress, policy
 
-**Revision:** 3 — corrects revision 2 per a second independent review (CHANGES REQUIRED); see
-[review-02.md](review-02.md) and [implementation-03.md](implementation-03.md) for those findings and
-their disposition, and [review-01.md](review-01.md)/[implementation-02.md](implementation-02.md) for
-the preceding round. **Status:** produced by packet K0.1, awaiting independent review of this revision
+**Revision:** 4 — corrects revision 3 per a third independent review (CHANGES REQUIRED); see
+[review-03.md](review-03.md) and [implementation-04.md](implementation-04.md) for those findings and
+their disposition, and [review-02.md](review-02.md)/[implementation-03.md](implementation-03.md) and
+[review-01.md](review-01.md)/[implementation-02.md](implementation-02.md) for the preceding rounds. **Status:** produced by packet K0.1, awaiting independent review of this revision
 per [006](../../006-development-process.md). **Owner of this document:** Kernel, except where a row is
 explicitly marked Runtime/Driver or deployment.
 
@@ -67,6 +67,11 @@ for a wire codec:
 | Container nesting depth | number of array/object boundaries from the value's root to its deepest scalar, inclusive of the root | ≤ 32 levels |
 | Canonical envelope size | byte length of the value's **canonical form as fully specified in E-7** — a semantic size bound computed over that exact byte sequence, never a claim about the actual wire encoding's byte count | ≤ 1,048,576 bytes (1 MiB) |
 
+Two different Unicode units appear deliberately in this section and are not in tension: a **string's
+length** is counted in Unicode scalar values (first row above), while **object key ordering** compares
+UTF-16 code units (E-7 rule 4, aligned to RFC 8785). The first is a counting rule for a bound; the
+second is a comparison rule for a total order. Neither follows from the other, and each is fixed here.
+
 An over-limit value is rejected at the same "malformed envelope" boundary as a structurally invalid
 one (§7), not truncated silently. The canonical-envelope-size bound is also E-6's operative definition
 of "large" for the payload-reference rule below: large payloads (checkpoints, artifacts) never travel
@@ -82,7 +87,8 @@ below fixes every byte-affecting rule; what remains implementation-owned is the 
 codec and the storage layout**, which are a different kind of choice, not a softer version of the
 same one.
 
-**Decision E-7 (the K0.1 canonical form — added in review round 2, [K01-R2-01](implementation-03.md)).**
+**Decision E-7 (the K0.1 canonical form — added in review round 2, [K01-R2-01](implementation-03.md);
+its profile alignment corrected in review round 3, [K01-R3-01](implementation-04.md)).**
 Round 2 found that "canonical envelope size = UTF-8 bytes of the canonicalized form" was untestable
 while canonicalization itself was left open. The canonical form is therefore fully specified here.
 
@@ -105,14 +111,25 @@ a value failing any of those is rejected (§7), not canonicalized into validity.
 2. **No insignificant whitespace.** No space, tab, carriage return or line feed appears anywhere
    outside a string. Structural bytes are exactly `{` `}` `[` `]` `,` `:`, one byte each.
 3. **Literals.** `null`, `true`, `false`, lowercase ASCII, exactly as spelled.
-4. **Object member order.** Members are sorted ascending by key, comparing keys as sequences of
-   **Unicode code points** — not UTF-16 code units and not locale collation. Comparing the keys'
-   UTF-8 byte sequences lexicographically is an exact equivalent (UTF-8 byte order is
-   order-isomorphic to code-point order) and is the recommended implementation. This rule is load
-   bearing rather than pedantic: a JavaScript implementation that sorts with the default `<` or
-   `Array.prototype.sort()` compares UTF-16 code units and produces a *different* order for keys
-   containing supplementary-plane characters (see the last boundary example below), which would make
-   two conforming-looking implementations disagree on identity and size.
+4. **Object member order — corrected in review round 3 ([K01-R3-01](implementation-04.md)).**
+   Members are sorted ascending by key, comparing the keys as sequences of **UTF-16 code units**,
+   each code unit treated as an unsigned 16-bit integer, compared lexicographically — not by Unicode
+   code point, not by UTF-8 byte sequence, and not by locale collation. This is RFC 8785's rule
+   adopted rather than paraphrased ("Property name strings to be sorted are formatted as arrays of
+   UTF-16 code units", compared by "pure value comparisons, where code units are treated as unsigned
+   integers, independent of locale settings", RFC 8785 §3.2.3), so that the canonical form and the
+   published profile this worksheet cites cannot disagree.
+
+   The recommended implementation follows from the rule rather than diverging from it. In
+   JavaScript, `Object.keys(o).sort()` and the default `<` on strings already compare UTF-16 code
+   units and are correct unchanged. In a language whose native string order is by code point or by
+   UTF-8 byte (Go, Rust, Python 3), the key must be converted to its UTF-16 code-unit sequence before
+   comparison; sorting those languages' native order is **wrong** for keys containing
+   supplementary-plane characters, because a lead surrogate (U+D800–U+DBFF) compares *below* every
+   BMP character from U+E000 upward even though the code point it encodes is far above them. The
+   last boundary example below is exactly that case. Revision 3 stated this rule the other way round
+   — code points, with UTF-8 byte order recommended — while simultaneously claiming to coincide with
+   RFC 8785; both could not be true, and rule 4 is the half that changed.
 5. **Array element order.** Preserved exactly as decoded. Array order is semantic; only object keys
    are reordered.
 6. **Strings.** Emitted between `"` bytes as UTF-8. Escaping is minimal and fixed: escape `"` as
@@ -122,18 +139,25 @@ a value failing any of those is rejected (§7), not canonicalized into validity.
    and every non-ASCII scalar value is emitted as raw UTF-8, never as `\uXXXX`. A string must be
    well-formed Unicode; an unpaired surrogate has no UTF-8 encoding and is **rejected at decode**,
    never silently replaced with U+FFFD.
-7. **Numbers.** Finite IEEE-754 binary64 only (E-1). The canonical spelling is the shortest decimal
-   string that round-trips to the same binary64 value — exactly the output of the ECMAScript
-   `Number::toString` algorithm (equivalently JavaScript's `String(x)`). Each consequence below is
-   byte-affecting and was verified empirically against Node `v25.2.1` while writing this worksheet
-   rather than recalled:
+7. **Numbers — reference pinned in review round 3 ([K01-R3-01](implementation-04.md)).** Finite
+   IEEE-754 binary64 only (E-1). The canonical spelling is fixed by an external normative algorithm,
+   not by this worksheet's prose and not by an observed implementation's behaviour: it is the
+   ECMAScript Number-to-String conversion of **ECMA-262 §7.1.12.1 including its "Note 2" enhancement**
+   — the variant requiring the *shortest* decimal string that round-trips to the same binary64 value.
+   (Current ECMA-262 editions spell the same abstract operation `Number::toString`; RFC 8785 §3.2.2.3
+   makes exactly this reference normative for JCS and names V8 and Ryū as compatible reference
+   implementations.) K0.1 adopts that algorithm **by reference**: where this prose and the referenced
+   algorithm could ever be read to differ, the referenced algorithm governs and the prose is the
+   defect. The consequences below are stated for reviewability and were cross-checked against Node
+   `v25.2.1` (`String(x)`, which implements that algorithm) as confirmation, not as the definition:
    - `-0` normalizes to `0` (`String(-0)` is `"0"`), so the two are one logical value;
    - integral magnitudes below 1e21 print with no fraction and no exponent — `1`, `1.0` and `1e0` all
      canonicalize to `1`, and `1e20` canonicalizes to `100000000000000000000`;
    - exponent form appears only at magnitude ≥ 1e21, or non-zero magnitude < 1e-6, and keeps
      ECMAScript's spelling exactly: lowercase `e`, an explicit **`+` for a positive exponent** and `-`
      for a negative one, no leading zeros in the exponent — `1e21` → `1e+21`, `1.5e300` → `1.5e+300`,
-     `1e-7` → `1e-7`, `5e-324` → `5e-324`;
+     `1e-7` → `1e-7`, `5e-324` → `5e-324`. The threshold is strict on the small side: `1e-6`
+     canonicalizes to `0.000001`, with no exponent, and only magnitudes below it use exponent form;
    - no leading `+` on the significand, no leading zero before another integer digit, no trailing `.`.
 
    The `+` in a positive exponent is part of the canonical bytes. Dropping it — a natural-looking
@@ -147,10 +171,34 @@ a value failing any of those is rejected (§7), not canonicalized into validity.
    implementations produce identical canonical bytes for the same logical value; if they do not, one
    of them violates a rule above, and that is a defect rather than an allowed variation.
 
-*Relationship to published profiles.* Rules 4, 6 and 7 coincide with the JSON Canonicalization Scheme
-(RFC 8785). K0.1 states them explicitly rather than incorporating that document by reference, so the
-contract is self-contained and reviewable here. Adopting any library that implements it is a separate
-K1 implementation decision and remains subject to AGENTS.md's third-party licence/terms review; this
+*Relationship to published profiles — corrected in review round 3
+([K01-R3-01](implementation-04.md)).* Revision 3 defined rule 4 by Unicode code point and then claimed
+rules 4, 6 and 7 "coincide with" RFC 8785. That was false for rule 4 — RFC 8785 sorts by unsigned
+UTF-16 code units and explicitly notes that UTF-8/UTF-32 ordering differs — so the normative rule and
+the guidance beside it named two different byte sequences. Rule 4 is now aligned, and the relationship
+can be stated accurately:
+
+With rule 4 aligned, this canonical form **follows RFC 8785, the JSON Canonicalization Scheme (JCS)**,
+for property ordering (rule 4) and for primitive serialization — literals (rule 3), strings and their
+escaping (rule 6) and numbers (rule 7) — and agrees with it on output encoding (rule 1), insignificant
+whitespace (rule 2), array order (rule 5), and on rejecting lone surrogates, non-finite numbers and
+duplicate object keys (E-1, E-2). A conforming, **unmodified** RFC-8785/JCS canonicalizer therefore
+emits exactly these canonical bytes for any value that passed E-1/E-2. That is the point of the
+alignment: it makes K1's "adopt an existing implementation" option real rather than notional, and it
+removes the class of defect this rule has now produced once.
+
+Two scope statements keep the claim honest. First, rules 8 and 9 are **not** JCS rules and are not
+claimed to be: absent-versus-null (rule 8) is a property of the logical value E-4 defines, upstream of
+any canonicalizer, and rule 9 is K0.1's own use of the resulting bytes for equality and for E-6's size
+bound. Second, JCS is normally applied to canonicalize for signing or for wire transmission; **E-7 is
+not.** It is an internal computation only, no transport is required to emit it (see *Purpose and scope*
+above), and the transport wire codec stays replaceable and implementation-owned.
+
+The rules are still written out in full here rather than incorporated by bare reference, so the
+contract stays reviewable in one place — but the reference now genuinely governs rules 1–7, so a
+divergence between this prose and RFC 8785 is a defect in this worksheet to be corrected, not an
+ArrokothI variant. Adopting any specific library that implements JCS remains a separate K1
+implementation decision and stays subject to AGENTS.md's third-party licence/terms review; this
 worksheet adds no dependency.
 
 *Deterministic boundary examples.* Each row shows two different but equally valid transport spellings
@@ -166,7 +214,7 @@ pass/fail result against E-6 is identical whichever spelling arrived:
 | `{"s":"\u0041"}` | `{"s":"A"}` | `{"s":"A"}` — rule 6 never escapes what does not require it | 9 bytes |
 | `{"s":"\u00e9"}` | `{"s":"é"}` (raw UTF-8) | `{"s":"é"}` — rule 6 emits raw UTF-8, never `\u` | 10 bytes (`é` is 2 UTF-8 bytes) |
 | `{"a":null}` | a value that omits `a` entirely — a **different** logical value, not another spelling | `{"a":null}` versus `{}` | 10 bytes versus 2 bytes — E-4 preserved |
-| `{"�":1,"😀":2}` | `{"😀":2,"�":1}` | `{"�":1,"😀":2}` as code points, emitted raw: U+FFFD (3 UTF-8 bytes) sorts **before** U+1F600 (4 UTF-8 bytes). A naive UTF-16-code-unit sort emits U+1F600 first, because its lead surrogate 0xD83D compares below 0xFFFD — that implementation would compute a different identity for the same logical value | 18 bytes under rule 4 (1 + 1+3+1 + 1 + 1 + 1 + 1+4+1 + 1 + 1 + 1) |
+| `{"�":1,"😀":2}` | `{"😀":2,"�":1}` | `{"😀":2,"�":1}`, emitted raw: under rule 4's UTF-16 code-unit comparison U+1F600's lead surrogate 0xD83D sorts **before** U+FFFD, so the emoji key comes first whichever spelling arrived. An implementation sorting by code point or by UTF-8 byte emits U+FFFD first (U+FFFD < U+1F600 as code points) and computes a different identity for the same logical value — revision 3's rule 4 required exactly that wrong order | 18 bytes (1 + 1+4+1 + 1 + 1 + 1 + 1+3+1 + 1 + 1 + 1) |
 
 **Left open (implementation-owned):** the **transport wire codec** (JSON text, a binary envelope
 codec, framing, compression) and the **storage layout/engine**. Nothing about the canonical form's
@@ -730,15 +778,28 @@ Event delivery representation; lifecycle transitions including `CREATED`; `Pendi
 completed in review round 1, [K01-REV-03](implementation-02.md)). A record is **split** into more than
 one row below wherever a single migratable/legacy-only/refused label would misrepresent part of it.
 
+**The classification vocabulary is exactly K0.1-C3's three labels: migratable, legacy-only, refused.**
+Every row in the table below carries exactly one of them, and a record is split across more than one
+row wherever a single label would misrepresent part of it. There is no fourth label. Material that is
+not a disposition of legacy data — a limitation of the reference implementation, for instance — is not
+a row in this table at all; it is recorded in
+[Reference-implementation limitations](#reference-implementation-limitations-not-a-legacy-disposition)
+after it.
+
+Review round 3 ([K01-R3-02](implementation-04.md)) enforced that vocabulary, because revision 3 had
+broken it twice. Revision 3's `MIG-5` used a fourth label, "partially migratable"; it is split here
+into **`MIG-5` (migratable)** — the declarative Event matching primitive and the envelope identity
+fields — and **`REF-5` (refused)** — adoption of the existing single-`wake` `ExecutionWait.event`
+record as the new K1 target wait record. Revision 3's `LIM-1` used a fifth label, "limitation"; its
+reference-store analysis is preserved in substance and keeps its ID, but moves out of this
+classification table into the subsection named above. §5's W-1/W-7 target semantics, which round 3
+accepted, are unchanged by this correction.
+
 Review round 2 ([K01-R2-02](implementation-03.md), [K01-R2-03](implementation-03.md),
-[K01-R2-04](implementation-03.md)) changed four rows: `PendingOperation` moved from an invalid
-fourth label to **`LEG-5`, legacy-only** with its reusable facts split out; `MIG-5` became **partially
-migratable** (matching primitive yes, record shape no); revision 2's `REF-2` became **`LIM-1`**, an
-implementation/scalability limitation rather than a semantic refusal, dropping an overreaching
-concurrency claim; and `REF-4`'s wording was corrected so the same mechanism is no longer described as
-both refused and retained. Every row uses exactly one of migratable / partially migratable /
-legacy-only / refused / limitation — and `LIM-1` is deliberately *not* a disposition of a record's
-migration, but of a mechanism's fitness, stated as such.
+[K01-R2-04](implementation-03.md)) had earlier corrected `PendingOperation` from an invalid
+no-label row to **`LEG-5`, legacy-only** with its reusable facts split out; withdrawn an overreaching
+concurrency claim from revision 2's `REF-2` (the entry now called `LIM-1`); and corrected `REF-4`'s
+wording so the same mechanism is no longer described as both refused and retained.
 
 | ID | Record / field (current file:line) | Classification | Reasoning |
 |---|---|---|---|
@@ -746,15 +807,15 @@ migration, but of a mechanism's fitness, stated as such.
 | MIG-2 | `LifecycleState` transition table (`packages/core/src/execution/lifecycle.ts:46-54`), **excluding** `CREATED` (see `LEG-3` below) | **Migratable** | A pure, store-independent function already enforcing "terminal states have no outgoing edges" and "only `RUNNING` reaches `COMPLETED`/`FAILED`." This is exactly the target invariant (kernel.md's lifecycle diagram) and needs no semantic change for the `READY`/`RUNNING`/`WAITING`/`COMPLETED`/`FAILED`/`CANCELLED` states — only confirmation it stays store-independent in K1, and that `CREATED` is dropped from the state list it operates over. |
 | MIG-3 | The **opaque progress payload** pattern: `ControllerProgress.progress: JsonObject`, Kernel-stored-and-returned-unchanged (`packages/core/src/execution/context.ts:57-63`) | **Migratable** | Matches PC-1 form (a) exactly: opaque data the Kernel never interprets. No format change needed for K1 beyond adding the codec/version pin PC-4 requires (see `LEG-4` immediately below for what does *not* migrate as-is). |
 | MIG-4 | `revision` counter (`packages/core/src/execution/context.ts:220`) — **corrected in review round 1** ([K01-REV-03](implementation-02.md)): previously classified plainly "Migratable ... directly usable as the base progress revision," which is wrong | **Migratable as an optimistic-concurrency mechanism; NOT equivalent to the target's semantic `base_progress_revision` without redefinition** | The current field bumps on *every* persisted context change, including pure lifecycle bookkeeping that has nothing to do with an accepted Outcome's progress content: `Harness.activate` bumps it at dispatch-claim (`READY`→`RUNNING`, `harness.ts:759`, `transitionContext(context, "RUNNING", startedAt)`) and again for a pre-Activation cancellation (`harness.ts:751`, `transitionContext(context, "CANCELLED", ...)`) — neither is an Outcome being accepted. `execution/resumption.ts`'s own docstring admits exactly this conflation in its own words: "`observedRevision` records the `ExecutionContext.revision` the suspending Activation read... the runtime deliberately does **not** use a naive `current.revision !== observedRevision` equality to detect staleness: `ExecutionContext.revision` also advances for ordinary lifecycle bookkeeping (`READY -> RUNNING`, `RUNNING -> WAITING`, `WAITING -> READY`), so that comparison would classify a normal suspension as an intervening semantic mutation" (`packages/core/src/execution/resumption.ts:23-27`). kernel.md's Activation/Outcome shape needs a `base_progress_revision` that identifies *the progress an Activation was dispatched against* and advances only when an accepted Outcome installs new progress (execution-protocol.md's Outcome-acceptance algorithm step 4: "install opaque progress and its revision"). K1 may reuse a monotonic-counter *mechanism* like this one, but must not assume the *existing field*, unmodified, already carries that exact semantic — either define a separate progress-specific revision, or prove (not merely assert) that every non-progress bump this field currently takes is harmless to the target's staleness check, the way `resumption.ts` already had to prove it for its own unrelated purpose. |
-| MIG-5 | `ExecutionWait`'s `event` arm and the `WakeCondition` it carries (`packages/core/src/execution/context.ts:103` `eventWait`; `packages/core/src/interaction/event-envelope.ts:74-80`, `:82-86` `eventSatisfiesWake`), plus the `DeliveredEvent`/envelope identity fields (`event-envelope.ts:34-42`, `:50-54`). **Classification corrected in review round 2** ([K01-R2-03](implementation-03.md)); revision 2 wrongly said this arm was "exactly what W-1/W-5 need" unchanged | **Partially migratable — the matching *primitive* migrates; the record *shape* does not migrate unchanged** | **Migrates:** declarative matching over envelope identity/kind/correlation, evaluated as data rather than code — `eventSatisfiesWake` is a pure set-membership-plus-equality test (`event-envelope.ts:82-86`), and the file's own rule that a wake condition "must stay declarative, serializable runtime data, not a callback or a query language" (`:66-72`) is exactly the constraint W-1 keeps. The envelope's identity/provenance fields (`eventId`, `destination`, `correlationId`, `causationId`, `occurredAt`, per-mailbox `sequence`) carry forward as the primitives an alternative is written against. **Does not migrate unchanged:** the record holds **one** `wake` condition with **one** `correlationId`, so it cannot express W-1's finite enumerable set of *differently correlated* alternatives — a single condition must either fix one correlation (missing the other alternative) or set `correlationId: null` and over-match every Event of that kind (§5, W-7 example 1). It also has **no declared-input-subscription concept at all**, and the file's own docstring records the resulting gap rather than hiding it: "It cannot yet select `external.input` by its application-defined `label`, so an Execution waiting for one kind of application input still wakes for every other one addressed to it... Selective input matching is accepted future work and is deliberately deferred" (`:66-72`). K1's wait record therefore needs a list of alternatives and a separate subscription list built from this primitive, not this record adopted as-is. |
+| MIG-5 | The declarative Event **matching primitive**: `WakeCondition`'s kind/correlation equality test and its evaluator (`packages/core/src/interaction/event-envelope.ts:74-80`, `:82-86` `eventSatisfiesWake`), together with the `DeliveredEvent`/envelope identity fields it matches against (`event-envelope.ts:34-42`, `:50-54`). **Split out of revision 3's single `MIG-5` row in review round 3** ([K01-R3-02](implementation-04.md)): revision 3 labelled the whole of it "partially migratable," which K0.1-C3's vocabulary does not permit, so the primitive is classified here and the record shape that holds it is classified separately as `REF-5` | **Migratable** | Declarative matching over envelope identity, kind and correlation, evaluated as data rather than code, is exactly the primitive W-1 builds *both* of its lists from. `eventSatisfiesWake` is a pure set-membership-plus-equality test (`event-envelope.ts:82-86`) — no callback, no closure, no query language — and the file's own rule that a wake condition "must stay declarative, serializable runtime data, not a callback or a query language" (`:66-72`) is the constraint W-1 keeps rather than relaxes. The envelope's identity/provenance fields (`eventId`, `destination`, `kind`, `correlationId`, `causationId`, `occurredAt`, per-mailbox `sequence`) carry forward as the vocabulary an alternative or a subscription is written against. Nothing in this primitive needs redefinition for K1; what needs replacing is the record that currently holds it, which is `REF-5`'s subject, not this row's. |
 | LEG-1 | The actual `ControllerResumption` record (`packages/core/src/execution/resumption.ts:72-101`) and the `ExecutionWait` `controller_resumption`/`dependencies` arms that name its ID (`packages/core/src/execution/context.ts:104-130`); the port's own admission that the underlying work is ephemeral, `packages/core/src/ports/controller-resumption.ts:40-41` ("Work registered by an Activation that does not return the matching wait is abandoned and can never wake the Execution") and `:61-62` (`ControllerResumptionWork` is documented "Never persisted, never inspected, never re-created by the runtime"); and the processor's own comparison against `EffectProcessor`, `packages/core/src/runtime/resumption-processor.ts:1-56` (header), specifically `:10-16` ("has a public settlement ingress / has none, deliberately") | **Legacy-only — corrected framing in review round 1** ([K01-REV-02](implementation-02.md)) | This is exactly F09's finding: the *durable record* (`ControllerResumptionId`, its state, its `observedRevision` provenance field) is Kernel-persisted, but the actual work it names is an in-process `Promise`/thunk that is, by the port's own contract, never persisted and cannot be reconstructed after a process death. Per 001's K1 section ("Remove controller resumptions and closed Agent/Workflow progress discriminators from the new Kernel protocol") and 003's F09 disposition, this whole mechanism does not migrate into the K1 Kernel protocol. **Correction:** round 1 said this record's *shape* (a Kernel-visible "local work" wait arm) was worth preserving with only its referent reclassified. That is withdrawn (§5, W-4): the target Kernel `waitingFor` record has **no** arm analogous to this at all, Kernel-visible or otherwise — this record and its `ExecutionWait` arms are legacy-only in the stronger sense that *neither the data nor the shape* informs the new Kernel wait protocol. It may continue to exist unchanged **inside** a compatibility Runtime (K1.4's "bridge existing controllers... keep its live-promise resumption private", 001 K1) as purely Runtime-private bookkeeping — legacy-only means "not part of the new Kernel contract, in data or in shape," not "delete the file." |
 | LEG-2 | `Harness.activate`'s mailbox consumption before `RUNNING`/before controller output exists (`packages/core/src/runtime/harness.ts:762`, `tx.mailboxes.consume(...)` inside the same transaction that writes `RUNNING`, prior to `runController` ever being called) | **Legacy-only** | This is F07: the current code treats "consumed from the mailbox" as equivalent to the target's "reserved in Activation," but does so as an unconditional side effect of claiming the Activation, not as part of accepting the resulting Outcome. It does not by itself satisfy B-3 (whole-batch acknowledgment tied to *Outcome acceptance*, not to dispatch). K1 must tie acknowledgment to accepted Outcome, not to the earlier consume-on-claim step, to satisfy OA-3/OA-4 and B-3 together (also connects to `REF-1`/`REF-4`). |
 | LEG-3 | The `CREATED` lifecycle state (`packages/core/src/execution/lifecycle.ts:16`, `:24-32` `LIFECYCLE_STATES`/enumeration, `:47` `CREATED: ["READY", "CANCELLED"]`), and `CancellationRequest`'s own docstring naming it as a real current phase: "For a `CREATED`, `READY`, or `WAITING` Execution the runtime transitions straight to `CANCELLED`" (`cancellation-request.ts:4-6`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Legacy-only** | 004's architecture review explicitly retires this as a mandatory Kernel state: its decisions table names the decision "Remove separate CREATED state from target," reasoning "Create, initial input and readiness can be accepted together; partial allocation is an operation attempt." The target lifecycle (kernel.md's diagram) starts directly at `READY` from one atomic `create + initial input` decision (execution-protocol.md's "Identities and immutable exchanges": "Creation binds the Runtime contract and executable definition revision, authority context and initial input in one atomic decision"). Current code's separate, externally observable `CREATED` phase — with its own transition edges and its own cancellation handling — does not migrate as a distinct target phase; K1 folds it into the atomic creation boundary (§11 row 1). The transition-table *pattern* (`MIG-2`) still applies to whatever shorter state list K1 actually uses. |
 | LEG-4 | `ControllerProgress`'s closed `kind: "agent" \| "workflow"` discriminator (`packages/core/src/execution/context.ts:57-59`), backed by the closed `DefinitionKind` union (`packages/core/src/definitions/types.ts:22`, `export type DefinitionKind = "agent" \| "workflow";`) — **added in review round 1** ([K01-REV-03](implementation-02.md)) | **Legacy-only** | 004's vocabulary-disposition table explicitly lists "closed Agent/Workflow union" under "Remove from mandatory Kernel model." A two-literal closed union cannot express a third Runtime kind without editing this type, which is exactly the closure 004 rejects as a Kernel concept — the opaque progress payload (`MIG-3`) is fine to keep opaque, but *tagging* it with this specific closed enum is not the target's compatibility mechanism. PC-4 already names the actual target mechanism: "versioned to the exact Runtime/definition contract revision that can understand it" — which `ExecutionContext.definition: ExecutionDefinitionRef` already tracks per Execution, kind-agnostically. K1's generic progress record should identify compatibility through that pinned Runtime/definition revision, not through a hardcoded two-value literal type; a compatibility-Runtime bridge may keep using `"agent"`/`"workflow"` as its own *internal* tag without that tag being part of the new Kernel protocol's progress-compatibility contract. |
 | REF-1 | Effect dispatch happening in `applyOutcome` (`packages/core/src/runtime/harness.ts:890-911`, `this.effects.processActivationEffects(...)`) *before* the progress-committing transaction (`harness.ts:938` onward, `this.options.store.transact(...)`) | **Refused** | This is F10 exactly: Effects are processed and can partially fail *before* the transaction that commits next-state/progress/acknowledgment. The in-code comment at `harness.ts:904-906` ("nothing partial was committed") is not true of the whole boundary — it is true only of the effect-dispatch call itself. This ordering is refused for the target K1/K2 boundary: OA-3/OA-4 require Effect *intents* to be part of the same atomic commit as progress, with actual dispatch/settlement happening afterward from the accepted record. This is explicitly a K2-boundary pattern (Effects don't exist in K1 at all, §8) — it is listed here because the current code's *ordering pattern* (side-effect-before-commit) must not be carried forward into K1's non-Effect Outcome-acceptance path either. |
-| LIM-1 | `InMemoryRuntimeStore.transact` (`packages/core/src/reference/in-memory-runtime-store.ts:455-468`): the scope parameter is named `_scope: ExecutionId` (leading underscore — declared but unused), every transaction does `const draft = structuredClone(this.state)` (`:457`) against the *entire* store's `RuntimeState` and installs the whole draft back (`:459`), and all transactions are serialized through one `queue` (`:453,462-466`). **Reclassified in review round 2** ([K01-R2-04](implementation-03.md)); revision 2 labelled this "Refused as a K1+ mechanism" and asserted it made concurrent Execution computation impossible | **Implementation/scalability limitation of the reference store — not a semantic classification, and not a refusal of the in-memory reference itself** | Two facts are proven by source and stand: the store *accepts a scope argument and ignores it*, and it clones and globally serializes the whole aggregate per transaction. The first matters semantically: nothing here implements per-Execution scoping, so **no K0/K1 assertion may rest on the store's global serialization as if it were a scope contract** — that is this row's actual obligation. The second is a cost/scalability property for K3 to measure (003's F13: "measure actual cost and choose bounded persistent mechanism"), not a semantic defect. **Correction:** revision 2 further claimed this proves Runtime computations cannot overlap. It does not. `Harness.activate` closes its claim transaction before any controller runs — the `store.transact(...)` call spans `harness.ts:742-764` and `runController` is invoked afterwards at `:779` — so controller computation happens entirely outside any store transaction and two Executions' computations can overlap in wall-clock time even with a globally serialized store. Whether K1's "one delayed Runtime must not prevent the same coordinator loop dispatching another Execution" requirement is met is therefore a **separate question about the coordinator loop, not the store**, and K0.1 records no verdict on it without an actual counterexample; `runOnce`'s sequential await (`harness.ts:683-690`) is the structure K1.1 should examine for that requirement. 001 K1 explicitly requires building this behavior "in an in-memory reference," so an in-memory store is mandated, not refused; what must change for K1 is the ignored scope argument and the mailbox mechanism (`REF-4`), not the decision to be in memory. |
 | REF-3 | `ExecutionWait`'s `dependencies` arm as currently defined (`packages/core/src/execution/context.ts:126-130`) treated as a **Kernel wait primitive at all** — **corrected framing in review round 1** ([K01-REV-02](implementation-02.md)) | **Refused outright as a target Kernel record shape; the Event half is separately migratable as `MIG-5`, the `resumptions` half is `LEG-1`** | Round 1 framed this as "the shape is worth keeping, only the referent needs reclassifying." That is withdrawn (§5, W-4): the target Kernel `waitingFor` record is not a union with an `event`-or-`resumptions` shape at all — it is Event-only. A K1 Kernel wait record must not itself carry any field naming a `ControllerResumptionId` or equivalent local-work identifier, full stop; there is no partial-credit "shape" to preserve. If a Runtime needs "wait for any of several local jobs plus one Event," that union is assembled **entirely Runtime-side**, privately, with only the Event surfacing to the Kernel as a real `waitingFor` registration once (and only once) something is actually ready to report (§5, W-4's "does not yet submit an Outcome" resolution) — restating kernel.md's "a Runtime can implement an all-of join by retaining observed results in progress and waiting for the remaining set," generalized to this any-of case. |
 | REF-4 | The reference mailbox's single monotonic `consumed` cursor (`packages/core/src/reference/in-memory-runtime-store.ts:45-50`, `MailboxState.consumed: number`, doc-commented "How many of `events` an Activation has already consumed"; `consume()` at `:161-167` takes `box.events.slice(box.consumed)` then unconditionally sets `box.consumed = box.events.length`). **Wording corrected in review round 2** ([K01-R2-04](implementation-03.md)): revision 2 described the same mechanism as both "refused for K1+" and "retained as the K1 reference," which cannot both be true | **Refused as the mailbox mechanism of the new K1 reference; the existing file remains legacy/compatibility material for current 0.8.x paths until migration** | This cursor is F20's flagged problem in current code: one global count, not a per-entry disposition, so it cannot represent B-4's retained unmatched input (an Event not selected into a batch must stay independently accounted for, not merely "after the cursor") or B-5's per-Event terminal disposition. It also implements no eligibility filter: `consume()` takes *everything* past the cursor regardless of the registered wait's alternatives or declared subscriptions (§5, W-1), and it consumes at dispatch-claim time rather than acknowledging at Outcome acceptance (`LEG-2`, B-3). K1's reference mailbox must therefore be a **new mechanism** — per-Event disposition plus eligibility selection plus Outcome-time acknowledgment — not this one carried over. To be unambiguous about the two statements revision 2 conflated: the *cursor mechanism* does not become the K1 reference's mailbox; the *existing file* may keep running the current 0.8.x paths unchanged until those paths migrate. Being in memory is not what is refused here (see `LIM-1`) — this specific consumption mechanism is. |
+| REF-5 | Adoption of the existing `ExecutionWait.event` arm and its **single** `wake: WakeCondition` (`packages/core/src/execution/context.ts:103` `eventWait`; `packages/core/src/interaction/event-envelope.ts:74-80`) **as the new K1 target wait record**. **Split out of revision 3's `MIG-5` in review round 3** ([K01-R3-02](implementation-04.md)) | **Refused** — the record shape is refused unchanged as the target K1 Kernel wait record; the matching primitive inside it is separately classified `MIG-5` | The record holds **one** `wake` condition with **one** `correlationId`, so it cannot express W-1's finite enumerable set of *differently correlated* alternatives: a single condition must either fix one correlation and miss the other alternative, or set `correlationId: null` and over-match every Event of that kind (§5, W-7 example 1). It also has **no declared-input-subscription concept at all**, and the file's own docstring records the resulting gap rather than hiding it: "It cannot yet select `external.input` by its application-defined `label`, so an Execution waiting for one kind of application input still wakes for every other one addressed to it... Selective input matching is accepted future work and is deliberately deferred" (`:66-72`). Revision 3 read that as making the record "partially migratable"; under K0.1-C3's vocabulary the accurate statement is that this record shape is **refused** as K1's wait record and is rebuilt from the `MIG-5` primitive as two declarative lists plus the §4 deadline (§5, W-1). Refusing the shape is not a refusal of the file: it may keep serving current 0.8.x paths unchanged until they migrate (`LC-1`). |
 | LEG-5 | `PendingOperation` (`packages/core/src/effects/pending.ts:73-106`) as a **single universal record covering every Effect kind alike** — one shape for spawn, message, user-input request, timer and capability call, carrying `PendingOperationStatus`, `PendingDispatchState`, `PendingOutcomeState`, `idempotencyKey`, `deadline` and `resultEventId` together (its own docstring: "Generic on purpose. Nothing here mentions capabilities, because `SpawnExecution`, `SendMessage`, `RequestUserInput`, and a timer all need the same runtime record", `pending.ts:4-8`). **Classification corrected in review round 2** ([K01-R2-02](implementation-03.md)); round 1 wrongly recorded this as out-of-scope with no label, which K0.1-C3 does not permit | **Legacy-only** (the universal abstraction); individual facts inside it are reusable input to K2's own records, as split below | The *universal hierarchy* is explicitly removed from the mandatory target Kernel model: 004's vocabulary-disposition table lists "universal PendingOperation hierarchy" under "Remove from mandatory Kernel model," kernel.md states "Pending action state is necessary; a separate universal `PendingOperation` abstraction is not required beyond these records," action-lifecycle.md opens with "This is not a new universal PendingOperation hierarchy," and 007's own K2 exclusions row forbids a "universal pending hierarchy." So the record as a *generic one-size abstraction* does not migrate. **Split — facts that remain necessary and may inform K2's logical-action/attempt/responsibility records without K0.1 deciding K2's mechanics:** (a) separating *dispatch* from *outcome* (`PendingDispatchState` versus `PendingOutcomeState`, `pending.ts:14-20`) so that "dispatched with no outcome" is representable rather than inferred — the same distinction action-lifecycle.md's "Attempt evidence" dimension requires (§8, EF-3); (b) retaining `unknown` as a first-class outcome value rather than collapsing it to failure; (c) correlating a settled request to the exact result Event that delivered it (`resultEventId`); (d) an explicitly nullable deadline meaning "no deadline was configured" rather than a sentinel far-future timestamp (`pending.ts:96-101`). **Facts that are not generic Kernel material:** `conflicted` is Structured-Memory-write-specific and `declined`/`denied`/`rejected` encode confirmation/authorization specifics (`pending.ts:38-71`) — whether K2 keeps, renames or restructures those belongs to K2's admission/settlement contract, which K0.1 does not decide. **Scope note (unchanged):** K1 still refuses all Effects (§8, `EF-1`/`EF-2`), so no pending record of any shape is created in K1's boundary; that is a scope fact about K1, not a substitute for this record's legacy classification. |
 
 **Decision LC-1 (no legacy record is deleted by this packet).** Every classification above describes
@@ -765,6 +826,47 @@ Runtime where feasible; keep its live-promise resumption private"). `LEG-3`/`LEG
 what the *target Kernel protocol* does not need, not files to delete — a compatibility Runtime may keep
 using an internal `CREATED`-like phase or an internal `"agent"`/`"workflow"` tag for its own bridging
 purposes.
+
+### Reference-implementation limitations (not a legacy disposition)
+
+`LIM-1` is **not** a migratable / legacy-only / refused classification, and review round 3
+([K01-R3-02](implementation-04.md)) moved it out of the table above for exactly that reason: it does
+not dispose of a legacy *record*, it records what the current reference store's mechanism does and
+does not prove. Review round 2 ([K01-R2-04](implementation-03.md)) had already reclassified it from
+revision 2's `REF-2` refusal; round 3 keeps that substance intact and keeps the `LIM-1` ID — both
+`REF-4` above and §13 below reference it — and simply stops presenting it as a fifth disposition
+label. K0.1-C3's vocabulary is not expanded to accommodate it.
+
+**`LIM-1` — `InMemoryRuntimeStore.transact`**
+(`packages/core/src/reference/in-memory-runtime-store.ts:455-468`).
+
+*What the source shows.* The scope parameter is named `_scope: ExecutionId` (leading underscore —
+declared but unused); every transaction does `const draft = structuredClone(this.state)` (`:457`)
+against the *entire* store's `RuntimeState` and installs the whole draft back (`:459`); and all
+transactions are serialized through one `queue` (`:453`, `:462-466`).
+
+*Status.* An **implementation/scalability limitation of the reference store** — not a semantic
+classification of legacy data, and not a refusal of the in-memory reference itself.
+
+*What follows.* Two facts are proven by source and stand: the store *accepts a scope argument and
+ignores it*, and it clones and globally serializes the whole aggregate per transaction. The first
+matters semantically: nothing here implements per-Execution scoping, so **no K0/K1 assertion may rest
+on the store's global serialization as if it were a scope contract** — that is this entry's actual
+obligation. The second is a cost/scalability property for K3 to measure (003's F13: "measure actual
+cost and choose bounded persistent mechanism"), not a semantic defect.
+
+*Correction carried forward from round 2.* Revision 2 further claimed this proves Runtime computations
+cannot overlap. It does not. `Harness.activate` closes its claim transaction before any controller
+runs — the `store.transact(...)` call spans `harness.ts:742-764` and `runController` is invoked
+afterwards at `:779` — so controller computation happens entirely outside any store transaction, and
+two Executions' computations can overlap in wall-clock time even with a globally serialized store.
+Whether K1's "one delayed Runtime must not prevent the same coordinator loop dispatching another
+Execution" requirement is met is therefore a **separate question about the coordinator loop, not the
+store**, and K0.1 records no verdict on it without an actual counterexample; `runOnce`'s sequential
+await (`harness.ts:683-690`) is the structure K1.1 should examine for that requirement. 001 K1
+explicitly requires building this behavior "in an in-memory reference," so an in-memory store is
+mandated, not refused; what must change for K1 is the ignored scope argument and the mailbox mechanism
+(`REF-4`), not the decision to be in memory.
 
 ---
 
@@ -792,23 +894,39 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
   of application input still wakes for every other one addressed to it," while kernel.md requires that
   "application-input waits require a declared subscription." **Resolution:** the canonical requirement
   wins. This is a *code-versus-target gap*, not a conflict between canonical sources: the code already
-  labels it "accepted future work... deliberately deferred," and §12's `MIG-5` now classifies the record
-  shape as not migrating unchanged for exactly this reason. K1 supplies the declared-subscription list
-  (§5, W-1); nothing in the canonical set needs changing.
+  labels it "accepted future work... deliberately deferred," and §12 now classifies the record shape as
+  **refused** unchanged for exactly this reason (`REF-5`, split out of revision 3's `MIG-5` in review
+  round 3, [K01-R3-02](implementation-04.md)), while the matching primitive it contains stays
+  **migratable** (`MIG-5`). K1 supplies the declared-subscription list (§5, W-1); nothing in the
+  canonical set needs changing.
 - **Re-checked in review round 2 ([K01-R2-04](implementation-03.md)) and withdrawn as a contradiction:**
   revision 2 asserted that the reference store's global serialization contradicted mental-model.md's
   "Unrelated Executions can compute concurrently." Re-reading the source shows no such contradiction:
   controller computation runs outside the store transaction (`harness.ts:742-764` closes before `:779`
   invokes `runController`), so a globally serialized store does not by itself prevent overlapping
-  computation. `LIM-1` now records the store's real limitation — an ignored scope argument, and cost —
-  without the overreaching concurrency claim, and K0.1 records no verdict on K1's delayed-A/B
-  requirement absent an actual counterexample.
+  computation. `LIM-1` records the store's real limitation — an ignored scope argument, and cost — without
+  the overreaching concurrency claim, and K0.1 records no verdict on K1's delayed-A/B requirement
+  absent an actual counterexample. Round 3 ([K01-R3-02](implementation-04.md)) moved that entry out of
+  §12's classification table into its own
+  [reference-implementation-limitations subsection](#reference-implementation-limitations-not-a-legacy-disposition),
+  because a statement about a mechanism's fitness is not a migratable/legacy-only/refused disposition.
+- **Contradiction internal to this worksheet (found in review round 2's output and resolved in review
+  round 3, [K01-R3-01](implementation-04.md)):** revision 3's E-7 defined rule 4 by Unicode code point,
+  recommended UTF-8 byte comparison as its equivalent, and then claimed rule 4 coincided with RFC 8785
+  — which sorts by unsigned UTF-16 code units. Two implementations each following the document
+  faithfully could therefore produce different canonical bytes. **Resolution:** rule 4 is realigned to
+  RFC 8785's UTF-16-code-unit ordering and the profile claim is restated accurately. No canonical owner
+  is overridden by this: none states an object-key ordering rule, and execution-protocol.md explicitly
+  leaves the choice to this packet ("Object key ordering need not create a different logical payload.
+  K0 selects one canonical value encoding and limits"). This was a defect in K0.1's own drafting, not a
+  dispute between canonical sources.
 - **No contradiction found** between kernel.md/detail-design and 001/005/003 on any of §1–§10's
-  decisions, re-checked after round 2's §1 (E-7 canonical encoding) and §5 (W-1 wait shape) additions:
-  each decision restates or narrowly resolves an explicitly-flagged open item (004's "Open questions
-  and decision points" section, K0/K1 bullet), not a dispute between canonical sources. The two entries
-  above are a code-versus-target gap and a withdrawn self-inflicted claim respectively, neither of which
-  is a conflict *between* canonical owners.
+  decisions, re-checked after round 2's §1 (E-7 canonical encoding) and §5 (W-1 wait shape) additions
+  and again after round 3's rule-4 realignment and §12 vocabulary split: each decision restates or
+  narrowly resolves an explicitly-flagged open item (004's "Open questions and decision points"
+  section, K0/K1 bullet), not a dispute between canonical sources. The other entries above are a
+  code-versus-target gap, a withdrawn self-inflicted claim and a self-inflicted internal inconsistency
+  respectively — none of them a conflict *between* canonical owners.
 
 ---
 
@@ -885,3 +1003,32 @@ Per K0.1-C5, explicit call-outs rather than silent resolution:
     preserved unedited.
   - **K01-R2-06** — validation evidence for this revision is committed alongside
     [implementation-03.md](implementation-03.md) as retrievable repository artifacts.
+- **Revision 4** (this document): corrects revision 3 per [review-03.md](review-03.md)'s CHANGES
+  REQUIRED findings K01-R3-01 through K01-R3-04, disposed in
+  [implementation-04.md](implementation-04.md):
+  - **K01-R3-01** — §1 E-7's canonical encoding and its standards guidance are made to agree, by the
+    review's preferred minimal-standard route: **rule 4 now orders object members by UTF-16 code
+    units per RFC 8785 §3.2.3**, replacing revision 3's Unicode-code-point rule and its UTF-8-byte
+    implementation recommendation (which, together with the "coincides with RFC 8785" claim, named two
+    different byte sequences). The supplementary-plane boundary example and its byte-order explanation
+    are updated — the canonical form is now `{"😀":2,"�":1}`, still 18 bytes — and the
+    *Relationship to published profiles* note now states accurately that the canonical form follows
+    RFC 8785/JCS for property ordering and primitive serialization, that an unmodified JCS
+    canonicalizer emits these bytes, and that rules 8–9 are K0.1's own. Rule 7 is pinned to
+    ECMA-262 §7.1.12.1 including its "Note 2" enhancement (the reference RFC 8785 §3.2.2.3 makes
+    normative), with the Node observations demoted to a cross-check; the `1e-6` → `0.000001` case is
+    stated explicitly. E-7 stays an internal-only computation with the transport wire codec
+    replaceable, and E-6 gained a note distinguishing its scalar-value length counting from rule 4's
+    code-unit comparison. All eight canonical byte counts were recomputed.
+  - **K01-R3-02** — §12 now uses exactly K0.1-C3's three labels. Revision 3's "partially migratable"
+    `MIG-5` is split into **`MIG-5` (migratable)** — the declarative Event matching primitive and the
+    envelope identity fields — and **`REF-5` (refused)** — adoption of the existing single-`wake`
+    `ExecutionWait.event` record as the new K1 target wait record. Revision 3's fifth label
+    disappears: `LIM-1`'s reference-store analysis is preserved in substance, keeps its ID, and moves
+    out of the classification table into a separate
+    [reference-implementation-limitations subsection](#reference-implementation-limitations-not-a-legacy-disposition).
+    §12's header note and §13's dependent entries are updated. §5's W-1/W-7 target semantics, which
+    round 3 accepted, are unchanged.
+  - **K01-R3-03** and **K01-R3-04** concern the packet's commit identity, round-4 evidence path and
+    historical review metadata rather than this worksheet's content; they are dispositioned in
+    [implementation-04.md](implementation-04.md) and [review-03.md](review-03.md).

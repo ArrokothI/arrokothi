@@ -12,8 +12,19 @@ Round 2 (C2 `fc84664`, H2 `cc61e74`) received a second independent review, again
 REQUIRED**: see [review-02.md](review-02.md) (findings K01-R2-01 through K01-R2-06, plus a
 provenance correction to round 1's recorded reviewer identity, access method and severities).
 Round 3's correction is reported in [implementation-03.md](implementation-03.md); sections marked
-"corrected in review round 2" reflect it. Every prior commit, report and review is preserved
-unedited — each round corrects forward rather than rewriting the record it was reviewed against.
+"corrected in review round 2" reflect it.
+
+Round 3 (C3 `2b252b0`, H3 `aef1e33`) received a third independent review, again **CHANGES REQUIRED**:
+see [review-03.md](review-03.md) (findings K01-R3-01 through K01-R3-04, criterion verdicts, and a
+provenance correction superseding two statements in [review-02.md](review-02.md)). Round 4's
+correction is reported in [implementation-04.md](implementation-04.md); sections marked "corrected in
+review round 3" reflect it. Round 3 also found that H3 added evidence files after its payload C3 was
+validated, so round 4 restores 006's commit-identity convention: an administrative review-record
+commit, then payload C4, then validation on the clean C4 tree, then a candidate H4 carrying only the
+report and the status-row edit. H3 is not rewritten to achieve that.
+
+Every prior commit, report and review is preserved unedited — each round corrects forward rather than
+rewriting the record it was reviewed against.
 
 ## Identity
 
@@ -72,9 +83,9 @@ Decomposed into stable IDs, checked in [implementation-01.md](implementation-01.
 |---|---|
 | K0.1-C1 | Every 001 K0 boundary (creation/input, dispatch, Outcome acceptance, Effect intent refusal until K2, wait/cancel, terminal, checkpoint form) has exactly one worksheet entry with an owner and an assertion phrased as an observable pass/fail, not prose intent. |
 | K0.1-C2 | Equality/limits, scoped receipts, batches, three clocks, cancellation/terminal obligations and progress compatibility are each a dedicated worksheet section with decisions, not open questions restated. **"Limits" means K0.1 states concrete units and a counting rule for each finite bound the semantic canonical-value model needs (corrected in review round 1, [K01-REV-04](review-01.md)) — e.g. "string length in Unicode scalar values," "array/object entries," "canonical envelope bytes" — so K1 fixtures can test an exact pass/fail boundary. Round 2 ([K01-R2-01](review-02.md)) further requires that the canonical encoding those bounds are measured over is itself fully specified — every byte-affecting rule (object-key ordering, string escaping, number spelling, absent-versus-null) — so that a size bound is computable rather than nominal; worksheet E-7 carries that specification. Only the transport wire codec and the storage layout/engine stay implementation-owned (C4).** |
-| K0.1-C3 | Every current legacy record type touched by K0/K1 (`ExecutionContext.control`, the `ControllerProgress` kind discriminator, `ExecutionWait` incl. `controller_resumption`/`dependencies`, the `ControllerResumption` record itself, the mailbox/Event delivery representation, lifecycle transitions incl. `CREATED`, `PendingOperation`, `CancellationRequest`, and the `revision` counter versus the target's semantic progress revision) is classified migratable / legacy-only / refused — splitting a record into parts with different classifications where a single label would misrepresent it (corrected in review round 1, [K01-REV-03](review-01.md)) — with current file/line evidence for each classification. |
+| K0.1-C3 | Every current legacy record type touched by K0/K1 (`ExecutionContext.control`, the `ControllerProgress` kind discriminator, `ExecutionWait` incl. `controller_resumption`/`dependencies`, the `ControllerResumption` record itself, the mailbox/Event delivery representation, lifecycle transitions incl. `CREATED`, `PendingOperation`, `CancellationRequest`, and the `revision` counter versus the target's semantic progress revision) is classified migratable / legacy-only / refused — splitting a record into parts with different classifications where a single label would misrepresent it (corrected in review round 1, [K01-REV-03](review-01.md)) — with current file/line evidence for each classification. **These three labels are exhaustive (made explicit in review round 3, [K01-R3-02](review-03.md)): no fourth or fifth classification may be introduced to accommodate a row, and material that is not a disposition of legacy data — a reference-implementation limitation, for example — belongs outside the classification table rather than inside it under a new label.** |
 | K0.1-C4 | No decision invents a new mandatory Kernel concept beyond what kernel.md/detail-design already name (no wire codec, no storage engine, no new entity). This applies to **transport/storage mechanics only** — the wire-byte encoding, database schema and storage-engine choice stay implementation-owned — and does not exempt the semantic canonical-value/equality profile, its canonical encoding rules (worksheet E-7) or its finite limits (C2), which 001 K0 requires K0.1 to actually state. A rule is "implementation-owned" here only if changing it cannot change which logical values are equal or what a bounded value measures. |
-| K0.1-C5 | Contradictions between sources (e.g. current code vs. target contract) are called out explicitly and resolved in the Kernel's favor per AGENTS.md, never silently resolved by picking whichever the current implementation already does. |
+| K0.1-C5 | Contradictions between sources (e.g. current code vs. target contract) are called out explicitly and resolved in the Kernel's favor per AGENTS.md, never silently resolved by picking whichever the current implementation already does. **Round 3 ([K01-R3-01](review-03.md)) confirms this criterion also covers a contradiction *internal to the worksheet* — a normative rule stated against its own implementation guidance or against a published profile it claims to follow — because such a contradiction makes the decision unusable in exactly the way a source conflict does: two implementers reading the same document reach different bytes.** |
 | K0.1-C6 | The worksheet is versioned (revision marker) and self-contained: a K1.1 implementer can read it without also reading this contract or the full canonical set again for the decisions it covers. |
 
 ## Sources and touchpoints inspected in the current tree
