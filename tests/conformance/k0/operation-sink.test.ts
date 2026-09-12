@@ -208,3 +208,114 @@ describe("K0 operation sink: retained references cannot rewrite recorded history
     assert.deepEqual(Object.keys(sink as unknown as Record<string, unknown>), ["attempt"]);
   });
 });
+
+describe("K0 operation sink: the snapshot is faithful across the whole accepted E-1 key space", () => {
+  // Round-2 review finding K02-R2-02. E-1 permits any well-formed string as an object member name, so
+  // the ledger has to record every one of them as data. `"__proto__"` is the case that breaks a naive
+  // copy: it is an ordinary own data property when JSON.parse produces it, but plain assignment hits
+  // the inherited setter instead, so the member vanishes from the record and its value becomes the
+  // copy's prototype — where `deepFreeze` never looks. That makes the ledger both incomplete about
+  // what was attempted and rewritable through the prototype it grew.
+  //
+  // These cases use ordinary JSON, not exotic JavaScript objects. Each one fails against the previous
+  // implementation.
+
+  const protoInput = () => JSON.parse('{"__proto__":{"x":1},"safe":2}') as Record<string, unknown>;
+
+  test("an own `__proto__` member is recorded as data and does not become the prototype", () => {
+    const { sink, ledger } = createOperationSink();
+    sink.attempt(attempt({ input: protoInput() }));
+
+    const recorded = ledger.entries()[0]!.input as Record<string, unknown>;
+    assert.ok(Object.prototype.hasOwnProperty.call(recorded, "__proto__"), "the member must survive as an own property");
+    assert.deepEqual(Object.keys(recorded), ["__proto__", "safe"], "no member may be dropped from the record");
+    assert.deepEqual(recorded["__proto__"], { x: 1 });
+    assert.equal(Object.getPrototypeOf(recorded), Object.prototype, "no member may leak onto the prototype");
+  });
+
+  test("the recorded value round-trips through JSON exactly as it arrived", () => {
+    const { sink, ledger } = createOperationSink();
+    const input = protoInput();
+    sink.attempt(attempt({ input }));
+
+    assert.equal(JSON.stringify(ledger.entries()[0]?.input), JSON.stringify(input));
+  });
+
+  test("the value stored under `__proto__` is frozen and is not reachable on any prototype", () => {
+    const { sink, ledger } = createOperationSink();
+    sink.attempt(attempt({ input: protoInput() }));
+
+    const recorded = ledger.entries()[0]!.input as Record<string, unknown>;
+    const nested = recorded["__proto__"] as { x: number };
+    assert.ok(Object.isFrozen(nested), "a value reachable through the record must be immutable");
+
+    try {
+      nested.x = 99;
+    } catch {
+      // Frozen in strict mode; either way the record below must be unchanged.
+    }
+    assert.equal((ledger.entries()[0]!.input as Record<string, { x: number }>)["__proto__"]!.x, 1);
+
+    // The escape route the previous implementation opened was that the recorded value ended up *on*
+    // the prototype, where deepFreeze never walked and anyone could edit it. Assert it is not there.
+    // Nothing is written to Object.prototype to check this: polluting a global to test for pollution
+    // would be its own defect, and would leak into every other test in the process.
+    const prototype = Object.getPrototypeOf(recorded) as Record<string, unknown>;
+    assert.equal(prototype, Object.prototype, "the snapshot must keep an ordinary prototype");
+    assert.equal(Object.prototype.hasOwnProperty.call(prototype, "x"), false, "no recorded value may live on a shared prototype");
+  });
+
+  test("mutating the caller's `__proto__` member afterwards does not change the entry", () => {
+    const { sink, ledger } = createOperationSink();
+    const input = protoInput();
+    sink.attempt(attempt({ input }));
+
+    (input["__proto__"] as { x: number }).x = 99;
+
+    assert.equal((ledger.entries()[0]!.input as Record<string, { x: number }>)["__proto__"]!.x, 1);
+  });
+
+  test("a `__proto__` member in the returned observation is recorded and detached too", () => {
+    const { sink, ledger } = createOperationSink({
+      handlers: { "artifact.publish": () => ({ disposition: "success", observation: JSON.parse('{"__proto__":{"y":1}}') }) },
+    });
+    const returned = sink.attempt(attempt()) as { observation: Record<string, { y: number }> };
+
+    const recorded = ledger.entries()[0]!.result.observation as Record<string, unknown>;
+    assert.ok(Object.prototype.hasOwnProperty.call(recorded, "__proto__"));
+    assert.deepEqual(recorded["__proto__"], { y: 1 });
+
+    try {
+      returned.observation["__proto__"]!.y = 99;
+    } catch {
+      // Either way the record must be unchanged.
+    }
+    assert.deepEqual((ledger.entries()[0]!.result.observation as Record<string, unknown>)["__proto__"], { y: 1 });
+  });
+
+  test("other member names that shadow Object.prototype are recorded as ordinary data", () => {
+    // `__proto__` is the only key with an accessor on Object.prototype, but the claim is about the
+    // whole key space, so the neighbouring cases are pinned rather than assumed.
+    const { sink, ledger } = createOperationSink();
+    const input = JSON.parse('{"constructor":1,"toString":2,"hasOwnProperty":3,"valueOf":4,"":5,"0":6}');
+    sink.attempt(attempt({ input }));
+
+    const recorded = ledger.entries()[0]!.input as Record<string, unknown>;
+    assert.equal(JSON.stringify(recorded), JSON.stringify(input));
+    for (const key of ["constructor", "toString", "hasOwnProperty", "valueOf", "", "0"]) {
+      assert.ok(Object.prototype.hasOwnProperty.call(recorded, key), `member ${JSON.stringify(key)} was not recorded as own data`);
+    }
+  });
+
+  test("nested and array-embedded `__proto__` members survive at depth", () => {
+    const { sink, ledger } = createOperationSink();
+    const input = JSON.parse('{"a":[{"__proto__":{"deep":true}}],"b":{"c":{"__proto__":1}}}');
+    sink.attempt(attempt({ input }));
+
+    const recorded = ledger.entries()[0]!.input;
+    assert.equal(JSON.stringify(recorded), JSON.stringify(input));
+    const first = (recorded as { a: Record<string, unknown>[] }).a[0]!;
+    assert.ok(Object.prototype.hasOwnProperty.call(first, "__proto__"));
+    assert.ok(Object.isFrozen(first), "a nested carrier must be frozen like any other");
+  });
+});

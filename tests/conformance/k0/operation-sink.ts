@@ -84,22 +84,42 @@ export interface OperationSinkOptions {
  * `null`, boolean, finite number, string, or arrays/objects built recursively from those). Anything
  * exotic that survives is passed through by reference and then frozen, so it still cannot be edited
  * in place; it simply cannot be cloned.
+ *
+ * **Members are written with `defineProperty`, not assignment.** Round-2 review finding K02-R2-02:
+ * E-1 permits any well-formed string as an object member name, so `"__proto__"` is a valid member —
+ * `JSON.parse('{"__proto__":{"x":1},"safe":2}')` produces it as an ordinary own data property. Plain
+ * assignment `copy[key] = ...` would invoke the inherited `__proto__` *setter* for that one key
+ * instead of creating an own property: the member would vanish from the record, its value would
+ * silently become the copy's prototype, and `deepFreeze` would not reach it there. The ledger would
+ * then be both incomplete about what was attempted and rewritable through the prototype it grew.
+ * `defineProperty` creates an own data property whatever the key is, so no member name gets special
+ * treatment and the stored value is faithful across the whole accepted key space.
  */
 function snapshot<T>(value: T): T {
   if (value === null || typeof value !== "object") return value;
   if (Array.isArray(value)) return value.map((entry) => snapshot(entry)) as unknown as T;
   if (Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null) return value;
   const copy: Record<string, unknown> = {};
-  for (const [key, member] of Object.entries(value as Record<string, unknown>)) copy[key] = snapshot(member);
+  for (const [key, member] of Object.entries(value as Record<string, unknown>)) {
+    Object.defineProperty(copy, key, { value: snapshot(member), writable: true, enumerable: true, configurable: true });
+  }
   return copy as unknown as T;
 }
 
-/** Freeze a value and everything reachable through it, so a stored entry has no mutable interior. */
+/**
+ * Freeze a value and everything reachable through it, so a stored entry has no mutable interior.
+ *
+ * The walk uses `Reflect.ownKeys` rather than `Object.values` so that nothing reachable is skipped
+ * because of how it is keyed — the same K02-R2-02 concern, applied to the freeze rather than the copy.
+ */
 function deepFreeze<T>(value: T): T {
   if (value === null || typeof value !== "object") return value;
   if (Object.isFrozen(value)) return value;
   Object.freeze(value);
-  for (const member of Object.values(value as Record<string, unknown>)) deepFreeze(member);
+  for (const key of Reflect.ownKeys(value as object)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value as object, key);
+    if (descriptor && "value" in descriptor) deepFreeze(descriptor.value);
+  }
   return value;
 }
 

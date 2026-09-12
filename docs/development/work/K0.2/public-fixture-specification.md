@@ -35,7 +35,7 @@ offline with no model, network, container or database.
 | `control-stale-timer-and-lost-wake` | lost wake at registration; generation fencing; timer idempotency | M-1, §11 row 5 |
 | `control-subscription-wait-deadline` | W-8 case 6: B-7's mandatory timeout member, both paths | §11 row 5 |
 | `control-cancel-versus-complete` | the cancellation fence, in both orders | M-1, §11 row 7 |
-| `control-completion-obligations` | completion with unaccounted owned work; terminal ingress refusal | §11 row 8 |
+| `control-completion-obligations` | a completing envelope carrying owned work is refused whole; terminal ingress refusal | §11 row 8 |
 | `control-missing-checkpoint-code` | recovery hold versus fresh-restored fabrication | M-1, §11 row 9 |
 | `effect-refusal-and-sink-attribution` | K1's Effect refusal, observed through the independent ledger | — |
 
@@ -59,7 +59,10 @@ excluded by construction:
   the limit of what this direction establishes;
 - **thirty violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
   exact step, and the failure detail must name the exact observation field at issue. Failing for an
-  unrelated reason would be an accident rather than discrimination, so the field names are asserted;
+  unrelated reason would be an accident rather than discrimination, so the field names are asserted.
+  Each transcript must also **name the governing decision its behavior breaks**, and that citation is
+  checked: a transcript that cannot cite one is a preference rather than a counterexample, and failing
+  a candidate for it would make the oracle reject conforming work;
 - the **refusing candidate** must report `REFUSED` for every scenario — a third verdict that is neither
   a pass nor a failure;
 - the oracle **fails closed**. A step asserting independent-ledger attribution cannot pass because the
@@ -87,7 +90,7 @@ unobserved. M-1 is a floor, not a ceiling.
 | Cancel versus complete | both orders; CX-6 rejection for `continue` **and** `complete`; zero batch acknowledgment; unchanged progress and emissions; B-5 disposition at `CANCELLED`; the same recorded rejection on exact retry; an accepted completion staying terminal and replaying its receipt | install the loser's progress, acknowledge its reserved batch, manufacture a receipt for a rejected submission, or reopen a terminal Execution |
 | Missing checkpoint/code | an inspectable recovery hold naming the unavailable pinned revision; accepted progress and revision intact | present empty or fresh Runtime state as the restored one, discard accepted progress, or invent a semantic wait for an unresolved Activation |
 | Subscription-only wait with a deadline (W-8 case 6) | B-7 path B mints exactly one timeout Event; at bound 1 the batch is exactly that Event even though an ineligible input was accepted earlier; B-7 path A yields `READY` at registration when the deadline is already due | require the timeout to match a dependency alternative the wait does not have, let older ineligible backlog take the slot, or persist a past deadline as a live wait |
-| Completion obligations (§11 row 8) | `complete` proposing owned work is rejected outright with a reason naming the completion obligation; the Execution stays non-terminal; terminal ingress is refused rather than queued | reach `COMPLETED` with unaccounted owned work, reject for the wrong reason, or accept ordinary input into a terminal Execution's mailbox |
+| Completion obligations (§11 row 8) | `complete` proposing owned work is refused whole with a recorded, inspectable reason; the Execution stays non-terminal and nothing in the envelope is committed; terminal ingress is refused rather than queued | reach a terminal state with unaccounted owned work, strip the Effect and accept the rest, commit progress or acknowledgment under a reported refusal, or accept ordinary input into a terminal Execution's mailbox |
 
 **State loss is the subject's failure even when the laboratory is safe.** The benchmark
 [methodology](../../../../../benchmark/docs/methodology.md) requires a subject that loses its state
@@ -253,3 +256,34 @@ against the previous implementation.
 the observer happened to be absent, so the one bad candidate catchable only through the ledger could
 pass on call shape alone. The runner now takes the whole sink bundle — omission is a type error — and
 an unusable observer at runtime fails the assertion rather than skipping it.
+
+## 9. What round-2 review changed
+
+Round 2 closed all three round-1 findings but raised two P1 defects of its own, both in material added
+by that correction. Both were upheld.
+
+**K02-R2-01 — the completion control demanded a distinction the protocol does not make.** The control
+required a completion-specific rejection *reason*, and shipped a counterexample that failed a
+candidate whose reason said only that Effects are unsupported before K2. That candidate is conforming:
+EF-1 and EF-2 require every K1 Outcome proposing an Effect to be refused as a whole envelope at
+validation, and §11 row 4 asks for "a recorded, inspectable reason" without fixing which one. The
+fixture was therefore rejecting a correct K1 implementation, and had turned an unobservable internal
+distinction into a normative requirement — the opposite failure mode from round 1's under-coverage,
+and a worse one, because an over-constrained oracle fails work that is right. The requirement is
+withdrawn: the control now pins the same EF-2 refusal reason the Effect-refusal scenario uses, and
+asserts what the protocol actually mandates — the Execution reaches no terminal state, the envelope is
+refused whole, and nothing in it is committed. The invalid counterexample is replaced by a genuine
+one: a candidate that reports the refusal while committing the progress and acknowledgment underneath
+it. §11 row 8's previously-owned-obligation clause remains assigned to K2.4, as before.
+
+**K02-R2-02 — the ledger snapshot was neither faithful nor immutable for a valid member name.** E-1
+permits any well-formed string as an object member name, so `"__proto__"` is ordinary JSON data —
+`JSON.parse('{"__proto__":{"x":1},"safe":2}')` produces it as an own data property. The snapshot copied
+members by plain assignment, which for that one key invokes the inherited setter instead of creating
+an own property: the member vanished from the record, its value became the copy's prototype, and
+`deepFreeze` never walked there, leaving it mutable after the fact. The independent ledger was
+therefore incomplete about what a candidate attempted and rewritable through the prototype it grew.
+Members are now written with `defineProperty`, so no key gets special treatment, and the freeze walks
+`Reflect.ownKeys`. Seven regression tests cover the member at top level, nested, inside arrays and in
+a returned observation, plus the neighbouring shadowing names; five fail against the previous
+implementation.

@@ -8,10 +8,13 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 2**, correcting revision 1 after round-1 review returned CHANGES REQUIRED on
-findings K02-R1-01, K02-R1-02 and K02-R1-03. The base, packet scope and C8's blocked state are
-unchanged; what changed is that three criteria were understating what they had to establish. Those
-understatements are recorded below rather than quietly overwritten.
+**Contract revision 3.** Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
+K02-R1-02, K02-R1-03), where three criteria were *understating* what they had to establish. Revision 3
+corrects revision 2 after round-2 review (findings K02-R2-01, K02-R2-02), where one criterion had
+begun *overstating* it — C6/C7/C9 required a rejection-reason distinction the protocol does not make —
+and C3's faithfulness claim did not hold across the whole accepted key space. The base, packet scope
+and C8's blocked state are unchanged throughout. Both directions of error are recorded below rather
+than quietly overwritten.
 
 ## Release provenance and predecessor disclosure
 
@@ -105,17 +108,22 @@ that fails to dispatch the second Execution, must FAIL.
 ### K0.2-C3 — independent operation sink with an independent ledger
 
 **Source:** 001 K0 ("a fake operation sink with an independent ledger for later action tests").
-**Observable:** the sink records every attempted operation in a ledger the candidate cannot read back,
+**Observable:** the sink records every attempted operation **faithfully across the whole accepted E-1
+object-key space** — every valid member name, `"__proto__"` included, is preserved as own data with no
+key-dependent prototype semantics, and every value reachable through a stored entry is detached and
+frozen (round-2 finding K02-R2-02) — in a ledger the candidate cannot read back,
 edit, reorder or truncate through the sink's own surface; the ledger is readable by the fixture as an
 observation independent of whatever the candidate reports about itself. **Independence must survive
 retained references, not only absent methods** (round-1 finding K02-R1-02): a candidate that keeps a
 reference to the input it passed in, to the result it was handed back, or to any object nested inside
 either, must not be able to rewrite recorded history by mutating it after the fact. Historical evidence
 editable by the party it incriminates is not evidence.
-**Distinguishing counterexample:** two kinds, both required. A candidate that claims a dispatch the
+**Distinguishing counterexample:** three kinds, all required. A candidate that claims a dispatch the
 ledger did not record, or claims none where the ledger recorded one, must FAIL on ledger comparison
 rather than on self-report. Separately, mutating each retained reference after `attempt()` returns must
-leave every later ledger read unchanged.
+leave every later ledger read unchanged. Separately again, a valid boundary value carrying an own
+`"__proto__"` member must round-trip through the ledger intact and immutable — a case that passes
+trivially for ordinary keys and therefore has to be tested by name.
 **Evidence:** `tests/conformance/k0/operation-sink.ts`, `operation-sink.test.ts`.
 
 ### K0.2-C4 — direct baseline specification
@@ -148,7 +156,11 @@ ceiling**: round-1 finding K02-R1-01 added two further unsafe/state-loss control
 were going unobserved — W-8 case 6's subscription-only wait with a deadline, including B-7's mandatory
 timeout Event, and §11 row 8's completion check. A dependency-only deadline scenario is explicitly not
 a substitute for W-8 case 6, because that case is sharp only when the wait has no dependency
-alternatives at all. Row 7 additionally asserts,
+alternatives at all. **A control may only assert distinctions the governing protocol makes
+observable** (round-2 finding K02-R2-01): the completion control asserts that a completing envelope
+carrying newly proposed Effects is refused whole and reaches no terminal state, and it may *not*
+require a completion-specific rejection reason, because EF-1/EF-2 already mandate the whole-envelope
+refusal and §11 row 4 leaves the reason text open. Row 7 additionally asserts,
 as M-1 requires by name: CX-6 full rejection for **both** `continue` and `complete` submitted after
 cancellation acceptance; zero acknowledgment of the reserved batch; no change to accepted
 progress/emissions; B-5 disposition at `CANCELLED`; deterministic recorded rejection on exact retry;
@@ -167,7 +179,12 @@ passed gate"); 006 ("A test fixture is not a passed evidence gate").
 supported entry is a **refusing** candidate: every scenario reports `REFUSED`, never `PASS`. (b) The
 oracle is proven in both directions by hand-authored transcripts — one conforming transcript the
 oracle passes, and at least one plausible-wrong transcript per obligation that it rejects with the
-specific violated assertion, at the step that obligation lives at. (c) **The oracle fails closed**
+specific violated assertion, at the step that obligation lives at. **Every retained counterexample
+must represent behavior the governing protocol actually forbids** (round-2 finding K02-R2-01), and
+must name the decision it breaks; a transcript that cannot cite one is a preference, not a
+counterexample, and failing a candidate for it makes the oracle reject conforming work. Rejecting at
+the right step is necessary and not sufficient: mechanical rejection cannot convert permitted
+behavior into valid evidence. (c) **The oracle fails closed**
 (round-1 finding K02-R1-03): a step declaring an independent-ledger expectation must never pass
 because the runner was invoked without a usable observer. Omission is a type error, and an unusable
 observer at runtime is a failure of the assertion rather than a reason to skip it — for a conforming
@@ -205,9 +222,12 @@ that step*; a corpus-level check, for negative obligations about the fixture as 
 explicit assignment to a named packet with the reason it has no observable K0 case. The map and the
 scenarios declare the relationship separately and must agree in both directions, and every violating
 transcript must defend a recorded obligation.
-**Distinguishing counterexample:** revision 1's machinery is itself the counterexample — it passed
-while most of rows 1, 2, 5(c)/(e) and all of row 8's completion clause went untested, because it only
-checked that each row number pointed at a scenario that existed.
+**Distinguishing counterexample:** both revisions' machinery, in opposite directions. Revision 1's
+passed while most of rows 1, 2, 5(c)/(e) and all of row 8's completion clause went untested, because
+it only checked that each row number pointed at a scenario that existed. Revision 2's then accepted a
+"counterexample" that was not a protocol violation at all, because nothing required a counterexample
+to name the rule it breaks. Under-coverage lets a wrong candidate pass; over-constraint fails a right
+one, and is the worse failure of the two.
 **Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`.
 
 ## Selected proof methods ([012](../../012-review-methods.md))

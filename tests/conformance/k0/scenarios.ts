@@ -1344,18 +1344,25 @@ export const subscriptionWaitDeadline: Scenario = {
 
 /**
  * Round-1 review finding K02-R1-01: row 8's completion check was not observed at all, and row 6's
- * terminal arm of B-8 was missing.
+ * terminal arm of B-8 was missing. Round-2 finding K02-R2-01 then corrected *what* about it is
+ * observable.
  *
- * CX-3 has two clauses. The first — "no newly proposed Effects in that same Outcome" — is observable
- * now, and is the only form "unresolved owned work" can take while K1 refuses Effects outright: work
- * proposed in the completing Outcome is by construction unaccounted for. The second clause, about
- * *previously owned* obligations, cannot arise until Effects exist; CX-3 says so itself ("K1 without
- * Effects satisfies this trivially ... K2 is where the check becomes non-trivial"), and this packet's
- * contract assigns it to K2.4 rather than pretending to observe it.
+ * CX-3 has two clauses. The second — about *previously owned* obligations — cannot arise until
+ * Effects exist; CX-3 says so itself ("K1 without Effects satisfies this trivially ... K2 is where the
+ * check becomes non-trivial"), and this packet's contract assigns it to K2.4 rather than pretending to
+ * observe it. The first clause — "no newly proposed Effects in that same Outcome" — does apply now.
  *
- * The rejection reason is distinct from the plain Effect refusal on purpose: a candidate that rejects
- * `complete` merely because Effects are unsupported has not demonstrated the completion check, and the
- * oracle must be able to tell those two answers apart.
+ * **What this control may and may not require.** The observable obligation is that the completing
+ * envelope is *not accepted*: the Execution must not reach a terminal state, nothing may be committed,
+ * and the refusal must be recorded inspectably. It is **not** that the Kernel expose a
+ * completion-specific rejection reason. An earlier revision demanded exactly that, and required the
+ * oracle to fail a candidate whose reason said only that Effects are unsupported before K2 — but EF-1
+ * and EF-2 already require every K1 Outcome proposing an Effect to be refused as a whole envelope at
+ * validation, and §11 row 4 asks for "a recorded, inspectable reason" without saying which. A
+ * candidate refusing this envelope on those grounds is conforming, so failing it turned a
+ * non-observable internal distinction into a normative requirement and would have rejected a correct
+ * K1 implementation. That requirement is withdrawn; the reason recorded here is the same EF-2 refusal
+ * the Effect-refusal scenario pins, because that is the answer the protocol actually mandates.
  */
 export const completionObligations: Scenario = {
   id: "control-completion-obligations",
@@ -1392,19 +1399,20 @@ export const completionObligations: Scenario = {
         }),
       },
       {
-        label: "`complete` proposing new owned work is rejected outright, and the Execution does not become COMPLETED",
+        label: "`complete` proposing new owned work is rejected whole, and the Execution does not become COMPLETED",
         observation: obs(X, {
           state: "RUNNING",
           queued: ["in-1"],
           activationId: "act-1",
           dispatchedBatch: ["in-1"],
           receipt: "receipt:create:req-x",
-          rejection: { classification: "malformed_envelope", reason: "completion proposes owned work that is not accounted for" },
+          rejection: { classification: "malformed_envelope", reason: "Effect proposals are not supported before K2" },
           writerEpoch: 1,
         }),
         forbids: [
-          "state must stay RUNNING: an Execution must not reach COMPLETED with unaccounted owned work",
-          "the reason must name the completion obligation, not merely that Effects are unsupported: rejecting for the wrong reason does not demonstrate the check",
+          "state must stay RUNNING: an Execution must not reach a terminal state carrying unaccounted owned work",
+          "progressRevision must stay 0 and progress null: the completing envelope is refused whole, not stripped of its Effect and then accepted",
+          "acknowledged must stay empty: a refused completing envelope acknowledges no part of its batch",
           "the independent ledger must stay empty: nothing was dispatched on the way to this rejection",
         ],
         ledgerCount: 0,

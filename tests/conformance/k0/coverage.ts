@@ -246,12 +246,17 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R8-a",
     row: 8,
-    obligation: "`complete` is rejected outright if unresolved owned work is not accounted for in the current or a previously acknowledged batch.",
+    // Round-2 finding K02-R2-01 narrowed this to what the protocol actually makes observable. The
+    // obligation is that the completing envelope is not *accepted*; it is not that the Kernel expose a
+    // completion-specific rejection reason. EF-1/EF-2 already mandate a whole-envelope refusal for any
+    // K1 Outcome proposing an Effect, and §11 row 4 requires "a recorded, inspectable reason" without
+    // fixing which one, so a candidate refusing on those grounds is conforming.
+    obligation: "A completing Outcome carrying newly proposed Effects is not accepted: the Execution reaches no terminal state, the envelope is refused whole with a recorded reason, and nothing in it is committed.",
     evidence: {
       kind: "scenario",
       scenario: "control-completion-obligations",
       stepIndex: 2,
-      counterexamples: ["completion/owned-work-proposed-in-the-completing-outcome-is-accepted", "completion/rejected-for-the-wrong-reason"],
+      counterexamples: ["completion/owned-work-proposed-in-the-completing-outcome-is-accepted", "completion/refused-envelope-partly-committed"],
     },
   },
   {

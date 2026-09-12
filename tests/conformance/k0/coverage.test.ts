@@ -134,6 +134,25 @@ describe("K0 boundary coverage: the corpus is fully accounted for", () => {
     }
   });
 
+  test("every violating transcript names the governing rule its behaviour breaks", () => {
+    // Round-2 finding K02-R2-01: an invalid counterexample reached the corpus because nothing required
+    // its author to name the rule being broken. A transcript that cannot cite one is a preference, not
+    // a counterexample, and failing a candidate for it makes the oracle reject conforming work.
+    for (const violation of VIOLATIONS) {
+      assert.ok(
+        violation.forbiddenBy.length > 30,
+        `violation ${violation.id} does not name the governing rule it breaks`,
+      );
+      assert.match(
+        violation.forbiddenBy,
+        // No \b around the alternatives: "§11" begins with a non-word character, so a leading word
+        // boundary there can never match.
+        /(?:OA|CX|W|B|E|EF|PC|ID|LP)-\d|§11|execution-protocol\.md|kernel\.md|mental-model\.md|Decision M-1/,
+        `violation ${violation.id} cites no identifiable governing decision: ${violation.forbiddenBy}`,
+      );
+    }
+  });
+
   test("every violating transcript defends a recorded obligation", () => {
     // A violation nobody relies on is either a coverage gap in this map or dead code; both matter.
     const relied = new Set(

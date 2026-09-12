@@ -229,6 +229,22 @@ export interface OutcomeEnvelope {
 /**
  * The rejection classifications a K0 candidate must be able to report. OA-5: a rejected Outcome is
  * recorded as a rejection with its reason, never silently dropped or auto-retried.
+ *
+ * **On reason strings, and what a fixture may make pass/fail.** The accepted decisions require that a
+ * rejection be *recorded with an inspectable reason* (§11 row 4, OA-5); with one exception they do not
+ * fix the text. The exception is CX-6, which names its reason — "cancellation accepted before Outcome
+ * acceptance" — and so is pinned here as a genuine requirement. Every other reason string in this
+ * fixture is a **representational convention** a candidate adopts in order to be judged, like the
+ * receipt spellings: it distinguishes one rejection *condition* from another.
+ *
+ * What a fixture may never do is turn a choice between two canonically *equivalent* answers to the
+ * same condition into a failure. Round-2 review finding K02-R2-01 is the worked example: an earlier
+ * revision demanded a completion-specific reason for an envelope that proposes an Effect and requests
+ * `complete`, and failed a candidate that reported the EF-2 refusal instead — but EF-1/EF-2 already
+ * mandate the whole-envelope refusal and §11 row 4 leaves the text open, so both answers are correct
+ * and the oracle was rejecting conforming work. Under-coverage lets a wrong candidate pass;
+ * over-constraint fails a right one, which is worse. Every counterexample in `candidate.ts` therefore
+ * has to name the decision it breaks, and that citation is checked.
  */
 export type RejectionClassification =
   /** OA-3 whole-envelope validation: malformed value, bad wait record, proposed Effect at K1, etc. */
