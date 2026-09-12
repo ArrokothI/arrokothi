@@ -43,13 +43,13 @@ offline with no model, network, container or database.
 Four of these were added after round-1 review and one after round-3 review; see §8.
 
 [`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at the
-granularity of the **independently distinguishable assertion** — 93 entries across the ten rows, not
+granularity of the **independently distinguishable assertion** — 94 entries across the ten rows, not
 ten row entries and not the 33 prose-level obligations of two revisions ago. The unit is
 behavioural rather than editorial: two clauses in one cell are separate assertions when a plausible
 implementation can get one right and the other wrong, because that is the candidate the oracle has to
 be able to fail. §11 row 5 states the standard itself — "Each of these is **separately** observable".
 
-Of the 93, **87** resolve to a scenario step plus at least one counterexample the oracle demonstrably
+Of the 94, **88** resolve to a scenario step plus at least one counterexample the oracle demonstrably
 rejects at that step; **three** (R3-c3, R6-a1, R8-b2) are marked `shared`, meaning two §11 rows name
 one observable fact and one transcript is the honest evidence for both, with the identity written down
 and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **two** are
@@ -76,7 +76,7 @@ excluded by construction:
 - a **conforming transcript** must report `PASS`. It is derived from the scenarios' own expectations,
   so it proves only that the runner can pass something — that circularity is stated in the code and is
   the limit of what this direction establishes;
-- **eighty-seven violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
+- **eighty-eight violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
   exact step, and the failure detail must name the exact observation field at issue. Failing for an
   unrelated reason would be an accident rather than discrimination, so the field names are asserted.
   Each transcript must also **name the governing decision its behavior breaks**, and that citation is
@@ -630,15 +630,57 @@ at which a deadline is submitted or live, and checking each species for a transc
 via B-7 path A (R5-c5) and via B-6 path A (R5-d4), current-generation expiry via B-7 path B (R5-d5),
 a later eligible Event via B-6 path B (R5-d6, new), stale delivery changing nothing (R5-f4), and a
 fenced losing `await` accepting nothing (R7-a6c). The ordering assertion that a past deadline is
-never persisted stays with R5-c3. One further point the sweep surfaces is **deliberately not owned**:
-at `control-whole-envelope-validation` step 4 a malformed wait carrying a deadline is refused, and
-§11 states a zero-deadline clause only in row 7, where R7-a6c owns it — row 3's zero-partial-state
-clause enumerates progress, Effect intent and acknowledgment, and row 5(a)'s assertion there is that
-the declaration is refused (R5-a1b). Inventing an assertion the worksheet does not state is the
-round-4 K02-R4-01 failure mode, so it is recorded here for a reviewer to disagree with rather than
-manufactured.
+never persisted stays with R5-c3. One further point the sweep surfaced was left unowned at this
+revision — the malformed wait carrying a deadline refused at `control-whole-envelope-validation` step
+4 — on the reading that §11 states a zero-deadline clause only in row 7. **Round-9 review overturned
+that reading and it is now owned as R3-c4; see §16.**
 
 The inventory goes from 92 entries to 93 (row 5: 33→34) and the corpus from 86 transcripts to 87,
 over 12 scenarios and 92 steps (`control-stale-timer-and-lost-wake` 11→13). This is the first round
 since round 5 that adds a schedule: the finding is precisely that no schedule could express the
 transition, so no transcript over the existing corpus could have closed it.
+
+## 16. What round-9 review changed
+
+Round 9 returned CHANGES REQUIRED on one P1 finding, and the finding is against §15's own reasoning
+rather than against its correction. It is fixed forward from C9; nothing from rounds 2–9 is reverted.
+The `g3`/`res-3` B-6 path-B schedule, R5-d6, R5-d4's path-A narrowing, all six accepted-deadline
+lifecycle transcripts, the per-family token namespaces, the R3-b and cancellation splits, and the
+implementation-neutral distinction between accepted logical deadline state and physical timer
+mechanism are all preserved unchanged.
+
+**K02-R9-01 — OA-5 deadline inertness on a malformed rejected Outcome was visible but unattributed.**
+§15 recorded this transition and declined to own it, on the reading that §11 row 3's parenthetical
+(`progress`, `Effect intent`, `acknowledgment`) is exhaustive and that the zero-deadline clause is
+stated only in row 7. **That reading was too narrow.** Row 3 cites OA-1–OA-6, and OA-5 states the
+clause directly: a rejected Outcome creates no Effects, acknowledges no Events, commits no progress,
+accepts no emissions and creates **no wait/deadline/readiness/next-state transition**. A malformed
+envelope is a rejected Outcome, so the assertion was stated for this boundary all along and simply
+had no owner.
+
+No schedule was added, because the schedule already existed. `control-whole-envelope-validation` step
+4 submits a structurally empty `await` carrying a deadline of 5000 and requires the whole envelope to
+be refused: `malformed_envelope`, the Execution still `RUNNING` with its Activation and pinned batch
+intact, `liveWaitGeneration` null, and `acceptedDeadline` null.
+
+- **R3-c4** owns the deadline clause at that boundary, joining R3-c1 (progress), R3-c1b (emissions),
+  R3-c2 (acknowledgment) and R3-c3 (Effect intent, `shared` with row 4) in row 3's zero-partial-state
+  family.
+- Its transcript, `envelope/malformed-wait-leaks-its-accepted-deadline`, is a partial under a
+  **correct** refusal: the rejection, lifecycle, live generation, Activation and batch are all right,
+  and only `acceptedDeadline` leaks as 5000 — the deadline parsed and committed during the envelope
+  walk and never rolled back when validation refused.
+- **R7-a6c does not stand in for it.** That is the same fact at the CX-6 cancellation/terminal-conflict
+  fence, a different rejection writer, and the two entries now cross-reference each other. A candidate
+  that commits its deadline after whole-envelope validation but before the terminal-conflict check
+  gets exactly one of them right — the writer/boundary test round 8 applied to B-6's two paths, applied
+  here to the two rejection paths.
+- `blind-spot-regression.test.ts` pins that the step really does submit and refuse a deadline-bearing
+  malformed wait, that the transcript moves exactly `acceptedDeadline` to the refused envelope's own
+  value, that it is a partial under a correct refusal rather than the pre-existing acceptance failure
+  at the same step (which removes the rejection and moves the lifecycle, and does **not** move the
+  deadline), and that the two rejection writers carry different classifications.
+
+The inventory goes from 93 entries to 94 (row 3: 9→10) and the corpus from 87 transcripts to 88, over
+the same 12 scenarios / 92 steps. No scenario, step or expectation changed: the observation already
+stated the fact, and only the owning counterexample was missing.

@@ -326,6 +326,26 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 2, counterexamples: ["envelope/rejected-envelope-acknowledges-its-batch"] },
   },
   {
+    // Added by round-9 review finding K02-R9-01, which correctly overrode this packet's round-9
+    // reading. §11 row 3's parenthetical lists progress, Effect intent and acknowledgment, and C9
+    // treated that list as exhaustive, leaving the deadline clause to row 7 alone. The governing
+    // decision the row cites is broader: OA-5 states that a rejected Outcome creates no Effects,
+    // acknowledges no Events, commits no progress, accepts no emissions and creates **no
+    // wait/deadline/readiness/next-state transition**, and a malformed envelope is a rejected
+    // Outcome. So the deadline clause is stated for this boundary too, and it is independently
+    // violable: the transcript at step 4 keeps the correct `malformed_envelope` rejection, RUNNING,
+    // the null live generation and the pinned Activation/batch, and moves only `acceptedDeadline`.
+    //
+    // R7-a6c is *not* this assertion. It is the same fact at the CX-6 cancellation/terminal-conflict
+    // fence, a different rejection writer — which is exactly the writer/boundary test round 8 applied
+    // to B-6's two paths. A candidate ordering its deadline commit after envelope validation but
+    // before the terminal-conflict check gets this one right and R7-a6c's wrong.
+    id: "R3-c4",
+    row: 3,
+    obligation: "It leaves no accepted deadline either (OA-5): a malformed `await` carrying a deadline is a rejected Outcome, so no deadline fact survives it even when the rejection, the lifecycle, the live generation and the pinned Activation are all correct.",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 4, counterexamples: ["envelope/malformed-wait-leaks-its-accepted-deadline"] },
+  },
+  {
     id: "R3-c3",
     row: 3,
     obligation: "It leaves no Effect intent: a partway acceptance failure creates no accepted intent or proposal-key binding.",
@@ -734,7 +754,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R7-a6c",
     row: 7,
-    obligation: "A losing `await` carrying a deadline accepts no deadline fact: `acceptedDeadline` stays null even when the Execution correctly stays CANCELLED with the correct CX-6 rejection. A physical timer retained after logical retirement is conforming W-3 behavior and is not observed here.",
+    obligation: "A losing `await` carrying a deadline accepts no deadline fact: `acceptedDeadline` stays null even when the Execution correctly stays CANCELLED with the correct CX-6 rejection. A physical timer retained after logical retirement is conforming W-3 behavior and is not observed here. This is the CX-6 fence's own writer; the OA-3/OA-5 whole-envelope rejection writer is R3-c4 (round-9 finding K02-R9-01), and a candidate can order its deadline commit to get exactly one of them right.",
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 11, counterexamples: ["control-cancel/losing-await-accepts-a-deadline"] },
   },
   {

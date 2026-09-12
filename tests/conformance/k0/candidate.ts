@@ -315,6 +315,29 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad", dispatchedBatch: null, activationId: null, rejection: null }),
   },
   {
+    // Round-9 review finding K02-R9-01. The transcript above is the *acceptance* failure at this step:
+    // the malformed wait registers and the rejection disappears. This is the partial under a
+    // **correct** refusal, and it is a different candidate entirely — the envelope is refused with the
+    // right classification, the Execution stays RUNNING with its Activation and pinned batch intact,
+    // no generation is live, and the only thing wrong is that the deadline supplied in the refused
+    // envelope was parsed and stored before validation ran. OA-5 names wait/deadline/readiness/
+    // next-state among what a rejected Outcome must not create, and a malformed envelope is a rejected
+    // Outcome, so the leak is a violation on its own terms rather than a consequence of the refusal
+    // failing. R7-a6c is the same fact at the CX-6 cancellation fence, which is a different rejection
+    // writer: a candidate that validates the envelope before committing anything but checks
+    // terminal-conflict afterwards gets one right and the other wrong.
+    id: "envelope/malformed-wait-leaks-its-accepted-deadline",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "the deadline in the submitted wait is parsed and committed while the envelope is still being walked, so " +
+      "whole-envelope validation refuses the declaration correctly and nothing else is accepted, but the accepted " +
+      "deadline fact from the refused envelope is already stored and is never rolled back",
+    forbiddenBy: "OA-5 with §11 row 3: a rejected Outcome — a malformed envelope included — creates no wait, deadline, readiness or next-state transition, so a failure partway through acceptance leaves zero partial state",
+    stepIndex: 4,
+    mustNameFields: ["acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, acceptedDeadline: 5_000 }),
+  },
+  {
     id: "subscription-deadline/backlog-takes-the-slot-from-the-timeout",
     scenarioId: "control-subscription-wait-deadline",
     plausibleBug:

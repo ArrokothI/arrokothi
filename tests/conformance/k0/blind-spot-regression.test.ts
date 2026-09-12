@@ -582,6 +582,96 @@ describe("round-8: the B-6 path-B wake owns the deadline it retires", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Round 9: a correct rejection can still leak the deadline it refused
+// ---------------------------------------------------------------------------
+
+/**
+ * Round-9 review finding K02-R9-01: round 9's sweep saw this transition and declined to own it,
+ * reading §11 row 3's parenthetical (`progress`, `Effect intent`, `acknowledgment`) as exhaustive and
+ * leaving the zero-deadline clause to row 7. The decision row 3 cites says otherwise — OA-5 forbids a
+ * rejected Outcome from creating any wait, deadline, readiness or next-state transition, and a
+ * malformed envelope is a rejected Outcome — so the assertion was stated all along and simply had no
+ * owner.
+ *
+ * These guards pin what makes the new transcript evidence rather than a restatement of the acceptance
+ * failure that already lived at this step.
+ */
+describe("round-9: the malformed-envelope rejection owns the deadline it refuses", () => {
+  const LEAK = "envelope/malformed-wait-leaks-its-accepted-deadline";
+  const ACCEPTED = "envelope/structurally-empty-wait-registered-because-it-has-a-deadline";
+
+  test("the step already submits a deadline-bearing malformed wait and refuses it with no deadline fact", () => {
+    // No schedule was added for this finding: the observation and the submission already existed.
+    const entry = violation(LEAK);
+    const target = scenario(entry.scenarioId);
+    const step = target.steps[entry.stepIndex]!;
+
+    assert.equal(step.command.kind, "submit_outcome");
+    assert.ok(step.command.kind === "submit_outcome" && step.command.outcome.next.step === "await");
+    const wait = step.command.kind === "submit_outcome" && step.command.outcome.next.step === "await" ? step.command.outcome.next.wait : null;
+    assert.equal(wait?.deadline, 5_000, "the refused envelope must actually carry a deadline, or nothing could leak");
+
+    const observation = step.expect.observation;
+    assert.equal(observation.rejection?.classification, "malformed_envelope");
+    assert.equal(observation.state, "RUNNING");
+    assert.equal(observation.liveWaitGeneration, null);
+    assert.equal(observation.acceptedDeadline, null);
+  });
+
+  test("the leak transcript moves exactly acceptedDeadline, to the value the refused envelope supplied", () => {
+    const entry = violation(LEAK);
+    const target = scenario(entry.scenarioId);
+    const expected = target.steps[entry.stepIndex]!.expect.observation;
+    assert.deepEqual(changedFields(expected, entry.mutate(expected)), ["acceptedDeadline"]);
+    assert.equal(entry.mutate(expected).acceptedDeadline, 5_000);
+  });
+
+  test("it is a partial under a correct refusal, not the acceptance failure already at this step", () => {
+    // The pre-existing transcript turns the malformed submission into an accepted registration: it
+    // moves the lifecycle and *removes* the rejection. The new one keeps every one of those facts
+    // right. If a later edit collapsed them the split would be cosmetic, and this fails first.
+    const leak = violation(LEAK);
+    const accepted = violation(ACCEPTED);
+    assert.equal(leak.scenarioId, accepted.scenarioId);
+    assert.equal(leak.stepIndex, accepted.stepIndex);
+
+    const expected = scenario(leak.scenarioId).steps[leak.stepIndex]!.expect.observation;
+    const leaked = leak.mutate(expected);
+    const registered = accepted.mutate(expected);
+
+    assert.equal(leaked.rejection, expected.rejection, "the leak transcript must keep the correct rejection");
+    assert.equal(leaked.state, "RUNNING");
+    assert.equal(leaked.liveWaitGeneration, null);
+    assert.deepEqual(leaked.dispatchedBatch, expected.dispatchedBatch);
+    assert.equal(registered.rejection, null, "the acceptance failure must not be a partial under a correct refusal");
+    assert.notEqual(registered.state, expected.state);
+
+    const leakFields = changedFields(expected, leaked);
+    const registerFields = changedFields(expected, registered);
+    assert.deepEqual(leakFields, ["acceptedDeadline"]);
+    assert.ok(!registerFields.includes("acceptedDeadline"), "the two transcripts must not both move the deadline fact");
+  });
+
+  test("the two rejection writers stay separate: whole-envelope validation is not the cancellation fence", () => {
+    // R7-a6c owns the same fact at CX-6's terminal-conflict fence. Different scenario, different
+    // rejection classification, different boundary — which is why one cannot stand in for the other.
+    const envelope = violation(LEAK);
+    const fence = violation("control-cancel/losing-await-accepts-a-deadline");
+    assert.notEqual(envelope.scenarioId, fence.scenarioId);
+
+    const envelopeObs = scenario(envelope.scenarioId).steps[envelope.stepIndex]!.expect.observation;
+    const fenceObs = scenario(fence.scenarioId).steps[fence.stepIndex]!.expect.observation;
+    assert.equal(envelopeObs.rejection?.classification, "malformed_envelope");
+    assert.equal(fenceObs.rejection?.classification, "cancellation_terminal_conflict");
+
+    // Both are single-field moves of the same fact, so the pair discriminates the writer.
+    for (const [entry, observation] of [[envelope, envelopeObs], [fence, fenceObs]] as const) {
+      assert.deepEqual(changedFields(observation, entry.mutate(observation)), ["acceptedDeadline"]);
+    }
+  });
+});
+
 describe("round-4: the withdrawn subscription rule stays withdrawn", () => {
   test("an empty declared subscription identity is well formed, because W-1 leaves the spelling to K1.3", () => {
     // Round-4 review finding K02-R4-01. This is a regression guard in the opposite direction from the
