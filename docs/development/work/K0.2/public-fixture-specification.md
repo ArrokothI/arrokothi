@@ -32,7 +32,7 @@ offline with no model, network, container or database.
 | `identity-create-and-activation` | create-key conflict; distinct Activation IDs; takeover under the same ID | — |
 | `control-whole-envelope-validation` | a valid prefix earns nothing; a structurally empty wait is refused | — |
 | `control-duplicate-conflicting-outcome` | receipt replay versus conflict | M-1, §11 row 3 |
-| `control-stale-timer-and-lost-wake` | lost wake at registration; generation fencing; timer idempotency | M-1, §11 row 5 |
+| `control-stale-timer-and-lost-wake` | lost wake at registration; generation fencing; timer idempotency; both B-6 entry boundaries for a deadline-bearing wait | M-1, §11 row 5 |
 | `control-subscription-wait-deadline` | W-8 case 6: B-7's mandatory timeout member, both paths | §11 row 5 |
 | `wait-structure-not-satisfiability` | a valid-but-inert alternative registers and counts; the eligibility category rule's two negative arms; no per-alternative satisfied flag | §11 row 5 |
 | `control-cancel-versus-complete` | the cancellation fence, in both orders | M-1, §11 row 7 |
@@ -43,13 +43,13 @@ offline with no model, network, container or database.
 Four of these were added after round-1 review and one after round-3 review; see §8.
 
 [`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at the
-granularity of the **independently distinguishable assertion** — 92 entries across the ten rows, not
+granularity of the **independently distinguishable assertion** — 93 entries across the ten rows, not
 ten row entries and not the 33 prose-level obligations of two revisions ago. The unit is
 behavioural rather than editorial: two clauses in one cell are separate assertions when a plausible
 implementation can get one right and the other wrong, because that is the candidate the oracle has to
 be able to fail. §11 row 5 states the standard itself — "Each of these is **separately** observable".
 
-Of the 92, **86** resolve to a scenario step plus at least one counterexample the oracle demonstrably
+Of the 93, **87** resolve to a scenario step plus at least one counterexample the oracle demonstrably
 rejects at that step; **three** (R3-c3, R6-a1, R8-b2) are marked `shared`, meaning two §11 rows name
 one observable fact and one transcript is the honest evidence for both, with the identity written down
 and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **two** are
@@ -76,7 +76,7 @@ excluded by construction:
 - a **conforming transcript** must report `PASS`. It is derived from the scenarios' own expectations,
   so it proves only that the runner can pass something — that circularity is stated in the code and is
   the limit of what this direction establishes;
-- **eighty-six violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
+- **eighty-seven violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
   exact step, and the failure detail must name the exact observation field at issue. Failing for an
   unrelated reason would be an accident rather than discrimination, so the field names are asserted.
   Each transcript must also **name the governing decision its behavior breaks**, and that citation is
@@ -105,7 +105,7 @@ unobserved. M-1 is a floor, not a ceiling.
 | Control | Must observe | Must never |
 |---|---|---|
 | Duplicate/conflicting Outcome | exact duplicate returns the original receipt; conflicting duplicate is a recorded rejection with none of its content merged, even when the rejection is correct | advance the revision on replay, re-publish an accepted emission, silently absorb a conflict without a rejection, or merge conflicting content into accepted state beside a correct rejection |
-| Stale timer / lost wake | an already-accepted eligible Event is found at registration; a superseded generation's timer is a no-op; a re-delivered timer is idempotent; an authenticated result is never generation-fenced; registration and both retirement species clear the accepted deadline fact while a stale delivery clears nothing | persist `WAITING` over an eligible Event already in the mailbox, wake a replacement wait from a retired generation, mint a second timeout Event, treat a timeout as proof the awaited work did not happen, leave a retired deadline fact live, or wipe the live deadline on a fenced stale delivery |
+| Stale timer / lost wake | an already-accepted eligible Event is found at registration; a superseded generation's timer is a no-op; a re-delivered timer is idempotent; an authenticated result is never generation-fenced; registration and every retirement path — B-6 path A at Outcome acceptance, B-6 path B at a later Event's own acceptance boundary, and B-7 current-generation expiry — clear the accepted deadline fact, while a stale delivery clears nothing | persist `WAITING` over an eligible Event already in the mailbox, wake a replacement wait from a retired generation, mint a second timeout Event, treat a timeout as proof the awaited work did not happen, leave a retired deadline fact live on any of the three retirement paths, or wipe the live deadline on a fenced stale delivery |
 | Cancel versus complete | both orders; CX-6 rejection for `continue`, `complete` **and** a deadline-bearing `await`; zero batch acknowledgment; unchanged progress and emissions; zero wait, accepted deadline fact, readiness and next-state change; B-5 disposition at `CANCELLED`; the same recorded rejection on exact retry; an accepted completion staying terminal and replaying its receipt | install the loser's progress, acknowledge its reserved batch, manufacture a receipt for a rejected submission, register the loser's wait, accept its deadline fact while staying `CANCELLED`, arm its readiness, or reopen a terminal Execution |
 | Missing checkpoint/code | an inspectable recovery hold naming the unavailable pinned revision; accepted progress and revision intact | present empty or fresh Runtime state as the restored one, discard accepted progress, or invent a semantic wait for an unresolved Activation |
 | Subscription-only wait with a deadline (W-8 case 6) | B-7 path B mints exactly one timeout Event; at bound 1 the batch is exactly that Event even though an ineligible input was accepted earlier; B-7 path A yields `READY` at registration when the deadline is already due | require the timeout to match a dependency alternative the wait does not have, let older ineligible backlog take the slot, or persist a past deadline as a live wait |
@@ -579,3 +579,66 @@ moves at five distinct steps and the narrowing. The cancellation-loser leak (R7-
 The inventory goes from 87 entries to 92 (row 5: 28→33) and the corpus from 81 transcripts to 86
 over the same 12 scenarios / 90 steps — no schedule or expectation changed, because the expectations
 already stated every deadline fact and only the owning counterexamples were missing.
+
+## 15. What round-8 review changed
+
+Round 8 returned CHANGES REQUIRED on one P1 finding in the round-8 material itself. It is correct and
+is fixed forward from C8; nothing from rounds 2–8 is reverted. All five round-8 deadline transcripts
+are preserved unchanged, `acceptedDeadline` remains the accepted logical deadline fact with no
+physical timer-registration or cancellation lifetime requirement anywhere, and W-3's stale-timer
+permissiveness, the per-family token namespaces, the R3-b split, the losing-`await` schedule and the
+heuristic-only coupling table are all intact.
+
+**K02-R8-01 — deadline cleanup was unowned on B-6 path B, a distinct acceptance boundary.** The
+accepted worksheet makes B-6 reach one state through two entry boundaries, and round 8 owned only
+the first:
+
+- **path A** — Outcome acceptance creates the registration, W-2 step 2 finds an already-accepted
+  eligible Event, and the registration and its generation retire inside that same Outcome
+  transaction; the cleanup writer lives in Outcome acceptance;
+- **path B** — the Execution is already durably `WAITING`, and a later eligible Event retires the
+  registration and creates readiness at **that Event's own acceptance boundary**, with no Outcome
+  anywhere in the transaction; the cleanup writer lives in Event acceptance/ingress routing.
+
+Round 8's eligible-wake entry (R5-d4) used path A only, and the corpus's one path-B wake
+(`k0-trace`) registers a wait with **no deadline**, so no schedule existed in which a live accepted
+deadline is ended by a later Event. A candidate could therefore persist the deadline correctly, clear
+it correctly on the path-A immediate wake, clear it correctly on expiry, and still leave it behind on
+path B — leaving `state = READY`, `liveWaitGeneration = null`, the correct Event-triggered readiness
+and the correct mailbox facts, with the retired generation's deadline still live.
+
+`control-stale-timer-and-lost-wake` gains the two steps that discriminate it, deliberately in the
+scenario that already owns path A so the two boundaries can be read side by side: `g3` is a wait on
+`corr-3` with a **future** deadline of 3000, submitted when the mailbox holds nothing eligible, so it
+parks durably as `WAITING` with the deadline as an accepted fact; then `res-3` is accepted and ends it
+through path B. The conforming observation is `READY`, `liveWaitGeneration` null, exactly one
+Event-triggered readiness for `g3`, `res-3` queued and unacknowledged, the progress revision
+unadvanced — and `acceptedDeadline` back to null.
+
+- **R5-d6** owns that transition. Its transcript,
+  `control-stale-timer/path-B-wake-leaves-the-accepted-deadline`, moves **only** `acceptedDeadline`,
+  leaving 3000 behind while every other path-B result stays correct.
+- **R5-d4** is narrowed to name path A explicitly, so the two entries cannot be read as one.
+- `blind-spot-regression.test.ts` pins the schedule (parked with a live deadline, then ended by an
+  `accept_event` rather than a `deliver_timer`), the single-field move, that no other transcript
+  shares the step, that path A's step is a `submit_outcome` and path B's an `accept_event`, and that
+  `k0-trace`'s path-B wake stays deadline-less so it cannot absorb the assertion.
+
+**The whole accepted-deadline sweep was re-run rather than assumed**, by enumerating every boundary
+at which a deadline is submitted or live, and checking each species for a transcript that moves only
+`acceptedDeadline`: persistence on durable registration (R5-c4), immediate retirement at registration
+via B-7 path A (R5-c5) and via B-6 path A (R5-d4), current-generation expiry via B-7 path B (R5-d5),
+a later eligible Event via B-6 path B (R5-d6, new), stale delivery changing nothing (R5-f4), and a
+fenced losing `await` accepting nothing (R7-a6c). The ordering assertion that a past deadline is
+never persisted stays with R5-c3. One further point the sweep surfaces is **deliberately not owned**:
+at `control-whole-envelope-validation` step 4 a malformed wait carrying a deadline is refused, and
+§11 states a zero-deadline clause only in row 7, where R7-a6c owns it — row 3's zero-partial-state
+clause enumerates progress, Effect intent and acknowledgment, and row 5(a)'s assertion there is that
+the declaration is refused (R5-a1b). Inventing an assertion the worksheet does not state is the
+round-4 K02-R4-01 failure mode, so it is recorded here for a reviewer to disagree with rather than
+manufactured.
+
+The inventory goes from 92 entries to 93 (row 5: 33→34) and the corpus from 86 transcripts to 87,
+over 12 scenarios and 92 steps (`control-stale-timer-and-lost-wake` 11→13). This is the first round
+since round 5 that adds a schedule: the finding is precisely that no schedule could express the
+transition, so no transcript over the existing corpus could have closed it.

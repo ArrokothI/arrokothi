@@ -495,6 +495,93 @@ describe("round-7: accepted-deadline lifecycle transitions each move only the de
   });
 });
 
+// ---------------------------------------------------------------------------
+// Round 8: both B-6 entry boundaries own the deadline, not just path A
+// ---------------------------------------------------------------------------
+
+/**
+ * Round-8 review finding K02-R8-01: round 7 closed "the eligible-wake cleanup" with a path-A
+ * transcript only. B-6 states two entry boundaries into one state — path A retires a wait the
+ * Outcome-acceptance transaction has just created, path B retires a wait that is already durably
+ * `WAITING` at a later Event's own acceptance boundary with no Outcome in the transaction — and the
+ * corpus's only path-B wake registered a wait with no deadline, so a candidate whose path-B handler
+ * retires lifecycle, generation and readiness but forgets the deadline passed everything.
+ *
+ * These guards pin the discriminating schedule and its transcript so neither can be quietly reduced
+ * back to path A.
+ */
+describe("round-8: the B-6 path-B wake owns the deadline it retires", () => {
+  const PATH_B = "control-stale-timer/path-B-wake-leaves-the-accepted-deadline";
+
+  test("the schedule parks a live accepted deadline and then ends it with an Event, not a timer", () => {
+    const entry = violation(PATH_B);
+    const target = scenario(entry.scenarioId);
+    const parked = target.steps[entry.stepIndex - 1]!;
+    const woken = target.steps[entry.stepIndex]!;
+
+    // Durably WAITING with a *live* accepted deadline first. Without this the step below could not
+    // tell a forgotten cleanup apart from a deadline that was never accepted at all.
+    assert.equal(parked.expect.observation.state, "WAITING");
+    assert.equal(parked.expect.observation.liveWaitGeneration, "g3");
+    assert.equal(parked.expect.observation.acceptedDeadline, 3_000);
+
+    // Ended at an Event's own acceptance with no Outcome in the transaction: that is what makes it
+    // path B rather than path A (Outcome acceptance) or B-7 (the expiry handler).
+    assert.equal(woken.command.kind, "accept_event");
+    assert.equal(woken.expect.observation.progressRevision, parked.expect.observation.progressRevision);
+    assert.deepEqual(woken.expect.observation.acknowledged, parked.expect.observation.acknowledged);
+
+    // And the conforming result: READY, generation retired, Event-triggered readiness, deadline gone,
+    // the waking Event retained as an unacknowledged mailbox fact.
+    assert.equal(woken.expect.observation.state, "READY");
+    assert.equal(woken.expect.observation.liveWaitGeneration, null);
+    assert.deepEqual(woken.expect.observation.waitEndedReadiness, [{ generation: "g3", species: "event" }]);
+    assert.equal(woken.expect.observation.acceptedDeadline, null);
+    assert.deepEqual(woken.expect.observation.queued, ["res-3"]);
+  });
+
+  test("the path-B transcript moves exactly acceptedDeadline, and at a step no other transcript owns", () => {
+    const entry = violation(PATH_B);
+    const target = scenario(entry.scenarioId);
+    const expected = target.steps[entry.stepIndex]!.expect.observation;
+    assert.deepEqual(changedFields(expected, entry.mutate(expected)), ["acceptedDeadline"]);
+    assert.equal(entry.mutate(expected).acceptedDeadline, 3_000, "the leftover must be the retired wait's own deadline");
+
+    const sharing = VIOLATIONS.filter(
+      (other) => other.id !== entry.id && other.scenarioId === entry.scenarioId && other.stepIndex === entry.stepIndex,
+    );
+    assert.deepEqual(sharing, [], "another transcript already lives at this step; the path-B assertion must not share one");
+  });
+
+  test("path A and path B are distinct boundaries, so neither transcript stands in for the other", () => {
+    const pathA = violation("control-stale-timer/immediate-retirement-leaves-the-accepted-deadline");
+    const pathB = violation(PATH_B);
+    assert.notEqual(`${pathA.scenarioId}#${pathA.stepIndex}`, `${pathB.scenarioId}#${pathB.stepIndex}`);
+
+    // Path A's step is an Outcome submission and path B's is an Event acceptance. If a later edit
+    // moved either onto the other's boundary the split would become cosmetic, and this fails first.
+    assert.equal(scenario(pathA.scenarioId).steps[pathA.stepIndex]!.command.kind, "submit_outcome");
+    assert.equal(scenario(pathB.scenarioId).steps[pathB.stepIndex]!.command.kind, "accept_event");
+
+    // Both are single-field moves of the same fact, so the pair discriminates the boundary rather
+    // than the observation.
+    for (const entry of [pathA, pathB]) {
+      const expected = scenario(entry.scenarioId).steps[entry.stepIndex]!.expect.observation;
+      assert.deepEqual(changedFields(expected, entry.mutate(expected)), ["acceptedDeadline"]);
+    }
+  });
+
+  test("the corpus's deadline-less path-B wake stays deadline-less, so it cannot absorb this assertion", () => {
+    // `k0-trace`'s wake remains the evidence for R5-d1 (retiring the registration and its generation).
+    // It has no deadline to retire, which is precisely why it could not own R5-d6.
+    const trace = scenario("k0-trace");
+    const wake = trace.steps[6]!;
+    assert.equal(wake.command.kind, "accept_event");
+    assert.deepEqual(wake.expect.observation.waitEndedReadiness, [{ generation: "g1", species: "event" }]);
+    assert.equal(trace.steps[4]!.expect.observation.acceptedDeadline, null, "the wait it retires never carried a deadline");
+  });
+});
+
 describe("round-4: the withdrawn subscription rule stays withdrawn", () => {
   test("an empty declared subscription identity is well formed, because W-1 leaves the spelling to K1.3", () => {
     // Round-4 review finding K02-R4-01. This is a regression guard in the opposite direction from the

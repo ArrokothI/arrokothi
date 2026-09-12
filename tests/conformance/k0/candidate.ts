@@ -804,6 +804,24 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, acceptedDeadline: 2_000 }),
   },
   {
+    // Round-8 review finding K02-R8-01: B-6's *third* deadline-clearing writer. Path A's cleanup runs
+    // inside Outcome acceptance (step 3 above) and expiry's inside the timer handler (step 7); this
+    // one runs wherever an Event's own acceptance retires a live wait, and a candidate can get the
+    // first two right and this one wrong. Everything else at this step is correct — READY, g3
+    // retired, one Event-triggered readiness, res-3 queued and unacknowledged, nothing else moved —
+    // and only the retired wait's deadline is left live.
+    id: "control-stale-timer/path-B-wake-leaves-the-accepted-deadline",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "the Event-acceptance wake handler retires the registration, the generation and the readiness bookkeeping " +
+      "but clears no deadline state, because deadline cleanup was written once in the Outcome-acceptance and " +
+      "expiry paths and never on the path where an Event ends a durably parked wait with no Outcome in the transaction",
+    forbiddenBy: "B-6 path B with W-2 step 4 and §11 row 5(d): any eligible wake retires the registration and its generation, and the accepted deadline persisted beside that registration retires with it",
+    stepIndex: 12,
+    mustNameFields: ["acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, acceptedDeadline: 3_000 }),
+  },
+  {
     id: "wait-structure/re-registered-dependency-treated-as-already-satisfied",
     scenarioId: "wait-structure-not-satisfiability",
     plausibleBug:

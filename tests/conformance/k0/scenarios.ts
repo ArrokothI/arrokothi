@@ -489,6 +489,23 @@ const laterResult = kernelEvent("res-2", X, "effect.result", "corr-2");
 const waitOnCorr1: WaitRecord = { dependencies: [{ kinds: ["effect.result"], correlation: "corr-1" }], subscriptions: [], deadline: 1_000, generation: "g1" };
 const waitOnCorr2: WaitRecord = { dependencies: [{ kinds: ["effect.result"], correlation: "corr-2" }], subscriptions: [], deadline: 2_000, generation: "g2" };
 const timeoutForG2 = timeoutEvent("to-g2", X, "g2");
+/**
+ * Round-8 review finding K02-R8-01. B-6 reaches one state through two entry boundaries, and the
+ * corpus proved only one of them for the accepted deadline. Path A is above at step 3: the wait is
+ * created and retired inside the **Outcome-acceptance** transaction because an eligible Event was
+ * already in the mailbox. Path B is different work by a different writer — the Execution is already
+ * durably `WAITING`, and a later eligible Event retires it at **that Event's own acceptance
+ * boundary**, with no Outcome in the transaction at all.
+ *
+ * Before this wait, every deadline-bearing wait in the corpus that reached durable `WAITING` ended
+ * through its own deadline (`g2` here, `gd1` in the W-8 case-6 control), and the one path-B wake the
+ * corpus had (`k0-trace`) registered a wait with no deadline. So a candidate whose path-B handler
+ * retired the lifecycle, the generation and the readiness correctly but never cleared the accepted
+ * deadline passed everything. `g3` is the wait that catches it: a future deadline, so it must park
+ * durably first, and a correlation only a later result can satisfy.
+ */
+const finalResult = kernelEvent("res-3", X, "effect.result", "corr-3");
+const waitOnCorr3: WaitRecord = { dependencies: [{ kinds: ["effect.result"], correlation: "corr-3" }], subscriptions: [], deadline: 3_000, generation: "g3" };
 
 export const staleTimerAndLostWake: Scenario = {
   id: "control-stale-timer-and-lost-wake",
@@ -496,12 +513,12 @@ export const staleTimerAndLostWake: Scenario = {
   sources: [
     "K0.1 worksheet Decision M-1, control from §11 row 5",
     "K0.1 worksheet W-2 (ordered registration), W-3 (generation fencing scope), W-9 (the timeout Event)",
-    "K0.1 worksheet B-6 path A, B-7 path B, B-8",
+    "K0.1 worksheet B-6 paths A and B, B-7 path B, B-8, §11 row 5(d)",
     "kernel.md ('stale timers cannot wake a replacement wait'), CL-2",
   ],
   k0BoundaryRows: [5, 6],
   isUnsafeControl: true,
-  waits: { waitOnCorr1, waitOnCorr2 },
+  waits: { waitOnCorr1, waitOnCorr2, waitOnCorr3 },
   steps: [
     step(
       { kind: "create", executionId: X, requestKey: "req-x", initialInput, definitionRevision: FAKE_RUNTIME_V1 },
@@ -697,6 +714,69 @@ export const staleTimerAndLostWake: Scenario = {
         forbids: [
           "the timeout must not suppress the later result for the same correlation: preserve both facts",
           "waitEndedReadiness must return to empty: reservation consumes it",
+        ],
+      },
+    ),
+    // Round-8 review finding K02-R8-01: B-6's *other* entry boundary, on a wait that carries a
+    // deadline. Step 3 above is path A — the wait is created and retired inside one Outcome-acceptance
+    // transaction. These two steps are path B: the wait parks durably with a live accepted deadline
+    // first, and is then ended by a later eligible Event at that Event's own acceptance boundary, with
+    // no Outcome in the transaction. The deadline never fires, and the wake must retire it all the
+    // same.
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({ executionId: X, activationId: "act-3", writerEpoch: 3, baseProgressRevision: 2, progress: { phase: "awaiting-3" }, next: { step: "await", wait: waitOnCorr3 } }),
+      },
+      {
+        label: "a third wait parks durably under g3 with a future deadline: 3000 is an accepted fact and nothing eligible is queued",
+        observation: obs(X, {
+          state: "WAITING",
+          progressRevision: 3,
+          progress: { phase: "awaiting-3" },
+          acknowledged: ["in-1", "res-1", "to-g2", "res-2"],
+          queued: [],
+          liveWaitGeneration: "g3",
+          acceptedDeadline: 3_000,
+          receipt: "receipt:outcome:act-3",
+          writerEpoch: 3,
+        }),
+        forbids: [
+          "state must be WAITING: unlike step 3's path A the mailbox holds nothing eligible once this Outcome's own batch is acknowledged, so W-2 reaches step 4 and persists",
+          "acceptedDeadline must be 3000: W-2 step 4 persists the live registration with its generation and its deadline as one accepted set (OA-4)",
+          "res-2 must not wake it: it was acknowledged by this very Outcome, and W-2 step 1 runs before the mailbox check",
+        ],
+      },
+    ),
+    step(
+      { kind: "accept_event", event: finalResult },
+      {
+        label: "B-6 path B: a later eligible Event retires the live deadline-bearing wait at its own acceptance boundary, deadline included",
+        observation: obs(X, {
+          state: "READY",
+          progressRevision: 3,
+          progress: { phase: "awaiting-3" },
+          acknowledged: ["in-1", "res-1", "to-g2", "res-2"],
+          queued: ["res-3"],
+          liveWaitGeneration: null,
+          // §3 row 2: Event-triggered, not deadline-triggered. g3's deadline never fired and now never
+          // will, so the timeout Event B-7 would have minted does not exist and must not be claimed.
+          waitEndedReadiness: [{ generation: "g3", species: "event" }],
+          // The fact this pair of steps exists for. Retirement here is committed by the
+          // Event-acceptance writer — not by Outcome acceptance as in path A at step 3, and not by the
+          // expiry handler as at step 7 — and the accepted deadline is part of the registration that
+          // writer retires. Nothing is claimed about a physical timer still registered for g3: W-3
+          // lets one survive and arrive later as a stale no-op, exactly as g1's did at step 6.
+          acceptedDeadline: null,
+          receipt: "receipt:outcome:act-3",
+          writerEpoch: 3,
+        }),
+        forbids: [
+          "acceptedDeadline must be null: the wake retires the accepted deadline with the registration it belongs to, and a deadline fact outliving its retired generation is what this step exists to catch",
+          "liveWaitGeneration must be null: an eligible Event retires the generation here, with no Outcome anywhere in the transaction (B-6 path B)",
+          "waitEndedReadiness must be exactly one Event-triggered entry for g3: a deadline species here would claim a timeout Event that was never minted",
+          "progressRevision must not advance and acknowledged must not grow: waking is not acknowledging, which requires an accepted Outcome (B-3)",
+          "res-3 must stay queued and unacknowledged: the Event that ended the wait is a mailbox fact, not a consumed one",
         ],
       },
     ),

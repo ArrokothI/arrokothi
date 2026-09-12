@@ -484,7 +484,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(c) Step 3 evaluates an already-due deadline before persisting, so a past deadline is never persisted as live (B-7 path A).",
     atomicity:
-      "One bug construction: the Outcome-acceptance writer persists WAITING with its accepted deadline before the deadline-evaluator runs, so the W-2 step-3 branch that would mint the timeout, retire immediately and create deadline-readiness never executes. The live generation, live accepted deadline, absent timeout and absent readiness are one ordering swap plus the absence of the one path-A transaction. A persister that writes the live generation without its deadline is now owned separately as R5-c4, and immediate-retirement deadline leftovers as R5-c5/R5-d4/R5-d5/R5-f4; the live-generation field alone already discriminates this entry's ordering swap, and the cancellation-loser leak is separately R7-a6c. Nothing here constrains physical timer handles.",
+      "One bug construction: the Outcome-acceptance writer persists WAITING with its accepted deadline before the deadline-evaluator runs, so the W-2 step-3 branch that would mint the timeout, retire immediately and create deadline-readiness never executes. The live generation, live accepted deadline, absent timeout and absent readiness are one ordering swap plus the absence of the one path-A transaction. A persister that writes the live generation without its deadline is now owned separately as R5-c4, and retirement-time deadline leftovers as R5-c5/R5-d4/R5-d5/R5-d6/R5-f4; the live-generation field alone already discriminates this entry's ordering swap, and the cancellation-loser leak is separately R7-a6c. Nothing here constrains physical timer handles.",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 6, counterexamples: ["subscription-deadline/past-deadline-persisted-as-a-live-wait"] },
   },
   {
@@ -529,9 +529,17 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     // Both retirement species of row 5(d), for the deadline fact: R5-d1/d2 own retiring the
     // registration and generation; these own retiring the accepted deadline beside them. Each moves
     // only `acceptedDeadline`.
+    //
+    // Round-8 review finding K02-R8-01 split the eligible-wake half again, because row 5(d)'s "any
+    // eligible wake" reaches one state through two entry boundaries and B-6 states them separately:
+    // path A is found during W-2 step 2 and retires inside the **Outcome-acceptance** transaction,
+    // while path B retires a wait that is already durably `WAITING` at the **Event's own acceptance
+    // boundary**, with no Outcome in the transaction at all. Those are different writers, so a
+    // candidate can clear the deadline in one and leave it behind in the other. R5-d4 owns path A and
+    // R5-d6 owns path B.
     id: "R5-d4",
     row: 5,
-    obligation: "(d) An eligible wake retires the accepted deadline with the registration: a deadline-bearing wait retired by an eligible Event leaves no accepted deadline fact.",
+    obligation: "(d) A registration-time eligible wake retires the accepted deadline inside the Outcome-acceptance transaction (B-6 path A): a deadline-bearing wait retired by an already-accepted Event leaves no accepted deadline fact.",
     evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 3, counterexamples: ["control-stale-timer/immediate-retirement-leaves-the-accepted-deadline"] },
   },
   {
@@ -539,6 +547,17 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(d) A current-generation deadline expiry retires the accepted deadline with the generation: timeout minted, generation retired, no deadline fact left live.",
     evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 7, counterexamples: ["control-stale-timer/expiry-retirement-leaves-the-accepted-deadline"] },
+  },
+  {
+    // Round-8 review finding K02-R8-01. R5-d1 already owns "any eligible wake retires the
+    // registration and generation" and its evidence *is* a path-B wake — but on a wait with no
+    // deadline, so it cannot see a path-B handler that retires lifecycle, generation and readiness
+    // correctly and forgets the deadline. This entry is that one fact, on a schedule where the wait
+    // parks durably with a live accepted deadline first.
+    id: "R5-d6",
+    row: 5,
+    obligation: "(d) A later eligible Event retires the accepted deadline at that Event's own acceptance boundary (B-6 path B): a live deadline-bearing wait ended with no Outcome in the transaction leaves no accepted deadline fact behind, while its lifecycle, generation, readiness species and mailbox results stay correct.",
+    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 12, counterexamples: ["control-stale-timer/path-B-wake-leaves-the-accepted-deadline"] },
   },
 
   // == Row 5(e): next-batch selection, both species ==========================
