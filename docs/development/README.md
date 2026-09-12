@@ -17,7 +17,7 @@ paths remain valid evidence locators and are not mass-renamed.
 | [K0.1 process retrospective](011-k0.1-process-retrospective.md) | Twelve-round evidence, workflow diagnosis and redesign rationale |
 | [Review methods](012-review-methods.md) | Claim-specific coverage and semantic correction closure |
 | [K0.1 integration receipt](work/K0.1/integration-01.md) | Verified main integration, owner closure and K0.2 hold |
-| [Structure and evidence sequencing](013-structure-and-evidence-sequencing.md) | Read-only benchmark interlock, rename handling and planned K1.0 before K1.1 |
+| [Structure and evidence sequencing](013-structure-and-evidence-sequencing.md) | Read-only benchmark interlock, rename handling and planned K1.0 after E1 fixture preparation, before K1.1 |
 | [Implemented baseline](002-implemented-kernel-baseline.md) | Actual 0.8.x surface and useful source/tests; no target recovery claim |
 | [Findings](003-evidence-and-findings.md) | Existing implementation defects, historical results and current disposition |
 | [Architecture review](004-architecture-review.md) | 2026-09-08 decisions, inspected prior art, unresolved questions and old-plan disposition |
@@ -42,6 +42,8 @@ this process review before considering its release. Historical K0.1 worksheet/re
 statements describe their candidate at the time; 007 and the separate integration receipt own current
 status. The process redesign is a candidate for owner inspection, not its author's independent ACCEPT.
 
-The proposed structural preparation packet is K1.0, after K0.2 and before K1.1. Both K0.2 and K1.0
+The proposed structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is
+itself K1 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared
+fixtures and a structural pass are not an E1 result. Both K0.2 and K1.0
 remain unimplemented and unreleased. Benchmark follow-ups are recommendations for its owner; this
 task does not change that repository.

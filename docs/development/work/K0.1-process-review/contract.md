@@ -11,6 +11,9 @@ or K0.2 release is authorized.
 The proposed changes cannot weaken the conditions of their own review. Candidate C/H will use the
 old convention: payload including this script/contract, clean validation, then report only as H. Attempt 1 was recorded as interim after the owner update;
 the expanded payload must be clean-validated anew and followed by implementation-02.
+Attempt 3 corrects reviewed candidate H2 `bf2a3057272aa8749a8ce9d36ec8239f4e2411a9` under independent
+finding PRC-7-01. H2 and implementation-02 are immutable reviewed history; the correction adds payload
+C3 on top of them, clean-validates it, then adds report-only H3 as implementation-03.
 Independent acceptance of the process redesign is not claimed by its author.
 
 | ID | Owner-requested result | Observable verification |
@@ -22,6 +25,7 @@ Independent acceptance of the process redesign is not claimed by its author.
 | PRC-5 | Preserve historical/canonical/runtime material; no K0.2 | Exact Git equality of all pre-existing K0.1 artifacts and protected paths; no K0.2 directory/release |
 | PRC-6 | Validate and deliver without merging | Link/anchor/scope/identity checks and diff check on clean C; report C/H; verified remote branch push, main unchanged |
 | PRC-7 | Evaluate both roadmaps, rename and structure without implementing migration | Pinned read-only benchmark evidence; 013 alternatives and bounded K1.0 planning; 007 dependency/aggregate gate consistency; SDK change only repository URL |
+| PRC-7a | Keep local sequencing compatible with the pinned benchmark roadmap's E1 build timing | 001/007/013/READMEs state one rule: benchmark-owned E1 fixture preparation precedes K1 implementation including K1.0; no document weakens fixtures to specifications or K1 implementation to K1 behavior; K1.0 earns no E1 credit and K1.4 retains the full K1/E1 gate |
 
 Selected 012 method: process/documentation. Normative examination concerns development policy only;
 no Kernel semantics change. Runtime, race/fault, native, benchmark and packaging runs cannot prove

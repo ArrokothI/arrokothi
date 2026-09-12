@@ -34,7 +34,11 @@ landing zone for new work is justified before that coupling grows.
 
 Add **K1.0 — Target boundary and legacy quarantine**, PLANNED and unreleased, under existing K1.
 Keep K0.2 first: public controls and E0 ownership should constrain what must be observed before code
-is reorganized. K1.0 adds an independently reviewable structural prerequisite to K1.1. K1.4 remains
+is reorganized. K1.0 does not move the external prerequisite: it is K1 implementation, so the
+benchmark roadmap's E1 fixture preparation must already exist before K1.0 begins, not merely before
+K1.1. That preparation depends only on the accepted K0 contract and never on a K1 subject, so adding
+K1.0 creates no circular gate and needs no benchmark roadmap amendment.
+K1.0 adds an independently reviewable structural prerequisite to K1.1. K1.4 remains
 the aggregate K1/E1 gate and must include K1.0's structural obligations. No K/R/E numbering changes,
 new evidence gate or new architectural milestone is needed.
 
@@ -61,6 +65,8 @@ layouts are allowed if the dependency boundary is enforced. Do not add mandatory
 | SDK/application host | Compose Kernel and Drivers/Runtimes from above, with explicit compatibility entry points during transition | Kernel importing SDK or quietly rebinding existing public APIs to partial target behavior |
 | Shared leaves/testing | Extract or reuse only individually audited portable primitives; separate fake Runtime/oracle support from Kernel production code | A catch-all shared barrel that indirectly reconnects Kernel to legacy or native Runtime internals |
 
+K1.0's entry record must name the E1 fixture identities its prerequisite was satisfied by, without
+claiming any E1 result from them.
 K1.0's future acceptance must include a source/export ownership inventory, allowed dependency graph,
 controlled move/import diff, preserved current consumer behavior and executable import-boundary
 checks. Test transitive, type-only, barrel and dynamic-import paths as applicable to the module system;
@@ -90,7 +96,7 @@ The K/R/E sequence remains sound; clarify preparation versus acceptance and the 
 
 | Interlock | Planning decision / follow-up |
 |---|---|
-| K0.2 ↔ E0, then K1/E1 | K0.2 remains the public control/ownership gate, not a working target Kernel. Pin E1 public fixture specifications before K1 behavior; K1.0 may prepare separation after K0.2 without claiming E1 passed. Required fixture/source access still gates the dependent behavior work. |
+| K0.2 ↔ E0, then K1/E1 | K0.2 remains the public control/ownership gate, not a working target Kernel. The benchmark roadmap builds E1 fixtures after the K0 contract and before K1 implementation; K1.0 is K1 implementation, so that fixture preparation precedes K1.0 as well as K1.1. Built fixtures and a K1.0 structural pass are preparation and separation, never an E1 result. Required fixture/source access still gates the dependent behavior work. |
 | Kernel-local oracle ↔ benchmark observer | ArrokothI owns deterministic conformance; benchmark pins it and observes independently. Independent sink/oracle checks must reject unsafe or state-losing behavior without merely trusting candidate inspection/report APIs. No duplicate full Kernel oracle or private-case transfer. |
 | K1 ↔ R1/E3 ↔ K3 | Keep trusted native probes after the K1 boundary and before persistence freezes; mediation still waits for K2. Directory separation does not replace the two native designs that challenge shared extensions. |
 | K2 → K3/E4, K4/K5 extensions | Preserve actual process-death/surviving-evidence gates and distinct composition/operating matrices. Structural guards earn no durability or isolation credit. |
@@ -103,8 +109,10 @@ Recommended **benchmark-owner follow-up**, not a change performed here:
    historical canary documents and evidence. Local `../../agent-kernel` paths describe an actual
    checkout name; a GitHub rename alone does not rename that directory.
 2. On adoption of K1.0, annotate the interlock so structural acceptance is not mistaken for E1
-   behavioral acceptance. Pin the actual public conformance entry after it exists; update moved
-   paths/version mappings without changing required observations or giving a structure-only pass.
+   behavioral acceptance. E1's existing "before K1 implementation" build timing already covers K1.0
+   and needs no change; this assessment requests no amendment of that prerequisite. Pin the actual
+   public conformance entry after it exists; update moved paths/version mappings without changing
+   required observations or giving a structure-only pass.
 3. In K0.2/E0 handoff, state which repository owns each public fixture, independent sink, capture
    adapter and gate decision. Resolve access before release; do not create a dependency cycle by
    requiring a successful K1 subject before its independent controls can be specified.

@@ -84,7 +84,8 @@ For implementation guidance, start at the [Kernel, Execution and Deployment guid
 | `docs/architecture-strategy-study` | Comparative architecture diagnosis that informed the redesign |
 
 The [structure/evidence assessment](docs/development/013-structure-and-evidence-sequencing.md)
-plans K1.0 boundary preparation after K0.2, before K1.1; no structural migration is implemented or
+plans K1.0 boundary preparation after K0.2 and after the benchmark-owned E1 fixture preparation
+that precedes all K1 implementation, before K1.1; no structural migration is implemented or
 released by that plan. Current layout above remains the implemented layout.
 
 The target dependency direction is application/SDK → Kernel + Execution Drivers → Execution Runtimes/providers. Provider-specific concepts should not become Kernel semantics merely because one integration exposes them.

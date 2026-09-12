@@ -88,11 +88,17 @@ requires model or Stage concepts, subtract them before K1. Keep the wire codec/s
 
 ## K1 — One asynchronous Execution with opaque progress
 
-**Owner:** Kernel. **Entry:** K0; E1 fixture specifications begin before behavioral implementation.
-The planned sequence is **K0.2 → K1.0 structural preparation → K1.1 asynchronous implementation**.
+**Owner:** Kernel. **Entry:** K0; E1 fixtures begin before implementation. The benchmark roadmap
+owns that prerequisite: E1 fixtures are built after the K0 contract and before K1 implementation,
+and the built fixtures' result then gates the next dependent slice. K1.0 is K1 implementation, so
+the required E1 fixture preparation must already exist when K1.0 starts, not only before K1.1.
+The planned packet order is **K0.2 → K1.0 structural preparation → K1.1 asynchronous
+implementation**. Fixture construction is permitted from the accepted K0 contract onward and never
+depends on a K1 subject, so this prerequisite adds no cycle.
 K1.0 establishes a narrow target-code boundary and quarantines the working legacy implementation,
-with import guards and preserved consumer regressions; it does not implement the new protocol or
-pass E1. K1.4 retains the full K1/E1 gate, including these structural obligations. See the
+with import guards and preserved consumer regressions; it does not implement the new protocol, and
+neither prepared fixtures nor a K1.0 structural pass is an E1 result.
+K1.4 retains the full K1/E1 gate, including these structural obligations. See the
 [structure/evidence assessment](013-structure-and-evidence-sequencing.md) and
 [packet contract seed](007-work-packets.md#k10--target-boundary-and-legacy-quarantine).
 This is a planned dependency amendment, not a release of K0.2 or K1.0.

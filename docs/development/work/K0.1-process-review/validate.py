@@ -25,11 +25,14 @@ DOCS = [PREFIX + name for name in (
     '012-review-methods.md', '013-structure-and-evidence-sequencing.md', 'work/K0.1/integration-01.md',
     'work/K0.1-process-review/contract.md',
 )] + ['README.md']
-REPORT = PREFIX + 'work/K0.1-process-review/implementation-02.md'
-INTERIM = PREFIX + 'work/K0.1-process-review/implementation-01.md'
+REPORT = PREFIX + 'work/K0.1-process-review/implementation-03.md'
+PRIOR_REPORTS = [PREFIX + 'work/K0.1-process-review/implementation-0%d.md' % n for n in (1, 2)]
+INTERIM, REVIEWED_REPORT = PRIOR_REPORTS
 INTERIM_COMMIT = '88236083e52c1a006077653482cae3f71eb213df'
+H2 = 'bf2a3057272aa8749a8ce9d36ec8239f4e2411a9'
 BENCHMARK = '98756f8c10bd806125da8318f1a129bc030aca61'
-ALLOWED = set(DOCS + [REPORT, INTERIM, 'packages/sdk/package.json', PREFIX + 'work/K0.1-process-review/validate.py'])
+ALLOWED = set(DOCS + [REPORT] + PRIOR_REPORTS
+              + ['packages/sdk/package.json', PREFIX + 'work/K0.1-process-review/validate.py'])
 failures = []
 
 
@@ -87,6 +90,10 @@ check(not (ROOT / PREFIX / 'work/K0.2').exists(), 'K0.2 directory exists')
 check(not (ROOT / PREFIX / 'work/K1.0').exists(), 'K1.0 implementation directory exists')
 check(git('hash-object', INTERIM) == git('rev-parse', INTERIM_COMMIT + ':' + INTERIM),
       'Interim process report altered')
+check(git('hash-object', REVIEWED_REPORT) == git('rev-parse', H2 + ':' + REVIEWED_REPORT),
+      'Reviewed attempt-2 report altered')
+check(subprocess.run(['git', 'merge-base', '--is-ancestor', H2, 'HEAD'], cwd=ROOT).returncode == 0,
+      'Reviewed H2 is not an ancestor of HEAD')
 ledger = (ROOT / PREFIX / '007-work-packets.md').read_text()
 rows = re.findall(r'^\| ([KRDS]\d+\.\d+) \| ([A-Z_]+) \|', ledger, re.M)
 check(len(rows) == 35 and len(dict(rows)) == 35, 'Expected 35 unique status rows')
@@ -122,6 +129,41 @@ check('| K1 | K1.0–K1.4 | K1.4 ACCEPTED, structural obligations plus full E1 |
 print('Ledger: 35 unique packets/definitions; K0.1 ACCEPTED, 34 PLANNED; acyclic dependencies')
 print('Sequence: K0.2 -> K1.0 -> K1.1; K1.4 retains full gate; no K0.2/K1.0 implementation directories')
 
+# PRC-7a: one sequencing rule, compatible with the pinned benchmark roadmap's E1 build timing.
+# The benchmark roadmap builds E1 fixtures "After K0 contract, before K1 implementation"; K1.0 is
+# K1 implementation. These are textual guards on the current planning documents only; the numbered
+# historical attempt reports keep their as-of wording and are excluded.
+WEAKENED = (
+    'fixture specifications begin before behavioral implementation',
+    'E1 public fixture specifications before K1 behavior',
+    'E1 fixture specifications',
+)
+for name in DOCS:
+    text = (ROOT / name).read_text()
+    for phrase in WEAKENED:
+        check(phrase not in text, f'{name}: weakened E1 sequencing phrase {phrase!r}')
+roadmap = (ROOT / PREFIX / '001-current-status-and-roadmap.md').read_text()
+for required in ('E1 fixtures are built after the K0 contract and before K1 implementation',
+                 'K1.0 is K1 implementation',
+                 'neither prepared fixtures nor a K1.0 structural pass is an E1 result'):
+    check(required in roadmap, f'001 lost required E1 sequencing statement: {required!r}')
+k10 = ledger.split('### K1.0 — Target boundary and legacy quarantine')[-1].split('### K1.1')[0]
+check('E1 fixture preparation required before K1' in k10,
+      'K1.0 entry lost the benchmark-owned E1 fixture prerequisite')
+check('close no E1 criterion' in k10, 'K1.0 acceptance lost the no-E1-credit statement')
+k10_row = [line for line in ledger.splitlines() if line.startswith('| K1.0 |')]
+check(len(k10_row) == 1 and 'E1 fixture preparation required before K1 implementation' in k10_row[0]
+      and 'no E1 credit' in k10_row[0],
+      'K1.0 status row lost the E1 fixture prerequisite or the no-E1-credit statement')
+k14 = ledger.split('### K1.4 — Legacy bridge and K1/E1 gate')[-1].split('### K2.1')[0]
+check('Full K1/E1 matrix and K1.0 structural obligations pass' in k14, 'K1.4 lost the full K1/E1 gate')
+assessment = (ROOT / PREFIX / '013-structure-and-evidence-sequencing.md').read_text()
+check('precedes K1.0 as well as K1.1' in assessment, '013 interlock lost the K1.0 prerequisite')
+check('needs no benchmark roadmap amendment' in assessment,
+      '013 no longer states that the benchmark prerequisite is unchanged')
+print('E1 sequencing: fixture preparation precedes K1 implementation including K1.0 in '
+      f'{len(DOCS)} current planning documents; K1.0 earns no E1 credit; K1.4 keeps the full gate')
+
 old_sdk = json.loads(git('show', BASE + ':packages/sdk/package.json'))
 new_sdk = json.loads((ROOT / 'packages/sdk/package.json').read_text())
 old_sdk['repository']['url'] = 'git+https://github.com/ArrokothI/arrokothi.git'
@@ -135,6 +177,7 @@ if benchmark.is_dir():
     check(actual == BENCHMARK and not dirty, 'Benchmark identity/clean state differs')
 print('Benchmark: read-only HEAD/clean-state check at ' + BENCHMARK)
 print('Interim process report: preserved byte-for-byte at ' + INTERIM_COMMIT)
+print('Reviewed attempt-2 report: preserved byte-for-byte at H2 ' + H2 + '; H2 is an ancestor of HEAD')
 
 for older, newer in [(PLANNING, H12), (H12, A12), (A12, BASE)]:
     result = subprocess.run(['git', 'merge-base', '--is-ancestor', older, newer], cwd=ROOT)
@@ -152,7 +195,7 @@ for older, newer, record in [(C12, H12, 'implementation-12.md'), (H12, A12, 'rev
           f'Administrative ledger edit exceeds K0.1 row at {newer}')
 print('Integration: 3 ancestry checks; exact merge parents; A12/full merge tree equality; C12/H12/A12 scope')
 
-files = DOCS + [INTERIM] + ([REPORT] if (ROOT / REPORT).exists() else [])
+files = DOCS + PRIOR_REPORTS + ([REPORT] if (ROOT / REPORT).exists() else [])
 links = 0
 external = 0
 for name in files:
