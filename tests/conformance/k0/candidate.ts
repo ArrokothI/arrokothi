@@ -130,7 +130,10 @@ export const VIOLATIONS: readonly Violation[] = [
     plausibleBug:
       "the mailbox is consumed by advancing one monotonic cursor, so completing acknowledges every Event before the " +
       "cursor — including input that was never eligible and never reserved (the F20 defect B-1 exists to forbid)",
-    forbiddenBy: "B-1/B-4 (per-entry disposition, not a monotonic cursor) and B-3 (only the reserved batch is acknowledged)",
+    forbiddenBy: "B-5 and §11 row 8: an unacknowledged Event at a terminal state is never *treated as processed*; B-3, only the reserved batch is acknowledged",
+    // Round-4 review finding K02-R4-02 named R8-b: "rather than deleting it or treating it as
+    // processed" is two forbidden alternatives, and this transcript only ever exercised the second.
+    // It stays the treated-as-processed half; silent deletion has its own transcript below.
     stepIndex: 8,
     mustNameFields: ["acknowledged", "terminalDispositions"],
     mutate: (observation) => ({ ...observation, acknowledged: ["in-1", "cont-1", "bq-1", "bq-2"], terminalDispositions: [] }),
@@ -141,10 +144,13 @@ export const VIOLATIONS: readonly Violation[] = [
     plausibleBug:
       "the accepted-duplicate check is placed after envelope validation instead of before it, so an exact retransmission " +
       "is validated and committed a second time, advancing the revision and re-publishing the emission",
-    forbiddenBy: "OA-2: an exact duplicate returns the original receipt without re-running acceptance",
+    forbiddenBy: "OA-2: an exact duplicate re-runs no part of acceptance, so the accepted progress revision does not advance",
+    // Narrowed by round-4 review finding K02-R4-02: it used to mutate the revision *and* the emission
+    // list, so one transcript stood for two assertions a candidate can fail separately. The progress
+    // writer and the emission publisher are different writers, exactly as row 7 already recognises.
     stepIndex: 3,
-    mustNameFields: ["progressRevision", "emissions"],
-    mutate: (observation) => ({ ...observation, progressRevision: 2, emissions: ["em-1", "em-1"] }),
+    mustNameFields: ["progressRevision"],
+    mutate: (observation) => ({ ...observation, progressRevision: 2 }),
   },
   {
     id: "control-duplicate/conflict-merged-into-accepted-state",
@@ -174,12 +180,15 @@ export const VIOLATIONS: readonly Violation[] = [
     plausibleBug:
       "the timer handler matches on Execution ID alone and ignores the wait generation, so a timer scheduled for a " +
       "retired wait wakes the wait that replaced it",
-    forbiddenBy: "W-3: a timer naming a superseded generation retires nothing and cannot wake a replacement wait",
-    // Narrowed in round 3: W-3's no-op has two separable halves — it retires nothing, and it creates no
-    // timeout Event. A candidate can get one right and the other wrong, so each needs its own evidence.
+    forbiddenBy: "W-3: a timer naming a superseded generation cannot wake a replacement wait; kernel.md says so directly",
+    // Narrowed twice. Round 3 separated the timeout-Event half. Round-4 review finding K02-R4-02 named
+    // this entry again: "retires nothing" and "wakes nothing" are still two assertions, and the
+    // transcript changed both fields at once. A timer handler can wake while leaving the generation
+    // live, or retire the generation without producing readiness; they are different lines of code.
+    // This transcript is now the *wake* half alone.
     stepIndex: 6,
-    mustNameFields: ["state", "liveWaitGeneration"],
-    mutate: (observation) => ({ ...observation, state: "READY", liveWaitGeneration: null }),
+    mustNameFields: ["state"],
+    mutate: (observation) => ({ ...observation, state: "READY" }),
   },
   {
     id: "control-cancel/losing-progress-installed-with-next-state-suppressed",
@@ -206,10 +215,13 @@ export const VIOLATIONS: readonly Violation[] = [
     plausibleBug:
       "the retry path reads only 'have I seen this Outcome identity before?' and returns an acceptance receipt for a " +
       "submission that was recorded as rejected, never accepted",
-    forbiddenBy: "CX-6: an exact resubmission returns the recorded rejection; OA-2's receipt rule does not apply because no Outcome was accepted",
+    forbiddenBy: "CX-6: OA-2's receipt rule does not apply to a rejected Outcome, because no Outcome was accepted, so no acceptance receipt may be manufactured by replay",
+    // Narrowed by round-4 review finding K02-R4-02's sweep: manufacturing a receipt and losing the
+    // recorded rejection are separate failures. A candidate can return the rejection correctly and
+    // still fill in a receipt field beside it.
     stepIndex: 4,
-    mustNameFields: ["receipt", "rejection"],
-    mutate: (observation) => ({ ...observation, receipt: "receipt:outcome:act-1", rejection: null }),
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:outcome:act-1" }),
   },
   {
     id: "control-missing-checkpoint/fresh-state-presented-as-restored",
@@ -263,10 +275,12 @@ export const VIOLATIONS: readonly Violation[] = [
     plausibleBug:
       "emissions are recorded as they are walked and validation stops at the first bad one, so the valid first emission " +
       "and the progress in the same envelope are committed while the envelope is reported rejected",
-    forbiddenBy: "OA-3/OA-5: a failure anywhere in envelope validation accepts nothing; §11 row 3's zero-partial-state clause",
+    forbiddenBy: "OA-3/OA-5 and §11 row 3: a failure anywhere in envelope validation installs no progress",
+    // Narrowed by round-4 review finding K02-R4-02, which named this entry: it committed progress and
+    // an emission together, so a candidate leaking only one of the two was covered by nothing specific.
     stepIndex: 2,
-    mustNameFields: ["emissions", "progressRevision"],
-    mutate: (observation) => ({ ...observation, emissions: ["em-1"], progressRevision: 1, progress: { cursor: 1 } }),
+    mustNameFields: ["progressRevision"],
+    mutate: (observation) => ({ ...observation, progressRevision: 1, progress: { cursor: 1 } }),
   },
   {
     id: "envelope/structurally-empty-wait-registered-because-it-has-a-deadline",
@@ -274,8 +288,8 @@ export const VIOLATIONS: readonly Violation[] = [
     plausibleBug:
       "well-formedness is read as 'the wait must be able to end', so a declaration with both lists empty is accepted " +
       "whenever it carries a deadline, and the Execution is parked on a wait W-1 calls malformed",
-    forbiddenBy: "W-1 well-formedness case 1: both lists empty is malformed, and a deadline does not rescue it",
-    stepIndex: 3,
+    forbiddenBy: "W-1 well-formedness case 1: a deadline does not rescue a declaration with both lists empty; the deadline bounds a wait rather than being the thing waited for",
+    stepIndex: 4,
     mustNameFields: ["state", "liveWaitGeneration", "rejection"],
     mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad", dispatchedBatch: null, activationId: null, rejection: null }),
   },
@@ -335,10 +349,12 @@ export const VIOLATIONS: readonly Violation[] = [
       "the Effect array is validated and refused, but the surrounding envelope has already been applied, so a completing " +
       "Outcome that was reported rejected still installed its progress and acknowledged its batch — OA-3's all-or-nothing " +
       "rule broken on the one envelope where the leftover state is hardest to see",
-    forbiddenBy: "OA-3/OA-5: a rejected Outcome commits no progress and acknowledges no Events, on a completing envelope as on any other",
+    forbiddenBy: "OA-3/OA-5: a rejected Outcome commits no progress, on a completing envelope as on any other",
+    // Narrowed by round-4 review finding K02-R4-02, which named R8-a as still bundled: this
+    // transcript is now the progress half alone, and the acknowledgment half has its own below.
     stepIndex: 2,
-    mustNameFields: ["progressRevision", "acknowledged"],
-    mutate: (observation) => ({ ...observation, progressRevision: 1, progress: { done: true }, acknowledged: ["in-1"] }),
+    mustNameFields: ["progressRevision"],
+    mutate: (observation) => ({ ...observation, progressRevision: 1, progress: { done: true } }),
   },
   {
     id: "terminal-ingress/late-input-queued-on-a-terminal-execution",
@@ -412,10 +428,13 @@ export const VIOLATIONS: readonly Violation[] = [
     id: "delayed-runtime/unresolved-activation-reported-as-waiting",
     scenarioId: "delayed-runtime-non-blocking",
     plausibleBug: "a slow Activation is modelled as a Kernel-visible wait, so Runtime-local work gets a waitingFor record and WAITING stops meaning 'an accepted Outcome declared a dependency'",
-    forbiddenBy: "W-4: Runtime-local work creates no waitingFor record; mental-model.md, RUNNING means an Activation is unresolved",
+    forbiddenBy: "W-4 and mental-model.md: WAITING means an accepted Outcome declared a Kernel-visible dependency, which Runtime-local work is not",
+    // Narrowed by round-4 review finding K02-R4-02's sweep: the lifecycle claim and the record's
+    // existence are separately violable — an implementation can create the record for its own
+    // bookkeeping while still reporting RUNNING. This transcript is now the lifecycle half.
     stepIndex: 4,
-    mustNameFields: ["state", "liveWaitGeneration"],
-    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-local" }),
+    mustNameFields: ["state"],
+    mutate: (observation) => ({ ...observation, state: "WAITING" }),
   },
   {
     id: "control-cancel/reserved-batch-acknowledged-instead-of-disposed",
@@ -582,7 +601,7 @@ export const VIOLATIONS: readonly Violation[] = [
       "well-formedness is implemented as rule 1 alone — count the two lists — so an alternative supplying no selector " +
       "field passes, and a wait meaning 'any application input labelled continue' is registered as 'any Event at all'",
     forbiddenBy: "W-1 well-formedness rule 2 and the selector grammar: an alternative supplying none of the three fields is invalid, not a shorthand for anything",
-    stepIndex: 4,
+    stepIndex: 5,
     mustNameFields: ["state", "liveWaitGeneration", "rejection"],
     mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad-2", dispatchedBatch: null, activationId: null, rejection: null }),
   },
@@ -593,20 +612,9 @@ export const VIOLATIONS: readonly Violation[] = [
       "the kind selector is applied with a set-membership test that an empty set satisfies vacuously, so `kinds: []` is " +
       "read as a selector matching nothing and registered as a valid-but-inert alternative",
     forbiddenBy: "W-1's grammar: an empty supplied kind set is rejected before any matching is attempted; absence is expressed by not supplying the field",
-    stepIndex: 5,
-    mustNameFields: ["state", "liveWaitGeneration", "rejection"],
-    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad-3", dispatchedBatch: null, activationId: null, rejection: null }),
-  },
-  {
-    id: "envelope/invalid-subscription-identity-registered",
-    scenarioId: "control-whole-envelope-validation",
-    plausibleBug:
-      "subscriptions are carried through as opaque strings and validated only where they are matched, so a structurally " +
-      "invalid entry registers and fails silently at eligibility time instead of at the envelope boundary",
-    forbiddenBy: "W-1 well-formedness rule 3: every declared subscription present must be structurally valid, checked at registration",
     stepIndex: 6,
     mustNameFields: ["state", "liveWaitGeneration", "rejection"],
-    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad-4", dispatchedBatch: null, activationId: null, rejection: null }),
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad-3", dispatchedBatch: null, activationId: null, rejection: null }),
   },
   {
     id: "wait-structure/inert-alternative-refused-as-unsatisfiable",
@@ -884,6 +892,166 @@ export const VIOLATIONS: readonly Violation[] = [
       receipt: "receipt:outcome:act-1",
       rejection: null,
     }),
+  },
+
+  // == Round-4 additions (review finding K02-R4-02) ==========================
+  //
+  // Each of these is the second half of an entry that was still bundling two independently violable
+  // assertions after round 3 — the systemic half of K02-R3-01 that C4's reconstruction pass did not
+  // reach, because it applied the split rule to entries it was adding and not to entries it inherited.
+
+  {
+    id: "k0-trace/acknowledgment-runs-past-the-pinned-batch",
+    scenarioId: "k0-trace",
+    plausibleBug:
+      "acknowledgment is driven by a mailbox position rather than by batch membership, so accepting an " +
+      "Outcome marks everything accepted up to that point — including input that was never reserved and " +
+      "which the Runtime has not seen",
+    forbiddenBy: "B-3 and §11 row 2: an accepted Outcome acknowledges its entire pinned batch and nothing beyond it, which is what makes the batch checkable exactly",
+    stepIndex: 4,
+    mustNameFields: ["acknowledged", "queued"],
+    mutate: (observation) => ({ ...observation, acknowledged: ["in-1", "bq-1"], queued: [] }),
+  },
+  {
+    id: "control-duplicate/replay-republishes-the-emission",
+    scenarioId: "control-duplicate-conflicting-outcome",
+    plausibleBug:
+      "the duplicate check guards the progress transaction but the emission publisher sits outside it, " +
+      "so a retransmitted Outcome correctly declines to advance the revision and still emits a second time",
+    forbiddenBy: "OA-2: an exact duplicate returns the original receipt without re-running acceptance, and an accepted emission is published once",
+    stepIndex: 3,
+    mustNameFields: ["emissions"],
+    mutate: (observation) => ({ ...observation, emissions: ["em-1", "em-1"] }),
+  },
+  {
+    id: "envelope/valid-prefix-emission-kept-when-a-later-member-is-malformed",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "emissions are published as the list is walked and validation stops at the first bad one, so the " +
+      "valid first emission has already left the building when the envelope is refused — while the " +
+      "progress commit, guarded by the transaction, correctly rolls back",
+    forbiddenBy: "OA-3/OA-5 and §11 row 3: a failure anywhere in envelope validation accepts no emissions either, not only no progress",
+    stepIndex: 2,
+    mustNameFields: ["emissions"],
+    mutate: (observation) => ({ ...observation, emissions: ["em-1"] }),
+  },
+  {
+    id: "envelope/bare-empty-wait-registered",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "well-formedness is not checked at all for the two lists, so any `await` registers whatever it was " +
+      "handed and an Execution parks on a wait that names nothing",
+    forbiddenBy: "W-1 well-formedness rule 1: dependency alternatives + declared subscriptions must be at least 1; both empty is malformed",
+    stepIndex: 3,
+    mustNameFields: ["state", "liveWaitGeneration", "rejection"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad-0", dispatchedBatch: null, activationId: null, rejection: null }),
+  },
+  {
+    id: "wait-structure/inert-alternative-acknowledges-matching-input",
+    scenarioId: "wait-structure-not-satisfiability",
+    plausibleBug:
+      "an Event that matched *something* in the wait record is marked handled on arrival, so an input the " +
+      "alternative matched by kind is acknowledged even though it was never eligible, never woke anything " +
+      "and was never delivered to the Runtime",
+    forbiddenBy: "W-7 cases 6-7: a dependency alternative matching application input is inert — it neither wakes *nor acknowledges*; B-3, only an accepted Outcome acknowledges",
+    stepIndex: 3,
+    mustNameFields: ["acknowledged", "queued"],
+    mutate: (observation) => ({ ...observation, acknowledged: ["in-1", "bq-1"], queued: [] }),
+  },
+  {
+    id: "control-stale-timer/stale-generation-retires-the-live-registration",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "the stale timer is correctly prevented from waking anything, but the handler clears the " +
+      "registration before checking the generation, so the live wait is retired and the Execution is left " +
+      "waiting on a registration that no longer exists — no readiness will ever come",
+    forbiddenBy: "W-3: a timer naming a superseded generation is a no-op that *retires nothing*, which is separable from its not waking anything",
+    stepIndex: 6,
+    mustNameFields: ["liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, liveWaitGeneration: null }),
+  },
+  {
+    id: "delayed-runtime/runtime-local-work-gets-a-waitingFor-record",
+    scenarioId: "delayed-runtime-non-blocking",
+    plausibleBug:
+      "the scheduler records a waitingFor entry for Runtime-local work so an operator can see what a slow " +
+      "Activation is doing, while the lifecycle correctly stays RUNNING — a Kernel-visible wait record " +
+      "that no accepted Outcome ever declared",
+    forbiddenBy: "W-4: an Activation with only Runtime-local work outstanding creates *no* waitingFor record at all, separately from staying RUNNING",
+    stepIndex: 4,
+    mustNameFields: ["liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, liveWaitGeneration: "g-local" }),
+  },
+  {
+    id: "control-cancel/exact-retry-loses-the-recorded-rejection",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "the rejection is recorded but not durably bound to the submitted identity/content, so an exact " +
+      "resubmission finds nothing and answers as though the Outcome had never been seen — no receipt " +
+      "manufactured, but the recorded decision is gone",
+    forbiddenBy: "CX-6: an authenticated exact resubmission returns the *same recorded rejection classification and reason*",
+    stepIndex: 4,
+    mustNameFields: ["rejection"],
+    mutate: (observation) => ({ ...observation, rejection: null }),
+  },
+  {
+    id: "completion/refused-without-a-recorded-reason",
+    scenarioId: "control-completion-obligations",
+    plausibleBug:
+      "the completing envelope is correctly refused whole and nothing is committed, but the refusal is a " +
+      "dropped return value rather than a recorded decision, so nothing inspectable says the Execution " +
+      "declined to complete or why",
+    forbiddenBy: "§11 row 8 with row 4 and OA-5: the refusal is recorded with an inspectable reason, never silently dropped",
+    stepIndex: 2,
+    mustNameFields: ["rejection"],
+    mutate: (observation) => ({ ...observation, rejection: null }),
+  },
+  {
+    id: "completion/refused-envelope-acknowledges-its-batch",
+    scenarioId: "control-completion-obligations",
+    plausibleBug:
+      "the batch is acknowledged when the Activation resolves in any way, so a refused completing envelope " +
+      "still consumes its reserved input while correctly committing no progress",
+    forbiddenBy: "OA-3/OA-5 and B-3: a rejected Outcome acknowledges no part of its batch, which is separable from whether it installed progress",
+    stepIndex: 2,
+    mustNameFields: ["acknowledged"],
+    mutate: (observation) => ({ ...observation, acknowledged: ["in-1"] }),
+  },
+  {
+    id: "completion/refused-envelope-leaves-an-effect-intent",
+    scenarioId: "control-completion-obligations",
+    plausibleBug:
+      "the completing envelope's Effect is walked into an intent before the completion path refuses the " +
+      "envelope, so the refusal is reported, nothing else is committed, and an accepted intent with a " +
+      "bound proposal key is left behind on an Execution that never completed",
+    forbiddenBy: "EF-2: 'no Effect ID is minted, no proposal key is bound'; §11 row 8's 'nothing in it is committed' covers intents as much as progress",
+    stepIndex: 2,
+    mustNameFields: ["effectIntents"],
+    mutate: (observation) => ({ ...observation, effectIntents: ["ef-c1", "proposal-key:p1"] }),
+  },
+  {
+    id: "k0-trace/unacknowledged-event-deleted-without-a-disposition",
+    scenarioId: "k0-trace",
+    plausibleBug:
+      "terminal cleanup drops the mailbox rather than writing a disposition for each entry, so unconsumed " +
+      "input simply disappears — not acknowledged, which the cursor bug would do, but gone with no record " +
+      "that it was ever accepted",
+    forbiddenBy: "B-5 and §11 row 8: each unacknowledged Event gets an *explicit recorded* terminal disposition 'rather than being deleted without record', which is a different failure from being treated as processed",
+    stepIndex: 8,
+    mustNameFields: ["terminalDispositions"],
+    mutate: (observation) => ({ ...observation, terminalDispositions: [] }),
+  },
+
+  {
+    id: "control-cancel/losing-progress-installed",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "the progress writer runs before the cancellation fence is consulted, so a losing Outcome's progress is committed while " +
+      "its emissions and batch acknowledgment are correctly withheld — the narrow version of the variant M-1 names",
+    forbiddenBy: "CX-6 and §11 row 7: the losing Outcome installs no Runtime progress or progress revision",
+    stepIndex: 3,
+    mustNameFields: ["progressRevision", "progress"],
+    mutate: (observation) => ({ ...observation, progressRevision: 1, progress: { cursor: 5 } }),
   },
 
   // -- Row 9: the hold has to be inspectable, not merely non-fabricated -------

@@ -27,6 +27,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { VIOLATIONS } from "./candidate.ts";
+import { checkWaitWellFormed } from "./protocol-vocabulary.ts";
 import { ALL_SCENARIOS } from "./scenarios.ts";
 import type { Observation } from "./fixture.ts";
 
@@ -96,7 +97,6 @@ const C3_STEP_LABELS: Readonly<Record<string, readonly string[]>> = {
 const UNREACHABLE_UNDER_C3: readonly { readonly id: string; readonly why: string }[] = [
   { id: "envelope/match-everything-alternative-registered", why: "W-1 rule 2 was enforced only by the fixture's own helper, blind spot 1" },
   { id: "envelope/empty-kind-set-treated-as-matches-nothing", why: "W-1's empty-kind-set rule, likewise helper-only" },
-  { id: "envelope/invalid-subscription-identity-registered", why: "W-1 rule 3, likewise helper-only" },
   { id: "wait-structure/inert-alternative-refused-as-unsatisfiable", why: "W-1's structure-not-satisfiability promise had no positive case anywhere in the corpus" },
   { id: "wait-structure/unmatched-kernel-event-wakes-the-wait", why: "the category rule's non-application arm was never submitted to a candidate" },
   { id: "wait-structure/re-registered-dependency-treated-as-already-satisfied", why: "W-1(d)'s 'no per-alternative satisfied flag' had no re-registration to observe" },
@@ -177,5 +177,155 @@ describe("round-3 blind spots: the reconstruction itself discriminates", () => {
       withoutRound3Fields(expected),
       "a violation C3 caught through dispatchedBatch must not look invisible under the C3 surface",
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Round 4: what the split transcripts used to carry
+// ---------------------------------------------------------------------------
+
+/**
+ * Round-4 review finding K02-R4-02 is a different kind of defect from round 3's, and the difference
+ * matters for what can honestly be claimed here.
+ *
+ * Round 3's blind spots were **invisible**: the required fact had no observation field, or the step did
+ * not exist, so the old oracle genuinely passed a violating candidate. Round 4's were **visible but
+ * unattributed**: the complete expected observation would have rejected many of these candidates, but
+ * the coverage map claimed a counterexample per assertion and did not have one — one transcript was
+ * standing in for two or three. The review says so directly ("The runner would reject some such
+ * candidates because the complete expected observation contains those fields").
+ *
+ * So the claim made here is not "C4 passed these". It is the narrower, checkable one: **each of these
+ * transcripts used to carry more than one assertion's worth of difference, and now carries one.** The
+ * field sets below are transcribed from C4 (`e2721ddf30416454ddba73a10ae509190e68cbc4`) and a reviewer
+ * can check them against it directly. `coverage.test.ts` separately enforces, corpus-wide, that no two
+ * transcripts at one step move the same fields — so a split cannot be cosmetic.
+ */
+const C4_BUNDLED_FIELDS: readonly {
+  readonly narrowed: string;
+  readonly splitOut: string;
+  readonly c4Fields: readonly string[];
+  readonly assertions: string;
+}[] = [
+  {
+    narrowed: "control-duplicate/replay-re-runs-acceptance",
+    splitOut: "control-duplicate/replay-republishes-the-emission",
+    c4Fields: ["progressRevision", "emissions"],
+    assertions: "R3-a2 (the acceptance transaction does not re-run) and R3-a3 (the emission is not re-published)",
+  },
+  {
+    narrowed: "envelope/valid-prefix-kept-when-a-later-member-is-malformed",
+    splitOut: "envelope/valid-prefix-emission-kept-when-a-later-member-is-malformed",
+    c4Fields: ["progressRevision", "progress", "emissions"],
+    assertions: "R3-c1 (no progress) and R3-c1b (no emissions) — the review's own first example",
+  },
+  {
+    narrowed: "control-stale-timer/stale-generation-wakes-the-replacement-wait",
+    splitOut: "control-stale-timer/stale-generation-retires-the-live-registration",
+    c4Fields: ["state", "liveWaitGeneration"],
+    assertions: "R5-f1a (wakes nothing) and R5-f1a2 (retires nothing) — the review's second example",
+  },
+  {
+    narrowed: "control-cancel/exact-retry-manufactures-a-receipt",
+    splitOut: "control-cancel/exact-retry-loses-the-recorded-rejection",
+    c4Fields: ["receipt", "rejection"],
+    assertions: "R7-b (no manufactured receipt) and R7-b2 (the recorded rejection is returned)",
+  },
+  {
+    narrowed: "completion/refused-envelope-partly-committed",
+    splitOut: "completion/refused-envelope-acknowledges-its-batch",
+    c4Fields: ["progressRevision", "progress", "acknowledged"],
+    assertions: "R8-a3 (no progress) and R8-a4 (no acknowledgment) — part of the review's third example",
+  },
+  {
+    narrowed: "delayed-runtime/unresolved-activation-reported-as-waiting",
+    splitOut: "delayed-runtime/runtime-local-work-gets-a-waitingFor-record",
+    c4Fields: ["state", "liveWaitGeneration"],
+    assertions: "R5-g (stays RUNNING) and R5-g2 (no waitingFor record exists at all)",
+  },
+  {
+    narrowed: "control-cancel/losing-progress-installed-with-next-state-suppressed",
+    splitOut: "control-cancel/losing-progress-installed",
+    c4Fields: ["progressRevision", "progress", "emissions", "acknowledged", "terminalDispositions"],
+    assertions: "R7-a8 (Decision M-1's named composite variant, which stays composite because M-1 names it) and R7-a2 (progress alone)",
+  },
+];
+
+function changedFields(before: Observation, after: Observation): string[] {
+  return (Object.keys(before) as (keyof Observation)[]).filter(
+    (key) => JSON.stringify(before[key]) !== JSON.stringify(after[key]),
+  );
+}
+
+describe("round-4 splits: each transcript used to carry more than one assertion", () => {
+  for (const entry of C4_BUNDLED_FIELDS) {
+    test(`${entry.narrowed} was bundled; now ${entry.assertions}`, () => {
+      const narrowed = violation(entry.narrowed);
+      const splitOut = violation(entry.splitOut);
+      assert.equal(
+        narrowed.scenarioId,
+        splitOut.scenarioId,
+        "a split pair must run against the same scenario, or they are not two halves of one entry",
+      );
+      assert.equal(narrowed.stepIndex, splitOut.stepIndex, "a split pair must fail at the same step");
+
+      const target = scenario(narrowed.scenarioId);
+      const expected = target.steps[narrowed.stepIndex]!.expect.observation;
+      const narrowedFields = changedFields(expected, narrowed.mutate(expected));
+      const splitFields = changedFields(expected, splitOut.mutate(expected));
+
+      // Everything both halves now move was moved by the single C4 transcript. This is the transcribed
+      // claim: one transcript's worth of difference is now two transcripts' worth.
+      for (const field of [...narrowedFields, ...splitFields]) {
+        assert.ok(
+          entry.c4Fields.includes(field),
+          `${field} is moved today but is not in the transcribed C4 field set for ${entry.narrowed}; the transcription is stale or the split drifted`,
+        );
+      }
+
+      // And neither half alone is still the whole thing, or nothing was actually split.
+      assert.notDeepStrictEqual(
+        [...narrowedFields].sort(),
+        [...splitFields].sort(),
+        `${entry.narrowed} and ${entry.splitOut} move the same fields, so the split is cosmetic`,
+      );
+      assert.ok(
+        narrowedFields.length < entry.c4Fields.length || splitFields.length < entry.c4Fields.length,
+        `neither half of ${entry.narrowed} is narrower than what C4 carried`,
+      );
+    });
+  }
+});
+
+describe("round-4: the withdrawn subscription rule stays withdrawn", () => {
+  test("an empty declared subscription identity is well formed, because W-1 leaves the spelling to K1.3", () => {
+    // Round-4 review finding K02-R4-01. This is a regression guard in the opposite direction from the
+    // rest of this file: it asserts that a rule the fixture *used to* enforce is gone and must not
+    // come back. W-9's closing note assigns the spelling of a declared subscription identity to K1.3,
+    // and W-1 constrains only that it is finite, declarative and compared by equality — all of which
+    // the empty string satisfies.
+    const verdict = checkWaitWellFormed({ dependencies: [], subscriptions: [{ subscriptionClass: "" }], generation: "g" });
+    assert.equal(
+      verdict.wellFormed,
+      true,
+      "the empty subscription identity is being rejected again; that is a spelling decision K1.3 owns, not a W-1 rule",
+    );
+  });
+
+  test("and no scenario requires a candidate to reject one", () => {
+    for (const target of ALL_SCENARIOS) {
+      for (const [index, step] of target.steps.entries()) {
+        if (step.command.kind !== "submit_outcome") continue;
+        const next = step.command.outcome.next;
+        if (next.step !== "await") continue;
+        const hasEmptyIdentity = next.wait.subscriptions.some((subscription) => subscription.subscriptionClass.length === 0);
+        if (!hasEmptyIdentity) continue;
+        assert.equal(
+          step.expect.observation.rejection,
+          null,
+          `${target.id} step ${index} submits an empty subscription identity and requires rejection; W-1 does not forbid that spelling`,
+        );
+      }
+    }
   });
 });

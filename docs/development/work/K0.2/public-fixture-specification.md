@@ -43,20 +43,23 @@ offline with no model, network, container or database.
 Four of these were added after round-1 review and one after round-3 review; see §8.
 
 [`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at the
-granularity of the **independently distinguishable assertion** — 69 entries across the ten rows, not
-ten row entries and not the 33 prose-level obligations of the previous revision. The unit is
+granularity of the **independently distinguishable assertion** — 83 entries across the ten rows, not
+ten row entries and not the 33 prose-level obligations of two revisions ago. The unit is
 behavioural rather than editorial: two clauses in one cell are separate assertions when a plausible
 implementation can get one right and the other wrong, because that is the candidate the oracle has to
 be able to fail. §11 row 5 states the standard itself — "Each of these is **separately** observable".
 
-Of the 69, **64** resolve to a scenario step plus at least one counterexample the oracle demonstrably
+Of the 83, **77** resolve to a scenario step plus at least one counterexample the oracle demonstrably
 rejects at that step; **three** (R3-c3, R6-a1, R8-b2) are marked `shared`, meaning two §11 rows name
 one observable fact and one transcript is the honest evidence for both, with the identity written down
-and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **one** (R8-c)
-is explicitly assigned to K2.4 with the reason it has no observable K0 case. `coverage.test.ts`
-enforces all of it,
+and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **two** are
+explicitly assigned with the governing source that permits the deferral — R8-c to K2.4, and R5-a4 to
+K1.3, which W-9's *Left open* note names as the owner of a declared subscription identity's concrete
+spelling. Seventeen entries carry an `atomicity` note, required whenever an entry's counterexamples
+cross more than one coupled field group. `coverage.test.ts` enforces all of it,
 including that **no counterexample defends two assertions** except through a declared `shared` link,
-and that scenario row attribution agrees with the map in both directions.
+that **no two counterexamples at one step move the same set of observation fields**, and that scenario
+row attribution agrees with the map in both directions.
 `interactions.test.ts` sweeps the corpus for the cross-scenario invariants.
 
 ## 2. How the oracle is known to work
@@ -67,7 +70,7 @@ excluded by construction:
 - a **conforming transcript** must report `PASS`. It is derived from the scenarios' own expectations,
   so it proves only that the runner can pass something — that circularity is stated in the code and is
   the limit of what this direction establishes;
-- **sixty-five violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
+- **seventy-seven violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
   exact step, and the failure detail must name the exact observation field at issue. Failing for an
   unrelated reason would be an accident rather than discrimination, so the field names are asserted.
   Each transcript must also **name the governing decision its behavior breaks**, and that citation is
@@ -367,3 +370,82 @@ now, not that it failed to before, which is the claim a coverage correction has 
 scenario steps that did not exist, pinned by their C3 labels from `acb5e01` — and shows each repaired
 case passing it. It also checks itself: a counterexample C3 already caught must fail the invisibility
 test, so the suite cannot pass vacuously.
+
+## 11. What round-4 review changed
+
+Round 4 closed the four concrete blind spots from round 3 but kept `K02-R3-01` open as a systemic
+finding, and added one of its own. Both are correct and both are fixed forward from C4; nothing from
+rounds 2 or 3 is reverted.
+
+**K02-R4-01 — the fixture invented a rule about a spelling the worksheet assigns away.** C4's
+well-formedness helper rejected `subscriptionClass: ""`, a scenario submitted one and required
+refusal, and a counterexample treated accepting it as a protocol violation. W-1 rule 3 says only that
+a subscription entry *is* a declared subscription identity, and W-9's closing *Left open* note names
+the owner of everything else about it: "the exact spelling of a declared subscription identity ... —
+K1.3 owns that, and W-1 constrains only that it is finite, declarative and compared by equality." The
+empty string is finite, declarative and equality-compared, so it satisfies every constraint W-1
+actually imposes, and a conforming K1 implementation may choose a representation in which it is an
+ordinary identity.
+
+This is round 2's `K02-R2-01` in a worse form. There, an over-tight comparison would have failed a
+conforming candidate; here a *counterexample* asserted that conforming behaviour is a violation. It
+also survived a sweep: round 4 swept rejection *reason* strings for exactly this class and did not
+look at validity *rules*.
+
+Within this fixture's representation — `subscriptionClass` is a `string` — no submittable value can
+fail the property W-1 states, so there is no honest negative case to write. The rule, its scenario
+step and its counterexample are removed, and R5-a4 is assigned to K1.3 with the quotation above.
+Writing a real negative case requires first choosing the representation, which is the assigned work.
+What W-1 fixes about subscriptions independently of spelling is still observed by R5-a6, R5-b1 and
+R5-b2/R5-b2b.
+
+**The sweep that finding requires turned up two more of the same class**, both mine and neither
+reported by the review. Both are corrected here:
+
+- **The recovery hold's reason was compared verbatim.** PC-5 requires "an inspectable recovery-hold
+  state" and fixes no wording, exactly as §11 row 4 requires a recorded reason without fixing one.
+  Round 3 corrected the rejection reason and did not sweep the neighbouring free-text field.
+- **Receipts and Activation IDs were compared literally.** These are the only two token families a
+  candidate *mints* rather than receives from the schedule — every other identity a scenario asserts
+  is fixture-supplied data. §2's *Left open* note leaves "exact receipt serialization (opaque token
+  vs. structured tuple)" to the implementation, and ID-3/ID-9 are purely relational. The runner now
+  requires a **bijection** between expected and observed tokens within a run — the same expected token
+  always names the same observed token, and two never collapse onto one — which is what "same means
+  same, different means different" amounts to, and rejects every counterexample in the corpus. The
+  epoch is deliberately left as an integer and the reason recorded: ID-4 permits that representation
+  in terms, and every assertion made of it is about advancement and supersession.
+
+**K02-R4-02 — the assertion-atomicity rule was applied only to new entries.** C4 defined the right
+unit and re-derived the entries it was *adding* against it, while leaving inherited entries at the
+granularity they already had. The review named four: row 3's "no progress and no accepted emissions",
+row 5(f)'s "retires nothing and wakes nothing", row 8's completion bundle, and row 8's
+"deleting it or treating it as processed". Re-running the rule over every entry found those and six
+more. The inventory went from 69 entries to 83 and the corpus from 65 transcripts to 77.
+
+The entries split were: rows 2 (acknowledgment stopping at the batch, both directions), 3 (the
+duplicate's two writers; the partway failure's two writers), 5 (rule 1 with and without a deadline;
+W-7's "neither wakes nor acknowledges"; the stale timer's retire and wake halves; W-4's lifecycle
+claim and the record's existence), 7 (the retry's two halves; and Decision M-1's named composite,
+which stays composite *because M-1 names it* and now says so in an `atomicity` note), and 8
+(completion's five separately-violable clauses; the terminal disposition's two forbidden alternatives).
+
+**Why the existing guard could not catch this, and what now does.** The round-3 guard checks that no
+counterexample defends two entries. It is structurally blind to the opposite failure — one entry
+holding two independently violable assertions — as the review says. Prose cannot be checked
+mechanically, but the fields a counterexample actually moves can. `coverage.ts` declares
+`COUPLED_FIELD_GROUPS`: sets of observation fields that one accepted transaction necessarily writes
+together, each citing the decision that couples them. An entry whose counterexamples cross more than
+one group must carry a written `atomicity` note saying why one plausible bug produces all of it.
+Seventeen do. That does not prove atomicity — nothing here can — but it converts a silent assumption
+into a reviewable claim, which is the remedy `forbiddenBy` already applies to counterexamples. A third
+guard stops a split being cosmetic: no two counterexamples at one step may move the same set of
+fields.
+
+**Mutation-checking a split is a different claim from mutation-checking a blind spot, and is made as
+such.** Round 3's blind spots were invisible — no field, no step — so the old oracle genuinely passed
+them. Round 4's were visible but unattributed: the complete expected observation would have rejected
+many of these candidates, while the map claimed a transcript per assertion and did not have one.
+`blind-spot-regression.test.ts` therefore records, for each split pair, the field set the single C4
+transcript used to move, transcribed from `e2721dd` and checkable against it, and asserts that the two
+halves now divide it. It also guards the withdrawal in K02-R4-01: the empty subscription identity must
+stay well formed, and no scenario may require a candidate to reject one.

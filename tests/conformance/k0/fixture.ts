@@ -233,6 +233,10 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
   }
 
   const failures: StepFailure[] = [];
+  // Per-run, because the relation a candidate must satisfy is within one schedule: the same expected
+  // token must name the same observed token throughout, and two different expected tokens must never
+  // collapse onto one.
+  const tokens = new TokenRelation();
   for (const [stepIndex, step] of scenario.steps.entries()) {
     const forbids = step.expect.forbids ?? [];
     let actual: Observation;
@@ -248,12 +252,11 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
       // A throw leaves the candidate's state unknown, so later steps cannot be judged.
       break;
     }
-    const rejectionFailure = compareRejection(step.expect.observation.rejection, actual.rejection);
-    if (rejectionFailure !== null) {
-      failures.push({ stepIndex, label: step.expect.label, detail: rejectionFailure, forbids });
+    for (const detail of compareRepresentations(step.expect.observation, actual, tokens)) {
+      failures.push({ stepIndex, label: step.expect.label, detail, forbids });
     }
     try {
-      deepStrictEqual(normalizeRejection(actual, step.expect.observation), step.expect.observation);
+      deepStrictEqual(normalizeRepresentations(actual, step.expect.observation), step.expect.observation);
     } catch {
       failures.push({
         stepIndex,
@@ -341,6 +344,111 @@ function normalizeRejection(actual: Observation, expected: Observation): Observa
   if (CANONICAL_REASON_CLASSIFICATIONS.has(expected.rejection.classification)) return actual;
   if (typeof actual.rejection.reason !== "string" || actual.rejection.reason.trim().length === 0) return actual;
   return { ...actual, rejection: { ...actual.rejection, reason: expected.rejection.reason } };
+}
+
+/**
+ * **Candidate-minted tokens, compared by the relations the protocol fixes rather than by spelling.**
+ *
+ * Round-4 review finding K02-R4-01 rejected an invented rule about how a *declared subscription
+ * identity* may be spelled. Sweeping the neighbouring implementation-owned spellings, as that finding
+ * requires, turns up the mirror-image problem in this runner. Most tokens a scenario asserts are
+ * **fixture-supplied** — Event IDs, emission IDs, wait generations and progress values all arrive in
+ * the commands the schedule issues, so comparing them literally compares the laboratory's own data.
+ * Two are **candidate-minted**, and for those the accepted decisions fix only relations:
+ *
+ *   - **Receipts.** §2's *Left open* note: "exact receipt serialization (opaque token vs. structured
+ *     tuple)" is implementation-owned. What ID-6/OA-2 fix is that a replay returns *the same* receipt,
+ *     that a new acceptance returns a *different* one, and that a rejection returns *none*.
+ *   - **Activation IDs.** ID-3 and ID-9 are entirely relational: two semantically different dispatches
+ *     never carry the same ID, and a takeover keeps the one it has. No decision fixes the spelling.
+ *
+ * So a conforming K1 candidate that mints `"r/7f3a"` where this fixture writes `"receipt:create:req-x"`
+ * was being failed for a choice the protocol left to it. The relation is enforced instead: within one
+ * scenario run the mapping from expected token to observed token must be a **bijection** — the same
+ * expected token always names the same observed token, and two expected tokens never collapse onto
+ * one. That is exactly "same means same, different means different", and it still rejects every
+ * counterexample in the corpus, each of which violates the relation rather than the spelling.
+ *
+ * **`writerEpoch` is deliberately not in here.** §2 leaves "integer vs. fencing token" open, and this
+ * fixture models ID-4's first option, which ID-4 permits in terms ("a monotonically increasing integer
+ * (or equivalent total order)"). Every assertion made of it is about *advancement and supersession*,
+ * which any total order satisfies; a candidate using fencing tokens adapts them to that order at the
+ * port. Recorded here rather than left implicit, because an unstated modelling choice is how the
+ * subscription defect got in.
+ */
+class TokenRelation {
+  private readonly forward = new Map<string, string>();
+  private readonly backward = new Map<string, string>();
+
+  /** Returns a failure description, or `null` when the relation still holds. */
+  check(field: string, expected: string | null, actual: string | null): string | null {
+    if (expected === null) {
+      return actual === null ? null : `${field}: expected none, observed ${JSON.stringify(actual)}`;
+    }
+    if (actual === null) return `${field}: expected one, observed none`;
+
+    const boundActual = this.forward.get(expected);
+    if (boundActual !== undefined && boundActual !== actual) {
+      return `${field}: ${JSON.stringify(expected)} named ${JSON.stringify(boundActual)} earlier in this run and now names ${JSON.stringify(actual)}; the protocol fixes that these are the same, not how they are spelled`;
+    }
+    const boundExpected = this.backward.get(actual);
+    if (boundExpected !== undefined && boundExpected !== expected) {
+      return `${field}: ${JSON.stringify(actual)} already names ${JSON.stringify(boundExpected)}, so reusing it for ${JSON.stringify(expected)} collapses two things the protocol requires to be distinct`;
+    }
+    this.forward.set(expected, actual);
+    this.backward.set(actual, expected);
+    return null;
+  }
+
+}
+
+/**
+ * Everything the fixture requires of a representation it does not own, checked before the structural
+ * comparison: the two relational token families, and the recovery hold.
+ *
+ * The hold is here for the same reason the rejection reason is: PC-5 requires "an inspectable
+ * recovery-hold state" and fixes no wording for it, so requiring this fixture's sentence verbatim
+ * would fail a conforming candidate that says the same thing differently. That this was missed when
+ * the rejection reason was corrected in round 3 is the point of doing the sweep by field rather than
+ * by memory.
+ */
+function compareRepresentations(expected: Observation, actual: Observation, tokens: TokenRelation): readonly string[] {
+  const failures: string[] = [];
+
+  const rejectionFailure = compareRejection(expected.rejection, actual.rejection);
+  if (rejectionFailure !== null) failures.push(rejectionFailure);
+
+  const receiptFailure = tokens.check("receipt", expected.receipt, actual.receipt);
+  if (receiptFailure !== null) failures.push(receiptFailure);
+
+  const activationFailure = tokens.check("activationId", expected.activationId, actual.activationId);
+  if (activationFailure !== null) failures.push(activationFailure);
+
+  if (expected.recoveryHold === null && actual.recoveryHold !== null) {
+    failures.push(`recoveryHold: expected none, observed ${JSON.stringify(actual.recoveryHold)}`);
+  } else if (expected.recoveryHold !== null) {
+    if (actual.recoveryHold === null) {
+      failures.push("recoveryHold: expected an inspectable hold, observed none (PC-5)");
+    } else if (typeof actual.recoveryHold.reason !== "string" || actual.recoveryHold.reason.trim().length === 0) {
+      failures.push("recoveryHold: a hold is present but records no inspectable reason (PC-5)");
+    }
+  }
+
+  return failures;
+}
+
+/**
+ * Rewrite the representations this fixture does not own to the expected spellings, so that
+ * `deepStrictEqual` judges every field it *does* own exactly. Anything actually wrong has already been
+ * reported by `compareRepresentations`; this only stops a permitted spelling from being reported twice
+ * as a structural difference.
+ */
+function normalizeRepresentations(actual: Observation, expected: Observation): Observation {
+  let normalized = normalizeRejection(actual, expected);
+  if (expected.receipt !== null && normalized.receipt !== null) normalized = { ...normalized, receipt: expected.receipt };
+  if (expected.activationId !== null && normalized.activationId !== null) normalized = { ...normalized, activationId: expected.activationId };
+  if (expected.recoveryHold !== null && normalized.recoveryHold !== null) normalized = { ...normalized, recoveryHold: expected.recoveryHold };
+  return normalized;
 }
 
 /** Field-by-field difference, so a failure names the violated obligation rather than dumping two objects. */

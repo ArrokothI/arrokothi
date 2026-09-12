@@ -64,8 +64,58 @@ export interface BoundaryObligation {
   readonly row: number;
   /** The distinguishing obligation, as §11 states it. */
   readonly obligation: string;
+  /**
+   * Required when this entry's counterexamples move **more than one coupled field group** (see
+   * `COUPLED_FIELD_GROUPS`): the written reason why one plausible bug produces all of them, so the
+   * entry is one assertion rather than several sharing a transcript.
+   *
+   * Round-4 review finding K02-R4-02 is why this exists. The guard added in round 3 checks that no
+   * counterexample defends two entries; it cannot see the opposite failure — one entry still holding
+   * two independently violable assertions — and the review found four such entries. A field-group
+   * signal catches that mechanically, and where the grouping is genuinely one act, saying so in
+   * writing is what makes the claim reviewable instead of assumed.
+   */
+  readonly atomicity?: string;
   readonly evidence: ObligationEvidence;
 }
+
+/**
+ * Observation fields that one accepted transaction necessarily writes together, so moving several of
+ * them is one act rather than several independently violable ones.
+ *
+ * This table is the thing a reviewer should disagree with if they disagree with the atomicity guard
+ * below: it is a claim about the protocol's writers, and it is stated once here rather than repeated
+ * in thirty entries. Every grouping cites the decision that couples the fields.
+ */
+export const COUPLED_FIELD_GROUPS: readonly { readonly name: string; readonly fields: readonly string[]; readonly because: string }[] = [
+  {
+    name: "progress",
+    fields: ["progress", "progressRevision"],
+    because: "OA-4: accepted progress and the revision naming it are one commit. No boundary writes one without the other.",
+  },
+  {
+    name: "disposition",
+    fields: ["acknowledged", "queued", "terminalDispositions", "ingressRefused"],
+    because:
+      "B-1/B-4/B-5 give every accepted Event exactly one disposition at a time — queued, acknowledged, terminally disposed — and ingress refusal is the fourth answer for an Event never accepted at all. Moving an Event between them is one act; a transcript that acknowledges an Event necessarily also removes it from the queue.",
+  },
+  {
+    name: "lifecycle",
+    fields: ["state", "liveWaitGeneration", "waitEndedReadiness"],
+    because:
+      "W-2/W-3 and B-6/B-7/B-8: a live generation exists exactly while WAITING, and the transaction that retires one commits the readiness and the new lifecycle state together. §3's table lists them as one row's worth of accepted facts.",
+  },
+  {
+    name: "activation",
+    fields: ["activationId", "dispatchedBatch"],
+    because: "ID-3 and B-1: an unresolved Activation and the batch it pinned exist together and are cleared together when the exchange resolves.",
+  },
+  {
+    name: "answer",
+    fields: ["receipt", "rejection"],
+    because: "OA-2/OA-5: one submission yields exactly one of an acceptance receipt or a recorded rejection, so a transcript that manufactures one generally clears the other.",
+  },
+];
 
 export const BOUNDARY_ROWS: readonly { readonly row: number; readonly boundary: string; readonly owner: "Kernel" | "Kernel + Runtime/Driver" }[] = [
   { row: 1, boundary: "Creation/input ingress accepted IDs and receipts", owner: "Kernel" },
@@ -165,8 +215,14 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R2-b2",
     row: 2,
-    obligation: "A later Outcome can be checked against that batch exactly: an accepted Outcome acknowledges the entire pinned batch, not the subset it happened to reference.",
+    obligation: "A later Outcome can be checked against that batch exactly — no less: an accepted Outcome acknowledges the entire pinned batch, not the subset it happened to reference.",
     evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 7, counterexamples: ["envelope/accepted-outcome-leaves-its-batch-unacknowledged"] },
+  },
+  {
+    id: "R2-b3",
+    row: 2,
+    obligation: "And no more: acknowledgment stops at the pinned batch and does not run past it into Events that were never reserved.",
+    evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 4, counterexamples: ["k0-trace/acknowledgment-runs-past-the-pinned-batch"] },
   },
   {
     id: "R2-c1",
@@ -191,20 +247,34 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R3-a2",
     row: 3,
-    obligation: "That duplicate re-dispatches nothing and re-runs no part of acceptance.",
+    obligation: "That duplicate re-runs no part of the acceptance transaction: the accepted progress revision does not advance.",
     evidence: { kind: "scenario", scenario: "control-duplicate-conflicting-outcome", stepIndex: 3, counterexamples: ["control-duplicate/replay-re-runs-acceptance"] },
+  },
+  {
+    id: "R3-a3",
+    row: 3,
+    obligation: "Nor does it re-publish what the original accepted: an emission accepted once is emitted once, however many times the Outcome is delivered.",
+    evidence: { kind: "scenario", scenario: "control-duplicate-conflicting-outcome", stepIndex: 3, counterexamples: ["control-duplicate/replay-republishes-the-emission"] },
   },
   {
     id: "R3-b",
     row: 3,
     obligation: "A same-identity, different-content submission is rejected, not merged.",
+    atomicity:
+      "One bug, not two: the conflicting Outcome is patched into accepted state instead of being rejected. Committing its progress and failing to record a conflict are the same decision — an implementation that deduplicates on identity without comparing content does both by construction. A candidate that records the conflict *and* merges it is not plausible: the merge is what happens instead of the rejection.",
     evidence: { kind: "scenario", scenario: "control-duplicate-conflicting-outcome", stepIndex: 4, counterexamples: ["control-duplicate/conflict-merged-into-accepted-state"] },
   },
   {
     id: "R3-c1",
     row: 3,
-    obligation: "A failure partway through acceptance leaves no progress and no accepted emissions, including a valid prefix of the envelope.",
+    obligation: "A failure partway through acceptance leaves no progress, including progress that was itself valid in the refused envelope.",
     evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 2, counterexamples: ["envelope/valid-prefix-kept-when-a-later-member-is-malformed"] },
+  },
+  {
+    id: "R3-c1b",
+    row: 3,
+    obligation: "It leaves no accepted emissions either, including a valid prefix of the emission list.",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 2, counterexamples: ["envelope/valid-prefix-emission-kept-when-a-later-member-is-malformed"] },
   },
   {
     id: "R3-c2",
@@ -241,6 +311,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R4-a3",
     row: 4,
     obligation: "The rest of that Outcome is rejected too, never silently split into the part K1 supports and the part it does not.",
+    atomicity:
+      "One bug: the Effect is stripped and the remainder of the envelope accepted, and the remainder here is the progress and the emission together. Whether a candidate can accept only part of that remainder is a different assertion, and it has its own entries — R3-c1 and R3-c1b observe partial acceptance of a refused envelope directly.",
     evidence: { kind: "scenario", scenario: "effect-refusal-and-sink-attribution", stepIndex: 2, counterexamples: ["effect-refusal/rest-of-the-outcome-silently-split"] },
   },
   {
@@ -254,37 +326,60 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R5-a1",
     row: 5,
-    obligation: "(a) Rule 1: a declaration with both lists empty is malformed, and a deadline does not rescue it.",
-    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 3, counterexamples: ["envelope/structurally-empty-wait-registered-because-it-has-a-deadline"] },
+    obligation: "(a) Rule 1: a declaration with both lists empty is malformed.",
+    atomicity:
+      "One bug: the malformed declaration registers. Registering *is* all three groups at once — the Execution moves to WAITING under the generation (lifecycle), the accepted Outcome resolves the exchange (activation), and there is no rejection to record (answer). No plausible implementation registers the wait while also recording the refusal.",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 3, counterexamples: ["envelope/bare-empty-wait-registered"] },
+  },
+  {
+    id: "R5-a1b",
+    row: 5,
+    obligation: "(a) Rule 1: a deadline does not rescue it — the case worksheet revision 9 answered two ways, where well-formedness is read as 'can this wait end'.",
+    atomicity:
+      "One bug, as in R5-a1: the declaration registers because well-formedness was read as 'can this wait end', and registering moves the lifecycle, resolves the exchange and produces no rejection together. What distinguishes this entry from R5-a1 is the *record submitted*, not the fields observed.",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 4, counterexamples: ["envelope/structurally-empty-wait-registered-because-it-has-a-deadline"] },
   },
   {
     id: "R5-a2",
     row: 5,
     obligation: "(a) Rule 2: every present alternative must supply at least one of the three selector fields; a match-everything alternative is invalid, not a shorthand.",
-    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 4, counterexamples: ["envelope/match-everything-alternative-registered"] },
+    atomicity:
+      "One bug, as in R5-a1: a match-everything alternative passes validation, and the wait then registers — lifecycle, exchange resolution and the absent rejection are the single consequence of that one acceptance.",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 5, counterexamples: ["envelope/match-everything-alternative-registered"] },
   },
   {
     id: "R5-a3",
     row: 5,
     obligation: "(a) Rule 2: an empty supplied kind set is malformed, neither a selector that matches nothing nor a spelling of an absent field.",
-    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 5, counterexamples: ["envelope/empty-kind-set-treated-as-matches-nothing"] },
+    atomicity:
+      "One bug, as in R5-a1: an empty supplied kind set is read as a selector matching nothing rather than as malformed, so the wait registers, with the same single consequence across the three groups.",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 6, counterexamples: ["envelope/empty-kind-set-treated-as-matches-nothing"] },
   },
   {
     id: "R5-a4",
     row: 5,
-    obligation: "(a) Rule 3: every present declared subscription must be structurally valid, checked at registration rather than at eligibility time.",
-    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 6, counterexamples: ["envelope/invalid-subscription-identity-registered"] },
+    obligation: "(a) Rule 3: every present declared subscription must be a declared subscription identity — the property, not any particular spelling of it.",
+    evidence: {
+      kind: "assigned",
+      packet: "K1.3",
+      reason:
+        "W-9's closing *Left open* note assigns this by name: 'the exact spelling of a declared subscription identity (whether a subscription names the input label directly or an application-declared subscription name that resolves to one) — K1.3 owns that, and W-1 constrains only that it is finite, declarative and compared by equality.' W-1 rule 3 likewise 'fixes only that the entry *is* such an identity'. In this fixture's representation a subscription identity is a `string`, so every submittable value is finite, declarative and equality-compared by construction, and no value can fail the property W-1 actually states. Round-4 review finding K02-R4-01: C4 manufactured a negative case by declaring the empty string invalid, which is a spelling decision K1.3 owns and which would have failed a conforming candidate whose representation admits it. Writing a real negative case requires first choosing the representation, which is the assigned work. Note this is an assignment of the *concrete representation*, not of the property: R5-a5 and R5-a6 still observe what W-1 fixes about subscriptions independently of spelling — that a subscription-only wait is first-class, and that eligibility runs through the declared subscription rather than through a dependency alternative.",
+    },
   },
   {
     id: "R5-a5",
     row: 5,
     obligation: "(a) The test proves structure, never satisfiability: a structurally valid but inert alternative is accepted and counts toward non-emptiness, so a well-formed wait may never be woken.",
+    atomicity:
+      "One bug: the candidate refuses a structurally valid declaration as unsatisfiable. A refusal commits nothing and leaves the exchange open, so the progress, disposition, lifecycle and activation groups all sit where the *previous* step left them and the answer group carries a rejection instead of acceptance. Every field difference follows from the single decision to refuse.",
     evidence: { kind: "scenario", scenario: "wait-structure-not-satisfiability", stepIndex: 2, counterexamples: ["wait-structure/inert-alternative-refused-as-unsatisfiable"] },
   },
   {
     id: "R5-a6",
     row: 5,
     obligation: "(a) A subscription-only input wait — 001's own K0 trace — is first-class: an empty dependency list is not an empty declaration.",
+    atomicity:
+      "One bug, as in R5-a5: the candidate refuses a subscription-only wait because it reads the dependency list as the wait. Refusing is one act whose consequence spans every group, since nothing in the submitted Outcome is accepted.",
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 4, counterexamples: ["k0-trace/subscription-only-wait-refused-for-an-empty-dependency-list"] },
   },
 
@@ -298,8 +393,14 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R5-b2",
     row: 5,
-    obligation: "(b) A dependency alternative that matches application input is inert: matching it neither wakes nor acknowledges (W-7 cases 6-7).",
+    obligation: "(b) A dependency alternative that matches application input is inert: matching it does not wake the Execution (W-7 cases 6-7).",
     evidence: { kind: "scenario", scenario: "wait-structure-not-satisfiability", stepIndex: 3, counterexamples: ["wait-structure/inert-alternative-wakes-matching-input"] },
+  },
+  {
+    id: "R5-b2b",
+    row: 5,
+    obligation: "(b) Nor does matching it acknowledge the Event: W-7's 'neither wakes nor acknowledges' is two rules, and only an accepted Outcome acknowledges (B-3).",
+    evidence: { kind: "scenario", scenario: "wait-structure-not-satisfiability", stepIndex: 3, counterexamples: ["wait-structure/inert-alternative-acknowledges-matching-input"] },
   },
   {
     id: "R5-b3",
@@ -311,6 +412,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R5-b4",
     row: 5,
     obligation: "(b) The timeout Event is eligible through neither list and arrives by construction (W-9).",
+    atomicity:
+      "One bug: the timeout Event is routed through the ordinary eligibility test and so is never minted for a wait that declares nothing matching it. The Event's absence from the mailbox (disposition) and the wait staying live (lifecycle) are the same non-event — there is no implementation that mints the timeout and still fails to end the wait, because B-7 commits them in one transaction.",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 4, counterexamples: ["subscription-deadline/timeout-withheld-because-nothing-declared-it"] },
   },
 
@@ -331,6 +434,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R5-c3",
     row: 5,
     obligation: "(c) Step 3 evaluates an already-due deadline before persisting, so a past deadline is never persisted as live (B-7 path A).",
+    atomicity:
+      "One bug: registration persists WAITING before evaluating the deadline, so B-7 path A never runs. The generation staying live and the timeout Event never being created are the two halves of that one skipped step, committed together or not at all.",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 6, counterexamples: ["subscription-deadline/past-deadline-persisted-as-a-live-wait"] },
   },
 
@@ -372,8 +477,14 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R5-f1a",
     row: 5,
-    obligation: "(f) A timer naming a superseded generation retires nothing and wakes nothing.",
+    obligation: "(f) A timer naming a superseded generation wakes nothing: it cannot make the replacement wait READY.",
     evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 6, counterexamples: ["control-stale-timer/stale-generation-wakes-the-replacement-wait"] },
+  },
+  {
+    id: "R5-f1a2",
+    row: 5,
+    obligation: "(f) And it retires nothing: the live registration survives a timer that names a generation it has superseded.",
+    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 6, counterexamples: ["control-stale-timer/stale-generation-retires-the-live-registration"] },
   },
   {
     id: "R5-f1b",
@@ -404,8 +515,14 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R5-g",
     row: 5,
-    obligation: "(g) An Activation with only Runtime-local work outstanding creates no waitingFor record at all and simply stays RUNNING.",
+    obligation: "(g) An Activation with only Runtime-local work outstanding simply stays RUNNING: WAITING means an accepted Outcome declared a Kernel-visible dependency.",
     evidence: { kind: "scenario", scenario: "delayed-runtime-non-blocking", stepIndex: 4, counterexamples: ["delayed-runtime/unresolved-activation-reported-as-waiting"] },
+  },
+  {
+    id: "R5-g2",
+    row: 5,
+    obligation: "(g) And it creates no waitingFor record at all — not a record the lifecycle merely declines to report.",
+    evidence: { kind: "scenario", scenario: "delayed-runtime-non-blocking", stepIndex: 4, counterexamples: ["delayed-runtime/runtime-local-work-gets-a-waitingFor-record"] },
   },
 
   // == Row 6: Event acceptance during computation ============================
@@ -455,7 +572,15 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R7-a2",
     row: 7,
-    obligation: "That losing Outcome installs zero progress. Decision M-1 names suppressing only next state while installing losing progress as a failing control, not a variant.",
+    obligation: "That losing Outcome installs zero progress.",
+    evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 3, counterexamples: ["control-cancel/losing-progress-installed"] },
+  },
+  {
+    id: "R7-a8",
+    row: 7,
+    obligation: "Decision M-1's named failing variant: suppressing only the loser's next state while installing its progress, emissions and batch acknowledgment is a failing control, not a conforming one.",
+    atomicity:
+      "The composite is the assertion here, and it is canonical rather than a bundle of convenience: Decision M-1 names this exact variant — 'Suppressing only next state while installing losing progress is a failing control, not a conforming variant' — as something the row-7 control must reject. Its individually violable parts are separately covered by R7-a2 (progress), R7-a3 (emissions) and R7-a4 (acknowledgment); this entry exists because M-1 requires the combination to be rejected under a correct-looking CANCELLED headline, which is the shape that makes it hard to see.",
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 3, counterexamples: ["control-cancel/losing-progress-installed-with-next-state-suppressed"] },
   },
   {
@@ -486,18 +611,28 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R7-a7",
     row: 7,
     obligation: "The fence does not depend on the loser's next step: a `complete` submitted after cancellation acceptance loses identically to a `continue`. Decision M-1 requires the control to assert both.",
+    atomicity:
+      "One bug: the loser's `complete` is accepted. Reaching COMPLETED, committing its progress and returning a receipt instead of the recorded rejection are all consequences of that single acceptance, not independently reachable states.",
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 5, counterexamples: ["control-cancel/complete-loser-escapes-the-fence"] },
   },
   {
     id: "R7-b",
     row: 7,
-    obligation: "An exact retry returns the recorded rejection, never a manufactured acceptance receipt.",
+    obligation: "An exact retry manufactures no acceptance receipt: OA-2's receipt rule does not apply, because no Outcome was accepted.",
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 4, counterexamples: ["control-cancel/exact-retry-manufactures-a-receipt"] },
+  },
+  {
+    id: "R7-b2",
+    row: 7,
+    obligation: "And it returns the same recorded rejection: the decision is durably bound to the submitted identity and content, not recomputed or forgotten.",
+    evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 4, counterexamples: ["control-cancel/exact-retry-loses-the-recorded-rejection"] },
   },
   {
     id: "R7-c1",
     row: 7,
     obligation: "The cancellation control path reaches CANCELLED on its own, without depending on the in-flight Runtime answering.",
+    atomicity:
+      "One bug: cancellation is recorded as a request and applied only when the in-flight Activation answers. The Execution therefore stays RUNNING with its Activation and pinned batch still live, and no terminal dispositions are written — one deferral, observed in three groups.",
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 2, counterexamples: ["control-cancel/cancellation-leaves-the-execution-running"] },
   },
   {
@@ -522,19 +657,51 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     // completion-specific rejection reason. EF-1/EF-2 already mandate a whole-envelope refusal for any
     // K1 Outcome proposing an Effect, and §11 row 4 requires "a recorded, inspectable reason" without
     // fixing which one, so a candidate refusing on those grounds is conforming.
-    obligation: "A completing Outcome carrying newly proposed Effects is not accepted: the Execution reaches no terminal state, the envelope is refused whole with a recorded reason, and nothing in it is committed.",
+    obligation: "A completing Outcome carrying newly proposed Effects is not accepted: the Execution reaches no terminal state.",
+    atomicity:
+      "One bug: the completion check runs as a later cleanup pass, so the envelope is accepted outright. Terminal state, committed progress, acknowledged batch, resolved exchange and the acceptance receipt all follow from that one acceptance. The clauses that *are* independently violable under a correct refusal — the recorded reason, the progress, the acknowledgment, the Effect intent — are split out as R8-a2 through R8-a5, each with its own transcript.",
     evidence: {
       kind: "scenario",
       scenario: "control-completion-obligations",
       stepIndex: 2,
-      counterexamples: ["completion/owned-work-proposed-in-the-completing-outcome-is-accepted", "completion/refused-envelope-partly-committed"],
+      counterexamples: ["completion/owned-work-proposed-in-the-completing-outcome-is-accepted"],
     },
+  },
+  {
+    id: "R8-a2",
+    row: 8,
+    obligation: "That refusal is recorded with an inspectable reason, rather than being a dropped return value.",
+    evidence: { kind: "scenario", scenario: "control-completion-obligations", stepIndex: 2, counterexamples: ["completion/refused-without-a-recorded-reason"] },
+  },
+  {
+    id: "R8-a3",
+    row: 8,
+    obligation: "No progress from the refused completing envelope is committed.",
+    evidence: { kind: "scenario", scenario: "control-completion-obligations", stepIndex: 2, counterexamples: ["completion/refused-envelope-partly-committed"] },
+  },
+  {
+    id: "R8-a4",
+    row: 8,
+    obligation: "No part of its reserved batch is acknowledged, which is a different writer from the progress commit.",
+    evidence: { kind: "scenario", scenario: "control-completion-obligations", stepIndex: 2, counterexamples: ["completion/refused-envelope-acknowledges-its-batch"] },
+  },
+  {
+    id: "R8-a5",
+    row: 8,
+    obligation: "And no Effect intent or proposal-key binding is left behind by the envelope that proposed it.",
+    evidence: { kind: "scenario", scenario: "control-completion-obligations", stepIndex: 2, counterexamples: ["completion/refused-envelope-leaves-an-effect-intent"] },
   },
   {
     id: "R8-b",
     row: 8,
-    obligation: "A terminal Execution exposes B-5 disposition for every unacknowledged Event, rather than deleting it or treating it as processed.",
+    obligation: "A terminal Execution never treats an unacknowledged Event as processed: it is not acknowledged on the way to the terminal state.",
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 8, counterexamples: ["k0-trace/global-cursor-acknowledges-unmatched-input"] },
+  },
+  {
+    id: "R8-b1b",
+    row: 8,
+    obligation: "Nor is it deleted without record: each unacknowledged Event gets an explicit recorded B-5 disposition, which is a different failure from being treated as processed.",
+    evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 8, counterexamples: ["k0-trace/unacknowledged-event-deleted-without-a-disposition"] },
   },
   {
     id: "R8-b2",
@@ -570,6 +737,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R9-a2",
     row: 9,
     obligation: "It is never a state that looks like normal restored computation.",
+    atomicity:
+      "One bug: recovery cannot load the pinned revision and silently starts over, presenting empty state as restored. Fabricating the progress and reporting no hold are the same act — the fabrication is what replaces the hold.",
     evidence: { kind: "scenario", scenario: "control-missing-checkpoint-code", stepIndex: 4, counterexamples: ["control-missing-checkpoint/fresh-state-presented-as-restored"] },
   },
 
@@ -578,6 +747,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R10-a",
     row: 10,
     obligation: "A policy check against just-accepted local state reads that exact write with no staleness window (LP-1).",
+    atomicity:
+      "One bug: the authority check reads a cached exchange, so the superseded writer's Outcome is admitted. Its progress commit and the acceptance receipt replacing the rejection are both consequences of that single admission.",
     evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 5, counterexamples: ["identity-activation/superseded-writer-epoch-accepted-from-a-stale-read"] },
   },
   {
@@ -594,6 +765,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R10-c",
     row: 10,
     obligation: "Ordinary corrective input never itself withdraws or invalidates an already-accepted Outcome (LP-3).",
+    atomicity:
+      "One bug: arriving input is treated as superseding whatever the Runtime last said, so the accepted Outcome is rolled back whole. Its progress and its emissions are retracted by the same retraction; an implementation that retracts one and not the other is not a plausible reading of 'the correction supersedes'.",
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 5, counterexamples: ["k0-trace/late-input-retracts-accepted-progress"] },
   },
 ];

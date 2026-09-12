@@ -8,7 +8,7 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 4.** Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
+**Contract revision 5.** Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
 K02-R1-02, K02-R1-03), where three criteria were *understating* what they had to establish. Revision 3
 corrected revision 2 after round-2 review (findings K02-R2-01, K02-R2-02), where one criterion had
 begun *overstating* it — C6/C7/C9 required a rejection-reason distinction the protocol does not make —
@@ -17,9 +17,13 @@ revision 3 after round-3 review (finding K02-R3-01, which reopens K02-R1-01): C9
 still a prose grouping rather than an independently distinguishable assertion, and C1/C6/C7 rested on
 that unit, so several §11 assertions were counted covered while no candidate could be failed for
 breaking them — two of them because the observation surface could not see the required fact at all.
-The base, packet scope and C8's blocked state are unchanged throughout. All three directions of error
-— understating, overstating, and counting unobservable facts as observed — are recorded below rather
-than quietly overwritten.
+Revision 5 corrects revision 4 after round-3 review's finding was itself only partly closed
+(K02-R4-01, K02-R4-02): C4 invented a validity rule for a spelling the worksheet assigns to K1.3, and
+applied its own assertion-atomicity rule to the entries it added without re-running it over the
+entries it inherited. The base, packet scope and C8's blocked state are unchanged throughout. All the
+directions of error this packet has produced — understating coverage, overstating what the protocol
+fixes, counting unobservable facts as observed, and applying a correct new rule only to new material —
+are recorded below rather than quietly overwritten.
 
 ## Release provenance and predecessor disclosure
 
@@ -65,6 +69,18 @@ Inherited requirement map:
 Left to sibling packets, not weakened here:
 
 - **K1.1–K1.3** implement the protocol this fixture describes. K0.2 ships no Kernel and no target API.
+- **The concrete spelling of a declared subscription identity** is assigned to **K1.3** by the accepted
+  worksheet itself. W-9's closing *Left open* note names it: "the exact spelling of a declared
+  subscription identity (whether a subscription names the input label directly or an
+  application-declared subscription name that resolves to one) — K1.3 owns that, and W-1 constrains
+  only that it is finite, declarative and compared by equality." W-1 rule 3 likewise "fixes only that
+  the entry *is* such an identity". Round-4 finding K02-R4-01: revision 4 of this contract manufactured
+  a negative case by declaring the empty string an invalid identity, which is precisely the spelling
+  decision K1.3 owns; a conforming candidate whose representation admits it would have been failed. The
+  rule is withdrawn and the assignment recorded in `coverage.ts` as obligation R5-a4. What W-1 *does*
+  fix about subscriptions independently of spelling is still observed: R5-a6 that a subscription-only
+  wait is first-class, R5-b1 that application input is eligible only through one, and R5-b2/R5-b2b that
+  a dependency alternative matching such input neither wakes nor acknowledges it.
 - **K1.4** is the K1/E1 gate that runs a real candidate against this fixture.
 - **E-6's "a K1 fixture tests exactly at and one past each bound"** is explicitly a K1 fixture
   obligation in the accepted worksheet. K0.2 records the four bounds in the vocabulary and does not
@@ -204,7 +220,14 @@ must represent behavior the governing protocol actually forbids** (round-2 findi
 must name the decision it breaks; a transcript that cannot cite one is a preference, not a
 counterexample, and failing a candidate for it makes the oracle reject conforming work. Rejecting at
 the right step is necessary and not sufficient: mechanical rejection cannot convert permitted
-behavior into valid evidence. (c) **The oracle fails closed**
+behavior into valid evidence. A citation is likewise necessary and not sufficient — round-4 finding
+K02-R4-01 was a transcript that cited W-1 rule 3 truthfully and still forbade nothing, because the
+rule it invoked leaves the point at issue to K1.3. **The oracle also may not pin a representation the
+protocol does not fix**: a rejection's classification is canonical and its reason text is not (except
+CX-6's, which the worksheet names); a recovery hold must exist and be inspectable, but its wording is
+open; and receipts and Activation IDs — the two token families a candidate mints rather than receives
+from the schedule — are judged by the relations ID-3/ID-6/OA-2 fix, one expected token naming one
+observed token throughout a run, never by spelling. (c) **The oracle fails closed**
 (round-1 finding K02-R1-03): a step declaring an independent-ledger expectation must never pass
 because the runner was invoked without a usable observer. Omission is a type error, and an unusable
 observer at runtime is a failure of the assertion rather than a reason to skip it — for a conforming
@@ -266,7 +289,10 @@ untested, because it only checked that each row number pointed at a scenario tha
 required a counterexample to name the rule it breaks. Revision 3's counted assertions covered whose
 required fact the observation surface could not see — a phantom wait-ended readiness, a retained
 Effect intent — and counted LP-1 covered by a cancellation-atomicity transcript from a neighbouring
-rule. Under-coverage lets a wrong candidate pass; over-constraint fails a right one, and is the worse
+rule. Revision 4's defined the right unit and then exempted the entries it had inherited from it, so
+four entries kept bundling clauses a candidate can fail one at a time, and it invented a spelling rule
+for declared subscription identities that W-9 assigns to K1.3.
+Under-coverage lets a wrong candidate pass; over-constraint fails a right one, and is the worse
 failure of the two.
 **Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`.
 

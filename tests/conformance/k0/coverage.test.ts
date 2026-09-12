@@ -14,7 +14,7 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { BOUNDARY_ROWS, K0_OBLIGATIONS } from "./coverage.ts";
+import { BOUNDARY_ROWS, COUPLED_FIELD_GROUPS, K0_OBLIGATIONS } from "./coverage.ts";
 import { VIOLATIONS, violatingCandidate } from "./candidate.ts";
 import { createOperationSink } from "./operation-sink.ts";
 import { runScenario } from "./fixture.ts";
@@ -210,6 +210,84 @@ describe("K0 boundary coverage: the corpus is fully accounted for", () => {
           `${violationId} defends both ${existing} and ${entry.id}; if they are the same assertion say so with shared evidence, otherwise one of them needs its own counterexample`,
         );
         owner.set(violationId, entry.id);
+      }
+    }
+  });
+
+  test("an entry whose counterexamples cross coupled field groups declares why it is still one assertion", () => {
+    // Round-4 review finding K02-R4-02. The round-3 guard above catches a transcript defending two
+    // entries; it is blind to the opposite failure, one entry holding two independently violable
+    // assertions, and the review found four of those. Prose cannot be checked mechanically, but the
+    // *fields the counterexamples actually move* can: crossing more than one coupled group is the
+    // signal that an entry may be bundling, and the author must then say in writing why one plausible
+    // bug produces all of it. That does not prove atomicity — nothing here can — but it converts a
+    // silent assumption into a reviewable claim, which is the same remedy `forbiddenBy` applies to
+    // counterexamples.
+    const groupOf = (field: string) =>
+      COUPLED_FIELD_GROUPS.find((group) => group.fields.includes(field))?.name ?? field;
+
+    for (const entry of K0_OBLIGATIONS) {
+      if (entry.evidence.kind !== "scenario") continue;
+      const scenario = scenarioById.get(entry.evidence.scenario)!;
+      const expected = scenario.steps[entry.evidence.stepIndex]!.expect.observation;
+      const groups = new Set<string>();
+      for (const violationId of entry.evidence.counterexamples) {
+        const violation = violationById.get(violationId);
+        assert.ok(violation, `${entry.id} names unknown violation ${violationId}`);
+        const mutated = violation.mutate(expected);
+        for (const key of Object.keys(expected) as (keyof typeof expected)[]) {
+          if (JSON.stringify(expected[key]) !== JSON.stringify(mutated[key])) groups.add(groupOf(key));
+        }
+      }
+      if (groups.size <= 1) continue;
+      assert.ok(
+        entry.atomicity !== undefined && entry.atomicity.length > 80,
+        `${entry.id}'s counterexamples move ${groups.size} coupled field groups (${[...groups].join(", ")}); either it is holding more than one independently violable assertion and needs splitting, or it needs an \`atomicity\` note saying why one bug produces all of them`,
+      );
+    }
+  });
+
+  test("no two counterexamples at one step move the same set of fields: a split must produce distinct evidence", () => {
+    // The other half of round-4 review finding K02-R4-02. Splitting a bundled entry is only real if
+    // the two transcripts discriminate different things; two names for the same mutation would satisfy
+    // every other check here — one counterexample per entry, each failing at the right step — while
+    // leaving the second assertion exactly as unguarded as before. Field sets are the mechanical
+    // signal: at a given step, two transcripts that move precisely the same fields are doing one job.
+    const byStep = new Map<string, { id: string; fields: string }[]>();
+    for (const violation of VIOLATIONS) {
+      const scenario = scenarioById.get(violation.scenarioId);
+      assert.ok(scenario, `${violation.id} names unknown scenario ${violation.scenarioId}`);
+      const expected = scenario.steps[violation.stepIndex]?.expect.observation;
+      assert.ok(expected, `${violation.id} names step ${violation.stepIndex}, which does not exist`);
+      const mutated = violation.mutate(expected);
+      const fields = (Object.keys(expected) as (keyof typeof expected)[])
+        .filter((key) => JSON.stringify(expected[key]) !== JSON.stringify(mutated[key]))
+        .join(",");
+      const key = `${violation.scenarioId}#${violation.stepIndex}`;
+      const bucket = byStep.get(key) ?? [];
+      // A transcript caught only by the independent ledger changes no observation field at all; that is
+      // its whole design, so it is exempt rather than a collision.
+      if (fields.length > 0) {
+        const clash = bucket.find((other) => other.fields === fields);
+        assert.equal(
+          clash,
+          undefined,
+          `${violation.id} and ${clash?.id} both move exactly [${fields}] at ${key}; if they are meant to discriminate different assertions one of them is not narrow enough`,
+        );
+        bucket.push({ id: violation.id, fields });
+      }
+      byStep.set(key, bucket);
+    }
+  });
+
+  test("the coupling table is well formed: no field in two groups, every group justified", () => {
+    const seen = new Set<string>();
+    for (const group of COUPLED_FIELD_GROUPS) {
+      assert.ok(group.fields.length > 1, `coupled group ${group.name} couples nothing`);
+      assert.ok(group.because.length > 60, `coupled group ${group.name} does not cite why the fields move together`);
+      for (const field of group.fields) {
+        assert.ok(!seen.has(field), `${field} appears in two coupled groups, which makes the reduction ambiguous`);
+        seen.add(field);
       }
     }
   });

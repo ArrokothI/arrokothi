@@ -201,7 +201,11 @@ describe("the helper's rules are the candidate's obligations, not a parallel sta
     { rule: "rule 1: both lists empty", wait: { dependencies: [], subscriptions: [], deadline: 5_000, generation: "g-bad" } },
     { rule: "rule 2: no selector field supplied", wait: { dependencies: [{}], subscriptions: [], generation: "g-bad-2" } },
     { rule: "rule 2: empty supplied kind set", wait: { dependencies: [{ kinds: [] }], subscriptions: [], generation: "g-bad-3" } },
-    { rule: "rule 3: invalid subscription identity", wait: { dependencies: [], subscriptions: [{ subscriptionClass: "" }], generation: "g-bad-4" } },
+    // W-1's rule 3 is deliberately absent. Round-4 review finding K02-R4-01: the entry that used to
+    // sit here submitted `subscriptionClass: ""` and required rejection, which is a spelling decision
+    // W-9's *Left open* note assigns to K1.3, not a rule W-1 makes. Within this fixture's `string`
+    // representation no submittable value fails the property W-1 states, so there is nothing honest to
+    // put here; `coverage.ts` assigns R5-a4 to K1.3 rather than manufacturing a case.
   ];
 
   /**

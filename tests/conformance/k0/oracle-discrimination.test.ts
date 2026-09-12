@@ -230,3 +230,71 @@ describe("K0.2-C7: the rejection comparison is loosened exactly as far as the de
     assert.equal(run(canonical, reworded), "FAIL");
   });
 });
+
+describe("K0.2-C7: candidate-minted tokens are judged by relation, not by spelling", () => {
+  /**
+   * Round-4 correction, from the neighbouring-spelling sweep that finding K02-R4-01 requires. Most
+   * tokens a scenario asserts are fixture-supplied, so comparing them literally compares the
+   * laboratory's own data. Receipts and Activation IDs are minted by the candidate, and §2's *Left
+   * open* note ("exact receipt serialization") and ID-3/ID-9's purely relational wording leave their
+   * spelling to the implementation. The recovery hold's reason is the same shape as the rejection
+   * reason corrected in round 3 — PC-5 requires an inspectable hold and fixes no wording — and was
+   * missed then.
+   *
+   * Loosening an oracle is where holes open, so both directions are pinned: what must now pass, and
+   * what must still fail.
+   */
+  const scenarioOf2 = (id: string) => {
+    const found = ALL_SCENARIOS.find((scenario) => scenario.id === id);
+    assert.ok(found, `unknown scenario ${id}`);
+    return found;
+  };
+  const drive = (scenario: Scenario, mutate: (observation: Observation) => Observation) =>
+    runScenario(
+      scriptedCandidate({ name: "representation-probe", observationsFor: (target) => expectedObservations(target).map(mutate) }),
+      scenario,
+      createOperationSink(),
+    ).outcome;
+
+  const identity = scenarioOf2("identity-create-and-activation");
+  const duplicate = scenarioOf2("control-duplicate-conflicting-outcome");
+  const checkpoint = scenarioOf2("control-missing-checkpoint-code");
+
+  test("a candidate that spells receipts and Activation IDs its own way passes, as long as the relation holds", () => {
+    // An opaque receipt token and a different exchange-ID scheme: exactly what §2 leaves open.
+    const respelled = (observation: Observation): Observation => ({
+      ...observation,
+      receipt: observation.receipt === null ? null : `opaque/${[...observation.receipt].reduce((sum, char) => sum + char.charCodeAt(0), 0)}`,
+      activationId: observation.activationId === null ? null : observation.activationId.replace("act-", "xchg#"),
+    });
+    assert.equal(drive(identity, respelled), "PASS");
+  });
+
+  test("but collapsing two Activation IDs onto one still fails: ID-3 fixes that they differ", () => {
+    const collapsed = (observation: Observation): Observation => ({
+      ...observation,
+      activationId: observation.activationId === null ? null : "the-activation",
+    });
+    assert.equal(drive(identity, collapsed), "FAIL");
+  });
+
+  test("and collapsing two receipts onto one still fails: ID-6 fixes that a new acceptance is not the old one", () => {
+    const collapsed = (observation: Observation): Observation => ({
+      ...observation,
+      receipt: observation.receipt === null ? null : "r",
+    });
+    assert.equal(drive(duplicate, collapsed), "FAIL");
+  });
+
+  test("a differently worded recovery hold passes: PC-5 requires an inspectable hold, not a sentence", () => {
+    const reworded = (observation: Observation): Observation =>
+      observation.recoveryHold === null ? observation : { ...observation, recoveryHold: { reason: "cannot load the pinned build" } };
+    assert.equal(drive(checkpoint, reworded), "PASS");
+  });
+
+  test("an empty recovery-hold reason still fails: a hold with nothing in it is not inspectable", () => {
+    const blank = (observation: Observation): Observation =>
+      observation.recoveryHold === null ? observation : { ...observation, recoveryHold: { reason: "" } };
+    assert.equal(drive(checkpoint, blank), "FAIL");
+  });
+});

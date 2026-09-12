@@ -1227,6 +1227,38 @@ export const wholeEnvelopeValidation: Scenario = {
         ],
       },
     ),
+    // Round-4 review finding K02-R4-02: W-1 case 1 has two halves a candidate can get separately
+    // right or wrong. The plain empty declaration is the base rule; the same record *with a deadline*
+    // is the one worksheet revision 9 answered two ways, and an implementation reading
+    // well-formedness as "can this wait end" accepts the second while rejecting the first. C4
+    // submitted only the deadline variant, so the base rule was never put to a candidate on its own.
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-1",
+          progress: { cursor: 1 },
+          next: { step: "await", wait: { dependencies: [], subscriptions: [], generation: "g-bad-0" } },
+        }),
+      },
+      {
+        label: "W-1 rule 1: a declaration with both lists empty is malformed on its own terms",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "malformed_envelope", reason: "both dependency alternatives and subscriptions are empty" },
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "liveWaitGeneration must stay null: g-bad-0 must never register",
+          "state must stay RUNNING: a refused wait does not move the Execution",
+        ],
+      },
+    ),
     step(
       {
         kind: "submit_outcome",
@@ -1316,33 +1348,6 @@ export const wholeEnvelopeValidation: Scenario = {
         }),
         forbids: [
           "an empty kind set must be rejected before any matching is attempted, not treated as an inert-but-valid alternative",
-        ],
-      },
-    ),
-    step(
-      {
-        kind: "submit_outcome",
-        outcome: outcome({
-          executionId: X,
-          activationId: "act-1",
-          // W-1 rule 3: a subscription entry must be a declared subscription identity. The exact
-          // spelling is implementation-owned under W-9's closing note; that it *is* one is not.
-          next: { step: "await", wait: { dependencies: [], subscriptions: [{ subscriptionClass: "" }], generation: "g-bad-4" } },
-        }),
-      },
-      {
-        label: "W-1 rule 3: a structurally invalid declared subscription is refused like any other malformed member",
-        observation: obs(X, {
-          state: "RUNNING",
-          queued: ["in-1"],
-          activationId: "act-1",
-          dispatchedBatch: ["in-1"],
-          receipt: "receipt:create:req-x",
-          rejection: { classification: "malformed_envelope", reason: "declared subscription has an empty subscription identity" },
-          writerEpoch: 1,
-        }),
-        forbids: [
-          "the subscription list is non-empty, so rule 1 passes: rule 3 has to be checked on its own for this to be caught",
         ],
       },
     ),

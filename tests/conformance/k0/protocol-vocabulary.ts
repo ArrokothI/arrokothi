@@ -138,12 +138,25 @@ export function checkWaitWellFormed(wait: WaitRecord): WaitWellFormedness {
       return { wellFormed: false, reason: "dependency alternative supplies an empty kind set" };
     }
   }
-  // Rule 3: every present subscription is structurally a declared subscription identity.
-  for (const subscription of wait.subscriptions) {
-    if (subscription.subscriptionClass.length === 0) {
-      return { wellFormed: false, reason: "declared subscription has an empty subscription identity" };
-    }
-  }
+  // Rule 3 — every present subscription is a declared subscription identity — is **not checked here**,
+  // and that is a correction rather than an omission. Round-4 review finding K02-R4-01: this helper
+  // used to reject `subscriptionClass: ""`, which invents a rule the accepted protocol deliberately
+  // does not make. W-1 rule 3 "fixes only that the entry *is* such an identity; its exact spelling
+  // remains implementation-owned under W-9's closing *Left open* note", and that note assigns the
+  // choice by name: "the exact spelling of a declared subscription identity ... — K1.3 owns that, and
+  // W-1 constrains only that it is finite, declarative and compared by equality."
+  //
+  // The empty string is a finite, declarative E-1 string compared by equality, so it satisfies every
+  // constraint W-1 actually imposes. A conforming K1 implementation may choose a representation in
+  // which it is a perfectly ordinary identity. Rejecting it turned a fixture preference into pass/fail
+  // behaviour — the K02-R2-01 class again, and this time it produced an unsound counterexample rather
+  // than only an over-tight comparison.
+  //
+  // Within this fixture's representation — `subscriptionClass` is a `string`, hence finite,
+  // declarative and equality-compared by construction — there is **no submittable value that fails
+  // rule 3**. So there is no honest negative case to write, and the coverage map assigns rule 3 to
+  // K1.3 (obligation R5-a4) instead of manufacturing one. Making a negative case exist would require
+  // first deciding the representation, which is exactly what K1.3 owns.
   return { wellFormed: true };
 }
 
