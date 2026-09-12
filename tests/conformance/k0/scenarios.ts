@@ -44,7 +44,7 @@ function obs(executionId: string, overrides: Partial<Observation> = {}): Observa
     terminalDispositions: [],
     liveWaitGeneration: null,
     waitEndedReadiness: [],
-    pendingTimers: [],
+    acceptedDeadline: null,
     dispatchedBatch: null,
     activationId: null,
     ingressRefused: null,
@@ -581,7 +581,7 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1", "res-1"],
           queued: [],
           liveWaitGeneration: "g2",
-          pendingTimers: ["g2"],
+          acceptedDeadline: 2_000,
           receipt: "receipt:outcome:act-2",
           writerEpoch: 2,
         }),
@@ -598,7 +598,7 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1", "res-1"],
           queued: [],
           liveWaitGeneration: "g2",
-          pendingTimers: ["g2"],
+          acceptedDeadline: 2_000,
           receipt: "receipt:outcome:act-2",
           writerEpoch: 2,
         }),
@@ -607,7 +607,7 @@ export const staleTimerAndLostWake: Scenario = {
           "liveWaitGeneration must stay g2: a stale timer retires nothing",
           "state must stay WAITING: a stale timer cannot wake a replacement wait",
           "waitEndedReadiness must stay empty: retiring nothing creates no readiness (B-8)",
-          "pendingTimers must stay ['g2']: a stale timer registers no timer and retires none",
+          "acceptedDeadline must stay 2000: a stale delivery neither commits a deadline nor retires the live one",
         ],
       },
     ),
@@ -711,10 +711,10 @@ const losingComplete = outcome({ executionId: X, activationId: "act-1", progress
  * Round-5 review finding K02-R5-02: the row-7 schedule submitted losing `continue`/`complete`
  * Outcomes but never a losing `await` carrying a wait with a deadline, so CX-6/OA-5's "no
  * wait/deadline" clause had no schedule exercising it and no observation that could see a leaked
- * persisted deadline/timer registration. This is that schedule: a well-formed subscription-only
- * wait with a deadline under a fresh generation, submitted after cancellation acceptance. Accepted,
- * it would persist WAITING under `g-lose` with a timer for `g-lose`; rejected under CX-6, it must
- * leave `liveWaitGeneration` null, `pendingTimers` empty, `waitEndedReadiness` empty and the
+ * accepted deadline fact. This is that schedule: a well-formed subscription-only wait with a
+ * deadline under a fresh generation, submitted after cancellation acceptance. Accepted, it would
+ * persist WAITING under `g-lose` with its deadline 5000 committed; rejected under CX-6, it must
+ * leave `liveWaitGeneration` null, `acceptedDeadline` null, `waitEndedReadiness` empty and the
  * Execution CANCELLED.
  */
 const losingAwaitWithDeadline = outcome({
@@ -893,7 +893,7 @@ export const cancelVersusComplete: Scenario = {
         forbids: [
           "state must stay CANCELLED: a losing `await` must not persist WAITING under g-lose",
           "liveWaitGeneration must stay null: the loser's wait registers nothing",
-          "pendingTimers must stay empty: the loser's deadline registers no persisted timer for g-lose",
+          "acceptedDeadline must stay null: the loser's deadline is accepted as no fact at all under CX-6/OA-5",
           "waitEndedReadiness must stay empty: a rejected Outcome creates no readiness",
           "rejection must stay CX-6: the fence does not depend on the loser's next step",
         ],
@@ -1475,14 +1475,14 @@ export const subscriptionWaitDeadline: Scenario = {
           acknowledged: ["in-1"],
           queued: ["bq-1"],
           liveWaitGeneration: "gd1",
-          pendingTimers: ["gd1"],
+          acceptedDeadline: 1_000,
           receipt: "receipt:outcome:act-1",
           writerEpoch: 1,
         }),
         forbids: [
           "bq-1 must not wake it: billing.question is outside the declared subscription",
           "waitEndedReadiness must stay empty: the wait is live, so nothing has retired",
-          "pendingTimers must be ['gd1']: the live deadline is a persisted timer registration, not an inferred absence",
+          "acceptedDeadline must be 1000: W-2 step 4 persists the live registration with its generation and its deadline, and that accepted fact is observed rather than inferred",
         ],
       },
     ),

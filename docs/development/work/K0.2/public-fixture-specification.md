@@ -58,14 +58,15 @@ K1.3, which W-9's *Left open* note names as the owner of a declared subscription
 spelling. Twenty entries carry an `atomicity` note, required whenever an entry's counterexamples
 cross more than one coupled field group. `COUPLED_FIELD_GROUPS` is a review heuristic only, never
 proof that within-group partial failures are impossible: `state`/`liveWaitGeneration` stay grouped
-only for W-3's definitional link, while `waitEndedReadiness` and `pendingTimers` are deliberately
-ungrouped so wake/retirement/readiness/timer partials cannot hide. Each note names the specific bug
+only for W-3's definitional link, while `waitEndedReadiness` and `acceptedDeadline` are deliberately
+ungrouped so wake/retirement/readiness/deadline partials cannot hide. Each note names the specific bug
 construction's writers rather than invoking normative coupling. `coverage.test.ts` enforces all of it,
 including that **no counterexample defends two assertions** except through a declared `shared` link,
 that **no two counterexamples at one step move the same set of observation fields**, and that scenario
 row attribution agrees with the map in both directions.
-`interactions.test.ts` sweeps the corpus for the cross-scenario invariants, including that persisted
-deadline timers live exactly while a deadline wait is live and that no fenced submission leaks one.
+`interactions.test.ts` sweeps the corpus for the cross-scenario invariants, including that a non-null
+accepted deadline belongs to the live wait, that stale delivery after logical retirement stays a no-op
+without constraining physical timers, and that no fenced submission accepts a deadline fact.
 
 ## 2. How the oracle is known to work
 
@@ -105,7 +106,7 @@ unobserved. M-1 is a floor, not a ceiling.
 |---|---|---|
 | Duplicate/conflicting Outcome | exact duplicate returns the original receipt; conflicting duplicate is a recorded rejection with none of its content merged, even when the rejection is correct | advance the revision on replay, re-publish an accepted emission, silently absorb a conflict without a rejection, or merge conflicting content into accepted state beside a correct rejection |
 | Stale timer / lost wake | an already-accepted eligible Event is found at registration; a superseded generation's timer is a no-op; a re-delivered timer is idempotent; an authenticated result is never generation-fenced | persist `WAITING` over an eligible Event already in the mailbox, wake a replacement wait from a retired generation, mint a second timeout Event, or treat a timeout as proof the awaited work did not happen |
-| Cancel versus complete | both orders; CX-6 rejection for `continue`, `complete` **and** a deadline-bearing `await`; zero batch acknowledgment; unchanged progress and emissions; zero wait, persisted deadline/timer, readiness and next-state change; B-5 disposition at `CANCELLED`; the same recorded rejection on exact retry; an accepted completion staying terminal and replaying its receipt | install the loser's progress, acknowledge its reserved batch, manufacture a receipt for a rejected submission, register the loser's wait, leak its deadline timer while staying `CANCELLED`, arm its readiness, or reopen a terminal Execution |
+| Cancel versus complete | both orders; CX-6 rejection for `continue`, `complete` **and** a deadline-bearing `await`; zero batch acknowledgment; unchanged progress and emissions; zero wait, accepted deadline fact, readiness and next-state change; B-5 disposition at `CANCELLED`; the same recorded rejection on exact retry; an accepted completion staying terminal and replaying its receipt | install the loser's progress, acknowledge its reserved batch, manufacture a receipt for a rejected submission, register the loser's wait, accept its deadline fact while staying `CANCELLED`, arm its readiness, or reopen a terminal Execution |
 | Missing checkpoint/code | an inspectable recovery hold naming the unavailable pinned revision; accepted progress and revision intact | present empty or fresh Runtime state as the restored one, discard accepted progress, or invent a semantic wait for an unresolved Activation |
 | Subscription-only wait with a deadline (W-8 case 6) | B-7 path B mints exactly one timeout Event; at bound 1 the batch is exactly that Event even though an ineligible input was accepted earlier; B-7 path A yields `READY` at registration when the deadline is already due | require the timeout to match a dependency alternative the wait does not have, let older ineligible backlog take the slot, or persist a past deadline as a live wait |
 | Completion obligations (§11 row 8) | `complete` proposing owned work is refused whole with a recorded, inspectable reason; the Execution stays non-terminal and nothing in the envelope is committed; terminal ingress is refused rather than queued | reach a terminal state with unaccounted owned work, strip the Effect and accept the rest, commit progress or acknowledgment under a reported refusal, or accept ordinary input into a terminal Execution's mailbox |
@@ -471,7 +472,7 @@ constrain receipts against receipts, and nothing requires the raw spellings to b
 now holds one bijection per family. A conforming probe reuses `opaque-1`/`opaque-2` across families
 and passes, while collapsing two receipts or two Activation IDs within their own family still fails.
 Other normalization state was swept: rejection keying (canonical CX-6 vs. free text), per-family
-rewrite, recovery-hold presence/reason and fixture-supplied timer generations couple nothing across
+rewrite, recovery-hold presence/reason and fixture-supplied deadline values couple nothing across
 families; the single shared relation was the only coupling.
 
 **K02-R5-02 — the atomicity guard was circular/incomplete and the row-7 deadline mutation was
@@ -480,28 +481,70 @@ note when a counterexample crossed groups. That is a review prompt, not proof a 
 cannot partially write one fact — and R3-b's note used it as proof, claiming record-and-merge is "not
 plausible" when OA-5 exists to prohibit exactly that partial writer. `COUPLED_FIELD_GROUPS` is now
 documented as heuristic only; `state`/`liveWaitGeneration` stay grouped solely for W-3's definitional
-link while `waitEndedReadiness` and the new `pendingTimers` are deliberately ungrouped, and all twenty
-notes were re-audited against plausible broken writers/transactions rather than normative coupling:
+link while `waitEndedReadiness` and the new deadline observation are deliberately ungrouped, and all
+twenty notes were re-audited against plausible broken writers/transactions rather than normative
+coupling (C6 observed that deadline as `pendingTimers`, corrected further below):
 
 - R3-b splits into R3-b (recorded rejection) and R3-b2 (no merge beside a correct rejection), with a
   dedicated conflict-path transcript that keeps the `duplicate_conflict` rejection and leaks only the
   conflicting progress;
-- R7-a6 splits into next-state (existing), wait (live generation), deadline/timer (`pendingTimers`)
-  and readiness, exercised by a new cancellation-losing `await` carrying a wait with a deadline at
-  `control-cancel-versus-complete` step 11. `Observation.pendingTimers` is the smallest truthful
-  addition: retained accepted timer registrations, empty in every fenced step, `["g2"]`/`["gd1"]`
-  while those deadline waits are live. A timer leak that keeps `CANCELLED`, the correct CX-6
-  rejection and null live generation is now a one-field difference the oracle rejects, rather than an
-  absence inferred from terminal state or `liveWaitGeneration`;
+- R7-a6 splits into next-state (existing), wait (live generation), deadline and
+  readiness, exercised by a new cancellation-losing `await` carrying a wait with a deadline at
+  `control-cancel-versus-complete` step 11. The deadline half observes the accepted logical deadline
+  fact rather than an absence inferred from terminal state or `liveWaitGeneration`;
 - R5-b2/b3/c1/d3 gain writer-model notes for their full-wake transactions (one upstream
-  misclassification plus one downstream B-6 retirement), with timer/withheld/persisted-deadline
-  transcripts now carrying their timers;
+  misclassification plus one downstream B-6 retirement), with withheld/persisted-deadline
+  transcripts carrying the live accepted deadline;
 - the remaining notes name validation vs. acceptance vs. commit vs. control vs. recovery writers
   explicitly and point at the separate entries where a second writer's partial is independently
   covered, rather than claiming a candidate is implausible because the protocol requires atomicity.
 
 The inventory goes from 83 entries to 87 (row 3: 8→9, row 7: 13→16) and the corpus from 77
 transcripts to 81 over 12 scenarios / 90 steps. `blind-spot-regression.test.ts` pins the R3-b field
-division against C5, the new losing-`await` schedule/observation, and the single-field timer leak;
-`interactions.test.ts` sweeps that timers live exactly while a deadline wait is live and that no
-fenced submission leaks one.
+division against C5, the new losing-`await` schedule/observation, and the single-field deadline leak;
+`interactions.test.ts` sweeps the accepted-deadline invariants and that no fenced submission accepts
+a deadline fact.
+
+## 13. What round-6 review changed
+
+Round 6 returned CHANGES REQUIRED on one P1 finding in the round-6 material itself. It is correct
+and is fixed forward from C6; nothing from rounds 2–6 is reverted. The separate token namespaces,
+the R3-b split, the deadline-bearing losing-`await` schedule, the separate wait/readiness/next-state
+counterexamples and the heuristic status of `COUPLED_FIELD_GROUPS` are all preserved.
+
+**K02-R6-01 — `pendingTimers` conflated accepted deadline state with timer mechanism.** C6 observed
+the deadline half of R7-a6 as retained timer registrations with a corpus invariant that timers "live
+exactly while a deadline wait is live". That silently chooses an eager timer-cancellation design:
+W-3 explicitly permits a timer scheduled for a retired generation to arrive later as a stale no-op,
+and W-9/§4 leave timer mechanism, storage layout, deadline units/precision and the instant source
+implementation-owned. A conforming implementation retaining a physical timer after logical retirement
+would have been failed for scheduler retention — the same over-constraint class as rejection text,
+subscription spelling and token namespaces in earlier rounds. The schedule was never the problem and
+is unchanged.
+
+The observation is now `Observation.acceptedDeadline: number | null` — the accepted logical deadline
+fact W-2 step 4 persists with the live registration ("with the live registration, its generation
+and its deadline"), committed by OA-4 and forbidden for rejected Outcomes by OA-5/CX-6. It is
+non-null exactly while a deadline wait is live (`2000` under `g2`, `1000` under `gd1`, `1` in the
+persisted-past-deadline transcript); it is null for a rejected losing `await`, for live waits
+without deadlines, and — crucially — for retired waits even though a physical timer scheduled
+earlier may still arrive later and be fenced as stale. Retirement clears the logical fact and
+requires no physical timer cancellation or removal. Deadline values are fixture-supplied (the
+`deadline` of a submitted `WaitRecord`), so comparison is literal laboratory data, like Event IDs
+and generations — unlike the candidate-minted receipt/Activation-ID families. R7-a6c's transcript
+is renamed `control-cancel/losing-await-accepts-a-deadline` and leaks only `5000` beside `CANCELLED`,
+a correct CX-6 rejection and null live generation.
+
+Every dependent wording was swept so none claims timer-registration lifetime as semantics:
+`fixture.ts`, the losing-`await` comment and step-11 `forbids`, the stale-timer and W-8-case-6
+expectations, the three deadline transcripts, the R5-b4/R5-c3/C6-heuristic notes, and the
+contract/C9 text. `interactions.test.ts` replaces the timer-lifetime block with accepted-deadline
+invariants (non-null only beside the live wait; every pair a submitted one; a live and a fenced case
+present so neither direction is vacuous) plus the required W-3 regression: stale deliveries for
+already-retired generations (`g1` at step 6, `g2` at step 8 of the stale-timer control) are still
+scheduled and still no-ops that change no logical fact. `blind-spot-regression.test.ts` pins that no
+observation key constrains timer/scheduler mechanism under any name, and that retirement (step 7:
+`READY`, deadline null) precedes a still-permitted stale delivery (step 8).
+
+Counts are unchanged by this round (87 obligations, 81 transcripts, 20 notes, 12 scenarios /
+90 steps): one violation renamed, one field replaced, two regression tests added.

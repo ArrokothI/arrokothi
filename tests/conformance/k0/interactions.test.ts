@@ -170,9 +170,11 @@ describe("interaction: cancellation × whole-envelope rejection", () => {
           assert.deepEqual(after.terminalDispositions, fenced.terminalDispositions, `${scenario.id}: a fenced submission changed dispositions`);
           assert.equal(after.liveWaitGeneration, null, `${scenario.id}: a fenced submission created a wait`);
           // Round-5 review finding K02-R5-02: the fence is zero wait/deadline/readiness/next-state, not
-          // merely zero lifecycle. A losing `await` with a deadline must leave no persisted timer and no
-          // readiness either — inferred absence from CANCELLED or live generation alone is not evidence.
-          assert.deepEqual(after.pendingTimers, [], `${scenario.id}: a fenced submission leaked a persisted deadline/timer registration`);
+          // merely zero lifecycle. A losing `await` with a deadline must leave no accepted deadline
+          // fact and no readiness either — inferred absence from CANCELLED or live generation alone is
+          // not evidence. Round-6 finding K02-R6-01: the deadline half observes accepted logical
+          // state, never physical timer handles.
+          assert.equal(after.acceptedDeadline, null, `${scenario.id}: a fenced submission accepted a deadline fact`);
           assert.deepEqual(after.waitEndedReadiness, [], `${scenario.id}: a fenced submission created a readiness`);
           assert.equal(after.rejection?.classification, "cancellation_terminal_conflict", `${scenario.id}: wrong rejection classification after the fence`);
         }
@@ -363,59 +365,86 @@ describe("interaction: wait-ended readiness lifetime × reservation × B-8", () 
   });
 });
 
-describe("interaction: persisted deadline timers live exactly while a deadline wait is live", () => {
-  // Added for round-5 review finding K02-R5-02. `pendingTimers` is a new observable, and a new
-  // observable is only as good as the invariants held over it — otherwise a later scenario author
-  // can assert a timer that the protocol says cannot exist and nothing notices. The rule is the
-  // smallest truthful one: a persisted timer exists exactly for a live wait that carries a deadline.
-  // A timer surviving into READY/RUNNING/terminal would be the orphaned registration CX-6/OA-5
-  // forbid; one naming a generation that was never live would be a fabrication.
-  test("no step outside WAITING carries a persisted timer", () => {
+describe("interaction: the accepted deadline is live exactly while a deadline wait is live", () => {
+  // Added for round-5 review finding K02-R5-02 and redefined for round-6 finding K02-R6-01.
+  // `acceptedDeadline` observes Kernel semantic state — the deadline fact W-2 step 4 persists with
+  // the live registration ("with the live registration, its generation and its deadline") — never
+  // scheduler mechanism. A new observable is only as good as the invariants held over it, otherwise
+  // a later scenario author can assert a deadline the protocol says cannot exist and nothing notices.
+  // The rule is the smallest truthful one: a non-null accepted deadline belongs to the live wait.
+  // Crucially, retirement clears the logical fact while saying nothing about physical timers: W-3
+  // permits a timer scheduled for a retired generation to arrive later as a stale no-op, and W-9/§4
+  // leave timer mechanism, storage layout, units/precision and the instant source
+  // implementation-owned. No invariant here may require a physical timer to be cancelled or removed
+  // when the logical wait retires.
+  test("a non-null accepted deadline is carried only while WAITING with that wait live", () => {
     for (const scenario of ALL_SCENARIOS) {
       for (const [index, step] of scenario.steps.entries()) {
-        const { state, pendingTimers } = step.expect.observation;
-        if (pendingTimers.length === 0) continue;
-        assert.equal(state, "WAITING", `${scenario.id} step ${index} carries persisted timers ${pendingTimers.join(",")} while ${state}`);
+        const { state, liveWaitGeneration, acceptedDeadline } = step.expect.observation;
+        if (acceptedDeadline === null) continue;
+        assert.equal(state, "WAITING", `${scenario.id} step ${index} carries accepted deadline ${acceptedDeadline} while ${state}`);
+        assert.ok(liveWaitGeneration !== null, `${scenario.id} step ${index} carries accepted deadline ${acceptedDeadline} with no live wait`);
       }
     }
   });
 
-  test("every persisted timer names the live generation", () => {
+  test("every accepted deadline is one some submitted wait actually declared, beside the live generation", () => {
+    // The converse, stopping a deadline being asserted out of nowhere: the (generation, deadline)
+    // pair must be one the same scenario submitted, and the generation must be the live one — the
+    // pair is the "record keyed by generation" the protocol fixes, without any scheduler handle.
     for (const scenario of ALL_SCENARIOS) {
-      for (const [index, step] of scenario.steps.entries()) {
-        const { liveWaitGeneration, pendingTimers } = step.expect.observation;
-        for (const timer of pendingTimers) {
-          assert.equal(timer, liveWaitGeneration, `${scenario.id} step ${index} persists a timer for ${timer} while ${liveWaitGeneration} is live`);
-        }
-      }
-    }
-  });
-
-  test("every persisted timer is one some submitted wait actually declared with a deadline", () => {
-    // The converse, stopping a timer being asserted out of nowhere: the generation it names must be
-    // one the same scenario submitted with a deadline.
-    for (const scenario of ALL_SCENARIOS) {
-      const deadlineGenerations = new Set<string>();
+      const declared = new Map<string, number>();
       for (const step of scenario.steps) {
         if (step.command.kind !== "submit_outcome") continue;
         const next = step.command.outcome.next;
         if (next.step !== "await") continue;
-        if (next.wait.deadline !== undefined) deadlineGenerations.add(next.wait.generation);
+        if (next.wait.deadline !== undefined) declared.set(next.wait.generation, next.wait.deadline);
       }
       for (const wait of Object.values(scenario.waits ?? {})) {
-        if (wait.deadline !== undefined) deadlineGenerations.add(wait.generation);
+        if (wait.deadline !== undefined) declared.set(wait.generation, wait.deadline);
       }
       for (const [index, step] of scenario.steps.entries()) {
-        for (const timer of step.expect.observation.pendingTimers) {
-          assert.ok(deadlineGenerations.has(timer), `${scenario.id} step ${index} persists a timer for ${timer}, a generation this scenario never waits on with a deadline`);
-        }
+        const { liveWaitGeneration, acceptedDeadline } = step.expect.observation;
+        if (acceptedDeadline === null) continue;
+        assert.ok(liveWaitGeneration !== null && declared.get(liveWaitGeneration) === acceptedDeadline, `${scenario.id} step ${index} carries accepted deadline ${acceptedDeadline} beside live generation ${liveWaitGeneration}, a pair this scenario never submitted`);
       }
     }
   });
 
-  test("and at least one live deadline wait and one fenced losing await exist, so the rule is exercised rather than vacuous", () => {
-    const liveDeadline = ALL_SCENARIOS.some((scenario) => scenario.steps.some((step) => step.expect.observation.pendingTimers.length > 0));
-    assert.ok(liveDeadline, "no step persists a deadline timer, so the timer invariant proves nothing");
+  test("a stale timer delivery after logical retirement is still scheduled and still a no-op (W-3)", () => {
+    // Round-6 review finding K02-R6-01's required regression. Logical retirement must not be read as
+    // physical timer cancellation: the schedule deliberately delivers a timer for a generation whose
+    // logical wait/deadline has already retired, and the expectation is a harmless no-op with the
+    // accepted deadline still null. An implementation that retains the physical timer and fences the
+    // late delivery as stale satisfies this; one that required eager cancellation would too — the
+    // fixture cannot and must not tell them apart.
+    let checked = 0;
+    for (const scenario of ALL_SCENARIOS) {
+      const retired = new Set<string>();
+      for (const [index, step] of scenario.steps.entries()) {
+        const observation = step.expect.observation;
+        // Only generations retired by *previous* steps count: the current delivery's own readiness
+        // (B-7 path B creates it here) must not qualify its own generation as stale.
+        if (step.command.kind === "deliver_timer" && retired.has(step.command.generation)) {
+          checked += 1;
+          const previous = previousObservationFor(scenario, index, step.command.executionId);
+          assert.ok(previous, `${scenario.id} step ${index}: no previous observation to compare the stale delivery against`);
+          assert.equal(observation.state, previous.state, `${scenario.id} step ${index}: a stale delivery for a retired generation moved the lifecycle`);
+          assert.equal(observation.liveWaitGeneration, previous.liveWaitGeneration, `${scenario.id} step ${index}: a stale delivery for a retired generation retired a generation`);
+          // The stale delivery changes no logical deadline fact either: where no deadline is live
+          // it stays null, and where another generation's deadline is live it is untouched. Either
+          // way the late delivery is fenced by generation, and no physical-timer state is consulted.
+          assert.equal(observation.acceptedDeadline, previous.acceptedDeadline, `${scenario.id} step ${index}: a stale delivery for a retired generation changed the accepted deadline`);
+        }
+        for (const readiness of observation.waitEndedReadiness) retired.add(readiness.generation);
+      }
+    }
+    assert.ok(checked >= 2, `expected stale-after-retirement deliveries across the corpus, found ${checked}`);
+  });
+
+  test("and at least one live accepted deadline and one fenced losing await exist, so the rule is exercised rather than vacuous", () => {
+    const liveDeadline = ALL_SCENARIOS.some((scenario) => scenario.steps.some((step) => step.expect.observation.acceptedDeadline !== null));
+    assert.ok(liveDeadline, "no step carries an accepted deadline, so the deadline invariant proves nothing");
     const losingAwait = ALL_SCENARIOS.some((scenario) =>
       scenario.steps.some(
         (step) =>
@@ -423,7 +452,7 @@ describe("interaction: persisted deadline timers live exactly while a deadline w
           step.command.outcome.next.step === "await" &&
           step.command.outcome.next.wait.deadline !== undefined &&
           step.expect.observation.rejection?.classification === "cancellation_terminal_conflict" &&
-          step.expect.observation.pendingTimers.length === 0,
+          step.expect.observation.acceptedDeadline === null,
       ),
     );
     assert.ok(losingAwait, "no fenced losing `await` with a deadline exists, so CX-6's zero-deadline clause has no schedule exercising it");

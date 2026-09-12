@@ -367,27 +367,75 @@ describe("round-5: the CX-6 deadline clause is a schedule plus an observation, n
       assert.ok(step.command.outcome.next.wait.deadline !== undefined, "the losing `await` must carry a deadline, or it does not exercise the deadline clause");
       assert.equal(step.expect.observation.state, "CANCELLED");
       assert.equal(step.expect.observation.liveWaitGeneration, null);
-      assert.deepEqual(step.expect.observation.pendingTimers, []);
+      assert.equal(step.expect.observation.acceptedDeadline, null);
       assert.deepEqual(step.expect.observation.waitEndedReadiness, []);
       assert.equal(step.expect.observation.rejection?.classification, "cancellation_terminal_conflict");
     }
   });
 
-  test("leaking only the timer is a different transcript from registering the wait or arming readiness", () => {
-    const timerLeak = violation("control-cancel/losing-await-leaks-a-timer-registration");
+  test("leaking only the accepted deadline is a different transcript from registering the wait or arming readiness", () => {
+    const deadlineLeak = violation("control-cancel/losing-await-accepts-a-deadline");
     const waitLeak = violation("control-cancel/losing-await-registers-a-wait");
     const readinessLeak = violation("control-cancel/losing-await-arms-a-readiness");
-    const target = scenario(timerLeak.scenarioId);
-    const expected = target.steps[timerLeak.stepIndex]!.expect.observation;
-    assert.deepEqual(changedFields(expected, timerLeak.mutate(expected)), ["pendingTimers"]);
+    const target = scenario(deadlineLeak.scenarioId);
+    const expected = target.steps[deadlineLeak.stepIndex]!.expect.observation;
+    assert.deepEqual(changedFields(expected, deadlineLeak.mutate(expected)), ["acceptedDeadline"]);
     assert.deepEqual(changedFields(expected, waitLeak.mutate(expected)), ["liveWaitGeneration"]);
     assert.deepEqual(changedFields(expected, readinessLeak.mutate(expected)), ["waitEndedReadiness"]);
-    // The sharp case: timer leaks while CANCELLED, rejection correct, live generation null. Inferring
-    // deadline absence from terminal state or `liveWaitGeneration` alone would pass this candidate.
-    const leaked = timerLeak.mutate(expected);
+    // The sharp case: an accepted deadline fact leaks while CANCELLED, rejection correct, live
+    // generation null. Inferring deadline absence from terminal state or `liveWaitGeneration` alone
+    // would pass this candidate.
+    const leaked = deadlineLeak.mutate(expected);
     assert.equal(leaked.state, "CANCELLED");
     assert.equal(leaked.liveWaitGeneration, null);
     assert.equal(leaked.rejection?.classification, "cancellation_terminal_conflict");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Round 6: the deadline observation is semantic state, not scheduler mechanism
+// ---------------------------------------------------------------------------
+
+/**
+ * Round-6 review finding K02-R6-01: C6's `pendingTimers` observed persisted timer registrations and
+ * pinned their lifetime to the logical wait ("timers live exactly while a deadline wait is live").
+ * That silently chooses an eager timer-cancellation design W-9 leaves implementation-owned: a
+ * conforming implementation may retain a physical timer after the logical wait retires and fence its
+ * late delivery as stale under W-3. The observation is now `acceptedDeadline` — the accepted logical
+ * deadline fact — and these guards pin the redefinition so the mechanism reading cannot come back.
+ */
+describe("round-6: no observation constrains physical timer lifetime", () => {
+  test("observations carry no timer-registration, scheduler or cancellation field", () => {
+    // A mechanism field reintroduced under any name would recouple the oracle to W-9's open design
+    // space. Timeout Events in `queued` are mailbox facts, not scheduler state, so values are not
+    // scanned — only the observation's keys. (`waitEndedReadiness` matches none of these patterns;
+    // it is readiness semantic state under B-8, not a timer handle.)
+    for (const target of ALL_SCENARIOS) {
+      for (const [index, step] of target.steps.entries()) {
+        for (const key of Object.keys(step.expect.observation)) {
+          assert.ok(
+            !/timer|scheduler|registration/i.test(key),
+            `${target.id} step ${index}: observation key ${key} constrains timer/scheduler mechanism, which W-9 leaves implementation-owned`,
+          );
+        }
+      }
+    }
+  });
+
+  test("retirement is observable as a gone logical deadline beside a still-permitted stale delivery", () => {
+    // The positive half of the same distinction: after g2's logical deadline retires (READY, deadline
+    // null), the schedule still delivers g2's timer and requires a harmless no-op. If retirement
+    // meant physical cancellation, that delivery could not arrive — yet W-3 requires it to be
+    // fenceable, not absent.
+    const target = scenario("control-stale-timer-and-lost-wake");
+    const retired = target.steps[7]!;
+    assert.equal(retired.expect.observation.state, "READY");
+    assert.equal(retired.expect.observation.acceptedDeadline, null);
+    const stale = target.steps[8]!;
+    assert.equal(stale.command.kind, "deliver_timer");
+    assert.ok(stale.command.kind === "deliver_timer" && stale.command.generation === "g2");
+    assert.equal(stale.expect.observation.state, "READY");
+    assert.equal(stale.expect.observation.acceptedDeadline, null);
   });
 });
 

@@ -89,24 +89,37 @@ export interface Observation {
    */
   readonly waitEndedReadiness: readonly WaitEndedReadiness[];
   /**
-   * Persisted Kernel timer registrations for live waits with deadlines, in generation order; empty
-   * when none.
+   * The accepted deadline committed for the live wait, if the live wait carries one; `null`
+   * otherwise — no live wait, a live wait without a deadline, or a retired wait whose logical
+   * deadline is no longer live.
    *
-   * Added for round-5 review finding K02-R5-02. CX-6/OA-5 require a rejected Outcome to create "no
-   * wait, deadline, readiness or next-state transition", and OA-4 commits "any wait/deadline" as part
-   * of the accepted set. A losing `await` carrying a wait with a deadline could leak a persisted
-   * deadline/timer registration while keeping the Execution correctly `CANCELLED`, reporting the
-   * correct CX-6 rejection, and leaving `liveWaitGeneration` null — invisible via terminal lifecycle
-   * state or live-generation alone. This observes retained accepted timer registration, so that leak
-   * is a candidate-visible difference rather than an inferred absence.
+   * Added for round-5 review finding K02-R5-02 and redefined for round-6 finding K02-R6-01.
+   * CX-6/OA-5 require a rejected Outcome to create "no wait, deadline, readiness or next-state
+   * transition", and OA-4 commits "any wait/deadline" as part of the accepted set while W-2 step 4
+   * persists `WAITING` "with the live registration, its generation and its deadline". A losing
+   * `await` carrying a wait with a deadline could leak an accepted deadline fact while keeping the
+   * Execution correctly `CANCELLED`, reporting the correct CX-6 rejection, and leaving
+   * `liveWaitGeneration` null — invisible via terminal lifecycle state or live-generation alone.
+   * This observes that accepted logical deadline fact, so the leak is a candidate-visible difference
+   * rather than an inferred absence.
    *
-   * It observes *retained accepted* registration. A timer constructed and discarded inside the same
+   * This is Kernel semantic state, not scheduler mechanism. W-3 explicitly permits a timer scheduled
+   * for a retired generation to arrive later as a stale no-op, and W-9/§4 leave timer mechanism,
+   * storage layout, deadline units/precision and the instant source implementation-owned. A
+   * conforming implementation may therefore retain a physical timer registration after the logical
+   * wait/deadline has retired and fence its late delivery as stale; this field must be `null` there
+   * all the same, because the *accepted deadline* is gone. Retirement never requires physical timer
+   * cancellation or removal — only that no accepted deadline fact remains live. The generation key
+   * for a non-null value is the sibling `liveWaitGeneration`.
+   *
+   * It observes *retained accepted* state. A deadline evaluated and discarded inside the same
    * rejected transaction leaves no accepted record and is indistinguishable here — as it is by any
    * other means, since 001's K0 exit asks for an observable acceptance/rejection result and nothing
-   * unobservable was committed. Entries are wait generations (fixture-supplied in the submitted
-   * `WaitRecord`), so comparison is literal: generations arrive in the schedule's own commands.
+   * unobservable was committed. Values are fixture-supplied (the `deadline` of a submitted
+   * `WaitRecord`), so comparison is literal: deadlines arrive in the schedule's own commands, like
+   * Event IDs and wait generations.
    */
-  readonly pendingTimers: readonly string[];
+  readonly acceptedDeadline: number | null;
   /**
    * The Event batch pinned by the **current unresolved** Activation, in acceptance order; `null` when
    * no Activation is unresolved. Reservation pins it and does not acknowledge it (B-3), which is what
@@ -378,7 +391,7 @@ function normalizeRejection(actual: Observation, expected: Observation): Observa
  * Round-4 review finding K02-R4-01 rejected an invented rule about how a *declared subscription
  * identity* may be spelled. Sweeping the neighbouring implementation-owned spellings, as that finding
  * requires, turns up the mirror-image problem in this runner. Most tokens a scenario asserts are
- * **fixture-supplied** — Event IDs, emission IDs, wait generations, pending-timer generations and
+ * **fixture-supplied** — Event IDs, emission IDs, wait generations, deadline values and
  * progress values all arrive in the commands the schedule issues, so comparing them literally
  * compares the laboratory's own data. Two are **candidate-minted**, and for those the accepted
  * decisions fix only relations:
@@ -417,9 +430,9 @@ function normalizeRejection(actual: Observation, expected: Observation): Observa
  * `normalizeRejection` keys only on rejection classification (canonical CX-6 vs. non-canonical
  * free text); `normalizeRepresentations` rewrites each family's spelling to its own expected token
  * independently and never keys one family's normalization on the other's observed value; the
- * recovery-hold check keys only on presence plus non-empty reason (PC-5); `pendingTimers` entries
- * are fixture-supplied wait generations compared literally. The only shared mutable normalization
- * state was the single `TokenRelation`, now split.
+  * recovery-hold check keys only on presence plus non-empty reason (PC-5); `acceptedDeadline`
+  * values are fixture-supplied deadlines compared literally. The only shared mutable normalization
+  * state was the single `TokenRelation`, now split.
  */
 class TokenRelation {
   private readonly forward = new Map<string, string>();

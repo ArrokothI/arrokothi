@@ -8,7 +8,7 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 6.** Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
+**Contract revision 7.** Revision 6 corrected revision 5 after round-6 review (finding K02-R6-01): C6's new deadline observation conflated the accepted logical deadline fact with the implementation-owned physical timer mechanism, pinning a timer-registration lifetime W-9 leaves open and W-3 contradicts (a retained timer for a retired generation arrives as a stale no-op). Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
 K02-R1-02, K02-R1-03), where three criteria were *understating* what they had to establish. Revision 3
 corrected revision 2 after round-2 review (findings K02-R2-01, K02-R2-02), where one criterion had
 begun *overstating* it — C6/C7/C9 required a rejection-reason distinction the protocol does not make —
@@ -203,11 +203,14 @@ candidate for breaking it. Wait-ended readiness and Effect-intent absence are no
 both controls assert what they claim. **And a control that claims zero wait/deadline mutation must
 submit the wait and observe the deadline** (round-5 finding K02-R5-02): inferring deadline absence
 from terminal state or `liveWaitGeneration` alone is not evidence. Row 7 therefore submits a
-cancellation-losing `await` carrying a wait with a deadline and observes retained accepted timer
-registration (`pendingTimers`) alongside live generation and readiness. Row 7 additionally asserts,
+cancellation-losing `await` carrying a wait with a deadline and observes the accepted logical
+deadline fact (`acceptedDeadline`) alongside live generation and readiness — semantic state, never
+scheduler mechanism (round-6 finding K02-R6-01): a physical timer retained after logical retirement
+is conforming W-3 behavior fenced as stale on arrival, and retirement requires no timer cancellation
+or removal. Row 7 additionally asserts,
 as M-1 requires by name: CX-6 full rejection for `continue`, `complete` **and** a deadline-bearing
 `await` submitted after cancellation acceptance; zero acknowledgment of the reserved batch; no change
-to accepted progress/emissions; zero wait, persisted deadline/timer, readiness and next-state change;
+to accepted progress/emissions; zero wait, accepted deadline fact, readiness and next-state change;
 B-5 disposition at `CANCELLED`; deterministic recorded rejection on exact retry;
 and the reverse order, where accepted completion remains terminal.
 **Distinguishing counterexample:** M-1 names one explicitly — "suppressing only next state while
@@ -308,9 +311,13 @@ for declared subscription identities that W-9 assigns to K1.3. Revision 5's coup
 Activation-ID namespaces that the worksheet leaves independent, rejecting a conforming representation,
 and treated normative transaction coupling as proof partial writers are implausible — leaving the
 duplicate-conflict record-and-merge writer without a discriminating candidate and CX-6's zero-deadline
-clause without a schedule or an observation. **And normative coupling never counts as proof a partial
+clause without a schedule or an observation. Revision 6's observed the deadline as a physical timer
+registration whose lifetime the worksheet leaves open, so R7-a6c could fail a conforming stale-timer
+mechanism. **And normative coupling never counts as proof a partial
 writer is impossible** (round-5 finding K02-R5-02): `COUPLED_FIELD_GROUPS` is a review heuristic, and
-every retained composite names its specific writers.
+every retained composite names its specific writers. **And timer mechanism is never the deadline
+fact** (round-6 finding K02-R6-01): the accepted deadline is observed as logical state beside the
+live generation, with retirement clearing the fact while permitting late stale delivery.
 Under-coverage lets a wrong candidate pass; over-constraint fails a right one, and is the worse
 failure of the two.
 **Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`.

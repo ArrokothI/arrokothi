@@ -93,18 +93,26 @@ export interface BoundaryObligation {
  * from the implementation boundary/writer model, not from the fact that the protocol requires an
  * atomic result.
  *
- * In particular, `waitEndedReadiness` and `pendingTimers` are deliberately *not* grouped with
+ * In particular, `waitEndedReadiness` and `acceptedDeadline` are deliberately *not* grouped with
  * `state`/`liveWaitGeneration`: earlier review rounds already proved candidates can violate those
- * facts separately (wake without retirement, retirement without wake, phantom readiness, orphaned
- * timer), so grouping them would suppress exactly the field-crossing signal that exposed those
- * defects. `state` and `liveWaitGeneration` stay grouped only for W-3's definitional link ("a live
- * generation exists exactly while WAITING"): persisting WAITING *is* persisting a live generation
- * via the same wait-registration writer, and retiring one *is* clearing the other via the same
- * Event-acceptance/timer writer. Even there, wake-vs-retire halves are split wherever the writers
- * differ (R5-f1a/f1a2, R5-d1/d2, R6-b1/b2, R7-a6b/c/d), and any entry moving readiness or timers
- * alongside lifecycle must still justify why one specific bug construction moves all of them.
- * `waitEndedReadiness` and `pendingTimers` are each their own group (via the `groupOf` fallback),
- * so any entry moving them with anything else needs a note or a split.
+ * facts separately (wake without retirement, retirement without wake, phantom readiness, accepted
+ * deadline without a live wait), so grouping them would suppress exactly the field-crossing signal
+ * that exposed those defects. `state` and `liveWaitGeneration` stay grouped only for W-3's
+ * definitional link ("a live generation exists exactly while WAITING"): persisting WAITING *is*
+ * persisting a live generation via the same wait-registration writer, and retiring one *is*
+ * clearing the other via the same Event-acceptance/expiry writer (B-7 path B's canonical handling
+ * of a current expiry, not scheduler storage). Even there, wake-vs-retire halves
+ * are split wherever the writers differ (R5-f1a/f1a2, R5-d1/d2, R6-b1/b2, R7-a6b/c/d), and any entry
+ * moving readiness or the accepted deadline alongside lifecycle must still justify why one specific
+ * bug construction moves all of them. `waitEndedReadiness` and `acceptedDeadline` are each their
+ * own group (via the `groupOf` fallback), so any entry moving them with anything else needs a note
+ * or a split.
+ *
+ * Round-6 review finding K02-R6-01: the accepted deadline is Kernel semantic state (W-2 step 4
+ * persists the live registration with its generation *and its deadline*; OA-4 commits it; OA-5/CX-6
+ * forbid it for rejected Outcomes), never scheduler mechanism. A physical timer retained after the
+ * logical wait retires is conforming W-3 behavior fenced as stale on arrival, and no observation
+ * here may require its cancellation or removal.
  *
  * This table is still the thing a reviewer should disagree with if they disagree with the guard
  * below, but disagreeing with it now makes the guard *more* sensitive (more notes required), never
@@ -126,7 +134,7 @@ export const COUPLED_FIELD_GROUPS: readonly { readonly name: string; readonly fi
     name: "lifecycle",
     fields: ["state", "liveWaitGeneration"],
     because:
-      "W-3: a live generation exists exactly while WAITING, via the same registration/retirement writer that moves the lifecycle. This groups only the definitional link, never readiness or timers: B-6/B-7/B-8 commit readiness beside retirement via a separable writer, and W-2 persists timers beside registration via another, so those stay ungrouped and any joint movement needs its own justification.",
+      "W-3: a live generation exists exactly while WAITING, via the same registration/retirement writer that moves the lifecycle. This groups only the definitional link, never readiness or the accepted deadline: B-6/B-7/B-8 commit readiness beside retirement via a separable writer, and W-2 step 4 persists the accepted deadline beside registration via another, so those stay ungrouped and any joint movement needs its own justification.",
   },
   {
     name: "activation",
@@ -452,7 +460,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(b) The timeout Event is eligible through neither list and arrives by construction (W-9).",
     atomicity:
-      "One bug construction: an ingress-routing writer sends the timeout through the ordinary eligibility test, so for a wait declaring nothing matching it the B-7 path-B transaction never runs — no timeout minted by the Kernel-mint writer, no retirement by the wait writer, no deadline-readiness by the readiness writer, timer stays persisted. The moves are one upstream routing decision plus the absence of the one downstream B-7 transaction. A partial that mints the timeout but fails to retire would be B-7 atomicity failure by the expiry-handler writer, separately evidenced by R5-d2 (expiry leaves generation live).",
+      "One bug construction: an ingress-routing writer sends the timeout through the ordinary eligibility test, so for a wait declaring nothing matching it the B-7 path-B transaction never runs — no timeout minted by the Kernel-mint writer, no retirement by the wait writer, no deadline-readiness by the readiness writer, and the accepted deadline stays live. The moves are one upstream routing decision plus the absence of the one downstream B-7 transaction. A partial that mints the timeout but fails to retire would be B-7 atomicity failure by the expiry-handler writer, separately evidenced by R5-d2 (expiry leaves generation live). Nothing here constrains physical timer handles: the logical deadline staying live is the violation, not any scheduler registration lifetime.",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 4, counterexamples: ["subscription-deadline/timeout-withheld-because-nothing-declared-it"] },
   },
 
@@ -476,7 +484,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(c) Step 3 evaluates an already-due deadline before persisting, so a past deadline is never persisted as live (B-7 path A).",
     atomicity:
-      "One bug construction: the Outcome-acceptance writer persists WAITING with its timer before the deadline-evaluator runs, so the W-2 step-3 branch that would mint the timeout, retire immediately and create deadline-readiness never executes. The live generation, persisted timer, absent timeout and absent readiness are one ordering swap plus the absence of the one path-A transaction. A persister that writes live without timer (or timer without live) would be registration sub-transaction failure by the same writer split further; the live field alone already discriminates the ordering swap, and orphaned-timer partials via other writers are separately covered by R7-a6c.",
+      "One bug construction: the Outcome-acceptance writer persists WAITING with its accepted deadline before the deadline-evaluator runs, so the W-2 step-3 branch that would mint the timeout, retire immediately and create deadline-readiness never executes. The live generation, live accepted deadline, absent timeout and absent readiness are one ordering swap plus the absence of the one path-A transaction. A persister that writes the live generation without its deadline (or vice versa) would be registration sub-transaction failure by the same writer split further; the live-generation field alone already discriminates the ordering swap, and accepted-deadline partials via other writers are separately covered by R7-a6c. Nothing here constrains physical timer handles.",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 6, counterexamples: ["subscription-deadline/past-deadline-persisted-as-a-live-wait"] },
   },
 
@@ -645,14 +653,14 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 3, counterexamples: ["control-cancel/losing-outcome-mints-an-effect-intent"] },
   },
   {
-    // Split by round-5 review finding K02-R5-02. The prior entry bundled wait, deadline/timer,
-    // readiness and next-state behind one transcript moving only the lifecycle state, so the wait
-    // and deadline clauses had no discriminating candidate and the deadline clause had no
-    // observation that could see it. Each now has its own schedule and transcript. The losing
-    // `await` with a deadline at step 11 exercises the wait/deadline path the prior schedule
-    // (losing `continue`/`complete` only) never submitted; `pendingTimers` observes retained
-    // accepted timer registration rather than inferring deadline absence from terminal state or
-    // `liveWaitGeneration`.
+    // Split by round-5 review finding K02-R5-02 and redefined by round-6 finding K02-R6-01.
+    // The prior entry bundled wait, deadline, readiness and next-state behind one transcript moving
+    // only the lifecycle state, so the wait and deadline clauses had no discriminating candidate and
+    // the deadline clause had no observation that could see it. Each now has its own schedule and
+    // transcript. The losing `await` with a deadline at step 11 exercises the wait/deadline path the
+    // prior schedule (losing `continue`/`complete` only) never submitted; `acceptedDeadline` observes
+    // the accepted logical deadline fact — never a physical timer registration — rather than
+    // inferring deadline absence from terminal state or `liveWaitGeneration`.
     id: "R7-a6",
     row: 7,
     obligation: "It produces no next-state change: a rejected losing Outcome cannot move the Execution off its terminal CANCELLED state.",
@@ -667,8 +675,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R7-a6c",
     row: 7,
-    obligation: "A losing `await` carrying a deadline registers no persisted deadline/timer: `pendingTimers` stays empty even when the Execution correctly stays CANCELLED with the correct CX-6 rejection.",
-    evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 11, counterexamples: ["control-cancel/losing-await-leaks-a-timer-registration"] },
+    obligation: "A losing `await` carrying a deadline accepts no deadline fact: `acceptedDeadline` stays null even when the Execution correctly stays CANCELLED with the correct CX-6 rejection. A physical timer retained after logical retirement is conforming W-3 behavior and is not observed here.",
+    evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 11, counterexamples: ["control-cancel/losing-await-accepts-a-deadline"] },
   },
   {
     id: "R7-a6d",

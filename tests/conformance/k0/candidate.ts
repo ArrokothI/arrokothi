@@ -330,12 +330,12 @@ export const VIOLATIONS: readonly Violation[] = [
     id: "subscription-deadline/past-deadline-persisted-as-a-live-wait",
     scenarioId: "control-subscription-wait-deadline",
     plausibleBug:
-      "registration persists WAITING and schedules its deadline timer first and evaluates the deadline afterwards, so a deadline " +
-      "that was already due at registration is stored as live with its timer and the Execution waits for an expiry that has already passed (B-7 path A)",
+      "registration persists WAITING with its accepted deadline first and evaluates the deadline afterwards, so a deadline " +
+      "that was already due at registration is stored as a live accepted fact and the Execution waits for an expiry that has already passed (B-7 path A)",
     forbiddenBy: "W-2 step 3 and B-7 path A: a past deadline is never persisted as live",
     stepIndex: 6,
-    mustNameFields: ["state", "liveWaitGeneration", "queued", "pendingTimers"],
-    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "gd2", queued: ["bq-1"], waitEndedReadiness: [], pendingTimers: ["gd2"] }),
+    mustNameFields: ["state", "liveWaitGeneration", "queued", "acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "gd2", queued: ["bq-1"], waitEndedReadiness: [], acceptedDeadline: 1 }),
   },
   {
     id: "completion/owned-work-proposed-in-the-completing-outcome-is-accepted",
@@ -713,11 +713,11 @@ export const VIOLATIONS: readonly Violation[] = [
     scenarioId: "control-subscription-wait-deadline",
     plausibleBug:
       "the timeout Event is routed through the same eligibility test as every other Event, so a wait that declares no " +
-      "dependency alternative and no matching subscription never receives its own expiry and waits forever with its deadline timer still persisted",
+      "dependency alternative and no matching subscription never receives its own expiry and its accepted deadline stays live forever",
     forbiddenBy: "W-9 and W-1's category table: the timeout Event is eligible through neither list and reaches the Runtime by construction, as B-7's mandatory member",
     stepIndex: 4,
-    mustNameFields: ["state", "queued", "waitEndedReadiness", "pendingTimers"],
-    mutate: (observation) => ({ ...observation, state: "WAITING", queued: ["bq-1"], liveWaitGeneration: "gd1", waitEndedReadiness: [], pendingTimers: ["gd1"] }),
+    mustNameFields: ["state", "queued", "waitEndedReadiness", "acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", queued: ["bq-1"], liveWaitGeneration: "gd1", waitEndedReadiness: [], acceptedDeadline: 1_000 }),
   },
 
   // -- Row 5(c): W-2's ordered registration -----------------------------------
@@ -876,7 +876,7 @@ export const VIOLATIONS: readonly Violation[] = [
     // Narrowed by round-5 review finding K02-R5-02: this entry bundled "no wait, deadline or
     // next-state change" behind one transcript that moved only the lifecycle state, so the wait and
     // deadline clauses had no discriminating candidate and the deadline clause had no observation
-    // that could see it. It is now the *next-state* half alone. The wait, deadline/timer and
+    // that could see it. It is now the *next-state* half alone. The wait, deadline and
     // readiness halves live at the new losing-`await` step below, each with its own transcript.
     id: "control-cancel/losing-outcome-moves-the-execution-off-terminal",
     scenarioId: "control-cancel-versus-complete",
@@ -903,19 +903,21 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, liveWaitGeneration: "g-lose" }),
   },
   {
-    // The sharp orphaned-timer case the review names: the Execution stays correctly CANCELLED, the
-    // rejection is correctly recorded, live generation stays null — and a persisted deadline/timer
-    // registration for the loser's deadline nevertheless leaks. Invisible via terminal state or
-    // `liveWaitGeneration` alone; visible only via `pendingTimers`.
-    id: "control-cancel/losing-await-leaks-a-timer-registration",
+    // The sharp leaked-deadline case the reviews name: the Execution stays correctly CANCELLED, the
+    // rejection is correctly recorded, live generation stays null — and an accepted deadline fact
+    // for the loser's deadline nevertheless leaks. Invisible via terminal state or
+    // `liveWaitGeneration` alone; visible only via `acceptedDeadline`. This is a leaked *accepted*
+    // fact, not a retained physical timer: W-3 permits a physical timer for a retired generation to
+    // arrive later as a stale no-op, and such retention alone is conforming and unobservable here.
+    id: "control-cancel/losing-await-accepts-a-deadline",
     scenarioId: "control-cancel-versus-complete",
     plausibleBug:
-      "the deadline timer is scheduled outside the fenced transaction, so a losing `await` carrying a deadline " +
-      "leaks a persisted timer registration while the Execution stays CANCELLED with the correct rejection and no live wait",
+      "the wait/deadline commit runs outside the fenced transaction, so a losing `await` carrying a deadline " +
+      "leaks an accepted deadline fact while the Execution stays CANCELLED with the correct rejection and no live wait",
     forbiddenBy: "CX-6/OA-5 and §11 row 7: a rejected losing Outcome creates no deadline; OA-4, wait/deadline commit atomically with acceptance, never beside a rejection",
     stepIndex: 11,
-    mustNameFields: ["pendingTimers"],
-    mutate: (observation) => ({ ...observation, pendingTimers: ["g-lose"] }),
+    mustNameFields: ["acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, acceptedDeadline: 5_000 }),
   },
   {
     // The readiness half: a readiness committer outside the fence arms a wait-ended readiness for the
