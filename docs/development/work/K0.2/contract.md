@@ -8,7 +8,7 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 5.** Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
+**Contract revision 6.** Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
 K02-R1-02, K02-R1-03), where three criteria were *understating* what they had to establish. Revision 3
 corrected revision 2 after round-2 review (findings K02-R2-01, K02-R2-02), where one criterion had
 begun *overstating* it — C6/C7/C9 required a rejection-reason distinction the protocol does not make —
@@ -20,10 +20,16 @@ breaking them — two of them because the observation surface could not see the 
 Revision 5 corrects revision 4 after round-3 review's finding was itself only partly closed
 (K02-R4-01, K02-R4-02): C4 invented a validity rule for a spelling the worksheet assigns to K1.3, and
 applied its own assertion-atomicity rule to the entries it added without re-running it over the
-entries it inherited. The base, packet scope and C8's blocked state are unchanged throughout. All the
+entries it inherited. Revision 6 corrects revision 5 after round-5 review (findings K02-R5-01,
+K02-R5-02): C5's relational token comparison coupled receipt and Activation-ID namespaces that the
+worksheet leaves independent, and its atomicity machinery treated normative transaction coupling as
+proof that partial-write bugs are implausible — leaving the duplicate-conflict partial writer without
+a discriminating candidate and CX-6's zero-deadline clause without a schedule or an observation that
+could see it. The base, packet scope and C8's blocked state are unchanged throughout. All the
 directions of error this packet has produced — understating coverage, overstating what the protocol
-fixes, counting unobservable facts as observed, and applying a correct new rule only to new material —
-are recorded below rather than quietly overwritten.
+fixes, counting unobservable facts as observed, applying a correct new rule only to new material,
+coupling independent representation namespaces, and treating a conforming atomicity requirement as
+evidence a broken writer cannot split it — are recorded below rather than quietly overwritten.
 
 ## Release provenance and predecessor disclosure
 
@@ -194,10 +200,15 @@ text** only where an accepted decision fixes that text, which today is CX-6 alon
 not assert a distinction the observation surface cannot see** (round-3 finding K02-R3-01): the
 stale-timer control claimed `B-8`'s no-second-readiness invariant in prose while nothing could fail a
 candidate for breaking it. Wait-ended readiness and Effect-intent absence are now observed facts, so
-both controls assert what they claim. Row 7 additionally asserts,
-as M-1 requires by name: CX-6 full rejection for **both** `continue` and `complete` submitted after
-cancellation acceptance; zero acknowledgment of the reserved batch; no change to accepted
-progress/emissions; B-5 disposition at `CANCELLED`; deterministic recorded rejection on exact retry;
+both controls assert what they claim. **And a control that claims zero wait/deadline mutation must
+submit the wait and observe the deadline** (round-5 finding K02-R5-02): inferring deadline absence
+from terminal state or `liveWaitGeneration` alone is not evidence. Row 7 therefore submits a
+cancellation-losing `await` carrying a wait with a deadline and observes retained accepted timer
+registration (`pendingTimers`) alongside live generation and readiness. Row 7 additionally asserts,
+as M-1 requires by name: CX-6 full rejection for `continue`, `complete` **and** a deadline-bearing
+`await` submitted after cancellation acceptance; zero acknowledgment of the reserved batch; no change
+to accepted progress/emissions; zero wait, persisted deadline/timer, readiness and next-state change;
+B-5 disposition at `CANCELLED`; deterministic recorded rejection on exact retry;
 and the reverse order, where accepted completion remains terminal.
 **Distinguishing counterexample:** M-1 names one explicitly — "suppressing only next state while
 installing losing progress is a failing control, not a conforming variant." That exact variant is
@@ -227,7 +238,9 @@ protocol does not fix**: a rejection's classification is canonical and its reaso
 CX-6's, which the worksheet names); a recovery hold must exist and be inspectable, but its wording is
 open; and receipts and Activation IDs — the two token families a candidate mints rather than receives
 from the schedule — are judged by the relations ID-3/ID-6/OA-2 fix, one expected token naming one
-observed token throughout a run, never by spelling. (c) **The oracle fails closed**
+observed token throughout a run *within each family*, never by spelling and never across families: a
+receipt and an Activation ID may share one raw opaque spelling while same-family collapse still fails
+(round-5 finding K02-R5-01). (c) **The oracle fails closed**
 (round-1 finding K02-R1-03): a step declaring an independent-ledger expectation must never pass
 because the runner was invoked without a usable observer. Omission is a type error, and an unusable
 observer at runtime is a failure of the assertion rather than a reason to skip it — for a conforming
@@ -282,7 +295,7 @@ shows the fixture agrees with the worksheet rather than that a candidate is held
 counterexample belonging to a neighbouring rule, which fails candidates for something else. Where an
 assertion has no observation surface, the correct response is to add the smallest truthful observation
 or to assign it explicitly — never to count it covered.
-**Distinguishing counterexample:** three revisions' machinery, failing in three different ways.
+**Distinguishing counterexample:** revisions' machinery, failing in different ways.
 Revision 1's passed while most of rows 1, 2, 5(c)/(e) and all of row 8's completion clause went
 untested, because it only checked that each row number pointed at a scenario that existed. Revision
 2's then accepted a "counterexample" that was not a protocol violation at all, because nothing
@@ -291,7 +304,13 @@ required fact the observation surface could not see — a phantom wait-ended rea
 Effect intent — and counted LP-1 covered by a cancellation-atomicity transcript from a neighbouring
 rule. Revision 4's defined the right unit and then exempted the entries it had inherited from it, so
 four entries kept bundling clauses a candidate can fail one at a time, and it invented a spelling rule
-for declared subscription identities that W-9 assigns to K1.3.
+for declared subscription identities that W-9 assigns to K1.3. Revision 5's coupled receipt and
+Activation-ID namespaces that the worksheet leaves independent, rejecting a conforming representation,
+and treated normative transaction coupling as proof partial writers are implausible — leaving the
+duplicate-conflict record-and-merge writer without a discriminating candidate and CX-6's zero-deadline
+clause without a schedule or an observation. **And normative coupling never counts as proof a partial
+writer is impossible** (round-5 finding K02-R5-02): `COUPLED_FIELD_GROUPS` is a review heuristic, and
+every retained composite names its specific writers.
 Under-coverage lets a wrong candidate pass; over-constraint fails a right one, and is the worse
 failure of the two.
 **Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`.

@@ -97,7 +97,7 @@ describe("K0 cancellation control: M-1's named assertions are all present", () =
   const forbids = forbidsText(cancelVersusComplete);
   const stepLabels = labels(cancelVersusComplete);
 
-  test("CX-6 full rejection is asserted for both `continue` and `complete`", () => {
+  test("CX-6 full rejection is asserted for `continue`, `complete` and a deadline-bearing `await`", () => {
     const commands = cancelVersusComplete.steps.map((step) => step.command);
     const fencedSubmissions = commands.filter(
       (command) => command.kind === "submit_outcome" && command.outcome.executionId === "exec-x",
@@ -105,7 +105,13 @@ describe("K0 cancellation control: M-1's named assertions are all present", () =
     const nextSteps = fencedSubmissions.map((command) =>
       command.kind === "submit_outcome" ? command.outcome.next.step : "",
     );
-    assert.deepEqual(nextSteps, ["continue", "complete"]);
+    assert.deepEqual(nextSteps, ["continue", "complete", "await"]);
+    const losingAwait = fencedSubmissions.find(
+      (command) => command.kind === "submit_outcome" && command.outcome.next.step === "await",
+    );
+    assert.ok(losingAwait && losingAwait.kind === "submit_outcome");
+    const wait = losingAwait.outcome.next.step === "await" ? losingAwait.outcome.next.wait : null;
+    assert.ok(wait && wait.deadline !== undefined, "the losing `await` must carry a wait with a deadline, or CX-6's zero-deadline clause has no schedule exercising it");
   });
 
   test("zero acknowledgment of the reserved batch is asserted", () => {

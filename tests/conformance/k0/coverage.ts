@@ -80,12 +80,35 @@ export interface BoundaryObligation {
 }
 
 /**
- * Observation fields that one accepted transaction necessarily writes together, so moving several of
- * them is one act rather than several independently violable ones.
+ * Observation fields that one accepted transaction *usually* writes together, used only as a review
+ * heuristic to prompt a written justification — never as proof that within-group partial failures
+ * are impossible.
  *
- * This table is the thing a reviewer should disagree with if they disagree with the atomicity guard
- * below: it is a claim about the protocol's writers, and it is stated once here rather than repeated
- * in thirty entries. Every grouping cites the decision that couples the fields.
+ * Round-5 review finding K02-R5-02: the prior revision presented this table as normative coupling
+ * ("necessarily writes together") and used it as evidence that a broken implementation cannot
+ * partially write one fact. That is circular: the entire purpose of these counterexamples is to
+ * model implementations whose atomicity is broken, and a normative rule saying two facts commit
+ * together is evidence that a partial-write candidate is *wrong*, not evidence that such a wrong
+ * implementation is implausible. Statements like "that candidate is not plausible" need support
+ * from the implementation boundary/writer model, not from the fact that the protocol requires an
+ * atomic result.
+ *
+ * In particular, `waitEndedReadiness` and `pendingTimers` are deliberately *not* grouped with
+ * `state`/`liveWaitGeneration`: earlier review rounds already proved candidates can violate those
+ * facts separately (wake without retirement, retirement without wake, phantom readiness, orphaned
+ * timer), so grouping them would suppress exactly the field-crossing signal that exposed those
+ * defects. `state` and `liveWaitGeneration` stay grouped only for W-3's definitional link ("a live
+ * generation exists exactly while WAITING"): persisting WAITING *is* persisting a live generation
+ * via the same wait-registration writer, and retiring one *is* clearing the other via the same
+ * Event-acceptance/timer writer. Even there, wake-vs-retire halves are split wherever the writers
+ * differ (R5-f1a/f1a2, R5-d1/d2, R6-b1/b2, R7-a6b/c/d), and any entry moving readiness or timers
+ * alongside lifecycle must still justify why one specific bug construction moves all of them.
+ * `waitEndedReadiness` and `pendingTimers` are each their own group (via the `groupOf` fallback),
+ * so any entry moving them with anything else needs a note or a split.
+ *
+ * This table is still the thing a reviewer should disagree with if they disagree with the guard
+ * below, but disagreeing with it now makes the guard *more* sensitive (more notes required), never
+ * less. Every grouping cites the decision that couples the fields in conforming code.
  */
 export const COUPLED_FIELD_GROUPS: readonly { readonly name: string; readonly fields: readonly string[]; readonly because: string }[] = [
   {
@@ -101,9 +124,9 @@ export const COUPLED_FIELD_GROUPS: readonly { readonly name: string; readonly fi
   },
   {
     name: "lifecycle",
-    fields: ["state", "liveWaitGeneration", "waitEndedReadiness"],
+    fields: ["state", "liveWaitGeneration"],
     because:
-      "W-2/W-3 and B-6/B-7/B-8: a live generation exists exactly while WAITING, and the transaction that retires one commits the readiness and the new lifecycle state together. §3's table lists them as one row's worth of accepted facts.",
+      "W-3: a live generation exists exactly while WAITING, via the same registration/retirement writer that moves the lifecycle. This groups only the definitional link, never readiness or timers: B-6/B-7/B-8 commit readiness beside retirement via a separable writer, and W-2 persists timers beside registration via another, so those stay ungrouped and any joint movement needs its own justification.",
   },
   {
     name: "activation",
@@ -257,11 +280,23 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     evidence: { kind: "scenario", scenario: "control-duplicate-conflicting-outcome", stepIndex: 3, counterexamples: ["control-duplicate/replay-republishes-the-emission"] },
   },
   {
+    // Split by round-5 review finding K02-R5-02. The prior entry bundled "rejected" and "not merged"
+    // behind one transcript that did both, with a note claiming a candidate recording the conflict
+    // *and* merging it is "not plausible". That note is false: OA-5 exists precisely to prohibit
+    // rejected Outcomes leaking partial state, and this packet already models the same partial-writer
+    // shape for malformed envelopes, cancellation and completion. The conflict check (record the
+    // rejection) and the progress writer (install accepted state) are different writers; a progress
+    // writer that ran too early leaves the conflicting progress installed while the rejection is
+    // correctly recorded. Each half now has its own transcript.
     id: "R3-b",
     row: 3,
-    obligation: "A same-identity, different-content submission is rejected, not merged.",
-    atomicity:
-      "One bug, not two: the conflicting Outcome is patched into accepted state instead of being rejected. Committing its progress and failing to record a conflict are the same decision — an implementation that deduplicates on identity without comparing content does both by construction. A candidate that records the conflict *and* merges it is not plausible: the merge is what happens instead of the rejection.",
+    obligation: "A same-identity, different-content submission is rejected with a recorded duplicate_conflict rejection, not silently absorbed as a replay.",
+    evidence: { kind: "scenario", scenario: "control-duplicate-conflicting-outcome", stepIndex: 4, counterexamples: ["control-duplicate/conflict-silently-absorbed-without-rejection"] },
+  },
+  {
+    id: "R3-b2",
+    row: 3,
+    obligation: "Even when that conflict rejection is correctly recorded, none of the conflicting content is merged into accepted state.",
     evidence: { kind: "scenario", scenario: "control-duplicate-conflicting-outcome", stepIndex: 4, counterexamples: ["control-duplicate/conflict-merged-into-accepted-state"] },
   },
   {
@@ -312,7 +347,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 4,
     obligation: "The rest of that Outcome is rejected too, never silently split into the part K1 supports and the part it does not.",
     atomicity:
-      "One bug: the Effect is stripped and the remainder of the envelope accepted, and the remainder here is the progress and the emission together. Whether a candidate can accept only part of that remainder is a different assertion, and it has its own entries — R3-c1 and R3-c1b observe partial acceptance of a refused envelope directly.",
+      "One bug construction: an envelope splitter strips the Effect array before validation and hands the remainder to the Outcome-acceptance writer, which then commits progress and emission together via the one OA-4 transaction it runs for any accepted envelope. The two moves are one downstream commit after one upstream strip. A splitter that strips and then partially commits the remainder (progress without emission or vice versa) would be splitter plus committer-atomicity failures combined; committer partials for the shared OA-3 writer are separately evidenced by R3-c1/R3-c1b at the whole-envelope step.",
     evidence: { kind: "scenario", scenario: "effect-refusal-and-sink-attribution", stepIndex: 2, counterexamples: ["effect-refusal/rest-of-the-outcome-silently-split"] },
   },
   {
@@ -328,7 +363,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(a) Rule 1: a declaration with both lists empty is malformed.",
     atomicity:
-      "One bug: the malformed declaration registers. Registering *is* all three groups at once — the Execution moves to WAITING under the generation (lifecycle), the accepted Outcome resolves the exchange (activation), and there is no rejection to record (answer). No plausible implementation registers the wait while also recording the refusal.",
+      "One bug construction: the well-formedness writer misclassifies the empty declaration as well-formed, and then the correct Outcome-acceptance writer runs — persisting WAITING with its live generation via the registration writer, resolving the exchange (clearing activation/batch) via the dispatch writer, and returning a receipt instead of a rejection via the answer writer in the one OA-4 commit. Recording a rejection *and* registering would require the validator to say malformed and well-formed in the same step (two opposite decisions, not one). Committer partials that record correctly but leak progress are a different writer (commit ordering) evidenced for the shared OA-3 writer by R3-c1/R3-c1b.",
     evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 3, counterexamples: ["envelope/bare-empty-wait-registered"] },
   },
   {
@@ -336,7 +371,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(a) Rule 1: a deadline does not rescue it — the case worksheet revision 9 answered two ways, where well-formedness is read as 'can this wait end'.",
     atomicity:
-      "One bug, as in R5-a1: the declaration registers because well-formedness was read as 'can this wait end', and registering moves the lifecycle, resolves the exchange and produces no rejection together. What distinguishes this entry from R5-a1 is the *record submitted*, not the fields observed.",
+      "One bug construction, as in R5-a1: the validator reads well-formedness as 'can this wait end', accepts the empty declaration because it carries a deadline, and the same downstream acceptance writer persists WAITING, resolves the exchange and returns a receipt. What distinguishes this entry from R5-a1 is the *record submitted* (deadline-bearing empty), not the downstream writers, which are the same validation-plus-acceptance pair.",
     evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 4, counterexamples: ["envelope/structurally-empty-wait-registered-because-it-has-a-deadline"] },
   },
   {
@@ -344,7 +379,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(a) Rule 2: every present alternative must supply at least one of the three selector fields; a match-everything alternative is invalid, not a shorthand.",
     atomicity:
-      "One bug, as in R5-a1: a match-everything alternative passes validation, and the wait then registers — lifecycle, exchange resolution and the absent rejection are the single consequence of that one acceptance.",
+      "One bug construction, as in R5-a1: the grammar writer checks only rule 1 (list counts) and passes the selector-less alternative, then the same downstream acceptance writer persists, resolves and receipts. A validator that passes *and* rejects in one step would be two decisions; committer partials are the separate OA-3 writer covered by R3-c1/R3-c1b.",
     evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 5, counterexamples: ["envelope/match-everything-alternative-registered"] },
   },
   {
@@ -352,7 +387,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(a) Rule 2: an empty supplied kind set is malformed, neither a selector that matches nothing nor a spelling of an absent field.",
     atomicity:
-      "One bug, as in R5-a1: an empty supplied kind set is read as a selector matching nothing rather than as malformed, so the wait registers, with the same single consequence across the three groups.",
+      "One bug construction, as in R5-a1: the kind-set writer applies set-membership vacuously and reads `kinds: []` as valid-but-inert, then the same downstream acceptance writer persists, resolves and receipts. The empty-set-vs-absent distinction is the validator's; once it misclassifies, the downstream moves follow from that one decision.",
     evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 6, counterexamples: ["envelope/empty-kind-set-treated-as-matches-nothing"] },
   },
   {
@@ -371,7 +406,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(a) The test proves structure, never satisfiability: a structurally valid but inert alternative is accepted and counts toward non-emptiness, so a well-formed wait may never be woken.",
     atomicity:
-      "One bug: the candidate refuses a structurally valid declaration as unsatisfiable. A refusal commits nothing and leaves the exchange open, so the progress, disposition, lifecycle and activation groups all sit where the *previous* step left them and the answer group carries a rejection instead of acceptance. Every field difference follows from the single decision to refuse.",
+      "One bug construction: a satisfiability-auditing writer refuses the structurally valid declaration as undischargeable. A refusal commits nothing via any writer (progress, disposition, lifecycle and activation writers all idle, exchange stays open) and records a rejection via the answer writer instead of a receipt. The multi-field difference is the absence of the one acceptance, not multiple moves. A refuser that additionally leaks progress would be auditor plus committer failures combined; committer partials for the shared OA-3 writer are evidenced by R3-c1/R3-c1b.",
     evidence: { kind: "scenario", scenario: "wait-structure-not-satisfiability", stepIndex: 2, counterexamples: ["wait-structure/inert-alternative-refused-as-unsatisfiable"] },
   },
   {
@@ -379,7 +414,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(a) A subscription-only input wait — 001's own K0 trace — is first-class: an empty dependency list is not an empty declaration.",
     atomicity:
-      "One bug, as in R5-a5: the candidate refuses a subscription-only wait because it reads the dependency list as the wait. Refusing is one act whose consequence spans every group, since nothing in the submitted Outcome is accepted.",
+      "One bug construction, as in R5-a5: the list-counting writer reads the dependency list as the wait and refuses the subscription-only declaration as empty. The same idle-writers-plus-rejection shape follows from that one misread; a refuser that also commits would be two writers failing, covered for commits by R3-c1/R3-c1b.",
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 4, counterexamples: ["k0-trace/subscription-only-wait-refused-for-an-empty-dependency-list"] },
   },
 
@@ -394,6 +429,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R5-b2",
     row: 5,
     obligation: "(b) A dependency alternative that matches application input is inert: matching it does not wake the Execution (W-7 cases 6-7).",
+    atomicity:
+      "One bug construction: the eligibility writer runs the selector grammar before the source-category check, so it misclassifies the input as eligible, and then the correct B-6 Event-acceptance writer runs — retiring the generation, creating event-readiness and moving to READY in the one transaction §3 row 2 fixes for a truly eligible Event. The three moves are one downstream transaction triggered by one upstream misclassification, not three independent decisions. Partial writers that retire without readiness (timer handler clearing without waking) or arm readiness without retiring (ingress path while READY/RUNNING) are different writers with their own entries R5-f1a/f1a2, R6-b1/b2 and R7-a6d.",
     evidence: { kind: "scenario", scenario: "wait-structure-not-satisfiability", stepIndex: 3, counterexamples: ["wait-structure/inert-alternative-wakes-matching-input"] },
   },
   {
@@ -406,6 +443,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R5-b3",
     row: 5,
     obligation: "(b) Every other ordinary Kernel Event is eligible only through a dependency alternative it actually matches under the grammar.",
+    atomicity:
+      "One bug construction, as in R5-b2: the matcher compares kind without correlation, misclassifies the Event as eligible, and then the correct B-6 writer retires, creates readiness and moves to READY in one transaction. The moves are one downstream transaction after one upstream miscomparison. A matcher that wakes without readiness, or readiness without a wake, would be a B-6 atomicity failure by a different writer, separately covered by R5-f1a/f1a2 and R6-b2.",
     evidence: { kind: "scenario", scenario: "wait-structure-not-satisfiability", stepIndex: 4, counterexamples: ["wait-structure/unmatched-kernel-event-wakes-the-wait"] },
   },
   {
@@ -413,7 +452,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(b) The timeout Event is eligible through neither list and arrives by construction (W-9).",
     atomicity:
-      "One bug: the timeout Event is routed through the ordinary eligibility test and so is never minted for a wait that declares nothing matching it. The Event's absence from the mailbox (disposition) and the wait staying live (lifecycle) are the same non-event — there is no implementation that mints the timeout and still fails to end the wait, because B-7 commits them in one transaction.",
+      "One bug construction: an ingress-routing writer sends the timeout through the ordinary eligibility test, so for a wait declaring nothing matching it the B-7 path-B transaction never runs — no timeout minted by the Kernel-mint writer, no retirement by the wait writer, no deadline-readiness by the readiness writer, timer stays persisted. The moves are one upstream routing decision plus the absence of the one downstream B-7 transaction. A partial that mints the timeout but fails to retire would be B-7 atomicity failure by the expiry-handler writer, separately evidenced by R5-d2 (expiry leaves generation live).",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 4, counterexamples: ["subscription-deadline/timeout-withheld-because-nothing-declared-it"] },
   },
 
@@ -422,6 +461,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R5-c1",
     row: 5,
     obligation: "(c) Step 1 first: this Outcome's own reserved batch is acknowledged before the mailbox check, so a wait is never woken by the batch that registered it.",
+    atomicity:
+      "One bug construction: W-2 steps 1 and 2 run in the wrong order (mailbox check before own-batch acknowledgment), so the just-acknowledged input is still a mailbox candidate and the correct B-6 writer retires, creates readiness and moves to READY on it. The moves are one downstream B-6 transaction after one upstream ordering swap. A reordering that wakes without readiness would additionally break B-6 atomicity by a different writer, covered by the split halves R5-f1a/f1a2.",
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 4, counterexamples: ["k0-trace/wait-woken-by-its-own-acknowledged-batch"] },
   },
   {
@@ -435,7 +476,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(c) Step 3 evaluates an already-due deadline before persisting, so a past deadline is never persisted as live (B-7 path A).",
     atomicity:
-      "One bug: registration persists WAITING before evaluating the deadline, so B-7 path A never runs. The generation staying live and the timeout Event never being created are the two halves of that one skipped step, committed together or not at all.",
+      "One bug construction: the Outcome-acceptance writer persists WAITING with its timer before the deadline-evaluator runs, so the W-2 step-3 branch that would mint the timeout, retire immediately and create deadline-readiness never executes. The live generation, persisted timer, absent timeout and absent readiness are one ordering swap plus the absence of the one path-A transaction. A persister that writes live without timer (or timer without live) would be registration sub-transaction failure by the same writer split further; the live field alone already discriminates the ordering swap, and orphaned-timer partials via other writers are separately covered by R7-a6c.",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 6, counterexamples: ["subscription-deadline/past-deadline-persisted-as-a-live-wait"] },
   },
 
@@ -456,6 +497,8 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R5-d3",
     row: 5,
     obligation: "(d) The Kernel keeps no per-alternative satisfied flag: a Runtime that still needs a dependency re-registers it, and the re-registration waits.",
+    atomicity:
+      "One bug construction: retirement records which alternative settled and carries that flag across generations, so the re-registration is judged already satisfied before it persists and the correct B-6 writer immediately retires it with readiness. The moves are one flag-read plus one downstream retirement transaction. A flag that arms readiness without retiring, or retires without readiness, would be a different writer failure, separately covered by R5-f1a2 and R6-b2.",
     evidence: { kind: "scenario", scenario: "wait-structure-not-satisfiability", stepIndex: 7, counterexamples: ["wait-structure/re-registered-dependency-treated-as-already-satisfied"] },
   },
 
@@ -602,17 +645,43 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 3, counterexamples: ["control-cancel/losing-outcome-mints-an-effect-intent"] },
   },
   {
+    // Split by round-5 review finding K02-R5-02. The prior entry bundled wait, deadline/timer,
+    // readiness and next-state behind one transcript moving only the lifecycle state, so the wait
+    // and deadline clauses had no discriminating candidate and the deadline clause had no
+    // observation that could see it. Each now has its own schedule and transcript. The losing
+    // `await` with a deadline at step 11 exercises the wait/deadline path the prior schedule
+    // (losing `continue`/`complete` only) never submitted; `pendingTimers` observes retained
+    // accepted timer registration rather than inferring deadline absence from terminal state or
+    // `liveWaitGeneration`.
     id: "R7-a6",
     row: 7,
-    obligation: "It produces no wait, deadline or next-state change: a rejected Outcome cannot move the Execution off its terminal state.",
+    obligation: "It produces no next-state change: a rejected losing Outcome cannot move the Execution off its terminal CANCELLED state.",
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 3, counterexamples: ["control-cancel/losing-outcome-moves-the-execution-off-terminal"] },
+  },
+  {
+    id: "R7-a6b",
+    row: 7,
+    obligation: "A losing `await` registers no wait: `liveWaitGeneration` stays null even when the loser's next step carries a well-formed wait.",
+    evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 11, counterexamples: ["control-cancel/losing-await-registers-a-wait"] },
+  },
+  {
+    id: "R7-a6c",
+    row: 7,
+    obligation: "A losing `await` carrying a deadline registers no persisted deadline/timer: `pendingTimers` stays empty even when the Execution correctly stays CANCELLED with the correct CX-6 rejection.",
+    evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 11, counterexamples: ["control-cancel/losing-await-leaks-a-timer-registration"] },
+  },
+  {
+    id: "R7-a6d",
+    row: 7,
+    obligation: "A losing `await` creates no wait-ended readiness: `waitEndedReadiness` stays empty.",
+    evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 11, counterexamples: ["control-cancel/losing-await-arms-a-readiness"] },
   },
   {
     id: "R7-a7",
     row: 7,
     obligation: "The fence does not depend on the loser's next step: a `complete` submitted after cancellation acceptance loses identically to a `continue`. Decision M-1 requires the control to assert both.",
     atomicity:
-      "One bug: the loser's `complete` is accepted. Reaching COMPLETED, committing its progress and returning a receipt instead of the recorded rejection are all consequences of that single acceptance, not independently reachable states.",
+      "One bug construction: the fence-placement writer checks `continue` paths but the terminal-decision writer for `complete` checks only 'already terminal in the way I am about to make it', so the loser's `complete` is admitted and then the correct completion-commit writer runs — COMPLETED via lifecycle, progress via progress writer, receipt via answer writer in the one OA-4 commit. A fence bypass that reaches COMPLETED without progress (or progress without COMPLETED) would be bypass plus commit-atomicity failures combined; commit partials under correct refusal are separately evidenced by R8-a3/R8-a4.",
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 5, counterexamples: ["control-cancel/complete-loser-escapes-the-fence"] },
   },
   {
@@ -632,7 +701,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 7,
     obligation: "The cancellation control path reaches CANCELLED on its own, without depending on the in-flight Runtime answering.",
     atomicity:
-      "One bug: cancellation is recorded as a request and applied only when the in-flight Activation answers. The Execution therefore stays RUNNING with its Activation and pinned batch still live, and no terminal dispositions are written — one deferral, observed in three groups.",
+      "One bug construction: the cancellation-control writer records the request as pending and defers the semantic fence to the next safe-boundary/Activation answer, so the control path never transitions — lifecycle stays RUNNING via the lifecycle writer, activation/batch stay live via the dispatch writer, and the B-5 disposition writer never runs because there is no terminal to dispose for. The three observations are one deferred fence plus the absence of the one control transaction. A control that reaches CANCELLED without dispositions would be fence plus B-5 failures combined, separately evidenced by R7-c2 (batch acknowledged instead of disposed).",
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 2, counterexamples: ["control-cancel/cancellation-leaves-the-execution-running"] },
   },
   {
@@ -659,7 +728,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     // fixing which one, so a candidate refusing on those grounds is conforming.
     obligation: "A completing Outcome carrying newly proposed Effects is not accepted: the Execution reaches no terminal state.",
     atomicity:
-      "One bug: the completion check runs as a later cleanup pass, so the envelope is accepted outright. Terminal state, committed progress, acknowledged batch, resolved exchange and the acceptance receipt all follow from that one acceptance. The clauses that *are* independently violable under a correct refusal — the recorded reason, the progress, the acknowledgment, the Effect intent — are split out as R8-a2 through R8-a5, each with its own transcript.",
+      "One bug construction: the completion-check writer runs as a later cleanup pass rather than at Outcome acceptance, so the envelope is admitted and then the correct acceptance-commit writer runs — terminal via lifecycle, progress via progress writer, acknowledgment via disposition writer, exchange resolution via dispatch writer and receipt via answer writer in the one OA-4 commit. A checker bypass that reaches terminal without progress (or progress without terminal) would be bypass plus commit-atomicity failures combined. The clauses independently violable under a *correct* refusal — recorded reason, progress, acknowledgment, Effect intent — are split out as R8-a2 through R8-a5, each with its own transcript by its own writer (reason recorder, progress committer, batch acknowledger, intent minter).",
     evidence: {
       kind: "scenario",
       scenario: "control-completion-obligations",
@@ -738,7 +807,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 9,
     obligation: "It is never a state that looks like normal restored computation.",
     atomicity:
-      "One bug: recovery cannot load the pinned revision and silently starts over, presenting empty state as restored. Fabricating the progress and reporting no hold are the same act — the fabrication is what replaces the hold.",
+      "One bug construction: the recovery-path writer cannot load the pinned revision and takes the fresh-start branch, which fabricates empty progress via the progress writer and takes the no-hold branch via the hold writer because fresh-start has no hold to report. The two moves are one path selection plus the two branch writers on that path. A fresh start that *also* reports a hold would require taking both branches (two path selections); a silent failure that neither fabricates nor holds is the different bug covered by R9-a1 (refused without inspectable hold, correctly not fabricated).",
     evidence: { kind: "scenario", scenario: "control-missing-checkpoint-code", stepIndex: 4, counterexamples: ["control-missing-checkpoint/fresh-state-presented-as-restored"] },
   },
 
@@ -748,7 +817,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 10,
     obligation: "A policy check against just-accepted local state reads that exact write with no staleness window (LP-1).",
     atomicity:
-      "One bug: the authority check reads a cached exchange, so the superseded writer's Outcome is admitted. Its progress commit and the acceptance receipt replacing the rejection are both consequences of that single admission.",
+      "One bug construction: the authority-check reader sits outside the acceptance transaction and reads a cached exchange, so the epoch the takeover just superseded is still readable as current and the old writer's Outcome is admitted; then the correct acceptance-commit writer runs — progress via progress writer and receipt replacing rejection via answer writer in the one OA-4 commit. An admission that commits progress without receipt (or receipt without progress) would be admission plus commit-atomicity failures combined, by the commit writer split further.",
     evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 5, counterexamples: ["identity-activation/superseded-writer-epoch-accepted-from-a-stale-read"] },
   },
   {
@@ -766,7 +835,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 10,
     obligation: "Ordinary corrective input never itself withdraws or invalidates an already-accepted Outcome (LP-3).",
     atomicity:
-      "One bug: arriving input is treated as superseding whatever the Runtime last said, so the accepted Outcome is rolled back whole. Its progress and its emissions are retracted by the same retraction; an implementation that retracts one and not the other is not a plausible reading of 'the correction supersedes'.",
+      "One bug construction: an input handler misreads 'correction' as withdrawal authority and invokes the retraction writer, which reverses the one OA-4 commit whole — progress and revision via the progress writer together with emissions via the emission publisher in the one reverse transaction. A retraction that removes progress but republishes emissions (or vice versa) would be handler plus retraction-atomicity failures combined; the emission publisher sits outside the progress transaction (as row 7 already recognises for R7-a2/a3), so half-retraction is a second writer failing, not the single handler misread this transcript demonstrates.",
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 5, counterexamples: ["k0-trace/late-input-retracts-accepted-progress"] },
   },
 ];

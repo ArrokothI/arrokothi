@@ -270,6 +270,30 @@ describe("K0.2-C7: candidate-minted tokens are judged by relation, not by spelli
     assert.equal(drive(identity, respelled), "PASS");
   });
 
+  test("a receipt and an Activation ID may share one raw opaque spelling: the namespaces are separate (K02-R5-01)", () => {
+    // ID-3/ID-9 constrain Activation IDs relative to other Activation IDs; ID-6/ID-7 constrain
+    // receipts relative to other receipts and accepted boundaries. Nothing requires the two families'
+    // raw spellings to be disjoint — they are different typed protocol concepts. A conforming adapter
+    // may expose receipt "opaque-1" alongside Activation ID "opaque-1" while keeping both relations
+    // internally correct. Round-5 finding K02-R5-01: one shared bijection rejected exactly this.
+    const sharedSpelling = (observation: Observation): Observation => {
+      const receiptMap = new Map([
+        ["receipt:create:req-x", "opaque-1"],
+        ["receipt:outcome:act-1", "opaque-2"],
+      ]);
+      const activationMap = new Map([
+        ["act-1", "opaque-1"],
+        ["act-2", "opaque-2"],
+      ]);
+      return {
+        ...observation,
+        receipt: observation.receipt === null ? null : (receiptMap.get(observation.receipt) ?? `opaque/${observation.receipt}`),
+        activationId: observation.activationId === null ? null : (activationMap.get(observation.activationId) ?? observation.activationId),
+      };
+    };
+    assert.equal(drive(identity, sharedSpelling), "PASS");
+  });
+
   test("but collapsing two Activation IDs onto one still fails: ID-3 fixes that they differ", () => {
     const collapsed = (observation: Observation): Observation => ({
       ...observation,

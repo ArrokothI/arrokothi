@@ -297,6 +297,100 @@ describe("round-4 splits: each transcript used to carry more than one assertion"
   }
 });
 
+// ---------------------------------------------------------------------------
+// Round 5: what the assertion reconstruction and the deadline schedule added
+// ---------------------------------------------------------------------------
+
+/**
+ * Round-5 review finding K02-R5-01 coupled two independent token families in one bijection, and
+ * K02-R5-02 left the duplicate-conflict partial writer and the CX-6 deadline clause without
+ * discriminating candidates. Unlike round 3 (invisible) and round 4 (visible but unattributed),
+ * these are over-constraint and unobservable-clause defects: the first rejected a conforming
+ * representation, the others counted clauses covered with no candidate that could be failed for
+ * breaking them. The guards below pin the repairs so they cannot be silently recombined.
+ */
+describe("round-5: receipt and Activation-ID namespaces stay separate", () => {
+  test("cross-family reuse of one raw spelling passes while same-family collapse still fails", () => {
+    // Transcribed from the oracle-discrimination probe: receipts map to opaque-1/opaque-2 distinctly
+    // and Activation IDs map to the same two spellings distinctly. Under C5's single TokenRelation
+    // the second family's first use collided (verified against C5 logic: 'opaque-1 already
+    // receipt:create:req-x for act-1'); with separate per-family bijections it passes, while
+    // collapsing two receipts or two Activation IDs within their own family still fails.
+    // The discrimination itself is asserted in oracle-discrimination.test.ts; this pins the shape so
+    // a future edit cannot recouple the namespaces without failing here too.
+    const identity = scenario("identity-create-and-activation");
+    const receiptValues = new Set(identity.steps.map((step) => step.expect.observation.receipt).filter((r): r is string => r !== null));
+    const activationValues = new Set(identity.steps.map((step) => step.expect.observation.activationId).filter((a): a is string => a !== null));
+    assert.ok(receiptValues.size >= 2, "the probe scenario needs two distinct receipts to show within-family distinctness");
+    assert.ok(activationValues.size >= 2, "the probe scenario needs two distinct Activation IDs to show within-family distinctness");
+  });
+});
+
+describe("round-5 splits: the duplicate conflict is two assertions", () => {
+  test("rejection-recorded-but-merged and silently-absorbed divide C5's bundled fields", () => {
+    // C5's `control-duplicate/conflict-merged-into-accepted-state` moved progress, progressRevision
+    // and rejection together with a note claiming record-and-merge is "not plausible". Round-5
+    // finding K02-R5-02 calls that note false: OA-5 exists to prohibit exactly that partial writer.
+    const c5Fields = ["progress", "progressRevision", "rejection"];
+    const merged = violation("control-duplicate/conflict-merged-into-accepted-state");
+    const absorbed = violation("control-duplicate/conflict-silently-absorbed-without-rejection");
+    assert.equal(merged.scenarioId, absorbed.scenarioId, "a split pair must run against the same scenario");
+    assert.equal(merged.stepIndex, absorbed.stepIndex, "a split pair must fail at the same step");
+
+    const target = scenario(merged.scenarioId);
+    const expected = target.steps[merged.stepIndex]!.expect.observation;
+    const mergedFields = changedFields(expected, merged.mutate(expected));
+    const absorbedFields = changedFields(expected, absorbed.mutate(expected));
+
+    for (const field of [...mergedFields, ...absorbedFields]) {
+      assert.ok(c5Fields.includes(field), `${field} is moved today but was not in C5's bundled set; the transcription is stale or the split drifted`);
+    }
+    // The merge half keeps the rejection correctly recorded and leaks only accepted state; the
+    // absorption half drops only the rejection. Neither half alone is the whole bundled thing.
+    assert.deepEqual([...mergedFields].sort(), ["progress", "progressRevision"]);
+    assert.deepEqual(absorbedFields, ["rejection"]);
+  });
+});
+
+describe("round-5: the CX-6 deadline clause is a schedule plus an observation, not an inference", () => {
+  test("a cancellation-losing `await` carrying a wait with a deadline is submitted", () => {
+    const target = scenario("control-cancel-versus-complete");
+    const losingAwaits = target.steps.filter(
+      (step) =>
+        step.command.kind === "submit_outcome" &&
+        step.command.outcome.executionId === "exec-x" &&
+        step.command.outcome.next.step === "await",
+    );
+    assert.ok(losingAwaits.length > 0, "no losing `await` is submitted for the cancelled Execution; CX-6's zero-deadline clause has no schedule exercising it");
+    for (const step of losingAwaits) {
+      assert.ok(step.command.kind === "submit_outcome" && step.command.outcome.next.step === "await");
+      assert.ok(step.command.outcome.next.wait.deadline !== undefined, "the losing `await` must carry a deadline, or it does not exercise the deadline clause");
+      assert.equal(step.expect.observation.state, "CANCELLED");
+      assert.equal(step.expect.observation.liveWaitGeneration, null);
+      assert.deepEqual(step.expect.observation.pendingTimers, []);
+      assert.deepEqual(step.expect.observation.waitEndedReadiness, []);
+      assert.equal(step.expect.observation.rejection?.classification, "cancellation_terminal_conflict");
+    }
+  });
+
+  test("leaking only the timer is a different transcript from registering the wait or arming readiness", () => {
+    const timerLeak = violation("control-cancel/losing-await-leaks-a-timer-registration");
+    const waitLeak = violation("control-cancel/losing-await-registers-a-wait");
+    const readinessLeak = violation("control-cancel/losing-await-arms-a-readiness");
+    const target = scenario(timerLeak.scenarioId);
+    const expected = target.steps[timerLeak.stepIndex]!.expect.observation;
+    assert.deepEqual(changedFields(expected, timerLeak.mutate(expected)), ["pendingTimers"]);
+    assert.deepEqual(changedFields(expected, waitLeak.mutate(expected)), ["liveWaitGeneration"]);
+    assert.deepEqual(changedFields(expected, readinessLeak.mutate(expected)), ["waitEndedReadiness"]);
+    // The sharp case: timer leaks while CANCELLED, rejection correct, live generation null. Inferring
+    // deadline absence from terminal state or `liveWaitGeneration` alone would pass this candidate.
+    const leaked = timerLeak.mutate(expected);
+    assert.equal(leaked.state, "CANCELLED");
+    assert.equal(leaked.liveWaitGeneration, null);
+    assert.equal(leaked.rejection?.classification, "cancellation_terminal_conflict");
+  });
+});
+
 describe("round-4: the withdrawn subscription rule stays withdrawn", () => {
   test("an empty declared subscription identity is well formed, because W-1 leaves the spelling to K1.3", () => {
     // Round-4 review finding K02-R4-01. This is a regression guard in the opposite direction from the

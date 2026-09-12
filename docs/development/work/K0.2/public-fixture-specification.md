@@ -43,24 +43,29 @@ offline with no model, network, container or database.
 Four of these were added after round-1 review and one after round-3 review; see §8.
 
 [`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at the
-granularity of the **independently distinguishable assertion** — 83 entries across the ten rows, not
+granularity of the **independently distinguishable assertion** — 87 entries across the ten rows, not
 ten row entries and not the 33 prose-level obligations of two revisions ago. The unit is
 behavioural rather than editorial: two clauses in one cell are separate assertions when a plausible
 implementation can get one right and the other wrong, because that is the candidate the oracle has to
 be able to fail. §11 row 5 states the standard itself — "Each of these is **separately** observable".
 
-Of the 83, **77** resolve to a scenario step plus at least one counterexample the oracle demonstrably
+Of the 87, **81** resolve to a scenario step plus at least one counterexample the oracle demonstrably
 rejects at that step; **three** (R3-c3, R6-a1, R8-b2) are marked `shared`, meaning two §11 rows name
 one observable fact and one transcript is the honest evidence for both, with the identity written down
 and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **two** are
 explicitly assigned with the governing source that permits the deferral — R8-c to K2.4, and R5-a4 to
 K1.3, which W-9's *Left open* note names as the owner of a declared subscription identity's concrete
-spelling. Seventeen entries carry an `atomicity` note, required whenever an entry's counterexamples
-cross more than one coupled field group. `coverage.test.ts` enforces all of it,
+spelling. Twenty entries carry an `atomicity` note, required whenever an entry's counterexamples
+cross more than one coupled field group. `COUPLED_FIELD_GROUPS` is a review heuristic only, never
+proof that within-group partial failures are impossible: `state`/`liveWaitGeneration` stay grouped
+only for W-3's definitional link, while `waitEndedReadiness` and `pendingTimers` are deliberately
+ungrouped so wake/retirement/readiness/timer partials cannot hide. Each note names the specific bug
+construction's writers rather than invoking normative coupling. `coverage.test.ts` enforces all of it,
 including that **no counterexample defends two assertions** except through a declared `shared` link,
 that **no two counterexamples at one step move the same set of observation fields**, and that scenario
 row attribution agrees with the map in both directions.
-`interactions.test.ts` sweeps the corpus for the cross-scenario invariants.
+`interactions.test.ts` sweeps the corpus for the cross-scenario invariants, including that persisted
+deadline timers live exactly while a deadline wait is live and that no fenced submission leaks one.
 
 ## 2. How the oracle is known to work
 
@@ -70,7 +75,7 @@ excluded by construction:
 - a **conforming transcript** must report `PASS`. It is derived from the scenarios' own expectations,
   so it proves only that the runner can pass something — that circularity is stated in the code and is
   the limit of what this direction establishes;
-- **seventy-seven violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
+- **eighty-one violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
   exact step, and the failure detail must name the exact observation field at issue. Failing for an
   unrelated reason would be an accident rather than discrimination, so the field names are asserted.
   Each transcript must also **name the governing decision its behavior breaks**, and that citation is
@@ -98,9 +103,9 @@ unobserved. M-1 is a floor, not a ceiling.
 
 | Control | Must observe | Must never |
 |---|---|---|
-| Duplicate/conflicting Outcome | exact duplicate returns the original receipt; conflicting duplicate is a recorded rejection | advance the revision on replay, re-publish an accepted emission, or merge conflicting content into accepted state |
+| Duplicate/conflicting Outcome | exact duplicate returns the original receipt; conflicting duplicate is a recorded rejection with none of its content merged, even when the rejection is correct | advance the revision on replay, re-publish an accepted emission, silently absorb a conflict without a rejection, or merge conflicting content into accepted state beside a correct rejection |
 | Stale timer / lost wake | an already-accepted eligible Event is found at registration; a superseded generation's timer is a no-op; a re-delivered timer is idempotent; an authenticated result is never generation-fenced | persist `WAITING` over an eligible Event already in the mailbox, wake a replacement wait from a retired generation, mint a second timeout Event, or treat a timeout as proof the awaited work did not happen |
-| Cancel versus complete | both orders; CX-6 rejection for `continue` **and** `complete`; zero batch acknowledgment; unchanged progress and emissions; B-5 disposition at `CANCELLED`; the same recorded rejection on exact retry; an accepted completion staying terminal and replaying its receipt | install the loser's progress, acknowledge its reserved batch, manufacture a receipt for a rejected submission, or reopen a terminal Execution |
+| Cancel versus complete | both orders; CX-6 rejection for `continue`, `complete` **and** a deadline-bearing `await`; zero batch acknowledgment; unchanged progress and emissions; zero wait, persisted deadline/timer, readiness and next-state change; B-5 disposition at `CANCELLED`; the same recorded rejection on exact retry; an accepted completion staying terminal and replaying its receipt | install the loser's progress, acknowledge its reserved batch, manufacture a receipt for a rejected submission, register the loser's wait, leak its deadline timer while staying `CANCELLED`, arm its readiness, or reopen a terminal Execution |
 | Missing checkpoint/code | an inspectable recovery hold naming the unavailable pinned revision; accepted progress and revision intact | present empty or fresh Runtime state as the restored one, discard accepted progress, or invent a semantic wait for an unresolved Activation |
 | Subscription-only wait with a deadline (W-8 case 6) | B-7 path B mints exactly one timeout Event; at bound 1 the batch is exactly that Event even though an ineligible input was accepted earlier; B-7 path A yields `READY` at registration when the deadline is already due | require the timeout to match a dependency alternative the wait does not have, let older ineligible backlog take the slot, or persist a past deadline as a live wait |
 | Completion obligations (§11 row 8) | `complete` proposing owned work is refused whole with a recorded, inspectable reason; the Execution stays non-terminal and nothing in the envelope is committed; terminal ingress is refused rather than queued | reach a terminal state with unaccounted owned work, strip the Effect and accept the rest, commit progress or acknowledgment under a reported refusal, or accept ordinary input into a terminal Execution's mailbox |
@@ -433,10 +438,10 @@ which stays composite *because M-1 names it* and now says so in an `atomicity` n
 counterexample defends two entries. It is structurally blind to the opposite failure — one entry
 holding two independently violable assertions — as the review says. Prose cannot be checked
 mechanically, but the fields a counterexample actually moves can. `coverage.ts` declares
-`COUPLED_FIELD_GROUPS`: sets of observation fields that one accepted transaction necessarily writes
-together, each citing the decision that couples them. An entry whose counterexamples cross more than
-one group must carry a written `atomicity` note saying why one plausible bug produces all of it.
-Seventeen do. That does not prove atomicity — nothing here can — but it converts a silent assumption
+`COUPLED_FIELD_GROUPS`: sets of observation fields that one accepted transaction usually writes
+together, each citing the decision that couples them in conforming code. An entry whose
+counterexamples cross more than one group must carry a written `atomicity` note naming the specific
+bug construction's writers. Seventeen did. That does not prove atomicity — nothing here can — but it converts a silent assumption
 into a reviewable claim, which is the remedy `forbiddenBy` already applies to counterexamples. A third
 guard stops a split being cosmetic: no two counterexamples at one step may move the same set of
 fields.
@@ -449,3 +454,54 @@ many of these candidates, while the map claimed a transcript per assertion and d
 transcript used to move, transcribed from `e2721dd` and checkable against it, and asserts that the two
 halves now divide it. It also guards the withdrawal in K02-R4-01: the empty subscription identity must
 stay well formed, and no scenario may require a candidate to reject one.
+
+## 12. What round-5 review changed
+
+Round 5 returned CHANGES REQUIRED on two P1 findings, both in material added to fix round 4. Both are
+correct and both are fixed forward from C5; nothing from rounds 2–4 is reverted. The R5-a4 assignment,
+the valid round-4 splits, the readiness/Effect-intent observation surfaces and the non-canonical
+free-text handling are all preserved.
+
+**K02-R5-01 — one TokenRelation imposed cross-namespace uniqueness between receipts and Activation
+IDs.** C5 replaced literal comparison with a relational bijection, but constructed one shared
+`TokenRelation` for both families. An implementation using the same opaque string in the receipt
+namespace and the Activation-ID namespace was treated as a collision even when every relation within
+each namespace was correct; ID-3/ID-9 constrain Activation IDs against Activation IDs and ID-6/ID-7
+constrain receipts against receipts, and nothing requires the raw spellings to be disjoint. The runner
+now holds one bijection per family. A conforming probe reuses `opaque-1`/`opaque-2` across families
+and passes, while collapsing two receipts or two Activation IDs within their own family still fails.
+Other normalization state was swept: rejection keying (canonical CX-6 vs. free text), per-family
+rewrite, recovery-hold presence/reason and fixture-supplied timer generations couple nothing across
+families; the single shared relation was the only coupling.
+
+**K02-R5-02 — the atomicity guard was circular/incomplete and the row-7 deadline mutation was
+unobservable.** C5 grouped fields a *conforming* accepted transaction writes together and required a
+note when a counterexample crossed groups. That is a review prompt, not proof a broken implementation
+cannot partially write one fact — and R3-b's note used it as proof, claiming record-and-merge is "not
+plausible" when OA-5 exists to prohibit exactly that partial writer. `COUPLED_FIELD_GROUPS` is now
+documented as heuristic only; `state`/`liveWaitGeneration` stay grouped solely for W-3's definitional
+link while `waitEndedReadiness` and the new `pendingTimers` are deliberately ungrouped, and all twenty
+notes were re-audited against plausible broken writers/transactions rather than normative coupling:
+
+- R3-b splits into R3-b (recorded rejection) and R3-b2 (no merge beside a correct rejection), with a
+  dedicated conflict-path transcript that keeps the `duplicate_conflict` rejection and leaks only the
+  conflicting progress;
+- R7-a6 splits into next-state (existing), wait (live generation), deadline/timer (`pendingTimers`)
+  and readiness, exercised by a new cancellation-losing `await` carrying a wait with a deadline at
+  `control-cancel-versus-complete` step 11. `Observation.pendingTimers` is the smallest truthful
+  addition: retained accepted timer registrations, empty in every fenced step, `["g2"]`/`["gd1"]`
+  while those deadline waits are live. A timer leak that keeps `CANCELLED`, the correct CX-6
+  rejection and null live generation is now a one-field difference the oracle rejects, rather than an
+  absence inferred from terminal state or `liveWaitGeneration`;
+- R5-b2/b3/c1/d3 gain writer-model notes for their full-wake transactions (one upstream
+  misclassification plus one downstream B-6 retirement), with timer/withheld/persisted-deadline
+  transcripts now carrying their timers;
+- the remaining notes name validation vs. acceptance vs. commit vs. control vs. recovery writers
+  explicitly and point at the separate entries where a second writer's partial is independently
+  covered, rather than claiming a candidate is implausible because the protocol requires atomicity.
+
+The inventory goes from 83 entries to 87 (row 3: 8→9, row 7: 13→16) and the corpus from 77
+transcripts to 81 over 12 scenarios / 90 steps. `blind-spot-regression.test.ts` pins the R3-b field
+division against C5, the new losing-`await` schedule/observation, and the single-field timer leak;
+`interactions.test.ts` sweeps that timers live exactly while a deadline wait is live and that no
+fenced submission leaks one.

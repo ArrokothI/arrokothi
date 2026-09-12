@@ -44,6 +44,7 @@ function obs(executionId: string, overrides: Partial<Observation> = {}): Observa
     terminalDispositions: [],
     liveWaitGeneration: null,
     waitEndedReadiness: [],
+    pendingTimers: [],
     dispatchedBatch: null,
     activationId: null,
     ingressRefused: null,
@@ -580,6 +581,7 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1", "res-1"],
           queued: [],
           liveWaitGeneration: "g2",
+          pendingTimers: ["g2"],
           receipt: "receipt:outcome:act-2",
           writerEpoch: 2,
         }),
@@ -596,6 +598,7 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1", "res-1"],
           queued: [],
           liveWaitGeneration: "g2",
+          pendingTimers: ["g2"],
           receipt: "receipt:outcome:act-2",
           writerEpoch: 2,
         }),
@@ -604,6 +607,7 @@ export const staleTimerAndLostWake: Scenario = {
           "liveWaitGeneration must stay g2: a stale timer retires nothing",
           "state must stay WAITING: a stale timer cannot wake a replacement wait",
           "waitEndedReadiness must stay empty: retiring nothing creates no readiness (B-8)",
+          "pendingTimers must stay ['g2']: a stale timer registers no timer and retires none",
         ],
       },
     ),
@@ -703,6 +707,25 @@ export const staleTimerAndLostWake: Scenario = {
 
 const losingContinue = outcome({ executionId: X, activationId: "act-1", progress: { cursor: 5 }, emissions: [{ emissionId: "em-late", value: { late: true } }], next: { step: "continue" } });
 const losingComplete = outcome({ executionId: X, activationId: "act-1", progress: { cursor: 6 }, next: { step: "complete", result: { status: "too late" } } });
+/**
+ * Round-5 review finding K02-R5-02: the row-7 schedule submitted losing `continue`/`complete`
+ * Outcomes but never a losing `await` carrying a wait with a deadline, so CX-6/OA-5's "no
+ * wait/deadline" clause had no schedule exercising it and no observation that could see a leaked
+ * persisted deadline/timer registration. This is that schedule: a well-formed subscription-only
+ * wait with a deadline under a fresh generation, submitted after cancellation acceptance. Accepted,
+ * it would persist WAITING under `g-lose` with a timer for `g-lose`; rejected under CX-6, it must
+ * leave `liveWaitGeneration` null, `pendingTimers` empty, `waitEndedReadiness` empty and the
+ * Execution CANCELLED.
+ */
+const losingAwaitWithDeadline = outcome({
+  executionId: X,
+  activationId: "act-1",
+  progress: { cursor: 7 },
+  next: {
+    step: "await",
+    wait: { dependencies: [], subscriptions: [{ subscriptionClass: "continue" }], deadline: 5_000, generation: "g-lose" },
+  },
+});
 const winningComplete = outcome({ executionId: Y, activationId: "act-y1", progress: { cursor: 1 }, next: { step: "complete", result: { status: "done" } } });
 
 const cancellationRejection = {
@@ -710,7 +733,7 @@ const cancellationRejection = {
   reason: "cancellation accepted before Outcome acceptance",
 };
 
-/** The fenced observation is asserted identically after four separate submissions. */
+/** The fenced observation is asserted identically after each losing submission for X. */
 const fencedObservation: Observation = obs(X, {
   state: "CANCELLED",
   progressRevision: 0,
@@ -862,7 +885,22 @@ export const cancelVersusComplete: Scenario = {
         ],
       },
     ),
+    step(
+      { kind: "submit_outcome", outcome: losingAwaitWithDeadline },
+      {
+        label: "a later `await` carrying a wait with a deadline loses identically: no wait, deadline, readiness or next-state change",
+        observation: fencedObservation,
+        forbids: [
+          "state must stay CANCELLED: a losing `await` must not persist WAITING under g-lose",
+          "liveWaitGeneration must stay null: the loser's wait registers nothing",
+          "pendingTimers must stay empty: the loser's deadline registers no persisted timer for g-lose",
+          "waitEndedReadiness must stay empty: a rejected Outcome creates no readiness",
+          "rejection must stay CX-6: the fence does not depend on the loser's next step",
+        ],
+      },
+    ),
   ],
+  waits: { losingAwait: { dependencies: [], subscriptions: [{ subscriptionClass: "continue" }], deadline: 5_000, generation: "g-lose" } },
 };
 
 // -- Control 4 (M-1 row 9): missing checkpoint or compatible code -----------
@@ -1437,12 +1475,14 @@ export const subscriptionWaitDeadline: Scenario = {
           acknowledged: ["in-1"],
           queued: ["bq-1"],
           liveWaitGeneration: "gd1",
+          pendingTimers: ["gd1"],
           receipt: "receipt:outcome:act-1",
           writerEpoch: 1,
         }),
         forbids: [
           "bq-1 must not wake it: billing.question is outside the declared subscription",
           "waitEndedReadiness must stay empty: the wait is live, so nothing has retired",
+          "pendingTimers must be ['gd1']: the live deadline is a persisted timer registration, not an inferred absence",
         ],
       },
     ),

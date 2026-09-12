@@ -153,15 +153,36 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, progressRevision: 2 }),
   },
   {
+    // Narrowed by round-5 review finding K02-R5-02. It used to clear the recorded rejection *and*
+    // install the conflicting progress together, so one transcript stood for two assertions a
+    // candidate can fail separately. A plausible partial writer detects and records the duplicate
+    // conflict correctly while a progress writer that ran too early leaves the conflicting progress
+    // installed (OA-5 exists precisely to prohibit rejected Outcomes leaking partial state). This
+    // transcript is now the *merge* half alone: the rejection stays correctly recorded and only
+    // accepted state leaks. The *rejection* half has its own transcript below.
     id: "control-duplicate/conflict-merged-into-accepted-state",
     scenarioId: "control-duplicate-conflicting-outcome",
     plausibleBug:
-      "a same-identity Outcome with different content is treated as an update and patched into accepted state instead " +
-      "of being rejected as a conflict",
-    forbiddenBy: "OA-2: a same-identity, different-content Outcome is a conflict, rejected and never merged",
+      "the duplicate-conflict check records the rejection but the progress writer ran before it, so the " +
+      "conflicting Outcome is correctly recorded as a conflict while its progress is nevertheless patched into accepted state",
+    forbiddenBy: "OA-2/OA-5 and §11 row 3: a same-identity, different-content Outcome is never merged or patched, even when its conflict rejection is correctly recorded",
     stepIndex: 4,
-    mustNameFields: ["progress", "rejection"],
-    mutate: (observation) => ({ ...observation, progress: { cursor: 99 }, progressRevision: 2, rejection: null }),
+    mustNameFields: ["progress", "progressRevision"],
+    mutate: (observation) => ({ ...observation, progress: { cursor: 99 }, progressRevision: 2 }),
+  },
+  {
+    // The second half of the split above: the conflict is silently absorbed without any recorded
+    // rejection, while accepted state happens to stay. A candidate that deduplicates on identity
+    // without comparing content answers every repeat as an idempotent replay.
+    id: "control-duplicate/conflict-silently-absorbed-without-rejection",
+    scenarioId: "control-duplicate-conflicting-outcome",
+    plausibleBug:
+      "the create/Outcome path deduplicates on submitted identity without comparing content, so a same-identity " +
+      "Outcome with different content is answered as an idempotent replay with nothing recorded to say it was refused",
+    forbiddenBy: "OA-2 and §11 row 3: a same-identity, different-content submission is *rejected as a conflict*, which requires a recorded rejection, not silence",
+    stepIndex: 4,
+    mustNameFields: ["rejection"],
+    mutate: (observation) => ({ ...observation, rejection: null }),
   },
   {
     id: "control-stale-timer/lost-wake-on-empty-dependency-list",
@@ -309,12 +330,12 @@ export const VIOLATIONS: readonly Violation[] = [
     id: "subscription-deadline/past-deadline-persisted-as-a-live-wait",
     scenarioId: "control-subscription-wait-deadline",
     plausibleBug:
-      "registration persists WAITING first and schedules the timer afterwards, so a deadline that was already due at " +
-      "registration is stored as live and the Execution waits for an expiry that has already passed (B-7 path A)",
+      "registration persists WAITING and schedules its deadline timer first and evaluates the deadline afterwards, so a deadline " +
+      "that was already due at registration is stored as live with its timer and the Execution waits for an expiry that has already passed (B-7 path A)",
     forbiddenBy: "W-2 step 3 and B-7 path A: a past deadline is never persisted as live",
     stepIndex: 6,
-    mustNameFields: ["state", "liveWaitGeneration", "queued"],
-    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "gd2", queued: ["bq-1"] }),
+    mustNameFields: ["state", "liveWaitGeneration", "queued", "pendingTimers"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "gd2", queued: ["bq-1"], waitEndedReadiness: [], pendingTimers: ["gd2"] }),
   },
   {
     id: "completion/owned-work-proposed-in-the-completing-outcome-is-accepted",
@@ -692,11 +713,11 @@ export const VIOLATIONS: readonly Violation[] = [
     scenarioId: "control-subscription-wait-deadline",
     plausibleBug:
       "the timeout Event is routed through the same eligibility test as every other Event, so a wait that declares no " +
-      "dependency alternative and no matching subscription never receives its own expiry and waits forever",
+      "dependency alternative and no matching subscription never receives its own expiry and waits forever with its deadline timer still persisted",
     forbiddenBy: "W-9 and W-1's category table: the timeout Event is eligible through neither list and reaches the Runtime by construction, as B-7's mandatory member",
     stepIndex: 4,
-    mustNameFields: ["state", "queued", "waitEndedReadiness"],
-    mutate: (observation) => ({ ...observation, state: "WAITING", queued: ["bq-1"], liveWaitGeneration: "gd1", waitEndedReadiness: [] }),
+    mustNameFields: ["state", "queued", "waitEndedReadiness", "pendingTimers"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", queued: ["bq-1"], liveWaitGeneration: "gd1", waitEndedReadiness: [], pendingTimers: ["gd1"] }),
   },
 
   // -- Row 5(c): W-2's ordered registration -----------------------------------
@@ -852,15 +873,62 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, acknowledged: ["in-1"], terminalDispositions: [] }),
   },
   {
+    // Narrowed by round-5 review finding K02-R5-02: this entry bundled "no wait, deadline or
+    // next-state change" behind one transcript that moved only the lifecycle state, so the wait and
+    // deadline clauses had no discriminating candidate and the deadline clause had no observation
+    // that could see it. It is now the *next-state* half alone. The wait, deadline/timer and
+    // readiness halves live at the new losing-`await` step below, each with its own transcript.
     id: "control-cancel/losing-outcome-moves-the-execution-off-terminal",
     scenarioId: "control-cancel-versus-complete",
     plausibleBug:
       "the loser's next step is applied because the lifecycle writer runs outside the fenced transaction, so a rejected " +
       "`continue` reopens a CANCELLED Execution for another Activation",
-    forbiddenBy: "CX-6 and §11 row 7: the losing Outcome produces no wait, deadline or next-state change; CX-2, terminal states do not reopen",
+    forbiddenBy: "CX-6/CX-2 and §11 row 7: a rejected losing Outcome produces no next-state change; terminal states do not reopen",
     stepIndex: 3,
     mustNameFields: ["state"],
     mutate: (observation) => ({ ...observation, state: "READY" }),
+  },
+  {
+    // Round-5 review finding K02-R5-02: the wait half of R7-a6, now exercised by a losing `await`.
+    // A wait-registration writer outside the fenced transaction persists the loser's wait while the
+    // lifecycle correctly stays CANCELLED and the CX-6 rejection is correctly recorded.
+    id: "control-cancel/losing-await-registers-a-wait",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "wait registration commits outside the cancellation fence, so a losing `await` persists its wait generation " +
+      "while the Execution correctly stays CANCELLED with the correct CX-6 rejection",
+    forbiddenBy: "CX-6/OA-5 and §11 row 7: a rejected losing Outcome creates no wait; W-3, a live generation exists exactly while WAITING",
+    stepIndex: 11,
+    mustNameFields: ["liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, liveWaitGeneration: "g-lose" }),
+  },
+  {
+    // The sharp orphaned-timer case the review names: the Execution stays correctly CANCELLED, the
+    // rejection is correctly recorded, live generation stays null — and a persisted deadline/timer
+    // registration for the loser's deadline nevertheless leaks. Invisible via terminal state or
+    // `liveWaitGeneration` alone; visible only via `pendingTimers`.
+    id: "control-cancel/losing-await-leaks-a-timer-registration",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "the deadline timer is scheduled outside the fenced transaction, so a losing `await` carrying a deadline " +
+      "leaks a persisted timer registration while the Execution stays CANCELLED with the correct rejection and no live wait",
+    forbiddenBy: "CX-6/OA-5 and §11 row 7: a rejected losing Outcome creates no deadline; OA-4, wait/deadline commit atomically with acceptance, never beside a rejection",
+    stepIndex: 11,
+    mustNameFields: ["pendingTimers"],
+    mutate: (observation) => ({ ...observation, pendingTimers: ["g-lose"] }),
+  },
+  {
+    // The readiness half: a readiness committer outside the fence arms a wait-ended readiness for the
+    // loser's generation while everything else stays fenced.
+    id: "control-cancel/losing-await-arms-a-readiness",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "a readiness writer outside the fenced transaction arms a wait-ended readiness for the losing `await`'s " +
+      "generation while the Execution stays CANCELLED with the correct rejection",
+    forbiddenBy: "CX-6/OA-5 and §11 row 7: a rejected losing Outcome creates no readiness; B-8, readiness is created only by a wait ending",
+    stepIndex: 11,
+    mustNameFields: ["waitEndedReadiness"],
+    mutate: (observation) => ({ ...observation, waitEndedReadiness: [{ generation: "g-lose", species: "deadline" }] }),
   },
   {
     id: "control-cancel/losing-outcome-mints-an-effect-intent",

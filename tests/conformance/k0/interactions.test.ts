@@ -169,6 +169,11 @@ describe("interaction: cancellation × whole-envelope rejection", () => {
           assert.deepEqual(after.acknowledged, fenced.acknowledged, `${scenario.id}: a fenced submission acknowledged its batch`);
           assert.deepEqual(after.terminalDispositions, fenced.terminalDispositions, `${scenario.id}: a fenced submission changed dispositions`);
           assert.equal(after.liveWaitGeneration, null, `${scenario.id}: a fenced submission created a wait`);
+          // Round-5 review finding K02-R5-02: the fence is zero wait/deadline/readiness/next-state, not
+          // merely zero lifecycle. A losing `await` with a deadline must leave no persisted timer and no
+          // readiness either — inferred absence from CANCELLED or live generation alone is not evidence.
+          assert.deepEqual(after.pendingTimers, [], `${scenario.id}: a fenced submission leaked a persisted deadline/timer registration`);
+          assert.deepEqual(after.waitEndedReadiness, [], `${scenario.id}: a fenced submission created a readiness`);
           assert.equal(after.rejection?.classification, "cancellation_terminal_conflict", `${scenario.id}: wrong rejection classification after the fence`);
         }
       }
@@ -355,6 +360,73 @@ describe("interaction: wait-ended readiness lifetime × reservation × B-8", () 
         }
       }
     }
+  });
+});
+
+describe("interaction: persisted deadline timers live exactly while a deadline wait is live", () => {
+  // Added for round-5 review finding K02-R5-02. `pendingTimers` is a new observable, and a new
+  // observable is only as good as the invariants held over it — otherwise a later scenario author
+  // can assert a timer that the protocol says cannot exist and nothing notices. The rule is the
+  // smallest truthful one: a persisted timer exists exactly for a live wait that carries a deadline.
+  // A timer surviving into READY/RUNNING/terminal would be the orphaned registration CX-6/OA-5
+  // forbid; one naming a generation that was never live would be a fabrication.
+  test("no step outside WAITING carries a persisted timer", () => {
+    for (const scenario of ALL_SCENARIOS) {
+      for (const [index, step] of scenario.steps.entries()) {
+        const { state, pendingTimers } = step.expect.observation;
+        if (pendingTimers.length === 0) continue;
+        assert.equal(state, "WAITING", `${scenario.id} step ${index} carries persisted timers ${pendingTimers.join(",")} while ${state}`);
+      }
+    }
+  });
+
+  test("every persisted timer names the live generation", () => {
+    for (const scenario of ALL_SCENARIOS) {
+      for (const [index, step] of scenario.steps.entries()) {
+        const { liveWaitGeneration, pendingTimers } = step.expect.observation;
+        for (const timer of pendingTimers) {
+          assert.equal(timer, liveWaitGeneration, `${scenario.id} step ${index} persists a timer for ${timer} while ${liveWaitGeneration} is live`);
+        }
+      }
+    }
+  });
+
+  test("every persisted timer is one some submitted wait actually declared with a deadline", () => {
+    // The converse, stopping a timer being asserted out of nowhere: the generation it names must be
+    // one the same scenario submitted with a deadline.
+    for (const scenario of ALL_SCENARIOS) {
+      const deadlineGenerations = new Set<string>();
+      for (const step of scenario.steps) {
+        if (step.command.kind !== "submit_outcome") continue;
+        const next = step.command.outcome.next;
+        if (next.step !== "await") continue;
+        if (next.wait.deadline !== undefined) deadlineGenerations.add(next.wait.generation);
+      }
+      for (const wait of Object.values(scenario.waits ?? {})) {
+        if (wait.deadline !== undefined) deadlineGenerations.add(wait.generation);
+      }
+      for (const [index, step] of scenario.steps.entries()) {
+        for (const timer of step.expect.observation.pendingTimers) {
+          assert.ok(deadlineGenerations.has(timer), `${scenario.id} step ${index} persists a timer for ${timer}, a generation this scenario never waits on with a deadline`);
+        }
+      }
+    }
+  });
+
+  test("and at least one live deadline wait and one fenced losing await exist, so the rule is exercised rather than vacuous", () => {
+    const liveDeadline = ALL_SCENARIOS.some((scenario) => scenario.steps.some((step) => step.expect.observation.pendingTimers.length > 0));
+    assert.ok(liveDeadline, "no step persists a deadline timer, so the timer invariant proves nothing");
+    const losingAwait = ALL_SCENARIOS.some((scenario) =>
+      scenario.steps.some(
+        (step) =>
+          step.command.kind === "submit_outcome" &&
+          step.command.outcome.next.step === "await" &&
+          step.command.outcome.next.wait.deadline !== undefined &&
+          step.expect.observation.rejection?.classification === "cancellation_terminal_conflict" &&
+          step.expect.observation.pendingTimers.length === 0,
+      ),
+    );
+    assert.ok(losingAwait, "no fenced losing `await` with a deadline exists, so CX-6's zero-deadline clause has no schedule exercising it");
   });
 });
 

@@ -89,6 +89,25 @@ export interface Observation {
    */
   readonly waitEndedReadiness: readonly WaitEndedReadiness[];
   /**
+   * Persisted Kernel timer registrations for live waits with deadlines, in generation order; empty
+   * when none.
+   *
+   * Added for round-5 review finding K02-R5-02. CX-6/OA-5 require a rejected Outcome to create "no
+   * wait, deadline, readiness or next-state transition", and OA-4 commits "any wait/deadline" as part
+   * of the accepted set. A losing `await` carrying a wait with a deadline could leak a persisted
+   * deadline/timer registration while keeping the Execution correctly `CANCELLED`, reporting the
+   * correct CX-6 rejection, and leaving `liveWaitGeneration` null — invisible via terminal lifecycle
+   * state or live-generation alone. This observes retained accepted timer registration, so that leak
+   * is a candidate-visible difference rather than an inferred absence.
+   *
+   * It observes *retained accepted* registration. A timer constructed and discarded inside the same
+   * rejected transaction leaves no accepted record and is indistinguishable here — as it is by any
+   * other means, since 001's K0 exit asks for an observable acceptance/rejection result and nothing
+   * unobservable was committed. Entries are wait generations (fixture-supplied in the submitted
+   * `WaitRecord`), so comparison is literal: generations arrive in the schedule's own commands.
+   */
+  readonly pendingTimers: readonly string[];
+  /**
    * The Event batch pinned by the **current unresolved** Activation, in acceptance order; `null` when
    * no Activation is unresolved. Reservation pins it and does not acknowledge it (B-3), which is what
    * makes CX-6's "acknowledges none of that batch" an observable fact rather than a claim.
@@ -233,10 +252,17 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
   }
 
   const failures: StepFailure[] = [];
-  // Per-run, because the relation a candidate must satisfy is within one schedule: the same expected
-  // token must name the same observed token throughout, and two different expected tokens must never
-  // collapse onto one.
-  const tokens = new TokenRelation();
+  // Per-run, one relation per candidate-minted token family, because the relation a candidate must
+  // satisfy is within one schedule *and within one family*: the same expected token must name the
+  // same observed token throughout, and two different expected tokens must never collapse onto one —
+  // but a receipt and an Activation ID are different typed protocol concepts (ID-3/ID-9 constrain
+  // Activation IDs relative to other Activation IDs; ID-6/ID-7 constrain receipts relative to other
+  // receipts and accepted boundaries) and nothing requires their raw spellings to be disjoint.
+  // Round-5 review finding K02-R5-01: a single shared relation treated cross-family reuse as a
+  // collision and rejected a conforming implementation for an implementation-owned representation
+  // choice. Receipts and Activation IDs therefore get separate bijections.
+  const receiptTokens = new TokenRelation();
+  const activationTokens = new TokenRelation();
   for (const [stepIndex, step] of scenario.steps.entries()) {
     const forbids = step.expect.forbids ?? [];
     let actual: Observation;
@@ -252,7 +278,7 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
       // A throw leaves the candidate's state unknown, so later steps cannot be judged.
       break;
     }
-    for (const detail of compareRepresentations(step.expect.observation, actual, tokens)) {
+    for (const detail of compareRepresentations(step.expect.observation, actual, { receiptTokens, activationTokens })) {
       failures.push({ stepIndex, label: step.expect.label, detail, forbids });
     }
     try {
@@ -352,9 +378,10 @@ function normalizeRejection(actual: Observation, expected: Observation): Observa
  * Round-4 review finding K02-R4-01 rejected an invented rule about how a *declared subscription
  * identity* may be spelled. Sweeping the neighbouring implementation-owned spellings, as that finding
  * requires, turns up the mirror-image problem in this runner. Most tokens a scenario asserts are
- * **fixture-supplied** — Event IDs, emission IDs, wait generations and progress values all arrive in
- * the commands the schedule issues, so comparing them literally compares the laboratory's own data.
- * Two are **candidate-minted**, and for those the accepted decisions fix only relations:
+ * **fixture-supplied** — Event IDs, emission IDs, wait generations, pending-timer generations and
+ * progress values all arrive in the commands the schedule issues, so comparing them literally
+ * compares the laboratory's own data. Two are **candidate-minted**, and for those the accepted
+ * decisions fix only relations:
  *
  *   - **Receipts.** §2's *Left open* note: "exact receipt serialization (opaque token vs. structured
  *     tuple)" is implementation-owned. What ID-6/OA-2 fix is that a replay returns *the same* receipt,
@@ -364,10 +391,20 @@ function normalizeRejection(actual: Observation, expected: Observation): Observa
  *
  * So a conforming K1 candidate that mints `"r/7f3a"` where this fixture writes `"receipt:create:req-x"`
  * was being failed for a choice the protocol left to it. The relation is enforced instead: within one
- * scenario run the mapping from expected token to observed token must be a **bijection** — the same
- * expected token always names the same observed token, and two expected tokens never collapse onto
- * one. That is exactly "same means same, different means different", and it still rejects every
- * counterexample in the corpus, each of which violates the relation rather than the spelling.
+ * scenario run *and within one token family* the mapping from expected token to observed token must
+ * be a **bijection** — the same expected token always names the same observed token, and two expected
+ * tokens never collapse onto one. That is exactly "same means same, different means different", and
+ * it still rejects every counterexample in the corpus, each of which violates the relation rather
+ * than the spelling.
+ *
+ * The two families use **separate** bijections. ID-3/ID-9 constrain Activation IDs relative to other
+ * Activation IDs; ID-6/ID-7 constrain receipts relative to other receipts and accepted boundaries.
+ * Nothing says an opaque receipt token's raw representation must be disjoint from the raw
+ * representation chosen for an Activation ID — they are different typed protocol concepts. Round-5
+ * review finding K02-R5-01: one shared relation rejected a candidate exposing receipt `"opaque-1"`
+ * alongside Activation ID `"opaque-1"` while keeping both domains internally correct. Cross-family
+ * reuse of one raw spelling therefore passes; collapsing two receipts, or two Activation IDs, onto
+ * one spelling still fails within its own family.
  *
  * **`writerEpoch` is deliberately not in here.** §2 leaves "integer vs. fencing token" open, and this
  * fixture models ID-4's first option, which ID-4 permits in terms ("a monotonically increasing integer
@@ -375,6 +412,14 @@ function normalizeRejection(actual: Observation, expected: Observation): Observa
  * which any total order satisfies; a candidate using fencing tokens adapts them to that order at the
  * port. Recorded here rather than left implicit, because an unstated modelling choice is how the
  * subscription defect got in.
+ *
+ * **Normalization sweep (K02-R5-01).** No other normalization state couples the two families.
+ * `normalizeRejection` keys only on rejection classification (canonical CX-6 vs. non-canonical
+ * free text); `normalizeRepresentations` rewrites each family's spelling to its own expected token
+ * independently and never keys one family's normalization on the other's observed value; the
+ * recovery-hold check keys only on presence plus non-empty reason (PC-5); `pendingTimers` entries
+ * are fixture-supplied wait generations compared literally. The only shared mutable normalization
+ * state was the single `TokenRelation`, now split.
  */
 class TokenRelation {
   private readonly forward = new Map<string, string>();
@@ -412,16 +457,21 @@ class TokenRelation {
  * the rejection reason was corrected in round 3 is the point of doing the sweep by field rather than
  * by memory.
  */
-function compareRepresentations(expected: Observation, actual: Observation, tokens: TokenRelation): readonly string[] {
+export interface TokenNamespace {
+  readonly receiptTokens: TokenRelation;
+  readonly activationTokens: TokenRelation;
+}
+
+function compareRepresentations(expected: Observation, actual: Observation, tokens: TokenNamespace): readonly string[] {
   const failures: string[] = [];
 
   const rejectionFailure = compareRejection(expected.rejection, actual.rejection);
   if (rejectionFailure !== null) failures.push(rejectionFailure);
 
-  const receiptFailure = tokens.check("receipt", expected.receipt, actual.receipt);
+  const receiptFailure = tokens.receiptTokens.check("receipt", expected.receipt, actual.receipt);
   if (receiptFailure !== null) failures.push(receiptFailure);
 
-  const activationFailure = tokens.check("activationId", expected.activationId, actual.activationId);
+  const activationFailure = tokens.activationTokens.check("activationId", expected.activationId, actual.activationId);
   if (activationFailure !== null) failures.push(activationFailure);
 
   if (expected.recoveryHold === null && actual.recoveryHold !== null) {
