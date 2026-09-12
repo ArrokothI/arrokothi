@@ -7,11 +7,14 @@ binding: splitting work does not remove any exit requirement or change canonical
 K0.1 is independently **ACCEPTED**, integrated and owner-closed; see the
 [integration receipt](work/K0.1/integration-01.md). The post-K0.1 process review is also independently
 **ACCEPTED** at H4 and integrated; see its [integration receipt](work/K0.1-process-review/integration-01.md).
-All successors remain **PLANNED**. The owner explicitly holds K0.2 after that process integration and
-sets `next_release: none`; integration does not release it. Proposed sequence: K0.2 → K1.0 structural
-preparation → K1.1. K1.0 is the first K1 implementation packet, so the benchmark-owned E1 fixture
-preparation precedes it as well as K1.1; K1.0 is also unimplemented and unreleased. No benchmark
-acceptance or E0–E6 status is changed here.
+That process integration set `next_release: none` and held K0.2; that receipt stands as the record of
+the hold at its own date. By a **separate later instruction on 2026-09-11 the owner released K0.2**,
+choosing implementation as written over a scope amendment; its round-1 candidate is now
+`BLOCKED_EXTERNAL` on the E0 clause (see the row below). Every other successor remains **PLANNED**,
+and this release extends to no other packet. Sequence: K0.2 → K1.0 structural preparation → K1.1.
+K1.0 is the first K1 implementation packet, so the benchmark-owned E1 fixture preparation precedes it
+as well as K1.1; K1.0 is unimplemented and unreleased. No benchmark acceptance or E0–E6 status is
+changed here.
 
 ## How to read a packet
 
@@ -306,7 +309,7 @@ there is no second editable “done” checkbox in 001.
 | Packet | Status | Report / review / candidate |
 |---|---|---|
 | K0.1 | ACCEPTED | Round 12 accepted by [review-12.md](work/K0.1/review-12.md), OpenAI GPT-5.6 Sol (High), 2026-09-11. Accepted H12 `bab7bf6635781e6d2f9b0e8e333f58440ae0b047`; clean-validated C12 `7a51801afcdf5c13d481e92c5d219a8c9be7c0eb`; base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`. K0.1-C1–C6 PASS; no findings. Reviewer inspected pinned GitHub source/diffs and implementation-12 evidence; no shell commands independently rerun. Acceptance is for H12 only. Integrated on main as `42731300266eea00a9a24d867d5e82d9887c280d` (PR #19); owner considers K0.1 merged/closed. [Integration and discussion receipt](work/K0.1/integration-01.md) separately verifies A12 and the merge. `next_release: none`; workflow review/improvement precedes any K0.2 release. |
-| K0.2 | PLANNED | Unimplemented and unreleased. Owner hold remains after the accepted/integrated [process review](work/K0.1-process-review/integration-01.md); `next_release: none`. Separate explicit owner release is required. |
+| K0.2 | BLOCKED_EXTERNAL | Released by explicit owner instruction 2026-09-11. Round 1: [implementation-01.md](work/K0.2/implementation-01.md), [contract.md](work/K0.2/contract.md), [public-fixture-specification.md](work/K0.2/public-fixture-specification.md); branch `codex/k0.2-public-controls-e0-gate`, base `c079237ee7aff428481426f93e87a68b79f170d4`, clean payload C `9aa70a82f02d57b2658e0906af53dc31bc34e483`, candidate H named in the report and supplied in the handoff. **Complete and independently reviewable:** K0.2-C1–C7 — the versioned public fixture (7 scenarios including 001's K0 trace and Decision M-1's four unsafe/state-loss controls), the independent operation sink and ledger, the refusing candidate plus 10 violating transcripts proving oracle discrimination, the direct baseline contract, both public application shapes and the E0 ownership records. Validation on C: typecheck exit 0; `npm test` 1063 tests / 0 failures (965 pre-existing plus 98 new); conformance 954; builder-docs 26 files / 280 links. **Blocked:** K0.2-C8, "obtain pinned E0 evidence". **Unavailable input:** any E0 fixture, ownership record, baseline contract, evaluator version or control result in the benchmark repository, which at revision `98756f8c10bd806125da8318f1a129bc030aca61` states E0 is planned and unimplemented. **Responsible actor:** benchmark repository owner. **Unblock condition:** E0's deliverable produced and accepted there at a pinned revision, with artifact identities recordable here. No E0 acceptance is claimed, implied or self-granted, and nothing was written in that repository. Not review-ready as a whole; this row is not acceptance of any part. Because K0.2 is K0's final gate packet, K0 stays open. |
 | K1.0 | PLANNED | Target boundary/legacy quarantine proposal; K0.2 plus the benchmark-owned E1 fixture preparation required before K1 implementation are prerequisites, and separate explicit owner release is required. No implementation; no E1 credit. |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
