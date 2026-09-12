@@ -27,6 +27,8 @@ offline with no model, network, container or database.
 
 | Scenario | Observes | Control? |
 |---|---|---|
+| `cited-decision-edges` | destination identity, exact/kind/ANY-OF selectors, batch order/union, stale submissions and accepted replay | — |
+| `redelivery-acceptance` | normal Outcome acceptance after ordinary redelivery without takeover | — |
 | `k0-trace` | 001's K0 trace end to end, as W-8's cases 1–5; distinct Outcome receipts across acceptances | — |
 | `delayed-runtime-non-blocking` | a delayed Runtime does not block another Execution; W-4; distinct create receipts across keys | — |
 | `identity-create-and-activation` | create-key conflict; ordinary redelivery (same ID/epoch/input); distinct Activation IDs; takeover under the same ID with pinned input; stale old-epoch fencing | — |
@@ -46,22 +48,21 @@ No scenario was added in round 13: its two findings were ownership and compariso
 schedule the empty-dependency clause needed already existed (§19).
 
 [`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at the
-granularity of the **independently distinguishable assertion** — 123 entries across the ten rows, not
+granularity of the **independently distinguishable assertion** — 269 entries across the ten rows, not
 ten row entries and not the 33 prose-level obligations of two revisions ago. The unit is
 behavioural rather than editorial: two clauses in one cell are separate assertions when a plausible
 implementation can get one right and the other wrong, because that is the candidate the oracle has to
 be able to fail. §11 row 5 states the standard itself — "Each of these is **separately** observable".
 
-Of the 123, **110** resolve to a scenario step plus at least one counterexample the oracle demonstrably
-rejects at that step; **four** (R3-c3, R6-a1, R8-b2, R2-c4) are marked `shared`, meaning two §11 rows name
-one observable fact and one transcript is the honest evidence for both, with the identity written down
-and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **eight** are
-explicitly assigned with the governing source that permits the deferral — R8-c to K2.4, R5-a4 to
-K1.3 (which W-9's *Left open* note names as the owner of a declared subscription identity's concrete
-spelling), R4-b1/b2/b3 to K2.2/K2.3/K4.1 for the Effect-admission, Effect-settlement and
-child/message-operation receipt boundaries, which have no observable K0 case while K1 refuses Effects
-and has no composition surface, and R1-f to K5.2 plus R5-c6/c7 to K1.3 for the three clauses round 13's
-re-audit found unowned in either direction (§19). Twenty-one entries carry an `atomicity` note, required whenever an entry's counterexamples
+Of the 269, **126** resolve to a scenario step plus a discriminating counterexample; **four**
+(R3-c3, R6-a1, R8-b2, R2-c4) retain justified `shared` links to the same observable fact.
+**Twenty** are separately stated negative corpus obligations, and **119** explicitly name the absent
+K0 observation surface and first actual implementing packet in 007. These include K2.3 required
+Effect accounting, K4.1 child accounting, K4.2 messaging, K1.3 timeout minting and concrete subscription
+identity, K3.2 durable recovery, K3.3 native/resource windows and K5.2 deletion. Receipt coordinates,
+clock roles and timeout envelope fields have independent owners even when the assigned packet is the
+same. See [the complete independence audit](cited-decision-audit-15.md).
+Twenty-six entries carry an `atomicity` note, required whenever an entry's counterexamples
 cross more than one coupled field group. `COUPLED_FIELD_GROUPS` is a review heuristic only, never
 proof that within-group partial failures are impossible: `state`/`liveWaitGeneration` stay grouped
 only for W-3's definitional link, while `waitEndedReadiness` and `acceptedDeadline` are deliberately
@@ -82,7 +83,7 @@ excluded by construction:
 - a **conforming transcript** must report `PASS`. It is derived from the scenarios' own expectations,
   so it proves only that the runner can pass something — that circularity is stated in the code and is
   the limit of what this direction establishes;
-- **110 violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
+- **126 violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
   exact step, and the failure detail must name the exact observation field at issue **where the
   discrimination is an observation field**. Failing for an unrelated reason would be an accident rather
   than discrimination, so the field names are asserted. One transcript deliberately names none:
@@ -1002,3 +1003,24 @@ Outcome fence; this is CX-6's existing rule, not a new exception.
 17, 15, 26, 17, 70, 5, 24, 13, 15, 6. The 123/110/108 totals in §19 describe Round 13 only.
 C8 remains `BLOCKED_EXTERNAL`: the benchmark owner decision at the unchanged pinned E0 branch is
 pending. No E0 acceptance, K1 implementation, merge or successor release follows from these totals.
+
+
+## 21. Round-15 assertion independence and selector isolation
+
+[The complete audit](cited-decision-audit-15.md) reconciles all 51 cited decisions at independently
+violable clause granularity: **455 references / 269 obligations = 126 scenario + 4 shared + 20 corpus +
+119 assigned**. The 34 explicit refinement groups record concrete reasons why prior bundles split;
+the guard rejects re-bundling independently of the inventory seal. Per-row counts:
+20, 22, 27, 21, 100, 5, 28, 14, 26, 6.
+
+**126 violating transcripts; 26 atomicity notes; 15 scenarios / 137 steps.** All 14 existing schedules
+are preserved. `redelivery-acceptance` adds four steps to observe a current Outcome after ordinary
+redelivery with no intervening takeover. A new cancellation-replay progress mutation distinguishes
+retained rejection from prohibited progress installation. Five C14 transcripts now isolate their
+intended selector/reservation defect with coherent lifecycle or disposition state; unchanged
+partial-write cases deliberately continue to test their partial writer.
+
+The published target protocol, observation shape, selector grammar, epoch relations and port
+adaptation are unchanged. These counts supersede historical §20 totals; they establish fixture
+validation only. C8 remains `BLOCKED_EXTERNAL`, with both freshly inspected benchmark branch owner
+decisions pending. H15 is submitted for accountable Round-16 independent review, not self-accepted.

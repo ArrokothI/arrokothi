@@ -38,6 +38,6 @@ describe("K0 public fixture: the current tree refuses the target protocol", () =
     const bundle = createOperationSink();
     const outcomes = ALL_SCENARIOS.map((scenario) => runScenario(refusingCandidate, scenario, bundle).outcome);
     assert.deepEqual(new Set(outcomes), new Set(["REFUSED"]));
-    assert.equal(outcomes.length, 14);
+    assert.equal(outcomes.length, 15);
   });
 });

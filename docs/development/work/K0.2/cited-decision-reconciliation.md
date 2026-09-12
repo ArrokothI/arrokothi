@@ -1,5 +1,9 @@
 # K0.2 cited-decision reconciliation — Round 14
 
+**Round-15 follow-up:** [the complete independence re-audit](cited-decision-audit-15.md) refines the
+C14 inventory below. Its historical reconstruction remains useful; current totals and independence
+judgments are in that follow-up and the executable inventory.
+
 This is the review guide for the correction to **K02-R14-01**, not an independent acceptance.
 The source is the accepted [K0.1 worksheet](../K0.1/protocol-worksheet.md), all ten §11 rows and
 the complete decisions those rows cite. The immutable Round-14 review is

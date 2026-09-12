@@ -8,7 +8,14 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 14.** Revision 14 fixes K02-R14-01 forward from preserved C13/H13,
+**Contract revision 15.** Fixes forward from A15 under [review-15.md](review-15.md).
+[The full independence audit](cited-decision-audit-15.md) refines all 51 cited decisions into
+455 clause references / 269 assertion owners. Selector counterexamples now preserve independent
+W-3 lifecycle/generation invariants. Explicit refinement judgments and separate corpus checks make
+re-bundling review-visible. Prior accepted corrections stand. C1–C7/C9 are offered for accountable
+Round 16 review of H15; C8 remains `BLOCKED_EXTERNAL`. No self-acceptance is claimed.
+
+Revision 14 fixed K02-R14-01 forward from preserved C13/H13,
 under [review-14.md](review-14.md). [The complete cited-decision reconciliation](cited-decision-reconciliation.md)
 indexes all 51 decisions cited by all ten §11 rows: 366 clause references resolve to single assertion
 owners, including explicit later assignments where the port cannot observe a fact. Missing schedules
@@ -318,6 +325,14 @@ in advance. No E0 acceptance may be claimed, implied or self-granted, and nothin
 benchmark repository by this packet.
 
 ### K0.2-C9 — the coverage machinery proves assertions, not row numbers or prose groupings
+
+**Revision-15 independence requirement:** independently encoded coordinates and separately failing
+writers require distinct owners even when they share a corpus test or implementing packet.
+A selector discriminator must preserve the independent lifecycle/generation rules while taking the
+wrong eligibility branch. Concrete partial-write counterexamples remain appropriate for atomicity
+assertions. [The complete re-audit](cited-decision-audit-15.md) records retained groupings and their
+observable/branch reasons; `clause-refinements.ts` protects authored independence judgments without
+claiming to decompose prose mechanically.
 
 **Revision-14 reconciliation requirement:** `cited-decisions.ts` records every cited decision's
 independently distinguishable clauses, with one reference to an actual `K0_OBLIGATIONS` owner per

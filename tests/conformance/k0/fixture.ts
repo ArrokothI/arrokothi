@@ -176,7 +176,7 @@ export interface Observation {
    * `dispatch`/`redeliver_dispatch`/`takeover` steps therefore correctly retain this field rather than
    * minting anew — retention is the absence of a new opaque acceptance, not a silently missing receipt.
    * Effect admission/settlement and child/message-operation receipts are K2/K4 boundaries (EF-1/EF-2
-   * refuse Effects at K1; CX-3's previously-owned-obligation clause is assigned to K2.4 as R8-c): they
+   * refuse Effects at K1; CX-3's previously-owned-obligation clause is assigned to K2.3 as R8-c): they
    * have no observable K0 case and are explicitly assigned, not silently omitted.
    *
    * Within this opaque family, the runner enforces ID-6/ID-7 relationally (separate bijection from

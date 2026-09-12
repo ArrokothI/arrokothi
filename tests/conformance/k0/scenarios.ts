@@ -1,12 +1,12 @@
 /**
  * K0.2 public fixture — the versioned scenario set.
  *
- * Thirteen scenarios. Between them they observe every *assertion* in the accepted K0.1 worksheet's §11
+ * Fifteen scenarios. Their locally observable assertions reconcile to the accepted K0.1 worksheet's §11
  * "001 K0 boundary → assertion map" — not merely every row number, and not merely every prose grouping
- * inside a row. `coverage.ts` enumerates those assertions individually and requires each to carry a
- * distinguishing counterexample that a candidate breaking *that* assertion would produce.
+ * inside a row. `coverage.ts` enumerates scenario assertions with discriminating counterexamples,
+ * negative corpus invariants and explicit later assignments for facts the port cannot observe.
  *
- * Six of the thirteen are unsafe/state-loss controls: Decision M-1's four named ones, plus W-8 case 6's
+ * Six of the fifteen are unsafe/state-loss controls: Decision M-1's four named ones, plus W-8 case 6's
  * deadline shape and row 8's completion check, both added after round-1 review finding K02-R1-01.
  *
  * **What round 3 changed.** Review finding K02-R3-01 reopened K02-R1-01: several §11 assertions were
@@ -2575,11 +2575,34 @@ export const citedDecisionEdges: Scenario = {
   ],
 };
 
+/** ID-9 case 1: acceptance after ordinary redelivery, with no intervening takeover. */
+export const redeliveryAcceptance: Scenario = {
+  id: "redelivery-acceptance",
+  title: "ordinary redelivery does not make a current Outcome stale",
+  sources: ["K0.1 ID-9 case 1; ID-3/ID-4; OA-3"],
+  k0BoundaryRows: [2],
+  isUnsafeControl: false,
+  steps: [
+    createAndActivationIdentity.steps[0]!,
+    createAndActivationIdentity.steps[3]!,
+    step({ kind: "redeliver_dispatch", executionId: X }, {
+      label: "ordinary redelivery retains the current exchange without a takeover",
+      observation: createAndActivationIdentity.steps[3]!.expect.observation,
+    }),
+    step({ kind: "submit_outcome", outcome: outcome({ executionId: X, activationId: "act-1", progress: { step: 1 }, next: { step: "continue" } }) }, {
+      label: "the still-current Outcome is accepted normally after repeated delivery",
+      observation: obs(X, { progressRevision: 1, progress: { step: 1 }, acknowledged: ["in-1"], receipt: "receipt:outcome:act-1", writerEpoch: 1 }),
+      forbids: ["ordinary redelivery alone never makes the Outcome stale"],
+    }),
+  ],
+};
+
 // -- The published set -------------------------------------------------------
 
 export const ALL_SCENARIOS: readonly Scenario[] = [
   k0Trace,
   citedDecisionEdges,
+  redeliveryAcceptance,
   delayedRuntimeNonBlocking,
   createAndActivationIdentity,
   producerScopedCreateIdentity,
