@@ -25,14 +25,22 @@ DOCS = [PREFIX + name for name in (
     '012-review-methods.md', '013-structure-and-evidence-sequencing.md', 'work/K0.1/integration-01.md',
     'work/K0.1-process-review/contract.md',
 )] + ['README.md']
-REPORT = PREFIX + 'work/K0.1-process-review/implementation-03.md'
-PRIOR_REPORTS = [PREFIX + 'work/K0.1-process-review/implementation-0%d.md' % n for n in (1, 2)]
-INTERIM, REVIEWED_REPORT = PRIOR_REPORTS
-INTERIM_COMMIT = '88236083e52c1a006077653482cae3f71eb213df'
+WORK = PREFIX + 'work/K0.1-process-review/'
 H2 = 'bf2a3057272aa8749a8ce9d36ec8239f4e2411a9'
+H3 = 'f7fddcc661e2e2f579d2da5259a274fae9124693'
+INTERIM_COMMIT = '88236083e52c1a006077653482cae3f71eb213df'
+# Numbered reports already submitted for independent review, with the commit that sealed each one.
+# A later correction adds the next numbered report; it never rewrites one of these.
+SEALED = {
+    'implementation-01.md': INTERIM_COMMIT,
+    'implementation-02.md': H2,
+    'implementation-03.md': H3,
+}
+REPORT = WORK + 'implementation-04.md'
+PRIOR_REPORTS = [WORK + name for name in sorted(SEALED)]
 BENCHMARK = '98756f8c10bd806125da8318f1a129bc030aca61'
 ALLOWED = set(DOCS + [REPORT] + PRIOR_REPORTS
-              + ['packages/sdk/package.json', PREFIX + 'work/K0.1-process-review/validate.py'])
+              + ['packages/sdk/package.json', WORK + 'validate.py'])
 failures = []
 
 
@@ -88,12 +96,13 @@ for name in historical:
 print(f'Historical preservation: {len(historical)} pre-existing K0.1 files compared by Git blob')
 check(not (ROOT / PREFIX / 'work/K0.2').exists(), 'K0.2 directory exists')
 check(not (ROOT / PREFIX / 'work/K1.0').exists(), 'K1.0 implementation directory exists')
-check(git('hash-object', INTERIM) == git('rev-parse', INTERIM_COMMIT + ':' + INTERIM),
-      'Interim process report altered')
-check(git('hash-object', REVIEWED_REPORT) == git('rev-parse', H2 + ':' + REVIEWED_REPORT),
-      'Reviewed attempt-2 report altered')
-check(subprocess.run(['git', 'merge-base', '--is-ancestor', H2, 'HEAD'], cwd=ROOT).returncode == 0,
-      'Reviewed H2 is not an ancestor of HEAD')
+for name, sealed_at in sorted(SEALED.items()):
+    path = WORK + name
+    check(git('hash-object', path) == git('rev-parse', sealed_at + ':' + path),
+          f'Sealed report altered: {name} differs from {sealed_at}')
+for reviewed in (H2, H3):
+    check(subprocess.run(['git', 'merge-base', '--is-ancestor', reviewed, 'HEAD'], cwd=ROOT).returncode == 0,
+          f'Reviewed candidate {reviewed} is not an ancestor of HEAD')
 ledger = (ROOT / PREFIX / '007-work-packets.md').read_text()
 rows = re.findall(r'^\| ([KRDS]\d+\.\d+) \| ([A-Z_]+) \|', ledger, re.M)
 check(len(rows) == 35 and len(dict(rows)) == 35, 'Expected 35 unique status rows')
@@ -157,6 +166,33 @@ check(len(k10_row) == 1 and 'E1 fixture preparation required before K1 implement
       'K1.0 status row lost the E1 fixture prerequisite or the no-E1-credit statement')
 k14 = ledger.split('### K1.4 — Legacy bridge and K1/E1 gate')[-1].split('### K2.1')[0]
 check('Full K1/E1 matrix and K1.0 structural obligations pass' in k14, 'K1.4 lost the full K1/E1 gate')
+# PRC-6a: the live contract must direct the current attempt's evidence at the current numbered
+# report, never at one already sealed by an independent review. Checked structurally rather than by
+# one exact sentence: the declared current report must not be sealed, and the active validation
+# paragraph must name only that report.
+contract_text = (ROOT / WORK / 'contract.md').read_text()
+declared = re.search(r'Current attempt report: `(implementation-\d+\.md)`', contract_text)
+check(declared is not None, 'Contract declares no current attempt report')
+if declared:
+    current = declared.group(1)
+    check(current not in SEALED,
+          f'Contract declares sealed report {current} as the current attempt report')
+    check(REPORT == WORK + current,
+          f'Validator report {REPORT} disagrees with the contract-declared {current}')
+paragraphs = [block for block in prose(contract_text).split('\n\n')
+              if block.startswith('Planned validation from repository root:')]
+check(len(paragraphs) == 1, 'Contract has no single active validation-instruction paragraph')
+if len(paragraphs) == 1:
+    active = ' '.join(paragraphs[0].split())  # wrapped prose: compare on normalized whitespace
+    for name in sorted(SEALED):
+        check(name[:-3] not in active,
+              f'Active validation instructions route current evidence into sealed report {name}')
+    check('current numbered implementation report' in active
+          or (declared and declared.group(1)[:-3] in active),
+          'Active validation instructions do not name the current numbered implementation report')
+print(f'Contract currency: declared current report is unsealed; active validation instructions name '
+      f'no sealed report among {len(SEALED)}')
+
 assessment = (ROOT / PREFIX / '013-structure-and-evidence-sequencing.md').read_text()
 check('precedes K1.0 as well as K1.1' in assessment, '013 interlock lost the K1.0 prerequisite')
 check('needs no benchmark roadmap amendment' in assessment,
@@ -176,8 +212,8 @@ if benchmark.is_dir():
     dirty = subprocess.check_output(['git', '-C', str(benchmark), 'status', '--porcelain=v1'], text=True)
     check(actual == BENCHMARK and not dirty, 'Benchmark identity/clean state differs')
 print('Benchmark: read-only HEAD/clean-state check at ' + BENCHMARK)
-print('Interim process report: preserved byte-for-byte at ' + INTERIM_COMMIT)
-print('Reviewed attempt-2 report: preserved byte-for-byte at H2 ' + H2 + '; H2 is an ancestor of HEAD')
+print(f'Sealed reports: {len(SEALED)} preserved byte-for-byte against their reviewed commits; '
+      'H2 and H3 are ancestors of HEAD')
 
 for older, newer in [(PLANNING, H12), (H12, A12), (A12, BASE)]:
     result = subprocess.run(['git', 'merge-base', '--is-ancestor', older, newer], cwd=ROOT)
