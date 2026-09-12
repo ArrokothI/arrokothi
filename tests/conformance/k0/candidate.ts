@@ -203,6 +203,201 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, recoveryHold: null, progress: null, progressRevision: 0 }),
   },
   {
+    id: "identity-create/same-key-different-content-applied-as-an-edit",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "the create path deduplicates on the request key alone without comparing content, so a second create under an " +
+      "accepted key is treated as an idempotent replay and the changed input silently replaces or joins the accepted one",
+    stepIndex: 2,
+    mustNameFields: ["rejection", "queued"],
+    mutate: (observation) => ({ ...observation, rejection: null, queued: ["in-DIFFERENT"] }),
+  },
+  {
+    id: "identity-activation/takeover-mints-a-new-activation-id",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "recovery treats a takeover as a fresh exchange and mints a new Activation ID, which breaks the retransmission " +
+      "identity a later Outcome is checked against (ID-9 cases 2-3)",
+    stepIndex: 4,
+    mustNameFields: ["activationId"],
+    mutate: (observation) => ({ ...observation, activationId: "act-2" }),
+  },
+  {
+    id: "identity-activation/new-exchange-reuses-the-resolved-activation-id",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "the Activation ID is derived from the Execution alone, so a genuinely new exchange after the prior one resolved " +
+      "carries the same ID and a stale Outcome for the old exchange would validate against the new one",
+    stepIndex: 6,
+    mustNameFields: ["activationId"],
+    mutate: (observation) => ({ ...observation, activationId: "act-1" }),
+  },
+  {
+    id: "envelope/valid-prefix-kept-when-a-later-member-is-malformed",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "emissions are recorded as they are walked and validation stops at the first bad one, so the valid first emission " +
+      "and the progress in the same envelope are committed while the envelope is reported rejected",
+    stepIndex: 2,
+    mustNameFields: ["emissions", "progressRevision"],
+    mutate: (observation) => ({ ...observation, emissions: ["em-1"], progressRevision: 1, progress: { cursor: 1 } }),
+  },
+  {
+    id: "envelope/structurally-empty-wait-registered-because-it-has-a-deadline",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "well-formedness is read as 'the wait must be able to end', so a declaration with both lists empty is accepted " +
+      "whenever it carries a deadline, and the Execution is parked on a wait W-1 calls malformed",
+    stepIndex: 3,
+    mustNameFields: ["state", "liveWaitGeneration", "rejection"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad", dispatchedBatch: null, activationId: null, rejection: null }),
+  },
+  {
+    id: "subscription-deadline/backlog-takes-the-slot-from-the-timeout",
+    scenarioId: "control-subscription-wait-deadline",
+    plausibleBug:
+      "the wait-ended batch is built by filtering the mailbox through the retired wait's rule, and the timeout is " +
+      "expected to match a dependency alternative. This wait has none, so the mandatory member is filtered out and the " +
+      "earlier ineligible backlog takes the single slot — the exact inconsistency worksheet revision 8 could not resolve",
+    stepIndex: 5,
+    mustNameFields: ["dispatchedBatch"],
+    mutate: (observation) => ({ ...observation, dispatchedBatch: ["bq-1"] }),
+  },
+  {
+    id: "subscription-deadline/past-deadline-persisted-as-a-live-wait",
+    scenarioId: "control-subscription-wait-deadline",
+    plausibleBug:
+      "registration persists WAITING first and schedules the timer afterwards, so a deadline that was already due at " +
+      "registration is stored as live and the Execution waits for an expiry that has already passed (B-7 path A)",
+    stepIndex: 6,
+    mustNameFields: ["state", "liveWaitGeneration", "queued"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "gd2", queued: ["bq-1"] }),
+  },
+  {
+    id: "completion/owned-work-proposed-in-the-completing-outcome-is-accepted",
+    scenarioId: "control-completion-obligations",
+    plausibleBug:
+      "the completion check runs as a later cleanup pass rather than at Outcome acceptance, so `complete` commits and " +
+      "the Execution reaches COMPLETED with owned work that was never accounted for",
+    stepIndex: 2,
+    mustNameFields: ["state", "rejection"],
+    mutate: (observation) => ({
+      ...observation,
+      state: "COMPLETED",
+      progressRevision: 1,
+      progress: { done: true },
+      acknowledged: ["in-1"],
+      dispatchedBatch: null,
+      activationId: null,
+      receipt: "receipt:outcome:act-1",
+      rejection: null,
+    }),
+  },
+  {
+    id: "completion/rejected-for-the-wrong-reason",
+    scenarioId: "control-completion-obligations",
+    plausibleBug:
+      "`complete` is refused only because the envelope carries Effects at all, which is the right answer to a different " +
+      "question. The completion obligation is never checked, so the same candidate would accept a completion whose owned " +
+      "work is unaccounted for once K2 makes Effects legal",
+    stepIndex: 2,
+    mustNameFields: ["rejection"],
+    mutate: (observation) => ({
+      ...observation,
+      rejection: { classification: "malformed_envelope", reason: "Effect proposals are not supported before K2" },
+    }),
+  },
+  {
+    id: "terminal-ingress/late-input-queued-on-a-terminal-execution",
+    scenarioId: "control-completion-obligations",
+    plausibleBug:
+      "ingress checks the destination but not the lifecycle, so input arriving after the terminal decision is accepted " +
+      "into the mailbox of an Execution that can never read it",
+    stepIndex: 4,
+    mustNameFields: ["queued", "ingressRefused"],
+    mutate: (observation) => ({ ...observation, queued: ["late-1"], ingressRefused: null }),
+  },
+  {
+    id: "identity-create/retry-mints-a-second-receipt",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug: "the create path is not idempotent at all: a retransmitted create is treated as a fresh request, so the caller is charged twice and the initial input is queued twice",
+    stepIndex: 1,
+    mustNameFields: ["receipt", "queued"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:create:req-x-2", queued: ["in-1", "in-1"] }),
+  },
+  {
+    id: "k0-trace/late-arrival-joins-the-pinned-batch",
+    scenarioId: "k0-trace",
+    plausibleBug: "the batch is represented as a live mailbox query rather than a set pinned at reservation, so an Event accepted during RUNNING appears in the Activation the Runtime is already working on",
+    stepIndex: 3,
+    mustNameFields: ["dispatchedBatch"],
+    mutate: (observation) => ({ ...observation, dispatchedBatch: ["in-1", "bq-1"] }),
+  },
+  {
+    id: "k0-trace/unsubscribed-input-wakes-the-execution",
+    scenarioId: "k0-trace",
+    plausibleBug: "eligibility is decided by Event kind rather than by source category plus declared subscription, so every external.input wakes the Execution regardless of its label — the exact over-match the current 0.8.x matcher has",
+    stepIndex: 5,
+    mustNameFields: ["state", "liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, state: "READY", liveWaitGeneration: null }),
+  },
+  {
+    id: "k0-trace/wake-leaves-the-generation-live",
+    scenarioId: "k0-trace",
+    plausibleBug: "the eligible Event sets readiness but the registration is retired lazily at the next dispatch, leaving a live generation a stale timer could still fire against",
+    stepIndex: 6,
+    mustNameFields: ["liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, liveWaitGeneration: "g1" }),
+  },
+  {
+    id: "control-stale-timer/duplicate-timer-mints-a-second-timeout",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug: "the timer transport is at-least-once and the handler is not idempotent, so a redelivered timer for an already-accepted expiry manufactures a repeat timeout for one wait",
+    stepIndex: 8,
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: ["to-g2", "to-g2"] }),
+  },
+  {
+    id: "control-stale-timer/late-result-discarded-as-stale",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug: "generation fencing is over-generalized from timers to every Event, so an authenticated result accepted after its wait retired is discarded as belonging to an obsolete generation",
+    stepIndex: 9,
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: ["to-g2"] }),
+  },
+  {
+    id: "delayed-runtime/unresolved-activation-reported-as-waiting",
+    scenarioId: "delayed-runtime-non-blocking",
+    plausibleBug: "a slow Activation is modelled as a Kernel-visible wait, so Runtime-local work gets a waitingFor record and WAITING stops meaning 'an accepted Outcome declared a dependency'",
+    stepIndex: 4,
+    mustNameFields: ["state", "liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-local" }),
+  },
+  {
+    id: "control-cancel/reserved-batch-acknowledged-instead-of-disposed",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug: "cancellation drains the mailbox by marking the reserved batch handled, which records the Runtime as having accounted for input it never saw",
+    stepIndex: 2,
+    mustNameFields: ["acknowledged", "terminalDispositions"],
+    mutate: (observation) => ({ ...observation, acknowledged: ["in-1"], terminalDispositions: [] }),
+  },
+  {
+    id: "control-cancel/late-cancel-reopens-a-completed-execution",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug: "cancellation is applied unconditionally to any Execution that is not already CANCELLED, so it overwrites an accepted completion instead of reporting it",
+    stepIndex: 9,
+    mustNameFields: ["state"],
+    mutate: (observation) => ({ ...observation, state: "CANCELLED" }),
+  },
+  {
+    id: "effect-refusal/rest-of-the-outcome-silently-split",
+    scenarioId: "effect-refusal-and-sink-attribution",
+    plausibleBug: "the Effect array is stripped and the remainder of the envelope is accepted, so the Outcome is silently split into the part K1 supports and the part it does not",
+    stepIndex: 2,
+    mustNameFields: ["emissions", "progressRevision"],
+    mutate: (observation) => ({ ...observation, emissions: ["em-1"], progressRevision: 1, progress: { cursor: 1 } }),
+  },
+  {
     id: "effect-refusal/refusal-claimed-while-the-sink-was-called",
     scenarioId: "effect-refusal-and-sink-attribution",
     plausibleBug:

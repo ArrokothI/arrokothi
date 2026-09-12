@@ -5,6 +5,13 @@
  * candidate is handed has no way to read, edit, reorder or truncate the record of what it did, and
  * that the observation surface hands out frozen snapshots so a later caller cannot rewrite history
  * either. That is what makes the ledger usable as attribution evidence in K2/E2.
+ *
+ * Round-1 review finding K02-R1-02: absent methods are not enough. The earlier revision recorded the
+ * caller's own objects and shallow-froze the entry, so a candidate that simply *kept a reference* to
+ * the input it passed in — or to the result it was handed back, or to any object nested inside either
+ * — could reach through and rewrite the ledger after the attempt was recorded. Historical evidence
+ * editable by the party it incriminates is not evidence. The suite below therefore mutates every
+ * retained reference it can reach, after recording, and asserts later reads are unchanged.
  */
 
 import { test, describe } from "node:test";
@@ -107,5 +114,97 @@ describe("K0 operation sink: the ledger is independent of the candidate", () => 
     const entries = ledger.entries();
     assert.deepEqual(entries.map((entry) => entry.operationId), ["op-1", "op-1"]);
     assert.deepEqual(entries.map((entry) => entry.sequence), [0, 1]);
+  });
+});
+
+describe("K0 operation sink: retained references cannot rewrite recorded history", () => {
+  // Finding K02-R1-02. Each case holds a reference the way a real candidate naturally would, mutates
+  // it after `attempt()` has returned, and then asks the ledger what it recorded.
+
+  test("mutating the request input object afterwards does not change the entry", () => {
+    const { sink, ledger } = createOperationSink();
+    const input = { artifact: "draft-1", nested: { revision: 1 } };
+    sink.attempt(attempt({ input }));
+
+    input.artifact = "tampered";
+    input.nested.revision = 99;
+
+    const recorded = ledger.entries()[0]?.input as { artifact: string; nested: { revision: number } };
+    assert.equal(recorded.artifact, "draft-1", "the ledger kept the caller's own object");
+    assert.equal(recorded.nested.revision, 1, "a nested object inside the input was still reachable");
+  });
+
+  test("mutating an array inside the request input afterwards does not change the entry", () => {
+    const { sink, ledger } = createOperationSink();
+    const input = { recipients: ["a@example.test"] };
+    sink.attempt(attempt({ input }));
+
+    input.recipients.push("attacker@example.test");
+
+    const recorded = ledger.entries()[0]?.input as { recipients: string[] };
+    assert.deepEqual(recorded.recipients, ["a@example.test"], "an array inside the input was shared with the ledger");
+  });
+
+  test("mutating the returned result afterwards does not change the entry", () => {
+    const { sink, ledger } = createOperationSink({
+      handlers: { "artifact.publish": () => ({ disposition: "success", observation: { published: true, at: { seq: 1 } } }) },
+    });
+    const returned = sink.attempt(attempt()) as { disposition: string; observation: { published: boolean; at: { seq: number } } };
+
+    returned.observation.published = false;
+    returned.observation.at.seq = 99;
+
+    const recorded = ledger.entries()[0]?.result.observation as { published: boolean; at: { seq: number } };
+    assert.equal(recorded.published, true, "the result handed back was the object the ledger stored");
+    assert.equal(recorded.at.seq, 1, "a nested object inside the observation was still reachable");
+  });
+
+  test("mutating a nested error object on the returned result does not change the entry", () => {
+    const { sink, ledger } = createOperationSink();
+    const returned = sink.attempt(attempt({ operation: "mail.send" })) as { error?: { code: string; message: string } };
+
+    if (returned.error) {
+      returned.error.code = "tampered";
+      returned.error.message = "tampered";
+    }
+
+    assert.equal(ledger.entries()[0]?.result.error?.code, "unscripted_operation");
+  });
+
+  test("the handler's own object is not shared with the ledger either", () => {
+    // A scripted handler that reuses one result object across calls must not be able to retro-edit
+    // every entry it ever produced.
+    const shared = { disposition: "success" as const, observation: { seq: 0 } };
+    const { sink, ledger } = createOperationSink({ handlers: { "artifact.publish": () => shared } });
+
+    sink.attempt(attempt({ operationId: "op-1" }));
+    shared.observation.seq = 1;
+    sink.attempt(attempt({ operationId: "op-2" }));
+    shared.observation.seq = 2;
+
+    const seqs = ledger.entries().map((entry) => (entry.result.observation as { seq: number }).seq);
+    assert.deepEqual(seqs, [0, 1], "each entry must hold the value as of its own attempt");
+  });
+
+  test("a recorded entry is frozen all the way down, not just at the top level", () => {
+    const { sink, ledger } = createOperationSink({
+      handlers: { "artifact.publish": () => ({ disposition: "success", observation: { nested: { deep: true } } }) },
+    });
+    sink.attempt(attempt({ input: { nested: { deep: true } } }));
+
+    const entry = ledger.entries()[0];
+    assert.ok(entry);
+    assert.ok(Object.isFrozen(entry), "entry");
+    assert.ok(Object.isFrozen(entry.input), "entry.input");
+    assert.ok(Object.isFrozen((entry.input as { nested: unknown }).nested), "entry.input.nested");
+    assert.ok(Object.isFrozen(entry.result), "entry.result");
+    assert.ok(Object.isFrozen(entry.result.observation), "entry.result.observation");
+    assert.ok(Object.isFrozen((entry.result.observation as { nested: unknown }).nested), "deeply nested observation");
+  });
+
+  test("the candidate/fixture surface separation is unchanged by all of this", () => {
+    // The fix must not have quietly widened what a candidate can reach.
+    const { sink } = createOperationSink();
+    assert.deepEqual(Object.keys(sink as unknown as Record<string, unknown>), ["attempt"]);
   });
 });

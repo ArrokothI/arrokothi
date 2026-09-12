@@ -29,15 +29,25 @@ offline with no model, network, container or database.
 |---|---|---|
 | `k0-trace` | 001's K0 trace end to end, as W-8's cases 1–5 | — |
 | `delayed-runtime-non-blocking` | a delayed Runtime does not block another Execution; W-4 | — |
+| `identity-create-and-activation` | create-key conflict; distinct Activation IDs; takeover under the same ID | — |
+| `control-whole-envelope-validation` | a valid prefix earns nothing; a structurally empty wait is refused | — |
 | `control-duplicate-conflicting-outcome` | receipt replay versus conflict | M-1, §11 row 3 |
 | `control-stale-timer-and-lost-wake` | lost wake at registration; generation fencing; timer idempotency | M-1, §11 row 5 |
+| `control-subscription-wait-deadline` | W-8 case 6: B-7's mandatory timeout member, both paths | §11 row 5 |
 | `control-cancel-versus-complete` | the cancellation fence, in both orders | M-1, §11 row 7 |
+| `control-completion-obligations` | completion with unaccounted owned work; terminal ingress refusal | §11 row 8 |
 | `control-missing-checkpoint-code` | recovery hold versus fresh-restored fabrication | M-1, §11 row 9 |
 | `effect-refusal-and-sink-attribution` | K1's Effect refusal, observed through the independent ledger | — |
 
-[`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps these onto all ten §11 boundary
-rows, and `coverage.test.ts` checks the map against the scenario set in both directions so neither a
-dropped scenario nor an aspirational map entry survives.
+Four of these were added after round-1 review; see §8.
+
+[`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at
+**obligation** granularity — 33 obligations across the ten rows, not ten row entries — because several
+rows state several distinguishing obligations in one cell. 31 resolve to a scenario step plus a
+counterexample the oracle demonstrably rejects at that step; one (R10-b) is a negative obligation
+enforced by scanning the corpus; one (R8-c) is explicitly assigned to K2.4 with the reason it has no
+observable K0 case. `coverage.test.ts` enforces all of that, and
+`interactions.test.ts` sweeps the corpus for the cross-scenario invariants.
 
 ## 2. How the oracle is known to work
 
@@ -47,11 +57,16 @@ excluded by construction:
 - a **conforming transcript** must report `PASS`. It is derived from the scenarios' own expectations,
   so it proves only that the runner can pass something — that circularity is stated in the code and is
   the limit of what this direction establishes;
-- **ten violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the exact
-  step, and the failure detail must name the exact observation field at issue. Failing for an unrelated
-  reason would be an accident rather than discrimination, so the field names are asserted;
+- **thirty violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
+  exact step, and the failure detail must name the exact observation field at issue. Failing for an
+  unrelated reason would be an accident rather than discrimination, so the field names are asserted;
 - the **refusing candidate** must report `REFUSED` for every scenario — a third verdict that is neither
-  a pass nor a failure.
+  a pass nor a failure;
+- the oracle **fails closed**. A step asserting independent-ledger attribution cannot pass because the
+  runner was invoked without a usable observer: omission is a type error, and an unusable observer at
+  runtime fails the assertion rather than skipping it. That holds for a conforming candidate too —
+  otherwise the guard would be discriminating on who was running rather than on whether the obligation
+  was actually checked.
 
 Each violating transcript names the bug a real implementation would plausibly have. Two are worth
 reading directly: `control-cancel/losing-progress-installed-with-next-state-suppressed` is the variant
@@ -61,8 +76,9 @@ leaves the observation entirely conforming and is caught only by the independent
 
 ## 3. Unsafe and state-loss control specifications
 
-Decision M-1 fixes the set. This is what each control must observe, and what a conforming candidate
-must therefore never do.
+This is what each control must observe, and what a conforming candidate must therefore never do.
+Decision M-1 fixes four of them; round-1 review added two more for §11 obligations that were going
+unobserved. M-1 is a floor, not a ceiling.
 
 | Control | Must observe | Must never |
 |---|---|---|
@@ -70,6 +86,8 @@ must therefore never do.
 | Stale timer / lost wake | an already-accepted eligible Event is found at registration; a superseded generation's timer is a no-op; a re-delivered timer is idempotent; an authenticated result is never generation-fenced | persist `WAITING` over an eligible Event already in the mailbox, wake a replacement wait from a retired generation, mint a second timeout Event, or treat a timeout as proof the awaited work did not happen |
 | Cancel versus complete | both orders; CX-6 rejection for `continue` **and** `complete`; zero batch acknowledgment; unchanged progress and emissions; B-5 disposition at `CANCELLED`; the same recorded rejection on exact retry; an accepted completion staying terminal and replaying its receipt | install the loser's progress, acknowledge its reserved batch, manufacture a receipt for a rejected submission, or reopen a terminal Execution |
 | Missing checkpoint/code | an inspectable recovery hold naming the unavailable pinned revision; accepted progress and revision intact | present empty or fresh Runtime state as the restored one, discard accepted progress, or invent a semantic wait for an unresolved Activation |
+| Subscription-only wait with a deadline (W-8 case 6) | B-7 path B mints exactly one timeout Event; at bound 1 the batch is exactly that Event even though an ineligible input was accepted earlier; B-7 path A yields `READY` at registration when the deadline is already due | require the timeout to match a dependency alternative the wait does not have, let older ineligible backlog take the slot, or persist a past deadline as a live wait |
+| Completion obligations (§11 row 8) | `complete` proposing owned work is rejected outright with a reason naming the completion obligation; the Execution stays non-terminal; terminal ingress is refused rather than queued | reach `COMPLETED` with unaccounted owned work, reject for the wrong reason, or accept ordinary input into a terminal Execution's mailbox |
 
 **State loss is the subject's failure even when the laboratory is safe.** The benchmark
 [methodology](../../../../../benchmark/docs/methodology.md) requires a subject that loses its state
@@ -202,3 +220,36 @@ gate packet, **K0 does not close** while C8 is open, regardless of how C1–C7 a
   into the target landing zone.
 - E-6's at-limit and one-past value matrix is assigned to K1.2 by this packet's contract and is not
   built here; only the four accepted bounds are recorded.
+- §11 row 8's second clause — a *previously owned* obligation settled or transferred before completion
+  — is assigned to K2.4. It has no observable K0 case while K1 refuses Effects, and CX-3 says so.
+
+## 8. What round-1 review changed
+
+The first candidate was reviewed and returned CHANGES REQUIRED on three findings. What they cost is
+worth stating plainly, because two of the three were cases of this document and its fixture claiming
+more than they established.
+
+**K02-R1-01 — inherited §11 coverage was incomplete.** The coverage map was row-granular and its test
+proved only that each row number pointed at a scenario that existed. Several §11 rows state several
+distinguishing obligations in one cell, so the check passed while row 1's conflict half, all three of
+row 2's identity claims, row 5's B-7 registration and bound-1 cases, row 6's terminal arm, row 8's
+completion check and row 10's negative obligation went untested. Re-deriving §11 found ten such gaps —
+the four the review named and six more. Four scenarios were added (`identity-create-and-activation`,
+`control-whole-envelope-validation`, `control-subscription-wait-deadline`,
+`control-completion-obligations`), twenty violating transcripts were added, and the map was rebuilt at
+obligation granularity with a counterexample required per obligation. Two claims in the previous
+revision were false and are withdrawn: that the stale-timer control already covered W-8 case 6 (it
+does not — that case is sharp only because the wait has *no* dependency alternatives), and that the
+row-attribution check constituted coverage.
+
+**K02-R1-02 — the ledger was not independent against retained references.** Absent read methods were
+not enough: entries held the caller's own objects under a shallow freeze, so a candidate keeping a
+reference to its input, its returned result, or anything nested inside either could rewrite recorded
+history after the fact. The sink now deep-copies on record and returns a separate copy, and six tests
+mutate every retained reference and assert later reads are unchanged. All six were confirmed to fail
+against the previous implementation.
+
+**K02-R1-03 — ledger assertions failed open.** The runner skipped a step's ledger expectation whenever
+the observer happened to be absent, so the one bad candidate catchable only through the ledger could
+pass on call shape alone. The runner now takes the whole sink bundle — omission is a type error — and
+an unusable observer at runtime fails the assertion rather than skipping it.

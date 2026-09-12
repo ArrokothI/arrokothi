@@ -10,7 +10,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { checkWaitWellFormed } from "./protocol-vocabulary.ts";
-import { k0Trace } from "./scenarios.ts";
+import { k0Trace, subscriptionWaitDeadline } from "./scenarios.ts";
 
 const labels = k0Trace.steps.map((step) => step.expect.label).join(" \n ");
 const forbids = k0Trace.steps.flatMap((step) => step.expect.forbids ?? []).join(" \n ");
@@ -104,11 +104,18 @@ describe("K0 trace: W-8's cases are each represented", () => {
     assert.deepEqual(completed?.expect.observation.queued, []);
   });
 
-  test("case 6's deadline variant is deliberately left to the stale-timer control, not duplicated here", () => {
-    // W-8 case 6 is a deadline on the same subscription-only wait. Its distinguishing behaviour is
-    // B-7's mandatory timeout member, which `control-stale-timer-and-lost-wake` already observes
-    // against a live generation. Repeating it here would add a scenario without adding an obligation.
+  test("case 6 lives in its own control, on a wait that is deliberately deadline-free here", () => {
+    // Round-1 review finding K02-R1-01 rejected the earlier reasoning at this spot, which claimed the
+    // stale-timer control already covered case 6. It did not: that control's waits carry dependency
+    // alternatives, and case 6 is sharp precisely because a subscription-only wait has none, so the
+    // timeout cannot be reached by matching at all. `control-subscription-wait-deadline` now carries
+    // it. This wait stays deadline-free so the two shapes remain distinct rather than merged.
     assert.equal(k0Trace.waits?.subscriptionOnlyWait?.deadline, undefined);
+
+    const caseSix = subscriptionWaitDeadline.waits?.subscriptionWaitWithDeadline;
+    assert.ok(caseSix, "W-8 case 6 must exist as its own wait record");
+    assert.deepEqual(caseSix.dependencies, [], "case 6 requires an empty dependency list, or it proves nothing");
+    assert.equal(typeof caseSix.deadline, "number", "case 6 requires a deadline");
   });
 });
 
@@ -142,6 +149,9 @@ describe("K0 trace: identity and forbidden mutations", () => {
 
   test("the scenario is not marked an unsafe control: it is the positive trace", () => {
     assert.equal(k0Trace.isUnsafeControl, false);
-    assert.deepEqual(k0Trace.k0BoundaryRows, [1, 2, 5, 6, 8]);
+    // Row 1's create-identity obligations moved to `identity-create-and-activation` under round-1
+    // review finding K02-R1-01; the retry step below still exists, but the map's row-1 evidence is
+    // that scenario's, and attribution has to say so.
+    assert.deepEqual(k0Trace.k0BoundaryRows, [2, 5, 6, 8]);
   });
 });

@@ -12,11 +12,18 @@
  *   - `ledger` — the fixture's observation surface, never handed to a candidate. Returns frozen
  *                snapshots, so a caller cannot mutate the record after the fact either.
  *
+ * **Independence has to survive retained references, not just missing methods.** An earlier revision
+ * recorded the caller's own `request` and `result` objects and shallow-froze the entry. A candidate
+ * that kept a reference to the input it passed in, or to the result it was handed back, could still
+ * reach through into the ledger and rewrite history after the attempt was recorded — historical
+ * evidence editable by the party it incriminates. `snapshot()` below therefore deep-copies on the way
+ * in and deep-freezes what it stores, and `attempt()` hands the caller a *separate* copy back, so no
+ * reference the candidate holds is the reference the ledger keeps.
+ *
  * At K0/K1 the Kernel refuses Effects outright (worksheet EF-1/EF-2), so the sink's K0 role is to make
  * that refusal *observable*: an Outcome proposing an Effect must leave the ledger empty. A candidate
  * that claims "rejected" while the ledger shows a dispatch is caught by the ledger, not by its own
- * self-report. The sink is built now because K2's action work needs it, and because a refusal with no
- * independent observation behind it is an unsupported claim.
+ * self-report.
  */
 
 export interface OperationAttempt {
@@ -72,6 +79,30 @@ export interface OperationSinkOptions {
   readonly handlers?: Readonly<Record<string, (request: OperationAttempt) => OperationResult>>;
 }
 
+/**
+ * Deep structural copy. Plain data only, which is all a boundary value ever is (worksheet E-1:
+ * `null`, boolean, finite number, string, or arrays/objects built recursively from those). Anything
+ * exotic that survives is passed through by reference and then frozen, so it still cannot be edited
+ * in place; it simply cannot be cloned.
+ */
+function snapshot<T>(value: T): T {
+  if (value === null || typeof value !== "object") return value;
+  if (Array.isArray(value)) return value.map((entry) => snapshot(entry)) as unknown as T;
+  if (Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null) return value;
+  const copy: Record<string, unknown> = {};
+  for (const [key, member] of Object.entries(value as Record<string, unknown>)) copy[key] = snapshot(member);
+  return copy as unknown as T;
+}
+
+/** Freeze a value and everything reachable through it, so a stored entry has no mutable interior. */
+function deepFreeze<T>(value: T): T {
+  if (value === null || typeof value !== "object") return value;
+  if (Object.isFrozen(value)) return value;
+  Object.freeze(value);
+  for (const member of Object.values(value as Record<string, unknown>)) deepFreeze(member);
+  return value;
+}
+
 export function createOperationSink(options: OperationSinkOptions = {}): OperationSinkBundle {
   // Closed over, not exposed. The only way to add an entry is to actually attempt an operation.
   const entries: LedgerEntry[] = [];
@@ -83,8 +114,21 @@ export function createOperationSink(options: OperationSinkOptions = {}): Operati
       const result: OperationResult = handler
         ? handler(request)
         : { disposition: "unknown", error: { code: "unscripted_operation", message: `no scripted result for ${request.operation}` } };
-      entries.push(Object.freeze({ ...request, sequence: entries.length, result }));
-      return result;
+
+      // Record deep copies: what the ledger keeps must not be reachable from anything the caller holds.
+      entries.push(
+        deepFreeze({
+          operationId: request.operationId,
+          executionId: request.executionId,
+          operation: request.operation,
+          input: snapshot(request.input),
+          sequence: entries.length,
+          result: snapshot(result),
+        }),
+      );
+
+      // Hand back a separate copy too, so mutating the returned result cannot reach the entry either.
+      return snapshot(result);
     },
   };
 

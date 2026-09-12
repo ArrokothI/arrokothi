@@ -76,8 +76,10 @@ describe("delayed Runtime: an unresolved Activation is not a Kernel-visible wait
     assert.match(forbids, /unrelated Executions compute independently/);
   });
 
-  test("the scenario observes the dispatch-intent boundary", () => {
-    assert.deepEqual(delayedRuntimeNonBlocking.k0BoundaryRows, [2]);
+  test("the scenario's §11 attribution is row 5(g), W-4's no-waitingFor rule", () => {
+    // The non-blocking half is a 001 K0/K1 deliverable rather than a §11 obligation, so it is carried
+    // by contract criterion C2 and the assertions above, not by the boundary map.
+    assert.deepEqual(delayedRuntimeNonBlocking.k0BoundaryRows, [5]);
     assert.equal(delayedRuntimeNonBlocking.isUnsafeControl, false);
   });
 });

@@ -20,8 +20,8 @@ describe("K0 public fixture: the current tree refuses the target protocol", () =
 
   for (const scenario of ALL_SCENARIOS) {
     test(`${scenario.id} is REFUSED, not passed`, () => {
-      const { sink, ledger } = createOperationSink();
-      const result = runScenario(refusingCandidate, scenario, { sink, ledgerCount: () => ledger.count() });
+      const bundle = createOperationSink();
+      const result = runScenario(refusingCandidate, scenario, bundle);
 
       assert.equal(result.outcome, "REFUSED");
       assert.notEqual(result.outcome as string, "PASS");
@@ -30,14 +30,14 @@ describe("K0 public fixture: the current tree refuses the target protocol", () =
         /target Activation\/Outcome protocol/,
         "a refusal must name what is missing rather than return a plausible-looking empty result",
       );
-      assert.equal(ledger.count(), 0, "a refusing candidate must not touch the operation sink");
+      assert.equal(bundle.ledger.count(), 0, "a refusing candidate must not touch the operation sink");
     });
   }
 
   test("every scenario is refused: no scenario is silently exempted", () => {
-    const { sink } = createOperationSink();
-    const outcomes = ALL_SCENARIOS.map((scenario) => runScenario(refusingCandidate, scenario, { sink }).outcome);
+    const bundle = createOperationSink();
+    const outcomes = ALL_SCENARIOS.map((scenario) => runScenario(refusingCandidate, scenario, bundle).outcome);
     assert.deepEqual(new Set(outcomes), new Set(["REFUSED"]));
-    assert.equal(outcomes.length, 7);
+    assert.equal(outcomes.length, 11);
   });
 });

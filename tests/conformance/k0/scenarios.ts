@@ -1,10 +1,12 @@
 /**
  * K0.2 public fixture — the versioned scenario set.
  *
- * Seven scenarios. The first two are 001's K0 trace and its delayed-Runtime property; four are
- * Decision M-1's named unsafe/state-loss controls; the last makes K1's Effect refusal observable
- * through the independent sink ledger. Between them they observe every row of the accepted K0.1
- * worksheet's §11 "001 K0 boundary → assertion map" — see `coverage.ts`.
+ * Eleven scenarios. Between them they observe every *obligation* in the accepted K0.1 worksheet's §11
+ * "001 K0 boundary → assertion map" — not merely every row number. `coverage.ts` enumerates those
+ * obligations individually and requires each to carry a distinguishing counterexample.
+ *
+ * Six of the eleven are unsafe/state-loss controls: Decision M-1's four named ones, plus W-8 case 6's
+ * deadline shape and row 8's completion check, both added after round-1 review finding K02-R1-01.
  *
  * **How to read an expectation.** `obs(...)` returns a *complete* `Observation`; the call site shows
  * only the fields that differ from the quiescent defaults, and every default it does not override is
@@ -34,6 +36,8 @@ function obs(executionId: string, overrides: Partial<Observation> = {}): Observa
     terminalDispositions: [],
     liveWaitGeneration: null,
     dispatchedBatch: null,
+    activationId: null,
+    ingressRefused: null,
     receipt: null,
     rejection: null,
     writerEpoch: 0,
@@ -97,7 +101,10 @@ export const k0Trace: Scenario = {
     "K0.1 worksheet B-1..B-5 (batch, acknowledgment, retention, terminal disposition)",
     "execution-protocol.md, Identities and immutable exchanges (retried create)",
   ],
-  k0BoundaryRows: [1, 2, 5, 6, 8],
+  // Row 1's create-identity obligations moved to `identity-create-and-activation` when round-1 review
+  // finding K02-R1-01 split them out; the retry step below stays because the trace reads better with
+  // it, but the authoritative row-1 evidence is that scenario's.
+  k0BoundaryRows: [2, 5, 6, 8],
   isUnsafeControl: false,
   waits: { subscriptionOnlyWait },
   steps: [
@@ -125,7 +132,7 @@ export const k0Trace: Scenario = {
       { kind: "dispatch", executionId: X, bound: 4 },
       {
         label: "dispatch pins a finite enumerable batch and the Execution is RUNNING",
-        observation: obs(X, { state: "RUNNING", queued: ["in-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
+        observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
         forbids: ["acknowledged stays empty: reservation is not acknowledgment (B-3)"],
       },
     ),
@@ -137,6 +144,7 @@ export const k0Trace: Scenario = {
           state: "RUNNING",
           queued: ["in-1", "bq-1"],
           dispatchedBatch: ["in-1"],
+          activationId: "act-1",
           receipt: "receipt:create:req-x",
           writerEpoch: 1,
         }),
@@ -232,6 +240,7 @@ export const k0Trace: Scenario = {
           acknowledged: ["in-1"],
           queued: ["bq-1", "bq-2", "cont-1"],
           dispatchedBatch: ["cont-1"],
+          activationId: "act-2",
           receipt: "receipt:outcome:act-1",
           writerEpoch: 2,
         }),
@@ -289,7 +298,10 @@ export const delayedRuntimeNonBlocking: Scenario = {
     "K0.1 worksheet W-4 (Runtime-local work creates no waitingFor record at all)",
     "mental-model.md ('RUNNING means an Activation is unresolved, not that a process is making progress')",
   ],
-  k0BoundaryRows: [2],
+  // §11 attribution is row 5(g) — W-4's "Runtime-local work creates no waitingFor record". The
+  // non-blocking property this scenario also observes comes from 001 K0/K1, not from §11, and is
+  // carried by contract criterion C2 and `delayed-runtime.test.ts` rather than by the boundary map.
+  k0BoundaryRows: [5],
   isUnsafeControl: false,
   steps: [
     step(
@@ -304,14 +316,14 @@ export const delayedRuntimeNonBlocking: Scenario = {
       { kind: "dispatch", executionId: X, bound: 4 },
       {
         label: "X is dispatched and its Runtime delays: the Activation stays unresolved",
-        observation: obs(X, { state: "RUNNING", queued: ["in-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
+        observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-x1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
       },
     ),
     step(
       { kind: "dispatch", executionId: Y, bound: 4 },
       {
         label: "Y is dispatched while X's Activation is still unresolved",
-        observation: obs(Y, { state: "RUNNING", queued: ["in-y1"], dispatchedBatch: ["in-y1"], receipt: "receipt:create:req-y", writerEpoch: 1 }),
+        observation: obs(Y, { state: "RUNNING", queued: ["in-y1"], activationId: "act-y1", dispatchedBatch: ["in-y1"], receipt: "receipt:create:req-y", writerEpoch: 1 }),
         forbids: ["Y must reach RUNNING: a delayed X may not hold the coordinator's dispatch loop"],
       },
     ),
@@ -319,7 +331,7 @@ export const delayedRuntimeNonBlocking: Scenario = {
       { kind: "inspect", executionId: X },
       {
         label: "the delayed X is still RUNNING with no Kernel-visible wait (W-4)",
-        observation: obs(X, { state: "RUNNING", queued: ["in-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
+        observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-x1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
         forbids: [
           "liveWaitGeneration must stay null: Runtime-local work creates no waitingFor record at all",
           "state must not be reported as WAITING: a slow Activation is unresolved, not a Kernel-visible dependency",
@@ -347,7 +359,7 @@ export const delayedRuntimeNonBlocking: Scenario = {
       { kind: "inspect", executionId: X },
       {
         label: "Y's completion changed nothing about X",
-        observation: obs(X, { state: "RUNNING", queued: ["in-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
+        observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-x1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
         forbids: ["every X field must be unchanged: unrelated Executions compute independently"],
       },
     ),
@@ -390,7 +402,7 @@ export const duplicateAndConflictingOutcome: Scenario = {
     ),
     step(
       { kind: "dispatch", executionId: X, bound: 4 },
-      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
+      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
     ),
     step(
       { kind: "submit_outcome", outcome: acceptedOutcome },
@@ -469,7 +481,7 @@ export const staleTimerAndLostWake: Scenario = {
     "K0.1 worksheet B-6 path A, B-7 path B, B-8",
     "kernel.md ('stale timers cannot wake a replacement wait'), CL-2",
   ],
-  k0BoundaryRows: [5, 6],
+  k0BoundaryRows: [5],
   isUnsafeControl: true,
   waits: { waitOnCorr1, waitOnCorr2 },
   steps: [
@@ -479,13 +491,13 @@ export const staleTimerAndLostWake: Scenario = {
     ),
     step(
       { kind: "dispatch", executionId: X, bound: 4 },
-      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
+      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
     ),
     step(
       { kind: "accept_event", event: earlyResult },
       {
         label: "the result arrives before the wait exists; no wait is live so no readiness is created (B-8)",
-        observation: obs(X, { state: "RUNNING", queued: ["in-1", "res-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
+        observation: obs(X, { state: "RUNNING", queued: ["in-1", "res-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
         forbids: ["dispatchedBatch must stay ['in-1']: a new arrival cannot join an already-pinned batch"],
       },
     ),
@@ -521,6 +533,7 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1"],
           queued: ["res-1"],
           dispatchedBatch: ["res-1"],
+          activationId: "act-2",
           receipt: "receipt:outcome:act-1",
           writerEpoch: 2,
         }),
@@ -630,6 +643,7 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1", "res-1"],
           queued: ["to-g2", "res-2"],
           dispatchedBatch: ["to-g2", "res-2"],
+          activationId: "act-3",
           receipt: "receipt:outcome:act-2",
           writerEpoch: 3,
         }),
@@ -683,7 +697,7 @@ export const cancelVersusComplete: Scenario = {
     ),
     step(
       { kind: "dispatch", executionId: X, bound: 4 },
-      { label: "X dispatched; the batch is reserved but unacknowledged", observation: obs(X, { state: "RUNNING", queued: ["in-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
+      { label: "X dispatched; the batch is reserved but unacknowledged", observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
     ),
     step(
       { kind: "accept_cancellation", executionId: X },
@@ -745,7 +759,7 @@ export const cancelVersusComplete: Scenario = {
     ),
     step(
       { kind: "dispatch", executionId: Y, bound: 4 },
-      { label: "Y dispatched", observation: obs(Y, { state: "RUNNING", queued: ["in-y1"], dispatchedBatch: ["in-y1"], receipt: "receipt:create:req-y", writerEpoch: 1 }) },
+      { label: "Y dispatched", observation: obs(Y, { state: "RUNNING", queued: ["in-y1"], activationId: "act-y1", dispatchedBatch: ["in-y1"], receipt: "receipt:create:req-y", writerEpoch: 1 }) },
     ),
     step(
       { kind: "submit_outcome", outcome: winningComplete },
@@ -821,7 +835,7 @@ export const missingCheckpointCode: Scenario = {
     ),
     step(
       { kind: "dispatch", executionId: X, bound: 4 },
-      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
+      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
     ),
     step(
       { kind: "submit_outcome", outcome: outcome({ executionId: X, activationId: "act-1", progress: { cursor: 7 }, next: { step: "continue" } }) },
@@ -840,6 +854,7 @@ export const missingCheckpointCode: Scenario = {
           progress: { cursor: 7 },
           acknowledged: ["in-1"],
           dispatchedBatch: [],
+          activationId: "act-2",
           receipt: "receipt:outcome:act-1",
           writerEpoch: 2,
         }),
@@ -856,6 +871,7 @@ export const missingCheckpointCode: Scenario = {
           progress: { cursor: 7 },
           acknowledged: ["in-1"],
           dispatchedBatch: [],
+          activationId: "act-2",
           receipt: "receipt:outcome:act-1",
           writerEpoch: 2,
           recoveryHold: { reason: "pinned definition revision fake-runtime@1 is unavailable" },
@@ -877,6 +893,7 @@ export const missingCheckpointCode: Scenario = {
           progress: { cursor: 7 },
           acknowledged: ["in-1"],
           dispatchedBatch: [],
+          activationId: "act-2",
           receipt: "receipt:outcome:act-1",
           writerEpoch: 2,
         }),
@@ -914,7 +931,7 @@ export const effectRefusalAndSinkAttribution: Scenario = {
     ),
     step(
       { kind: "dispatch", executionId: X, bound: 4 },
-      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }), ledgerCount: 0 },
+      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }), ledgerCount: 0 },
     ),
     step(
       { kind: "submit_outcome", outcome: effectProposingOutcome },
@@ -924,6 +941,7 @@ export const effectRefusalAndSinkAttribution: Scenario = {
           state: "RUNNING",
           queued: ["in-1"],
           dispatchedBatch: ["in-1"],
+          activationId: "act-1",
           receipt: "receipt:create:req-x",
           rejection: { classification: "malformed_envelope", reason: "Effect proposals are not supported before K2" },
           writerEpoch: 1,
@@ -960,14 +978,493 @@ export const effectRefusalAndSinkAttribution: Scenario = {
   ],
 };
 
+// -- Scenario 8: create identity and Activation identity (§11 rows 1, 2) ----
+
+/**
+ * Round-1 review finding K02-R1-01: row 1's *conflict* half and row 2's *identity* half were both
+ * unobserved. Row 1 turns on a create under the same key with different content being rejected rather
+ * than silently applied as an edit; row 2 turns on Activation IDs, not on epochs — a new exchange must
+ * never reuse an ID, while an authorized takeover of a still-unresolved exchange must keep it (ID-9).
+ */
+export const createAndActivationIdentity: Scenario = {
+  id: "identity-create-and-activation",
+  title: "create keys conflict on changed content; exchanges get new Activation IDs, takeovers do not",
+  sources: [
+    "K0.1 worksheet §11 row 1 (ID-1, ID-2, ID-6, ID-7) and row 2 (ID-3, ID-4, ID-9)",
+    "execution-protocol.md, Identities and immutable exchanges",
+  ],
+  k0BoundaryRows: [1, 2],
+  isUnsafeControl: false,
+  steps: [
+    step(
+      { kind: "create", executionId: X, requestKey: "req-x", initialInput, definitionRevision: FAKE_RUNTIME_V1 },
+      { label: "X created", observation: obs(X, { queued: ["in-1"], receipt: "receipt:create:req-x" }) },
+    ),
+    step(
+      { kind: "create_retry", executionId: X, requestKey: "req-x", initialInput, definitionRevision: FAKE_RUNTIME_V1 },
+      {
+        label: "same key, same content: the original Execution and receipt come back",
+        observation: obs(X, { queued: ["in-1"], receipt: "receipt:create:req-x" }),
+        forbids: ["no second Execution, no second queued input, no new receipt"],
+      },
+    ),
+    step(
+      {
+        kind: "create_retry",
+        executionId: X,
+        requestKey: "req-x",
+        initialInput: applicationInput("in-DIFFERENT", X, "initial"),
+        definitionRevision: FAKE_RUNTIME_V1,
+      },
+      {
+        label: "same key, different content: a conflict, never a silent edit",
+        observation: obs(X, {
+          queued: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "duplicate_conflict", reason: "create request key req-x was accepted with different content" },
+        }),
+        forbids: [
+          "queued must stay ['in-1']: the conflicting input must not replace or join the accepted one",
+          "receipt must stay the original: a conflict mints no receipt",
+          "a fresh intentional run needs a fresh key; reusing one must not be a way to edit an accepted create",
+        ],
+      },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 4 },
+      {
+        label: "the first exchange opens as act-1",
+        observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
+      },
+    ),
+    step(
+      { kind: "takeover", executionId: X },
+      {
+        label: "ID-9: an authorized takeover of a still-unresolved exchange keeps the Activation ID and advances the epoch",
+        observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 2 }),
+        forbids: [
+          "activationId must stay act-1: a takeover is the same exchange under a new writer, not a new exchange",
+          "dispatchedBatch must stay ['in-1']: a takeover cannot replace pinned input with new mailbox content",
+          "acknowledged must stay empty: a takeover acknowledges nothing",
+        ],
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({ executionId: X, activationId: "act-1", writerEpoch: 2, progress: { step: 1 }, next: { step: "continue" } }),
+      },
+      {
+        label: "the taken-over exchange resolves under the advanced epoch",
+        observation: obs(X, {
+          state: "READY",
+          progressRevision: 1,
+          progress: { step: 1 },
+          acknowledged: ["in-1"],
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 2,
+        }),
+      },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 4 },
+      {
+        label: "a semantically different dispatch after the prior exchange resolved gets a new Activation ID",
+        observation: obs(X, {
+          state: "RUNNING",
+          progressRevision: 1,
+          progress: { step: 1 },
+          acknowledged: ["in-1"],
+          activationId: "act-2",
+          dispatchedBatch: [],
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 3,
+        }),
+        forbids: ["activationId must not be act-1: two semantically different exchanges never share an Activation ID"],
+      },
+    ),
+  ],
+};
+
+// -- Scenario 9: whole-envelope validation is all-or-nothing (§11 rows 3, 5a) --
+
+/**
+ * Round-1 review finding K02-R1-01: row 3's "a failure partway through acceptance leaves zero partial
+ * state" and row 5(a)'s structural well-formedness were asserted only as predicates, never as an
+ * observable rejection of a submitted Outcome. Both are envelope validation (OA-3), so both belong on
+ * the same scenario: the point is that a valid-looking prefix earns nothing.
+ */
+export const wholeEnvelopeValidation: Scenario = {
+  id: "control-whole-envelope-validation",
+  title: "a failure anywhere in envelope validation accepts nothing, including a valid prefix",
+  sources: [
+    "K0.1 worksheet §11 row 3 (OA-3, OA-5) and row 5(a) (W-1 well-formedness)",
+    "execution-protocol.md, Outcome acceptance algorithm step 3",
+    "K0.1 worksheet W-1 well-formedness case 1 (both lists empty, deadline does not rescue it)",
+  ],
+  k0BoundaryRows: [3, 5],
+  isUnsafeControl: false,
+  steps: [
+    step(
+      { kind: "create", executionId: X, requestKey: "req-x", initialInput, definitionRevision: FAKE_RUNTIME_V1 },
+      { label: "X created", observation: obs(X, { queued: ["in-1"], receipt: "receipt:create:req-x" }) },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 4 },
+      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-1",
+          progress: { cursor: 1 },
+          // Emission 1 is perfectly valid. Emission 2 reuses its key, which step 3 of the acceptance
+          // algorithm rejects ("unique proposal/emission keys"). The prefix earns nothing.
+          emissions: [
+            { emissionId: "em-1", value: { partial: "a" } },
+            { emissionId: "em-1", value: { partial: "b" } },
+          ],
+          next: { step: "continue" },
+        }),
+      },
+      {
+        label: "a duplicate emission key rejects the whole envelope, and the valid first emission is not kept",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "malformed_envelope", reason: "duplicate emission key em-1" },
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "emissions must stay empty: accepting em-1 and rejecting em-2 would be exactly the partial state row 3 forbids",
+          "progressRevision must stay 0 and progress null: the valid progress in the same envelope is rejected with it",
+          "acknowledged must stay empty: a rejected Outcome acknowledges no part of its batch",
+        ],
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-1",
+          progress: { cursor: 1 },
+          // W-1 well-formedness case 1: both lists empty. The deadline does not rescue it.
+          next: { step: "await", wait: { dependencies: [], subscriptions: [], deadline: 5_000, generation: "g-bad" } },
+        }),
+      },
+      {
+        label: "a structurally empty wait declaration is refused at envelope validation, deadline notwithstanding",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "malformed_envelope", reason: "wait declaration is structurally empty" },
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "liveWaitGeneration must stay null: no registration exists for a refused wait, and g-bad must never appear",
+          "state must stay RUNNING: a refused wait does not move the Execution",
+          "a deadline must not make a malformed declaration acceptable",
+        ],
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({ executionId: X, activationId: "act-1", progress: { cursor: 1 }, emissions: [{ emissionId: "em-1", value: { partial: "a" } }], next: { step: "continue" } }),
+      },
+      {
+        label: "a well-formed envelope is still accepted afterwards: rejection is inert, not a wedge",
+        observation: obs(X, {
+          state: "READY",
+          progressRevision: 1,
+          progress: { cursor: 1 },
+          emissions: ["em-1"],
+          acknowledged: ["in-1"],
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 1,
+        }),
+      },
+    ),
+  ],
+};
+
+// -- Scenario 10: W-8 case 6 — a subscription-only wait with a deadline ------
+
+/**
+ * Round-1 review finding K02-R1-01: W-8 case 6 was missing, and a dependency-only deadline scenario is
+ * not a substitute for it. The case is sharp precisely because the wait has **no dependency
+ * alternatives at all**, so nothing in it could ever "match" a timeout — the timeout Event is B-7's
+ * mandatory batch member by construction rather than by matching, and it must still win the single
+ * slot at bound 1 over an ineligible Event accepted earlier. Revision 8 of the worksheet could not
+ * answer this shape consistently; the fixture has to.
+ */
+const subscriptionWaitWithDeadline: WaitRecord = {
+  dependencies: [],
+  subscriptions: [{ subscriptionClass: "continue" }],
+  deadline: 1_000,
+  generation: "gd1",
+};
+const alreadyDueWait: WaitRecord = {
+  dependencies: [],
+  subscriptions: [{ subscriptionClass: "continue" }],
+  deadline: 1,
+  generation: "gd2",
+};
+const timeoutForGd1 = timeoutEvent("to-gd1", X, "gd1");
+
+export const subscriptionWaitDeadline: Scenario = {
+  id: "control-subscription-wait-deadline",
+  title: "unsafe control: W-8 case 6 — a subscription-only wait's deadline, and B-7's mandatory timeout member",
+  sources: [
+    "K0.1 worksheet W-8 case 6 (the deadline case a subscription-only wait makes sharp)",
+    "K0.1 worksheet B-7 paths A and B, W-9 (the timeout Event), §11 row 5(c) and 5(e)",
+    "K0.1 worksheet W-1 well-formedness case 3 (a deadline bounds a wait it cannot otherwise end)",
+  ],
+  k0BoundaryRows: [5],
+  isUnsafeControl: true,
+  waits: { subscriptionWaitWithDeadline, alreadyDueWait },
+  steps: [
+    step(
+      { kind: "create", executionId: X, requestKey: "req-x", initialInput, definitionRevision: FAKE_RUNTIME_V1 },
+      { label: "X created", observation: obs(X, { queued: ["in-1"], receipt: "receipt:create:req-x" }) },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 4 },
+      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
+    ),
+    step(
+      { kind: "accept_event", event: billingOne },
+      {
+        label: "an ineligible input is accepted earlier than everything that follows",
+        observation: obs(X, { state: "RUNNING", queued: ["in-1", "bq-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({ executionId: X, activationId: "act-1", progress: { phase: "waiting" }, next: { step: "await", wait: subscriptionWaitWithDeadline } }),
+      },
+      {
+        label: "the subscription-only wait with a deadline registers durably: nothing eligible is queued",
+        observation: obs(X, {
+          state: "WAITING",
+          progressRevision: 1,
+          progress: { phase: "waiting" },
+          acknowledged: ["in-1"],
+          queued: ["bq-1"],
+          liveWaitGeneration: "gd1",
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 1,
+        }),
+        forbids: ["bq-1 must not wake it: billing.question is outside the declared subscription"],
+      },
+    ),
+    step(
+      { kind: "deliver_timer", executionId: X, generation: "gd1", timeoutEvent: timeoutForGd1 },
+      {
+        label: "B-7 path B: the current generation's deadline expires and mints exactly one timeout Event",
+        observation: obs(X, {
+          state: "READY",
+          progressRevision: 1,
+          progress: { phase: "waiting" },
+          acknowledged: ["in-1"],
+          queued: ["bq-1", "to-gd1"],
+          liveWaitGeneration: null,
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 1,
+        }),
+        forbids: ["the wait has no dependency alternatives at all, so the timeout must arrive by construction, not by matching"],
+      },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 1 },
+      {
+        label: "W-8 case 6 at bound 1: the batch is exactly the timeout Event, not the earlier ineligible backlog",
+        observation: obs(X, {
+          state: "RUNNING",
+          progressRevision: 1,
+          progress: { phase: "waiting" },
+          acknowledged: ["in-1"],
+          queued: ["bq-1", "to-gd1"],
+          activationId: "act-2",
+          dispatchedBatch: ["to-gd1"],
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 2,
+        }),
+        forbids: [
+          "dispatchedBatch must not be ['bq-1']: bq-1 was accepted first, and ordinary acceptance-order selection would have taken the slot",
+          "the timeout Event is the species' mandatory member and is retained before any other candidate",
+        ],
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-2",
+          writerEpoch: 2,
+          baseProgressRevision: 1,
+          progress: { phase: "re-waiting" },
+          next: { step: "await", wait: alreadyDueWait },
+        }),
+      },
+      {
+        label: "B-7 path A: a deadline already due at registration yields READY with a timeout Event, never a durable WAITING",
+        observation: obs(X, {
+          state: "READY",
+          progressRevision: 2,
+          progress: { phase: "re-waiting" },
+          acknowledged: ["in-1", "to-gd1"],
+          queued: ["bq-1", "to-gd2"],
+          liveWaitGeneration: null,
+          receipt: "receipt:outcome:act-2",
+          writerEpoch: 2,
+        }),
+        forbids: [
+          "state must not be WAITING: W-2 step 3 evaluates an already-due deadline before persisting, and a past deadline is never persisted as live",
+          "liveWaitGeneration must be null: gd2 is created and retired inside the one acceptance transaction",
+          "bq-1 must still be queued and unacknowledged after two wait generations came and went",
+        ],
+      },
+    ),
+  ],
+};
+
+// -- Scenario 11: completion obligations and terminal ingress (§11 rows 8, 6) --
+
+/**
+ * Round-1 review finding K02-R1-01: row 8's completion check was not observed at all, and row 6's
+ * terminal arm of B-8 was missing.
+ *
+ * CX-3 has two clauses. The first — "no newly proposed Effects in that same Outcome" — is observable
+ * now, and is the only form "unresolved owned work" can take while K1 refuses Effects outright: work
+ * proposed in the completing Outcome is by construction unaccounted for. The second clause, about
+ * *previously owned* obligations, cannot arise until Effects exist; CX-3 says so itself ("K1 without
+ * Effects satisfies this trivially ... K2 is where the check becomes non-trivial"), and this packet's
+ * contract assigns it to K2.4 rather than pretending to observe it.
+ *
+ * The rejection reason is distinct from the plain Effect refusal on purpose: a candidate that rejects
+ * `complete` merely because Effects are unsupported has not demonstrated the completion check, and the
+ * oracle must be able to tell those two answers apart.
+ */
+export const completionObligations: Scenario = {
+  id: "control-completion-obligations",
+  title: "unsafe control: completion with unaccounted owned work is rejected, and terminal ingress is refused",
+  sources: [
+    "K0.1 worksheet §11 row 8 (CX-3, CX-4, B-3, B-5) and row 6 (B-8's terminal arm)",
+    "execution-protocol.md, Completion check",
+    "execution-protocol.md, Input reservation ('Terminal ingress refuses new ordinary input')",
+  ],
+  k0BoundaryRows: [6, 8],
+  isUnsafeControl: true,
+  steps: [
+    step(
+      { kind: "create", executionId: X, requestKey: "req-x", initialInput, definitionRevision: FAKE_RUNTIME_V1 },
+      { label: "X created", observation: obs(X, { queued: ["in-1"], receipt: "receipt:create:req-x" }), ledgerCount: 0 },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 4 },
+      {
+        label: "X dispatched",
+        observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
+        ledgerCount: 0,
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-1",
+          progress: { done: true },
+          effects: [{ proposalKey: "p1", operation: "artifact.publish", input: { artifact: "draft-1" } }],
+          next: { step: "complete", result: { status: "done" } },
+        }),
+      },
+      {
+        label: "`complete` proposing new owned work is rejected outright, and the Execution does not become COMPLETED",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "malformed_envelope", reason: "completion proposes owned work that is not accounted for" },
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "state must stay RUNNING: an Execution must not reach COMPLETED with unaccounted owned work",
+          "the reason must name the completion obligation, not merely that Effects are unsupported: rejecting for the wrong reason does not demonstrate the check",
+          "the independent ledger must stay empty: nothing was dispatched on the way to this rejection",
+        ],
+        ledgerCount: 0,
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({ executionId: X, activationId: "act-1", progress: { done: true }, next: { step: "complete", result: { status: "done" } } }),
+      },
+      {
+        label: "with nothing owned outstanding, the same completion is accepted",
+        observation: obs(X, {
+          state: "COMPLETED",
+          progressRevision: 1,
+          progress: { done: true },
+          acknowledged: ["in-1"],
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 1,
+        }),
+        ledgerCount: 0,
+      },
+    ),
+    step(
+      { kind: "accept_event", event: applicationInput("late-1", X, "continue") },
+      {
+        label: "terminal ingress refuses new ordinary input rather than queueing it",
+        observation: obs(X, {
+          state: "COMPLETED",
+          progressRevision: 1,
+          progress: { done: true },
+          acknowledged: ["in-1"],
+          queued: [],
+          ingressRefused: "late-1",
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "queued must stay empty: a refused ingress is not an accepted mailbox fact",
+          "terminalDispositions must stay empty: B-5 disposes input that was accepted before the terminal decision, not input refused after it",
+          "no readiness may be created: no wait generation is live in a terminal state (B-8, W-3)",
+        ],
+        ledgerCount: 0,
+      },
+    ),
+  ],
+};
+
 // -- The published set -------------------------------------------------------
 
 export const ALL_SCENARIOS: readonly Scenario[] = [
   k0Trace,
   delayedRuntimeNonBlocking,
+  createAndActivationIdentity,
+  wholeEnvelopeValidation,
   duplicateAndConflictingOutcome,
   staleTimerAndLostWake,
+  subscriptionWaitDeadline,
   cancelVersusComplete,
+  completionObligations,
   missingCheckpointCode,
   effectRefusalAndSinkAttribution,
 ];

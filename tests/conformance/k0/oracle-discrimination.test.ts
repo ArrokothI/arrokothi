@@ -15,6 +15,7 @@ import assert from "node:assert/strict";
 import { conformingCandidate, VIOLATIONS, violatingCandidate } from "./candidate.ts";
 import { createOperationSink } from "./operation-sink.ts";
 import { runScenario } from "./fixture.ts";
+import type { RunOptions } from "./fixture.ts";
 import { ALL_SCENARIOS, UNSAFE_CONTROLS } from "./scenarios.ts";
 
 function scenarioById(id: string) {
@@ -26,8 +27,8 @@ function scenarioById(id: string) {
 describe("K0 public fixture: the oracle passes a conforming transcript", () => {
   for (const scenario of ALL_SCENARIOS) {
     test(`${scenario.id} passes`, () => {
-      const { sink, ledger } = createOperationSink();
-      const result = runScenario(conformingCandidate, scenario, { sink, ledgerCount: () => ledger.count() });
+      const bundle = createOperationSink();
+      const result = runScenario(conformingCandidate, scenario, bundle);
       assert.equal(
         result.outcome,
         "PASS",
@@ -41,8 +42,8 @@ describe("K0 public fixture: the oracle rejects every plausible wrong implementa
   for (const violation of VIOLATIONS) {
     test(`${violation.id} is caught`, () => {
       const scenario = scenarioById(violation.scenarioId);
-      const { sink, ledger } = createOperationSink();
-      const result = runScenario(violatingCandidate(violation), scenario, { sink, ledgerCount: () => ledger.count() });
+      const bundle = createOperationSink();
+      const result = runScenario(violatingCandidate(violation), scenario, bundle);
 
       assert.equal(result.outcome, "FAIL", `the oracle accepted a known-bad trace: ${violation.plausibleBug}`);
       if (result.outcome !== "FAIL") return;
@@ -61,7 +62,7 @@ describe("K0 public fixture: the oracle rejects every plausible wrong implementa
     });
   }
 
-  test("each of Decision M-1's four controls has at least one violating transcript", () => {
+  test("every unsafe/state-loss control has at least one violating transcript", () => {
     for (const control of UNSAFE_CONTROLS) {
       const covering = VIOLATIONS.filter((violation) => violation.scenarioId === control.id);
       assert.ok(covering.length > 0, `unsafe control ${control.id} ships no plausible wrong implementation`);
@@ -79,8 +80,8 @@ describe("K0 public fixture: the oracle rejects every plausible wrong implementa
     const mutated = violation.mutate(scenario.steps[violation.stepIndex]!.expect.observation);
     assert.equal(mutated.state, "CANCELLED", "the variant must keep the correct headline state, or it proves nothing");
 
-    const { sink } = createOperationSink();
-    const result = runScenario(violatingCandidate(violation), scenario, { sink });
+    const bundle = createOperationSink();
+    const result = runScenario(violatingCandidate(violation), scenario, bundle);
     assert.equal(result.outcome, "FAIL");
   });
 
@@ -91,8 +92,8 @@ describe("K0 public fixture: the oracle rejects every plausible wrong implementa
     assert.equal(violation.mustNameFields.length, 0, "this violation must not be catchable from the observation alone");
 
     const scenario = scenarioById(violation.scenarioId);
-    const { sink, ledger } = createOperationSink();
-    const result = runScenario(violatingCandidate(violation), scenario, { sink, ledgerCount: () => ledger.count() });
+    const bundle = createOperationSink();
+    const result = runScenario(violatingCandidate(violation), scenario, bundle);
 
     assert.equal(result.outcome, "FAIL");
     if (result.outcome !== "FAIL") return;
@@ -100,6 +101,77 @@ describe("K0 public fixture: the oracle rejects every plausible wrong implementa
       result.failures.some((failure) => /independent sink ledger/.test(failure.label)),
       "the failure must be attributed to the independent ledger, not to the candidate's self-report",
     );
-    assert.equal(ledger.count(), 1, "the ledger must have recorded the attempt the candidate denied making");
+    assert.equal(bundle.ledger.count(), 1, "the ledger must have recorded the attempt the candidate denied making");
+  });
+});
+
+describe("K0 public fixture: a ledger expectation cannot be skipped by how the runner is invoked", () => {
+  // Round-1 review finding K02-R1-03. The earlier runner asserted a step's `ledgerCount` only when an
+  // observer happened to be supplied, and silently skipped it otherwise. That failed open: the one bad
+  // candidate catchable *only* through the ledger would report PASS purely because of the call shape.
+  //
+  // The contract is now closed in two independent ways, and both are checked here: the runner takes
+  // the whole sink bundle, so omission is a type error, and `assertLedger` treats an unusable observer
+  // as a failure of the assertion rather than a reason to skip it. The casts below exist precisely to
+  // get around the type-level guard and prove the runtime guard alone still holds.
+
+  const ledgerViolation = VIOLATIONS.find((entry) => entry.id === "effect-refusal/refusal-claimed-while-the-sink-was-called")!;
+
+  function runWith(options: unknown) {
+    const scenario = scenarioById(ledgerViolation.scenarioId);
+    return runScenario(violatingCandidate(ledgerViolation), scenario, options as RunOptions);
+  }
+
+  test("the scenario under test declares ledger expectations, or this suite proves nothing", () => {
+    const scenario = scenarioById(ledgerViolation.scenarioId);
+    const declaring = scenario.steps.filter((step) => step.expect.ledgerCount !== undefined);
+    assert.ok(declaring.length > 0, "the effect-attribution scenario must declare independent-ledger expectations");
+  });
+
+  test("the bad candidate cannot pass when the ledger observer is omitted entirely", () => {
+    const { sink } = createOperationSink();
+    const result = runWith({ sink });
+
+    assert.equal(result.outcome, "FAIL", "omitting the observer must not turn a known-bad candidate into a pass");
+    assert.notEqual(result.outcome as string, "PASS");
+    if (result.outcome !== "FAIL") return;
+    assert.ok(
+      result.failures.some((failure) => /cannot be skipped/.test(failure.detail)),
+      "the failure must say the expectation could not be evaluated, rather than silently passing it",
+    );
+  });
+
+  test("the bad candidate cannot pass when the observer is present but unusable", () => {
+    const { sink } = createOperationSink();
+    const result = runWith({ sink, ledger: {} });
+
+    assert.equal(result.outcome, "FAIL");
+    if (result.outcome !== "FAIL") return;
+    assert.ok(result.failures.some((failure) => /cannot be skipped/.test(failure.detail)));
+  });
+
+  test("the bad candidate cannot pass when the observer returns a non-count", () => {
+    const { sink } = createOperationSink();
+    const result = runWith({ sink, ledger: { count: () => "zero" } });
+
+    assert.equal(result.outcome, "FAIL");
+    if (result.outcome !== "FAIL") return;
+    assert.ok(result.failures.some((failure) => /not a count/.test(failure.detail)));
+  });
+
+  test("a conforming candidate is also failed by an unusable observer, not quietly passed", () => {
+    // Fail-closed has to be symmetric. If only bad candidates failed here, the guard would be
+    // discriminating on the candidate rather than on whether the obligation was actually checked.
+    const { sink } = createOperationSink();
+    const scenario = scenarioById(ledgerViolation.scenarioId);
+    const result = runScenario(conformingCandidate, scenario, { sink } as unknown as RunOptions);
+
+    assert.equal(result.outcome, "FAIL", "an unevaluated ledger assertion is a failure regardless of who was running");
+  });
+
+  test("with a proper bundle the same conforming candidate passes, so the guard is not simply always-fail", () => {
+    const scenario = scenarioById(ledgerViolation.scenarioId);
+    const result = runScenario(conformingCandidate, scenario, createOperationSink());
+    assert.equal(result.outcome, "PASS");
   });
 });

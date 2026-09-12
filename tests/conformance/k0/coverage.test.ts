@@ -1,75 +1,169 @@
 /**
- * K0.2-C1..C6 in aggregate: every K0 boundary is actually observed by a scenario.
+ * K0.2-C1..C6 in aggregate: every K0 boundary *obligation* is actually observed, and observing it
+ * actually discriminates.
  *
- * 001's K0 exit demands that each input/Outcome/Effect/wake/cancel boundary has "an observable
- * acceptance/rejection result". The accepted K0.1 worksheet enumerates those boundaries as ten §11
- * rows. This file checks the coverage map against the scenario set in both directions, so neither a
- * dropped scenario nor an aspirational map entry can survive.
+ * Round-1 review finding K02-R1-01: the previous version of this file proved only that each §11 row
+ * number pointed at a scenario that existed. A row can hold several distinguishing obligations, so
+ * that check passed while most of row 1, row 2, row 5(c)/(e) and all of row 8's completion clause went
+ * untested. The unit is now the obligation, and an obligation is only covered when the oracle can be
+ * shown to *reject* a candidate that gets it wrong.
  */
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { K0_BOUNDARY_COVERAGE } from "./coverage.ts";
+import { readFile, readdir } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { BOUNDARY_ROWS, K0_OBLIGATIONS } from "./coverage.ts";
+import { VIOLATIONS, violatingCandidate } from "./candidate.ts";
+import { createOperationSink } from "./operation-sink.ts";
+import { runScenario } from "./fixture.ts";
 import { ALL_SCENARIOS } from "./scenarios.ts";
 
-const scenarioIds = new Set(ALL_SCENARIOS.map((scenario) => scenario.id));
+const scenarioById = new Map(ALL_SCENARIOS.map((scenario) => [scenario.id, scenario]));
+const violationById = new Map(VIOLATIONS.map((violation) => [violation.id, violation]));
+const HERE = dirname(fileURLToPath(import.meta.url));
 
-describe("K0 boundary coverage", () => {
+describe("K0 boundary coverage: structure", () => {
   test("all ten §11 rows are present exactly once, in order", () => {
-    assert.deepEqual(
-      K0_BOUNDARY_COVERAGE.map((entry) => entry.row),
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    );
+    assert.deepEqual(BOUNDARY_ROWS.map((entry) => entry.row), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   });
 
-  test("every row is observed by at least one scenario that actually exists", () => {
-    for (const entry of K0_BOUNDARY_COVERAGE) {
-      assert.ok(entry.observedBy.length > 0, `row ${entry.row} claims no observing scenario`);
-      for (const id of entry.observedBy) {
-        assert.ok(scenarioIds.has(id), `row ${entry.row} names unknown scenario ${id}`);
-      }
+  test("every row carries at least one obligation", () => {
+    for (const { row } of BOUNDARY_ROWS) {
+      const obligations = K0_OBLIGATIONS.filter((entry) => entry.row === row);
+      assert.ok(obligations.length > 0, `§11 row ${row} has no obligation recorded`);
     }
   });
 
-  test("every scenario's own declared rows agree with the map", () => {
-    // The map and the scenarios declare the relationship separately; disagreement means one of them
-    // drifted, and a drifted coverage map is worse than none.
-    for (const scenario of ALL_SCENARIOS) {
-      for (const row of scenario.k0BoundaryRows) {
-        const entry = K0_BOUNDARY_COVERAGE.find((candidate) => candidate.row === row);
-        assert.ok(entry, `${scenario.id} claims unknown boundary row ${row}`);
-        assert.ok(
-          entry.observedBy.includes(scenario.id),
-          `${scenario.id} claims row ${row} but the coverage map does not list it there`,
-        );
-      }
+  test("obligation IDs are unique and name their row", () => {
+    const ids = K0_OBLIGATIONS.map((entry) => entry.id);
+    assert.equal(new Set(ids).size, ids.length, "duplicate obligation ID");
+    for (const entry of K0_OBLIGATIONS) {
+      assert.match(entry.id, new RegExp(`^R${entry.row}-`), `${entry.id} does not name row ${entry.row}`);
+      assert.ok(entry.obligation.length > 40, `${entry.id} has no substantive obligation text`);
     }
   });
 
-  test("every scenario is reachable from the map: none is dead weight", () => {
-    const mapped = new Set(K0_BOUNDARY_COVERAGE.flatMap((entry) => entry.observedBy));
-    for (const id of scenarioIds) {
-      assert.ok(mapped.has(id), `${id} is not referenced by any boundary row`);
-    }
-  });
-
-  test("each row states how it is observed, not merely that it is", () => {
-    for (const entry of K0_BOUNDARY_COVERAGE) {
-      assert.ok(entry.observable.length > 40, `row ${entry.row} has no substantive observation statement`);
-      assert.ok(entry.boundary.length > 0);
+  test("row 5's lettered sub-parts are each represented", () => {
+    // The one row whose cell states seven separately observable things. Losing any of them silently
+    // was the shape of the round-1 gap, so each letter is checked by name.
+    const rowFive = K0_OBLIGATIONS.filter((entry) => entry.row === 5).map((entry) => entry.obligation).join(" ");
+    for (const letter of ["(a)", "(b)", "(c)", "(d)", "(e)", "(f)", "(g)"]) {
+      assert.ok(rowFive.includes(letter), `§11 row 5 sub-part ${letter} has no obligation`);
     }
   });
 
   test("row 9 is the one boundary K0.1 assigns jointly to Kernel and Runtime/Driver", () => {
-    const joint = K0_BOUNDARY_COVERAGE.filter((entry) => entry.owner === "Kernel + Runtime/Driver");
-    assert.deepEqual(joint.map((entry) => entry.row), [9]);
+    assert.deepEqual(BOUNDARY_ROWS.filter((entry) => entry.owner === "Kernel + Runtime/Driver").map((entry) => entry.row), [9]);
+  });
+});
+
+describe("K0 boundary coverage: every obligation resolves to real evidence", () => {
+  for (const entry of K0_OBLIGATIONS) {
+    test(`${entry.id} has usable evidence`, () => {
+      const evidence = entry.evidence;
+      if (evidence.kind === "assigned") {
+        assert.ok(/^K\d/.test(evidence.packet), `${entry.id} assigns to a non-packet ${evidence.packet}`);
+        assert.ok(evidence.reason.length > 80, `${entry.id} is assigned away without a substantive reason`);
+        return;
+      }
+      if (evidence.kind === "corpus") {
+        assert.ok(evidence.test.length > 10 && evidence.note.length > 40);
+        return;
+      }
+      const scenario = scenarioById.get(evidence.scenario);
+      assert.ok(scenario, `${entry.id} names unknown scenario ${evidence.scenario}`);
+      assert.ok(
+        evidence.stepIndex >= 0 && evidence.stepIndex < scenario.steps.length,
+        `${entry.id} names step ${evidence.stepIndex}, but ${scenario.id} has ${scenario.steps.length} steps`,
+      );
+      assert.ok(evidence.counterexamples.length > 0, `${entry.id} is observed but carries no counterexample`);
+    });
+  }
+});
+
+describe("K0 boundary coverage: every counterexample actually discriminates", () => {
+  for (const entry of K0_OBLIGATIONS) {
+    if (entry.evidence.kind !== "scenario") continue;
+    const evidence = entry.evidence;
+    for (const violationId of evidence.counterexamples) {
+      test(`${entry.id} is defended by ${violationId}`, () => {
+        const violation = violationById.get(violationId);
+        assert.ok(violation, `${entry.id} names unknown violation ${violationId}`);
+        assert.equal(
+          violation.scenarioId,
+          evidence.scenario,
+          `${violationId} runs against ${violation.scenarioId}, but ${entry.id} is observed in ${evidence.scenario}`,
+        );
+
+        // The counterexample must be rejected, and rejected at the step the obligation lives at —
+        // otherwise it defends some other obligation and this one is still unguarded.
+        const scenario = scenarioById.get(evidence.scenario)!;
+        const bundle = createOperationSink();
+        const result = runScenario(violatingCandidate(violation), scenario, bundle);
+        assert.equal(result.outcome, "FAIL", `${violationId} was accepted by the oracle`);
+        if (result.outcome !== "FAIL") return;
+        assert.ok(
+          result.failures.some((failure) => failure.stepIndex === evidence.stepIndex),
+          `${violationId} failed at steps ${result.failures.map((f) => f.stepIndex).join(",")}, not at ${entry.id}'s step ${evidence.stepIndex}`,
+        );
+      });
+    }
+  }
+});
+
+describe("K0 boundary coverage: the corpus is fully accounted for", () => {
+  test("every scenario is referenced by at least one obligation: none is dead weight", () => {
+    const referenced = new Set(
+      K0_OBLIGATIONS.flatMap((entry) => (entry.evidence.kind === "scenario" ? [entry.evidence.scenario] : [])),
+    );
+    for (const scenario of ALL_SCENARIOS) {
+      assert.ok(referenced.has(scenario.id), `${scenario.id} is not referenced by any obligation`);
+    }
   });
 
-  test("every scenario declares at least one boundary row", () => {
+  test("every scenario's declared rows are rows an obligation actually observes it at", () => {
     for (const scenario of ALL_SCENARIOS) {
-      assert.ok(scenario.k0BoundaryRows.length > 0, `${scenario.id} declares no boundary row`);
-      assert.ok(scenario.sources.length > 0, `${scenario.id} cites no governing source`);
-      assert.ok(scenario.steps.length > 0, `${scenario.id} has no steps`);
+      for (const row of scenario.k0BoundaryRows) {
+        const observing = K0_OBLIGATIONS.filter(
+          (entry) => entry.row === row && entry.evidence.kind === "scenario" && entry.evidence.scenario === scenario.id,
+        );
+        assert.ok(observing.length > 0, `${scenario.id} claims row ${row} but no obligation observes it there`);
+      }
+    }
+  });
+
+  test("every violating transcript defends a recorded obligation", () => {
+    // A violation nobody relies on is either a coverage gap in this map or dead code; both matter.
+    const relied = new Set(
+      K0_OBLIGATIONS.flatMap((entry) => (entry.evidence.kind === "scenario" ? entry.evidence.counterexamples : [])),
+    );
+    for (const violation of VIOLATIONS) {
+      assert.ok(relied.has(violation.id), `violation ${violation.id} defends no obligation in the coverage map`);
+    }
+  });
+
+  test("no part of the fixture claims a remote-revocation freshness guarantee", async () => {
+    // Obligation R10-b, enforced across the corpus rather than at a step: LP-2's decision at K0/K1 is
+    // the negative one, so what has to be checked is that nothing here quietly asserts the positive.
+    // This file is excluded: it necessarily contains the pattern it searches for, and a scanner that
+    // matches its own detector proves nothing about the corpus.
+    const fixtureFiles = (await readdir(HERE)).filter((name) => name.endsWith(".ts") && name !== "coverage.test.ts");
+    const specPath = resolve(HERE, "../../../docs/development/work/K0.2/public-fixture-specification.md");
+    const sources = await Promise.all([
+      ...fixtureFiles.map((name) => readFile(resolve(HERE, name), "utf8")),
+      readFile(specPath, "utf8"),
+    ]);
+
+    const claimsFreshness = /\b(instantaneous|immediately\s+fresh|instantly\s+revoked)\b[^.]*\b(revocation|revoked|remote)\b/i;
+    for (const [index, source] of sources.entries()) {
+      const name = index < fixtureFiles.length ? fixtureFiles[index] : "public-fixture-specification.md";
+      for (const line of source.split("\n")) {
+        // The prohibition is on asserting the guarantee, not on naming it in order to disclaim it.
+        if (/\bnot\b|\bnever\b|\bno\b|cannot|must not/i.test(line)) continue;
+        assert.ok(!claimsFreshness.test(line), `${name} appears to assert remote-revocation freshness: ${line.trim()}`);
+      }
     }
   });
 });

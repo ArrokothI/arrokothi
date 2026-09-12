@@ -1,10 +1,12 @@
 /**
- * K0.2-C6: Decision M-1's four unsafe/state-loss controls exist as negative tests with the assertions
- * M-1 names by name.
+ * K0.2-C6: the unsafe/state-loss controls exist as negative tests, with the assertions their governing
+ * decisions name by name.
  *
- * The accepted K0.1 worksheet fixes which controls this fixture must carry and, for the cancellation
- * control, exactly what it must assert. This file checks the fixture against that list, so the
- * controls cannot quietly lose an assertion in a later edit. It judges the *fixture*, not a Kernel.
+ * The accepted K0.1 worksheet fixes four controls in Decision M-1 and, for the cancellation control,
+ * exactly what it must assert. Round-1 review finding K02-R1-01 added two more — W-8 case 6's
+ * subscription-only deadline and §11 row 8's completion check — for obligations that were going
+ * unobserved. M-1 is a floor, not a ceiling, so the set is checked as a superset of its four.
+ * This file judges the *fixture*, not a Kernel.
  */
 
 import { test, describe } from "node:test";
@@ -18,6 +20,14 @@ import {
 } from "./scenarios.ts";
 import type { Scenario } from "./fixture.ts";
 
+/** The four controls Decision M-1 names by hand. The fixture may carry more; it may not carry fewer. */
+const M1_CONTROLS = [
+  "control-duplicate-conflicting-outcome",
+  "control-stale-timer-and-lost-wake",
+  "control-cancel-versus-complete",
+  "control-missing-checkpoint-code",
+];
+
 /** Concatenated `forbids` prose across a scenario, which is where the named obligations live. */
 function forbidsText(scenario: Scenario): string {
   return scenario.steps.flatMap((step) => step.expect.forbids ?? []).join(" \n ");
@@ -28,13 +38,27 @@ function labels(scenario: Scenario): string {
 }
 
 describe("K0 unsafe/state-loss controls: Decision M-1's set is complete", () => {
-  test("exactly the four controls M-1 names are present", () => {
+  test("Decision M-1's four named controls are all present", () => {
+    // M-1 fixes a floor, not a ceiling: these four must exist. Round-1 review finding K02-R1-01 added
+    // two more unsafe/state-loss controls for §11 obligations that were going unobserved, so the set
+    // is asserted as a superset of M-1's rather than as an exact match.
+    for (const required of M1_CONTROLS) {
+      assert.ok(
+        UNSAFE_CONTROLS.some((scenario) => scenario.id === required),
+        `Decision M-1 requires control ${required}, which is missing`,
+      );
+    }
+  });
+
+  test("the controls added after round-1 review are declared and additional, not replacements", () => {
     assert.deepEqual(
       UNSAFE_CONTROLS.map((scenario) => scenario.id),
       [
         "control-duplicate-conflicting-outcome",
         "control-stale-timer-and-lost-wake",
+        "control-subscription-wait-deadline",
         "control-cancel-versus-complete",
+        "control-completion-obligations",
         "control-missing-checkpoint-code",
       ],
     );
@@ -53,12 +77,11 @@ describe("K0 unsafe/state-loss controls: Decision M-1's set is complete", () => 
     assert.deepEqual(missingCheckpointCode.k0BoundaryRows, [9]);
   });
 
-  test("each control cites Decision M-1 as a governing source", () => {
+  test("each control cites the governing decision that requires it", () => {
     for (const control of UNSAFE_CONTROLS) {
-      assert.ok(
-        control.sources.some((source) => /Decision M-1/.test(source)),
-        `${control.id} does not cite the decision that requires it`,
-      );
+      const cited = control.sources.join(" ");
+      const required = M1_CONTROLS.includes(control.id) ? /Decision M-1/ : /W-8 case 6|§11 row 8/;
+      assert.match(cited, required, `${control.id} does not cite the decision that requires it`);
     }
   });
 

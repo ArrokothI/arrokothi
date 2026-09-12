@@ -8,6 +8,10 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
+**Contract revision 2**, correcting revision 1 after round-1 review returned CHANGES REQUIRED on
+findings K02-R1-01, K02-R1-02 and K02-R1-03. The base, packet scope and C8's blocked state are
+unchanged; what changed is that three criteria were understating what they had to establish. Those
+understatements are recorded below rather than quietly overwritten.
 
 ## Release provenance and predecessor disclosure
 
@@ -59,6 +63,12 @@ Left to sibling packets, not weakened here:
   build the value-limit boundary matrix. Assigned to K1.2 (whole-envelope validation).
 - **K2** owns Effect admission, schema validation and consent. K0.2 exercises only the K0-level fact
   that a proposed Effect is refused at envelope validation with zero sink dispatch (EF-1/EF-2).
+- **§11 row 8's second clause** — that a *previously owned* required Effect or child obligation is
+  settled, transferred or abandoned before completion is accepted — is assigned to **K2.4**. It has no
+  observable K0 case: no previously owned obligation can exist while K1 refuses Effects outright, and
+  CX-3 says exactly that ("K1 without Effects satisfies this trivially ... K2 is where the check
+  becomes non-trivial"). Criterion C6 observes the clause that *is* reachable now. The assignment is
+  recorded in `coverage.ts` as obligation R8-c with that reason, and is checked mechanically.
 - **S1** owns packaging and any published export of this fixture. K0.2 places it under
   `tests/conformance/k0/` and advertises no package surface.
 - **K1.0** may relocate the fixture into the target landing zone; this packet does not create one.
@@ -78,6 +88,8 @@ subscribed wake at batch bound 1.
 **Distinguishing counterexample:** a candidate that selects the older ineligible backlog into the
 wait-ended batch, or that acknowledges it, must FAIL.
 **Evidence:** `tests/conformance/k0/scenarios.ts` (`k0Trace`), `tests/conformance/k0/k0-trace.test.ts`.
+W-8 case 6 is carried by its own control rather than by this scenario; revision 1 claimed the
+stale-timer control already covered it, which was wrong and is corrected under C6.
 
 ### K0.2-C2 — delayed Runtime, and delay that does not block a second Execution
 
@@ -95,9 +107,15 @@ that fails to dispatch the second Execution, must FAIL.
 **Source:** 001 K0 ("a fake operation sink with an independent ledger for later action tests").
 **Observable:** the sink records every attempted operation in a ledger the candidate cannot read back,
 edit, reorder or truncate through the sink's own surface; the ledger is readable by the fixture as an
-observation independent of whatever the candidate reports about itself.
-**Distinguishing counterexample:** a candidate that claims a dispatch the ledger did not record, or
-claims none where the ledger recorded one, must FAIL on ledger comparison rather than on self-report.
+observation independent of whatever the candidate reports about itself. **Independence must survive
+retained references, not only absent methods** (round-1 finding K02-R1-02): a candidate that keeps a
+reference to the input it passed in, to the result it was handed back, or to any object nested inside
+either, must not be able to rewrite recorded history by mutating it after the fact. Historical evidence
+editable by the party it incriminates is not evidence.
+**Distinguishing counterexample:** two kinds, both required. A candidate that claims a dispatch the
+ledger did not record, or claims none where the ledger recorded one, must FAIL on ledger comparison
+rather than on self-report. Separately, mutating each retained reference after `attempt()` returns must
+leave every later ledger read unchanged.
 **Evidence:** `tests/conformance/k0/operation-sink.ts`, `operation-sink.test.ts`.
 
 ### K0.2-C4 — direct baseline specification
@@ -120,12 +138,17 @@ boundary, physical controls, input acceptance and failure observations, as fresh
 not copies of private P0X cases.
 **Evidence:** [public-fixture-specification.md](public-fixture-specification.md) §5.
 
-### K0.2-C6 — the four unsafe/state-loss controls, as negative tests
+### K0.2-C6 — the unsafe/state-loss controls, as negative tests
 
 **Source:** K0.1 worksheet Decision M-1; 001 K0 exit; execution-protocol.md's K0–K4 acceptance examples.
-**Observable:** all four controls exist as executable negative scenarios with per-assertion forbidden
+**Observable:** M-1's four controls exist as executable negative scenarios with per-assertion forbidden
 mutations, namely M-1's row 3 (duplicate/conflicting Outcome), row 5 (stale timer / lost wake), row 7
-(cancel-versus-complete, both orders) and row 9 (missing checkpoint/code). Row 7 additionally asserts,
+(cancel-versus-complete, both orders) and row 9 (missing checkpoint/code). **M-1 is a floor, not a
+ceiling**: round-1 finding K02-R1-01 added two further unsafe/state-loss controls for obligations that
+were going unobserved — W-8 case 6's subscription-only wait with a deadline, including B-7's mandatory
+timeout Event, and §11 row 8's completion check. A dependency-only deadline scenario is explicitly not
+a substitute for W-8 case 6, because that case is sharp only when the wait has no dependency
+alternatives at all. Row 7 additionally asserts,
 as M-1 requires by name: CX-6 full rejection for **both** `continue` and `complete` submitted after
 cancellation acceptance; zero acknowledgment of the reserved batch; no change to accepted
 progress/emissions; B-5 disposition at `CANCELLED`; deterministic recorded rejection on exact retry;
@@ -140,11 +163,17 @@ shipped as a violating transcript and the oracle must reject it.
 
 **Source:** 007 K0.2 acceptance; 007 preamble ("Prepared fixtures are an entry prerequisite, never a
 passed gate"); 006 ("A test fixture is not a passed evidence gate").
-**Observable:** three things hold simultaneously. (a) The only candidate shipped against the real
+**Observable:** four things hold simultaneously. (a) The only candidate shipped against the real
 supported entry is a **refusing** candidate: every scenario reports `REFUSED`, never `PASS`. (b) The
-oracle is nevertheless proven in both directions by hand-authored transcripts — one conforming
-transcript the oracle passes, and one plausible-wrong transcript per control that it rejects with the
-specific violated assertion. (c) No document or test in this packet claims K0, E0 or E1 status.
+oracle is proven in both directions by hand-authored transcripts — one conforming transcript the
+oracle passes, and at least one plausible-wrong transcript per obligation that it rejects with the
+specific violated assertion, at the step that obligation lives at. (c) **The oracle fails closed**
+(round-1 finding K02-R1-03): a step declaring an independent-ledger expectation must never pass
+because the runner was invoked without a usable observer. Omission is a type error, and an unusable
+observer at runtime is a failure of the assertion rather than a reason to skip it — for a conforming
+candidate as much as a violating one, or the guard would be discriminating on the candidate instead
+of on whether the obligation was checked. (d) No document or test in this packet claims K0, E0 or
+E1 status.
 **Distinguishing counterexample:** an oracle that passes every transcript, or that rejects every
 transcript, is vacuous; the discrimination test fails in both directions if either happens.
 **Evidence:** `tests/conformance/k0/candidate.ts`, `refusal.test.ts`, `oracle-discrimination.test.ts`.
@@ -162,6 +191,24 @@ states E0–E6 are planned and not implemented. This criterion is expected to cl
 **BLOCKED_EXTERNAL**, not PASS. The owner released the packet as written with that consequence stated
 in advance. No E0 acceptance may be claimed, implied or self-granted, and nothing is written in the
 benchmark repository by this packet.
+
+### K0.2-C9 — the coverage machinery proves obligations, not row numbers
+
+**Source:** 001 K0 exit ("an observable acceptance/rejection result" for each boundary); round-1
+finding K02-R1-01; [012](../../012-review-methods.md) ("a collection of individually correct sections
+or unit tests does not establish a coherent packet").
+**Observable:** coverage is recorded per **obligation**, not per §11 row, because several rows state
+several distinguishing obligations in one cell — row 1 has a replay half and a conflict half, row 2
+has three identity claims, row 5 has seven lettered sub-parts. Every obligation resolves to one of:
+a scenario plus a specific step plus at least one counterexample the oracle demonstrably rejects *at
+that step*; a corpus-level check, for negative obligations about the fixture as a whole; or an
+explicit assignment to a named packet with the reason it has no observable K0 case. The map and the
+scenarios declare the relationship separately and must agree in both directions, and every violating
+transcript must defend a recorded obligation.
+**Distinguishing counterexample:** revision 1's machinery is itself the counterexample — it passed
+while most of rows 1, 2, 5(c)/(e) and all of row 8's completion clause went untested, because it only
+checked that each row number pointed at a scenario that existed.
+**Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`.
 
 ## Selected proof methods ([012](../../012-review-methods.md))
 

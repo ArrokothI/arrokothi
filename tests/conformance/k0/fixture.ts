@@ -14,7 +14,7 @@
 
 import { deepStrictEqual } from "node:assert";
 import type { ExecutionState, FixtureEvent, OutcomeEnvelope, OutcomeRejection, WaitRecord } from "./protocol-vocabulary.ts";
-import type { OperationSink } from "./operation-sink.ts";
+import type { OperationSink, OperationSinkBundle } from "./operation-sink.ts";
 
 /** Versioned public fixture identity. Benchmark E0/E1 pin this string together with a repository revision. */
 export const FIXTURE_VERSION = "arrokothi-k0-public-fixture/1";
@@ -40,6 +40,11 @@ export type Command =
   | { readonly kind: "deliver_timer"; readonly executionId: string; readonly generation: string; readonly timeoutEvent: FixtureEvent }
   /** Recover an Execution when only these definition revisions have runnable code (PC-4/PC-5). */
   | { readonly kind: "recover"; readonly executionId: string; readonly availableDefinitionRevisions: readonly string[] }
+  /**
+   * Authorized takeover of a still-unresolved exchange. ID-9 cases 2-3: this advances the writer epoch
+   * under the **same** Activation ID rather than minting a new one, because the exchange is the same.
+   */
+  | { readonly kind: "takeover"; readonly executionId: string }
   /** Read an Execution without changing it. Used to assert that acting on one Execution left another alone. */
   | { readonly kind: "inspect"; readonly executionId: string };
 
@@ -72,6 +77,18 @@ export interface Observation {
    * makes CX-6's "acknowledges none of that batch" an observable fact rather than a claim.
    */
   readonly dispatchedBatch: readonly string[] | null;
+  /**
+   * The current unresolved Activation's ID; `null` when none is unresolved. Observed because §11 row 2
+   * turns on identity, not only on epochs: semantically different exchanges must never share an
+   * Activation ID, while an authorized takeover must keep it (ID-9).
+   */
+  readonly activationId: string | null;
+  /**
+   * The Event ID of an ingress the Kernel refused rather than accepting into the mailbox; `null` when
+   * the last command refused nothing. execution-protocol.md: "Terminal ingress refuses new ordinary
+   * input." A refusal is not a queued Event and not a B-5 disposition; it is a third answer.
+   */
+  readonly ingressRefused: string | null;
   /** The receipt returned by the most recent accepted Outcome, if any. */
   readonly receipt: string | null;
   /** The rejection recorded by the most recent rejected Outcome, if any. */
@@ -103,7 +120,11 @@ export interface Scenario {
   readonly title: string;
   /** Governing sources this scenario is derived from, for a reviewer to check against. */
   readonly sources: readonly string[];
-  /** The §11 boundary rows of the accepted K0.1 worksheet this scenario observes. */
+  /**
+   * The §11 rows this scenario is the coverage map's *attributed evidence* for — not every row whose
+   * behavior it happens to touch. Several scenarios exercise the same rule incidentally; attribution
+   * names the one the map relies on, so `coverage.test.ts` can check the two agree in both directions.
+   */
   readonly k0BoundaryRows: readonly number[];
   /** True when this scenario is one of Decision M-1's four unsafe/state-loss controls. */
   readonly isUnsafeControl: boolean;
@@ -151,11 +172,17 @@ export type ScenarioResult =
   | { readonly outcome: "PASS"; readonly scenarioId: string; readonly candidate: string; readonly steps: number }
   | { readonly outcome: "FAIL"; readonly scenarioId: string; readonly candidate: string; readonly failures: readonly StepFailure[] };
 
-export interface RunOptions {
-  readonly sink: OperationSink;
-  /** Independent ledger size reader, used only when a step declares `ledgerCount`. */
-  readonly ledgerCount?: () => number;
-}
+/**
+ * The runner takes the whole sink **bundle**, not a sink plus an optional observer.
+ *
+ * An earlier revision accepted `{ sink, ledgerCount? }` and skipped a step's `ledgerCount` assertion
+ * whenever the observer happened to be absent. That failed *open*: a scenario whose whole point was
+ * independent attribution could report PASS because of how the runner was invoked, and the one bad
+ * candidate that is catchable only through the ledger would have slipped through. Requiring the
+ * bundle makes the observer impossible to omit at the type level, and `assertLedger` below refuses to
+ * skip the check at runtime even if a caller casts its way around the type.
+ */
+export type RunOptions = OperationSinkBundle;
 
 /**
  * Drive one candidate through one scenario.
@@ -196,15 +223,10 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
         forbids,
       });
     }
-    if (step.expect.ledgerCount !== undefined && options.ledgerCount !== undefined) {
-      const observedLedger = options.ledgerCount();
-      if (observedLedger !== step.expect.ledgerCount) {
-        failures.push({
-          stepIndex,
-          label: `${step.expect.label} (independent sink ledger)`,
-          detail: `expected ledger size ${step.expect.ledgerCount}, independent ledger recorded ${observedLedger}`,
-          forbids,
-        });
+    if (step.expect.ledgerCount !== undefined) {
+      const ledgerFailure = assertLedger(step.expect.ledgerCount, options);
+      if (ledgerFailure !== null) {
+        failures.push({ stepIndex, label: `${step.expect.label} (independent sink ledger)`, detail: ledgerFailure, forbids });
       }
     }
   }
@@ -213,6 +235,23 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
     return { outcome: "FAIL", scenarioId: scenario.id, candidate: candidate.name, failures };
   }
   return { outcome: "PASS", scenarioId: scenario.id, candidate: candidate.name, steps: scenario.steps.length };
+}
+
+/**
+ * Fail closed. A step that declares a ledger expectation is asserting independent attribution, so an
+ * unusable observer is a failure of that assertion, never a reason to skip it. Returns `null` when the
+ * expectation holds and a failure description otherwise.
+ */
+function assertLedger(expected: number, options: RunOptions): string | null {
+  const count = options?.ledger?.count;
+  if (typeof count !== "function") {
+    return `this step asserts independent-ledger attribution, but the runner was invoked without a usable ledger observer; the expectation cannot be skipped (expected ${expected})`;
+  }
+  const observed = count.call(options.ledger);
+  if (typeof observed !== "number") {
+    return `the independent ledger observer returned ${typeof observed}, not a count (expected ${expected})`;
+  }
+  return observed === expected ? null : `expected ledger size ${expected}, independent ledger recorded ${observed}`;
 }
 
 /** Field-by-field difference, so a failure names the violated obligation rather than dumping two objects. */

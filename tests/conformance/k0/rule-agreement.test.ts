@@ -19,7 +19,7 @@ import {
   VALUE_BOUNDS,
 } from "./protocol-vocabulary.ts";
 import type { FixtureEvent, WaitRecord } from "./protocol-vocabulary.ts";
-import { k0Trace, staleTimerAndLostWake } from "./scenarios.ts";
+import { k0Trace, staleTimerAndLostWake, subscriptionWaitDeadline } from "./scenarios.ts";
 
 // Rebuilt here from the worksheet rather than imported from the scenarios, so that agreement between
 // the two is an actual finding and not a shared definition.
@@ -115,6 +115,29 @@ describe("§3's wait-ended batch rule agrees with the fixture's literal expectat
     const derived = selectWaitEndedBatch(waitOnCorr2, [timeoutForG2, laterResult], 4, "to-g2").map((event) => event.eventId);
     assert.deepEqual(derived, ["to-g2", "res-2"]);
     assert.deepEqual(staleTimerAndLostWake.steps[10]?.expect.observation.dispatchedBatch, derived);
+  });
+
+  test("W-8 case 6: at bound 1 a B-7 batch is exactly the timeout Event, however old the backlog is", () => {
+    // The case the round-1 review found missing. The wait has no dependency alternatives at all, so
+    // nothing in it could match a timeout; the mandatory member arrives by construction. Derived here
+    // independently, then compared against the literal expectation the scenario writes down.
+    const subscriptionOnlyWithDeadline: WaitRecord = {
+      dependencies: [],
+      subscriptions: [{ subscriptionClass: "continue" }],
+      deadline: 1_000,
+      generation: "gd1",
+    };
+    const timeoutForGd1: FixtureEvent = { eventId: "to-gd1", destination: X, kind: "kernel.wait.timeout", category: "kernel_timeout", waitGeneration: "gd1" };
+
+    // bq-1 was accepted first and is ineligible; to-gd1 is the mandatory member.
+    const derived = selectWaitEndedBatch(subscriptionOnlyWithDeadline, [billingOne, timeoutForGd1], 1, "to-gd1").map((event) => event.eventId);
+
+    assert.deepEqual(derived, ["to-gd1"]);
+    assert.equal(isEligibleUnderWait(subscriptionOnlyWithDeadline, timeoutForGd1), false, "the timeout is eligible via neither list");
+    assert.deepEqual(subscriptionWaitDeadline.steps[5]?.expect.observation.dispatchedBatch, derived);
+
+    // And the bug the control exists to catch: ordinary selection would have taken the older backlog.
+    assert.deepEqual(selectOrdinaryBatch([billingOne, timeoutForGd1], 1).map((e) => e.eventId), ["bq-1"]);
   });
 
   test("B-1: a batch bound below 1 is rejected rather than silently producing an empty batch", () => {
