@@ -187,7 +187,19 @@ export interface Observation {
   readonly receipt: string | null;
   /** The most recent recorded create/input/Outcome rejection, if any (including ID-2 content conflict). */
   readonly rejection: OutcomeRejection | null;
-  /** Writer epoch of the current exchange. A takeover advances it under the same Activation ID (ID-9). */
+  /**
+   * Writer epoch of the current exchange: the attempt currently authorized to commit progress for the
+   * Activation named beside it. A takeover advances it under the **same** Activation ID (ID-4, ID-9
+   * cases 2-3); ordinary redelivery does not (ID-9 case 1).
+   *
+   * **Compared relationally, per exchange** (round-13 review finding K02-R13-01). ID-4 fixes a total
+   * order and three relations inside one unresolved exchange, and explicitly leaves "whether the
+   * counter is reset or continues across a later, genuinely new Activation ID" to the implementation.
+   * `EpochRelation` enforces exactly the former and nothing of the latter, and the schedules write
+   * exchange-local attempt ordinals rather than absolute counters. When `activationId` is `null` there
+   * is no current exchange for this to be the writer of, and nothing is asserted about it at all: how
+   * a candidate spells "no current epoch" is a representation no accepted decision fixes.
+   */
   readonly writerEpoch: number;
   /** PC-5: an inspectable recovery hold, never a fresh-restored fabrication. */
   readonly recoveryHold: { readonly reason: string } | null;
@@ -319,13 +331,27 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
   // Round-5 review finding K02-R5-01: a single shared relation treated cross-family reuse as a
   // collision and rejected a conforming implementation for an implementation-owned representation
   // choice. Receipts and Activation IDs therefore get separate bijections.
+  // Round-13 review finding K02-R13-01 adds the third family. The epoch relation is scoped per
+  // exchange rather than per run, because ID-4 fixes advancement and supersession *within* one
+  // unresolved exchange and leaves the counter's behaviour across a genuinely new Activation ID to
+  // the implementation.
   const receiptTokens = new TokenRelation();
   const activationTokens = new TokenRelation();
+  const writerEpochs = new EpochRelation();
+  const tokens: TokenNamespace = { receiptTokens, activationTokens, writerEpochs };
   for (const [stepIndex, step] of scenario.steps.entries()) {
     const forbids = step.expect.forbids ?? [];
+    // Commands are written in the laboratory's names; the candidate answers in its own. The two
+    // candidate-minted families are resolved back before delivery, and an unresolvable name fails
+    // the step rather than reaching the candidate as a fabrication.
+    const adapted = adaptCommandToCandidate(step.command, tokens);
+    if ("failure" in adapted) {
+      failures.push({ stepIndex, label: step.expect.label, detail: adapted.failure, forbids });
+      break;
+    }
     let actual: Observation;
     try {
-      actual = started.apply(step.command);
+      actual = started.apply(adapted.command);
     } catch (error) {
       failures.push({
         stepIndex,
@@ -336,7 +362,7 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
       // A throw leaves the candidate's state unknown, so later steps cannot be judged.
       break;
     }
-    for (const detail of compareRepresentations(step.expect.observation, actual, { receiptTokens, activationTokens })) {
+    for (const detail of compareRepresentations(step.expect.observation, actual, tokens)) {
       failures.push({ stepIndex, label: step.expect.label, detail, forbids });
     }
     try {
@@ -361,6 +387,51 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
     return { outcome: "FAIL", scenarioId: scenario.id, candidate: candidate.name, failures };
   }
   return { outcome: "PASS", scenarioId: scenario.id, candidate: candidate.name, steps: scenario.steps.length };
+}
+
+/**
+ * **Translate a command out of the laboratory's namespace and into the candidate's, for the two
+ * families the candidate mints.**
+ *
+ * Round-13 review finding K02-R13-01 named half of this directly: "the schedules also place the
+ * pinned epoch in submitted Outcomes, so the wrong fixture policy can turn the later submission into
+ * a stale-writer rejection and make the expected trace unreachable". Under a relational epoch oracle
+ * that is not a policy question any more but a namespace one. A schedule writes
+ * `submit_outcome{activationId:"act-2", writerEpoch:1}` because that is how *the laboratory* names
+ * the first attempt at the second exchange; a candidate that mints `"A#7"` and holds epoch `41` there
+ * would be handed an envelope naming an exchange it never opened at an epoch it never issued, and
+ * would correctly reject it — failing the schedule for the representation choice ID-3 and ID-4 leave
+ * it. Observations are compared the other way round, by binding the laboratory's name to whatever the
+ * candidate reported, so the binding needed here already exists by the time a command uses it.
+ *
+ * The sweep that R13-01 required turned up the Activation-ID half too, and it is the same defect at
+ * the same port: `compareRepresentations` has enforced ID-3/ID-9 relationally since round 5 while
+ * every `submit_outcome`/`resubmit_outcome` command still delivered the laboratory's literal spelling.
+ * Both families are therefore resolved here. Nothing else in a command is candidate-minted — Event
+ * IDs, emission IDs, wait generations, deadlines, progress values, producers and request keys all
+ * originate in the schedule and reach the candidate unchanged.
+ *
+ * It fails closed. A command naming an exchange or an attempt this run has not observed cannot be
+ * adapted, and guessing would hand the candidate a fabricated identity; the step fails with the
+ * reason instead. `interactions.test.ts` additionally checks the corpus statically, so a schedule
+ * cannot reach a candidate with an unresolvable name in the first place.
+ */
+function adaptCommandToCandidate(command: Command, tokens: TokenNamespace): { readonly command: Command } | { readonly failure: string } {
+  if (command.kind !== "submit_outcome" && command.kind !== "resubmit_outcome") return { command };
+  const envelope = command.outcome;
+  const activationId = tokens.activationTokens.resolve(envelope.activationId);
+  if (activationId === null) {
+    return {
+      failure: `this step submits an Outcome for exchange ${JSON.stringify(envelope.activationId)}, which no earlier step of this run observed, so it cannot be named in the candidate's own namespace (ID-3)`,
+    };
+  }
+  const writerEpoch = tokens.writerEpochs.resolve(envelope.activationId, envelope.writerEpoch);
+  if (writerEpoch === null) {
+    return {
+      failure: `this step submits an Outcome for exchange ${JSON.stringify(envelope.activationId)} at attempt ${envelope.writerEpoch}, which no earlier step of this run observed, so it cannot be named in the candidate's own namespace (ID-4)`,
+    };
+  }
+  return { command: { ...command, outcome: { ...envelope, activationId, writerEpoch } } };
 }
 
 /**
@@ -464,12 +535,17 @@ function normalizeRejection(actual: Observation, expected: Observation): Observa
  * reuse of one raw spelling therefore passes; collapsing two receipts, or two Activation IDs, onto
  * one spelling still fails within its own family.
  *
- * **`writerEpoch` is deliberately not in here.** §2 leaves "integer vs. fencing token" open, and this
- * fixture models ID-4's first option, which ID-4 permits in terms ("a monotonically increasing integer
- * (or equivalent total order)"). Every assertion made of it is about *advancement and supersession*,
- * which any total order satisfies; a candidate using fencing tokens adapts them to that order at the
- * port. Recorded here rather than left implicit, because an unstated modelling choice is how the
- * subscription defect got in.
+ * **`writerEpoch` is the third candidate-minted family, and round 13 moved it in here.** The prior
+ * revision left it out of the relational treatment and compared it literally, recording that "every
+ * assertion made of it is about advancement and supersession". Round-13 review finding K02-R13-01
+ * disproved that claim from the corpus: a literal comparison also fixes how the counter behaves
+ * **across a genuinely new Activation ID**, which ID-4 leaves implementation-owned in terms — "Whether
+ * the counter is reset or continues across a later, genuinely new Activation ID is an implementation
+ * choice ... either satisfies ID-3/ID-4 as long as a stale epoch for the *current* exchange is always
+ * rejected". Six scenarios pinned an advance at each new Activation ID while `identity-producer-scope`
+ * pinned no change at all, so no single conforming policy could pass the whole corpus. `EpochRelation`
+ * below states what is enforced instead, and `adaptCommandToCandidate` states why the submitted epoch
+ * has to be adapted at the port rather than asserted in the schedule's own numbering.
  *
  * **Normalization sweep (K02-R5-01).** No other normalization state couples the two families.
  * `normalizeRejection` keys only on rejection classification (canonical CX-6 vs. non-canonical
@@ -477,7 +553,9 @@ function normalizeRejection(actual: Observation, expected: Observation): Observa
  * independently and never keys one family's normalization on the other's observed value; the
   * recovery-hold check keys only on presence plus non-empty reason (PC-5); `acceptedDeadline`
   * values are fixture-supplied deadlines compared literally. The only shared mutable normalization
-  * state was the single `TokenRelation`, now split.
+  * state was the single `TokenRelation`, now split. Round 13 adds a third, independent relation for
+  * the writer epoch: it is keyed by the exchange the step names and never by receipt or Activation-ID
+  * spelling, so no family's normalization keys on another's observed value.
  */
 class TokenRelation {
   private readonly forward = new Map<string, string>();
@@ -503,6 +581,103 @@ class TokenRelation {
     return null;
   }
 
+  /**
+   * The candidate's own spelling for a token the schedule names, or `null` when this run has not
+   * observed it yet. Used by `adaptCommandToCandidate`, because a command that names an
+   * Activation ID has to reach the candidate in the candidate's own namespace.
+   */
+  resolve(expected: string): string | null {
+    return this.forward.get(expected) ?? null;
+  }
+}
+
+/**
+ * **The writer epoch, compared by the relations ID-4 actually fixes — and only inside one exchange.**
+ *
+ * Added by round-13 review finding K02-R13-01. ID-4 and ID-9 fix three things about the epoch, all of
+ * them scoped to *one unresolved exchange* (one Activation ID, ID-3):
+ *
+ *   1. **Ordinary redelivery keeps it.** ID-9 case 1: the same dispatch delivered again is the
+ *      identical in-flight exchange, "same Activation ID, same writer epoch".
+ *   2. **An authenticated takeover advances it.** ID-4/ID-9 case 2: bumped "only by an authenticated
+ *      takeover decision — including a takeover **within** the current unresolved Activation
+ *      ID/exchange", never by ordinary retry.
+ *   3. **A stale epoch for the current exchange is rejected.** ID-9 case 3, and ID-4's own proviso.
+ *
+ * And it fixes one thing by explicitly *not* fixing it: "Whether the counter is reset or continues
+ * across a later, genuinely new Activation ID is an implementation choice ... either satisfies
+ * ID-3/ID-4". A fixture that compares epochs literally silently decides that choice, which is what
+ * K02-R13-01 found: `k0-trace`, `identity-create-and-activation`, `control-stale-timer-and-lost-wake`,
+ * `control-subscription-wait-deadline`, `wait-structure-not-satisfiability` and
+ * `control-missing-checkpoint-code` all advanced the epoch at a new Activation ID with no takeover
+ * anywhere, while `identity-producer-scope` held it fixed across exactly the same transition. A reset
+ * implementation failed the first six; a continuing implementation failed the seventh; no conforming
+ * implementation passed the corpus. C7(b) forbids pinning a representation the protocol leaves open,
+ * and C9 records that over-constraint — failing a right candidate — is the worse of the two failures.
+ *
+ * So the epoch is bound **per exchange**, and each exchange's sub-relation requires only:
+ *
+ *   - the same expected epoch always names the same observed epoch (rule 1);
+ *   - a later expected epoch names a strictly later observed one, and an earlier expected epoch a
+ *     strictly earlier observed one, so ID-4's total order survives whatever the values are (rules
+ *     2 and 3);
+ *   - two distinct expected epochs never collapse onto one observed epoch.
+ *
+ * **Nothing relates two exchanges.** A new Activation ID opens a fresh sub-relation, so reset,
+ * continue, advance-per-exchange and an opaque ascending fencing token are all accepted, which is
+ * exactly the freedom ID-4 grants. The schedules cooperate by writing each exchange's epochs as
+ * attempt ordinals starting at 1 (see `scenarios.ts`), so the corpus cannot express a cross-exchange
+ * claim even in prose; `interactions.test.ts` enforces that shape, and
+ * `blind-spot-regression.test.ts` runs four genuinely different policies through the whole corpus.
+ *
+ * **Where no exchange is current, nothing is asserted at all.** `Observation.writerEpoch` is "the
+ * writer epoch of the current exchange"; before the first dispatch and after an exchange resolves
+ * there is no current exchange, and how a candidate spells that — a retained last value, a zero, a
+ * base token — is a representation ID-4 does not fix. The schedules still write the closed exchange's
+ * last ordinal there as documentation of one conforming answer, the way they write one conforming
+ * rejection reason, and the runner neither compares nor binds it.
+ */
+class EpochRelation {
+  private readonly byExchange = new Map<string, Map<number, number>>();
+
+  private scope(exchange: string): Map<number, number> {
+    const existing = this.byExchange.get(exchange);
+    if (existing !== undefined) return existing;
+    const created = new Map<number, number>();
+    this.byExchange.set(exchange, created);
+    return created;
+  }
+
+  /**
+   * Bind, or check, the epoch a step observes for `exchange`. Returns a failure description, or
+   * `null` when every relation ID-4 fixes still holds.
+   */
+  check(exchange: string, expected: number, actual: number): string | null {
+    const scope = this.scope(exchange);
+    const bound = scope.get(expected);
+    if (bound !== undefined) {
+      return bound === actual
+        ? null
+        : `writerEpoch: exchange ${JSON.stringify(exchange)} observed epoch ${JSON.stringify(bound)} for this attempt earlier in the run and now observes ${JSON.stringify(actual)}; within one unresolved exchange the epoch changes only by an authenticated takeover (ID-4, ID-9 case 1)`;
+    }
+    for (const [otherExpected, otherActual] of scope) {
+      const wanted = expected > otherExpected ? "later" : "earlier";
+      const holds = expected > otherExpected ? actual > otherActual : actual < otherActual;
+      if (!holds) {
+        return `writerEpoch: exchange ${JSON.stringify(exchange)} needs an epoch strictly ${wanted} than the ${JSON.stringify(otherActual)} it observed for its attempt ${otherExpected}, and observed ${JSON.stringify(actual)}; ID-4 fixes a total order in which a takeover advances authority and a superseded writer stays behind`;
+      }
+    }
+    scope.set(expected, actual);
+    return null;
+  }
+
+  /**
+   * The candidate's own epoch for an attempt the schedule names, or `null` when this run has not
+   * observed that attempt yet. Used to adapt a submitted Outcome at the port.
+   */
+  resolve(exchange: string, expected: number): number | null {
+    return this.byExchange.get(exchange)?.get(expected) ?? null;
+  }
 }
 
 /**
@@ -518,6 +693,7 @@ class TokenRelation {
 export interface TokenNamespace {
   readonly receiptTokens: TokenRelation;
   readonly activationTokens: TokenRelation;
+  readonly writerEpochs: EpochRelation;
 }
 
 function compareRepresentations(expected: Observation, actual: Observation, tokens: TokenNamespace): readonly string[] {
@@ -531,6 +707,14 @@ function compareRepresentations(expected: Observation, actual: Observation, toke
 
   const activationFailure = tokens.activationTokens.check("activationId", expected.activationId, actual.activationId);
   if (activationFailure !== null) failures.push(activationFailure);
+
+  // The epoch is asserted exactly where the protocol gives it a meaning: while an exchange is
+  // unresolved. `expected.activationId` names that exchange, and a null one means there is none to
+  // be the writer of (EpochRelation's closing note).
+  if (expected.activationId !== null) {
+    const epochFailure = tokens.writerEpochs.check(expected.activationId, expected.writerEpoch, actual.writerEpoch);
+    if (epochFailure !== null) failures.push(epochFailure);
+  }
 
   if (expected.recoveryHold === null && actual.recoveryHold !== null) {
     failures.push(`recoveryHold: expected none, observed ${JSON.stringify(actual.recoveryHold)}`);
@@ -556,6 +740,10 @@ function normalizeRepresentations(actual: Observation, expected: Observation): O
   if (expected.receipt !== null && normalized.receipt !== null) normalized = { ...normalized, receipt: expected.receipt };
   if (expected.activationId !== null && normalized.activationId !== null) normalized = { ...normalized, activationId: expected.activationId };
   if (expected.recoveryHold !== null && normalized.recoveryHold !== null) normalized = { ...normalized, recoveryHold: expected.recoveryHold };
+  // The epoch is judged only by `EpochRelation`, whether or not this step had an exchange to judge it
+  // in, so the structural comparison never sees it. Leaving it to `deepStrictEqual` is exactly the
+  // literal comparison round-13 review finding K02-R13-01 removed.
+  normalized = { ...normalized, writerEpoch: expected.writerEpoch };
   return normalized;
 }
 

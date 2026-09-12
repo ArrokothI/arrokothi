@@ -26,9 +26,18 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { VIOLATIONS } from "./candidate.ts";
+import {
+  CONFORMING_EPOCH_POLICIES,
+  VIOLATIONS,
+  VIOLATING_EPOCH_POLICIES,
+  emptyDependencyShortcutCandidate,
+  epochPolicyCandidate,
+  violatingCandidate,
+} from "./candidate.ts";
 import { checkWaitWellFormed, isEligibleUnderWait } from "./protocol-vocabulary.ts";
 import { ALL_SCENARIOS } from "./scenarios.ts";
+import { runScenario } from "./fixture.ts";
+import { createOperationSink } from "./operation-sink.ts";
 import type { Observation } from "./fixture.ts";
 
 /** The two fields C3's observation surface did not have. */
@@ -767,17 +776,23 @@ describe("round-10: takeover keeps the pinned input, redelivery is representable
     assert.deepEqual(late.expect.observation.queued, ["in-1", "in-2"]);
     assert.deepEqual(late.expect.observation.dispatchedBatch, ["in-1"]);
 
+    // The epoch assertions here are relational on purpose (round-13 review finding K02-R13-01): what
+    // the schedule states is that redelivery names the *same* attempt the dispatch did and the
+    // takeover names a *later* one in the same exchange, which is what ID-9 cases 1 and 2 fix. The
+    // ordinals themselves are laboratory names bound to whatever a candidate reports.
+    const dispatched = target.steps[3]!.expect.observation;
     const redelivered = target.steps[5]!;
     assert.equal(redelivered.command.kind, "redeliver_dispatch");
     assert.deepEqual(redelivered.expect.observation.dispatchedBatch, ["in-1"]);
     assert.equal(redelivered.expect.observation.activationId, "act-1");
-    assert.equal(redelivered.expect.observation.writerEpoch, 1);
+    assert.equal(redelivered.expect.observation.activationId, dispatched.activationId);
+    assert.equal(redelivered.expect.observation.writerEpoch, dispatched.writerEpoch);
 
     const takenOver = target.steps[6]!;
     assert.equal(takenOver.command.kind, "takeover");
     assert.deepEqual(takenOver.expect.observation.dispatchedBatch, ["in-1"]);
     assert.equal(takenOver.expect.observation.activationId, "act-1");
-    assert.equal(takenOver.expect.observation.writerEpoch, 2);
+    assert.ok(takenOver.expect.observation.writerEpoch > redelivered.expect.observation.writerEpoch);
 
     const repin = violation("identity-activation/takeover-repins-the-pinned-batch");
     const redeliveryRepin = violation("identity-activation/redelivery-repins-the-pinned-batch");
@@ -796,7 +811,7 @@ describe("round-10: takeover keeps the pinned input, redelivery is representable
     const target = scenario("identity-create-and-activation");
     const stale = target.steps[7]!;
     assert.equal(stale.expect.observation.rejection?.classification, "stale_exchange");
-    assert.equal(stale.expect.observation.writerEpoch, 2);
+    assert.equal(stale.expect.observation.writerEpoch, target.steps[6]!.expect.observation.writerEpoch);
   });
 });
 
@@ -900,5 +915,181 @@ describe("round-11 input identity discrimination", () => {
       const expected = target.steps[entry.stepIndex]!.expect.observation;
       assert.deepEqual(changedFields(expected, entry.mutate(expected)), entry.mustNameFields);
     }
+  });
+});
+
+describe("round-13: the epoch oracle fixes what ID-4 fixes, and nothing it leaves open", () => {
+  // K02-R13-01. The pre-round-13 oracle compared `writerEpoch` literally, which decided the one
+  // question ID-4 explicitly leaves to the implementation — "whether the counter is reset or
+  // continues across a later, genuinely new Activation ID". Because six scenarios advanced the epoch
+  // at a new Activation ID with no takeover anywhere and `identity-producer-scope` held it fixed
+  // across the same transition, the corpus did not merely over-constrain: it was unsatisfiable. These
+  // tests are the evidence the finding asked for, one case per relation.
+
+  for (const policy of CONFORMING_EPOCH_POLICIES) {
+    test(`a candidate whose epochs follow the ${policy.name} policy passes every scenario`, () => {
+      // Reset and continue are ID-4's two named options; advance-per-exchange is the policy the
+      // pre-correction corpus accidentally made normative; the opaque ascending fence is §2's "integer
+      // vs. fencing token" freedom and shares no value with the schedule's ordinals, so it also proves
+      // the runner resolves a submitted epoch into the candidate's own namespace rather than handing
+      // over the laboratory's number.
+      for (const target of ALL_SCENARIOS) {
+        const result = runScenario(epochPolicyCandidate(policy), target, createOperationSink());
+        assert.equal(
+          result.outcome,
+          "PASS",
+          `${policy.name} was rejected on ${target.id}: ${result.outcome === "FAIL" ? result.failures.map((f) => `#${f.stepIndex} ${f.detail}`).join(" | ") : result.outcome}`,
+        );
+      }
+    });
+  }
+
+  for (const policy of VIOLATING_EPOCH_POLICIES) {
+    test(`and the ${policy.name} policy is still rejected at the takeover it breaks`, () => {
+      // Acceptance alone would be vacuous. These break what ID-4 does fix — a takeover advances
+      // authority for the still-unresolved exchange, and the order is monotone — so the same relational
+      // oracle must reject them, at the takeover step.
+      const target = ALL_SCENARIOS.find((entry) => entry.id === "identity-create-and-activation")!;
+      const takeoverStep = target.steps.findIndex((step) => step.command.kind === "takeover");
+      const result = runScenario(epochPolicyCandidate(policy), target, createOperationSink());
+      assert.equal(result.outcome, "FAIL", `${policy.name} was accepted by the oracle`);
+      if (result.outcome !== "FAIL") return;
+      assert.ok(
+        result.failures.some((failure) => failure.stepIndex === takeoverStep && failure.detail.includes("writerEpoch")),
+        `${policy.name} failed at ${result.failures.map((f) => f.stepIndex).join(",")}, not at the takeover step ${takeoverStep}`,
+      );
+    });
+  }
+
+  test("ordinary redelivery keeping the epoch, and takeover advancing it, each still fail their own way", () => {
+    // The two within-exchange relations ID-9 states as cases 1 and 2, kept as single-field transcripts
+    // so the relational oracle is shown to discriminate them separately rather than as one epoch rule.
+    const target = ALL_SCENARIOS.find((entry) => entry.id === "identity-create-and-activation")!;
+    for (const [id, stepIndex] of [
+      ["identity-activation/redelivery-advances-the-writer-epoch", 5],
+      ["identity-activation/takeover-leaves-the-writer-epoch-unchanged", 6],
+    ] as const) {
+      const result = runScenario(violatingCandidate(violation(id)), target, createOperationSink());
+      assert.equal(result.outcome, "FAIL", `${id} was accepted`);
+      if (result.outcome !== "FAIL") return;
+      const failure = result.failures.find((entry) => entry.stepIndex === stepIndex);
+      assert.ok(failure, `${id} did not fail at step ${stepIndex}`);
+      assert.ok(failure.detail.includes("writerEpoch"), `${id} failed at the right step for the wrong reason: ${failure.detail}`);
+    }
+  });
+
+  test("a stale old-epoch submission is still rejected, and that rejection is what the schedule asserts", () => {
+    // ID-9 case 3 / LP-1. The stale submission is the one place a schedule names an attempt the
+    // exchange has already superseded; the adapted command carries the candidate's own epoch for that
+    // superseded attempt, so a candidate is judged on rejecting it rather than on arithmetic.
+    const target = ALL_SCENARIOS.find((entry) => entry.id === "identity-create-and-activation")!;
+    const stale = target.steps[7]!;
+    assert.equal(stale.command.kind, "submit_outcome");
+    assert.ok(stale.command.kind === "submit_outcome");
+    assert.equal(stale.command.outcome.writerEpoch, 1, "the stale submission names the superseded attempt");
+    assert.equal(stale.expect.observation.writerEpoch, 2, "while the exchange's current attempt has advanced");
+    assert.equal(stale.expect.observation.rejection?.classification, "stale_exchange");
+    const result = runScenario(
+      violatingCandidate(violation("identity-activation/superseded-writer-epoch-accepted-from-a-stale-read")),
+      target,
+      createOperationSink(),
+    );
+    assert.equal(result.outcome, "FAIL");
+    if (result.outcome !== "FAIL") return;
+    assert.ok(result.failures.some((failure) => failure.stepIndex === 7));
+  });
+
+  test("and where no exchange is unresolved the epoch is asserted nowhere", () => {
+    // C7(b): "the writer epoch of the current exchange" has no meaning when there is no current
+    // exchange, and ID-4 fixes no representation for that. Each conforming policy above answers that
+    // case differently — 0, a retained value, a distant base — and all of them pass, which is the
+    // evidence that the residual value is documentation rather than a pinned claim.
+    const answers = new Set(CONFORMING_EPOCH_POLICIES.map((policy) => policy.whenNoExchange(null)));
+    assert.ok(answers.size > 1, "the policies must disagree about the residual value for this to prove anything");
+    const trace = ALL_SCENARIOS.find((entry) => entry.id === "k0-trace")!;
+    assert.equal(trace.steps[8]!.expect.observation.activationId, null);
+  });
+});
+
+describe("round-13: the empty-dependency clause of W-2 step 2 has an owner that actually exercises it", () => {
+  // K02-R13-02. R5-c2 claimed both that step 2 runs and that it "is not skipped for an empty
+  // dependency list", while its only evidence was `control-stale-timer-and-lost-wake` step 3 — whose
+  // wait declares a dependency alternative and no subscription. These tests establish the three
+  // things the split needs: the new owner's schedule really does supply the condition, the shortcut
+  // candidate really is caught there, and it really is invisible to the old owner.
+
+  test("the owning schedule has an empty dependency list, a valid subscription and an already-accepted eligible input", () => {
+    const target = scenario("identity-producer-scope");
+    const registration = target.steps[8]!;
+    assert.equal(registration.command.kind, "submit_outcome");
+    assert.ok(registration.command.kind === "submit_outcome");
+    const next = registration.command.outcome.next;
+    assert.equal(next.step, "await");
+    assert.ok(next.step === "await");
+    const wait = next.wait;
+
+    // (a) an empty dependency-alternative list, which is the condition the clause is about, and a
+    // structurally valid subscription-only declaration, which is what keeps the wait well formed.
+    assert.deepEqual(wait.dependencies, []);
+    assert.equal(wait.subscriptions.length, 1);
+    assert.deepEqual(checkWaitWellFormed(wait), { wellFormed: true });
+
+    // (b) at least one already-accepted, still-unacknowledged Event that is eligible under it, accepted
+    // before the registering Outcome and still queued at the step before.
+    const before = target.steps[7]!.expect.observation;
+    const eligible = target.steps
+      .slice(0, 8)
+      .flatMap((step) => (step.command.kind === "accept_event" ? [step.command.event] : []))
+      .filter((event) => isEligibleUnderWait(wait, event) && before.queued.includes(event.eventId));
+    assert.ok(eligible.length > 0, "the mailbox must already hold an eligible Event for step 2 to find");
+    assert.ok(!before.acknowledged.some((id) => eligible.some((event) => event.eventId === id)));
+    assert.equal(before.state, "RUNNING", "and the wait must not already be live: this is a registration, not a path-B wake");
+
+    // (c) the conforming answer is immediate B-6 path-A readiness, not durable WAITING.
+    const after = registration.expect.observation;
+    assert.equal(after.state, "READY");
+    assert.equal(after.liveWaitGeneration, null);
+    assert.deepEqual(after.waitEndedReadiness, [{ generation: wait.generation, species: "event" }]);
+
+    // And the entry it replaces genuinely does not supply the condition, which is the defect itself.
+    const oldOwner = scenario("control-stale-timer-and-lost-wake").steps[3]!;
+    assert.ok(oldOwner.command.kind === "submit_outcome");
+    const oldNext = oldOwner.command.outcome.next;
+    assert.ok(oldNext.step === "await");
+    assert.ok(oldNext.wait.dependencies.length > 0, "R5-c2's schedule has a dependency alternative, which is why it cannot own the empty-dependency clause");
+  });
+
+  test("the shortcut candidate fails at the registration that has the empty list", () => {
+    const target = scenario("identity-producer-scope");
+    const result = runScenario(emptyDependencyShortcutCandidate, target, createOperationSink());
+    assert.equal(result.outcome, "FAIL", "a candidate skipping W-2 step 2 for an empty dependency list must be rejected");
+    if (result.outcome !== "FAIL") return;
+    assert.deepEqual(result.failures.map((failure) => failure.stepIndex), [8]);
+    const detail = result.failures[0]!.detail;
+    for (const field of ["state", "liveWaitGeneration", "waitEndedReadiness"]) {
+      assert.ok(detail.includes(field), `the failure must name ${field}: ${detail}`);
+    }
+  });
+
+  test("and it is accepted by every other scenario, including the one R5-c2 still owns", () => {
+    // The half a scenario-scoped transcript cannot state. This bug is correct everywhere a dependency
+    // alternative carries the wait, so the old owner cannot be the empty-dependency clause's evidence.
+    for (const target of ALL_SCENARIOS) {
+      if (target.id === "identity-producer-scope") continue;
+      const result = runScenario(emptyDependencyShortcutCandidate, target, createOperationSink());
+      assert.equal(
+        result.outcome,
+        "PASS",
+        `${target.id} rejected the shortcut candidate, so it is not the independent owner it claims to be`,
+      );
+    }
+  });
+
+  test("while the general lost-wake transcript still fails at R5-c2's own step", () => {
+    const target = scenario("control-stale-timer-and-lost-wake");
+    const result = runScenario(violatingCandidate(violation("control-stale-timer/lost-wake-at-registration")), target, createOperationSink());
+    assert.equal(result.outcome, "FAIL");
+    if (result.outcome !== "FAIL") return;
+    assert.ok(result.failures.some((failure) => failure.stepIndex === 3));
   });
 });

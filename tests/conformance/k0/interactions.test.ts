@@ -568,3 +568,72 @@ describe("interaction: ID-2 application ingress across receipts, waits, batches 
     assert.deepEqual(completed.queued, []);
   });
 });
+
+describe("interaction: the writer epoch is an exchange-local relation, never a cross-exchange counter", () => {
+  // Round-13 review finding K02-R13-01, as a corpus invariant rather than a per-scenario assertion.
+  // The defect was corpus-shaped: six scenarios advanced the epoch at a new Activation ID with no
+  // takeover anywhere, `identity-producer-scope` held it fixed across the same transition, and no
+  // conforming implementation could satisfy both. A per-scenario check would have found neither half.
+  // `blind-spot-regression.test.ts` owns the other direction — that four different conforming policies
+  // are accepted and two non-conforming ones rejected.
+
+  test("the corpus itself no longer states a cross-exchange epoch relation", () => {
+    // The structural half. Every exchange's first observed attempt is ordinal 1, so the numbers in
+    // the schedules cannot be read as an absolute counter even before the runner ignores them.
+    let takeovers = 0;
+    for (const target of ALL_SCENARIOS) {
+      const seen = new Map<string, number>();
+      for (const [index, step] of target.steps.entries()) {
+        const observation = step.expect.observation;
+        if (observation.activationId === null) continue;
+        const previous = seen.get(observation.activationId);
+        if (previous === undefined) {
+          assert.equal(
+            observation.writerEpoch,
+            1,
+            `${target.id} step ${index}: exchange ${observation.activationId} opens at attempt ${observation.writerEpoch}; attempts are exchange-local ordinals starting at 1 so no schedule can relate two exchanges`,
+          );
+          seen.set(observation.activationId, observation.writerEpoch);
+          continue;
+        }
+        if (observation.writerEpoch === previous) continue;
+        assert.ok(
+          observation.writerEpoch > previous,
+          `${target.id} step ${index}: the attempt ordinal moved backwards inside one exchange, which ID-4's total order forbids`,
+        );
+        assert.equal(
+          step.command.kind,
+          "takeover",
+          `${target.id} step ${index}: the attempt ordinal advanced at a ${step.command.kind} command; ID-4 bumps the epoch only by an authenticated takeover`,
+        );
+        takeovers += 1;
+        seen.set(observation.activationId, observation.writerEpoch);
+      }
+    }
+    assert.equal(takeovers, 1, "exactly one authenticated takeover exists in the corpus, and it is the only advance");
+  });
+
+  test("every submitted Outcome names an attempt its own exchange actually observed first", () => {
+    // The other half of the port question. An envelope naming an attempt no step observed could not be
+    // resolved into a candidate's namespace, so `adaptCommandToCandidate` would fail the step closed;
+    // this checks the corpus never relies on that path.
+    for (const target of ALL_SCENARIOS) {
+      const seen = new Map<string, Set<number>>();
+      for (const [index, step] of target.steps.entries()) {
+        const command = step.command;
+        if (command.kind === "submit_outcome" || command.kind === "resubmit_outcome") {
+          const known = seen.get(command.outcome.activationId);
+          assert.ok(
+            known?.has(command.outcome.writerEpoch),
+            `${target.id} step ${index}: submits ${command.outcome.activationId} at attempt ${command.outcome.writerEpoch}, which no earlier step observed`,
+          );
+        }
+        const observation = step.expect.observation;
+        if (observation.activationId === null) continue;
+        const bucket = seen.get(observation.activationId) ?? new Set<number>();
+        bucket.add(observation.writerEpoch);
+        seen.set(observation.activationId, bucket);
+      }
+    }
+  });
+});

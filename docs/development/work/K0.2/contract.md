@@ -8,7 +8,23 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 12.** Revision 12 corrects revision 11 after round-11 review
+**Contract revision 13.** Revision 13 corrects revision 12 after round-13 review
+(K02-R13-01, K02-R13-02), forward from C12/H12; round 12 recorded no blocking local finding and its
+other closures stand. Both findings sit inside subsystems earlier rounds had already corrected, so
+012's reconstruction rule governs. C7's representation rule now covers the writer epoch, which ID-4
+fixes only inside one unresolved exchange and explicitly leaves reset-or-continue across a new
+Activation ID: the oracle relates epochs per exchange, asserts nothing where no exchange is unresolved,
+and resolves a submitted envelope's exchange and epoch into the candidate's namespace at the port.
+C9's ownership rule now requires a clause to be owned by a schedule that presents its condition:
+W-2 step 2's empty-dependency clause moves to the registration that has an empty dependency list and
+an already-accepted eligible input, with its counterexample expressed as a candidate so the corpus can
+assert it fails there and is accepted by the schedule it was taken from. The dependent re-audit of W-2,
+W-8 and row 1 disposed of three further cited-decision clauses explicitly — one new counterexample, three
+assignments — rather than leaving them absent. C7/C9 evidence is offered for independent review; no
+acceptance is claimed. C8 remains `BLOCKED_EXTERNAL`: the benchmark's E0 branch records a pending owner
+decision and its `main` is still the pre-E0 revision.
+
+Revision 12 corrected revision 11 after round-11 review
 (K02-R11-01/-02/-03), forward from C11/H11. R3-c7 now has an accepted eligible Event outside the
 reserved batch, so premature W-2 step 2 / B-6 path A would actually produce the readiness leaked
 beside the independent duplicate-emission rejection. Application input ingress carries the full
@@ -249,11 +265,19 @@ K02-R4-01 was a transcript that cited W-1 rule 3 truthfully and still forbade no
 rule it invoked leaves the point at issue to K1.3. **The oracle also may not pin a representation the
 protocol does not fix**: a rejection's classification is canonical and its reason text is not (except
 CX-6's, which the worksheet names); a recovery hold must exist and be inspectable, but its wording is
-open; and receipts and Activation IDs — the two token families a candidate mints rather than receives
+open; and receipts and Activation IDs — two of the three token families a candidate mints rather than receives
 from the schedule — are judged by the relations ID-3/ID-6/OA-2 fix, one expected token naming one
 observed token throughout a run *within each family*, never by spelling and never across families: a
 receipt and an Activation ID may share one raw opaque spelling while same-family collapse still fails
-(round-5 finding K02-R5-01). (c) **The oracle fails closed**
+(round-5 finding K02-R5-01). **The writer epoch is the third family, and it is scoped to one exchange**
+(round-13 finding K02-R13-01): ID-4 fixes that redelivery keeps the epoch, a takeover advances it under
+the same Activation ID and a stale epoch for the current exchange is rejected, and it leaves open "whether
+the counter is reset or continues across a later, genuinely new Activation ID". A literal comparison
+decided that open question — six scenarios advanced the epoch at a new Activation ID with no takeover
+anywhere while one held it fixed across the same transition, so no conforming implementation could pass
+the corpus. The oracle now relates epochs only inside one exchange, asserts nothing where no exchange is
+unresolved, and resolves a submitted envelope's exchange and epoch into the candidate's own namespace
+before delivering it, because a schedule's names are the laboratory's and not the candidate's. (c) **The oracle fails closed**
 (round-1 finding K02-R1-03): a step declaring an independent-ledger expectation must never pass
 because the runner was invoked without a usable observer. Omission is a type error, and an unusable
 observer at runtime is a failure of the assertion rather than a reason to skip it — for a conforming
@@ -263,7 +287,11 @@ E1 status.
 **Distinguishing counterexample:** an oracle that passes every transcript, or that rejects every
 transcript, is vacuous; the discrimination test fails in both directions if either happens.
 **Evidence:** `tests/conformance/k0/candidate.ts`, `refusal.test.ts`, `oracle-discrimination.test.ts`,
-`blind-spot-regression.test.ts`.
+`blind-spot-regression.test.ts`; for the epoch families, `blind-spot-regression.test.ts`'s four
+conforming epoch policies (reset, continue, advance-per-exchange and an opaque ascending fence, each
+minting its own Activation IDs and verifying the envelopes it is handed) against two that break what
+ID-4 fixes, plus `interactions.test.ts`'s corpus check that no schedule states a cross-exchange epoch
+relation.
 
 ### K0.2-C8 — pinned E0 evidence
 
@@ -345,9 +373,24 @@ writer; row 2's ID-9 cases 2–3 own takeover input immutability and share the s
 10 rather than leaving it neighbouring, with ID-9 case 1 redelivery representable rather than implicit;
 and row 1's ID-2/ID-6/ID-7 own producer-scoped identity and per-boundary receipt relations with explicit
 K2.2/K2.3/K4.1 assignments where K0 has no case, rather than one overloaded receipt field.
+**And a clause is owned by a schedule that actually presents its condition** (round-13 finding
+K02-R13-02): R5-c2 claimed both that W-2 step 2 runs and that it is not skipped for an empty dependency
+list, while its only evidence was a wait carrying a dependency alternative — a schedule where the
+empty-dependency shortcut never executes, so the transcript discriminated a neighbouring bug. The two
+clauses are split, the empty-dependency one owned at the registration that has an empty list and an
+already-accepted eligible input, and its counterexample is stated as a candidate rather than one
+transcript so the corpus can assert both halves of ownership: it must fail at its own step **and** be
+accepted by the scenario it was taken from. **And a cited-decision clause with no observation surface
+is assigned, never absent**: round 13's dependent re-audit of W-2, W-8 and row 1 found three owned in
+neither direction and disposed of each explicitly — W-2 step 2's no-timeout clause gained a
+counterexample, W-2 step 3's single-clock-read and non-strict-due clauses are assigned to K1.3 because
+K0.2 supplies no accepted-time observation, and ID-1's non-reissue-after-deletion clause is assigned to
+K5.2 because K0.2 has no deletion command.
 Under-coverage lets a wrong candidate pass; over-constraint fails a right one, and is the worse
 failure of the two.
-**Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`.
+**Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`,
+`blind-spot-regression.test.ts` (the empty-dependency shortcut candidate, and the owning schedule's
+preconditions).
 
 ## Selected proof methods ([012](../../012-review-methods.md))
 

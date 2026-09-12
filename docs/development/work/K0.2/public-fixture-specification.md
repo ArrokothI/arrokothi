@@ -30,7 +30,7 @@ offline with no model, network, container or database.
 | `k0-trace` | 001's K0 trace end to end, as W-8's cases 1–5; distinct Outcome receipts across acceptances | — |
 | `delayed-runtime-non-blocking` | a delayed Runtime does not block another Execution; W-4; distinct create receipts across keys | — |
 | `identity-create-and-activation` | create-key conflict; ordinary redelivery (same ID/epoch/input); distinct Activation IDs; takeover under the same ID with pinned input; stale old-epoch fencing | — |
-| `identity-producer-scope` | cross-producer create and same-destination application ingress; exact replay and conflicting content (ID-2) | — |
+| `identity-producer-scope` | cross-producer create and same-destination application ingress; exact replay and conflicting content (ID-2); W-2 step 2 running for an empty dependency list (§19) | — |
 | `control-whole-envelope-validation` | a valid prefix earns nothing; a structurally empty wait is refused; OA-5's whole-envelope zero-partial-state family (progress/emissions/ack/intent/deadline/wait/readiness/next-state) plus rejected-mints-none | — |
 | `control-duplicate-conflicting-outcome` | receipt replay versus conflict, including conflicting-mints-none | M-1, §11 row 3 |
 | `control-stale-timer-and-lost-wake` | lost wake at registration; generation fencing; timer idempotency; both B-6 entry boundaries for a deadline-bearing wait | M-1, §11 row 5 |
@@ -42,23 +42,26 @@ offline with no model, network, container or database.
 | `effect-refusal-and-sink-attribution` | K1's Effect refusal, observed through the independent ledger | — |
 
 Four of these were added after round-1 review, one after round-3 review and one after round-10 review; see §§8, 10 and 17.
+No scenario was added in round 13: its two findings were ownership and comparison defects, and the
+schedule the empty-dependency clause needed already existed (§19).
 
 [`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at the
-granularity of the **independently distinguishable assertion** — 118 entries across the ten rows, not
+granularity of the **independently distinguishable assertion** — 123 entries across the ten rows, not
 ten row entries and not the 33 prose-level obligations of two revisions ago. The unit is
 behavioural rather than editorial: two clauses in one cell are separate assertions when a plausible
 implementation can get one right and the other wrong, because that is the candidate the oracle has to
 be able to fail. §11 row 5 states the standard itself — "Each of these is **separately** observable".
 
-Of the 118, **108** resolve to a scenario step plus at least one counterexample the oracle demonstrably
+Of the 123, **110** resolve to a scenario step plus at least one counterexample the oracle demonstrably
 rejects at that step; **four** (R3-c3, R6-a1, R8-b2, R2-c4) are marked `shared`, meaning two §11 rows name
 one observable fact and one transcript is the honest evidence for both, with the identity written down
-and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **five** are
+and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **eight** are
 explicitly assigned with the governing source that permits the deferral — R8-c to K2.4, R5-a4 to
 K1.3 (which W-9's *Left open* note names as the owner of a declared subscription identity's concrete
-spelling), and R4-b1/b2/b3 to K2.2/K2.3/K4.1 for the Effect-admission, Effect-settlement and
+spelling), R4-b1/b2/b3 to K2.2/K2.3/K4.1 for the Effect-admission, Effect-settlement and
 child/message-operation receipt boundaries, which have no observable K0 case while K1 refuses Effects
-and has no composition surface. Twenty entries carry an `atomicity` note, required whenever an entry's counterexamples
+and has no composition surface, and R1-f to K5.2 plus R5-c6/c7 to K1.3 for the three clauses round 13's
+re-audit found unowned in either direction (§19). Twenty-one entries carry an `atomicity` note, required whenever an entry's counterexamples
 cross more than one coupled field group. `COUPLED_FIELD_GROUPS` is a review heuristic only, never
 proof that within-group partial failures are impossible: `state`/`liveWaitGeneration` stay grouped
 only for W-3's definitional link, while `waitEndedReadiness` and `acceptedDeadline` are deliberately
@@ -79,9 +82,15 @@ excluded by construction:
 - a **conforming transcript** must report `PASS`. It is derived from the scenarios' own expectations,
   so it proves only that the runner can pass something — that circularity is stated in the code and is
   the limit of what this direction establishes;
-- **one hundred and four violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
-  exact step, and the failure detail must name the exact observation field at issue. Failing for an
-  unrelated reason would be an accident rather than discrimination, so the field names are asserted.
+- **110 violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
+  exact step, and the failure detail must name the exact observation field at issue **where the
+  discrimination is an observation field**. Failing for an unrelated reason would be an accident rather
+  than discrimination, so the field names are asserted. One transcript deliberately names none:
+  `effect-refusal/refusal-claimed-while-the-sink-was-called` changes no observation at all and is
+  caught only by the independent ledger, which is the whole design of C3's attribution evidence — a
+  candidate can report the correct refusal and still have dispatched the operation. Its
+  `mustNameFields` is empty and `coverage.test.ts` exempts it from the field-set collision rule for the
+  same reason.
   Each transcript must also **name the governing decision its behavior breaks**, and that citation is
   checked: a transcript that cannot cite one is a preference rather than a counterexample, and failing
   a candidate for it would make the oracle reject conforming work;
@@ -420,9 +429,10 @@ reported by the review. Both are corrected here:
   vs. structured tuple)" to the implementation, and ID-3/ID-9 are purely relational. The runner now
   requires a **bijection** between expected and observed tokens within a run — the same expected token
   always names the same observed token, and two never collapse onto one — which is what "same means
-  same, different means different" amounts to, and rejects every counterexample in the corpus. The
+  same, different means different" amounts to, and rejects every counterexample in the corpus. ~~The
   epoch is deliberately left as an integer and the reason recorded: ID-4 permits that representation
-  in terms, and every assertion made of it is about advancement and supersession.
+  in terms, and every assertion made of it is about advancement and supersession.~~ **That last
+  sentence was wrong, and round-13 review finding K02-R13-01 disproved it from the corpus; see §19.**
 
 **K02-R4-02 — the assertion-atomicity rule was applied only to new entries.** C4 defined the right
 unit and re-derived the entries it was *adding* against it, while leaving inherited entries at the
@@ -825,3 +835,146 @@ and B-5 disposal. All existing interaction, deadline, receipt-family and discrim
 13, 11, 16, 7, 34, 5, 17, 9, 2, 4. The 114/104/98 figures in §17 describe the prior correction's
 historical delta, not this revision. Both P3 live descriptions are corrected. Historical reports and
 reviews are unchanged. C8 remains `BLOCKED_EXTERNAL`; K0 stays open and K1.0 stays unreleased.
+
+
+## 19. Round-13 correction: the epoch oracle, and R5-c2's assertion owner
+
+Revision 13 fixes forward from C12/H12 under [review-13.md](review-13.md). Two P1 findings, both
+local, both inside subsystems earlier rounds had already corrected — so 012's reconstruction rule
+applies rather than a two-line patch, and the dependent re-audit's own findings are recorded here
+separately from the reviewer's.
+
+### K02-R13-01 — `writerEpoch` over-constrained ID-4 across new Activation IDs
+
+ID-4 fixes three relations, all of them **inside one unresolved exchange**: ordinary redelivery keeps
+the epoch (ID-9 case 1), an authenticated takeover advances it under the same Activation ID (ID-9
+cases 2–3), and a stale epoch for the *current* exchange is always rejected. It then leaves one thing
+open in terms — "whether the counter is reset or continues across a later, genuinely new Activation
+ID is an implementation choice ... either satisfies ID-3/ID-4".
+
+The runner compared the epoch literally and recorded (§16) that this was safe because "every assertion
+made of it is about advancement and supersession". The corpus disproved that. Six scenarios — `k0-trace`,
+`identity-create-and-activation`, `control-stale-timer-and-lost-wake`, `control-subscription-wait-deadline`,
+`wait-structure-not-satisfiability`, `control-missing-checkpoint-code` — advanced the epoch at a new
+Activation ID with **no takeover anywhere**, while `identity-producer-scope` held it fixed across exactly
+the same transition. A resetting implementation failed the first six; a continuing one failed the
+seventh. The corpus was not merely over-constrained: no conforming implementation could pass it. C7(b)
+forbids pinning a representation the protocol leaves open, and C9 records that over-constraint is the
+worse of the two failures.
+
+The correction has four parts, and deliberately makes neither permitted policy normative.
+
+- **`EpochRelation`** (`fixture.ts`) binds the epoch **per exchange**, keyed by the Activation ID the
+  step names. Inside one exchange the same expected attempt must always name the same observed epoch,
+  a later attempt a strictly later epoch and an earlier attempt a strictly earlier one, and two attempts
+  never collapse onto one epoch. **Across exchanges nothing is related at all**: a new Activation ID
+  opens a fresh sub-relation.
+- **Where no exchange is unresolved, nothing is asserted.** `Observation.writerEpoch` is the epoch *of
+  the current exchange*; before the first dispatch and after an exchange resolves there is none, and
+  how a candidate spells that is a representation ID-4 does not fix. The schedules still write the
+  closed exchange's last ordinal as documentation, the way they write one conforming rejection reason.
+- **The schedules write exchange-local attempt ordinals.** Every exchange opens at 1, and the only
+  value above 1 in the whole corpus is `identity-create-and-activation`'s `act-1` after its
+  authenticated takeover. The corpus can no longer state a cross-exchange epoch claim even in prose;
+  `interactions.test.ts` enforces the shape and that the advance happens only at a `takeover` command.
+- **Commands are adapted at the port.** A schedule naming `submit_outcome{activationId:"act-2",
+  writerEpoch:1}` is using *the laboratory's* names; a candidate that mints `"A#7"` at epoch `41` would
+  be handed an exchange it never opened at an epoch it never issued and would correctly reject it —
+  which is how the wrong fixture policy turned a later submission into a stale-writer rejection. The
+  runner now resolves both candidate-minted families through the bindings the observations already
+  established, and fails the step closed if a name cannot be resolved. The Activation-ID half of this
+  was the same defect at the same port, unreported: `compareRepresentations` has enforced ID-3/ID-9
+  relationally since round 5 while every submitted envelope still carried the laboratory's spelling.
+
+**Distinguishing evidence.** `blind-spot-regression.test.ts` runs four genuinely different conforming
+policies through every scenario and requires all to pass: `reset-per-exchange` and
+`continue-across-exchanges` (ID-4's two named options), `advance-per-exchange` (the policy the corpus
+had accidentally made normative) and `opaque-ascending-fence` (§2's "integer vs. fencing token", whose
+values share nothing with the schedule's ordinals and which therefore also proves the port adaptation
+works). Each of these candidates mints its own Activation IDs and verifies every envelope it is handed
+names an exchange it opened at an epoch it issued, so a runner that skipped adaptation is caught rather
+than silently passed. Two non-conforming policies — `takeover-does-not-advance` and
+`takeover-moves-backwards` — must fail, at the takeover step, naming `writerEpoch`. Ordinary redelivery
+keeping the epoch and takeover advancing it keep their own single-field transcripts, and the stale
+old-epoch submission keeps R10-a's rejection evidence, so all four cases the finding named are
+separately evidenced.
+
+### K02-R13-02 — R5-c2's empty-dependency clause was defended by the wrong schedule
+
+W-8 case 1 says the mailbox check "is not skipped merely because the dependency list is empty", and
+R5-c2 stated both that W-2 step 2 runs and that it is not skipped for an empty list. Its declared
+evidence was `control-stale-timer-and-lost-wake` step 3 — whose `waitOnCorr1` declares a dependency
+alternative for `effect.result`/`corr-1` and no subscription at all. That transcript discriminates a
+candidate that skips the mailbox check *generally*; it cannot see one that runs it for dependency waits
+and skips it only when `dependencies.length === 0`, which is a different line of code.
+
+- **R5-c2** keeps the general clause on that schedule, and its transcript is renamed
+  `control-stale-timer/lost-wake-at-registration` with a citation that no longer claims the
+  empty-dependency case.
+- **R5-c2b** is the empty-dependency clause, owned where the condition exists:
+  `identity-producer-scope` step 8 registers `producerIngressWait` — `dependencies: []`, one `continue`
+  subscription — after two eligible `continue` inputs were accepted and left unacknowledged, and its
+  conforming answer is immediate B-6 path-A readiness. The schedule already existed for row 1, so row 5
+  is attributed to it rather than duplicating it; the scenario's declared rows are updated in both
+  directions, as `coverage.test.ts` requires.
+- The counterexample is written **once, as a rule over the schedule** rather than as a hand-edited
+  observation: `emptyDependencyShortcutCandidate` takes W-2 step 4 instead of step 2 at any
+  registration whose wait has an empty dependency list and whose conforming answer was path-A
+  readiness. Running one candidate across the corpus states both halves C9 asks for — it **fails** at
+  `identity-producer-scope` step 8, naming `state`, `liveWaitGeneration` and `waitEndedReadiness`, and
+  it is **accepted by every other scenario, including R5-c2's own**, which is what makes R5-c2b an
+  independent owner rather than a restatement. A regression separately checks that the owning schedule
+  really has the empty list, a well-formed subscription-only declaration, an already-accepted
+  unacknowledged eligible input before registration, and a path-A conforming answer — and that R5-c2's
+  schedule does not.
+
+### Self-found in the dependent re-audit
+
+Recorded separately from the reviewer's findings, as 012 requires. Walking W-2 step by step and W-8
+case by case, plus row 1's cited decisions, found three clauses owned in neither direction.
+
+- **R5-c2c (added, with a counterexample).** W-2 step 2 ends "**No timeout Event is created** for that
+  generation", and §3 defines row 3 as "as row 1, **plus exactly one timeout Event**" — so a path-A
+  retirement that also mints one has produced row 3 where row 5(c) requires row 1. Nothing owned it.
+  R5-c3's transcript moves `queued` at the step-3 branch, but in the opposite direction and by a
+  different writer: it withholds a timeout the deadline branch owed. The new transcript models a
+  registration writer that mints the timeout when it installs the deadline, before the mailbox check
+  picks the branch, and retires the generation without retracting it — single-field move on `queued` at
+  `control-stale-timer-and-lost-wake` step 3, whose `waitOnCorr1` carries a deadline and is retired at
+  registration.
+- **R5-c6/R5-c7 (assigned to K1.3).** W-2 step 3's "one accepted-time observation taken in this
+  transaction" and its non-strict due comparison ("equal instants are due") both turn on a clock this
+  laboratory does not have: no K0.2 command supplies or advances an accepted-time observation, so a
+  schedule can only place a deadline plainly in the past or plainly in the future. Adding a clock
+  command to observe them would extend the released fixture vocabulary rather than evidence the
+  contract as written, and E-6's at-limit/one-over matrix is already assigned to K1 for the same
+  reason. C9 requires such an assertion to be assigned explicitly, never counted covered.
+- **R1-f (assigned to K5.2).** Row 1 cites ID-1, whose clause is about identity *after deletion*; every
+  other row-1 entry comes from ID-2/ID-6/ID-7 and this one had no entry at all. K0.2's vocabulary has
+  no deletion or garbage-collection command, and a terminal Execution is not a deleted one — B-5 keeps
+  its Events with recorded dispositions and terminal ingress refuses new input, both already observed.
+  007 assigns deletion to K5.2, where a reissue could first be attempted and therefore first refused.
+  This matches round 13's own disposition of the supplementary audit's ID-1 note: not a blocking
+  defect, but not silently omitted either.
+
+Three other clauses were checked and found already owned, and are named so the re-audit is reviewable:
+W-2 step 2's "a timer scheduled for it is stale on arrival" (R5-f1a/f1a2/f1b/f4), W-2 step 4's durable
+`WAITING` with its live generation (R5-c1's transcript, which moves that exact lifecycle group at
+`k0-trace` step 4) and its accepted deadline (R5-c4), and W-2 step 3's minting of exactly one timeout
+in the path-A deadline branch (inside R5-c3's declared atomicity note, whose one ordering swap produces
+the whole absent transaction).
+
+### Non-blocking wording corrected with this payload
+
+Round 12's K02-R12-01 and round 13's two P3 notes, none of which justified a candidate of their own:
+`007-work-packets.md`'s introduction no longer counts K0.2's CHANGES REQUIRED rounds in live prose;
+§2's transcript count is current; and §2's claim that every failure names an observation field now
+accounts for the one transcript whose discrimination is the independent ledger by design.
+
+**Current totals:** 123 obligations = 110 scenario + 4 shared + 1 corpus + 8 assigned;
+110 violating transcripts; 21 atomicity notes; 13 scenarios / 108 steps. Per-row counts are
+14, 11, 16, 7, 38, 5, 17, 9, 2, 4. The 118/108 figures in §18 and the 114/104/98 figures in §17
+describe prior corrections' historical deltas, not this revision. Historical reports and reviews are
+unchanged. C8 remains `BLOCKED_EXTERNAL` — the benchmark's `e0-claims-ownership-and-public-controls`
+branch records `ownerDecision.state: "pending"` and its `main` is still the pre-E0 revision — so K0
+stays open and K1.0 stays unreleased.

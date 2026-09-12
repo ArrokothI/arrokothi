@@ -299,6 +299,25 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     obligation: "A correctly rejected input identity conflict leaves accepted input content and order unchanged (ID-2, ID-6).",
     evidence: { kind: "scenario", scenario: "identity-producer-scope", stepIndex: 7, counterexamples: ["input-identity/conflict-appends-input"] },
   },
+  {
+    // Self-found while re-auditing row 1's cited decisions under round-13 review finding K02-R13-02's
+    // reconstruction requirement, which asks that every cited-decision clause be owned, assigned or
+    // explained rather than silently omitted. Rows are read from the decisions they cite (round-9
+    // finding K02-R9-01), and row 1 cites ID-1, whose clause is about identity *after deletion*. Every
+    // other row-1 entry comes from ID-2/ID-6/ID-7; this one had no entry at all, in either direction.
+    // It is assigned rather than added: K0.2's command vocabulary has no deletion or garbage-collection
+    // command, and inventing one to observe the clause would fabricate a boundary the released contract
+    // does not have.
+    id: "R1-f",
+    row: 1,
+    obligation: "ID-1: an Execution ID is never reissued to a new logical Execution even after the original is deleted or garbage-collected, so a store recycling primary keys must remap through a separate never-reused logical ID.",
+    evidence: {
+      kind: "assigned",
+      packet: "K5.2",
+      reason:
+        "The clause is only observable across a deletion, and no K0.2 command deletes or garbage-collects an Execution: the vocabulary is create/ingress, dispatch/redelivery/takeover, Outcome submission, cancellation, timer delivery, recovery and inspection. A terminal Execution is not a deleted one — B-5 keeps its Events with recorded dispositions and terminal ingress refuses new input, both of which the corpus already observes — so nothing here reaches the state ID-1 constrains. 007 assigns deletion to K5.2 (Operations, upgrade and deletion: 'privacy deletion', 'deleted data explicitly disables affected recovery'), which is where a reissue could first be attempted and therefore first refused.",
+    },
+  },
   // == Row 2: Activation dispatch intent =====================================
   {
     id: "R2-a",
@@ -736,10 +755,53 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 4, counterexamples: ["k0-trace/wait-woken-by-its-own-acknowledged-batch"] },
   },
   {
+    // Split by round-13 review finding K02-R13-02. The entry used to state both that step 2 runs and
+    // that it "is not skipped for an empty dependency list", while its only evidence was
+    // `control-stale-timer-and-lost-wake` step 3 — whose `waitOnCorr1` declares a dependency
+    // alternative for `effect.result`/`corr-1` and no subscription at all. That transcript
+    // discriminates a candidate that skips the mailbox check *generally*; it cannot see a candidate
+    // that runs it for dependency waits and skips it only when `dependencies.length === 0`, which is
+    // a separate line of code and exactly the shortcut W-8 case 1 names. This entry keeps the general
+    // clause, on the schedule that genuinely exercises it; R5-c2b below owns the empty-dependency one.
     id: "R5-c2",
     row: 5,
-    obligation: "(c) Step 2 runs, and is not skipped for an empty dependency list: an already-accepted eligible Event is found rather than lost.",
-    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 3, counterexamples: ["control-stale-timer/lost-wake-on-empty-dependency-list"] },
+    obligation: "(c) Step 2 runs at all: for a wait whose eligibility rule a dependency alternative carries, an already-accepted still-unacknowledged Event is found at registration rather than lost.",
+    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 3, counterexamples: ["control-stale-timer/lost-wake-at-registration"] },
+  },
+  {
+    // The other half of that split, owned where the condition actually exists. `identity-producer-scope`
+    // step 8 registers `producerIngressWait` — `dependencies: []`, one `continue` subscription — after
+    // two eligible `continue` inputs have been accepted and left unacknowledged, and its conforming
+    // result is immediate B-6 path-A readiness. That is W-8 case 1 in full: "W-2's mailbox check
+    // applies to a subscription-only wait exactly as it does to a dependency wait, and there is no
+    // 'no dependencies, so nothing to check' shortcut." The schedule already existed for row 1's
+    // producer-scoped ingress obligations, and round 13 attributes row 5 to it rather than building a
+    // duplicate scenario; `blind-spot-regression.test.ts` checks the preconditions are real and that
+    // the shortcut candidate this entry describes is invisible to R5-c2's own scenario.
+    id: "R5-c2b",
+    row: 5,
+    obligation: "(c) Step 2 is not skipped for an empty dependency list: a subscription-only wait's registration checks the mailbox too, so an already-accepted eligible application input still ends it immediately (W-8 case 1).",
+    atomicity:
+      "One bug construction, and it is a single upstream branch: the registration writer tests `dependencies.length === 0` and takes W-2 step 4 instead of step 2. Everything downstream is then the one persist-WAITING transaction W-2 step 4 specifies — the live generation is written beside the lifecycle by the same writer W-3's definitional link couples, and the B-6 path-A readiness that step 2 would have committed is simply never created because that branch never ran. The absence of readiness here is the absent alternative branch, not a second independent decision: a candidate that both persisted WAITING and armed readiness for the same generation would be a different failure, and the corpus already owns wake-without-readiness and readiness-without-wake separately at R5-f1a/f1a2 and R6-b1/b2.",
+    evidence: { kind: "scenario", scenario: "identity-producer-scope", stepIndex: 8, counterexamples: ["identity-producer/empty-dependency-list-skips-the-mailbox-check"] },
+  },
+  {
+    // Self-found in the same re-audit. W-2 step 2 ends with a clause of its own — "**No timeout Event
+    // is created** for that generation, and a timer scheduled for it is stale on arrival (W-3)" — and
+    // §3 makes the same contrast structurally: row 1 commits the readiness with no timeout, and row 3
+    // is "as row 1, **plus exactly one timeout Event**". Row 5(c) requires the transaction to produce
+    // "exactly one of §3's rows 1, 3 or a durable WAITING", so producing row 1 *with* row 3's timeout
+    // is a distinguishable failure. Nothing owned it. R5-c3's transcript moves `queued` at the step-3
+    // branch, but in the opposite direction and by a different writer: its declared bug withholds a
+    // timeout the deadline branch owed, while this one mints a timeout the mailbox branch never owed.
+    // The bug construction is a registration writer that mints the timeout Event when it installs the
+    // deadline, before the mailbox check decides the branch, and then retires the generation without
+    // retracting the Event it already committed — leaving an otherwise perfect path-A result with a
+    // timeout in the mailbox for a wait that never timed out. Single-field move on `queued`.
+    id: "R5-c2c",
+    row: 5,
+    obligation: "(c) Step 2's retirement mints no timeout Event: the B-6 path-A transaction commits §3 row 1, so a deadline-bearing wait ended by an already-accepted Event leaves no timeout for the generation it just retired.",
+    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 3, counterexamples: ["control-stale-timer/path-A-retirement-mints-a-timeout"] },
   },
   {
     id: "R5-c3",
@@ -764,6 +826,36 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(c) Step 3 leaves no accepted deadline behind: an already-due deadline retires immediately via B-7 path A with no durable deadline fact, even though the retirement is otherwise correct.",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 6, counterexamples: ["subscription-deadline/path-A-retirement-leaves-the-accepted-deadline"] },
+  },
+
+  {
+    // Self-found in round-13's re-audit of W-2, and assigned rather than added. C9 requires an
+    // assertion with no observation surface to be assigned explicitly, never counted covered and never
+    // silently dropped; these two are the clauses of W-2 step 3 that turn on a clock this laboratory
+    // does not have. K0.2's command vocabulary supplies deadlines as schedule data and never supplies
+    // an accepted-time observation, so a schedule expresses "already due" by giving the wait a small
+    // deadline and "not yet due" by giving it a large one. That is enough for the branch (R5-c3/c5 own
+    // it) and structurally incapable of addressing either clause below.
+    id: "R5-c6",
+    row: 5,
+    obligation: "(c) Step 3 evaluates the deadline against **one** accepted-time observation taken in that transaction, so two reads inside one transaction cannot disagree and make the outcome depend on which line of code asked.",
+    evidence: {
+      kind: "assigned",
+      packet: "K1.3",
+      reason:
+        "The clause distinguishes one clock read from two, and W-2 states in terms that nothing between its steps is externally observable: both readings commit the same transaction and differ only in which instant decided it. No K0.2 command supplies or advances an accepted-time observation, so no schedule can present a candidate with two instants to read; adding a clock command to observe it would extend the released fixture vocabulary rather than evidence the contract as written. 007 assigns the wait-registration races to K1.3, which is where a real registration transaction reads a real clock and can be driven at a pinned instant.",
+    },
+  },
+  {
+    id: "R5-c7",
+    row: 5,
+    obligation: "(c) Step 3's comparison is non-strict — the deadline is due iff the accepted-time observation is at or after the deadline instant, so equal instants are due rather than one tick short.",
+    evidence: {
+      kind: "assigned",
+      packet: "K1.3",
+      reason:
+        "This is an exact limit edge, and 012's normative method is right that limit edges need the at-limit and one-over cases rather than a value comfortably on one side. Expressing it needs a deadline and an accepted-time observation the schedule can make exactly equal, and K0.2 has no command that supplies the second: the corpus can only place a deadline plainly in the past (deadline 1) or plainly in the future (deadline 1000, 3000). E-6's at-limit/one-over matrix is already assigned to K1 for the same reason (`rule-agreement.test.ts`), and this edge belongs with the K1.3 registration transaction that owns the comparison.",
+    },
   },
 
   // == Row 5(d): retirement ==================================================

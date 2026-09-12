@@ -201,15 +201,40 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, receipt: "receipt:outcome:act-1#conflict" }),
   },
   {
-    id: "control-stale-timer/lost-wake-on-empty-dependency-list",
+    // Renamed and re-cited by round-13 review finding K02-R13-02. It used to be called
+    // `lost-wake-on-empty-dependency-list` and cited W-2 step 2's empty-dependency clause, but
+    // `waitOnCorr1` declares a dependency alternative and no subscription: this transcript has always
+    // discriminated a candidate that skips the mailbox check *generally*, which is the honest claim.
+    // The empty-dependency shortcut is a different line of code and now has its own owner on a
+    // schedule that actually has an empty dependency list — see
+    // `identity-producer/empty-dependency-list-skips-the-mailbox-check`.
+    id: "control-stale-timer/lost-wake-at-registration",
     scenarioId: "control-stale-timer-and-lost-wake",
     plausibleBug:
       "W-2's mailbox check is skipped, so the wait is persisted as WAITING even though an eligible result had already " +
       "been accepted — the classic lost wake",
-    forbiddenBy: "W-2 step 2: the mailbox check runs even for an empty dependency list, so no wake is lost",
+    forbiddenBy: "W-2 step 2 with B-6 path A: registering a wait tests every already-accepted, still-unacknowledged Event against it, so an eligible one ends the wait in that same transaction",
     stepIndex: 3,
     mustNameFields: ["state", "liveWaitGeneration"],
     mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g1" }),
+  },
+  {
+    // Self-found while re-auditing W-2's clauses under round-13 review finding K02-R13-02. W-2 step 2
+    // says "**No timeout Event is created** for that generation", and §3 row 3 is defined as "as row 1,
+    // plus exactly one timeout Event" — so a path-A retirement that also mints one has produced row 3
+    // where row 5(c) requires row 1. `waitOnCorr1` carries a deadline and is retired at registration by
+    // the already-accepted `res-1`, which is exactly the shape that makes the difference visible.
+    id: "control-stale-timer/path-A-retirement-mints-a-timeout",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "the registration writer mints the generation's timeout Event when it installs the deadline, before the mailbox " +
+      "check decides which W-2 branch runs, and the path-A retirement that follows clears the generation without " +
+      "retracting the Event already committed — so an otherwise perfect immediate wake leaves a timeout in the mailbox " +
+      "for a wait that never timed out",
+    forbiddenBy: "W-2 step 2 with §3 row 1: the B-6 path-A transaction creates no timeout Event for the generation it retires; only §3 row 3's already-due deadline branch mints one (W-9)",
+    stepIndex: 3,
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: [...observation.queued, "to-g1"] }),
   },
   {
     id: "control-stale-timer/stale-generation-wakes-the-replacement-wait",
@@ -790,6 +815,32 @@ export const VIOLATIONS: readonly Violation[] = [
     stepIndex: 1,
     mustNameFields: ["receipt"],
     mutate: (observation) => ({ ...observation, receipt: "receipt:create:req-shared:prod-a" }),
+  },
+  {
+    // Round-13 review finding K02-R13-02. W-8 case 1 states the empty-dependency clause of W-2 step 2
+    // in terms: "W-2's mailbox check applies to a subscription-only wait exactly as it does to a
+    // dependency wait, and there is no 'no dependencies, so nothing to check' shortcut." Nothing in
+    // the corpus discriminated a candidate that implements that shortcut and is otherwise correct:
+    // R5-c2's declared transcript ran against `control-stale-timer-and-lost-wake`, whose wait has a
+    // dependency alternative and therefore takes the ordinary branch even in the broken candidate.
+    //
+    // This step is where the condition genuinely exists. `producerIngressWait` has `dependencies: []`
+    // and one `continue` subscription; `input-a` and `input-b` were accepted at steps 4-5 and are
+    // still unacknowledged when the registering Outcome arrives; the conforming answer is B-6 path A
+    // — READY, the generation retired inside the same transaction, one Event-triggered readiness.
+    // The shortcut takes W-2 step 4 instead, so the observable difference is exactly a durable
+    // WAITING with a live generation and no readiness.
+    id: "identity-producer/empty-dependency-list-skips-the-mailbox-check",
+    scenarioId: "identity-producer-scope",
+    plausibleBug:
+      "the registration writer treats an empty dependency-alternative list as 'nothing to look for' and jumps " +
+      "straight to persisting WAITING, so a subscription-only wait never sees the eligible application input " +
+      "already sitting unacknowledged in the mailbox — the lost wake W-8's own trace is built from, in the one " +
+      "shape a dependency-wait implementation gets right by accident",
+    forbiddenBy: "W-2 step 2 with W-8 case 1: the mailbox check 'is not skipped merely because the dependency list is empty', and a subscription-only wait that finds an eligible Event is READY through B-6 path A, never WAITING",
+    stepIndex: 8,
+    mustNameFields: ["state", "liveWaitGeneration", "waitEndedReadiness"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-input", waitEndedReadiness: [] }),
   },
   {
     // Round-10 review finding K02-R10-03. Different request keys are different requests even for one
@@ -1588,3 +1639,212 @@ export function violatingCandidate(violation: Violation): K0Candidate {
     ...(violation.onCommand ? { onCommand: violation.onCommand } : {}),
   });
 }
+
+// -- Epoch-policy candidates -------------------------------------------------
+
+/**
+ * **A candidate that mints its own Activation IDs and its own writer epochs, under a declared policy.**
+ *
+ * Added by round-13 review finding K02-R13-01. Scripted transcripts replay the schedule's own
+ * expectations, so they can prove the oracle rejects a wrong *observation* but say nothing about the
+ * two questions that finding raised: whether the oracle still accepts a candidate whose epochs follow
+ * a different — equally conforming — policy, and whether a command reaches such a candidate in a
+ * namespace it can act on.
+ *
+ * These candidates answer both, because they are the first ones in this file that do not simply echo
+ * the laboratory. Each mints a private Activation-ID spelling per exchange, issues epochs from its own
+ * policy, and **verifies every Outcome it is handed**: the envelope must name an exchange it actually
+ * opened, at an epoch it actually issued. A runner that delivered the schedule's own spellings would
+ * be caught here rather than silently passing.
+ *
+ * What the policies deliberately differ on is only what ID-4 leaves open — "whether the counter is
+ * reset or continues across a later, genuinely new Activation ID". What they all obey is what ID-4
+ * fixes: the epoch changes inside an unresolved exchange only at an authenticated takeover, and then
+ * strictly upwards. Two deliberately non-conforming policies are shipped beside them so the oracle is
+ * shown to be non-vacuous in this dimension too.
+ */
+export interface EpochPolicy {
+  readonly name: string;
+  /**
+   * The epoch this candidate issues for the first attempt at a newly opened exchange, given the epoch
+   * it last issued anywhere (`null` before the first exchange) and the exchange's zero-based order.
+   */
+  readonly firstAttempt: (previous: number | null, exchangeIndex: number) => number;
+  /** The epoch it issues after an authenticated takeover of a still-unresolved exchange. */
+  readonly afterTakeover: (current: number) => number;
+  /**
+   * What it reports for `writerEpoch` when no exchange is unresolved. ID-4 fixes nothing here, so a
+   * policy may answer with a retained value, a zero, or anything else.
+   */
+  readonly whenNoExchange: (previous: number | null) => number;
+}
+
+/** The reset/continue choice ID-4 leaves open, plus an opaque fencing-token shape. All conforming. */
+export const CONFORMING_EPOCH_POLICIES: readonly EpochPolicy[] = [
+  {
+    // ID-4's "reset" option, read literally: each new Activation ID starts the counter again.
+    name: "reset-per-exchange",
+    firstAttempt: () => 1,
+    afterTakeover: (current) => current + 1,
+    whenNoExchange: () => 0,
+  },
+  {
+    // ID-4's "continues" option: nothing but a takeover ever moves the counter.
+    name: "continue-across-exchanges",
+    firstAttempt: (previous) => previous ?? 1,
+    afterTakeover: (current) => current + 1,
+    whenNoExchange: (previous) => previous ?? 0,
+  },
+  {
+    // The policy the pre-round-13 corpus accidentally made normative in six scenarios, and which
+    // `identity-producer-scope` accidentally made impossible in a seventh. It is still permitted.
+    name: "advance-per-exchange",
+    firstAttempt: (previous) => (previous ?? 0) + 1,
+    afterTakeover: (current) => current + 1,
+    whenNoExchange: (previous) => previous ?? 0,
+  },
+  {
+    // §2's *Left open* note permits "integer vs. fencing token". An implementation handing out opaque
+    // ascending fences satisfies ID-4's "or equivalent total order" and shares no value with the
+    // schedule's attempt ordinals, so it also proves the runner adapts submitted epochs at the port.
+    name: "opaque-ascending-fence",
+    firstAttempt: (_previous, exchangeIndex) => 9_000 + exchangeIndex * 137,
+    afterTakeover: (current) => current + 41,
+    whenNoExchange: (previous) => previous ?? 7_777,
+  },
+];
+
+/** Policies that break what ID-4 *does* fix, so the epoch oracle is shown to reject as well as accept. */
+export const VIOLATING_EPOCH_POLICIES: readonly EpochPolicy[] = [
+  {
+    // ID-9 case 2: a takeover that leaves the epoch alone lets the superseded writer keep committing.
+    name: "takeover-does-not-advance",
+    firstAttempt: () => 1,
+    afterTakeover: (current) => current,
+    whenNoExchange: () => 0,
+  },
+  {
+    // ID-4 fixes a monotonically increasing order; a takeover that moves backwards inverts authority.
+    name: "takeover-moves-backwards",
+    firstAttempt: () => 100,
+    afterTakeover: (current) => current - 1,
+    whenNoExchange: () => 0,
+  },
+];
+
+export function epochPolicyCandidate(policy: EpochPolicy): K0Candidate {
+  return {
+    name: `epoch-policy:${policy.name}`,
+    begin(scenario: Scenario): CandidateRun {
+      // The candidate's own namespaces, derived as the run proceeds exactly as a real one would be.
+      const mintedIds = new Map<string, string>();
+      const issuedEpochs = new Map<string, Map<number, number>>();
+      const issuedByExchange = new Map<string, Set<number>>();
+      let previousEpoch: number | null = null;
+
+      const epochFor = (labExchange: string, ordinal: number): number => {
+        let scope = issuedEpochs.get(labExchange);
+        if (scope === undefined) {
+          scope = new Map<number, number>();
+          issuedEpochs.set(labExchange, scope);
+          const issued = policy.firstAttempt(previousEpoch, issuedEpochs.size - 1);
+          scope.set(ordinal, issued);
+          previousEpoch = issued;
+        }
+        const known = scope.get(ordinal);
+        if (known !== undefined) return known;
+        // A higher ordinal in the same exchange is a takeover: advance once per intervening attempt.
+        const highest = Math.max(...scope.keys());
+        let issued = scope.get(highest)!;
+        for (let attempt = highest; attempt < ordinal; attempt += 1) issued = policy.afterTakeover(issued);
+        scope.set(ordinal, issued);
+        previousEpoch = issued;
+        return issued;
+      };
+
+      const observations = scenario.steps.map((step) => {
+        const expected = step.expect.observation;
+        if (expected.activationId === null) {
+          return { ...expected, activationId: null, writerEpoch: policy.whenNoExchange(previousEpoch) };
+        }
+        let activationId = mintedIds.get(expected.activationId);
+        if (activationId === undefined) {
+          activationId = `xid-${mintedIds.size + 1}/${policy.name}`;
+          mintedIds.set(expected.activationId, activationId);
+        }
+        const writerEpoch = epochFor(expected.activationId, expected.writerEpoch);
+        const issued = issuedByExchange.get(activationId) ?? new Set<number>();
+        issued.add(writerEpoch);
+        issuedByExchange.set(activationId, issued);
+        return { ...expected, activationId, writerEpoch };
+      });
+
+      let stepIndex = 0;
+      return {
+        apply(command: Command): Observation {
+          const index = stepIndex++;
+          if (command.kind === "submit_outcome" || command.kind === "resubmit_outcome") {
+            const { activationId, writerEpoch } = command.outcome;
+            if (!issuedByExchange.has(activationId)) {
+              throw new Error(
+                `${policy.name}: step ${index} submits an Outcome for Activation ${JSON.stringify(activationId)}, which this candidate never minted; the runner delivered a name from another namespace (ID-3)`,
+              );
+            }
+            if (!issuedByExchange.get(activationId)!.has(writerEpoch)) {
+              throw new Error(
+                `${policy.name}: step ${index} submits an Outcome for ${JSON.stringify(activationId)} at epoch ${writerEpoch}, which this candidate never issued for it; the runner delivered an epoch from another namespace (ID-4)`,
+              );
+            }
+          }
+          const observation = observations[index];
+          if (observation === undefined) {
+            throw new Error(`epoch-policy candidate ${policy.name} has no observation for step ${index} of ${scenario.id}`);
+          }
+          return observation;
+        },
+      };
+    },
+  };
+}
+
+// -- The empty-dependency shortcut, as a candidate rather than one transcript -
+
+/**
+ * **A candidate that runs W-2 step 2 correctly for dependency waits and skips it only when
+ * `dependencies.length === 0`.**
+ *
+ * Added by round-13 review finding K02-R13-02. A `Violation` is scoped to one scenario, so a
+ * transcript can show that the oracle rejects this behaviour where the clause lives but not that the
+ * behaviour is invisible everywhere else — which is the whole reason the clause needs an owner of its
+ * own. C9 asks for the second half in terms: a counterexample belonging to a neighbouring rule "fails
+ * candidates for something else", and R5-c2's declared transcript ran against a wait with a dependency
+ * alternative, where this bug simply does not fire.
+ *
+ * The bug is written once, as a rule over the schedule rather than as a hand-edited observation: at
+ * any step whose command registers a wait with an empty dependency-alternative list, where the
+ * conforming answer was B-6 path-A readiness, take W-2 step 4 instead and persist `WAITING` with that
+ * generation live and no readiness. Every other step is answered conformingly. Running one candidate
+ * across the whole corpus is then a statement about the corpus: it must fail at
+ * `identity-producer-scope`'s registration and must be accepted everywhere else, including by R5-c2's
+ * own scenario.
+ */
+export const emptyDependencyShortcutCandidate: K0Candidate = scriptedCandidate({
+  name: "empty-dependency-list-skips-the-mailbox-check",
+  observationsFor: (scenario: Scenario) =>
+    scenario.steps.map((step) => {
+      const expected = step.expect.observation;
+      const command = step.command;
+      if (command.kind !== "submit_outcome" && command.kind !== "resubmit_outcome") return expected;
+      const next = command.outcome.next;
+      if (next.step !== "await" || next.wait.dependencies.length > 0) return expected;
+      // Only a registration whose conforming answer was an immediate path-A wake can show the
+      // difference. Where the conforming answer was already durable `WAITING` (no eligible Event in
+      // the mailbox) or a rejection (the envelope never reached W-2), the shortcut is unobservable —
+      // which is exactly why it needs a schedule that supplies the eligible Event.
+      const readiness = expected.waitEndedReadiness;
+      if (readiness.length !== 1 || readiness[0]!.generation !== next.wait.generation || readiness[0]!.species !== "event") {
+        return expected;
+      }
+      return { ...expected, state: "WAITING" as const, liveWaitGeneration: next.wait.generation, waitEndedReadiness: [] };
+    }),
+});

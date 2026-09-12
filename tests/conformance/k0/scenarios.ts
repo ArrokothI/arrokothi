@@ -22,6 +22,20 @@
  * that catches it has to be present even when nothing interesting happens to it. The `forbids` list
  * names, in prose, which of those fields carries the forbidden-mutation meaning for that step.
  *
+ * **How to read `writerEpoch`.** It is written as an **attempt ordinal inside one exchange**, not as
+ * an absolute counter: every new Activation ID starts again at 1, and the only value above 1 in the
+ * whole corpus is `identity-create-and-activation`'s act-1 after its authenticated takeover. The
+ * runner binds these ordinals to whatever epochs a candidate actually reports, per exchange, and
+ * relates them only within one exchange (`EpochRelation` in `fixture.ts`). Round-13 review finding
+ * K02-R13-01 is why: six scenarios used to advance the epoch at each new Activation ID and one held
+ * it fixed across the same transition, so literal comparison silently decided the reset-or-continue
+ * question ID-4 leaves to the implementation — and decided it two incompatible ways at once. Writing
+ * ordinals keeps the corpus unable to state a cross-exchange epoch claim even by accident;
+ * `interactions.test.ts` enforces the shape, and `blind-spot-regression.test.ts` proves four
+ * different conforming policies still pass. Where a step shows no unresolved Activation the ordinal
+ * is documentation of the exchange that just closed and is asserted nowhere, like a non-canonical
+ * rejection reason.
+ *
  * Nothing in this file implements a Kernel. These are expectations derived from the accepted
  * worksheet, against which some future K1 candidate is judged.
  */
@@ -261,7 +275,7 @@ export const k0Trace: Scenario = {
           dispatchedBatch: ["cont-1"],
           activationId: "act-2",
           receipt: "receipt:outcome:act-1",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "dispatchedBatch must not contain bq-1 or bq-2: they are ineligible under W₀'s retired rule and are not candidates at any bound",
@@ -276,7 +290,7 @@ export const k0Trace: Scenario = {
         outcome: outcome({
           executionId: X,
           activationId: "act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
           baseProgressRevision: 1,
           progress: { asked: true, answered: true },
           next: { step: "complete", result: { status: "done" } },
@@ -293,7 +307,7 @@ export const k0Trace: Scenario = {
           queued: [],
           terminalDispositions: ["bq-1", "bq-2"],
           receipt: "receipt:outcome:act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "bq-1 and bq-2 must not be acknowledged: completion acknowledges only the reserved batch (B-3)",
@@ -582,7 +596,7 @@ export const staleTimerAndLostWake: Scenario = {
           dispatchedBatch: ["res-1"],
           activationId: "act-2",
           receipt: "receipt:outcome:act-1",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "waitEndedReadiness must return to empty: B-8 consumes it at durable reservation and forbids re-arming afterwards",
@@ -592,7 +606,7 @@ export const staleTimerAndLostWake: Scenario = {
     step(
       {
         kind: "submit_outcome",
-        outcome: outcome({ executionId: X, activationId: "act-2", writerEpoch: 2, baseProgressRevision: 1, progress: { phase: "awaiting-2" }, next: { step: "await", wait: waitOnCorr2 } }),
+        outcome: outcome({ executionId: X, activationId: "act-2", baseProgressRevision: 1, progress: { phase: "awaiting-2" }, next: { step: "await", wait: waitOnCorr2 } }),
       },
       {
         label: "a second wait registers under a new generation g2, and X is WAITING",
@@ -605,7 +619,7 @@ export const staleTimerAndLostWake: Scenario = {
           liveWaitGeneration: "g2",
           acceptedDeadline: 2_000,
           receipt: "receipt:outcome:act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
       },
     ),
@@ -622,7 +636,7 @@ export const staleTimerAndLostWake: Scenario = {
           liveWaitGeneration: "g2",
           acceptedDeadline: 2_000,
           receipt: "receipt:outcome:act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "queued must stay empty: a stale timer creates no timeout Event",
@@ -649,7 +663,7 @@ export const staleTimerAndLostWake: Scenario = {
           // one Event eligible under the retired rule".
           waitEndedReadiness: [{ generation: "g2", species: "deadline" }],
           receipt: "receipt:outcome:act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
       },
     ),
@@ -668,7 +682,7 @@ export const staleTimerAndLostWake: Scenario = {
           // below, where no candidate could be failed for breaking it. The list is still length 1.
           waitEndedReadiness: [{ generation: "g2", species: "deadline" }],
           receipt: "receipt:outcome:act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "queued must stay ['to-g2']: at most one timeout Event exists per generation",
@@ -693,7 +707,7 @@ export const staleTimerAndLostWake: Scenario = {
           // readiness that re-selects a batch after reservation.
           waitEndedReadiness: [{ generation: "g2", species: "deadline" }],
           receipt: "receipt:outcome:act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "res-2 must be accepted and retained: a timeout is never proof the awaited work did not happen (CL-2)",
@@ -714,7 +728,7 @@ export const staleTimerAndLostWake: Scenario = {
           dispatchedBatch: ["to-g2", "res-2"],
           activationId: "act-3",
           receipt: "receipt:outcome:act-2",
-          writerEpoch: 3,
+          writerEpoch: 1,
         }),
         forbids: [
           "the timeout must not suppress the later result for the same correlation: preserve both facts",
@@ -731,7 +745,7 @@ export const staleTimerAndLostWake: Scenario = {
     step(
       {
         kind: "submit_outcome",
-        outcome: outcome({ executionId: X, activationId: "act-3", writerEpoch: 3, baseProgressRevision: 2, progress: { phase: "awaiting-3" }, next: { step: "await", wait: waitOnCorr3 } }),
+        outcome: outcome({ executionId: X, activationId: "act-3", baseProgressRevision: 2, progress: { phase: "awaiting-3" }, next: { step: "await", wait: waitOnCorr3 } }),
       },
       {
         label: "a third wait parks durably under g3 with a future deadline: 3000 is an accepted fact and nothing eligible is queued",
@@ -744,7 +758,7 @@ export const staleTimerAndLostWake: Scenario = {
           liveWaitGeneration: "g3",
           acceptedDeadline: 3_000,
           receipt: "receipt:outcome:act-3",
-          writerEpoch: 3,
+          writerEpoch: 1,
         }),
         forbids: [
           "state must be WAITING: unlike step 3's path A the mailbox holds nothing eligible once this Outcome's own batch is acknowledged, so W-2 reaches step 4 and persists",
@@ -774,7 +788,7 @@ export const staleTimerAndLostWake: Scenario = {
           // lets one survive and arrive later as a stale no-op, exactly as g1's did at step 6.
           acceptedDeadline: null,
           receipt: "receipt:outcome:act-3",
-          writerEpoch: 3,
+          writerEpoch: 1,
         }),
         forbids: [
           "acceptedDeadline must be null: the wake retires the accepted deadline with the registration it belongs to, and a deadline fact outliving its retired generation is what this step exists to catch",
@@ -1029,7 +1043,7 @@ export const missingCheckpointCode: Scenario = {
           dispatchedBatch: [],
           activationId: "act-2",
           receipt: "receipt:outcome:act-1",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: ["dispatchedBatch must be [] and not null: the Runtime was asked to continue, not to read something"],
       },
@@ -1046,7 +1060,7 @@ export const missingCheckpointCode: Scenario = {
           dispatchedBatch: [],
           activationId: "act-2",
           receipt: "receipt:outcome:act-1",
-          writerEpoch: 2,
+          writerEpoch: 1,
           recoveryHold: { reason: "pinned definition revision fake-runtime@1 is unavailable" },
         }),
         forbids: [
@@ -1068,7 +1082,7 @@ export const missingCheckpointCode: Scenario = {
           dispatchedBatch: [],
           activationId: "act-2",
           receipt: "receipt:outcome:act-1",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: ["the accepted progress and revision must survive the held period unchanged"],
       },
@@ -1340,7 +1354,7 @@ export const createAndActivationIdentity: Scenario = {
           activationId: "act-2",
           dispatchedBatch: ["in-2"],
           receipt: "receipt:outcome:act-1",
-          writerEpoch: 3,
+          writerEpoch: 1,
         }),
         forbids: ["activationId must not be act-1: two semantically different exchanges never share an Activation ID"],
       },
@@ -1381,7 +1395,11 @@ export const producerScopedCreateIdentity: Scenario = {
     "K0.1 worksheet §11 row 1 (ID-1, ID-2, ID-6, ID-7)",
     "execution-protocol.md, Identities and immutable exchanges (input identity is producer + destination + request key)",
   ],
-  k0BoundaryRows: [1],
+  // Round-13 review finding K02-R13-02 adds row 5. Step 8 registers a wait whose dependency-alternative
+  // list is empty while two eligible subscribed inputs are already accepted and unacknowledged, which
+  // is the only place in the corpus where W-2 step 2's empty-dependency clause (W-8 case 1) is
+  // observable; `coverage.ts` R5-c2b attributes it here rather than duplicating the schedule.
+  k0BoundaryRows: [1, 5],
   isUnsafeControl: false,
   waits: { input: producerIngressWait },
   steps: [
@@ -1437,7 +1455,17 @@ export const producerScopedCreateIdentity: Scenario = {
     ),
     step(
       { kind: "submit_outcome", outcome: outcome({ executionId: "exec-pa", activationId: "act-pa", next: { step: "await", wait: producerIngressWait } }) },
-      { label: "W-2 path A sees both accepted producers after acknowledging only the pinned batch", observation: obs("exec-pa", { progressRevision: 1, acknowledged: ["in-pa"], queued: ["input-a", "input-b"], receipt: "receipt:input-wait", writerEpoch: 1, waitEndedReadiness: [{ generation: "g-input", species: "event" }] }) },
+      {
+        label: "W-2 step 2 runs for an empty dependency list too, so both accepted producers are found at registration (W-8 case 1, B-6 path A)",
+        observation: obs("exec-pa", { progressRevision: 1, acknowledged: ["in-pa"], queued: ["input-a", "input-b"], receipt: "receipt:input-wait", writerEpoch: 1, waitEndedReadiness: [{ generation: "g-input", species: "event" }] }),
+        forbids: [
+          // Round-13 review finding K02-R13-02 gave row 5's empty-dependency clause its owner here.
+          "state must not be WAITING and liveWaitGeneration must not be g-input: `producerIngressWait` declares no dependency alternative at all, and W-8 case 1 forbids the 'no dependencies, so nothing to check' shortcut a dependency-wait implementation never exercises",
+          "waitEndedReadiness must be exactly one Event-triggered entry for g-input: the wait is created and retired inside this one transaction (§3 row 1)",
+          "acknowledged must be exactly ['in-pa']: W-2 step 1 acknowledges only this Outcome's own reserved batch, which is why input-a and input-b are still candidates in step 2",
+          "input-a and input-b stay queued: being found by the mailbox check is a wake, never an acknowledgment (B-3)",
+        ],
+      },
     ),
     step(
       { kind: "dispatch", executionId: "exec-pa", bound: 1 },
@@ -1834,7 +1862,7 @@ export const subscriptionWaitDeadline: Scenario = {
           activationId: "act-2",
           dispatchedBatch: ["to-gd1"],
           receipt: "receipt:outcome:act-1",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "dispatchedBatch must not be ['bq-1']: bq-1 was accepted first, and ordinary acceptance-order selection would have taken the slot",
@@ -1849,7 +1877,7 @@ export const subscriptionWaitDeadline: Scenario = {
         outcome: outcome({
           executionId: X,
           activationId: "act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
           baseProgressRevision: 1,
           progress: { phase: "re-waiting" },
           next: { step: "await", wait: alreadyDueWait },
@@ -1866,7 +1894,7 @@ export const subscriptionWaitDeadline: Scenario = {
           liveWaitGeneration: null,
           waitEndedReadiness: [{ generation: "gd2", species: "deadline" }],
           receipt: "receipt:outcome:act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "state must not be WAITING: W-2 step 3 evaluates an already-due deadline before persisting, and a past deadline is never persisted as live",
@@ -2033,7 +2061,7 @@ export const inertAlternativeEligibility: Scenario = {
           dispatchedBatch: ["res-9"],
           activationId: "act-2",
           receipt: "receipt:outcome:act-1",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "dispatchedBatch must be ['res-9']: bq-1 and oth-1 were accepted first and are still not candidates",
@@ -2047,7 +2075,7 @@ export const inertAlternativeEligibility: Scenario = {
         outcome: outcome({
           executionId: X,
           activationId: "act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
           baseProgressRevision: 1,
           progress: { phase: "re-declared" },
           // The same three alternatives, under a new generation. Re-registration is how an outstanding
@@ -2065,7 +2093,7 @@ export const inertAlternativeEligibility: Scenario = {
           queued: ["bq-1", "oth-1"],
           liveWaitGeneration: "gi2",
           receipt: "receipt:outcome:act-2",
-          writerEpoch: 2,
+          writerEpoch: 1,
         }),
         forbids: [
           "state must be WAITING: `c9` settled once under gi1, and the Kernel keeps no per-alternative satisfied flag that would carry that forward",

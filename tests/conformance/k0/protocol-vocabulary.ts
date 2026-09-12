@@ -256,6 +256,12 @@ export type OutcomeNext =
 export interface OutcomeEnvelope {
   readonly executionId: string;
   readonly activationId: string;
+  /**
+   * The epoch this submission claims authority under. Schedules write it as an exchange-local attempt
+   * ordinal and the runner resolves it into the candidate's own epoch space before delivery
+   * (`adaptCommandToCandidate` in `fixture.ts`); round-13 review finding K02-R13-01 is why neither the
+   * ordinal nor the Activation-ID spelling beside it may reach a candidate literally.
+   */
   readonly writerEpoch: number;
   readonly baseProgressRevision: number;
   readonly progress: unknown;
