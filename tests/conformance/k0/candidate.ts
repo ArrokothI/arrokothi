@@ -174,10 +174,12 @@ export const VIOLATIONS: readonly Violation[] = [
     plausibleBug:
       "the timer handler matches on Execution ID alone and ignores the wait generation, so a timer scheduled for a " +
       "retired wait wakes the wait that replaced it",
-    forbiddenBy: "W-3: a timer naming a superseded generation is a no-op; kernel.md 'stale timers cannot wake a replacement wait'",
+    forbiddenBy: "W-3: a timer naming a superseded generation retires nothing and cannot wake a replacement wait",
+    // Narrowed in round 3: W-3's no-op has two separable halves — it retires nothing, and it creates no
+    // timeout Event. A candidate can get one right and the other wrong, so each needs its own evidence.
     stepIndex: 6,
-    mustNameFields: ["state", "liveWaitGeneration", "queued"],
-    mutate: (observation) => ({ ...observation, state: "READY", liveWaitGeneration: null, queued: ["to-g1"] }),
+    mustNameFields: ["state", "liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, state: "READY", liveWaitGeneration: null }),
   },
   {
     id: "control-cancel/losing-progress-installed-with-next-state-suppressed",
@@ -226,10 +228,12 @@ export const VIOLATIONS: readonly Violation[] = [
     plausibleBug:
       "the create path deduplicates on the request key alone without comparing content, so a second create under an " +
       "accepted key is treated as an idempotent replay and the changed input silently replaces or joins the accepted one",
-    forbiddenBy: "§11 row 1 and execution-protocol.md: changing content under an accepted request key is a conflict, never an edit",
+    forbiddenBy: "§11 row 1 and execution-protocol.md: changing content under an accepted request key is never an edit",
+    // Narrowed in round 3: this transcript is the *edit* half. Failing to record the conflict at all is
+    // a different bug with its own transcript below.
     stepIndex: 2,
-    mustNameFields: ["rejection", "queued"],
-    mutate: (observation) => ({ ...observation, rejection: null, queued: ["in-DIFFERENT"] }),
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: ["in-DIFFERENT"] }),
   },
   {
     id: "identity-activation/takeover-mints-a-new-activation-id",
@@ -249,7 +253,7 @@ export const VIOLATIONS: readonly Violation[] = [
       "the Activation ID is derived from the Execution alone, so a genuinely new exchange after the prior one resolved " +
       "carries the same ID and a stale Outcome for the old exchange would validate against the new one",
     forbiddenBy: "§11 row 2: two semantically different dispatches never carry the same Activation ID",
-    stepIndex: 6,
+    stepIndex: 7,
     mustNameFields: ["activationId"],
     mutate: (observation) => ({ ...observation, activationId: "act-1" }),
   },
@@ -351,10 +355,13 @@ export const VIOLATIONS: readonly Violation[] = [
     id: "identity-create/retry-mints-a-second-receipt",
     scenarioId: "identity-create-and-activation",
     plausibleBug: "the create path is not idempotent at all: a retransmitted create is treated as a fresh request, so the caller is charged twice and the initial input is queued twice",
-    forbiddenBy: "§11 row 1: a replayed create under the same key returns the same Execution ID and receipt, not another charge",
+    forbiddenBy: "§11 row 1: a replayed create under the same key returns the same receipt, not another charge",
+    // Round-3 review finding K02-R3-01 narrowed this. It used to mutate the receipt *and* re-queue the
+    // input, so one transcript stood in for three separate row-1 assertions and a candidate that got
+    // two of them right was still failed by the same evidence. Each now has its own transcript.
     stepIndex: 1,
-    mustNameFields: ["receipt", "queued"],
-    mutate: (observation) => ({ ...observation, receipt: "receipt:create:req-x-2", queued: ["in-1", "in-1"] }),
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:create:req-x-2" }),
   },
   {
     id: "k0-trace/late-arrival-joins-the-pinned-batch",
@@ -452,6 +459,474 @@ export const VIOLATIONS: readonly Violation[] = [
       if (stepIndex !== 2) return;
       sink.attempt({ operationId: "op-1", executionId: "exec-x", operation: "artifact.publish", input: { artifact: "draft-1" } });
     },
+  },
+
+  // == Round-3 additions (review finding K02-R3-01) ==========================
+  //
+  // Each of these exists because a §11 assertion was counted as covered while nothing here could fail
+  // a candidate for breaking it. Grouped by the row they discriminate.
+
+  // -- Row 1: the remaining create-identity assertions ------------------------
+  {
+    id: "identity-create/retry-mints-a-second-execution-id",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "the request-key index is written after the Execution record rather than in the same transaction, so a retry that " +
+      "arrives before the index is visible mints a second Execution and answers with its ID",
+    forbiddenBy: "§11 row 1 (ID-1, ID-2): a replayed create under the same key returns the *same Execution ID*",
+    stepIndex: 1,
+    mustNameFields: ["executionId"],
+    mutate: (observation) => ({ ...observation, executionId: "exec-x-2" }),
+  },
+  {
+    id: "identity-create/retry-queues-the-initial-input-twice",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "create idempotence is implemented over the Execution record only, so a retry correctly returns the original " +
+      "identity and receipt while its copy of the initial input is ingested a second time",
+    forbiddenBy: "ID-2/§11 row 1: a replayed create is one accepted create, not one identity with two ingested inputs",
+    stepIndex: 1,
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: ["in-1", "in-1"] }),
+  },
+  {
+    id: "identity-create/same-key-different-content-silently-treated-as-a-replay",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "the create path deduplicates on the request key without comparing content and answers every repeat as an " +
+      "idempotent replay, so the caller's changed request is dropped with nothing recorded to say it was refused",
+    forbiddenBy: "§11 row 1: a same-key/different-content create is *rejected as a conflict*, which requires a recorded conflict, not silence",
+    stepIndex: 2,
+    mustNameFields: ["rejection"],
+    mutate: (observation) => ({ ...observation, rejection: null }),
+  },
+
+  // -- Row 2: the batch the Outcome is checked against, and the epoch ---------
+  {
+    id: "envelope/accepted-outcome-leaves-its-batch-unacknowledged",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "acknowledgment is derived from the Events the Outcome explicitly references rather than from the pinned batch, " +
+      "so a reserved Event the Runtime did not mention stays unacknowledged and is re-delivered in the next batch",
+    forbiddenBy: "B-3 and §11 row 2: an accepted Outcome acknowledges its *entire* pinned batch, which is what makes the batch checkable exactly",
+    stepIndex: 7,
+    mustNameFields: ["acknowledged"],
+    mutate: (observation) => ({ ...observation, acknowledged: [] }),
+  },
+  {
+    id: "identity-activation/takeover-leaves-the-writer-epoch-unchanged",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "takeover re-sends the pinned Activation without advancing the epoch, so the superseded writer's Outcome still " +
+      "validates and two writers can commit progress for one exchange",
+    forbiddenBy: "ID-9 cases 2-3: a takeover advances the writer epoch under the same Activation ID; keeping the ID is only half the rule",
+    stepIndex: 4,
+    mustNameFields: ["writerEpoch"],
+    mutate: (observation) => ({ ...observation, writerEpoch: 1 }),
+  },
+
+  // -- Row 3: the duplicate receipt, and zero partial state -------------------
+  {
+    id: "control-duplicate/replay-returns-a-fresh-receipt",
+    scenarioId: "control-duplicate-conflicting-outcome",
+    plausibleBug:
+      "the duplicate is correctly detected and nothing is re-committed, but the receipt is minted per submission, so a " +
+      "caller retrying after a lost response cannot tell the two answers name the same accepted Outcome",
+    forbiddenBy: "OA-2/ID-6: an exact duplicate returns *the original receipt*, not a fresh one for the same accepted Outcome",
+    stepIndex: 3,
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:outcome:act-1#retry" }),
+  },
+  {
+    id: "envelope/rejected-envelope-acknowledges-its-batch",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "the batch is acknowledged when the Activation resolves rather than when an Outcome is accepted, so a rejected " +
+      "envelope still consumes its input and the Runtime is recorded as having accounted for Events it must now re-see",
+    forbiddenBy: "§11 row 3 and B-3: a failure partway through acceptance leaves no acknowledgment; only an accepted Outcome acknowledges",
+    stepIndex: 2,
+    mustNameFields: ["acknowledged"],
+    mutate: (observation) => ({ ...observation, acknowledged: ["in-1"] }),
+  },
+
+  // -- Row 4: the Effect-intent assertions, now observable --------------------
+  {
+    id: "effect-refusal/intent-and-proposal-key-bound-before-refusal",
+    scenarioId: "effect-refusal-and-sink-attribution",
+    plausibleBug:
+      "the envelope is walked into domain objects before it is validated, so an Effect ID is minted and its proposal key " +
+      "bound while the record is being built; the envelope is then refused and the intent is left behind, reserving a " +
+      "proposal key and creating an action record K1 says cannot exist",
+    forbiddenBy: "EF-2: 'no Effect ID is minted, no proposal key is bound'; §11 row 4 refuses *before* any intent, ID or proposal-key binding exists; EF-4 — no action record exists at all",
+    stepIndex: 2,
+    mustNameFields: ["effectIntents"],
+    mutate: (observation) => ({ ...observation, effectIntents: ["ef-1", "proposal-key:pk-1"] }),
+  },
+  {
+    id: "effect-refusal/refused-without-a-recorded-reason",
+    scenarioId: "effect-refusal-and-sink-attribution",
+    plausibleBug:
+      "validation returns a boolean and the caller simply declines to commit, so the Effect proposal is dropped with " +
+      "nothing inspectable recording that it was refused or why — indistinguishable, to the Runtime, from being ignored",
+    forbiddenBy: "§11 row 4: rejection carries 'a recorded, inspectable reason'; EF-1 forbids silently accepted-and-ignored as well as silently stripped",
+    stepIndex: 2,
+    mustNameFields: ["rejection"],
+    mutate: (observation) => ({ ...observation, rejection: null }),
+  },
+
+  // -- Row 5(a): the selector grammar, submitted by a candidate at last -------
+  {
+    id: "envelope/match-everything-alternative-registered",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "well-formedness is implemented as rule 1 alone — count the two lists — so an alternative supplying no selector " +
+      "field passes, and a wait meaning 'any application input labelled continue' is registered as 'any Event at all'",
+    forbiddenBy: "W-1 well-formedness rule 2 and the selector grammar: an alternative supplying none of the three fields is invalid, not a shorthand for anything",
+    stepIndex: 4,
+    mustNameFields: ["state", "liveWaitGeneration", "rejection"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad-2", dispatchedBatch: null, activationId: null, rejection: null }),
+  },
+  {
+    id: "envelope/empty-kind-set-treated-as-matches-nothing",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "the kind selector is applied with a set-membership test that an empty set satisfies vacuously, so `kinds: []` is " +
+      "read as a selector matching nothing and registered as a valid-but-inert alternative",
+    forbiddenBy: "W-1's grammar: an empty supplied kind set is rejected before any matching is attempted; absence is expressed by not supplying the field",
+    stepIndex: 5,
+    mustNameFields: ["state", "liveWaitGeneration", "rejection"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad-3", dispatchedBatch: null, activationId: null, rejection: null }),
+  },
+  {
+    id: "envelope/invalid-subscription-identity-registered",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "subscriptions are carried through as opaque strings and validated only where they are matched, so a structurally " +
+      "invalid entry registers and fails silently at eligibility time instead of at the envelope boundary",
+    forbiddenBy: "W-1 well-formedness rule 3: every declared subscription present must be structurally valid, checked at registration",
+    stepIndex: 6,
+    mustNameFields: ["state", "liveWaitGeneration", "rejection"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad-4", dispatchedBatch: null, activationId: null, rejection: null }),
+  },
+  {
+    id: "wait-structure/inert-alternative-refused-as-unsatisfiable",
+    scenarioId: "wait-structure-not-satisfiability",
+    plausibleBug:
+      "well-formedness is implemented as the withdrawn revision-9 rule — the wait must name at least one source that " +
+      "*can end it* — so a declaration whose alternatives the Kernel judges unable to wake it is refused at registration",
+    forbiddenBy: "W-1: well-formedness is structural and proves 'structure, never satisfiability'; the Kernel does not audit whether a declared source can wake the Execution",
+    stepIndex: 2,
+    mustNameFields: ["state", "rejection", "liveWaitGeneration"],
+    mutate: (observation) => ({
+      ...observation,
+      state: "RUNNING",
+      progressRevision: 0,
+      progress: null,
+      acknowledged: [],
+      queued: ["in-1"],
+      liveWaitGeneration: null,
+      dispatchedBatch: ["in-1"],
+      activationId: "act-1",
+      receipt: "receipt:create:req-x",
+      rejection: { classification: "malformed_envelope", reason: "wait declares no source that can end it" },
+    }),
+  },
+  {
+    id: "k0-trace/subscription-only-wait-refused-for-an-empty-dependency-list",
+    scenarioId: "k0-trace",
+    plausibleBug:
+      "the dependency list is treated as the wait, and the subscription list as an optional extra, so a wait with no " +
+      "dependency alternatives is refused as empty — which makes 001's own K0 trace unrepresentable",
+    forbiddenBy: "W-1 rule 1 and W-8: either list may be empty; a subscription-only input wait is first-class, and §11 row 5(a) says so",
+    stepIndex: 4,
+    mustNameFields: ["state", "liveWaitGeneration", "rejection"],
+    mutate: (observation) => ({
+      ...observation,
+      state: "RUNNING",
+      progressRevision: 0,
+      progress: null,
+      emissions: [],
+      acknowledged: [],
+      queued: ["in-1", "bq-1"],
+      liveWaitGeneration: null,
+      dispatchedBatch: ["in-1"],
+      activationId: "act-1",
+      receipt: "receipt:create:req-x",
+      rejection: { classification: "malformed_envelope", reason: "wait declares no dependency alternatives" },
+    }),
+  },
+
+  // -- Row 5(b): the eligibility category rule, both negative arms ------------
+  {
+    id: "wait-structure/inert-alternative-wakes-matching-input",
+    scenarioId: "wait-structure-not-satisfiability",
+    plausibleBug:
+      "eligibility is decided by running every Event through the selector grammar before consulting its source category, " +
+      "so application input whose kind a dependency alternative happens to name wakes a wait that declared no subscription",
+    forbiddenBy: "W-1's category table and W-7 cases 6-7: for application input a matching dependency alternative is inert; only a declared subscription makes it eligible",
+    stepIndex: 3,
+    mustNameFields: ["state", "liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, state: "READY", liveWaitGeneration: null, waitEndedReadiness: [{ generation: "gi1", species: "event" }] }),
+  },
+  {
+    id: "wait-structure/unmatched-kernel-event-wakes-the-wait",
+    scenarioId: "wait-structure-not-satisfiability",
+    plausibleBug:
+      "a non-application Kernel Event is treated as eligible on arrival because the Execution is waiting and the Event " +
+      "is 'the kind of thing it waits for', with the alternative's correlation never compared",
+    forbiddenBy: "W-1's category table: every other ordinary Kernel Event is eligible only through a dependency alternative it actually matches under the grammar",
+    stepIndex: 4,
+    mustNameFields: ["state", "liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, state: "READY", liveWaitGeneration: null, waitEndedReadiness: [{ generation: "gi1", species: "event" }] }),
+  },
+  {
+    id: "subscription-deadline/timeout-withheld-because-nothing-declared-it",
+    scenarioId: "control-subscription-wait-deadline",
+    plausibleBug:
+      "the timeout Event is routed through the same eligibility test as every other Event, so a wait that declares no " +
+      "dependency alternative and no matching subscription never receives its own expiry and waits forever",
+    forbiddenBy: "W-9 and W-1's category table: the timeout Event is eligible through neither list and reaches the Runtime by construction, as B-7's mandatory member",
+    stepIndex: 4,
+    mustNameFields: ["state", "queued", "waitEndedReadiness"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", queued: ["bq-1"], liveWaitGeneration: "gd1", waitEndedReadiness: [] }),
+  },
+
+  // -- Row 5(c): W-2's ordered registration -----------------------------------
+  {
+    id: "k0-trace/wait-woken-by-its-own-acknowledged-batch",
+    scenarioId: "k0-trace",
+    plausibleBug:
+      "W-2's mailbox check runs before the Outcome's own batch is acknowledged, so the wait is immediately satisfied by " +
+      "the very input the Outcome just accounted for and the Execution re-wakes on its own input forever",
+    forbiddenBy: "W-2 step 1: this Outcome's own reserved batch is acknowledged *first* and is therefore not a candidate in step 2",
+    stepIndex: 4,
+    mustNameFields: ["state", "liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, state: "READY", liveWaitGeneration: null, waitEndedReadiness: [{ generation: "g1", species: "event" }] }),
+  },
+
+  // -- Row 5(d): retirement, and the flag the Kernel does not keep ------------
+  {
+    id: "subscription-deadline/deadline-expiry-leaves-the-generation-live",
+    scenarioId: "control-subscription-wait-deadline",
+    plausibleBug:
+      "the expiry handler mints the timeout Event and sets READY but retires the registration lazily at the next " +
+      "dispatch, leaving a live generation that a redelivered timer can fire against a second time",
+    forbiddenBy: "W-1(d)/B-7: a current-generation deadline expiry retires the registration and its generation in the same transaction that mints the timeout",
+    stepIndex: 4,
+    mustNameFields: ["liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, liveWaitGeneration: "gd1" }),
+  },
+  {
+    id: "wait-structure/re-registered-dependency-treated-as-already-satisfied",
+    scenarioId: "wait-structure-not-satisfiability",
+    plausibleBug:
+      "retirement records which alternative settled, so re-registering a dependency the Kernel has seen settle once is " +
+      "immediately ready — a satisfaction flag carried across generations instead of a selector",
+    forbiddenBy: "W-1(d)/B-6: the Kernel keeps no per-alternative satisfied flag; a wait-ended readiness preserves a selector, and a Runtime that still needs a dependency re-registers it",
+    stepIndex: 7,
+    mustNameFields: ["state", "liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, state: "READY", liveWaitGeneration: null, waitEndedReadiness: [{ generation: "gi2", species: "event" }] }),
+  },
+
+  // -- Row 5(f) and row 6: readiness, now a fact rather than prose ------------
+  {
+    id: "control-stale-timer/stale-timer-mints-a-timeout-for-a-retired-generation",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "the timer handler checks the generation before waking but mints the timeout Event unconditionally, so a retired " +
+      "generation's expiry is delivered into the mailbox of the wait that replaced it",
+    forbiddenBy: "W-3/W-9: a timer naming a superseded generation creates no timeout Event at all, not merely no wake",
+    stepIndex: 6,
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: ["to-g1"] }),
+  },
+  {
+    id: "control-stale-timer/duplicate-timer-arms-a-second-readiness",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "timeout Event creation is made idempotent by keying on the generation, but the readiness commit beside it is not, " +
+      "so a redelivered timer leaves a second readiness outstanding behind the first with no second Event to show for it",
+    forbiddenBy: "W-9 and B-8: a duplicate timer for an already-accepted expiry creates no second timeout Event, readiness or logical timeout",
+    stepIndex: 8,
+    mustNameFields: ["waitEndedReadiness"],
+    mutate: (observation) => ({
+      ...observation,
+      waitEndedReadiness: [
+        { generation: "g2", species: "deadline" },
+        { generation: "g2", species: "deadline" },
+      ],
+    }),
+  },
+  {
+    id: "control-stale-timer/late-result-arms-a-second-readiness",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "the ingress path arms readiness whenever an arriving Event matches the most recently retired wait's rule, without " +
+      "first checking that a generation is live. The Execution is already READY, so nothing visible changes now — the " +
+      "phantom readiness survives the next reservation and re-selects a batch afterwards",
+    forbiddenBy: "B-8 and §3 row 6: an Event accepted while READY, RUNNING or terminal creates no readiness, so a second readiness can never arm behind the first",
+    stepIndex: 9,
+    mustNameFields: ["waitEndedReadiness"],
+    mutate: (observation) => ({
+      ...observation,
+      waitEndedReadiness: [
+        { generation: "g2", species: "deadline" },
+        { generation: "g2", species: "event" },
+      ],
+    }),
+  },
+  {
+    id: "control-stale-timer/event-accepted-while-running-arms-a-readiness",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "an arriving result is treated as a wake for whatever the Execution is doing, so an Event accepted while an " +
+      "Activation is in flight arms a readiness for a wait that does not exist yet",
+    forbiddenBy: "B-8 and §3 row 6: while RUNNING no generation is live (W-3), so an accepted Event is a mailbox fact and nothing more",
+    stepIndex: 2,
+    mustNameFields: ["waitEndedReadiness"],
+    mutate: (observation) => ({ ...observation, waitEndedReadiness: [{ generation: "g0", species: "event" }] }),
+  },
+  {
+    id: "k0-trace/late-arrival-dropped-instead-of-queued",
+    scenarioId: "k0-trace",
+    plausibleBug:
+      "an Event that cannot join the pinned batch is discarded rather than retained, so input arriving during RUNNING is " +
+      "lost instead of becoming a later candidate",
+    forbiddenBy: "B-4 and §11 row 6: an Event accepted during an in-flight Activation remains queued for later B-2 selection or B-5 disposition; it is never silently dropped",
+    stepIndex: 3,
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: ["in-1"] }),
+  },
+
+  // -- Row 7: the CX-6 fence, one assertion at a time -------------------------
+  {
+    id: "control-cancel/cancellation-leaves-the-execution-running",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "cancellation is recorded as a request and applied only when the in-flight Activation reports back, so the control " +
+      "path never reaches a terminal state on its own and a Runtime that never answers is never cancelled",
+    forbiddenBy: "CX-1/CX-2 and §11 row 7: cancellation request acceptance is itself the fence, and the cancellation control path reaches CANCELLED",
+    stepIndex: 2,
+    mustNameFields: ["state", "terminalDispositions"],
+    mutate: (observation) => ({ ...observation, state: "RUNNING", terminalDispositions: [], dispatchedBatch: ["in-1"], activationId: "act-1" }),
+  },
+  {
+    id: "control-cancel/losing-outcome-rejected-with-the-wrong-classification",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "the fence is implemented as a generic 'the Activation is no longer current' check, so the loser is reported as a " +
+      "stale exchange and a caller cannot tell an authority failure from a terminal-decision race it should not retry",
+    forbiddenBy: "CX-6, which the accepted worksheet fixes by name: the losing Outcome is rejected with the cancellation/terminal-conflict classification. §11 row 7 states it explicitly",
+    stepIndex: 3,
+    mustNameFields: ["rejection"],
+    mutate: (observation) => ({ ...observation, rejection: { classification: "stale_exchange", reason: "activation act-1 is no longer current" } }),
+  },
+  {
+    id: "control-cancel/losing-emissions-published",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "emissions are published as the envelope is walked, before the fence is consulted, so a losing Outcome's output " +
+      "reaches subscribers even though the Outcome is rejected and its progress correctly discarded",
+    forbiddenBy: "CX-6 and §11 row 7: the losing Outcome accepts zero emissions, separately from installing zero progress",
+    stepIndex: 3,
+    mustNameFields: ["emissions"],
+    mutate: (observation) => ({ ...observation, emissions: ["em-late"] }),
+  },
+  {
+    id: "control-cancel/losing-outcome-acknowledges-its-batch",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "the reserved batch is acknowledged when the Activation resolves in any way, so the loser's rejection still records " +
+      "the Runtime as having accounted for input it never produced an accepted Outcome for",
+    forbiddenBy: "CX-6/B-3/B-5: a rejected losing Outcome acknowledges none of that batch, which instead takes a terminal disposition",
+    stepIndex: 3,
+    mustNameFields: ["acknowledged", "terminalDispositions"],
+    mutate: (observation) => ({ ...observation, acknowledged: ["in-1"], terminalDispositions: [] }),
+  },
+  {
+    id: "control-cancel/losing-outcome-moves-the-execution-off-terminal",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "the loser's next step is applied because the lifecycle writer runs outside the fenced transaction, so a rejected " +
+      "`continue` reopens a CANCELLED Execution for another Activation",
+    forbiddenBy: "CX-6 and §11 row 7: the losing Outcome produces no wait, deadline or next-state change; CX-2, terminal states do not reopen",
+    stepIndex: 3,
+    mustNameFields: ["state"],
+    mutate: (observation) => ({ ...observation, state: "READY" }),
+  },
+  {
+    id: "control-cancel/losing-outcome-mints-an-effect-intent",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "intents are constructed during envelope walking and committed by a separate writer that the cancellation fence " +
+      "does not cover, so a rejected losing Outcome still leaves an accepted intent behind",
+    forbiddenBy: "CX-6 and §11 row 7: the losing Outcome creates zero Effect intents; EF-1/EF-2 mean none may exist at K1 in the first place",
+    stepIndex: 3,
+    mustNameFields: ["effectIntents"],
+    mutate: (observation) => ({ ...observation, effectIntents: ["ef-late"] }),
+  },
+
+  {
+    id: "control-cancel/complete-loser-escapes-the-fence",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "the fence is applied where `continue` is handled, because that is the path that would obviously reopen a " +
+      "cancelled Execution, while `complete` is handled by a terminal-decision writer that checks only 'is this " +
+      "Execution already terminal in the way I am about to make it'",
+    forbiddenBy: "Decision M-1, which requires the control to assert CX-6's full rejection for *both* `continue` and `complete`; CX-2, the first accepted terminal decision wins",
+    stepIndex: 5,
+    mustNameFields: ["state", "progressRevision"],
+    mutate: (observation) => ({
+      ...observation,
+      state: "COMPLETED",
+      progressRevision: 1,
+      progress: { cursor: 6 },
+      receipt: "receipt:outcome:act-1",
+      rejection: null,
+    }),
+  },
+
+  // -- Row 9: the hold has to be inspectable, not merely non-fabricated -------
+  {
+    id: "control-missing-checkpoint/refused-without-an-inspectable-hold",
+    scenarioId: "control-missing-checkpoint-code",
+    plausibleBug:
+      "recovery refuses by throwing out of the resume path, so the Execution is correctly not restarted and correctly " +
+      "not fabricated, but nothing durable records that it is held or why; an operator sees only a failed job",
+    forbiddenBy: "PC-5 and §11 row 9: the result is an *explicit* hold/refusal, which requires an inspectable record and not merely the absence of a fabrication",
+    stepIndex: 4,
+    mustNameFields: ["recoveryHold"],
+    mutate: (observation) => ({ ...observation, recoveryHold: null }),
+  },
+
+  // -- Row 10: LP-1 and LP-3, with evidence of their own ----------------------
+  {
+    id: "identity-activation/superseded-writer-epoch-accepted-from-a-stale-read",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "the authority check reads the exchange through a cache refreshed outside the acceptance transaction, so the " +
+      "epoch the takeover just superseded is still readable as current and the old writer's Outcome commits",
+    forbiddenBy: "LP-1: a policy check against local, already-accepted state ('is this Activation ID still the live one') reads the last accepted write with no eventual-consistency window",
+    stepIndex: 5,
+    mustNameFields: ["progressRevision", "rejection"],
+    mutate: (observation) => ({
+      ...observation,
+      progressRevision: 1,
+      progress: { step: 99 },
+      receipt: "receipt:outcome:act-1",
+      rejection: null,
+    }),
+  },
+  {
+    id: "k0-trace/late-input-retracts-accepted-progress",
+    scenarioId: "k0-trace",
+    plausibleBug:
+      "arriving input is treated as superseding whatever the Runtime last said, so a new message rolls back the accepted " +
+      "Outcome that preceded it — 'the user corrected us, so what we committed no longer counts'",
+    forbiddenBy: "LP-3: ordinary corrective input never itself withdraws or invalidates an already-accepted Outcome; explicit withdrawal is a separate K2-scoped mechanism",
+    stepIndex: 5,
+    mustNameFields: ["progressRevision", "emissions"],
+    mutate: (observation) => ({ ...observation, progressRevision: 0, progress: null, emissions: [] }),
   },
 ];
 

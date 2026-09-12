@@ -89,6 +89,28 @@ export interface WaitRecord {
   readonly generation: string;
 }
 
+/**
+ * An outstanding **wait-ended readiness**, as §3's four-row table defines it.
+ *
+ * The table treats readiness as an accepted record with two properties a later reservation depends
+ * on, not as a scheduler hint: *which* generation was retired, and *which species* retired it —
+ * Event-triggered (`B-6`, rows 1-2) or deadline-triggered (`B-7`, rows 3-4). The species fixes the
+ * next batch's mandatory member: at least one Event eligible under the retired rule for `B-6`, and
+ * the generation-correlated timeout Event for `B-7`. Ordinary `READY` (row 5) has no such record and
+ * therefore no mandatory member, which is the whole difference between the wait-ended batch rule and
+ * B-2's ordinary acceptance-order selection.
+ *
+ * `B-8` fixes its lifetime: created only by a wait ending, consumed when the next batch is durably
+ * reserved, never re-armed after reservation, and never created by an Event accepted while `READY`,
+ * `RUNNING` or terminal.
+ */
+export interface WaitEndedReadiness {
+  /** The generation this readiness retired. Never a live generation — retirement is what created it. */
+  readonly generation: string;
+  /** `B-6` (an eligible Event ended the wait) or `B-7` (the current generation's deadline did). */
+  readonly species: "event" | "deadline";
+}
+
 export type WaitWellFormedness =
   | { readonly wellFormed: true }
   | { readonly wellFormed: false; readonly reason: string };
@@ -245,6 +267,17 @@ export interface OutcomeEnvelope {
  * and the oracle was rejecting conforming work. Under-coverage lets a wrong candidate pass;
  * over-constraint fails a right one, which is worse. Every counterexample in `candidate.ts` therefore
  * has to name the decision it breaks, and that citation is checked.
+ *
+ * **Round-3 correction: the oracle now implements this paragraph, which it previously only stated.**
+ * C3 wrote the rule above and then went on comparing every reason string verbatim, so a candidate that
+ * reported a malformed wait as "the wait record is not well formed" rather than in the fixture's own
+ * words was failed — the very thing the paragraph forbids. The gap surfaced while welding
+ * `checkWaitWellFormed` to the scenario corpus: the helper and the scenario described one condition in
+ * two different sentences, which only the arbitrariness of both made possible. `runScenario` now
+ * compares the **classification** exactly always, requires a non-empty reason always, and compares the
+ * reason text only for the classifications listed in `CANONICAL_REASON_CLASSIFICATIONS` — today just
+ * CX-6's. The reason strings written into the scenarios remain as documentation of one conforming
+ * answer. A stated principle an oracle does not enforce is not a safeguard.
  */
 export type RejectionClassification =
   /** OA-3 whole-envelope validation: malformed value, bad wait record, proposed Effect at K1, etc. */

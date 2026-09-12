@@ -1,12 +1,20 @@
 /**
  * K0.2 public fixture — the versioned scenario set.
  *
- * Eleven scenarios. Between them they observe every *obligation* in the accepted K0.1 worksheet's §11
- * "001 K0 boundary → assertion map" — not merely every row number. `coverage.ts` enumerates those
- * obligations individually and requires each to carry a distinguishing counterexample.
+ * Twelve scenarios. Between them they observe every *assertion* in the accepted K0.1 worksheet's §11
+ * "001 K0 boundary → assertion map" — not merely every row number, and not merely every prose grouping
+ * inside a row. `coverage.ts` enumerates those assertions individually and requires each to carry a
+ * distinguishing counterexample that a candidate breaking *that* assertion would produce.
  *
- * Six of the eleven are unsafe/state-loss controls: Decision M-1's four named ones, plus W-8 case 6's
+ * Six of the twelve are unsafe/state-loss controls: Decision M-1's four named ones, plus W-8 case 6's
  * deadline shape and row 8's completion check, both added after round-1 review finding K02-R1-01.
+ *
+ * **What round 3 changed.** Review finding K02-R3-01 reopened K02-R1-01: several §11 assertions were
+ * counted as covered while the only thing standing behind them was `forbids` prose, a green test of
+ * the fixture's own helper, or a counterexample belonging to a neighbouring rule. The corpus now
+ * submits the waits whose *grammar* W-1 fixes, registers a valid-but-inert wait to prove structure is
+ * not satisfiability, observes wait-ended readiness and Effect-intent absence as facts rather than
+ * claims, and exercises a superseded writer epoch so LP-1 has evidence of its own.
  *
  * **How to read an expectation.** `obs(...)` returns a *complete* `Observation`; the call site shows
  * only the fields that differ from the quiescent defaults, and every default it does not override is
@@ -18,7 +26,7 @@
  * worksheet, against which some future K1 candidate is judged.
  */
 
-import type { FixtureEvent, OutcomeEnvelope, WaitRecord } from "./protocol-vocabulary.ts";
+import type { DependencyAlternative, FixtureEvent, OutcomeEnvelope, WaitRecord } from "./protocol-vocabulary.ts";
 import type { Observation, Scenario, ScenarioStep } from "./fixture.ts";
 
 // -- Small builders ----------------------------------------------------------
@@ -35,6 +43,7 @@ function obs(executionId: string, overrides: Partial<Observation> = {}): Observa
     queued: [],
     terminalDispositions: [],
     liveWaitGeneration: null,
+    waitEndedReadiness: [],
     dispatchedBatch: null,
     activationId: null,
     ingressRefused: null,
@@ -42,6 +51,7 @@ function obs(executionId: string, overrides: Partial<Observation> = {}): Observa
     rejection: null,
     writerEpoch: 0,
     recoveryHold: null,
+    effectIntents: [],
     ...overrides,
   };
 }
@@ -104,7 +114,7 @@ export const k0Trace: Scenario = {
   // Row 1's create-identity obligations moved to `identity-create-and-activation` when round-1 review
   // finding K02-R1-01 split them out; the retry step below stays because the trace reads better with
   // it, but the authoritative row-1 evidence is that scenario's.
-  k0BoundaryRows: [2, 5, 6, 8],
+  k0BoundaryRows: [2, 5, 6, 8, 10],
   isUnsafeControl: false,
   waits: { subscriptionOnlyWait },
   steps: [
@@ -202,6 +212,7 @@ export const k0Trace: Scenario = {
         forbids: [
           "state must stay WAITING: waking here would wake for every external.input regardless of label",
           "liveWaitGeneration must stay g1: an ineligible Event retires nothing",
+          "waitEndedReadiness must stay empty: nothing retired, so B-8 creates nothing",
           "bq-2 must appear in queued: an ineligible Event is retained, not dropped",
           "acknowledged must not grow: an ineligible Event is not acknowledged",
         ],
@@ -219,12 +230,17 @@ export const k0Trace: Scenario = {
           acknowledged: ["in-1"],
           queued: ["bq-1", "bq-2", "cont-1"],
           liveWaitGeneration: null,
+          // §3 row 2: the Event's own acceptance boundary commits the retirement and the readiness,
+          // with no Outcome anywhere in the transaction. That readiness is why the next reservation
+          // is bound by g1's retired rule rather than by acceptance order.
+          waitEndedReadiness: [{ generation: "g1", species: "event" }],
           receipt: "receipt:outcome:act-1",
           writerEpoch: 1,
         }),
         forbids: [
           "acknowledged must not grow: a wake is not an acknowledgment, which requires an accepted Outcome (B-3)",
           "progressRevision must not advance: no Outcome was submitted at this boundary",
+          "waitEndedReadiness must be exactly one Event-triggered entry for g1: ordinary READY carries none, and the difference decides the next batch",
         ],
       },
     ),
@@ -247,6 +263,7 @@ export const k0Trace: Scenario = {
         forbids: [
           "dispatchedBatch must not contain bq-1 or bq-2: they are ineligible under W₀'s retired rule and are not candidates at any bound",
           "the single slot must go to cont-1, the wait-ended batch's mandatory member, not to the earlier-accepted backlog",
+          "waitEndedReadiness must return to empty: reservation consumes it and B-8 forbids re-arming",
         ],
       },
     ),
@@ -481,7 +498,7 @@ export const staleTimerAndLostWake: Scenario = {
     "K0.1 worksheet B-6 path A, B-7 path B, B-8",
     "kernel.md ('stale timers cannot wake a replacement wait'), CL-2",
   ],
-  k0BoundaryRows: [5],
+  k0BoundaryRows: [5, 6],
   isUnsafeControl: true,
   waits: { waitOnCorr1, waitOnCorr2 },
   steps: [
@@ -498,7 +515,10 @@ export const staleTimerAndLostWake: Scenario = {
       {
         label: "the result arrives before the wait exists; no wait is live so no readiness is created (B-8)",
         observation: obs(X, { state: "RUNNING", queued: ["in-1", "res-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }),
-        forbids: ["dispatchedBatch must stay ['in-1']: a new arrival cannot join an already-pinned batch"],
+        forbids: [
+          "dispatchedBatch must stay ['in-1']: a new arrival cannot join an already-pinned batch",
+          "waitEndedReadiness must stay empty: the Execution is RUNNING, so no generation is live and B-8 creates nothing",
+        ],
       },
     ),
     step(
@@ -512,6 +532,10 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1"],
           queued: ["res-1"],
           liveWaitGeneration: null,
+          // §3 row 1: g1 is created and retired inside this one transaction, and the readiness it
+          // leaves is Event-triggered. This is not ordinary READY — the next reservation is bound by
+          // the retired wait's rule, which is why the species and generation are observed.
+          waitEndedReadiness: [{ generation: "g1", species: "event" }],
           receipt: "receipt:outcome:act-1",
           writerEpoch: 1,
         }),
@@ -525,7 +549,7 @@ export const staleTimerAndLostWake: Scenario = {
     step(
       { kind: "dispatch", executionId: X, bound: 4 },
       {
-        label: "the wait-ended batch carries its mandatory member",
+        label: "the wait-ended batch carries its mandatory member, and reservation consumes the readiness",
         observation: obs(X, {
           state: "RUNNING",
           progressRevision: 1,
@@ -537,6 +561,9 @@ export const staleTimerAndLostWake: Scenario = {
           receipt: "receipt:outcome:act-1",
           writerEpoch: 2,
         }),
+        forbids: [
+          "waitEndedReadiness must return to empty: B-8 consumes it at durable reservation and forbids re-arming afterwards",
+        ],
       },
     ),
     step(
@@ -576,6 +603,7 @@ export const staleTimerAndLostWake: Scenario = {
           "queued must stay empty: a stale timer creates no timeout Event",
           "liveWaitGeneration must stay g2: a stale timer retires nothing",
           "state must stay WAITING: a stale timer cannot wake a replacement wait",
+          "waitEndedReadiness must stay empty: retiring nothing creates no readiness (B-8)",
         ],
       },
     ),
@@ -590,6 +618,10 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1", "res-1"],
           queued: ["to-g2"],
           liveWaitGeneration: null,
+          // §3 row 4: deadline-triggered. The species differs from g1's above, and it decides the next
+          // batch's mandatory member — the generation-correlated timeout Event rather than "at least
+          // one Event eligible under the retired rule".
+          waitEndedReadiness: [{ generation: "g2", species: "deadline" }],
           receipt: "receipt:outcome:act-2",
           writerEpoch: 2,
         }),
@@ -606,12 +638,15 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1", "res-1"],
           queued: ["to-g2"],
           liveWaitGeneration: null,
+          // Round-3 review finding K02-R3-01: "no second readiness" used to live only in the prose
+          // below, where no candidate could be failed for breaking it. The list is still length 1.
+          waitEndedReadiness: [{ generation: "g2", species: "deadline" }],
           receipt: "receipt:outcome:act-2",
           writerEpoch: 2,
         }),
         forbids: [
           "queued must stay ['to-g2']: at most one timeout Event exists per generation",
-          "no second readiness and no second logical timeout may be created",
+          "waitEndedReadiness must stay exactly one entry: a duplicate timer creates no second readiness and no second logical timeout (W-9, B-8)",
         ],
       },
     ),
@@ -626,10 +661,18 @@ export const staleTimerAndLostWake: Scenario = {
           acknowledged: ["in-1", "res-1"],
           queued: ["to-g2", "res-2"],
           liveWaitGeneration: null,
+          // The sharp B-8 state, and the one round-3 review finding K02-R3-01 named: the Execution is
+          // already READY with a readiness outstanding when an eligible-looking result arrives. It is
+          // an accepted mailbox fact and nothing more. A second entry here would be the phantom
+          // readiness that re-selects a batch after reservation.
+          waitEndedReadiness: [{ generation: "g2", species: "deadline" }],
           receipt: "receipt:outcome:act-2",
           writerEpoch: 2,
         }),
-        forbids: ["res-2 must be accepted and retained: a timeout is never proof the awaited work did not happen (CL-2)"],
+        forbids: [
+          "res-2 must be accepted and retained: a timeout is never proof the awaited work did not happen (CL-2)",
+          "waitEndedReadiness must stay exactly one entry: no wait generation is live, so this arrival creates no readiness behind the first (B-8, §3 row 6)",
+        ],
       },
     ),
     step(
@@ -647,7 +690,10 @@ export const staleTimerAndLostWake: Scenario = {
           receipt: "receipt:outcome:act-2",
           writerEpoch: 3,
         }),
-        forbids: ["the timeout must not suppress the later result for the same correlation: preserve both facts"],
+        forbids: [
+          "the timeout must not suppress the later result for the same correlation: preserve both facts",
+          "waitEndedReadiness must return to empty: reservation consumes it",
+        ],
       },
     ),
   ],
@@ -688,7 +734,11 @@ export const cancelVersusComplete: Scenario = {
     "K0.1 worksheet OA-2 (accepted receipt replay), OA-5 (rejection is inert), B-5",
     "kernel.md, Recovery and cancellation",
   ],
-  k0BoundaryRows: [7, 8, 10],
+  // Round-3 review finding K02-R3-01: row 10 was claimed here because R10-a pointed at this
+  // scenario's cancellation-atomicity transcript, which demonstrates CX-6/OA-3 and says nothing about
+  // LP-1's staleness window. LP-1 now has evidence of its own on the identity scenario, so this claim
+  // is withdrawn rather than left as a row this scenario does not actually observe.
+  k0BoundaryRows: [7, 8],
   isUnsafeControl: true,
   steps: [
     step(
@@ -922,7 +972,7 @@ export const effectRefusalAndSinkAttribution: Scenario = {
     "K0.1 worksheet §11 row 4, OA-3 (whole-envelope validation, all-or-nothing), OA-5",
     "001 K0 deliverable (the fake operation sink with an independent ledger)",
   ],
-  k0BoundaryRows: [4],
+  k0BoundaryRows: [3, 4],
   isUnsafeControl: false,
   steps: [
     step(
@@ -993,7 +1043,7 @@ export const createAndActivationIdentity: Scenario = {
     "K0.1 worksheet §11 row 1 (ID-1, ID-2, ID-6, ID-7) and row 2 (ID-3, ID-4, ID-9)",
     "execution-protocol.md, Identities and immutable exchanges",
   ],
-  k0BoundaryRows: [1, 2],
+  k0BoundaryRows: [1, 2, 10],
   isUnsafeControl: false,
   steps: [
     step(
@@ -1046,6 +1096,36 @@ export const createAndActivationIdentity: Scenario = {
           "activationId must stay act-1: a takeover is the same exchange under a new writer, not a new exchange",
           "dispatchedBatch must stay ['in-1']: a takeover cannot replace pinned input with new mailbox content",
           "acknowledged must stay empty: a takeover acknowledges nothing",
+        ],
+      },
+    ),
+    // LP-1, given evidence of its own by round-3 review finding K02-R3-01. The map previously pointed
+    // row 10 at a cancellation-atomicity transcript, which demonstrates CX-6/OA-3 and says nothing
+    // about a stale local read. LP-1's own examples are exactly this check — "is this Execution's
+    // current epoch still current", "is this Activation ID still the live one" — and its content is
+    // that the check reads **the same store the acceptance algorithm just wrote to**, with no
+    // eventual-consistency window. The takeover above is that write; this submission is the read.
+    step(
+      {
+        kind: "submit_outcome",
+        // writerEpoch defaults to 1: the epoch the takeover in the previous step superseded.
+        outcome: outcome({ executionId: X, activationId: "act-1", progress: { step: 99 }, next: { step: "continue" } }),
+      },
+      {
+        label: "LP-1: the authority check reads the epoch the immediately preceding takeover wrote, with no staleness window",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "stale_exchange", reason: "writer epoch 1 was superseded by epoch 2" },
+          writerEpoch: 2,
+        }),
+        forbids: [
+          "progressRevision must stay 0 and progress null: a superseded writer commits nothing",
+          "writerEpoch must stay 2: a rejected stale submission does not roll the epoch back",
+          "there is no window in which the previous epoch is still readable as current: the takeover's write is visible to the very next check",
         ],
       },
     ),
@@ -1102,7 +1182,7 @@ export const wholeEnvelopeValidation: Scenario = {
     "execution-protocol.md, Outcome acceptance algorithm step 3",
     "K0.1 worksheet W-1 well-formedness case 1 (both lists empty, deadline does not rescue it)",
   ],
-  k0BoundaryRows: [3, 5],
+  k0BoundaryRows: [2, 3, 5],
   isUnsafeControl: false,
   steps: [
     step(
@@ -1173,6 +1253,96 @@ export const wholeEnvelopeValidation: Scenario = {
           "liveWaitGeneration must stay null: no registration exists for a refused wait, and g-bad must never appear",
           "state must stay RUNNING: a refused wait does not move the Execution",
           "a deadline must not make a malformed declaration acceptable",
+        ],
+      },
+    ),
+    // W-1 well-formedness rule 2, first half. Round-3 review finding K02-R3-01: the three rules below
+    // were enforced only by `checkWaitWellFormed`, which `rule-agreement.test.ts` checks against the
+    // worksheet. That proves the fixture's own helper agrees with the worksheet; it proves nothing
+    // about a candidate, because no scenario ever submitted a wait that breaks them. The reasons
+    // expected here are the helper's exact strings, so the helper's rule and the candidate's
+    // obligation are now the same assertion rather than two parallel ones.
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-1",
+          // An alternative supplying none of the three selector fields matches every Event addressed
+          // to the Execution. The grammar calls that invalid, not a shorthand for "anything" — it is
+          // the one over-matching spelling W-1 refuses structurally.
+          next: { step: "await", wait: { dependencies: [{}], subscriptions: [], generation: "g-bad-2" } },
+        }),
+      },
+      {
+        label: "W-1 rule 2: an alternative supplying no selector field is a malformed match-everything, not a shorthand",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "malformed_envelope", reason: "dependency alternative supplies none of the three selector fields" },
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "state must stay RUNNING and liveWaitGeneration null: g-bad-2 must never register",
+          "the declaration is structurally non-empty under rule 1, so rule 1 alone must not be treated as the whole of well-formedness",
+        ],
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-1",
+          // An empty supplied kind set is malformed. It is neither "a Kind selector that matches
+          // nothing" nor a spelling of "Kind selector absent" — absence is expressed by not supplying
+          // the field at all.
+          next: { step: "await", wait: { dependencies: [{ kinds: [] }], subscriptions: [], generation: "g-bad-3" } },
+        }),
+      },
+      {
+        label: "W-1 rule 2: an empty supplied kind set is malformed, not a selector that matches nothing",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "malformed_envelope", reason: "dependency alternative supplies an empty kind set" },
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "an empty kind set must be rejected before any matching is attempted, not treated as an inert-but-valid alternative",
+        ],
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-1",
+          // W-1 rule 3: a subscription entry must be a declared subscription identity. The exact
+          // spelling is implementation-owned under W-9's closing note; that it *is* one is not.
+          next: { step: "await", wait: { dependencies: [], subscriptions: [{ subscriptionClass: "" }], generation: "g-bad-4" } },
+        }),
+      },
+      {
+        label: "W-1 rule 3: a structurally invalid declared subscription is refused like any other malformed member",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "malformed_envelope", reason: "declared subscription has an empty subscription identity" },
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "the subscription list is non-empty, so rule 1 passes: rule 3 has to be checked on its own for this to be caught",
         ],
       },
     ),
@@ -1265,7 +1435,10 @@ export const subscriptionWaitDeadline: Scenario = {
           receipt: "receipt:outcome:act-1",
           writerEpoch: 1,
         }),
-        forbids: ["bq-1 must not wake it: billing.question is outside the declared subscription"],
+        forbids: [
+          "bq-1 must not wake it: billing.question is outside the declared subscription",
+          "waitEndedReadiness must stay empty: the wait is live, so nothing has retired",
+        ],
       },
     ),
     step(
@@ -1279,10 +1452,14 @@ export const subscriptionWaitDeadline: Scenario = {
           acknowledged: ["in-1"],
           queued: ["bq-1", "to-gd1"],
           liveWaitGeneration: null,
+          waitEndedReadiness: [{ generation: "gd1", species: "deadline" }],
           receipt: "receipt:outcome:act-1",
           writerEpoch: 1,
         }),
-        forbids: ["the wait has no dependency alternatives at all, so the timeout must arrive by construction, not by matching"],
+        forbids: [
+          "the wait has no dependency alternatives at all, so the timeout must arrive by construction, not by matching",
+          "waitEndedReadiness must be deadline-triggered for gd1: the species is what makes the timeout Event the next batch's mandatory member",
+        ],
       },
     ),
     step(
@@ -1303,6 +1480,7 @@ export const subscriptionWaitDeadline: Scenario = {
         forbids: [
           "dispatchedBatch must not be ['bq-1']: bq-1 was accepted first, and ordinary acceptance-order selection would have taken the slot",
           "the timeout Event is the species' mandatory member and is retained before any other candidate",
+          "waitEndedReadiness must return to empty: reservation consumes it",
         ],
       },
     ),
@@ -1327,6 +1505,7 @@ export const subscriptionWaitDeadline: Scenario = {
           acknowledged: ["in-1", "to-gd1"],
           queued: ["bq-1", "to-gd2"],
           liveWaitGeneration: null,
+          waitEndedReadiness: [{ generation: "gd2", species: "deadline" }],
           receipt: "receipt:outcome:act-2",
           writerEpoch: 2,
         }),
@@ -1334,6 +1513,205 @@ export const subscriptionWaitDeadline: Scenario = {
           "state must not be WAITING: W-2 step 3 evaluates an already-due deadline before persisting, and a past deadline is never persisted as live",
           "liveWaitGeneration must be null: gd2 is created and retired inside the one acceptance transaction",
           "bq-1 must still be queued and unacknowledged after two wait generations came and went",
+        ],
+      },
+    ),
+  ],
+};
+
+// -- Scenario 12: structure is not satisfiability (§11 row 5(a) and 5(b)) ----
+
+/**
+ * Round-3 review finding K02-R3-01. §11 row 5 says in terms that "each of these is separately
+ * observable", and row 5(a)'s test "proves **structure, never satisfiability**". The fixture observed
+ * the malformed half of that — a structurally empty declaration is refused — and none of the
+ * positive half: that a **valid but inert** alternative is accepted, counts toward non-emptiness, and
+ * then makes nothing eligible. A candidate that quietly audited whether a declared source could in
+ * fact wake the Execution, and refused a wait it judged undischargeable, passed every scenario.
+ *
+ * The wait below is the sharp shape for that, because it is *entirely* dependency alternatives with no
+ * subscription anywhere:
+ *
+ *   - `{ kinds: ["external.input"] }` is grammar-valid and permanently inert — ordinary application
+ *     input is eligible only through a declared subscription, and this wait declares none, so the
+ *     alternative neither wakes nor acknowledges (W-7 cases 6-7);
+ *   - `{ kinds: ["kernel.wait.timeout"] }` is grammar-valid and inert for a different reason, one the
+ *     category table gives directly: the timeout Event cannot exist while its own wait is live, so no
+ *     Event in that category can ever be tested against this alternative. Its inertness is therefore
+ *     **structurally unobservable** rather than merely untested, and it is carried here for the
+ *     structural claim — a valid alternative the Kernel does not audit — not for a behavioral one;
+ *   - `{ correlation: "c9" }` is the one alternative that can actually end the wait.
+ *
+ * K0.1 promises no general satisfiability or deadlock prevention, and "the Kernel does **not** audit
+ * whether a declared source can in fact wake this Execution". Accepting this record is the observable
+ * form of that promise.
+ */
+const inertInputAlternative: DependencyAlternative = { kinds: ["external.input"] };
+const inertTimeoutAlternative: DependencyAlternative = { kinds: ["kernel.wait.timeout"] };
+const correlatedAlternative: DependencyAlternative = { correlation: "c9" };
+const inertAndCorrelatedWait: WaitRecord = {
+  dependencies: [inertInputAlternative, inertTimeoutAlternative, correlatedAlternative],
+  subscriptions: [],
+  generation: "gi1",
+};
+
+const unrelatedKernelEvent = kernelEvent("oth-1", X, "svc.result", "c-other");
+const correlatedKernelEvent = kernelEvent("res-9", X, "svc.result", "c9");
+
+export const inertAlternativeEligibility: Scenario = {
+  id: "wait-structure-not-satisfiability",
+  title: "a structurally valid but inert alternative is accepted, counts, and makes nothing eligible",
+  sources: [
+    "K0.1 worksheet W-1 well-formedness case 2 (a valid inert alternative; the wait may never be woken)",
+    "K0.1 worksheet W-1 selector grammar ('A well-formed alternative can still be inert, and it still counts')",
+    "K0.1 worksheet W-1 eligibility category table, W-7 cases 6-7",
+    "K0.1 worksheet §11 row 5(a) (structure, never satisfiability) and row 5(b) (the category rule)",
+  ],
+  k0BoundaryRows: [5],
+  isUnsafeControl: false,
+  waits: { inertAndCorrelatedWait },
+  steps: [
+    step(
+      { kind: "create", executionId: X, requestKey: "req-x", initialInput, definitionRevision: FAKE_RUNTIME_V1 },
+      { label: "X created", observation: obs(X, { queued: ["in-1"], receipt: "receipt:create:req-x" }) },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 4 },
+      { label: "X dispatched", observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1 }) },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({ executionId: X, activationId: "act-1", progress: { phase: "declared" }, next: { step: "await", wait: inertAndCorrelatedWait } }),
+      },
+      {
+        label: "W-1 rule 1 is satisfied structurally, so the wait registers even though two of its three alternatives are inert",
+        observation: obs(X, {
+          state: "WAITING",
+          progressRevision: 1,
+          progress: { phase: "declared" },
+          acknowledged: ["in-1"],
+          queued: [],
+          liveWaitGeneration: "gi1",
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "rejection must stay null: refusing this record would be a satisfiability audit, and the Kernel performs none",
+          "state must be WAITING: an inert alternative counts toward structural non-emptiness exactly as a live one does",
+        ],
+      },
+    ),
+    step(
+      { kind: "accept_event", event: billingOne },
+      {
+        label: "the inert alternative matches this input by kind and still makes it ineligible (W-7 cases 6-7)",
+        observation: obs(X, {
+          state: "WAITING",
+          progressRevision: 1,
+          progress: { phase: "declared" },
+          acknowledged: ["in-1"],
+          queued: ["bq-1"],
+          liveWaitGeneration: "gi1",
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "state must stay WAITING: bq-1's kind is exactly what the first alternative names, and matching it changes nothing",
+          "ordinary application input is eligible only through a declared subscription, and this wait declares none",
+          "bq-1 must be queued and unacknowledged: an ineligible Event is retained with its own disposition (B-4)",
+        ],
+      },
+    ),
+    step(
+      { kind: "accept_event", event: unrelatedKernelEvent },
+      {
+        label: "a Kernel Event matching no alternative is accepted and inert: the category rule is the only path",
+        observation: obs(X, {
+          state: "WAITING",
+          progressRevision: 1,
+          progress: { phase: "declared" },
+          acknowledged: ["in-1"],
+          queued: ["bq-1", "oth-1"],
+          liveWaitGeneration: "gi1",
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "state must stay WAITING: oth-1 shares its kind with the Event that will wake this wait, and kind alone is not the alternative's selector",
+          "no declared subscription can make a non-application Kernel Event eligible, and there is none here to try",
+        ],
+      },
+    ),
+    step(
+      { kind: "accept_event", event: correlatedKernelEvent },
+      {
+        label: "the one live alternative matches: the wait and its generation retire (B-6 path B)",
+        observation: obs(X, {
+          state: "READY",
+          progressRevision: 1,
+          progress: { phase: "declared" },
+          acknowledged: ["in-1"],
+          queued: ["bq-1", "oth-1", "res-9"],
+          liveWaitGeneration: null,
+          waitEndedReadiness: [{ generation: "gi1", species: "event" }],
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 1,
+        }),
+        forbids: ["acknowledged must not grow: waking is not acknowledging (B-3)"],
+      },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 1 },
+      {
+        label: "at bound 1 the two earlier-accepted ineligible Events are not candidates under the retired rule",
+        observation: obs(X, {
+          state: "RUNNING",
+          progressRevision: 1,
+          progress: { phase: "declared" },
+          acknowledged: ["in-1"],
+          queued: ["bq-1", "oth-1", "res-9"],
+          dispatchedBatch: ["res-9"],
+          activationId: "act-2",
+          receipt: "receipt:outcome:act-1",
+          writerEpoch: 2,
+        }),
+        forbids: [
+          "dispatchedBatch must be ['res-9']: bq-1 and oth-1 were accepted first and are still not candidates",
+          "waitEndedReadiness must return to empty: reservation consumes it",
+        ],
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-2",
+          writerEpoch: 2,
+          baseProgressRevision: 1,
+          progress: { phase: "re-declared" },
+          // The same three alternatives, under a new generation. Re-registration is how an outstanding
+          // need is carried forward, because the Kernel retains nothing about it.
+          next: { step: "await", wait: { dependencies: [inertInputAlternative, inertTimeoutAlternative, correlatedAlternative], subscriptions: [], generation: "gi2" } },
+        }),
+      },
+      {
+        label: "re-registering the same dependency waits again: no satisfied flag survived g1's retirement",
+        observation: obs(X, {
+          state: "WAITING",
+          progressRevision: 2,
+          progress: { phase: "re-declared" },
+          acknowledged: ["in-1", "res-9"],
+          queued: ["bq-1", "oth-1"],
+          liveWaitGeneration: "gi2",
+          receipt: "receipt:outcome:act-2",
+          writerEpoch: 2,
+        }),
+        forbids: [
+          "state must be WAITING: `c9` settled once under gi1, and the Kernel keeps no per-alternative satisfied flag that would carry that forward",
+          "a wait-ended readiness preserves a selector, never a satisfaction flag; a Runtime that still needs a dependency re-registers it",
+          "waitEndedReadiness must stay empty: nothing retired in this transaction",
         ],
       },
     ),
@@ -1471,6 +1849,7 @@ export const ALL_SCENARIOS: readonly Scenario[] = [
   duplicateAndConflictingOutcome,
   staleTimerAndLostWake,
   subscriptionWaitDeadline,
+  inertAlternativeEligibility,
   cancelVersusComplete,
   completionObligations,
   missingCheckpointCode,

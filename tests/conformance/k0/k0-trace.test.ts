@@ -151,7 +151,9 @@ describe("K0 trace: identity and forbidden mutations", () => {
     assert.equal(k0Trace.isUnsafeControl, false);
     // Row 1's create-identity obligations moved to `identity-create-and-activation` under round-1
     // review finding K02-R1-01; the retry step below still exists, but the map's row-1 evidence is
-    // that scenario's, and attribution has to say so.
-    assert.deepEqual(k0Trace.k0BoundaryRows, [2, 5, 6, 8]);
+    // that scenario's, and attribution has to say so. Row 10 was added under round-3 finding
+    // K02-R3-01: LP-3 — ordinary corrective input never withdraws an already-accepted Outcome — is
+    // observed at this trace's step 5, where unrelated input arrives after an accepted Outcome.
+    assert.deepEqual(k0Trace.k0BoundaryRows, [2, 5, 6, 8, 10]);
   });
 });

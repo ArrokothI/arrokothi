@@ -34,19 +34,29 @@ offline with no model, network, container or database.
 | `control-duplicate-conflicting-outcome` | receipt replay versus conflict | M-1, §11 row 3 |
 | `control-stale-timer-and-lost-wake` | lost wake at registration; generation fencing; timer idempotency | M-1, §11 row 5 |
 | `control-subscription-wait-deadline` | W-8 case 6: B-7's mandatory timeout member, both paths | §11 row 5 |
+| `wait-structure-not-satisfiability` | a valid-but-inert alternative registers and counts; the eligibility category rule's two negative arms; no per-alternative satisfied flag | §11 row 5 |
 | `control-cancel-versus-complete` | the cancellation fence, in both orders | M-1, §11 row 7 |
 | `control-completion-obligations` | a completing envelope carrying owned work is refused whole; terminal ingress refusal | §11 row 8 |
 | `control-missing-checkpoint-code` | recovery hold versus fresh-restored fabrication | M-1, §11 row 9 |
 | `effect-refusal-and-sink-attribution` | K1's Effect refusal, observed through the independent ledger | — |
 
-Four of these were added after round-1 review; see §8.
+Four of these were added after round-1 review and one after round-3 review; see §8.
 
-[`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at
-**obligation** granularity — 33 obligations across the ten rows, not ten row entries — because several
-rows state several distinguishing obligations in one cell. 31 resolve to a scenario step plus a
-counterexample the oracle demonstrably rejects at that step; one (R10-b) is a negative obligation
-enforced by scanning the corpus; one (R8-c) is explicitly assigned to K2.4 with the reason it has no
-observable K0 case. `coverage.test.ts` enforces all of that, and
+[`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at the
+granularity of the **independently distinguishable assertion** — 69 entries across the ten rows, not
+ten row entries and not the 33 prose-level obligations of the previous revision. The unit is
+behavioural rather than editorial: two clauses in one cell are separate assertions when a plausible
+implementation can get one right and the other wrong, because that is the candidate the oracle has to
+be able to fail. §11 row 5 states the standard itself — "Each of these is **separately** observable".
+
+Of the 69, **64** resolve to a scenario step plus at least one counterexample the oracle demonstrably
+rejects at that step; **three** (R3-c3, R6-a1, R8-b2) are marked `shared`, meaning two §11 rows name
+one observable fact and one transcript is the honest evidence for both, with the identity written down
+and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **one** (R8-c)
+is explicitly assigned to K2.4 with the reason it has no observable K0 case. `coverage.test.ts`
+enforces all of it,
+including that **no counterexample defends two assertions** except through a declared `shared` link,
+and that scenario row attribution agrees with the map in both directions.
 `interactions.test.ts` sweeps the corpus for the cross-scenario invariants.
 
 ## 2. How the oracle is known to work
@@ -57,7 +67,7 @@ excluded by construction:
 - a **conforming transcript** must report `PASS`. It is derived from the scenarios' own expectations,
   so it proves only that the runner can pass something — that circularity is stated in the code and is
   the limit of what this direction establishes;
-- **thirty violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
+- **sixty-five violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
   exact step, and the failure detail must name the exact observation field at issue. Failing for an
   unrelated reason would be an accident rather than discrimination, so the field names are asserted.
   Each transcript must also **name the governing decision its behavior breaks**, and that citation is
@@ -287,3 +297,73 @@ Members are now written with `defineProperty`, so no key gets special treatment,
 `Reflect.ownKeys`. Seven regression tests cover the member at top level, nested, inside arrays and in
 a returned observation, plus the neighbouring shadowing names; five fail against the previous
 implementation.
+
+## 10. What round-3 review changed
+
+Round 3 closed both round-2 findings but reopened round 1's `K02-R1-01` through a new finding, and the
+finding is correct. The correction is forward from C3; nothing from round 2 is reverted.
+
+**K02-R3-01 — the coverage unit was still not the unit §11 uses.** C2/C3 replaced row-granular
+coverage with "obligations", which was much finer, but the unit was still in places a *prose grouping*
+whose single counterexample exercised one clause out of several. The worksheet states the standard
+itself, in row 5's opening words: "Each of these is **separately** observable." Four concrete blind
+spots were named, and re-deriving all ten rows against that standard found the rest. The unit is now
+the **independently distinguishable assertion**, and the test applied is behavioural rather than
+editorial: two clauses are separate assertions when a plausible implementation can get one right and
+the other wrong. The inventory went from 33 entries to 69, and the corpus from 30 violating transcripts
+to 65.
+
+Two of the four named blind spots needed a new observation, because the required fact was not visible
+at all:
+
+- **Wait-ended readiness.** §3's four-row table treats readiness as an accepted, recoverable record
+  with an identity and a species; `B-8` forbids a second one arming behind the first and re-selecting
+  a batch after reservation. The stale-timer control reaches exactly that state and its `forbids`
+  prose claimed to forbid it, but the observation surface could not see readiness, so no candidate
+  could be failed for it. `Observation.waitEndedReadiness` is a list, deliberately: a nullable field
+  would hide the two-entry failure by construction.
+- **Effect intents.** §11 row 3 requires a partway failure to leave "no Effect intent" and row 4
+  requires refusal "before any Effect intent, ID or proposal-key binding ever exists". The independent
+  ledger records *physical attempts*, not intent creation, so a candidate could mint and retain an
+  intent, attempt nothing, and pass. `Observation.effectIntents` must be empty at every step of every
+  scenario; a field that is always empty is the smallest observation that turns "never exists" into a
+  checked fact. Its limit is stated in the code: it observes *retained accepted* intent, and an intent
+  constructed and discarded inside the same rejected transaction leaves no accepted record and is
+  unobservable by any means.
+
+The other two needed scenarios, not observations. W-1's selector grammar was enforced only by
+`checkWaitWellFormed`, which `rule-agreement.test.ts` checks against the worksheet — that shows the
+fixture agrees with the worksheet, not that a candidate is held to it, and no scenario had ever
+submitted a wait breaking those rules. The envelope control now submits all three, and
+`rule-agreement.test.ts` welds the helper to the corpus: every rule the helper applies must be a rule
+some scenario makes a candidate answer for, so the two cannot drift apart into parallel statements
+again. LP-1's freshness assertion was "covered" by a cancellation-atomicity transcript, which
+demonstrates CX-6/OA-3 and says nothing about a stale local read; it now has its own step — an Outcome
+submitted under the writer epoch an immediately preceding takeover superseded — and its own transcript.
+A twelfth scenario, `wait-structure-not-satisfiability`, carries W-1's positive half: a valid-but-inert
+alternative is accepted and counts, and the eligibility category rule's two negative arms hold.
+
+Two structural guards were added against the defect class rather than the instances. `coverage.test.ts`
+now requires that **no counterexample defends two assertions** — the shape of the LP-1 defect, which
+passes every other check while leaving an assertion unguarded — except through an explicit `shared`
+link that names the identity and is itself checked; and scenario row attribution must agree with the
+map in **both** directions, the missing direction having let `control-cancel-versus-complete` go on
+claiming row 10 after its row-10 attribution moved elsewhere.
+
+**A second K02-R2-01-class defect was found and fixed while doing this.** The oracle compared every
+rejection's *reason text* verbatim. Only one is canonical: CX-6 fixes "cancellation accepted before
+Outcome acceptance" by name, and nothing fixes the wording of any other rejection — §11 row 4 asks
+only for "a recorded, inspectable reason". C3's own vocabulary note said exactly this and the runner
+did not implement it, so the fixture would have failed a conforming candidate for phrasing a permitted
+message differently. `runScenario` now compares the classification exactly and always, requires a
+non-empty reason always, and compares reason text only for CX-6. Loosening an oracle is where holes
+open, so all five directions are pinned by test: the reworded non-canonical reason that must now pass,
+and the blank reason, changed classification, dropped rejection and reworded CX-6 reason that must
+still fail.
+
+**The repaired blind spots are mutation-checked.** Adding a counterexample proves the oracle rejects it
+now, not that it failed to before, which is the claim a coverage correction has to make.
+`blind-spot-regression.test.ts` reconstructs the C3 oracle — the two absent observation fields, and the
+scenario steps that did not exist, pinned by their C3 labels from `acb5e01` — and shows each repaired
+case passing it. It also checks itself: a counterexample C3 already caught must fail the invisibility
+test, so the suite cannot pass vacuously.

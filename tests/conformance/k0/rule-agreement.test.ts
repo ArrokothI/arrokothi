@@ -6,6 +6,17 @@
  * in `protocol-vocabulary.ts`, and this file checks the two derivations agree at the points where a
  * misreading would matter. Two independent derivations that agree is meaningfully stronger evidence
  * than either alone; it is still not proof that both readings of the worksheet are correct.
+ *
+ * **And it is not evidence about a candidate at all.** Round-3 review finding K02-R3-01 made that
+ * distinction the whole point: W-1's grammar rules were checked here, against the fixture's own
+ * helper, and nowhere else — so a K1 candidate that accepted `{dependencies:[{}]}` or an empty kind
+ * set passed every scenario, because no scenario ever submitted one. A helper agreeing with the
+ * worksheet says nothing about what the candidate port enforces.
+ *
+ * The scenario corpus now submits those waits. The last suite in this file keeps the two derivations
+ * welded together: each helper rejection reason must be the reason some scenario step actually expects
+ * a candidate to record, so the helper's rule and the candidate's obligation cannot drift into being
+ * two parallel statements again.
  */
 
 import { test, describe } from "node:test";
@@ -19,7 +30,7 @@ import {
   VALUE_BOUNDS,
 } from "./protocol-vocabulary.ts";
 import type { FixtureEvent, WaitRecord } from "./protocol-vocabulary.ts";
-import { k0Trace, staleTimerAndLostWake, subscriptionWaitDeadline } from "./scenarios.ts";
+import { ALL_SCENARIOS, k0Trace, staleTimerAndLostWake, subscriptionWaitDeadline } from "./scenarios.ts";
 
 // Rebuilt here from the worksheet rather than imported from the scenarios, so that agreement between
 // the two is an actual finding and not a shared definition.
@@ -178,5 +189,75 @@ describe("E-6's bounds are recorded with the accepted numbers", () => {
     // E-6: "a K1 fixture tests exactly at and one past each bound". K0.2's contract assigns that
     // construction to K1.2. Recording the numbers is preparation; exercising every bound is not.
     assert.equal(VALUE_BOUNDS.containerDepth, 32);
+  });
+});
+
+describe("the helper's rules are the candidate's obligations, not a parallel statement", () => {
+  // Round-3 review finding K02-R3-01. Every well-formedness rule coded above must correspond to a
+  // rejection some scenario step requires a candidate to produce, with the same recorded reason. If a
+  // rule is ever added here without a scenario submitting a wait that breaks it, this fails — which is
+  // exactly the gap the finding identified, made impossible to reintroduce silently.
+  const malformedWaits: readonly { readonly rule: string; readonly wait: WaitRecord }[] = [
+    { rule: "rule 1: both lists empty", wait: { dependencies: [], subscriptions: [], deadline: 5_000, generation: "g-bad" } },
+    { rule: "rule 2: no selector field supplied", wait: { dependencies: [{}], subscriptions: [], generation: "g-bad-2" } },
+    { rule: "rule 2: empty supplied kind set", wait: { dependencies: [{ kinds: [] }], subscriptions: [], generation: "g-bad-3" } },
+    { rule: "rule 3: invalid subscription identity", wait: { dependencies: [], subscriptions: [{ subscriptionClass: "" }], generation: "g-bad-4" } },
+  ];
+
+  /**
+   * Every wait a scenario submits, paired with whether that step requires the candidate to reject the
+   * envelope. Keyed by the helper's own verdict rather than by message text: the reason wording is a
+   * representational convention (see `compareRejection` in `fixture.ts`), so welding on it would pin
+   * an arbitrary sentence. What matters is that the *rule* the helper applies is a rule some scenario
+   * makes a candidate answer for.
+   */
+  const submittedWaits = ALL_SCENARIOS.flatMap((scenario) =>
+    scenario.steps.flatMap((step) => {
+      if (step.command.kind !== "submit_outcome") return [];
+      const next = step.command.outcome.next;
+      if (next.step !== "await") return [];
+      return [{ scenario: scenario.id, wait: next.wait, rejected: step.expect.observation.rejection !== null }];
+    }),
+  );
+
+  for (const { rule, wait } of malformedWaits) {
+    test(`${rule} is rejected by the helper and demanded of a candidate by a scenario`, () => {
+      const verdict = checkWaitWellFormed(wait);
+      assert.equal(verdict.wellFormed, false, `the helper accepts a wait breaking ${rule}`);
+      if (verdict.wellFormed) return;
+
+      const matching = submittedWaits.filter((entry) => {
+        const entryVerdict = checkWaitWellFormed(entry.wait);
+        return !entryVerdict.wellFormed && entryVerdict.reason === verdict.reason;
+      });
+      assert.ok(
+        matching.length > 0,
+        `the helper rejects ${rule}, but no scenario submits a wait breaking it, so no candidate is ever held to it`,
+      );
+      assert.ok(
+        matching.every((entry) => entry.rejected),
+        `a scenario submits a wait breaking ${rule} without requiring the candidate to reject the envelope`,
+      );
+    });
+  }
+
+  test("the positive direction too: a valid-but-inert declaration is one a scenario requires a candidate to accept", () => {
+    // The other half of K02-R3-01's first blind spot. Refusing a structurally valid wait is as much a
+    // violation as registering a malformed one, and it needs a scenario that registers one.
+    const inert: WaitRecord = { dependencies: [{ kinds: ["external.input"] }], subscriptions: [], generation: "g" };
+    assert.equal(checkWaitWellFormed(inert).wellFormed, true);
+
+    const registersAnInertWait = ALL_SCENARIOS.some((scenario) =>
+      Object.values(scenario.waits ?? {}).some(
+        (wait) =>
+          wait.subscriptions.length === 0 &&
+          wait.dependencies.some((alternative) => alternative.kinds?.includes("external.input") === true) &&
+          scenario.steps.some((step) => step.expect.observation.liveWaitGeneration === wait.generation),
+      ),
+    );
+    assert.ok(
+      registersAnInertWait,
+      "no scenario registers a wait whose only application-input alternative is inert, so a candidate auditing satisfiability would pass",
+    );
   });
 });

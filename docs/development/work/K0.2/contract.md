@@ -8,12 +8,17 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 3.** Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
+**Contract revision 4.** Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
 K02-R1-02, K02-R1-03), where three criteria were *understating* what they had to establish. Revision 3
-corrects revision 2 after round-2 review (findings K02-R2-01, K02-R2-02), where one criterion had
+corrected revision 2 after round-2 review (findings K02-R2-01, K02-R2-02), where one criterion had
 begun *overstating* it — C6/C7/C9 required a rejection-reason distinction the protocol does not make —
-and C3's faithfulness claim did not hold across the whole accepted key space. The base, packet scope
-and C8's blocked state are unchanged throughout. Both directions of error are recorded below rather
+and C3's faithfulness claim did not hold across the whole accepted key space. Revision 4 corrects
+revision 3 after round-3 review (finding K02-R3-01, which reopens K02-R1-01): C9's coverage unit was
+still a prose grouping rather than an independently distinguishable assertion, and C1/C6/C7 rested on
+that unit, so several §11 assertions were counted covered while no candidate could be failed for
+breaking them — two of them because the observation surface could not see the required fact at all.
+The base, packet scope and C8's blocked state are unchanged throughout. All three directions of error
+— understating, overstating, and counting unobservable facts as observed — are recorded below rather
 than quietly overwritten.
 
 ## Release provenance and predecessor disclosure
@@ -94,6 +99,13 @@ wait-ended batch, or that acknowledges it, must FAIL.
 W-8 case 6 is carried by its own control rather than by this scenario; revision 1 claimed the
 stale-timer control already covered it, which was wrong and is corrected under C6.
 
+C1 also carries, through C9's map, the inherited K0 boundary-observability obligation for this
+scenario's §11 rows. Round-3 finding K02-R3-01 found three of them unevidenced here and they are now
+observed: W-2 step 1's ordering, so the wait this trace registers can never be woken by the batch that
+registered it; W-8's first-class subscription-only wait, which a candidate reading the dependency list
+as "the wait" would refuse; and LP-3, since this trace is where unrelated input arrives after an
+accepted Outcome and must not retract it.
+
 ### K0.2-C2 — delayed Runtime, and delay that does not block a second Execution
 
 **Source:** 001 K0 ("delayed fake Runtime"); 001 K1 ("One delayed Runtime must not prevent the same
@@ -160,7 +172,13 @@ alternatives at all. **A control may only assert distinctions the governing prot
 observable** (round-2 finding K02-R2-01): the completion control asserts that a completing envelope
 carrying newly proposed Effects is refused whole and reaches no terminal state, and it may *not*
 require a completion-specific rejection reason, because EF-1/EF-2 already mandate the whole-envelope
-refusal and §11 row 4 leaves the reason text open. Row 7 additionally asserts,
+refusal and §11 row 4 leaves the reason text open. That rule is now enforced generally rather than
+control by control: the oracle compares a rejection's **classification** exactly and its **reason
+text** only where an accepted decision fixes that text, which today is CX-6 alone. **And a control may
+not assert a distinction the observation surface cannot see** (round-3 finding K02-R3-01): the
+stale-timer control claimed `B-8`'s no-second-readiness invariant in prose while nothing could fail a
+candidate for breaking it. Wait-ended readiness and Effect-intent absence are now observed facts, so
+both controls assert what they claim. Row 7 additionally asserts,
 as M-1 requires by name: CX-6 full rejection for **both** `continue` and `complete` submitted after
 cancellation acceptance; zero acknowledgment of the reserved batch; no change to accepted
 progress/emissions; B-5 disposition at `CANCELLED`; deterministic recorded rejection on exact retry;
@@ -169,7 +187,9 @@ and the reverse order, where accepted completion remains terminal.
 installing losing progress is a failing control, not a conforming variant." That exact variant is
 shipped as a violating transcript and the oracle must reject it.
 **Evidence:** `tests/conformance/k0/scenarios.ts` (`duplicateAndConflictingOutcome`, `staleTimerAndLostWake`,
-`cancelVersusComplete`, `missingCheckpointCode`); `controls.test.ts`; `oracle-discrimination.test.ts`.
+`cancelVersusComplete`, `missingCheckpointCode`); `controls.test.ts`; `oracle-discrimination.test.ts`;
+`blind-spot-regression.test.ts` for the readiness assertions the stale-timer control previously
+claimed in prose only.
 
 ### K0.2-C7 — preparation is visibly not a pass
 
@@ -193,7 +213,8 @@ of on whether the obligation was checked. (d) No document or test in this packet
 E1 status.
 **Distinguishing counterexample:** an oracle that passes every transcript, or that rejects every
 transcript, is vacuous; the discrimination test fails in both directions if either happens.
-**Evidence:** `tests/conformance/k0/candidate.ts`, `refusal.test.ts`, `oracle-discrimination.test.ts`.
+**Evidence:** `tests/conformance/k0/candidate.ts`, `refusal.test.ts`, `oracle-discrimination.test.ts`,
+`blind-spot-regression.test.ts`.
 
 ### K0.2-C8 — pinned E0 evidence
 
@@ -209,25 +230,44 @@ states E0–E6 are planned and not implemented. This criterion is expected to cl
 in advance. No E0 acceptance may be claimed, implied or self-granted, and nothing is written in the
 benchmark repository by this packet.
 
-### K0.2-C9 — the coverage machinery proves obligations, not row numbers
+### K0.2-C9 — the coverage machinery proves assertions, not row numbers or prose groupings
 
 **Source:** 001 K0 exit ("an observable acceptance/rejection result" for each boundary); round-1
-finding K02-R1-01; [012](../../012-review-methods.md) ("a collection of individually correct sections
-or unit tests does not establish a coherent packet").
-**Observable:** coverage is recorded per **obligation**, not per §11 row, because several rows state
-several distinguishing obligations in one cell — row 1 has a replay half and a conflict half, row 2
-has three identity claims, row 5 has seven lettered sub-parts. Every obligation resolves to one of:
-a scenario plus a specific step plus at least one counterexample the oracle demonstrably rejects *at
-that step*; a corpus-level check, for negative obligations about the fixture as a whole; or an
-explicit assignment to a named packet with the reason it has no observable K0 case. The map and the
-scenarios declare the relationship separately and must agree in both directions, and every violating
-transcript must defend a recorded obligation.
-**Distinguishing counterexample:** both revisions' machinery, in opposite directions. Revision 1's
-passed while most of rows 1, 2, 5(c)/(e) and all of row 8's completion clause went untested, because
-it only checked that each row number pointed at a scenario that existed. Revision 2's then accepted a
-"counterexample" that was not a protocol violation at all, because nothing required a counterexample
-to name the rule it breaks. Under-coverage lets a wrong candidate pass; over-constraint fails a right
-one, and is the worse failure of the two.
+finding K02-R1-01 as reopened by round-3 finding K02-R3-01; K0.1 worksheet §11 row 5 ("Each of these
+is **separately** observable"); [012](../../012-review-methods.md) ("a collection of individually
+correct sections or unit tests does not establish a coherent packet").
+**Observable:** coverage is recorded per **independently distinguishable assertion** — not per §11 row,
+and not per prose grouping inside a row. The unit test is behavioural rather than editorial: two
+clauses in one cell are separate assertions when a plausible implementation can get one right and the
+other wrong, because that is exactly the candidate the oracle must be able to fail. A takeover that
+keeps the Activation ID without advancing the epoch, a create that returns the right identity while
+ingesting the input twice, a duplicate timer whose Event creation is idempotent but whose readiness
+commit is not: each is one real implementation getting half a cell right.
+
+Every assertion resolves to one of: a scenario plus a specific step plus at least one counterexample
+the oracle demonstrably rejects *at that step*; a declared `shared` link to another assertion, for the
+case where two §11 rows name one observable fact, with the identity justified and the target required
+to carry scenario evidence of its own; a corpus-level check, for negative obligations about the
+fixture as a whole; or an explicit assignment to a named packet with the reason it has no observable
+K0 case. **No counterexample may defend two assertions** except through a declared `shared` link. The
+map and the scenarios declare the row relationship separately and must agree in **both** directions,
+and every violating transcript must defend a recorded assertion.
+
+**What does not count as evidence**, each because a review round found it standing in for some:
+`forbids` prose, which fails no candidate; a green test of the fixture's own helper predicates, which
+shows the fixture agrees with the worksheet rather than that a candidate is held to it; and a
+counterexample belonging to a neighbouring rule, which fails candidates for something else. Where an
+assertion has no observation surface, the correct response is to add the smallest truthful observation
+or to assign it explicitly — never to count it covered.
+**Distinguishing counterexample:** three revisions' machinery, failing in three different ways.
+Revision 1's passed while most of rows 1, 2, 5(c)/(e) and all of row 8's completion clause went
+untested, because it only checked that each row number pointed at a scenario that existed. Revision
+2's then accepted a "counterexample" that was not a protocol violation at all, because nothing
+required a counterexample to name the rule it breaks. Revision 3's counted assertions covered whose
+required fact the observation surface could not see — a phantom wait-ended readiness, a retained
+Effect intent — and counted LP-1 covered by a cancellation-atomicity transcript from a neighbouring
+rule. Under-coverage lets a wrong candidate pass; over-constraint fails a right one, and is the worse
+failure of the two.
 **Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`.
 
 ## Selected proof methods ([012](../../012-review-methods.md))

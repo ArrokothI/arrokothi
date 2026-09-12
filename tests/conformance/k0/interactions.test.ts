@@ -278,3 +278,107 @@ function previousObservationFor(scenario: Scenario, index: number, execution: st
   }
   return null;
 }
+
+describe("interaction: wait-ended readiness lifetime × reservation × B-8", () => {
+  /**
+   * Added for round-3 review finding K02-R3-01. `waitEndedReadiness` is a new observable, and a new
+   * observable is only as good as the invariants held over it — otherwise a later scenario author can
+   * assert a readiness that the protocol says cannot exist and nothing notices. `B-8` fixes the whole
+   * lifetime, so the whole lifetime is swept.
+   */
+  test("no step ever shows two outstanding readinesses: a second can never arm behind the first", () => {
+    for (const scenario of ALL_SCENARIOS) {
+      for (const [index, step] of scenario.steps.entries()) {
+        assert.ok(
+          step.expect.observation.waitEndedReadiness.length <= 1,
+          `${scenario.id} step ${index} expects ${step.expect.observation.waitEndedReadiness.length} outstanding readinesses; B-8 forbids a second arming behind the first`,
+        );
+      }
+    }
+  });
+
+  test("a readiness never names the live generation: retirement is what created it", () => {
+    for (const scenario of ALL_SCENARIOS) {
+      for (const [index, step] of scenario.steps.entries()) {
+        const { liveWaitGeneration, waitEndedReadiness } = step.expect.observation;
+        for (const readiness of waitEndedReadiness) {
+          assert.notEqual(
+            readiness.generation,
+            liveWaitGeneration,
+            `${scenario.id} step ${index} shows a readiness for the still-live generation ${readiness.generation}`,
+          );
+        }
+      }
+    }
+  });
+
+  test("readiness exists only while READY: no other lifecycle state carries one", () => {
+    // W-3 and §3: rows 1-4 all land on READY, and the contrast rows create none. A readiness surviving
+    // into RUNNING would be the re-arming after reservation that B-8 forbids; one in WAITING or a
+    // terminal state would mean a retirement that did not happen.
+    for (const scenario of ALL_SCENARIOS) {
+      for (const [index, step] of scenario.steps.entries()) {
+        const { state, waitEndedReadiness } = step.expect.observation;
+        if (waitEndedReadiness.length === 0) continue;
+        assert.equal(state, "READY", `${scenario.id} step ${index} carries a wait-ended readiness while ${state}`);
+      }
+    }
+  });
+
+  test("a dispatch always consumes it: reservation is where it is spent", () => {
+    for (const scenario of ALL_SCENARIOS) {
+      for (const [index, step] of scenario.steps.entries()) {
+        if (step.command.kind !== "dispatch") continue;
+        assert.deepEqual(
+          step.expect.observation.waitEndedReadiness,
+          [],
+          `${scenario.id} step ${index} reserves a batch but leaves a readiness outstanding; B-8 consumes it at durable reservation`,
+        );
+      }
+    }
+  });
+
+  test("every readiness a scenario shows is one some step actually retired a generation to produce", () => {
+    // The converse of the above, and the check that stops a readiness being asserted out of nowhere:
+    // the generation it names must be one the same scenario had live at an earlier step.
+    for (const scenario of ALL_SCENARIOS) {
+      const liveSoFar = new Set<string>();
+      for (const [index, step] of scenario.steps.entries()) {
+        const observation = step.expect.observation;
+        if (observation.liveWaitGeneration !== null) liveSoFar.add(observation.liveWaitGeneration);
+        for (const readiness of observation.waitEndedReadiness) {
+          const declared = Object.values(scenario.waits ?? {}).some((wait) => wait.generation === readiness.generation);
+          assert.ok(
+            liveSoFar.has(readiness.generation) || declared,
+            `${scenario.id} step ${index} shows a readiness for ${readiness.generation}, a generation this scenario never registers`,
+          );
+        }
+      }
+    }
+  });
+});
+
+describe("interaction: Effect intents do not exist at K1, anywhere in the corpus", () => {
+  test("every step of every scenario expects an empty Effect-intent set (EF-1/EF-2)", () => {
+    // Round-3 review finding K02-R3-01 added this observable precisely because "no Effect intent ever
+    // exists" was unobservable. The corpus-wide form states the K1 rule once, rather than leaving it
+    // implicit in eighty-nine separate expectations: at K1 the Kernel refuses Effects outright, so no
+    // accepted intent or proposal-key binding can exist at any step, in any scenario, ever.
+    for (const scenario of ALL_SCENARIOS) {
+      for (const [index, step] of scenario.steps.entries()) {
+        assert.deepEqual(
+          step.expect.observation.effectIntents,
+          [],
+          `${scenario.id} step ${index} expects an accepted Effect intent, which EF-1/EF-2 say cannot exist before K2`,
+        );
+      }
+    }
+  });
+
+  test("and at least one scenario actually proposes an Effect, so the rule above is exercised rather than vacuous", () => {
+    const proposesAnEffect = ALL_SCENARIOS.some((scenario) =>
+      scenario.steps.some((step) => step.command.kind === "submit_outcome" && step.command.outcome.effects.length > 0),
+    );
+    assert.ok(proposesAnEffect, "no scenario proposes an Effect, so the empty-intent invariant proves nothing");
+  });
+});

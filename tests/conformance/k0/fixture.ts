@@ -13,7 +13,7 @@
  */
 
 import { deepStrictEqual } from "node:assert";
-import type { ExecutionState, FixtureEvent, OutcomeEnvelope, OutcomeRejection, WaitRecord } from "./protocol-vocabulary.ts";
+import type { ExecutionState, FixtureEvent, OutcomeEnvelope, OutcomeRejection, WaitEndedReadiness, WaitRecord } from "./protocol-vocabulary.ts";
 import type { OperationSink, OperationSinkBundle } from "./operation-sink.ts";
 
 /** Versioned public fixture identity. Benchmark E0/E1 pin this string together with a repository revision. */
@@ -72,6 +72,23 @@ export interface Observation {
   /** The live wait generation, if the Execution is WAITING. W-3: live exactly while WAITING. */
   readonly liveWaitGeneration: string | null;
   /**
+   * Outstanding **wait-ended readiness**, in creation order; empty when there is none.
+   *
+   * Added for round-3 review finding K02-R3-01. §3's four-row table treats readiness as an accepted,
+   * recoverable record with an identity and a species, not as an implementation detail: it is created
+   * only by a wait ending (`B-8`), it names the generation that was retired, it is *Event-triggered*
+   * (`B-6`) or *deadline-triggered* (`B-7`), and it is consumed when the next batch is **durably
+   * reserved**. Ordinary `READY` (§3 row 5) carries none, which is exactly what makes the wait-ended
+   * batch rule a different rule from B-2's acceptance-order selection.
+   *
+   * It is observed as a **list** rather than a nullable single because the failure `B-8` exists to
+   * foreclose is "a second readiness arming behind the first and silently re-selecting a batch after
+   * reservation". A nullable field would hide that failure by construction; a list of length two
+   * shows it. Before this field the rule was prose in a `forbids` list and no candidate could be
+   * failed for breaking it.
+   */
+  readonly waitEndedReadiness: readonly WaitEndedReadiness[];
+  /**
    * The Event batch pinned by the **current unresolved** Activation, in acceptance order; `null` when
    * no Activation is unresolved. Reservation pins it and does not acknowledge it (B-3), which is what
    * makes CX-6's "acknowledges none of that batch" an observable fact rather than a claim.
@@ -97,6 +114,24 @@ export interface Observation {
   readonly writerEpoch: number;
   /** PC-5: an inspectable recovery hold, never a fresh-restored fabrication. */
   readonly recoveryHold: { readonly reason: string } | null;
+  /**
+   * Accepted Effect intents and bound proposal keys recorded against this Execution, in acceptance
+   * order. **At K0/K1 this is empty at every step of every scenario**, and that is the point.
+   *
+   * Added for round-3 review finding K02-R3-01. §11 row 3 requires that a failure partway through
+   * acceptance leaves "no Effect intent", and row 4 requires refusal "before any Effect intent, ID or
+   * proposal-key binding ever exists" (EF-2: "no Effect ID is minted, no proposal key is bound").
+   * Neither was observable: the candidate-facing observation had no such field, and the independent
+   * operation ledger records *physical attempts*, so a candidate could mint and retain an intent,
+   * attempt nothing, report the expected refusal, and pass. A field that must always be empty is the
+   * smallest observation that turns "never exists" into a checked fact.
+   *
+   * **Limit, stated rather than glossed.** This observes *retained accepted* intent. A candidate that
+   * constructed an intent and discarded it inside the same rejected transaction leaves no accepted
+   * record and is indistinguishable here — as it is by any other means, since 001's K0 exit asks for
+   * an observable acceptance/rejection result and nothing unobservable was committed.
+   */
+  readonly effectIntents: readonly string[];
 }
 
 export interface StepExpectation {
@@ -213,8 +248,12 @@ export function runScenario(candidate: K0Candidate, scenario: Scenario, options:
       // A throw leaves the candidate's state unknown, so later steps cannot be judged.
       break;
     }
+    const rejectionFailure = compareRejection(step.expect.observation.rejection, actual.rejection);
+    if (rejectionFailure !== null) {
+      failures.push({ stepIndex, label: step.expect.label, detail: rejectionFailure, forbids });
+    }
     try {
-      deepStrictEqual(actual, step.expect.observation);
+      deepStrictEqual(normalizeRejection(actual, step.expect.observation), step.expect.observation);
     } catch {
       failures.push({
         stepIndex,
@@ -252,6 +291,56 @@ function assertLedger(expected: number, options: RunOptions): string | null {
     return `the independent ledger observer returned ${typeof observed}, not a count (expected ${expected})`;
   }
   return observed === expected ? null : `expected ledger size ${expected}, independent ledger recorded ${observed}`;
+}
+
+/**
+ * Classifications whose **reason text** an accepted decision fixes verbatim, so the fixture may
+ * require it exactly.
+ *
+ * There is exactly one. CX-6 states it in terms: "Record and return an inspectable rejection
+ * classification **cancellation/terminal-conflict**, with reason **cancellation accepted before
+ * Outcome acceptance**". Nothing fixes the wording of any other rejection — §11 row 4 asks only for
+ * "a recorded, inspectable reason", and W-1 and OA-2/OA-3 name conditions rather than messages.
+ *
+ * Round-3 correction, found while welding `checkWaitWellFormed`'s rules to the scenario corpus: the
+ * fixture's own helper and its scenario expectation described the same malformed wait in two different
+ * sentences, which is only possible because both were arbitrary. That is round-2 finding K02-R2-01's
+ * defect in a new place — the oracle would have failed a conforming K1 candidate for phrasing a
+ * permitted message differently. The classification is canonical and is still compared exactly; the
+ * reason is required to exist and to be non-empty, which is what "recorded, inspectable" means, and
+ * its text is documentation of one conforming answer rather than a requirement.
+ */
+const CANONICAL_REASON_CLASSIFICATIONS: ReadonlySet<string> = new Set(["cancellation_terminal_conflict"]);
+
+/** Returns a failure description, or `null` when the observed rejection satisfies what is fixed. */
+function compareRejection(expected: OutcomeRejection | null, actual: OutcomeRejection | null): string | null {
+  if (expected === null) {
+    return actual === null ? null : `expected no recorded rejection, observed ${JSON.stringify(actual)}`;
+  }
+  if (actual === null) return `expected a recorded rejection classified ${expected.classification}, observed none`;
+  if (actual.classification !== expected.classification) {
+    return `rejection classification: expected ${expected.classification}, observed ${actual.classification}`;
+  }
+  if (typeof actual.reason !== "string" || actual.reason.trim().length === 0) {
+    return `rejection is classified ${expected.classification} but records no inspectable reason (§11 row 4)`;
+  }
+  if (CANONICAL_REASON_CLASSIFICATIONS.has(expected.classification) && actual.reason !== expected.reason) {
+    return `rejection reason: ${expected.classification} fixes its reason verbatim (CX-6), expected ${JSON.stringify(expected.reason)}, observed ${JSON.stringify(actual.reason)}`;
+  }
+  return null;
+}
+
+/**
+ * Replace a non-canonical rejection reason with the expected one before the structural comparison, so
+ * that `deepStrictEqual` judges every other field exactly while the reason's wording is left to
+ * `compareRejection`. Any real difference in the rejection has already been reported by then.
+ */
+function normalizeRejection(actual: Observation, expected: Observation): Observation {
+  if (actual.rejection === null || expected.rejection === null) return actual;
+  if (actual.rejection.classification !== expected.rejection.classification) return actual;
+  if (CANONICAL_REASON_CLASSIFICATIONS.has(expected.rejection.classification)) return actual;
+  if (typeof actual.rejection.reason !== "string" || actual.rejection.reason.trim().length === 0) return actual;
+  return { ...actual, rejection: { ...actual.rejection, reason: expected.rejection.reason } };
 }
 
 /** Field-by-field difference, so a failure names the violated obligation rather than dumping two objects. */

@@ -12,10 +12,10 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { conformingCandidate, VIOLATIONS, violatingCandidate } from "./candidate.ts";
+import { conformingCandidate, expectedObservations, scriptedCandidate, VIOLATIONS, violatingCandidate } from "./candidate.ts";
 import { createOperationSink } from "./operation-sink.ts";
 import { runScenario } from "./fixture.ts";
-import type { RunOptions } from "./fixture.ts";
+import type { Observation, RunOptions, Scenario } from "./fixture.ts";
 import { ALL_SCENARIOS, UNSAFE_CONTROLS } from "./scenarios.ts";
 
 function scenarioById(id: string) {
@@ -173,5 +173,60 @@ describe("K0 public fixture: a ledger expectation cannot be skipped by how the r
     const scenario = scenarioById(ledgerViolation.scenarioId);
     const result = runScenario(conformingCandidate, scenario, createOperationSink());
     assert.equal(result.outcome, "PASS");
+  });
+});
+
+describe("K0.2-C7: the rejection comparison is loosened exactly as far as the decisions allow", () => {
+  /**
+   * Round-3 correction. The oracle used to require every rejection's *reason text* verbatim. Only one
+   * is canonical — CX-6 fixes "cancellation accepted before Outcome acceptance" by name — so for every
+   * other classification the fixture was failing conforming candidates for phrasing a permitted
+   * message differently, which is round-2 finding K02-R2-01's defect in a second place.
+   *
+   * Loosening an oracle is where holes get opened, so all five directions are pinned here: the one
+   * thing that must now pass, and the four that must still fail.
+   */
+  const scenarioOf = (id: string) => {
+    const found = ALL_SCENARIOS.find((scenario) => scenario.id === id);
+    assert.ok(found, `unknown scenario ${id}`);
+    return found;
+  };
+  const nonCanonical = scenarioOf("control-whole-envelope-validation");
+  const canonical = scenarioOf("control-cancel-versus-complete");
+
+  const rewrite = (mutate: (rejection: NonNullable<Observation["rejection"]>) => Observation["rejection"]) =>
+    (observation: Observation): Observation =>
+      observation.rejection === null ? observation : { ...observation, rejection: mutate(observation.rejection) };
+
+  const run = (scenario: Scenario, mutate: (observation: Observation) => Observation) =>
+    runScenario(
+      scriptedCandidate({ name: "rejection-probe", observationsFor: (target) => expectedObservations(target).map(mutate) }),
+      scenario,
+      createOperationSink(),
+    ).outcome;
+
+  const reworded = rewrite((rejection) => ({ ...rejection, reason: "the wait record is not well formed" }));
+  const blank = rewrite((rejection) => ({ ...rejection, reason: "   " }));
+  const reclassified = rewrite((rejection) => ({ ...rejection, classification: "stale_exchange" as const }));
+  const dropped = rewrite(() => null);
+
+  test("a differently worded non-canonical reason passes: no decision fixes that text", () => {
+    assert.equal(run(nonCanonical, reworded), "PASS");
+  });
+
+  test("an empty reason still fails: §11 row 4 requires a recorded, inspectable reason", () => {
+    assert.equal(run(nonCanonical, blank), "FAIL");
+  });
+
+  test("a changed classification still fails: the classification is canonical, not the prose", () => {
+    assert.equal(run(nonCanonical, reclassified), "FAIL");
+  });
+
+  test("a dropped rejection still fails: refusing silently is not refusing", () => {
+    assert.equal(run(nonCanonical, dropped), "FAIL");
+  });
+
+  test("CX-6's reason is still required verbatim: the worksheet fixes it by name", () => {
+    assert.equal(run(canonical, reworded), "FAIL");
   });
 });

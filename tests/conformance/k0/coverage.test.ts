@@ -72,6 +72,21 @@ describe("K0 boundary coverage: every obligation resolves to real evidence", () 
         assert.ok(evidence.test.length > 10 && evidence.note.length > 40);
         return;
       }
+      if (evidence.kind === "shared") {
+        // A shared entry is only honest if what it points at is real candidate-level evidence, and if
+        // the identity claim is written down. Round-3 review finding K02-R3-01 landed partly because
+        // an obligation pointed at a neighbouring rule's transcript with nothing said about why.
+        const target = K0_OBLIGATIONS.find((other) => other.id === evidence.obligation);
+        assert.ok(target, `${entry.id} shares evidence with unknown obligation ${evidence.obligation}`);
+        assert.equal(
+          target.evidence.kind,
+          "scenario",
+          `${entry.id} shares evidence with ${evidence.obligation}, which carries no scenario evidence of its own`,
+        );
+        assert.notEqual(target.row, entry.row, `${entry.id} shares evidence within its own row, which is a missing split rather than one fact seen twice`);
+        assert.ok(evidence.reason.length > 80, `${entry.id} shares evidence without justifying the identity`);
+        return;
+      }
       const scenario = scenarioById.get(evidence.scenario);
       assert.ok(scenario, `${entry.id} names unknown scenario ${evidence.scenario}`);
       assert.ok(
@@ -124,13 +139,38 @@ describe("K0 boundary coverage: the corpus is fully accounted for", () => {
   });
 
   test("every scenario's declared rows are rows an obligation actually observes it at", () => {
+    // A shared entry resolves to the scenario its target names: the obligation really is observed in
+    // that scenario, just through a transcript another row also relies on. Resolving the reference
+    // here rather than treating shared evidence as no evidence keeps the attribution truthful in both
+    // directions — this check exists because row attribution had silently drifted in round 1.
+    const scenarioOf = (entry: (typeof K0_OBLIGATIONS)[number]): string | null => {
+      const evidence = entry.evidence;
+      if (evidence.kind === "scenario") return evidence.scenario;
+      if (evidence.kind !== "shared") return null;
+      const target = K0_OBLIGATIONS.find((other) => other.id === evidence.obligation);
+      return target !== undefined && target.evidence.kind === "scenario" ? target.evidence.scenario : null;
+    };
     for (const scenario of ALL_SCENARIOS) {
       for (const row of scenario.k0BoundaryRows) {
-        const observing = K0_OBLIGATIONS.filter(
-          (entry) => entry.row === row && entry.evidence.kind === "scenario" && entry.evidence.scenario === scenario.id,
-        );
+        const observing = K0_OBLIGATIONS.filter((entry) => entry.row === row && scenarioOf(entry) === scenario.id);
         assert.ok(observing.length > 0, `${scenario.id} claims row ${row} but no obligation observes it there`);
       }
+    }
+  });
+
+  test("and the reverse: every row the map attributes to a scenario is a row that scenario declares", () => {
+    // The other direction of the same agreement, which round 3 added after the one-directional check
+    // let a stale claim survive: `control-cancel-versus-complete` went on declaring row 10 after its
+    // row-10 attribution moved elsewhere. Drift can appear on either side, so both are checked.
+    for (const entry of K0_OBLIGATIONS) {
+      const evidence = entry.evidence;
+      if (evidence.kind !== "scenario") continue;
+      const scenario = scenarioById.get(evidence.scenario);
+      assert.ok(scenario, `${entry.id} names unknown scenario ${evidence.scenario}`);
+      assert.ok(
+        scenario.k0BoundaryRows.includes(entry.row),
+        `${entry.id} attributes row ${entry.row} to ${scenario.id}, which declares rows ${scenario.k0BoundaryRows.join(",")}`,
+      );
     }
   });
 
@@ -150,6 +190,27 @@ describe("K0 boundary coverage: the corpus is fully accounted for", () => {
         /(?:OA|CX|W|B|E|EF|PC|ID|LP)-\d|§11|execution-protocol\.md|kernel\.md|mental-model\.md|Decision M-1/,
         `violation ${violation.id} cites no identifiable governing decision: ${violation.forbiddenBy}`,
       );
+    }
+  });
+
+  test("no counterexample defends two obligations: each assertion has evidence of its own", () => {
+    // The structural guard against round-3 review finding K02-R3-01 recurring. That finding's shape
+    // was a counterexample doing double duty — LP-1's freshness assertion "covered" by a cancellation
+    // atomicity failure — which passes every other check here while leaving the assertion unguarded.
+    // Where two §11 rows genuinely name one fact, the `shared` evidence kind records it explicitly and
+    // is checked above; reuse by accident is what this forbids.
+    const owner = new Map<string, string>();
+    for (const entry of K0_OBLIGATIONS) {
+      if (entry.evidence.kind !== "scenario") continue;
+      for (const violationId of entry.evidence.counterexamples) {
+        const existing = owner.get(violationId);
+        assert.equal(
+          existing,
+          undefined,
+          `${violationId} defends both ${existing} and ${entry.id}; if they are the same assertion say so with shared evidence, otherwise one of them needs its own counterexample`,
+        );
+        owner.set(violationId, entry.id);
+      }
     }
   });
 
