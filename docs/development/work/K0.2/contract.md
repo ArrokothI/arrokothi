@@ -1,0 +1,234 @@
+# K0.2 contract — public controls and the K0/E0 gate
+
+**Packet:** K0.2. **Parent milestone:** K0 ([001 K0](../../001-current-status-and-roadmap.md#k0--state-the-contract-and-create-the-smallest-counterexample)).
+**Packet seed:** [007 K0.2](../../007-work-packets.md#k02--public-controls-and-k0e0-gate).
+**Governing process baseline:** `c079237ee7aff428481426f93e87a68b79f170d4` (integrated `main`, including the
+accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
+**Dependency:** K0.1, independently ACCEPTED at H12 `bab7bf6635781e6d2f9b0e8e333f58440ae0b047` and
+integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
+**Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
+**Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
+
+## Release provenance and predecessor disclosure
+
+**Release.** Before this packet, the authoritative ledger recorded `next_release: none` and an explicit
+owner hold on K0.2, carried in both integration receipts. 009 states that "an ambiguous or absent
+release requires clarification; merely pasting Prompt A does not release K0.2 or any other successor",
+so the launcher alone was treated as insufficient and the hold was reported back to the owner with the
+E0 consequence stated in advance. The owner then released K0.2 explicitly, choosing implementation of
+the packet as written over a scope amendment, and choosing a fresh implementation over recovering the
+withdrawn attempt below. That instruction is the release this packet relies on; it is recorded in the
+round-1 report and remains subject to the owner's own written record.
+
+**Predecessor.** A withdrawn K0.2 attempt existed on a remote branch of the same conventional name,
+tip `48da596`, based on `42731300`. The owner deleted that branch, and `main` carries no K0.2 record,
+report or status from it; it was never reviewed and holds no acceptance. During the repository-state
+survey that preceded this packet, exactly two things about it were observed: the file list and line
+counts from `git diff --stat`, and the ledger row text it had written. Its payload contents were not
+read, and nothing here is copied or adapted from it. Convergence on the same directory
+(`tests/conformance/k0/`) follows from the existing `tests/conformance/*/*.test.ts` globs, not from
+that attempt. This is independent work from base `c079237`.
+
+## What this packet owes, and to whom
+
+K0.1 decided the protocol. K0.2 builds the **observable fixture** those decisions are checked against,
+and specifies the comparison arms and E0 records. It implements no Kernel.
+
+Inherited requirement map:
+
+| Source | Inherited obligation | Criterion |
+|---|---|---|
+| 001 K0 deliverable | "a public deterministic fixture: accept input → delayed fake Runtime → typed output → input wait → completion" | C1 |
+| 001 K0 deliverable | "Add a fake operation sink with an independent ledger for later action tests" | C3 |
+| 001 K0 deliverable | "The direct baseline is ordinary code plus explicit state and policy; keep validators/services identical across candidates" | C4 |
+| 001 K0 exit | "each input/Outcome/Effect/wake/cancel boundary has one authoritative owner and an observable acceptance/rejection result" | C1–C6, via the §11 coverage map |
+| 001 K0 exit | "E0's unsafe/lost-state controls are specified" | C6 |
+| 007 K0.2 scope | "smallest public delayed-Runtime/typed-output/input-wait fixture" | C1, C2 |
+| 007 K0.2 scope | "both public application shapes" | C5 |
+| 007 K0.2 scope | "obtain pinned E0 evidence" | C8 |
+| 007 K0.2 acceptance | "fixture preparation is explicitly distinguished from later K1 candidate success" | C7 |
+| K0.1 worksheet M-1 | the four named unsafe/state-loss controls K0.2's fixture must include as negative tests | C6 |
+| benchmark E0 | two public application shapes, ownership/claim records, baseline contract, planned unsafe and state-loss controls | C5, C8 |
+
+Left to sibling packets, not weakened here:
+
+- **K1.1–K1.3** implement the protocol this fixture describes. K0.2 ships no Kernel and no target API.
+- **K1.4** is the K1/E1 gate that runs a real candidate against this fixture.
+- **E-6's "a K1 fixture tests exactly at and one past each bound"** is explicitly a K1 fixture
+  obligation in the accepted worksheet. K0.2 records the four bounds in the vocabulary and does not
+  build the value-limit boundary matrix. Assigned to K1.2 (whole-envelope validation).
+- **K2** owns Effect admission, schema validation and consent. K0.2 exercises only the K0-level fact
+  that a proposed Effect is refused at envelope validation with zero sink dispatch (EF-1/EF-2).
+- **S1** owns packaging and any published export of this fixture. K0.2 places it under
+  `tests/conformance/k0/` and advertises no package surface.
+- **K1.0** may relocate the fixture into the target landing zone; this packet does not create one.
+
+## Acceptance criteria
+
+Each criterion names its governing source, its observable boundary and where its evidence lives.
+
+### K0.2-C1 — the 001 K0 trace is a deterministic public fixture
+
+**Source:** 001 K0 deliverable; 007 K0.2 scope; K0.1 W-8.
+**Observable:** the fixture defines the trace *accept input → delayed fake Runtime → typed output →
+input wait → completion* as a declarative scenario whose every step has a stated expected observation
+**and** stated forbidden mutations, including W-8's selectivity case: an unrelated application input
+accepted during the wait is never eligible, never acknowledged, never dropped, and cannot displace the
+subscribed wake at batch bound 1.
+**Distinguishing counterexample:** a candidate that selects the older ineligible backlog into the
+wait-ended batch, or that acknowledges it, must FAIL.
+**Evidence:** `tests/conformance/k0/scenarios.ts` (`k0Trace`), `tests/conformance/k0/k0-trace.test.ts`.
+
+### K0.2-C2 — delayed Runtime, and delay that does not block a second Execution
+
+**Source:** 001 K0 ("delayed fake Runtime"); 001 K1 ("One delayed Runtime must not prevent the same
+coordinator loop dispatching another Execution").
+**Observable:** the fixture's Runtime delay is explicit and scheduled, not a timing race; an Execution
+whose Activation is unresolved leaves a second Execution dispatchable, and the unresolved Activation
+stays `RUNNING` with no Kernel-visible wait created (W-4).
+**Distinguishing counterexample:** a candidate that reports the delayed Execution as `WAITING`, or
+that fails to dispatch the second Execution, must FAIL.
+**Evidence:** `tests/conformance/k0/scenarios.ts` (`delayedRuntimeNonBlocking`), `delayed-runtime.test.ts`.
+
+### K0.2-C3 — independent operation sink with an independent ledger
+
+**Source:** 001 K0 ("a fake operation sink with an independent ledger for later action tests").
+**Observable:** the sink records every attempted operation in a ledger the candidate cannot read back,
+edit, reorder or truncate through the sink's own surface; the ledger is readable by the fixture as an
+observation independent of whatever the candidate reports about itself.
+**Distinguishing counterexample:** a candidate that claims a dispatch the ledger did not record, or
+claims none where the ledger recorded one, must FAIL on ledger comparison rather than on self-report.
+**Evidence:** `tests/conformance/k0/operation-sink.ts`, `operation-sink.test.ts`.
+
+### K0.2-C4 — direct baseline specification
+
+**Source:** 001 K0 ("The direct baseline is ordinary code plus explicit state and policy; keep
+validators/services identical across candidates").
+**Observable:** a written contract fixing what the direct arm is, what it shares with the Kernel arm
+(validators, sink, policy, fixture inputs — identical instances, not equivalents), what it is allowed
+to do differently, and which observations are comparable versus incomparable.
+**Distinguishing counterexample:** a specification permitting the direct arm a private validator or a
+different sink would be non-conforming, because it would let an arm win on laboratory difference.
+**Evidence:** [public-fixture-specification.md](public-fixture-specification.md) §4.
+
+### K0.2-C5 — both public application shapes
+
+**Source:** 007 K0.2 scope; benchmark E0 ("reviewed artifact publication, and a restartable request
+across two independent jobs plus human input").
+**Observable:** both shapes are specified with each owner's authoritative state, attempted-action
+boundary, physical controls, input acceptance and failure observations, as fresh public fixtures and
+not copies of private P0X cases.
+**Evidence:** [public-fixture-specification.md](public-fixture-specification.md) §5.
+
+### K0.2-C6 — the four unsafe/state-loss controls, as negative tests
+
+**Source:** K0.1 worksheet Decision M-1; 001 K0 exit; execution-protocol.md's K0–K4 acceptance examples.
+**Observable:** all four controls exist as executable negative scenarios with per-assertion forbidden
+mutations, namely M-1's row 3 (duplicate/conflicting Outcome), row 5 (stale timer / lost wake), row 7
+(cancel-versus-complete, both orders) and row 9 (missing checkpoint/code). Row 7 additionally asserts,
+as M-1 requires by name: CX-6 full rejection for **both** `continue` and `complete` submitted after
+cancellation acceptance; zero acknowledgment of the reserved batch; no change to accepted
+progress/emissions; B-5 disposition at `CANCELLED`; deterministic recorded rejection on exact retry;
+and the reverse order, where accepted completion remains terminal.
+**Distinguishing counterexample:** M-1 names one explicitly — "suppressing only next state while
+installing losing progress is a failing control, not a conforming variant." That exact variant is
+shipped as a violating transcript and the oracle must reject it.
+**Evidence:** `tests/conformance/k0/scenarios.ts` (`duplicateAndConflictingOutcome`, `staleTimerAndLostWake`,
+`cancelVersusComplete`, `missingCheckpointCode`); `controls.test.ts`; `oracle-discrimination.test.ts`.
+
+### K0.2-C7 — preparation is visibly not a pass
+
+**Source:** 007 K0.2 acceptance; 007 preamble ("Prepared fixtures are an entry prerequisite, never a
+passed gate"); 006 ("A test fixture is not a passed evidence gate").
+**Observable:** three things hold simultaneously. (a) The only candidate shipped against the real
+supported entry is a **refusing** candidate: every scenario reports `REFUSED`, never `PASS`. (b) The
+oracle is nevertheless proven in both directions by hand-authored transcripts — one conforming
+transcript the oracle passes, and one plausible-wrong transcript per control that it rejects with the
+specific violated assertion. (c) No document or test in this packet claims K0, E0 or E1 status.
+**Distinguishing counterexample:** an oracle that passes every transcript, or that rejects every
+transcript, is vacuous; the discrimination test fails in both directions if either happens.
+**Evidence:** `tests/conformance/k0/candidate.ts`, `refusal.test.ts`, `oracle-discrimination.test.ts`.
+
+### K0.2-C8 — pinned E0 evidence
+
+**Source:** 007 K0.2 scope ("obtain pinned E0 evidence"); 007 old→new mapping ("K0.2 ACCEPTED,
+including E0"); 006 ("Missing cross-repository gate evidence blocks only dependent acceptance, not
+independent fixture preparation").
+**Observable:** benchmark revision, E0 fixture/config identities, raw observations, evaluator version
+and the actual external decision recorded here — **or** a named blocker with responsible actor and a
+concrete unblock condition.
+**Status entering this packet:** the benchmark repository at `98756f8c10bd806125da8318f1a129bc030aca61`
+states E0–E6 are planned and not implemented. This criterion is expected to close as
+**BLOCKED_EXTERNAL**, not PASS. The owner released the packet as written with that consequence stated
+in advance. No E0 acceptance may be claimed, implied or self-granted, and nothing is written in the
+benchmark repository by this packet.
+
+## Selected proof methods ([012](../../012-review-methods.md))
+
+| Method | Applied to | Why |
+|---|---|---|
+| **Normative decisions** | C1, C4, C5, C6, C7 | The fixture and specifications are behavioral contracts. Both orders of interacting operations, absence/inert cases, duplicate/conflicting/stale submissions and rejection are walked; every path accounts for the whole result, not only its headline state. |
+| **Deterministic execution** | C1, C2, C3, C6, C7 | The oracle is mechanically decidable. Assertions are derived from the accepted worksheet rather than from any implementation, and each control ships a plausible broken behavior the oracle rejects. |
+| **External evidence/gate** | C5, C8 | Distinguishes preparation from execution and execution from gate acceptance; pins subject, fixture and revision identities; verifies evidence ownership. |
+| **Process/documentation** | C7, C8 | Checks successor holds, exact identity and that no unsupported claim is made. |
+
+**Materially excluded, with reason:**
+
+- **Race and fault.** No persistence or process-death claim is made by K0.2. The controls pin *logical*
+  acceptance order as scheduled data; actual process death is E4/K3 work. Recorded as a limit, not a gap.
+- **Native Runtime/Driver.** No Driver exists at K0; C6's missing-checkpoint control asserts the
+  Kernel-side PC-4/PC-5 refusal contract only, never native fidelity. R1 owns the rest.
+- **Packaging/release.** S1 owns it; this packet advertises no export.
+
+## Interacting boundaries
+
+These are the connections a per-criterion checklist would miss, and they are checked as interactions:
+
+1. **Wait registration × batch selection × terminal disposition.** W-2's ordered registration, §3's
+   wait-ended batch rule and B-5's terminal disposition all touch the same unacknowledged Events. The
+   K0 trace scenario carries one Event (`billing.question`) across all three so a candidate cannot
+   satisfy them separately with inconsistent bookkeeping.
+2. **Cancellation fence × receipt replay.** OA-2's accepted-receipt replay and CX-6's recorded-rejection
+   replay are the same submitted-identity lookup with opposite answers. The cancel control exercises
+   both against one Execution so a candidate cannot pass by implementing only one rule.
+3. **Generation fencing × authenticated Events.** W-3 fences wait-created timers but explicitly does
+   **not** fence authenticated result Events. The stale-timer control asserts both halves; a candidate
+   that over-generalizes fencing loses a result it should still observe.
+4. **Envelope refusal × sink ledger.** EF-2's refusal is only meaningful if the independent ledger
+   shows zero dispatch. C3 and C6 are read together, never separately.
+
+## Command plan
+
+| Command | Purpose | When |
+|---|---|---|
+| `node --test --experimental-strip-types tests/conformance/k0/*.test.ts` | targeted iteration | while implementing |
+| `npm run typecheck` | whole-workspace type check | on clean payload C |
+| `npm test` | full suite; proves no regression in existing conformance | on clean payload C |
+| `npm run test:conformance` | conformance subset including the new `k0` directory | on clean payload C |
+| `npm run check:builder-docs` | builder-docs inventory, since docs changed | on clean payload C |
+| `git diff --check <base> <C>` | whitespace | on clean payload C |
+
+`npm run test:evals` is **not** run: no Agent behavior changes. `npm run test:sdk` is covered by
+`npm test`, which includes `packages/sdk/tests/*.test.ts`; no separate duplicate run.
+
+## Evidence owners and limits
+
+- **Kernel-local fixture and oracle:** this repository. Runnable offline with no model, network,
+  container or database.
+- **E0 fixtures, ownership records and the E0 decision:** benchmark repository owner. Not writable or
+  grantable from here.
+- **Limit:** the fixture is validated against hand-authored transcripts, not a Kernel. It proves the
+  oracle discriminates; it proves nothing about any implementation, because none exists.
+- **Limit:** no claim of durability, isolation, performance or application value is made.
+
+## Routine decisions taken within this contract
+
+Resolved by the implementer under 007's "routine coding choices" allowance, recorded for the reviewer:
+
+1. **Location** `tests/conformance/k0/`, picked up by the existing `tests/conformance/*/*.test.ts`
+   globs in `npm test` and `npm run test:conformance` with no script change.
+2. **Zero `@arrokothi/*` imports** in the fixture. The fixture describes the *target* protocol, which
+   the 0.8.x packages do not implement; importing their vocabulary would bake legacy shapes
+   ([013](../../013-structure-and-evidence-sequencing.md)) into a K1 acceptance oracle.
+3. **Transcript-driven oracle validation** rather than a reference Kernel, because implementing the
+   protocol is K1.1–K1.3's responsibility and would be out of scope here.
