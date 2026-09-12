@@ -74,7 +74,7 @@ describe("K0 unsafe/state-loss controls: Decision M-1's set is complete", () => 
     assert.deepEqual(duplicateAndConflictingOutcome.k0BoundaryRows, [3]);
     assert.ok(staleTimerAndLostWake.k0BoundaryRows.includes(5));
     assert.ok(cancelVersusComplete.k0BoundaryRows.includes(7));
-    assert.deepEqual(missingCheckpointCode.k0BoundaryRows, [9]);
+    assert.deepEqual(missingCheckpointCode.k0BoundaryRows, [5, 9]);
   });
 
   test("each control cites the governing decision that requires it", () => {

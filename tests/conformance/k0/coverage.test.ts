@@ -64,7 +64,7 @@ describe("K0 boundary coverage: every obligation resolves to real evidence", () 
     test(`${entry.id} has usable evidence`, () => {
       const evidence = entry.evidence;
       if (evidence.kind === "assigned") {
-        assert.ok(/^K\d/.test(evidence.packet), `${entry.id} assigns to a non-packet ${evidence.packet}`);
+        assert.ok(/^[KR]\d/.test(evidence.packet), `${entry.id} assigns to a non-packet ${evidence.packet}`);
         assert.ok(evidence.reason.length > 80, `${entry.id} is assigned away without a substantive reason`);
         return;
       }

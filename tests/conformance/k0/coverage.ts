@@ -14,9 +14,10 @@
  *
  * The unit is now the **independently distinguishable assertion**, and the inventory below states the
  * test it was built with. See `K0_OBLIGATIONS` for what each evidence kind means and what deliberately
- * does not count.
+ * does not count. Round 14 adds `cited-decisions.ts`: every clause of every cited decision
+ * reconciles to one owner here. Its source/inventory seals detect drift, not semantic completeness.
  *
- * `coverage.test.ts` enforces all of it mechanically, including that the named step exists and that
+ * `coverage.test.ts` checks the declared evidence mechanically, including that the named step exists and that
  * the named counterexamples exist, target the right scenario and step, and are actually rejected.
  */
 
@@ -637,12 +638,12 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R4-b3",
     row: 4,
-    obligation: "Child/message-operation receipts (ID-6/ID-7 sixth boundary): no K0 case before composition exists.",
+    obligation: "Child-operation receipts (ID-6/ID-7 sixth boundary): no K0 case before composition exists; message receipts are separately R4-b4.",
     evidence: {
       kind: "assigned",
       packet: "K4.1",
       reason:
-        "K1 has no child delegation or addressed-messaging surface; composition (child-link, structural budget, event router, input requests) is owned by K4, starting with durable children/delegation in K4.1 and addressed messages/replies in K4.2. Minting a child/message receipt in K0.2 would fabricate the composition operation it evidences. Row 8's previously-owned child obligation (R8-c, assigned to K2.4) is the only child-adjacent clause with a K0-adjacent reason, and it has no observable K0 case either.",
+        "K1 has no child delegation or addressed-messaging surface; composition (child-link, structural budget, event router, input requests) is owned by K4, starting with durable children/delegation in K4.1 and addressed messages/replies in K4.2. Minting a child/message receipt in K0.2 would fabricate the composition operation it evidences. Row 8 separately assigns required child accounting to R8-d/K4.1; R8-c/K2.3 owns required Effects. Neither has an observable owned-work surface in K0.2.",
     },
   },
 
@@ -1221,12 +1222,12 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R8-c",
     row: 8,
-    obligation: "A *previously owned* required Effect or child obligation must be settled, or explicitly transferred or abandoned under policy, before completion is accepted.",
+    obligation: "A *previously owned* required Effect must be settled, or explicitly transferred or abandoned under policy, before completion is accepted.",
     evidence: {
       kind: "assigned",
-      packet: "K2.4",
+      packet: "K2.3",
       reason:
-        "No previously owned obligation can exist while K1 refuses Effects outright (EF-1/EF-2), so this clause has no observable K0 case. CX-3 says so in terms: 'K1 without Effects satisfies this trivially (no Effects exist yet to be unaccounted-for); K2 is where the check becomes non-trivial.' R8-a observes the clause that *is* reachable now — work proposed in the completing Outcome itself. Fabricating owned work at K0 would require inventing state the protocol says cannot exist.",
+        "No previously owned obligation can exist while K1 refuses Effects outright (EF-1/EF-2), so this clause has no observable K0 case. CX-3 says so in terms: 'K1 without Effects satisfies this trivially (no Effects exist yet to be unaccounted-for); K2 is where the check becomes non-trivial.' R8-a observes the clause that *is* reachable now — work proposed in the completing Outcome itself. 007 K2.3 first implements required-work accounting; K2.4 is the aggregate gate, not its first owner. Child obligations are separately assigned in R8-d. Fabricating owned work at K0 would require inventing state the protocol says cannot exist.",
     },
   },
 
@@ -1234,7 +1235,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   {
     id: "R9-a1",
     row: 9,
-    obligation: "Resuming against unavailable compatible code or resources yields an *explicit* hold/refusal: an inspectable record, not merely the absence of a restart.",
+    obligation: "Resuming against unavailable compatible code yields an *explicit* hold/refusal: an inspectable record, not merely the absence of a restart. Missing checkpoint/resource triggers are separately assigned in R9-f1/f2.",
     evidence: { kind: "scenario", scenario: "control-missing-checkpoint-code", stepIndex: 4, counterexamples: ["control-missing-checkpoint/refused-without-an-inspectable-hold"] },
   },
   {
@@ -1284,5 +1285,903 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     atomicity:
       "One bug construction: an input handler misreads 'correction' as withdrawal authority and invokes the retraction writer, which reverses the one OA-4 commit whole — progress and revision via the progress writer together with emissions via the emission publisher in the one reverse transaction. A retraction that removes progress but republishes emissions (or vice versa) would be handler plus retraction-atomicity failures combined; the emission publisher sits outside the progress transaction (as row 7 already recognises for R7-a2/a3), so half-retraction is a second writer failing, not the single handler misread this transcript demonstrates.",
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 5, counterexamples: ["k0-trace/late-input-retracts-accepted-progress"] },
+  },
+
+  // Round 14: cited clauses with no truthful observation surface in this port.
+  {
+    "id": "R1-g",
+    "row": 1,
+    "obligation": "ID-6/ID-7: dispatch-intent acceptance has its own receipt and position, distinct from creation and Outcome acceptance.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.1",
+      "reason": "The port observes Activation identity and batch but exposes no dispatch receipt or dispatch acceptance position. 007 K1.1 first implements reservation/dispatch intent and its minimum inspection; an Activation token cannot substitute for this receipt."
+    }
+  },
+  {
+    "id": "R3-e1",
+    "row": 3,
+    "obligation": "OA-1: authenticate the Outcome submitter before inspecting content.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.2",
+      "reason": "OutcomeEnvelope and submit_outcome carry no submitting principal or authentication result, and Observation cannot reveal inspection order. 007 K1.2 first implements the Outcome validation/receipt boundary that must authenticate before parsing its content."
+    }
+  },
+  {
+    "id": "R3-e2",
+    "row": 3,
+    "obligation": "OA-1: scope authenticated Outcome access to the named Execution before inspecting content.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.2",
+      "reason": "A destination string is not an access grant. The K0 port supplies no caller-access relation or denied-access inspection trace. K1.2 owns Outcome acceptance and receipt lookup; that is the first implementing boundary able to discriminate this separate scope check."
+    }
+  },
+  {
+    "id": "R3-f1",
+    "row": 3,
+    "obligation": "OA-2: replay an accepted receipt before validation even when updated policy would now reject the envelope.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.2",
+      "reason": "The fixture has no policy-change command or policy version observation. Ordinary duplicate replay already has R3-a1/a2/a3; those cannot establish validation ordering against changed policy. 007 K1.2 first owns receipt replay/conflict and whole-envelope validation."
+    }
+  },
+  {
+    "id": "R3-f2",
+    "row": 3,
+    "obligation": "OA-2: exact accepted replay must not dispatch an Effect again.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.1",
+      "reason": "No accepted Effect can exist under K0/K1 whole-envelope refusal. R3-a2/a3 cover progress/publication replay, not an accepted Effect dispatch. K2.1 first introduces accepted intents and dispatch only from accepted records, including replay safety."
+    }
+  },
+  {
+    "id": "R3-g1",
+    "row": 3,
+    "obligation": "OA-3: same-Outcome Effect references must resolve and bind during whole-envelope validation.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.1",
+      "reason": "K0 has no accepted Effect or proposal binding surface: every Effect-bearing envelope is refused. K2.1 explicitly owns same-Outcome keys and atomic intents, so it is the first place to test resolution without substituting K1 unsupported-field refusal."
+    }
+  },
+  {
+    "id": "R3-g2",
+    "row": 3,
+    "obligation": "OA-4: accepted Effect intents commit atomically with progress, input acknowledgment, emissions and next state.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.1",
+      "reason": "The K0 intent observation can see a forbidden leaked intent, but cannot observe successful intent acceptance because K1 refuses all Effects. K2.1 explicitly commits all intents with the other accepted facts; a no-intent refusal is not evidence for positive atomic intent acceptance."
+    }
+  },
+  {
+    "id": "R3-h1",
+    "row": 3,
+    "obligation": "OA-6: an unclassifiable invalid Runtime response ends or holds the exchange under an explicit inspectable recovery decision.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.2",
+      "reason": "The typed OutcomeEnvelope surface cannot represent an unclassifiable Runtime response; missing-code recovery is a different trigger. K1.2 owns malformed Outcome acceptance/refusal and is the first executable acceptance boundary to provide a protocol-failure decision."
+    }
+  },
+  {
+    "id": "R3-h2",
+    "row": 3,
+    "obligation": "OA-6: an unclassifiable response must never cause an infinite silent retry of the same dispatch.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.2",
+      "reason": "The scheduled port neither produces unclassifiable responses nor observes an autonomous retry loop. K1.2 must handle this failure at its new Outcome boundary; K0 refusal of a typed malformed envelope cannot demonstrate that retry policy."
+    }
+  },
+  {
+    "id": "R4-c1",
+    "row": 4,
+    "obligation": "EF-3: request disposition remains distinct from attempt evidence, result validity and responsibility.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.2",
+      "reason": "K0 refuses Effects before intent creation, so it has no admitted action, consent, result-contract or responsibility observation on which this assertion could be tested. 007 K2.2 first owns concrete admission and consent/withdrawal decisions. EF-3/EF-4 preserve this future distinction without selecting its representation."
+    }
+  },
+  {
+    "id": "R4-c2",
+    "row": 4,
+    "obligation": "EF-3: attempt evidence remains distinct from request disposition, result validity and responsibility.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.1",
+      "reason": "K0 refuses Effects before intent creation, so it has no admitted action, consent, result-contract or responsibility observation on which this assertion could be tested. 007 K2.1 first owns accepted intents with separately recorded attempts. EF-3/EF-4 preserve this future distinction without selecting its representation."
+    }
+  },
+  {
+    "id": "R4-c3",
+    "row": 4,
+    "obligation": "EF-3: result contract validity or partial/missing evidence remains distinct from outcome certainty.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 refuses Effects before intent creation, so it has no admitted action, consent, result-contract or responsibility observation on which this assertion could be tested. 007 K2.3 first owns trusted evidence, result validity versus certainty, safe retry/refusal and required-work accounting. EF-3/EF-4 preserve this future distinction without selecting its representation."
+    }
+  },
+  {
+    "id": "R4-c4",
+    "row": 4,
+    "obligation": "EF-3: responsibility remains required, transferred to a named durable owner, or abandoned under policy independently of action success.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 refuses Effects before intent creation, so it has no admitted action, consent, result-contract or responsibility observation on which this assertion could be tested. 007 K2.3 first owns trusted evidence, result validity versus certainty, safe retry/refusal and required-work accounting. EF-3/EF-4 preserve this future distinction without selecting its representation."
+    }
+  },
+  {
+    "id": "R4-d1",
+    "row": 4,
+    "obligation": "EF-4: denial/refusal before a physical attempt is not evidence of external failure.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.2",
+      "reason": "K0 refuses Effects before intent creation, so it has no admitted action, consent, result-contract or responsibility observation on which this assertion could be tested. 007 K2.2 first owns concrete admission and consent/withdrawal decisions. EF-3/EF-4 preserve this future distinction without selecting its representation."
+    }
+  },
+  {
+    "id": "R4-d2",
+    "row": 4,
+    "obligation": "EF-4: waiting for consent consumes no physical attempt.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.2",
+      "reason": "K0 refuses Effects before intent creation, so it has no admitted action, consent, result-contract or responsibility observation on which this assertion could be tested. 007 K2.2 first owns concrete admission and consent/withdrawal decisions. EF-3/EF-4 preserve this future distinction without selecting its representation."
+    }
+  },
+  {
+    "id": "R4-d3",
+    "row": 4,
+    "obligation": "EF-4: admitted work without confirming evidence is unknown, never guessed successful or failed.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 refuses Effects before intent creation, so it has no admitted action, consent, result-contract or responsibility observation on which this assertion could be tested. 007 K2.3 first owns trusted evidence, result validity versus certainty, safe retry/refusal and required-work accounting. EF-3/EF-4 preserve this future distinction without selecting its representation."
+    }
+  },
+  {
+    "id": "R4-d4",
+    "row": 4,
+    "obligation": "EF-4: acknowledging an unknown Event does not discharge required work for completion.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 refuses Effects before intent creation, so it has no admitted action, consent, result-contract or responsibility observation on which this assertion could be tested. 007 K2.3 first owns trusted evidence, result validity versus certainty, safe retry/refusal and required-work accounting. EF-3/EF-4 preserve this future distinction without selecting its representation."
+    }
+  },
+  {
+    "id": "R4-d5",
+    "row": 4,
+    "obligation": "EF-4: stopping retries changes disposition/responsibility, not proof of external failure.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 refuses Effects before intent creation, so it has no admitted action, consent, result-contract or responsibility observation on which this assertion could be tested. 007 K2.3 first owns trusted evidence, result validity versus certainty, safe retry/refusal and required-work accounting. EF-3/EF-4 preserve this future distinction without selecting its representation."
+    }
+  },
+  {
+    "id": "R5-h1",
+    "row": 5,
+    "obligation": "CL-1: wait deadline, Execution deadline and scheduler lease have independent identities rather than one generic deadline field.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.2",
+      "reason": "K0 exposes only a wait deadline and an authorized takeover command, not Execution deadline or lease identity/expiry. K1.3 first owns wait and cancellation clocks, but the three-way operational distinction first becomes testable in K3.2 persistent lifecycle/dispatch recovery on a worker claim; K3.1 prepares its fault harness, not the implementation."
+    }
+  },
+  {
+    "id": "R5-h2",
+    "row": 5,
+    "obligation": "CL-1: Execution deadline expiry initiates ordered cancellation, without claiming native interruption.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.3",
+      "reason": "The port can accept cancellation but cannot deliver an Execution-deadline expiry or observe its mapping. K1.3 owns out-of-band cancellation and wait/cancel races, the first truthful owner of this logical expiry-to-control mapping; physical interruption remains Driver work."
+    }
+  },
+  {
+    "id": "R5-h3",
+    "row": 5,
+    "obligation": "CL-1: scheduler lease expiry triggers recovery inspection/reassignment eligibility, never proof of host death or permission to write unchecked.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.2",
+      "reason": "K0 takeover is an already-authorized command and supplies no lease, worker liveness or recovery inspection. K3.2 first implements persistent dispatch/lifecycle recovery under the real K3.1 kill harness; K3.3 subsequently tests native stale-host exclusion, which Kernel fencing alone cannot prove."
+    }
+  },
+  {
+    "id": "R5-h4",
+    "row": 5,
+    "obligation": "CL-2/W-9: wait timeout is not proof of action failure or non-execution.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "R5-f3 already preserves a generic later result Event. The port has no admitted action or outcome-certainty record whose evidence a timeout could corrupt. K2.3 first implements settlement/uncertainty and required-work accounting, so it owns the separate action-evidence assertion."
+    }
+  },
+  {
+    "id": "R5-h5",
+    "row": 5,
+    "obligation": "CL-3: the wait clock is evaluated only at registration and current-generation expiry while WAITING.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.3",
+      "reason": "R5-c3 and R5-f1a/f1a2/f1b/f4 observe the accepted consequences. The port exposes no clock-read instrumentation, so it cannot discriminate an extra read producing no accepted mutation. K1.3 owns the actual registration/deadline evaluator and can inspect its reading points without imposing a timer mechanism here."
+    }
+  },
+  {
+    "id": "R5-i1",
+    "row": 5,
+    "obligation": "B-6/B-7/B-8: accepted readiness survives process failure before reservation on every creation path.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.2",
+      "reason": "K0 has no process-death or surviving-store command: scheduled observations cannot demonstrate persistence. K3.2 first implements persistent accepted truth and readiness reconstruction with K3.1 real worker/host kills, for both Outcome and Event acceptance windows."
+    }
+  },
+  {
+    "id": "R5-i2",
+    "row": 5,
+    "obligation": "B-6: Effect settlement atomically accepts its result Event and applicable destination readiness without a later Runtime Outcome.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "Generic kernel_event ingress can illustrate Event wake but no admitted Effect or settlement record exists in K0. K2.3 first owns trusted settlement and result publication; the source action evidence and destination wake must be accepted together there."
+    }
+  },
+  {
+    "id": "R5-i3",
+    "row": 5,
+    "obligation": "B-6: child routing obligation alone never fabricates parent readiness before destination Event acceptance.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K4.1",
+      "reason": "K0 has no child, parent link or pending routing intent. K4.1 first implements durable children, terminal routing and result accounting; it must distinguish the source obligation from actual parent mailbox acceptance, with one-transaction profiles still allowed."
+    }
+  },
+  {
+    "id": "R5-i4",
+    "row": 5,
+    "obligation": "B-6: child routing recovery fulfils the same durable obligation idempotently, with readiness committed at actual destination acceptance.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K4.1",
+      "reason": "No K0 command can create or replay a child routing obligation independently of accepting an Event. K4.1 owns the first child/result-route crash tests and hence both fulfilment identity and destination wake; K0 synthetic ingress is not that evidence."
+    }
+  },
+  {
+    "id": "R5-i5",
+    "row": 5,
+    "obligation": "B-6: message/routed-Event success is destination mailbox acceptance with readiness, not creation of a source routing obligation.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K4.2",
+      "reason": "The fixture has no sender operation, delivery acknowledgment or source routing record. K4.2 first implements mediated destination acceptance and recoverable sender settlement; this assignment preserves both single-transaction and split-transaction profiles."
+    }
+  },
+  {
+    "id": "R5-i6",
+    "row": 5,
+    "obligation": "W-9: only trusted Kernel timer provenance can mint a timeout Event; a Runtime or application producer cannot forge one.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.3",
+      "reason": "The laboratory supplies an already-categorized timeoutEvent on deliver_timer, with no authenticated submitter or ingress authority decision. K1.3 first implements deadline minting and separately scoped Event ingress; category typing is not authentication evidence."
+    }
+  },
+  {
+    "id": "R5-i7",
+    "row": 5,
+    "obligation": "W-9: timeout acceptance issues no external caller receipt and creates no seventh caller-facing boundary.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.3",
+      "reason": "K0 receipt is a most-recent create/Outcome token, not a timer-ingress receipt stream. K1.3 first implements Kernel-owned timeout acceptance and can prove the absence of an external receipt without interpreting a stale displayed token as one."
+    }
+  },
+  {
+    "id": "R7-e1",
+    "row": 7,
+    "obligation": "CX-1: cancellation acceptance blocks new Effect admissions even before physical interruption.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.2",
+      "reason": "No K0 command admits an Effect, and K1 refuses every proposal before admission. K2.2 first implements concrete admission ordered with withdrawal/revocation and dispatch ownership, where the cancellation fence can actually block a new admission."
+    }
+  },
+  {
+    "id": "R7-e2",
+    "row": 7,
+    "obligation": "CX-1: Kernel requests Driver cancellation without waiting for Runtime cooperation; physical interruption may occur later.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.3",
+      "reason": "R7-c1 owns independent logical cancellation, but the port has no Driver cancellation callback or physical-interruption observation. K1.3 first implements out-of-band cancellation and its Driver request; R1.1 later probes real native interruption fidelity."
+    }
+  },
+  {
+    "id": "R7-f1",
+    "row": 7,
+    "obligation": "CX-5: Late authenticated settlement after cancellation is recorded against the original admitted attempt/Effect.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 cannot admit or settle Effects, so neither original attempt identity nor a late settlement is present. Ordinary input refusal on a terminal Execution is a different boundary. 007 K2.3 explicitly requires late authenticated evidence to survive cancellation and first supplies that settlement surface."
+    }
+  },
+  {
+    "id": "R7-f2",
+    "row": 7,
+    "obligation": "CX-5: Late settlement after cancellation never reopens the terminal Execution.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 cannot admit or settle Effects, so neither original attempt identity nor a late settlement is present. Ordinary input refusal on a terminal Execution is a different boundary. 007 K2.3 explicitly requires late authenticated evidence to survive cancellation and first supplies that settlement surface."
+    }
+  },
+  {
+    "id": "R7-f3",
+    "row": 7,
+    "obligation": "CX-5: Late settlement after cancellation never becomes a new unrelated Effect.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 cannot admit or settle Effects, so neither original attempt identity nor a late settlement is present. Ordinary input refusal on a terminal Execution is a different boundary. 007 K2.3 explicitly requires late authenticated evidence to survive cancellation and first supplies that settlement surface."
+    }
+  },
+  {
+    "id": "R7-g1",
+    "row": 7,
+    "obligation": "CX-6: the cancellation fence and recorded rejection survive recovery under retention; expiration never permits acceptance.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.2",
+      "reason": "The port replays a rejection in one process but has no persistent-store restart or record-expiration control. K3.2 first implements persistent receipts and terminal recovery; K5.1 later exercises finite retention limits without weakening that fence."
+    }
+  },
+
+  {
+    "id": "R8-d",
+    "row": 8,
+    "obligation": "CX-3: required child work must be accounted for by settlement or explicit policy-governed transfer/abandonment before completion.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K4.1",
+      "reason": "K0 has no child creation, link, result or responsibility record. K2.3 can account for Effects but cannot prove child responsibility. 007 K4.1 first implements durable children and required result accounting, so this cannot truthfully be assigned to the K2.4 gate."
+    }
+  },
+  {
+    "id": "R8-e1",
+    "row": 8,
+    "obligation": "CX-4: Unresolved/unknown external work bars completion.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 refuses Effects and therefore cannot establish admitted unknown work. Completing-envelope refusal R8-a has no previously admitted uncertainty and cannot defend this clause. K2.3 first implements uncertainty, safe refusal and required-work accounting; K5.2 later exercises deletion/operations without replacing this first semantic owner."
+    }
+  },
+  {
+    "id": "R8-e2",
+    "row": 8,
+    "obligation": "CX-4: Unresolved/unknown external work does not bar cancellation.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 refuses Effects and therefore cannot establish admitted unknown work. Completing-envelope refusal R8-a has no previously admitted uncertainty and cannot defend this clause. K2.3 first implements uncertainty, safe refusal and required-work accounting; K5.2 later exercises deletion/operations without replacing this first semantic owner."
+    }
+  },
+  {
+    "id": "R8-e3",
+    "row": 8,
+    "obligation": "CX-4: Cancellation retains unresolved evidence for reconciliation rather than claiming resolution or deleting it.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "K0 refuses Effects and therefore cannot establish admitted unknown work. Completing-envelope refusal R8-a has no previously admitted uncertainty and cannot defend this clause. K2.3 first implements uncertainty, safe refusal and required-work accounting; K5.2 later exercises deletion/operations without replacing this first semantic owner."
+    }
+  },
+  {
+    "id": "R9-b1",
+    "row": 9,
+    "obligation": "PC-1: inline structured continuation data is stored and returned unchanged under an opaque Runtime contract.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.1",
+      "reason": "Observation can report accepted progress, but the fixture has no Runtime-side observation of the continuation payload delivered back by dispatch. K1.1 explicitly owns opaque pinned progress and asynchronous dispatch, the first implementation of this store-and-return contract."
+    }
+  },
+  {
+    "id": "R9-b2",
+    "row": 9,
+    "obligation": "PC-1: immutable resumable checkpoint references and references to still-running native jobs retain their different recovery guarantees.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "R1.1",
+      "reason": "The fixture progress is ordinary structured data; no native job or checkpoint-form declaration crosses its port. 007 R1.1 first requires a real native boundary to declare identity/resources/lost-submit and unsupported recovery; K1 only requires inline form, so K1.1 must not pretend to implement the native guarantees."
+    }
+  },
+  {
+    "id": "R9-b3",
+    "row": 9,
+    "obligation": "PC-1: progress compatibility uses pinned Runtime/definition/codec identity, never the legacy Agent/Workflow wrapper discriminator.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.1",
+      "reason": "The K0 port has no legacy wrapper or Runtime-definition identity negotiation, and missing-code hold cannot discriminate how compatibility was chosen. K1.1 explicitly owns opaque pinned progress and acceptance with no Agent/Workflow discriminator; this is the first actual boundary, following K1.0 structural preparation."
+    }
+  },
+  {
+    "id": "R9-c1",
+    "row": 9,
+    "obligation": "PC-2: Driver publishes an immutable candidate checkpoint before proposing its reference.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.3",
+      "reason": "K0 has no checkpoint publication, pin, rejection-pin or resource-version observation; its missing-code control only sees hold/refusal. 007 K3.3 explicitly owns checkpoint pin/delete and native two-store windows, the first truthful implementation/evidence owner after the R1 capability declarations."
+    }
+  },
+  {
+    "id": "R9-c2",
+    "row": 9,
+    "obligation": "PC-2: Outcome acceptance pins the proposed checkpoint.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.3",
+      "reason": "K0 has no checkpoint publication, pin, rejection-pin or resource-version observation; its missing-code control only sees hold/refusal. 007 K3.3 explicitly owns checkpoint pin/delete and native two-store windows, the first truthful implementation/evidence owner after the R1 capability declarations."
+    }
+  },
+  {
+    "id": "R9-c3",
+    "row": 9,
+    "obligation": "PC-2: Outcome rejection does not pin a candidate checkpoint.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.3",
+      "reason": "K0 has no checkpoint publication, pin, rejection-pin or resource-version observation; its missing-code control only sees hold/refusal. 007 K3.3 explicitly owns checkpoint pin/delete and native two-store windows, the first truthful implementation/evidence owner after the R1 capability declarations."
+    }
+  },
+  {
+    "id": "R9-c4",
+    "row": 9,
+    "obligation": "PC-2: Checkpoint identity includes codec/version and required resource versions, never a bare locator.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.3",
+      "reason": "K0 has no checkpoint publication, pin, rejection-pin or resource-version observation; its missing-code control only sees hold/refusal. 007 K3.3 explicitly owns checkpoint pin/delete and native two-store windows, the first truthful implementation/evidence owner after the R1 capability declarations."
+    }
+  },
+  {
+    "id": "R9-d1",
+    "row": 9,
+    "obligation": "PC-3: A mutable native session is a locator, not an immutable resumable checkpoint; Kernel CAS alone cannot protect external mutation.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "R1.1",
+      "reason": "K0 takeover operates only on a fake immutable exchange and has no native session or Driver recovery capability declaration. R1.1 first declares the native identity/resources/lost-submit and recovery/refusal profile. K3.3 later proves actual stale-host and two-store safety; a declaration here earns none of that durable proof."
+    }
+  },
+  {
+    "id": "R9-d2",
+    "row": 9,
+    "obligation": "PC-3: Locator recovery requires an explicit Driver exclusive-ownership or reconciliation declaration.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "R1.1",
+      "reason": "K0 takeover operates only on a fake immutable exchange and has no native session or Driver recovery capability declaration. R1.1 first declares the native identity/resources/lost-submit and recovery/refusal profile. K3.3 later proves actual stale-host and two-store safety; a declaration here earns none of that durable proof."
+    }
+  },
+  {
+    "id": "R9-d3",
+    "row": 9,
+    "obligation": "PC-3: Absent that declaration, automatic takeover over a locator is refused.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "R1.1",
+      "reason": "K0 takeover operates only on a fake immutable exchange and has no native session or Driver recovery capability declaration. R1.1 first declares the native identity/resources/lost-submit and recovery/refusal profile. K3.3 later proves actual stale-host and two-store safety; a declaration here earns none of that durable proof."
+    }
+  },
+  {
+    "id": "R9-e",
+    "row": 9,
+    "obligation": "PC-4: persisted progress is pinned to the exact Runtime/definition contract revision that understands it.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.1",
+      "reason": "The control toggles compatible-code availability but exposes no definition/codec identity to distinguish wrong-version acceptance from right-version acceptance. K1.1 first owns opaque pinned progress at create/reserve/dispatch; K3.3 later proves checkpoint-specific persistent version windows."
+    }
+  },
+  {
+    "id": "R10-d1",
+    "row": 10,
+    "obligation": "LP-3: ordinary corrective input cannot withdraw an already-accepted Effect intent.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.1",
+      "reason": "R10-c observes accepted Outcome progress, but K0 has no accepted Effect intent to retract. K2.1 first introduces immutable accepted intents and their relation to later input, so the same wording cannot be counted as tested by Outcome-only evidence."
+    }
+  },
+  {
+    "id": "R10-d2",
+    "row": 10,
+    "obligation": "LP-3: ordinary corrective input cannot invalidate an already-accepted action admission; explicit withdrawal is a separate mechanism.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.2",
+      "reason": "K0 has no admission or withdrawal command, and Effect refusal precedes both. K2.2 first orders concrete admission and withdrawal/revocation, so this separate admission assertion belongs there, not in the K0 progress-retraction transcript."
+    }
+  },
+
+  {
+    "id": "R4-b4",
+    "row": 4,
+    "obligation": "ID-6/ID-7: message operation acceptance has its own receipt, distinct from processing or sender Runtime progress.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K4.2",
+      "reason": "K0 has no mediated message operation or destination acknowledgment. K4.1 introduces child/link receipts, but 007 K4.2 first owns addressed messages, durable destination acceptance and recoverable sender settlement, so a child receipt cannot cover this boundary instance."
+    }
+  },
+  {
+    "id": "R1-h",
+    "row": 1,
+    "obligation": "ID-6: a receipt proves only its own acceptance boundary and never later Effect success.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K2.3",
+      "reason": "The K0 port carries create/Outcome receipt tokens but no Effect success/certainty evidence against which an over-claim could be discriminated. K2.3 first implements result certainty and settlement, where admission/Outcome receipts must not be consumed as proof of action success."
+    }
+  },
+  {
+    "id": "R2-e1",
+    "row": 2,
+    "obligation": "ID-3: the dispatched base progress and Runtime input stay pinned for redelivery/takeover, beyond the observed Event batch.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.1",
+      "reason": "K0 observes the Event IDs in dispatchedBatch and accepted progress, but has no Runtime-side dispatched progress/input observation. K1.1 first implements opaque pinned progress and Driver dispatch; unchanged stored progress alone cannot prove the delivered payload stayed pinned."
+    }
+  },
+  {
+    "id": "R2-e2",
+    "row": 2,
+    "obligation": "ID-3/ID-4/ID-9: takeover requires authenticated recovery permission; neither epoch nor liveness alone authorizes it.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.1",
+      "reason": "The port takeover command is already authorized by its contract, with no caller principal, recovery-permission proof or denied takeover observation. K1.1 first implements scoped dispatch ownership and retries; K3.2 later supplies lease/crash recovery, rather than turning K0 command naming into authentication evidence."
+    }
+  },
+  {
+    "id": "R2-e3",
+    "row": 2,
+    "obligation": "ID-4: the fixture imposes no cross-exchange epoch relation or concrete epoch representation.",
+    "evidence": {
+      "kind": "corpus",
+      "test": "cited-decisions.test.ts: epoch representation remains exchange-local",
+      "note": "The negative claim is about the entire fixture oracle. Existing C13 four conforming policy candidates and two takeover violations remain required; the new guard checks every schedule starts exchange-local attempt ordinals."
+    }
+  },
+  {
+    "id": "R5-j1",
+    "row": 5,
+    "obligation": "B-1: the fixture never dispatches at a bound below one or names a batch member outside accepted Events.",
+    "evidence": {
+      "kind": "corpus",
+      "test": "cited-decisions.test.ts: batches contain accepted Events under positive bounds",
+      "note": "This is a negative whole-corpus shape assertion, not proof of a candidate validator for bound zero or arbitrary forged records. Every published dispatch and accepted Event reference is checked; concrete bound/codec validation belongs to K1.1."
+    }
+  },
+  {
+    "id": "R5-j4",
+    "row": 5,
+    "obligation": "B-2: the fixture never dispatches directly from WAITING.",
+    "evidence": {
+      "kind": "corpus",
+      "test": "cited-decisions.test.ts: no dispatch while WAITING",
+      "note": "The whole-corpus invariant forbids a schedule that selects a batch while still waiting; an Event or deadline acceptance must retire it first. This is fixture protocol consistency, not a claim that a candidate could never run unscheduled internal work."
+    }
+  },
+  {
+    "id": "R5-j6",
+    "row": 5,
+    "obligation": "B-3: the fixture never treats acknowledgment as semantic obedience or parses Runtime progress to decide obedience.",
+    "evidence": {
+      "kind": "corpus",
+      "test": "cited-decisions.test.ts: no semantic-obedience protocol field",
+      "note": "The Kernel boundary does not expose a semantic-obedience judgment. The guard checks the protocol/observation shape for such a field; the independently reviewed inventory states the negative meaning and does not pretend a token scan proves arbitrary semantics."
+    }
+  },
+  {
+    "id": "R5-j7",
+    "row": 5,
+    "obligation": "B-3: a Runtime intentionally ignoring an acknowledged Event records that choice in its own progress.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.4",
+      "reason": "K0 has opaque scripted progress and no Runtime semantic decision/ignore observation. K1.4 first bridges real existing controller behavior as private Runtime machinery and ports its useful conformance; the Kernel must not inspect that content to certify obedience."
+    }
+  },
+  {
+    "id": "R5-j8",
+    "row": 5,
+    "obligation": "B-8/W-3: the fixture never carries a live generation outside WAITING or readiness without retirement and READY.",
+    "evidence": {
+      "kind": "corpus",
+      "test": "cited-decisions.test.ts: generation and readiness lifecycle",
+      "note": "The negative whole-corpus invariant checks each accepted observation and its earlier retirement. Existing scenario counterexamples own retirement writers separately; this guard rejects contradictory schedules without claiming process durability."
+    }
+  },
+  {
+    "id": "R5-j9",
+    "row": 5,
+    "obligation": "B-8: no fixture readiness survives reservation or spans two exchanges.",
+    "evidence": {
+      "kind": "corpus",
+      "test": "cited-decisions.test.ts: reservation consumes readiness",
+      "note": "This negative corpus invariant examines all dispatch observations. It does not substitute for crash evidence, which is explicitly R5-i1; takeover batch immutability remains the separate candidate-level R2-c3 owner."
+    }
+  },
+  {
+    "id": "R5-k3",
+    "row": 5,
+    "obligation": "W-1/W-4/W-5: the target fixture wait has no callback, payload selector, interleave, native work identity or Runtime-local arm.",
+    "evidence": {
+      "kind": "corpus",
+      "test": "cited-decisions.test.ts: wait grammar remains declarative",
+      "note": "This is a negative boundary-shape assertion, guarded on the declared WaitRecord and DependencyAlternative members. It earns no native containment or Runtime implementation credit; the legacy bridge remains separately assigned."
+    }
+  },
+  {
+    "id": "R5-k4",
+    "row": 5,
+    "obligation": "W-3: each registration allocates an independent generation identity, distinct in role from Execution and Activation identity.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.3",
+      "reason": "K0 supplies generation strings in its wait commands, so it can test fencing but not a Kernel generation allocator or namespace adapter. K1.3 first owns wait generation creation and the concrete representation; equal token spellings across independent namespaces are not forbidden here."
+    }
+  },
+  {
+    "id": "R5-k5",
+    "row": 5,
+    "obligation": "W-4/W-5: legacy resumptions and interleave may stay private in a compatibility Runtime, never define the target Kernel wait.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.4",
+      "reason": "K0 imports no legacy bridge and observes no private resumption machinery. K1.4 explicitly integrates the legacy bridge as Runtime-private machinery, preserving supported behavior or documenting migration/refusal, and is the first truthful behavior owner after K1.0 structural preparation."
+    }
+  },
+  {
+    "id": "R5-k6",
+    "row": 5,
+    "obligation": "W-9: a timeout Event carries stable identity, destination, semantic class and exact generation correlation.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.3",
+      "reason": "The laboratory supplies a fully formed timeoutEvent and observes only Event IDs in the mailbox/batch; it cannot inspect the candidate-minted envelope or detect a wrong payload/class behind the same ID. K1.3 first implements Kernel timeout minting and its concrete Event schema; identity retention itself is already R5-f2a."
+    }
+  },
+  {
+    "id": "R7-g2",
+    "row": 7,
+    "obligation": "CX-6: an accepted nonterminal Outcome replays its original accepted answer after cancellation, rather than being reclassified as a loser.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 20,
+      "counterexamples": [
+        "clauses/r7-g2"
+      ]
+    }
+  },
+  {
+    "id": "R2-e4",
+    "row": 2,
+    "obligation": "ID-9 case 4: submitting changed content for an old accepted exchange never revives its progress.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 16,
+      "counterexamples": [
+        "clauses/r2-e4"
+      ]
+    }
+  },
+  {
+    "id": "R3-i1",
+    "row": 3,
+    "obligation": "OA-3: a current Activation and epoch cannot accept progress from an envelope with the wrong base revision.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 13,
+      "counterexamples": [
+        "clauses/r3-i1"
+      ]
+    }
+  },
+  {
+    "id": "R5-j2",
+    "row": 5,
+    "obligation": "B-2/B-4: ordinary readiness after a consumed wait selects retained backlog in bounded acceptance order.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 12,
+      "counterexamples": [
+        "clauses/r5-j2"
+      ]
+    }
+  },
+  {
+    "id": "R5-j2b",
+    "row": 5,
+    "obligation": "B-2: an ordinary READY Execution with an empty mailbox may dispatch an empty batch.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "control-missing-checkpoint-code",
+      "stepIndex": 3,
+      "counterexamples": [
+        "clauses/r5-j2b"
+      ]
+    }
+  },
+  {
+    "id": "R5-j3",
+    "row": 5,
+    "obligation": "B-2/W-9 case 3: a wait-ended batch with room includes both its mandatory timeout and the later eligible result.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "control-stale-timer-and-lost-wake",
+      "stepIndex": 10,
+      "counterexamples": [
+        "clauses/r5-j3"
+      ]
+    }
+  },
+  {
+    "id": "R5-j3b",
+    "row": 5,
+    "obligation": "B-2: the selected wait-ended batch is presented in per-Execution acceptance order, including Events accepted after the wake.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 6,
+      "counterexamples": [
+        "clauses/r5-j3b"
+      ]
+    }
+  },
+  {
+    "id": "R5-j5",
+    "row": 5,
+    "obligation": "B-3: reservation itself acknowledges no Event from the pinned batch.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 6,
+      "counterexamples": [
+        "clauses/r5-j5"
+      ]
+    }
+  },
+  {
+    "id": "R5-k1",
+    "row": 5,
+    "obligation": "W-1: an exact Event-identity selector cannot be ignored when kind and correlation match.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 8,
+      "counterexamples": [
+        "clauses/r5-k1"
+      ]
+    }
+  },
+  {
+    "id": "R5-k1b",
+    "row": 5,
+    "obligation": "W-1: membership in the non-first member of a finite kind set can make an Event eligible.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 9,
+      "counterexamples": [
+        "clauses/r5-k1b"
+      ]
+    }
+  },
+  {
+    "id": "R5-k2",
+    "row": 5,
+    "obligation": "W-7 case 2: an already-accepted Event matching only the second alternative is found at registration.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 4,
+      "counterexamples": [
+        "clauses/r5-k2"
+      ]
+    }
+  },
+  {
+    "id": "R5-k7",
+    "row": 5,
+    "obligation": "W-9/CX-6: terminal cancellation after timeout retirement before reservation explicitly disposes the timeout Event.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 19,
+      "counterexamples": [
+        "clauses/r5-k7"
+      ]
+    }
+  },
+  {
+    "id": "R5-k7b",
+    "row": 5,
+    "obligation": "W-9/CX-6: terminal cancellation before reservation suppresses the pending timeout readiness.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 19,
+      "counterexamples": [
+        "clauses/r5-k7b"
+      ]
+    }
+  },
+
+  {
+    "id": "R9-f1",
+    "row": 9,
+    "obligation": "PC-5: unavailable checkpoint state produces an explicit hold, never empty fabricated restoration.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.3",
+      "reason": "The K0 recover command varies availableDefinitionRevisions only: it cannot remove a checkpoint or required resource independently of code availability. R9-a1/a2 discriminate the compatible-code case. 007 K3.3 explicitly owns unavailable code/checkpoint/resource recovery and two-store windows, the first truthful owner for this separate missing-state trigger."
+    }
+  },
+  {
+    "id": "R9-f2",
+    "row": 9,
+    "obligation": "PC-5: unavailable required resource produces an explicit hold, never empty fabricated restoration.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K3.3",
+      "reason": "The K0 recover command varies availableDefinitionRevisions only: it cannot remove a checkpoint or required resource independently of code availability. R9-a1/a2 discriminate the compatible-code case. 007 K3.3 explicitly owns unavailable code/checkpoint/resource recovery and two-store windows, the first truthful owner for this separate missing-state trigger."
+    }
+  },
+
+  {
+    "id": "R1-i",
+    "row": 1,
+    "obligation": "ID-2: the destination participates in subsequent input identity; the same producer and raw key at another Execution accepts a distinct input.",
+    "evidence": {
+      "kind": "scenario",
+      "scenario": "cited-decision-edges",
+      "stepIndex": 24,
+      "counterexamples": [
+        "clauses/r1-i"
+      ]
+    }
+  },
+  {
+    "id": "R3-i2",
+    "row": 3,
+    "obligation": "OA-5: a rejected classified Outcome is not silently retried automatically by the Kernel.",
+    "evidence": {
+      "kind": "assigned",
+      "packet": "K1.2",
+      "reason": "The fixture supplies every dispatch/submission command and exposes no autonomous retry count or internal Driver invocation. An unchanged observation cannot distinguish a hidden repeated dispatch. K1.2 first implements classified Outcome rejection and its dispatch/receipt integration; OA-6 unclassifiable failure is separately R3-h2."
+    }
   },
 ];

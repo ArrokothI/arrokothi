@@ -14,6 +14,7 @@
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
+import { isDeepStrictEqual } from "node:util";
 import { isEligibleUnderWait } from "./protocol-vocabulary.ts";
 import type { FixtureEvent, WaitRecord } from "./protocol-vocabulary.ts";
 import type { Command, Observation, Scenario } from "./fixture.ts";
@@ -176,7 +177,15 @@ describe("interaction: cancellation × whole-envelope rejection", () => {
           // state, never physical timer handles.
           assert.equal(after.acceptedDeadline, null, `${scenario.id}: a fenced submission accepted a deadline fact`);
           assert.deepEqual(after.waitEndedReadiness, [], `${scenario.id}: a fenced submission created a readiness`);
-          assert.equal(after.rejection?.classification, "cancellation_terminal_conflict", `${scenario.id}: wrong rejection classification after the fence`);
+          // OA-2 lookup precedes CX-6: an Outcome accepted before cancellation replays its
+          // accepted answer. The new clause-edge schedule makes this exception observable.
+          const submitted = later.command;
+          const wasAccepted = (submitted.kind === "submit_outcome" || submitted.kind === "resubmit_outcome") &&
+            scenario.steps.slice(0, index).some(prior => prior.command.kind === "submit_outcome" &&
+              isDeepStrictEqual(prior.command.outcome, submitted.outcome) &&
+              prior.expect.observation.rejection === null);
+          if (wasAccepted) assert.equal(after.rejection, null, `${scenario.id}: accepted replay reclassified as loser`);
+          else assert.equal(after.rejection?.classification, "cancellation_terminal_conflict", `${scenario.id}: wrong rejection classification after the fence`);
         }
       }
     }

@@ -8,7 +8,17 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 13.** Revision 13 corrects revision 12 after round-13 review
+**Contract revision 14.** Revision 14 fixes K02-R14-01 forward from preserved C13/H13,
+under [review-14.md](review-14.md). [The complete cited-decision reconciliation](cited-decision-reconciliation.md)
+indexes all 51 decisions cited by all ten §11 rows: 366 clause references resolve to single assertion
+owners, including explicit later assignments where the port cannot observe a fact. Missing schedules
+are not used as a reason to assign observable clauses away; 14 additional discriminators address the
+concrete dependent gaps this full sweep exposed, with no new port fields or commands. Source/inventory
+seals and deletion controls guard against silent omission but do not claim mechanical semantic
+completeness. C13's epoch relation, Activation-ID adaptation, R5-c2/c2b/c2c and prior accepted corrections
+stand. C1–C7/C9 are offered for Round 15 review, not self-accepted; C8 remains `BLOCKED_EXTERNAL`.
+
+Revision 13 corrects revision 12 after round-13 review
 (K02-R13-01, K02-R13-02), forward from C12/H12; round 12 recorded no blocking local finding and its
 other closures stand. Both findings sit inside subsystems earlier rounds had already corrected, so
 012's reconstruction rule governs. C7's representation rule now covers the writer epoch, which ID-4
@@ -308,6 +318,14 @@ in advance. No E0 acceptance may be claimed, implied or self-granted, and nothin
 benchmark repository by this packet.
 
 ### K0.2-C9 — the coverage machinery proves assertions, not row numbers or prose groupings
+
+**Revision-14 reconciliation requirement:** `cited-decisions.ts` records every cited decision's
+independently distinguishable clauses, with one reference to an actual `K0_OBLIGATIONS` owner per
+clause. Repeated semantic facts reference their existing owner, not duplicated scenarios or invented
+`shared` entries. Each later assignment names the absent port surface and the first implementing 007
+packet; aggregate gates cannot substitute for earlier real owners. Negative whole-corpus claims use
+corpus checks with their scope stated. The source/inventory guard makes deletion review-visible and
+never claims to derive semantics from prose. See [audit and ownership rationale](cited-decision-reconciliation.md).
 
 **Source:** 001 K0 exit ("an observable acceptance/rejection result" for each boundary); round-1
 finding K02-R1-01 as reopened by round-3 finding K02-R3-01; K0.1 worksheet §11 row 5 ("Each of these

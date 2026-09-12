@@ -978,3 +978,27 @@ describe prior corrections' historical deltas, not this revision. Historical rep
 unchanged. C8 remains `BLOCKED_EXTERNAL` — the benchmark's `e0-claims-ownership-and-public-controls`
 branch records `ownerDecision.state: "pending"` and its `main` is still the pre-E0 revision — so K0
 stays open and K1.0 stays unreleased.
+
+
+## 20. Round-14 complete cited-decision reconciliation
+
+[Round-14 reconciliation](cited-decision-reconciliation.md) audits all 51 decisions cited by the ten
+K0.1 §11 rows. Its explicit executable inventory has 366 clause references, not 366 distinct tests:
+repeated facts point to their existing assertion owner. Every later assignment explains the absent
+port surface and the first implementing 007 packet. K02-R14-01 is offered as corrected for independent
+review; neither inventory seals nor local fixture PASS are acceptance.
+
+The new `cited-decision-edges` scenario adds 25 steps through existing commands only (rows 1/2/3/5/7):
+destination-scoped input; selector equality and an early last-alternative match; retained ordinary
+backlog and ordered wait-ended batches; stale base/exchange submissions; cancellation after timeout
+retirement and accepted-Outcome replay. Its 12 counterexamples plus two at existing observation
+points bring the violation corpus to 124. No existing counterexample, command expectation or epoch
+behavior changes. The missing-code control additionally attributes its existing empty ordinary batch
+to row 5. The cancellation interaction sweep recognizes accepted replay before applying the losing
+Outcome fence; this is CX-6's existing rule, not a new exception.
+
+**Current totals:** 208 obligations = 124 scenario + 4 shared + 8 corpus + 72 assigned;
+124 violating transcripts; 21 atomicity notes; 14 scenarios / 133 steps. Per-row counts are
+17, 15, 26, 17, 70, 5, 24, 13, 15, 6. The 123/110/108 totals in §19 describe Round 13 only.
+C8 remains `BLOCKED_EXTERNAL`: the benchmark owner decision at the unchanged pinned E0 branch is
+pending. No E0 acceptance, K1 implementation, merge or successor release follows from these totals.
