@@ -5,11 +5,13 @@ review identities and eligibility. The [milestone roadmap](001-current-status-an
 binding: splitting work does not remove any exit requirement or change canonical semantics.
 
 K0.1 is independently **ACCEPTED**, integrated and owner-closed; see the
-[integration receipt](work/K0.1/integration-01.md). All successors remain **PLANNED**. The owner
-holds K0.2 pending review and improvement of the coding/review workflow; this process work does not
-release it. Proposed sequence: K0.2 → K1.0 structural preparation → K1.1. K1.0 is the first K1
-implementation packet, so the benchmark-owned E1 fixture preparation precedes it as well as K1.1;
-K1.0 is also unimplemented and unreleased. No benchmark acceptance or E0–E6 status is changed here.
+[integration receipt](work/K0.1/integration-01.md). The post-K0.1 process review is also independently
+**ACCEPTED** at H4 and integrated; see its [integration receipt](work/K0.1-process-review/integration-01.md).
+All successors remain **PLANNED**. The owner explicitly holds K0.2 after that process integration and
+sets `next_release: none`; integration does not release it. Proposed sequence: K0.2 → K1.0 structural
+preparation → K1.1. K1.0 is the first K1 implementation packet, so the benchmark-owned E1 fixture
+preparation precedes it as well as K1.1; K1.0 is also unimplemented and unreleased. No benchmark
+acceptance or E0–E6 status is changed here.
 
 ## How to read a packet
 
@@ -77,7 +79,6 @@ relative to `docs/detail-design/`; source hints are relative to repository root.
 **Dependencies:** K0.1. **Scope:** Build the smallest public delayed-Runtime/typed-output/input-wait fixture, independent sink and direct baseline specification. Include both public application shapes and unsafe/state-loss control specifications; obtain pinned E0 evidence.
 
 **Acceptance:** All K0 exit requirements and E0 ownership observations covered; fixture preparation is explicitly distinguished from later K1 candidate success.
-
 ### K1.0 — Target boundary and legacy quarantine
 
 **Dependencies:** K0.2, and the benchmark-owned E1 fixture preparation required before K1
@@ -305,7 +306,7 @@ there is no second editable “done” checkbox in 001.
 | Packet | Status | Report / review / candidate |
 |---|---|---|
 | K0.1 | ACCEPTED | Round 12 accepted by [review-12.md](work/K0.1/review-12.md), OpenAI GPT-5.6 Sol (High), 2026-09-11. Accepted H12 `bab7bf6635781e6d2f9b0e8e333f58440ae0b047`; clean-validated C12 `7a51801afcdf5c13d481e92c5d219a8c9be7c0eb`; base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`. K0.1-C1–C6 PASS; no findings. Reviewer inspected pinned GitHub source/diffs and implementation-12 evidence; no shell commands independently rerun. Acceptance is for H12 only. Integrated on main as `42731300266eea00a9a24d867d5e82d9887c280d` (PR #19); owner considers K0.1 merged/closed. [Integration and discussion receipt](work/K0.1/integration-01.md) separately verifies A12 and the merge. `next_release: none`; workflow review/improvement precedes any K0.2 release. |
-| K0.2 | PLANNED | Unimplemented and unreleased. Owner hold: review/improve workflow before a separate explicit release; see K0.1 integration receipt. |
+| K0.2 | PLANNED | Unimplemented and unreleased. Owner hold remains after the accepted/integrated [process review](work/K0.1-process-review/integration-01.md); `next_release: none`. Separate explicit owner release is required. |
 | K1.0 | PLANNED | Target boundary/legacy quarantine proposal; K0.2 plus the benchmark-owned E1 fixture preparation required before K1 implementation are prerequisites, and separate explicit owner release is required. No implementation; no E1 credit. |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
