@@ -185,6 +185,22 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, rejection: null }),
   },
   {
+    // Round-10 review finding K02-R10-03. The rejected-mints-none half for the duplicate-conflict
+    // writer: the conflict is correctly recorded and no conflicting progress is merged (R3-b/b2), but
+    // a fresh receipt is minted for the refused request beside the correct rejection. Single
+    // receipt-only move, distinct from the rejection half (rejection) and the merge half (progress
+    // group) at the same step.
+    id: "control-duplicate/conflict-mints-a-fresh-receipt",
+    scenarioId: "control-duplicate-conflicting-outcome",
+    plausibleBug:
+      "the conflict path records the rejection correctly and withholds conflicting progress, but the answer " +
+      "writer mints a receipt for every submission it sees, including refused conflicts",
+    forbiddenBy: "ID-6 with §11 row 3: a rejected conflict mints no new receipt; the field retains the original accepted receipt beside the recorded rejection",
+    stepIndex: 4,
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:outcome:act-1#conflict" }),
+  },
+  {
     id: "control-stale-timer/lost-wake-on-empty-dependency-list",
     scenarioId: "control-stale-timer-and-lost-wake",
     plausibleBug:
@@ -275,9 +291,65 @@ export const VIOLATIONS: readonly Violation[] = [
       "recovery treats a takeover as a fresh exchange and mints a new Activation ID, which breaks the retransmission " +
       "identity a later Outcome is checked against (ID-9 cases 2-3)",
     forbiddenBy: "ID-9 cases 2-3: a takeover advances the writer epoch under the same Activation ID",
-    stepIndex: 4,
+    stepIndex: 6,
     mustNameFields: ["activationId"],
     mutate: (observation) => ({ ...observation, activationId: "act-2" }),
+  },
+  {
+    // Round-10 review finding K02-R10-02. The third half of ID-3's takeover rule: the takeover keeps
+    // the correct Activation ID and advances the epoch correctly, but repins the batch to include
+    // mailbox content (in-2) accepted after dispatch. Execution-protocol.md forbids exactly this:
+    // "it cannot replace input with new mailbox content under the old Activation ID". Single
+    // activation-group field, so no atomicity note is owed; the ID half (R2-c1) and epoch half (R2-c2)
+    // at the same step move different fields.
+    id: "identity-activation/takeover-repins-the-pinned-batch",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "takeover re-reads the mailbox instead of preserving the pinned exchange input, so the replacement " +
+      "attempt pins a new batch covering the late arrival in-2 under the old Activation ID",
+    forbiddenBy: "ID-3 with §11 row 2: a takeover preserves the same immutable exchange input; it cannot replace input with new mailbox content under the old Activation ID",
+    stepIndex: 6,
+    mustNameFields: ["dispatchedBatch"],
+    mutate: (observation) => ({ ...observation, dispatchedBatch: ["in-1", "in-2"] }),
+  },
+  {
+    // Round-10 review finding K02-R10-02. ID-9 case 1 / ID-3 ordinary redelivery was unrepresentable
+    // before `redeliver_dispatch` existed. Each preserved fact gets its own single-field transcript at
+    // the redelivery step (index 5), which runs after the late arrival so a wrong repin has content to
+    // include. A redelivery that mints a new ID treats the same attempt as a new exchange; one that
+    // bumps the epoch treats it as a new attempt; one that repins treats it as new input. All three
+    // keep the other two facts correct, so the field sets are distinct and no atomicity note is owed.
+    id: "identity-activation/redelivery-mints-a-new-activation-id",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "delivery retry is treated as a fresh exchange and mints a new Activation ID, so an Outcome submitted " +
+      "for the original ID would validate against the wrong exchange",
+    forbiddenBy: "ID-9 case 1 with ID-3: ordinary Driver redelivery of the same dispatch preserves both the Activation ID and the writer epoch; it is not a new attempt",
+    stepIndex: 5,
+    mustNameFields: ["activationId"],
+    mutate: (observation) => ({ ...observation, activationId: "act-9" }),
+  },
+  {
+    id: "identity-activation/redelivery-advances-the-writer-epoch",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "every delivery is treated as a new attempt and bumps the writer epoch, so the original writer's " +
+      "Outcome would validate as stale merely because the network retried",
+    forbiddenBy: "ID-4 with ID-9 case 1: the epoch is bumped only by an authenticated takeover decision, never by ordinary retry of the same attempt",
+    stepIndex: 5,
+    mustNameFields: ["writerEpoch"],
+    mutate: (observation) => ({ ...observation, writerEpoch: 2 }),
+  },
+  {
+    id: "identity-activation/redelivery-repins-the-pinned-batch",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "redelivery re-reads the mailbox instead of preserving dispatched input, so the same attempt pins a " +
+      "new batch covering the late arrival in-2",
+    forbiddenBy: "execution-protocol.md with ID-3: delivery retries preserve dispatched input; a redelivery cannot pick up later mailbox content",
+    stepIndex: 5,
+    mustNameFields: ["dispatchedBatch"],
+    mutate: (observation) => ({ ...observation, dispatchedBatch: ["in-1", "in-2"] }),
   },
   {
     id: "identity-activation/new-exchange-reuses-the-resolved-activation-id",
@@ -286,7 +358,7 @@ export const VIOLATIONS: readonly Violation[] = [
       "the Activation ID is derived from the Execution alone, so a genuinely new exchange after the prior one resolved " +
       "carries the same ID and a stale Outcome for the old exchange would validate against the new one",
     forbiddenBy: "§11 row 2: two semantically different dispatches never carry the same Activation ID",
-    stepIndex: 7,
+    stepIndex: 9,
     mustNameFields: ["activationId"],
     mutate: (observation) => ({ ...observation, activationId: "act-1" }),
   },
@@ -336,6 +408,65 @@ export const VIOLATIONS: readonly Violation[] = [
     stepIndex: 4,
     mustNameFields: ["acceptedDeadline"],
     mutate: (observation) => ({ ...observation, acceptedDeadline: 5_000 }),
+  },
+  {
+    // Round-10 review finding K02-R10-01. The wait/lifecycle half at the same whole-envelope-validation
+    // writer as R3-c4 above: the malformed future-deadline `await` is correctly refused with
+    // `malformed_envelope`, the Activation and pinned batch stay intact, no deadline fact and no
+    // readiness leak — but the wait-registration writer ran before validation and parked the Execution
+    // on the refused declaration. W-3's definitional link (a live generation exists exactly while
+    // WAITING) is preserved by the leak itself, which is what makes it a single lifecycle-group move
+    // rather than two independent decisions. The CX-6 writer's wait half (R7-a6b) is a different
+    // rejection writer and cannot stand in for this one.
+    id: "envelope/malformed-await-installs-a-wait",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "wait registration commits outside the whole-envelope-validation fence, so a malformed `await` " +
+      "parks the Execution on its refused declaration while the envelope is otherwise correctly refused " +
+      "with no deadline fact and no readiness",
+    forbiddenBy: "OA-5 with §11 row 3: a rejected Outcome — a malformed envelope included — creates no wait/deadline/readiness/next-state transition; a malformed `await` registers no wait and moves no lifecycle",
+    stepIndex: 4,
+    mustNameFields: ["state", "liveWaitGeneration"],
+    mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "g-bad" }),
+  },
+  {
+    // Round-10 review finding K02-R10-01. The next-state half at the whole-envelope-validation writer:
+    // the duplicate-emission envelope already carries a valid `next: continue`, so a next-state writer
+    // outside the fence can move the Execution to READY while the envelope is otherwise correctly
+    // refused with no progress, no emissions, no acknowledgment and no Activation resolution. Single
+    // field, single lifecycle-group move; the CX-6 writer's next-state half (R7-a6) is a different
+    // fence and cannot stand in for this one.
+    id: "envelope/rejected-continue-commits-its-next-state",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "the loser's next step is applied because the lifecycle writer runs outside the whole-envelope-validation " +
+      "fence, so a correctly refused `continue` envelope with a duplicate emission key nevertheless moves the " +
+      "Execution to READY",
+    forbiddenBy: "OA-5 with §11 row 3: a rejected Outcome creates no next-state transition; a refused `continue` leaves the Execution RUNNING with its Activation still pinned",
+    stepIndex: 2,
+    mustNameFields: ["state"],
+    mutate: (observation) => ({ ...observation, state: "READY" }),
+  },
+  {
+    // Round-10 review finding K02-R10-01. The readiness-only half at the whole-envelope-validation
+    // writer, on the new minimal schedule that submits a *valid* wait inside an envelope malformed for
+    // an unrelated reason (duplicate emission key). The envelope is correctly refused, correctly
+    // registers no wait, correctly accepts no deadline and correctly stays RUNNING — but a readiness
+    // writer outside the fence arms a wait-ended readiness for the valid generation it names.
+    // `waitEndedReadiness` is deliberately ungrouped (round 5), so this single-field move needs no
+    // atomicity note; bundling it with lifecycle or deadline to avoid another schedule would hide the
+    // independence this packet exists to prove. The CX-6 writer's readiness half (R7-a6d) is a
+    // different fence and cannot stand in for this one.
+    id: "envelope/valid-wait-in-malformed-envelope-arms-readiness",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "a readiness writer outside the whole-envelope-validation fence arms a wait-ended readiness for the " +
+      "valid generation named in a refused envelope, while the Execution correctly stays RUNNING with no " +
+      "wait registered and no deadline fact",
+    forbiddenBy: "OA-5 with §11 row 3: a rejected Outcome creates no readiness; B-8, readiness is created only by a wait ending, never by a refused envelope naming a valid wait",
+    stepIndex: 7,
+    mustNameFields: ["waitEndedReadiness"],
+    mutate: (observation) => ({ ...observation, waitEndedReadiness: [{ generation: "g-good", species: "event" }] }),
   },
   {
     id: "subscription-deadline/backlog-takes-the-slot-from-the-timeout",
@@ -592,6 +723,68 @@ export const VIOLATIONS: readonly Violation[] = [
     mustNameFields: ["rejection"],
     mutate: (observation) => ({ ...observation, rejection: null }),
   },
+  {
+    // Round-10 review finding K02-R10-03. ID-2 scopes input identity by producer namespace +
+    // destination + producer request key, not by raw key text. A candidate globally deduplicating raw
+    // key text returns the first producer's Execution for the second producer's same-text key. Single
+    // executionId-group field; the receipt half below moves a different field at the same step.
+    id: "identity-producer/global-dedup-collapses-execution-id",
+    scenarioId: "identity-producer-scope",
+    plausibleBug:
+      "the create path keys its idempotence index on raw request-key text alone, ignoring the authenticated " +
+      "producer namespace, so prod-b reusing prod-a's key text is answered with prod-a's Execution instead of a fresh one",
+    forbiddenBy: "ID-2 with §11 row 1: input identity is producer namespace + destination + producer request key; two producers reusing one raw key text do not collide",
+    stepIndex: 1,
+    mustNameFields: ["executionId"],
+    mutate: (observation) => ({ ...observation, executionId: "exec-pa" }),
+  },
+  {
+    // The receipt half of the same global-dedup bug: same raw key text reuses the first producer's
+    // receipt instead of minting a distinct one for a distinct accepted create. Single answer-group
+    // field, distinct set from the ID half above, so no atomicity note is owed and the split is not
+    // cosmetic. Preserves K02-R5-01's per-family separation: this collapses two receipts within the
+    // receipt family, not a receipt onto an Activation ID.
+    id: "identity-producer/global-dedup-collapses-receipt",
+    scenarioId: "identity-producer-scope",
+    plausibleBug:
+      "the same global raw-key index returns the first producer's receipt for the second producer's fresh " +
+      "create, so two distinct accepted creates share one receipt",
+    forbiddenBy: "ID-6/ID-7 with §11 row 1: distinct accepted creates never collapse onto one receipt; a new acceptance mints a new receipt, and exact replay alone returns the same one",
+    stepIndex: 1,
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:create:req-shared:prod-a" }),
+  },
+  {
+    // Round-10 review finding K02-R10-03. Different request keys are different requests even for one
+    // producer: X (req-x) and Y (req-y) are already distinct accepted creates with distinct receipts in
+    // the delayed-Runtime schedule. A candidate keying receipts by Execution alone, or by a global
+    // counter that restarts, collapses Y's onto X's while keeping its Execution ID correct. Single
+    // receipt-only move at Y's creation step.
+    id: "identity-create/different-keys-collapse-onto-one-receipt",
+    scenarioId: "delayed-runtime-non-blocking",
+    plausibleBug:
+      "receipts are keyed by a per-laboratory counter that restarts per scenario half, or by Execution " +
+      "short name, so Y's fresh create reuses X's receipt instead of minting a distinct one",
+    forbiddenBy: "ID-6/ID-7 with §11 row 1: distinct accepted creates never collapse onto one receipt",
+    stepIndex: 1,
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:create:req-x" }),
+  },
+  {
+    // The rejected-mints-none half for the create-conflict writer: the conflict is correctly recorded
+    // as `duplicate_conflict` with the accepted content unchanged (R1-b1/b2), but a fresh receipt is
+    // minted for the refused request beside it. Single receipt-only move, distinct from the rejection
+    // half (rejection) and the edit half (queued) at the same step.
+    id: "identity-create/conflict-mints-a-fresh-receipt",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "the conflict path records the rejection correctly but the answer writer mints a receipt for every " +
+      "request it sees, including refused ones, so a rejected create looks accepted to a caller holding the token",
+    forbiddenBy: "ID-6 with §11 row 1: a rejected create mints no new receipt; the field retains the original accepted receipt beside the recorded conflict",
+    stepIndex: 2,
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:create:req-x-2" }),
+  },
 
   // -- Row 2: the batch the Outcome is checked against, and the epoch ---------
   {
@@ -601,7 +794,7 @@ export const VIOLATIONS: readonly Violation[] = [
       "acknowledgment is derived from the Events the Outcome explicitly references rather than from the pinned batch, " +
       "so a reserved Event the Runtime did not mention stays unacknowledged and is re-delivered in the next batch",
     forbiddenBy: "B-3 and §11 row 2: an accepted Outcome acknowledges its *entire* pinned batch, which is what makes the batch checkable exactly",
-    stepIndex: 7,
+    stepIndex: 8,
     mustNameFields: ["acknowledged"],
     mutate: (observation) => ({ ...observation, acknowledged: [] }),
   },
@@ -612,7 +805,7 @@ export const VIOLATIONS: readonly Violation[] = [
       "takeover re-sends the pinned Activation without advancing the epoch, so the superseded writer's Outcome still " +
       "validates and two writers can commit progress for one exchange",
     forbiddenBy: "ID-9 cases 2-3: a takeover advances the writer epoch under the same Activation ID; keeping the ID is only half the rule",
-    stepIndex: 4,
+    stepIndex: 6,
     mustNameFields: ["writerEpoch"],
     mutate: (observation) => ({ ...observation, writerEpoch: 1 }),
   },
@@ -639,6 +832,22 @@ export const VIOLATIONS: readonly Violation[] = [
     stepIndex: 2,
     mustNameFields: ["acknowledged"],
     mutate: (observation) => ({ ...observation, acknowledged: ["in-1"] }),
+  },
+  {
+    // Round-10 review finding K02-R10-03. The rejected-mints-none half for the whole-envelope-validation
+    // writer (different writer from the conflict check above): the malformed envelope is correctly
+    // refused with no progress, no emissions and no acknowledgment (R3-c1/c1b/c2), correctly stays
+    // RUNNING with no next-state change (R3-c6), but a fresh receipt is minted beside the correct
+    // rejection. Single receipt-only move at step 2, distinct from every other half there.
+    id: "envelope/malformed-envelope-mints-a-fresh-receipt",
+    scenarioId: "control-whole-envelope-validation",
+    plausibleBug:
+      "whole-envelope validation records the malformed refusal correctly and withholds every other fact, " +
+      "but the answer writer mints a receipt for the refused submission anyway",
+    forbiddenBy: "ID-6 with §11 row 3: a rejected malformed envelope mints no new receipt; the field retains the prior accepted receipt beside the recorded rejection",
+    stepIndex: 2,
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:outcome:act-1#malformed" }),
   },
 
   // -- Row 4: the Effect-intent assertions, now observable --------------------
@@ -1258,7 +1467,7 @@ export const VIOLATIONS: readonly Violation[] = [
       "the authority check reads the exchange through a cache refreshed outside the acceptance transaction, so the " +
       "epoch the takeover just superseded is still readable as current and the old writer's Outcome commits",
     forbiddenBy: "LP-1: a policy check against local, already-accepted state ('is this Activation ID still the live one') reads the last accepted write with no eventual-consistency window",
-    stepIndex: 5,
+    stepIndex: 7,
     mustNameFields: ["progressRevision", "rejection"],
     mutate: (observation) => ({
       ...observation,
@@ -1278,6 +1487,59 @@ export const VIOLATIONS: readonly Violation[] = [
     stepIndex: 5,
     mustNameFields: ["progressRevision", "emissions"],
     mutate: (observation) => ({ ...observation, progressRevision: 0, progress: null, emissions: [] }),
+  },
+
+  // == Round-10 additions (review findings K02-R10-01..03) =====================
+  //
+  // Each exists because a decision-level re-derivation found an independently violable assertion with
+  // no candidate-level owner: OA-5's remaining whole-envelope-validation partials (R10-01, already
+  // placed near their steps above), ID-9's takeover/redelivery halves (R10-02, likewise above), and
+  // ID-6/ID-7's receipt relations beyond same-key replay (R10-03, below). The R10-01/R10-02 transcripts
+  // live near the steps they discriminate; the receipt-narrowing transcripts that need no new schedule
+  // live here so the row-1/row-2/row-10 sections above stay readable.
+  {
+    // R3-d1: distinct accepted Outcomes never collapse. The K0 trace accepts act-1 (receipt
+    // outcome:act-1 at step 4) and later act-2 (receipt outcome:act-2 at step 8); collapsing the second
+    // onto the first keeps every other fact correct. Single receipt-only move, distinct from R8-b's
+    // disposition pair and R8-b1b's disposition singleton at the same step.
+    id: "k0-trace/second-acceptance-collapses-onto-the-first-receipt",
+    scenarioId: "k0-trace",
+    plausibleBug:
+      "receipts are keyed by Execution alone rather than by accepted boundary, so the second accepted " +
+      "Outcome reuses the first acceptance's receipt",
+    forbiddenBy: "ID-6/ID-7 with §11 row 3: distinct accepted Outcomes never collapse onto one receipt; exact replay alone returns the same one",
+    stepIndex: 8,
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:outcome:act-1" }),
+  },
+  {
+    // R7-a9: the losing Outcome itself mints none. Correctly stays CANCELLED with the correct CX-6
+    // rejection, no progress, no emissions and no acknowledgment (R7-a2/a3/a4), but mints a fresh
+    // acceptance receipt beside it. Single receipt-only move at step 3, distinct from every other half
+    // there. R7-b owns the same fact for the *retry*; this owns it for the losing submission itself.
+    id: "control-cancel/losing-outcome-mints-a-receipt",
+    scenarioId: "control-cancel-versus-complete",
+    plausibleBug:
+      "the fence records the CX-6 rejection correctly and withholds every other fact, but the answer " +
+      "writer mints a receipt for the refused losing submission anyway",
+    forbiddenBy: "ID-6 with §11 row 7 and CX-6: a rejected losing Outcome mints no acceptance receipt; OA-2's receipt rule does not apply because no Outcome was accepted",
+    stepIndex: 3,
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:outcome:act-1" }),
+  },
+  {
+    // R10-a2: the stale-writer fence mints none. Correctly rejected as `stale_exchange` with no progress
+    // (R10-a/R2-c4's shared admission half), but a fresh receipt minted beside the correct rejection.
+    // Single receipt-only move at step 7, distinct from R10-a's four-field admission.
+    id: "identity-activation/stale-rejection-mints-a-receipt",
+    scenarioId: "identity-create-and-activation",
+    plausibleBug:
+      "the stale-epoch check records the rejection correctly and withholds progress, but the answer writer " +
+      "mints a receipt for the refused stale submission beside it",
+    forbiddenBy: "ID-6 with ID-9 case 3 and LP-1: a rejected stale-writer Outcome mints no acceptance receipt; the field retains the prior accepted receipt",
+    stepIndex: 7,
+    mustNameFields: ["receipt"],
+    mutate: (observation) => ({ ...observation, receipt: "receipt:outcome:act-1" }),
   },
 ];
 

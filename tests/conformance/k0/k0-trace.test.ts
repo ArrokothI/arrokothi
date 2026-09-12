@@ -154,6 +154,8 @@ describe("K0 trace: identity and forbidden mutations", () => {
     // that scenario's, and attribution has to say so. Row 10 was added under round-3 finding
     // K02-R3-01: LP-3 — ordinary corrective input never withdraws an already-accepted Outcome — is
     // observed at this trace's step 5, where unrelated input arrives after an accepted Outcome.
-    assert.deepEqual(k0Trace.k0BoundaryRows, [2, 5, 6, 8, 10]);
+    // Row 3's distinct-receipts half (R3-d1) was added under round-10 finding K02-R10-03: act-1 and
+    // act-2 are already distinct accepted Outcomes with distinct receipts.
+    assert.deepEqual(k0Trace.k0BoundaryRows, [2, 3, 5, 6, 8, 10]);
   });
 });

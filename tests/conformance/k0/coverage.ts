@@ -229,13 +229,58 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     obligation: "It is never silently accepted as an edit: the accepted content is unchanged by the conflicting request.",
     evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 2, counterexamples: ["identity-create/same-key-different-content-applied-as-an-edit"] },
   },
+  {
+    // Added by round-10 review finding K02-R10-03. ID-2 scopes input identity by authenticated
+    // producer namespace + destination + producer request key. The prior fixture carried no
+    // producer/caller dimension, so a candidate globally deduplicating raw key text passed everything.
+    // Two different producers (`prod-a`, `prod-b`) reuse one raw key text (`req-shared`) for different
+    // Executions; conformingly each is a fresh accepted create. Each half below is independently
+    // violable — a global index can return the first Execution's ID while minting a fresh receipt, or
+    // mint no fresh ID while reusing the first receipt — so ID and receipt get separate single-field
+    // transcripts at the same step with distinct field sets. Preserves K02-R5-01: both collapse within
+    // their own family (Execution ID is fixture-supplied laboratory data compared literally; receipts
+    // use the receipt-family bijection), never across families.
+    id: "R1-c1",
+    row: 1,
+    obligation: "Two different producers reusing the same raw request-key text do not collide: each gets its own Execution ID (ID-2).",
+    evidence: { kind: "scenario", scenario: "identity-producer-scope", stepIndex: 1, counterexamples: ["identity-producer/global-dedup-collapses-execution-id"] },
+  },
+  {
+    id: "R1-c2",
+    row: 1,
+    obligation: "Those two distinct accepted creates get distinct receipts: exact replay alone returns the same receipt, and distinct requests never collapse (ID-6/ID-7).",
+    evidence: { kind: "scenario", scenario: "identity-producer-scope", stepIndex: 1, counterexamples: ["identity-producer/global-dedup-collapses-receipt"] },
+  },
+  {
+    // Added by round-10 review finding K02-R10-03, re-deriving ID-6/ID-7 at the create boundary beyond
+    // same-key replay (R1-a2) and cross-producer same-text distinctness (R1-c2). Different request keys
+    // are different requests and never collapse onto one receipt, even when the Executions are otherwise
+    // unrelated. The delayed-Runtime scenario already creates X (req-x) and Y (req-y) with distinct
+    // receipts; the violating transcript collapses Y's onto X's while keeping its Execution ID correct.
+    // Single answer-group field, so no atomicity note is owed.
+    id: "R1-d1",
+    row: 1,
+    obligation: "Two creates under different request keys get different receipts: distinct accepted requests never collapse (ID-6/ID-7).",
+    evidence: { kind: "scenario", scenario: "delayed-runtime-non-blocking", stepIndex: 1, counterexamples: ["identity-create/different-keys-collapse-onto-one-receipt"] },
+  },
+  {
+    // The third half of the create receipt relation: a rejected conflict mints no new receipt (the field
+    // retains the prior accepted receipt). R1-b1 owns the recorded rejection and R1-b2 owns no edit;
+    // this owns the answer half — a candidate correctly recording the conflict while minting a fresh
+    // receipt for the refused request. Single receipt-only move beside a correct `duplicate_conflict`
+    // rejection, distinct from both halves above.
+    id: "R1-b3",
+    row: 1,
+    obligation: "A same-key/different-content conflict mints no new receipt: the field retains the original accepted receipt beside the recorded rejection (ID-6).",
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 2, counterexamples: ["identity-create/conflict-mints-a-fresh-receipt"] },
+  },
 
   // == Row 2: Activation dispatch intent =====================================
   {
     id: "R2-a",
     row: 2,
     obligation: "Two semantically different dispatches never carry the same Activation ID.",
-    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 7, counterexamples: ["identity-activation/new-exchange-reuses-the-resolved-activation-id"] },
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 9, counterexamples: ["identity-activation/new-exchange-reuses-the-resolved-activation-id"] },
   },
   {
     id: "R2-b1",
@@ -247,7 +292,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R2-b2",
     row: 2,
     obligation: "A later Outcome can be checked against that batch exactly — no less: an accepted Outcome acknowledges the entire pinned batch, not the subset it happened to reference.",
-    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 7, counterexamples: ["envelope/accepted-outcome-leaves-its-batch-unacknowledged"] },
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 8, counterexamples: ["envelope/accepted-outcome-leaves-its-batch-unacknowledged"] },
   },
   {
     id: "R2-b3",
@@ -259,13 +304,75 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R2-c1",
     row: 2,
     obligation: "An authorized takeover of a still-unresolved exchange keeps the Activation ID rather than minting a new one (ID-9 cases 2-3).",
-    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 4, counterexamples: ["identity-activation/takeover-mints-a-new-activation-id"] },
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 6, counterexamples: ["identity-activation/takeover-mints-a-new-activation-id"] },
   },
   {
     id: "R2-c2",
     row: 2,
     obligation: "That takeover advances the writer epoch, which is the other half of ID-9 and is what fences the superseded writer.",
-    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 4, counterexamples: ["identity-activation/takeover-leaves-the-writer-epoch-unchanged"] },
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 6, counterexamples: ["identity-activation/takeover-leaves-the-writer-epoch-unchanged"] },
+  },
+  {
+    // Added by round-10 review finding K02-R10-02. ID-3's takeover rule is three facts, not two:
+    // same Activation ID (R2-c1), advanced writer epoch (R2-c2), and the same immutable exchange
+    // input — "it does not invent new mailbox content under it" (execution-protocol.md). The prior
+    // schedule had no deterministic new mailbox content for a wrong repin to include, so a candidate
+    // keeping the ID and advancing the epoch correctly while repinning the batch to cover in-2 passed.
+    // `in-2` is accepted after dispatch but before takeover and stays queued-but-never-reserved, so the
+    // conforming takeover keeps `dispatchedBatch: ["in-1"]` and the violating transcript keeps the
+    // correct ID and epoch while moving only the batch to include it. Single activation-group field,
+    // so no atomicity note is owed.
+    id: "R2-c3",
+    row: 2,
+    obligation: "That takeover keeps the same immutable exchange input: the pinned batch stays ['in-1'] and cannot be repinned to include mailbox content (in-2) accepted after dispatch (ID-3).",
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 6, counterexamples: ["identity-activation/takeover-repins-the-pinned-batch"] },
+  },
+  {
+    // Added by round-10 review finding K02-R10-02. §11 row 2 explicitly invokes ID-9 cases 2-3, so
+    // row 2 needs an honest owner for case 3's stale old-epoch rejection — the same observable fact
+    // R10-a/LP-1 already evidences at the next step (old epoch submitted immediately after takeover is
+    // rejected as `stale_exchange` with no progress, because the epoch no longer matches, not because
+    // the Activation ID is wrong). One implementation bug (a stale read admitting the superseded epoch)
+    // produces both failures: accepting the stale writer violates LP-1's no-staleness-window rule and
+    // ID-9 case 3's epoch-fencing rule at once. Two transcripts differing only in prose would be worse
+    // evidence, not better, and a second transcript moving the same fields at the same step is
+    // forbidden by the no-shared-field-set guard — so this is a justified `shared` link, not a reuse
+    // of a neighbouring rule's transcript.
+    id: "R2-c4",
+    row: 2,
+    obligation: "A stale old-epoch Outcome submitted after takeover is rejected as a stale-writer conflict because the epoch no longer matches, not because the Activation ID is wrong (ID-9 case 3).",
+    evidence: {
+      kind: "shared",
+      obligation: "R10-a",
+      reason:
+        "The same observable fact as LP-1's freshness assertion, reached from row 2's identity boundary: the old writer's Outcome for the still-correct Activation ID at its superseded epoch must be rejected with `stale_exchange` and commit nothing, with the epoch staying advanced. The takeover write in the previous step is the write both rows read; admitting the stale epoch violates both decisions at once, so one transcript is the honest evidence for both.",
+    },
+  },
+  {
+    // Added by round-10 review finding K02-R10-02. ID-9 case 1 / ID-3 ordinary dispatch redelivery was
+    // unrepresentable: the vocabulary had `dispatch` (a new exchange) and `takeover` (a new attempt at
+    // the same exchange) but no "the same attempt delivered again". `redeliver_dispatch` is the
+    // smallest command that can say it, and the schedule places it after a late arrival (in-2) so a
+    // wrong repin has deterministic content to include. Each of the three preserved facts is
+    // independently violable — a redelivery can mint a new ID while keeping the epoch and batch, bump
+    // the epoch while keeping the ID and batch, or repin the batch while keeping the ID and epoch —
+    // so each gets its own single-field transcript at the same step, with distinct field sets.
+    id: "R2-d1",
+    row: 2,
+    obligation: "Ordinary redelivery of the same unresolved dispatch preserves the Activation ID: it is the identical in-flight exchange, not a new one (ID-9 case 1 / ID-3).",
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 5, counterexamples: ["identity-activation/redelivery-mints-a-new-activation-id"] },
+  },
+  {
+    id: "R2-d2",
+    row: 2,
+    obligation: "That redelivery preserves the writer epoch as well: only an authenticated takeover advances it, never an ordinary retry (ID-4).",
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 5, counterexamples: ["identity-activation/redelivery-advances-the-writer-epoch"] },
+  },
+  {
+    id: "R2-d3",
+    row: 2,
+    obligation: "That redelivery preserves the pinned immutable input too: delivery retries preserve dispatched input and cannot pick up later mailbox content (in-2).",
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 5, counterexamples: ["identity-activation/redelivery-repins-the-pinned-batch"] },
   },
 
   // == Row 3: Outcome acceptance, duplicates and conflicts ===================
@@ -346,6 +453,76 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 4, counterexamples: ["envelope/malformed-wait-leaks-its-accepted-deadline"] },
   },
   {
+    // Added by round-10 review finding K02-R10-01, completing OA-5's whole-envelope-validation family
+    // beyond R3-c4's deadline member. OA-5 forbids not only progress/emissions/acknowledgment/Effect
+    // intent/deadline but also wait, readiness and next-state transitions at a correctly rejected
+    // Outcome. Each remaining partial is independently plausible via its own writer running before or
+    // outside whole-envelope validation, so each gets its own candidate-level owner at the schedule
+    // that discriminates it honestly. None reuses the CX-6 cancellation writer (R7-a6/a6b/a6d), which
+    // is a different fence: a candidate ordering its commit between the two fences gets exactly one
+    // of each pair right.
+    id: "R3-c5",
+    row: 3,
+    obligation: "It installs no wait/lifecycle transition either (OA-5): a malformed `await` correctly refused with `malformed_envelope` leaves the Execution RUNNING with no live generation, even though the refused declaration names one.",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 4, counterexamples: ["envelope/malformed-await-installs-a-wait"] },
+  },
+  {
+    id: "R3-c6",
+    row: 3,
+    obligation: "It commits no next-state transition either (OA-5): a `continue` envelope correctly refused for a duplicate emission key leaves the Execution RUNNING with its Activation still pinned, rather than moving to READY.",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 2, counterexamples: ["envelope/rejected-continue-commits-its-next-state"] },
+  },
+  {
+    // The readiness-only half needs its own schedule because every other rejected await in this
+    // scenario is malformed or absent: arming a readiness for g-bad/g-bad-2/g-bad-3 or for no wait at
+    // all would model a doubly-wrong candidate (readiness for a generation that never existed) rather
+    // than the independently plausible partial — a readiness writer leaking for a valid generation
+    // while registration, deadline and lifecycle correctly stay refused. The new step submits a valid
+    // subscription-only wait (g-good) inside an envelope malformed for an unrelated reason (duplicate
+    // emission), so only readiness leaks. `waitEndedReadiness` is deliberately ungrouped, so no
+    // atomicity note is owed; bundling it with lifecycle or deadline to avoid another schedule is
+    // exactly what this entry exists to forbid.
+    id: "R3-c7",
+    row: 3,
+    obligation: "It leaves no wait-ended readiness behind either (OA-5): even a valid wait named in a refused envelope creates no readiness, so a correct `malformed_envelope` refusal with no wait, no deadline and RUNNING still has empty readiness.",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 7, counterexamples: ["envelope/valid-wait-in-malformed-envelope-arms-readiness"] },
+  },
+  {
+    // Added by round-10 review finding K02-R10-03, re-deriving ID-6/ID-7 at the Outcome boundary. Exact
+    // replay returns the same receipt (R3-a1); distinct accepted Outcomes never collapse (this entry);
+    // rejected Outcomes mint none (R3-b3/R3-c8 below). The K0 trace already accepts act-1 (receipt
+    // outcome:act-1) and later act-2 (receipt outcome:act-2) with distinct tokens; the violating
+    // transcript collapses the second onto the first while keeping everything else correct. Single
+    // answer-group field, distinct from R8-b's disposition pair and R8-b1b's disposition singleton at
+    // the same step.
+    id: "R3-d1",
+    row: 3,
+    obligation: "Two different accepted Outcomes get different receipts: distinct accepted boundaries never collapse onto one receipt (ID-6/ID-7).",
+    evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 8, counterexamples: ["k0-trace/second-acceptance-collapses-onto-the-first-receipt"] },
+  },
+  {
+    // The rejected-mints-none half for the duplicate-conflict writer: the conflict is correctly recorded
+    // as `duplicate_conflict` with no progress merged (R3-b/R3-b2), but the answer writer mints a fresh
+    // receipt for the refused request beside it. Single receipt-only move, distinct from the rejection
+    // half (rejection) and the merge half (progress group) at the same step.
+    id: "R3-b3",
+    row: 3,
+    obligation: "A same-identity/different-content conflict mints no new receipt: the field retains the original accepted receipt beside the recorded rejection (ID-6).",
+    evidence: { kind: "scenario", scenario: "control-duplicate-conflicting-outcome", stepIndex: 4, counterexamples: ["control-duplicate/conflict-mints-a-fresh-receipt"] },
+  },
+  {
+    // The rejected-mints-none half for the whole-envelope-validation writer (different writer from the
+    // conflict check above): a malformed envelope correctly refused with `malformed_envelope`, no
+    // progress, no emissions and no acknowledgment, but a fresh Outcome receipt minted beside it.
+    // Single receipt-only move at step 2, distinct from progress/emissions/acknowledgment/next-state
+    // halves there. The cancellation fence's receipt half (R7-a9) and the stale writer's (R10-a2) are
+    // different fences and get their own owners below.
+    id: "R3-c8",
+    row: 3,
+    obligation: "A malformed envelope mints no new receipt either: the field retains the prior accepted receipt beside the recorded `malformed_envelope` rejection (ID-6).",
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 2, counterexamples: ["envelope/malformed-envelope-mints-a-fresh-receipt"] },
+  },
+  {
     id: "R3-c3",
     row: 3,
     obligation: "It leaves no Effect intent: a partway acceptance failure creates no accepted intent or proposal-key binding.",
@@ -383,6 +560,46 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 4,
     obligation: "Nothing is physically attempted against the outside world, independently of what the candidate reports about itself.",
     evidence: { kind: "scenario", scenario: "effect-refusal-and-sink-attribution", stepIndex: 2, counterexamples: ["effect-refusal/refusal-claimed-while-the-sink-was-called"] },
+  },
+  {
+    // Added by round-10 review finding K02-R10-03. ID-6/ID-7 name six receipt-bearing boundaries; K0.2
+    // observes opaque receipts only for creation and Outcome acceptance (rows 1 and 3). The remaining
+    // three — Effect admission, Effect settlement and child/message operation — have no observable K0
+    // case while K1 refuses Effects outright (EF-1/EF-2) and has no composition surface. Fabricating K2
+    // envelopes, intents or child/message operations in K0.2 to mint such receipts would invent state the
+    // protocol says cannot exist. Each is therefore explicitly assigned with its governing owner, not
+    // silently omitted while claiming row-level completeness.
+    id: "R4-b1",
+    row: 4,
+    obligation: "Effect-admission receipts (ID-6/ID-7 fourth boundary): no K0 case while K1 refuses Effects.",
+    evidence: {
+      kind: "assigned",
+      packet: "K2.2",
+      reason:
+        "EF-1/EF-2 refuse every K1 Outcome proposing an Effect at whole-envelope validation (OA-3) before any intent, ID or proposal-key binding exists, so no Effect intent is ever created for admission to accept. Admission (kernel.md Acceptance/atomicity: current policy/consent decision and attempt intent under current dispatch ownership) is a K2-introduced boundary that does not exist yet. 007 assigns concrete admission to K2.2.",
+    },
+  },
+  {
+    id: "R4-b2",
+    row: 4,
+    obligation: "Effect-settlement receipts (ID-6/ID-7 fifth boundary): no K0 case while K1 refuses Effects.",
+    evidence: {
+      kind: "assigned",
+      packet: "K2.3",
+      reason:
+        "Same K1 refusal as R4-b1: with no admitted intent there is nothing to settle, and settlement (authenticated evidence, action state, result Event and recoverable readiness) never runs. 007 assigns trusted attempt evidence, settlement and required-work accounting to K2.3. Fabricating a settlement receipt in K0.2 would require inventing the admitted intent it settles.",
+    },
+  },
+  {
+    id: "R4-b3",
+    row: 4,
+    obligation: "Child/message-operation receipts (ID-6/ID-7 sixth boundary): no K0 case before composition exists.",
+    evidence: {
+      kind: "assigned",
+      packet: "K4.1",
+      reason:
+        "K1 has no child delegation or addressed-messaging surface; composition (child-link, structural budget, event router, input requests) is owned by K4, starting with durable children/delegation in K4.1 and addressed messages/replies in K4.2. Minting a child/message receipt in K0.2 would fabricate the composition operation it evidences. Row 8's previously-owned child obligation (R8-c, assigned to K2.4) is the only child-adjacent clause with a K0-adjacent reason, and it has no observable K0 case either.",
+    },
   },
 
   // == Row 5(a): wait record shape and structural well-formedness ============
@@ -764,6 +981,20 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 11, counterexamples: ["control-cancel/losing-await-arms-a-readiness"] },
   },
   {
+    // Added by round-10 review finding K02-R10-03, re-deriving ID-6 at the cancellation fence. The
+    // losing Outcome's progress/emissions/acknowledgment/intent/wait/deadline/readiness/next-state
+    // halves (R7-a2/a3/a4/a5/a6/a6b/a6c/a6d) leave the answer half unowned: a candidate correctly staying
+    // CANCELLED with the correct CX-6 rejection, no progress, no emissions and no acknowledgment, but
+    // minting a fresh acceptance receipt for the refused submission beside it. R7-b owns the same fact
+    // for the *retry* (exact resubmission manufactures none); this owns it for the losing submission
+    // itself — different steps, different writers (initial answer vs. replay lookup), so no shared link.
+    // Single receipt-only move at step 3, distinct from every other half there.
+    id: "R7-a9",
+    row: 7,
+    obligation: "The losing Outcome itself mints no acceptance receipt either: the field retains the prior accepted receipt beside the recorded CX-6 rejection (ID-6).",
+    evidence: { kind: "scenario", scenario: "control-cancel-versus-complete", stepIndex: 3, counterexamples: ["control-cancel/losing-outcome-mints-a-receipt"] },
+  },
+  {
     id: "R7-a7",
     row: 7,
     obligation: "The fence does not depend on the loser's next step: a `complete` submitted after cancellation acceptance loses identically to a `continue`. Decision M-1 requires the control to assert both.",
@@ -905,7 +1136,19 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     obligation: "A policy check against just-accepted local state reads that exact write with no staleness window (LP-1).",
     atomicity:
       "One bug construction: the authority-check reader sits outside the acceptance transaction and reads a cached exchange, so the epoch the takeover just superseded is still readable as current and the old writer's Outcome is admitted; then the correct acceptance-commit writer runs — progress via progress writer and receipt replacing rejection via answer writer in the one OA-4 commit. An admission that commits progress without receipt (or receipt without progress) would be admission plus commit-atomicity failures combined, by the commit writer split further.",
-    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 5, counterexamples: ["identity-activation/superseded-writer-epoch-accepted-from-a-stale-read"] },
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 7, counterexamples: ["identity-activation/superseded-writer-epoch-accepted-from-a-stale-read"] },
+  },
+  {
+    // Added by round-10 review finding K02-R10-03, re-deriving ID-6 at the stale-writer fence. R10-a
+    // owns the full admission (progress commit + receipt replacing rejection); R2-c4 shares that same
+    // observable fact for row 2. This owns the narrower answer half a candidate can get wrong alone: the
+    // stale submission is correctly rejected as `stale_exchange` with no progress, but a fresh acceptance
+    // receipt is minted beside it. Single receipt-only move at step 7, distinct from R10-a's four-field
+    // admission and from R7-a9/R3-b3/R3-c8 at other fences (different classifications, different steps).
+    id: "R10-a2",
+    row: 10,
+    obligation: "A stale old-epoch rejection mints no acceptance receipt either: the field retains the prior accepted receipt beside the recorded `stale_exchange` rejection (ID-6).",
+    evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 7, counterexamples: ["identity-activation/stale-rejection-mints-a-receipt"] },
   },
   {
     id: "R10-b",

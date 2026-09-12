@@ -672,6 +672,164 @@ describe("round-9: the malformed-envelope rejection owns the deadline it refuses
   });
 });
 
+describe("round-10: the whole-envelope-validation writer owns wait, readiness and next-state — not only the deadline", () => {
+  test("the wait half moves lifecycle together under a correct malformed rejection, distinct from the acceptance failure and the deadline half", () => {
+    const waitLeak = violation("envelope/malformed-await-installs-a-wait");
+    const deadlineLeak = violation("envelope/malformed-wait-leaks-its-accepted-deadline");
+    const accepted = violation("envelope/structurally-empty-wait-registered-because-it-has-a-deadline");
+    assert.equal(waitLeak.scenarioId, deadlineLeak.scenarioId);
+    assert.equal(waitLeak.stepIndex, deadlineLeak.stepIndex);
+    assert.equal(waitLeak.stepIndex, accepted.stepIndex);
+
+    const expected = scenario(waitLeak.scenarioId).steps[waitLeak.stepIndex]!.expect.observation;
+    assert.deepEqual(changedFields(expected, waitLeak.mutate(expected)).sort(), ["liveWaitGeneration", "state"]);
+    assert.deepEqual(changedFields(expected, deadlineLeak.mutate(expected)), ["acceptedDeadline"]);
+
+    const leaked = waitLeak.mutate(expected);
+    assert.deepEqual(leaked.rejection, expected.rejection, "the wait leak must keep the correct malformed_envelope rejection");
+    assert.equal(leaked.acceptedDeadline, null, "the wait half must not also leak the deadline fact");
+    assert.deepEqual(leaked.waitEndedReadiness, [], "the wait half must not also arm readiness");
+    assert.deepEqual(leaked.dispatchedBatch, expected.dispatchedBatch, "the exchange stays pinned");
+    assert.equal(leaked.activationId, expected.activationId);
+  });
+
+  test("the next-state half moves only RUNNING to READY at the duplicate-emission step, distinct from progress, emissions and acknowledgment", () => {
+    const nextLeak = violation("envelope/rejected-continue-commits-its-next-state");
+    const target = scenario(nextLeak.scenarioId);
+    const step = target.steps[nextLeak.stepIndex]!;
+    assert.equal(step.command.kind, "submit_outcome");
+    assert.ok(step.command.kind === "submit_outcome" && step.command.outcome.next.step === "continue", "the next-state schedule must carry a valid next: continue");
+
+    const expected = step.expect.observation;
+    assert.deepEqual(changedFields(expected, nextLeak.mutate(expected)), ["state"]);
+    assert.equal(nextLeak.mutate(expected).state, "READY");
+    assert.equal(expected.state, "RUNNING");
+    assert.equal(expected.rejection?.classification, "malformed_envelope");
+  });
+
+  test("the readiness half has its own valid-wait schedule and moves only readiness under a correct refusal", () => {
+    const readinessLeak = violation("envelope/valid-wait-in-malformed-envelope-arms-readiness");
+    const target = scenario(readinessLeak.scenarioId);
+    const step = target.steps[readinessLeak.stepIndex]!;
+    assert.equal(step.command.kind, "submit_outcome");
+    assert.ok(step.command.kind === "submit_outcome" && step.command.outcome.next.step === "await");
+    const wait = step.command.kind === "submit_outcome" && step.command.outcome.next.step === "await" ? step.command.outcome.next.wait : null;
+    assert.ok(wait && checkWaitWellFormed(wait).wellFormed, "the readiness schedule must submit a valid wait, or the leak models a doubly-wrong candidate");
+    assert.ok((step.command.kind === "submit_outcome" ? step.command.outcome.emissions.length : 0) > 1, "the envelope must be malformed for an unrelated reason (duplicate emission)");
+
+    const expected = step.expect.observation;
+    assert.equal(expected.rejection?.classification, "malformed_envelope");
+    assert.equal(expected.state, "RUNNING");
+    assert.equal(expected.liveWaitGeneration, null);
+    assert.equal(expected.acceptedDeadline, null);
+    assert.deepEqual(changedFields(expected, readinessLeak.mutate(expected)), ["waitEndedReadiness"]);
+    assert.deepEqual(readinessLeak.mutate(expected).waitEndedReadiness, [{ generation: "g-good", species: "event" }]);
+  });
+
+  test("none of the three reuses the CX-6 fence: different scenarios and classifications", () => {
+    for (const [envelopeId, fenceId] of [
+      ["envelope/malformed-await-installs-a-wait", "control-cancel/losing-await-registers-a-wait"],
+      ["envelope/valid-wait-in-malformed-envelope-arms-readiness", "control-cancel/losing-await-arms-a-readiness"],
+      ["envelope/rejected-continue-commits-its-next-state", "control-cancel/losing-outcome-moves-the-execution-off-terminal"],
+    ] as const) {
+      const envelope = violation(envelopeId);
+      const fence = violation(fenceId);
+      assert.notEqual(envelope.scenarioId, fence.scenarioId, `${envelopeId} must not borrow the CX-6 writer`);
+    }
+    const envelopeNext = scenario("control-whole-envelope-validation").steps[2]!.expect.observation;
+    const fenceNext = scenario("control-cancel-versus-complete").steps[3]!.expect.observation;
+    assert.equal(envelopeNext.rejection?.classification, "malformed_envelope");
+    assert.equal(fenceNext.rejection?.classification, "cancellation_terminal_conflict");
+  });
+});
+
+describe("round-10: takeover keeps the pinned input, redelivery is representable, and the stale case has a row-2 owner", () => {
+  test("takeover and redelivery preserve in-1 despite a later arrival, and each half moves a different field", () => {
+    const target = scenario("identity-create-and-activation");
+    const late = target.steps[4]!;
+    assert.equal(late.command.kind, "accept_event");
+    assert.deepEqual(late.expect.observation.queued, ["in-1", "in-2"]);
+    assert.deepEqual(late.expect.observation.dispatchedBatch, ["in-1"]);
+
+    const redelivered = target.steps[5]!;
+    assert.equal(redelivered.command.kind, "redeliver_dispatch");
+    assert.deepEqual(redelivered.expect.observation.dispatchedBatch, ["in-1"]);
+    assert.equal(redelivered.expect.observation.activationId, "act-1");
+    assert.equal(redelivered.expect.observation.writerEpoch, 1);
+
+    const takenOver = target.steps[6]!;
+    assert.equal(takenOver.command.kind, "takeover");
+    assert.deepEqual(takenOver.expect.observation.dispatchedBatch, ["in-1"]);
+    assert.equal(takenOver.expect.observation.activationId, "act-1");
+    assert.equal(takenOver.expect.observation.writerEpoch, 2);
+
+    const repin = violation("identity-activation/takeover-repins-the-pinned-batch");
+    const redeliveryRepin = violation("identity-activation/redelivery-repins-the-pinned-batch");
+    const redeliveryId = violation("identity-activation/redelivery-mints-a-new-activation-id");
+    const redeliveryEpoch = violation("identity-activation/redelivery-advances-the-writer-epoch");
+    const redeliveredObs = redelivered.expect.observation;
+    const takenOverObs = takenOver.expect.observation;
+    assert.deepEqual(changedFields(takenOverObs, repin.mutate(takenOverObs)), ["dispatchedBatch"]);
+    assert.deepEqual(repin.mutate(takenOverObs).dispatchedBatch, ["in-1", "in-2"]);
+    assert.deepEqual(changedFields(redeliveredObs, redeliveryRepin.mutate(redeliveredObs)), ["dispatchedBatch"]);
+    assert.deepEqual(changedFields(redeliveredObs, redeliveryId.mutate(redeliveredObs)), ["activationId"]);
+    assert.deepEqual(changedFields(redeliveredObs, redeliveryEpoch.mutate(redeliveredObs)), ["writerEpoch"]);
+  });
+
+  test("row 2's stale case shares R10-a's transcript rather than restating it", () => {
+    const target = scenario("identity-create-and-activation");
+    const stale = target.steps[7]!;
+    assert.equal(stale.expect.observation.rejection?.classification, "stale_exchange");
+    assert.equal(stale.expect.observation.writerEpoch, 2);
+  });
+});
+
+describe("round-10: producer scope is representable and receipts are re-derived without overloading", () => {
+  test("two producers reuse one raw key without colliding, and same-producer replay still works", () => {
+    const target = scenario("identity-producer-scope");
+    assert.equal(target.steps.length, 3);
+    const first = target.steps[0]!.expect.observation;
+    const second = target.steps[1]!.expect.observation;
+    const retry = target.steps[2]!.expect.observation;
+    assert.notEqual(first.executionId, second.executionId, "different producers same raw key must not share an Execution ID");
+    assert.notEqual(first.receipt, second.receipt, "different accepted creates must not share a receipt");
+    assert.equal(retry.executionId, first.executionId, "same producer same key same content returns the same Execution");
+    assert.equal(retry.receipt, first.receipt, "same-producer replay returns the same receipt");
+
+    const collapseId = violation("identity-producer/global-dedup-collapses-execution-id");
+    const collapseReceipt = violation("identity-producer/global-dedup-collapses-receipt");
+    assert.deepEqual(changedFields(second, collapseId.mutate(second)), ["executionId"]);
+    assert.deepEqual(changedFields(second, collapseReceipt.mutate(second)), ["receipt"]);
+  });
+
+  test("rejected operations mint no receipt at every K0.2 opaque writer, each moving only receipt", () => {
+    for (const id of [
+      "identity-create/conflict-mints-a-fresh-receipt",
+      "control-duplicate/conflict-mints-a-fresh-receipt",
+      "envelope/malformed-envelope-mints-a-fresh-receipt",
+      "control-cancel/losing-outcome-mints-a-receipt",
+      "identity-activation/stale-rejection-mints-a-receipt",
+    ] as const) {
+      const entry = violation(id);
+      const expected = scenario(entry.scenarioId).steps[entry.stepIndex]!.expect.observation;
+      assert.ok(expected.rejection !== null, `${id} must run at a correctly rejected step`);
+      assert.deepEqual(changedFields(expected, entry.mutate(expected)), ["receipt"], `${id} must move only the receipt fact`);
+    }
+  });
+
+  test("distinct accepted requests never collapse, each moving only receipt at its own step", () => {
+    for (const id of [
+      "identity-producer/global-dedup-collapses-receipt",
+      "identity-create/different-keys-collapse-onto-one-receipt",
+      "k0-trace/second-acceptance-collapses-onto-the-first-receipt",
+    ] as const) {
+      const entry = violation(id);
+      const expected = scenario(entry.scenarioId).steps[entry.stepIndex]!.expect.observation;
+      assert.deepEqual(changedFields(expected, entry.mutate(expected)), ["receipt"], `${id} must move only the receipt fact`);
+    }
+  });
+});
+
 describe("round-4: the withdrawn subscription rule stays withdrawn", () => {
   test("an empty declared subscription identity is well formed, because W-1 leaves the spelling to K1.3", () => {
     // Round-4 review finding K02-R4-01. This is a regression guard in the opposite direction from the

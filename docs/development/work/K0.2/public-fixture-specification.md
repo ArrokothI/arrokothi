@@ -27,35 +27,38 @@ offline with no model, network, container or database.
 
 | Scenario | Observes | Control? |
 |---|---|---|
-| `k0-trace` | 001's K0 trace end to end, as W-8's cases 1–5 | — |
-| `delayed-runtime-non-blocking` | a delayed Runtime does not block another Execution; W-4 | — |
-| `identity-create-and-activation` | create-key conflict; distinct Activation IDs; takeover under the same ID | — |
-| `control-whole-envelope-validation` | a valid prefix earns nothing; a structurally empty wait is refused | — |
-| `control-duplicate-conflicting-outcome` | receipt replay versus conflict | M-1, §11 row 3 |
+| `k0-trace` | 001's K0 trace end to end, as W-8's cases 1–5; distinct Outcome receipts across acceptances | — |
+| `delayed-runtime-non-blocking` | a delayed Runtime does not block another Execution; W-4; distinct create receipts across keys | — |
+| `identity-create-and-activation` | create-key conflict; ordinary redelivery (same ID/epoch/input); distinct Activation IDs; takeover under the same ID with pinned input; stale old-epoch fencing | — |
+| `identity-producer-scope` | two producers reusing one raw request-key text do not collide (ID-2) | — |
+| `control-whole-envelope-validation` | a valid prefix earns nothing; a structurally empty wait is refused; OA-5's whole-envelope zero-partial-state family (progress/emissions/ack/intent/deadline/wait/readiness/next-state) plus rejected-mints-none | — |
+| `control-duplicate-conflicting-outcome` | receipt replay versus conflict, including conflicting-mints-none | M-1, §11 row 3 |
 | `control-stale-timer-and-lost-wake` | lost wake at registration; generation fencing; timer idempotency; both B-6 entry boundaries for a deadline-bearing wait | M-1, §11 row 5 |
 | `control-subscription-wait-deadline` | W-8 case 6: B-7's mandatory timeout member, both paths | §11 row 5 |
 | `wait-structure-not-satisfiability` | a valid-but-inert alternative registers and counts; the eligibility category rule's two negative arms; no per-alternative satisfied flag | §11 row 5 |
-| `control-cancel-versus-complete` | the cancellation fence, in both orders | M-1, §11 row 7 |
+| `control-cancel-versus-complete` | the cancellation fence, in both orders, including losing-mints-none | M-1, §11 row 7 |
 | `control-completion-obligations` | a completing envelope carrying owned work is refused whole; terminal ingress refusal | §11 row 8 |
 | `control-missing-checkpoint-code` | recovery hold versus fresh-restored fabrication | M-1, §11 row 9 |
 | `effect-refusal-and-sink-attribution` | K1's Effect refusal, observed through the independent ledger | — |
 
-Four of these were added after round-1 review and one after round-3 review; see §8.
+Four of these were added after round-1 review, one after round-3 review and one after round-10 review; see §§8, 10 and 17.
 
 [`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at the
-granularity of the **independently distinguishable assertion** — 94 entries across the ten rows, not
+granularity of the **independently distinguishable assertion** — 114 entries across the ten rows, not
 ten row entries and not the 33 prose-level obligations of two revisions ago. The unit is
 behavioural rather than editorial: two clauses in one cell are separate assertions when a plausible
 implementation can get one right and the other wrong, because that is the candidate the oracle has to
 be able to fail. §11 row 5 states the standard itself — "Each of these is **separately** observable".
 
-Of the 94, **88** resolve to a scenario step plus at least one counterexample the oracle demonstrably
-rejects at that step; **three** (R3-c3, R6-a1, R8-b2) are marked `shared`, meaning two §11 rows name
+Of the 114, **104** resolve to a scenario step plus at least one counterexample the oracle demonstrably
+rejects at that step; **four** (R3-c3, R6-a1, R8-b2, R2-c4) are marked `shared`, meaning two §11 rows name
 one observable fact and one transcript is the honest evidence for both, with the identity written down
-and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **two** are
-explicitly assigned with the governing source that permits the deferral — R8-c to K2.4, and R5-a4 to
-K1.3, which W-9's *Left open* note names as the owner of a declared subscription identity's concrete
-spelling. Twenty entries carry an `atomicity` note, required whenever an entry's counterexamples
+and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **five** are
+explicitly assigned with the governing source that permits the deferral — R8-c to K2.4, R5-a4 to
+K1.3 (which W-9's *Left open* note names as the owner of a declared subscription identity's concrete
+spelling), and R4-b1/b2/b3 to K2.2/K2.3/K4.1 for the Effect-admission, Effect-settlement and
+child/message-operation receipt boundaries, which have no observable K0 case while K1 refuses Effects
+and has no composition surface. Twenty entries carry an `atomicity` note, required whenever an entry's counterexamples
 cross more than one coupled field group. `COUPLED_FIELD_GROUPS` is a review heuristic only, never
 proof that within-group partial failures are impossible: `state`/`liveWaitGeneration` stay grouped
 only for W-3's definitional link, while `waitEndedReadiness` and `acceptedDeadline` are deliberately
@@ -76,7 +79,7 @@ excluded by construction:
 - a **conforming transcript** must report `PASS`. It is derived from the scenarios' own expectations,
   so it proves only that the runner can pass something — that circularity is stated in the code and is
   the limit of what this direction establishes;
-- **eighty-eight violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
+- **one hundred and four violating transcripts**, each a plausible wrong implementation, must report `FAIL` at the
   exact step, and the failure detail must name the exact observation field at issue. Failing for an
   unrelated reason would be an accident rather than discrimination, so the field names are asserted.
   Each transcript must also **name the governing decision its behavior breaks**, and that citation is
@@ -684,3 +687,94 @@ intact, `liveWaitGeneration` null, and `acceptedDeadline` null.
 The inventory goes from 93 entries to 94 (row 3: 9→10) and the corpus from 87 transcripts to 88, over
 the same 12 scenarios / 92 steps. No scenario, step or expectation changed: the observation already
 stated the fact, and only the owning counterexample was missing.
+
+## 17. What round-10 review changed
+
+Round 10 returned CHANGES REQUIRED on three P1 findings, all instances of C10's own decision-level
+rule — read the governing decision a row cites, never the row's illustrative parenthetical — applied
+as a cumulative method rather than another one-field patch. It is fixed forward from C10; nothing from
+rounds 2–10 is reverted. R3-c4, the `g3`/`res-3` B-6 path-B schedule, R5-d6, all six accepted-deadline
+lifecycle transcripts, the per-family receipt/Activation-ID token relations, all prior splits and the
+logical-deadline/physical-timer distinction are preserved. `K02-R9-01` stays closed.
+
+**K02-R10-01 — OA-5's whole-envelope rejection family was still only partly owned.** Row 3 cites
+OA-1–OA-6, and OA-5 forbids a rejected Outcome from creating Effects, acknowledging Events, committing
+progress, accepting emissions **and** creating any wait/deadline/readiness/next-state transition. The
+inventory owned progress (R3-c1), emissions (R3-c1b), acknowledgment (R3-c2), Effect intent (R3-c3,
+`shared` with row 4) and deadline (R3-c4), but no row-3 owner for wait/lifecycle, readiness or
+next-state under a correct rejection — the same visible-but-unattributed class as rounds 4, 7 and 8,
+now at the whole-envelope-validation writer rather than the CX-6 fence, which has its own full family
+(R7-a2/a3/a4/a5/a6/a6b/a6c/a6d) and cannot stand in for this one.
+
+- **R3-c5** owns wait/lifecycle at the malformed future-deadline `await` (step 4): correct
+  `malformed_envelope` refusal with pinned Activation/batch, no deadline and no readiness, but
+  `WAITING` under `g-bad`. Lifecycle-group move (`state` + `liveWaitGeneration`), distinct from the
+  acceptance failure at the same step (which removes the rejection) and from R3-c4's deadline-only
+  move.
+- **R3-c6** owns next-state at the duplicate-emission envelope (step 2), which already carries a valid
+  `next: continue`: correct refusal with no progress/emissions/acknowledgment, but `READY`. Single
+  `state` move, distinct from every other half there.
+- **R3-c7** owns readiness-only on a new minimal schedule (step 7): a valid subscription-only wait
+  (`g-good`) inside an envelope malformed for an unrelated reason (duplicate emission key). Correct
+  refusal with no wait, no deadline and `RUNNING`, but a wait-ended readiness for `g-good`. No existing
+  rejected schedule could distinguish this honestly — every other await here is malformed or absent, so
+  arming a readiness for `g-bad` or for no wait would model a doubly-wrong candidate — hence the new
+  step rather than a bundled move. `waitEndedReadiness` is deliberately ungrouped, so no atomicity note
+  is owed.
+
+**K02-R10-02 — row 2 still under-covered ID-3/ID-4/ID-9.** Takeover is three facts (same ID in R2-c1,
+advanced epoch in R2-c2, same immutable input), but only the first two were owned, and ordinary
+redelivery (ID-9 case 1 / ID-3) was unrepresentable: the vocabulary had `dispatch` (new exchange) and
+`takeover` (new attempt) but no "same attempt delivered again".
+
+- `in-2` is accepted after dispatch but before redelivery/takeover, queued but never reserved, so a
+  wrong repin has deterministic content to include while the conforming batch stays `["in-1"]`.
+- **R2-c3** owns takeover input immutability at the takeover step: correct ID and epoch with the batch
+  repinned to `["in-1", "in-2"]`. Single activation-group field.
+- **R2-d1/d2/d3** own ordinary redelivery at the new `redeliver_dispatch` step (same ID, same epoch,
+  same input), each a single-field transcript with distinct sets. The command is the smallest vocabulary
+  that can say ID-9 case 1; `dispatch` and `takeover` cannot.
+- **R2-c4** gives row 2 an honest owner for ID-9 case 3's stale old-epoch rejection — the same observable
+  fact R10-a/LP-1 already evidences at the next step — as a justified `shared` link (one stale-read bug
+  violates both decisions at once; a second transcript moving the same fields is forbidden).
+- The stale step, the taken-over acceptance (now acknowledging only `["in-1"]` with `in-2` retained) and
+  the next dispatch (now pinning `["in-2"]` under `act-2`) are updated for the new mailbox content; R2-a
+  and R10-a shift indices with them.
+
+**K02-R10-03 — producer scope and accepted receipts were not representable.** ID-2 binds input identity
+to producer namespace + destination + producer request key; the fixture carried no producer dimension,
+so global raw-key deduplication passed. `Observation.receipt` was documented as the most recent accepted
+**Outcome** receipt while scenarios used it for create and silently retained it across dispatch/ingress.
+
+- `create`/`create_retry` gain an optional `producer` namespace (ID-2's triple); pre-round-10 schedules
+  stay in one implicit scope with unchanged meaning. The new `identity-producer-scope` scenario reuses
+  one raw key text (`req-shared`) across `prod-a`/`prod-b` for different Executions without colliding,
+  with same-producer retry still returning the same identity and receipt. **R1-c1/c2** own the ID and
+  receipt halves with separate single-field globally-deduplicating transcripts, preserving K02-R5-01's
+  per-family separation.
+- `receipt` is clarified as the most recent opaque acceptance receipt among K0.2's
+  opaque-receipt-bearing boundaries — creation and Outcome acceptance. Dispatch intent's acceptance
+  identity is the Activation ID + epoch + pinned batch (ID-3/ID-4/ID-9, row 2 cites those, not ID-6/ID-7);
+  subsequent input-ingress position is the per-Execution acceptance order (B-4, fixture-supplied Event
+  IDs via `queued`). Neither mints a separate opaque receipt in K0.2, so retention across
+  `accept_event`/`dispatch`/`redeliver_dispatch`/`takeover` is correct absence, not omission.
+  Effect-admission, Effect-settlement and child/message-operation receipts have no observable K0 case
+  while K1 refuses Effects and has no composition surface, and are explicitly assigned to K2.2/K2.3/K4.1
+  as **R4-b1/b2/b3** rather than fabricated.
+- ID-6/ID-7 are re-derived at the actual opaque boundaries: same on replay (R1-a2 for create, R3-a1 for
+  Outcome, both pre-existing), distinct on new (R1-c2 across producers, **R1-d1** across keys in the
+  delayed-Runtime schedule, **R3-d1** across Activations in the K0 trace), and none on reject (**R1-b3**
+  for create conflict, **R3-b3** for duplicate conflict, **R3-c8** for malformed envelope, **R7-a9** for
+  the cancellation loser itself, **R10-a2** for the stale writer) — each a single receipt-only move
+  beside a correct rejection, distinct from every other half at its step. Spelling stays
+  implementation-owned with per-family bijections unchanged.
+
+The inventory goes from 94 entries to 114 (row 1: 5→9, row 2: 6→11, row 3: 10→16, row 4: 4→7, row 7:
+16→17, row 10: 3→4; rows 5, 6, 8, 9 unchanged at 34, 5, 9, 2) and the corpus from 88 transcripts to 104,
+over 13 scenarios / 98 steps (one new scenario with three steps; one new whole-envelope step; two new
+identity steps for the late arrival and redelivery). Twenty atomicity notes, unchanged — every new
+transcript is single-field (or single lifecycle-group for R3-c5), so none owes a note. Dependent rows,
+including row 8's shared rejection paths, were re-swept after the surface change; `coverage.test.ts`
+re-enforces no-shared-transcript, no-shared-field-set and bidirectional row attribution, and
+`blind-spot-regression.test.ts` pins the three round-10 families, the redelivery/takeover field
+division with its shared stale link, and the producer/receipt splits.

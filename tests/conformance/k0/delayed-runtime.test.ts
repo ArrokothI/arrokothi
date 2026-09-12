@@ -78,8 +78,10 @@ describe("delayed Runtime: an unresolved Activation is not a Kernel-visible wait
 
   test("the scenario's §11 attribution is row 5(g), W-4's no-waitingFor rule", () => {
     // The non-blocking half is a 001 K0/K1 deliverable rather than a §11 obligation, so it is carried
-    // by contract criterion C2 and the assertions above, not by the boundary map.
-    assert.deepEqual(delayedRuntimeNonBlocking.k0BoundaryRows, [5]);
+    // by contract criterion C2 and the assertions above, not by the boundary map. Row 1's
+    // distinct-receipts half (R1-d1) is additionally attributed here because X (req-x) and Y (req-y)
+    // are already distinct accepted creates with distinct receipts (round-10 finding K02-R10-03).
+    assert.deepEqual(delayedRuntimeNonBlocking.k0BoundaryRows, [1, 5]);
     assert.equal(delayedRuntimeNonBlocking.isUnsafeControl, false);
   });
 });

@@ -114,8 +114,10 @@ export const k0Trace: Scenario = {
   ],
   // Row 1's create-identity obligations moved to `identity-create-and-activation` when round-1 review
   // finding K02-R1-01 split them out; the retry step below stays because the trace reads better with
-  // it, but the authoritative row-1 evidence is that scenario's.
-  k0BoundaryRows: [2, 5, 6, 8, 10],
+  // it, but the authoritative row-1 evidence is that scenario's. Row 3's distinct-receipts half (R3-d1)
+  // is attributed here because the trace already accepts act-1 and later act-2 with distinct receipts —
+  // the honest schedule for ID-6/ID-7 distinctness across Outcome acceptances.
+  k0BoundaryRows: [2, 3, 5, 6, 8, 10],
   isUnsafeControl: false,
   waits: { subscriptionOnlyWait },
   steps: [
@@ -316,10 +318,13 @@ export const delayedRuntimeNonBlocking: Scenario = {
     "K0.1 worksheet W-4 (Runtime-local work creates no waitingFor record at all)",
     "mental-model.md ('RUNNING means an Activation is unresolved, not that a process is making progress')",
   ],
-  // §11 attribution is row 5(g) — W-4's "Runtime-local work creates no waitingFor record". The
-  // non-blocking property this scenario also observes comes from 001 K0/K1, not from §11, and is
-  // carried by contract criterion C2 and `delayed-runtime.test.ts` rather than by the boundary map.
-  k0BoundaryRows: [5],
+  // §11 attribution is row 5(g) — W-4's "Runtime-local work creates no waitingFor record" — plus
+  // row 1's distinct-requests-never-collapse receipt half (R1-d1): X (req-x) and Y (req-y) are already
+  // distinct accepted creates with distinct receipts, which is the honest schedule for ID-6/ID-7
+  // distinctness without manufacturing a new scenario. The non-blocking property this scenario also
+  // observes comes from 001 K0/K1, not from §11, and is carried by contract criterion C2 and
+  // `delayed-runtime.test.ts` rather than by the boundary map.
+  k0BoundaryRows: [1, 5],
   isUnsafeControl: false,
   steps: [
     step(
@@ -1154,6 +1159,20 @@ export const effectRefusalAndSinkAttribution: Scenario = {
  * than silently applied as an edit; row 2 turns on Activation IDs, not on epochs — a new exchange must
  * never reuse an ID, while an authorized takeover of a still-unresolved exchange must keep it (ID-9).
  */
+/**
+ * Round-10 review finding K02-R10-02. Row 2's takeover rule is not merely "same Activation ID +
+ * incremented epoch": the replacement attempt keeps the **same immutable exchange input**, including
+ * the pinned Event batch (ID-3: "it does not invent new mailbox content under it"). The prior schedule
+ * dispatched and immediately took over with nothing else in the mailbox, so a candidate that kept the
+ * ID, advanced the epoch correctly, but repinned the batch could pass — the wrong repin had no
+ * deterministic new content to include. `in-2` is that content: accepted after dispatch but before
+ * redelivery/takeover, queued but never reserved, so the conforming redelivery and takeover both keep
+ * `dispatchedBatch: ["in-1"]` while `queued` grows. ID-9 case 1 (ordinary redelivery, same ID + same
+ * epoch + same input, no takeover decided) had no command at all; `redeliver_dispatch` is the smallest
+ * vocabulary that can say it.
+ */
+const lateArrivalForRepin = applicationInput("in-2", X, "initial");
+
 export const createAndActivationIdentity: Scenario = {
   id: "identity-create-and-activation",
   title: "create keys conflict on changed content; exchanges get new Activation IDs, takeovers do not",
@@ -1206,13 +1225,51 @@ export const createAndActivationIdentity: Scenario = {
       },
     ),
     step(
+      { kind: "accept_event", event: lateArrivalForRepin },
+      {
+        label: "a late arrival is queued but cannot join the already-pinned batch",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1", "in-2"],
+          dispatchedBatch: ["in-1"],
+          activationId: "act-1",
+          receipt: "receipt:create:req-x",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "dispatchedBatch must stay ['in-1']: a new arrival cannot join an already-pinned batch (B-1, §11 row 6)",
+          "state must stay RUNNING and no readiness may arm: no generation is live (B-8, §11 row 6)",
+        ],
+      },
+    ),
+    step(
+      { kind: "redeliver_dispatch", executionId: X },
+      {
+        label: "ID-9 case 1: ordinary redelivery is the identical in-flight exchange — same ID, same epoch, same pinned input",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1", "in-2"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "activationId must stay act-1: redelivery is not a new exchange and mints no new ID (ID-3)",
+          "writerEpoch must stay 1: only an authenticated takeover advances the epoch, never an ordinary retry (ID-4)",
+          "dispatchedBatch must stay ['in-1']: delivery retries preserve dispatched input and cannot pick up in-2",
+          "acknowledged must stay empty: redelivery acknowledges nothing",
+        ],
+      },
+    ),
+    step(
       { kind: "takeover", executionId: X },
       {
         label: "ID-9: an authorized takeover of a still-unresolved exchange keeps the Activation ID and advances the epoch",
-        observation: obs(X, { state: "RUNNING", queued: ["in-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 2 }),
+        observation: obs(X, { state: "RUNNING", queued: ["in-1", "in-2"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 2 }),
         forbids: [
           "activationId must stay act-1: a takeover is the same exchange under a new writer, not a new exchange",
-          "dispatchedBatch must stay ['in-1']: a takeover cannot replace pinned input with new mailbox content",
+          "dispatchedBatch must stay ['in-1']: a takeover cannot replace pinned input with new mailbox content (in-2 stays queued, never reserved)",
           "acknowledged must stay empty: a takeover acknowledges nothing",
         ],
       },
@@ -1233,7 +1290,7 @@ export const createAndActivationIdentity: Scenario = {
         label: "LP-1: the authority check reads the epoch the immediately preceding takeover wrote, with no staleness window",
         observation: obs(X, {
           state: "RUNNING",
-          queued: ["in-1"],
+          queued: ["in-1", "in-2"],
           activationId: "act-1",
           dispatchedBatch: ["in-1"],
           receipt: "receipt:create:req-x",
@@ -1244,6 +1301,7 @@ export const createAndActivationIdentity: Scenario = {
           "progressRevision must stay 0 and progress null: a superseded writer commits nothing",
           "writerEpoch must stay 2: a rejected stale submission does not roll the epoch back",
           "there is no window in which the previous epoch is still readable as current: the takeover's write is visible to the very next check",
+          "in-2 stays queued and unacknowledged: a stale rejection acknowledges nothing and disposes nothing",
         ],
       },
     ),
@@ -1259,9 +1317,14 @@ export const createAndActivationIdentity: Scenario = {
           progressRevision: 1,
           progress: { step: 1 },
           acknowledged: ["in-1"],
+          queued: ["in-2"],
           receipt: "receipt:outcome:act-1",
           writerEpoch: 2,
         }),
+        forbids: [
+          "acknowledged must be exactly ['in-1']: only the pinned batch is acknowledged (B-3); in-2 was never reserved",
+          "in-2 stays queued for the next exchange: it is neither acknowledged nor disposed here",
+        ],
       },
     ),
     step(
@@ -1273,12 +1336,73 @@ export const createAndActivationIdentity: Scenario = {
           progressRevision: 1,
           progress: { step: 1 },
           acknowledged: ["in-1"],
+          queued: ["in-2"],
           activationId: "act-2",
-          dispatchedBatch: [],
+          dispatchedBatch: ["in-2"],
           receipt: "receipt:outcome:act-1",
           writerEpoch: 3,
         }),
         forbids: ["activationId must not be act-1: two semantically different exchanges never share an Activation ID"],
+      },
+    ),
+  ],
+};
+
+// -- Scenario 8b: producer-scoped create identity (§11 row 1, ID-2) --------------
+
+/**
+ * Round-10 review finding K02-R10-03. ID-2 scopes input identity by authenticated producer namespace
+ * + destination + producer request key — not by raw key text. The prior vocabulary carried no
+ * producer/caller dimension, so every create/retry occurred in one implicit scope and a candidate
+ * globally deduplicating raw key text passed everything. This is the smallest schedule that can tell
+ * the difference: two different producers (`prod-a`, `prod-b`) reuse the same raw request-key text
+ * (`req-shared`) for different Executions with different inputs. Conformingly they do not collide —
+ * each is a fresh accepted create with its own Execution ID and its own receipt. A third step retries
+ * the first producer's create (same producer, same key, same content) and returns the original
+ * identity and receipt, proving same-scope replay still works once the scope is explicit.
+ */
+const producerSharedKey = "req-shared";
+const producerAInput = applicationInput("in-pa", "exec-pa", "initial");
+const producerBInput = applicationInput("in-pb", "exec-pb", "initial");
+
+export const producerScopedCreateIdentity: Scenario = {
+  id: "identity-producer-scope",
+  title: "two producers reusing one raw request-key text do not collide; same-producer replay still does",
+  sources: [
+    "K0.1 worksheet §11 row 1 (ID-1, ID-2, ID-6, ID-7)",
+    "execution-protocol.md, Identities and immutable exchanges (input identity is producer + destination + request key)",
+  ],
+  k0BoundaryRows: [1],
+  isUnsafeControl: false,
+  steps: [
+    step(
+      { kind: "create", executionId: "exec-pa", requestKey: producerSharedKey, producer: "prod-a", initialInput: producerAInput, definitionRevision: FAKE_RUNTIME_V1 },
+      {
+        label: "prod-a creates under req-shared",
+        observation: obs("exec-pa", { queued: ["in-pa"], receipt: "receipt:create:req-shared:prod-a" }),
+      },
+    ),
+    step(
+      { kind: "create", executionId: "exec-pb", requestKey: producerSharedKey, producer: "prod-b", initialInput: producerBInput, definitionRevision: FAKE_RUNTIME_V1 },
+      {
+        label: "prod-b reuses the same raw key text for a different Execution: no collision",
+        observation: obs("exec-pb", { queued: ["in-pb"], receipt: "receipt:create:req-shared:prod-b" }),
+        forbids: [
+          "executionId must be exec-pb, not exec-pa: different producers reusing one raw key text are different input identities (ID-2)",
+          "receipt must differ from prod-a's: distinct accepted creates never collapse onto one receipt (ID-6/ID-7)",
+          "in-pb must be queued for exec-pb: the second create is a fresh acceptance, not a replay and not a conflict",
+        ],
+      },
+    ),
+    step(
+      { kind: "create_retry", executionId: "exec-pa", requestKey: producerSharedKey, producer: "prod-a", initialInput: producerAInput, definitionRevision: FAKE_RUNTIME_V1 },
+      {
+        label: "same producer, same key, same content: the original Execution and receipt come back",
+        observation: obs("exec-pa", { queued: ["in-pa"], receipt: "receipt:create:req-shared:prod-a" }),
+        forbids: [
+          "executionId must stay exec-pa and receipt must stay the original: same-scope replay is idempotent (ID-2, ID-6)",
+          "queued must not gain a second copy of the initial input",
+        ],
       },
     ),
   ],
@@ -1292,6 +1416,26 @@ export const createAndActivationIdentity: Scenario = {
  * observable rejection of a submitted Outcome. Both are envelope validation (OA-3), so both belong on
  * the same scenario: the point is that a valid-looking prefix earns nothing.
  */
+/**
+ * Round-10 review finding K02-R10-01. OA-5's zero-partial-state family at the whole-envelope-validation
+ * writer was still incomplete: deadline (R3-c4) was owned, but wait/lifecycle, readiness and next-state
+ * had no candidate-level owners. The duplicate-emission envelope (step 2) already carries a valid
+ * `next: continue`, so it can exercise a correct rejection with a leaked next-state transition; the
+ * malformed future-deadline `await` (step 4) can exercise a correct rejection with a leaked
+ * wait/lifecycle registration. Readiness is independent of both (deliberately ungrouped since round 5),
+ * and no existing rejected schedule in this scenario submits a *valid* wait whose generation could
+ * honestly arm a readiness-only leak — every await here is either malformed or absent — so a new
+ * minimal step submits a valid subscription-only wait inside an envelope that is malformed for an
+ * unrelated reason (duplicate emission key). Its conforming result is a correct `malformed_envelope`
+ * refusal with no wait, no deadline, no readiness and no next-state change; the violating transcript
+ * arms only readiness for that valid generation.
+ */
+const validWaitInMalformedEnvelope: WaitRecord = {
+  dependencies: [],
+  subscriptions: [{ subscriptionClass: "continue" }],
+  generation: "g-good",
+};
+
 export const wholeEnvelopeValidation: Scenario = {
   id: "control-whole-envelope-validation",
   title: "a failure anywhere in envelope validation accepts nothing, including a valid prefix",
@@ -1466,6 +1610,43 @@ export const wholeEnvelopeValidation: Scenario = {
         }),
         forbids: [
           "an empty kind set must be rejected before any matching is attempted, not treated as an inert-but-valid alternative",
+        ],
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({
+          executionId: X,
+          activationId: "act-1",
+          progress: { cursor: 1 },
+          // Malformed for an unrelated reason: the wait itself is valid (subscription-only, well formed
+          // under W-1 rule 1), but the emission list reuses its key, so OA-3 refuses the whole envelope.
+          // A readiness writer that runs before validation could arm a readiness for g-good even though
+          // validation correctly refuses and correctly registers no wait, no deadline and no next-state.
+          emissions: [
+            { emissionId: "em-1", value: { partial: "a" } },
+            { emissionId: "em-1", value: { partial: "b" } },
+          ],
+          next: { step: "await", wait: validWaitInMalformedEnvelope },
+        }),
+      },
+      {
+        label: "a valid wait inside a malformed envelope earns nothing: no wait, readiness or next-state transition",
+        observation: obs(X, {
+          state: "RUNNING",
+          queued: ["in-1"],
+          activationId: "act-1",
+          dispatchedBatch: ["in-1"],
+          receipt: "receipt:create:req-x",
+          rejection: { classification: "malformed_envelope", reason: "duplicate emission key em-1" },
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "liveWaitGeneration must stay null: g-good is valid but the envelope carrying it was refused, so no registration exists",
+          "waitEndedReadiness must stay empty: a rejected Outcome creates no readiness, even for a valid generation it names",
+          "acceptedDeadline must stay null: this wait carries no deadline and the refused envelope accepts none",
+          "state must stay RUNNING: a refused await does not move the Execution",
         ],
       },
     ),
@@ -1970,6 +2151,7 @@ export const ALL_SCENARIOS: readonly Scenario[] = [
   k0Trace,
   delayedRuntimeNonBlocking,
   createAndActivationIdentity,
+  producerScopedCreateIdentity,
   wholeEnvelopeValidation,
   duplicateAndConflictingOutcome,
   staleTimerAndLostWake,

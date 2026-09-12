@@ -22,10 +22,17 @@ export const FIXTURE_VERSION = "arrokothi-k0-public-fixture/1";
 // -- Commands ----------------------------------------------------------------
 
 export type Command =
-  /** Creation/input ingress. `requestKey` is the caller-scoped create key (execution-protocol.md). */
-  | { readonly kind: "create"; readonly executionId: string; readonly requestKey: string; readonly initialInput: FixtureEvent; readonly definitionRevision: string }
-  /** A retried create under the same caller-scoped request key. */
-  | { readonly kind: "create_retry"; readonly executionId: string; readonly requestKey: string; readonly initialInput: FixtureEvent; readonly definitionRevision: string }
+  /**
+   * Creation/input ingress. `requestKey` is the producer-supplied request-key text; input identity is
+   * the triple (authenticated producer namespace + destination + producer request key) per ID-2, not
+   * the bare string. `producer` names the authenticated producer namespace/principal for this request.
+   * It is optional only so pre-round-10 schedules (all in one implicit producer scope) keep their
+   * meaning; new schedules set it explicitly to prove cross-producer same-raw-key text does not
+   * collide. Two different producers may legitimately reuse the same `requestKey` text.
+   */
+  | { readonly kind: "create"; readonly executionId: string; readonly requestKey: string; readonly producer?: string; readonly initialInput: FixtureEvent; readonly definitionRevision: string }
+  /** A retried create under the same producer-scoped request key (same producer, same key text). */
+  | { readonly kind: "create_retry"; readonly executionId: string; readonly requestKey: string; readonly producer?: string; readonly initialInput: FixtureEvent; readonly definitionRevision: string }
   /** Accept an Event into the destination mailbox through its own ingress boundary. */
   | { readonly kind: "accept_event"; readonly event: FixtureEvent }
   /** Reserve a batch and dispatch. `bound` is the implementation-owned batch bound (B-1: at least 1). */
@@ -45,6 +52,15 @@ export type Command =
    * under the **same** Activation ID rather than minting a new one, because the exchange is the same.
    */
   | { readonly kind: "takeover"; readonly executionId: string }
+  /**
+   * Ordinary Driver redelivery of the same unresolved dispatch (ID-9 case 1 / ID-3). No takeover was
+   * decided: the network retried the same dispatch. The Kernel treats it as the identical in-flight
+   * exchange — same Activation ID, same writer epoch, same pinned immutable input — not as a new
+   * attempt. Added for round-10 review finding K02-R10-02; the prior vocabulary had `dispatch`
+   * (a new exchange) and `takeover` (a new attempt at the same exchange) but no way to say "the same
+   * attempt delivered again", so ID-9 case 1 / ID-3 was unrepresentable.
+   */
+  | { readonly kind: "redeliver_dispatch"; readonly executionId: string }
   /** Read an Execution without changing it. Used to assert that acting on one Execution left another alone. */
   | { readonly kind: "inspect"; readonly executionId: string };
 
@@ -138,7 +154,32 @@ export interface Observation {
    * input." A refusal is not a queued Event and not a B-5 disposition; it is a third answer.
    */
   readonly ingressRefused: string | null;
-  /** The receipt returned by the most recent accepted Outcome, if any. */
+  /**
+   * The most recent opaque acceptance receipt among K0.2's opaque-receipt-bearing boundaries —
+   * creation and Outcome acceptance — if any.
+   *
+   * Added-clarified for round-10 review finding K02-R10-03. ID-6/ID-7 define receipts per accepted
+   * boundary across six boundaries, but K0.2's §11 obligations only require opaque candidate-minted
+   * receipts for two of them: creation/input-ingress's create half (row 1: same key/same content returns
+   * the same receipt, same key/different content is a conflict minting none) and Outcome acceptance
+   * (row 3: exact duplicate returns the original receipt, conflict/malformed/stale/cancelled rejections
+   * mint none). Dispatch intent's acceptance identity is the Activation ID + writer epoch + pinned batch
+   * (ID-3/ID-4/ID-9, observed via `activationId`'s own per-family bijection plus literal epoch/batch —
+   * row 2 cites those decisions, not ID-6/ID-7). Subsequent input ingress acceptance position is the
+   * per-Execution acceptance order (B-4, observed literally via `queued` Event IDs, which are
+   * fixture-supplied laboratory data like generations and deadlines, not candidate-minted tokens).
+   * Neither mints a separate opaque receipt in K0.2's command surface: `accept_event` and
+   * `dispatch`/`redeliver_dispatch`/`takeover` steps therefore correctly retain this field rather than
+   * minting anew — retention is the absence of a new opaque acceptance, not a silently missing receipt.
+   * Effect admission/settlement and child/message-operation receipts are K2/K4 boundaries (EF-1/EF-2
+   * refuse Effects at K1; CX-3's previously-owned-obligation clause is assigned to K2.4 as R8-c): they
+   * have no observable K0 case and are explicitly assigned, not silently omitted.
+   *
+   * Within this opaque family, the runner enforces ID-6/ID-7 relationally (separate bijection from
+   * Activation IDs per K02-R5-01): exact replay returns the same token, distinct accepted
+   * boundaries/requests never collapse onto one, and rejected operations mint none (the field retains
+   * the prior accepted receipt). Spelling is implementation-owned (§2 Left open).
+   */
   readonly receipt: string | null;
   /** The rejection recorded by the most recent rejected Outcome, if any. */
   readonly rejection: OutcomeRejection | null;
