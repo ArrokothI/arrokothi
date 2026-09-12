@@ -1,12 +1,12 @@
 /**
  * K0.2 public fixture — the versioned scenario set.
  *
- * Twelve scenarios. Between them they observe every *assertion* in the accepted K0.1 worksheet's §11
+ * Thirteen scenarios. Between them they observe every *assertion* in the accepted K0.1 worksheet's §11
  * "001 K0 boundary → assertion map" — not merely every row number, and not merely every prose grouping
  * inside a row. `coverage.ts` enumerates those assertions individually and requires each to carry a
  * distinguishing counterexample that a candidate breaking *that* assertion would produce.
  *
- * Six of the twelve are unsafe/state-loss controls: Decision M-1's four named ones, plus W-8 case 6's
+ * Six of the thirteen are unsafe/state-loss controls: Decision M-1's four named ones, plus W-8 case 6's
  * deadline shape and row 8's completion check, both added after round-1 review finding K02-R1-01.
  *
  * **What round 3 changed.** Review finding K02-R3-01 reopened K02-R1-01: several §11 assertions were
@@ -57,9 +57,9 @@ function obs(executionId: string, overrides: Partial<Observation> = {}): Observa
   };
 }
 
-function applicationInput(eventId: string, destination: string, subscriptionClass: string): FixtureEvent {
+function applicationInput(eventId: string, destination: string, subscriptionClass: string, producer = "prod-default", requestKey = eventId): FixtureEvent {
   // W-1's category table: `external.input` is the one kind in the ordinary-application-input category.
-  return { eventId, destination, kind: "external.input", category: "application_input", subscriptionClass };
+  return { eventId, destination, kind: "external.input", category: "application_input", subscriptionClass, producer, requestKey };
 }
 
 function kernelEvent(eventId: string, destination: string, kind: string, correlation: string): FixtureEvent {
@@ -92,7 +92,7 @@ const FAKE_RUNTIME_V2 = "fake-runtime@2";
 // -- Scenario 1: 001's K0 trace ---------------------------------------------
 
 const X = "exec-x";
-const initialInput = applicationInput("in-1", X, "initial");
+const initialInput = applicationInput("in-1", X, "initial", "prod-default", "req-x");
 const billingOne = applicationInput("bq-1", X, "billing.question");
 const billingTwo = applicationInput("bq-2", X, "billing.question");
 const continueInput = applicationInput("cont-1", X, "continue");
@@ -307,7 +307,7 @@ export const k0Trace: Scenario = {
 // -- Scenario 2: a delayed Runtime does not block a second Execution ---------
 
 const Y = "exec-y";
-const yInput = applicationInput("in-y1", Y, "initial");
+const yInput = applicationInput("in-y1", Y, "initial", "prod-default", "req-y");
 
 export const delayedRuntimeNonBlocking: Scenario = {
   id: "delayed-runtime-non-blocking",
@@ -1200,7 +1200,7 @@ export const createAndActivationIdentity: Scenario = {
         kind: "create_retry",
         executionId: X,
         requestKey: "req-x",
-        initialInput: applicationInput("in-DIFFERENT", X, "initial"),
+        initialInput: applicationInput("in-DIFFERENT", X, "initial", "prod-default", "req-x"),
         definitionRevision: FAKE_RUNTIME_V1,
       },
       {
@@ -1362,18 +1362,28 @@ export const createAndActivationIdentity: Scenario = {
  * identity and receipt, proving same-scope replay still works once the scope is explicit.
  */
 const producerSharedKey = "req-shared";
-const producerAInput = applicationInput("in-pa", "exec-pa", "initial");
-const producerBInput = applicationInput("in-pb", "exec-pb", "initial");
+const producerAInput = applicationInput("in-pa", "exec-pa", "initial", "prod-a", producerSharedKey);
+const producerBInput = applicationInput("in-pb", "exec-pb", "initial", "prod-b", producerSharedKey);
+
+// Subsequent application ingress independently varies producer while destination and key stay fixed.
+const producerIngressA = applicationInput("input-a", "exec-pa", "continue", "prod-a", "k");
+const producerIngressB = applicationInput("input-b", "exec-pa", "continue", "prod-b", "k");
+const producerIngressConflict = applicationInput("input-conflict", "exec-pa", "billing.question", "prod-a", "k");
+const producerIngressWait: WaitRecord = { dependencies: [], subscriptions: [{ subscriptionClass: "continue" }], generation: "g-input" };
+function producerIngressObservation(later: readonly string[], overrides: Partial<Observation> = {}): Observation {
+  return obs("exec-pa", { state: "RUNNING", queued: ["in-pa", ...later], activationId: "act-pa", dispatchedBatch: ["in-pa"], receipt: "receipt:create:req-shared:prod-a", writerEpoch: 1, ...overrides });
+}
 
 export const producerScopedCreateIdentity: Scenario = {
   id: "identity-producer-scope",
-  title: "two producers reusing one raw request-key text do not collide; same-producer replay still does",
+  title: "producer-scoped create and same-destination input identities, replay and conflict",
   sources: [
     "K0.1 worksheet §11 row 1 (ID-1, ID-2, ID-6, ID-7)",
     "execution-protocol.md, Identities and immutable exchanges (input identity is producer + destination + request key)",
   ],
   k0BoundaryRows: [1],
   isUnsafeControl: false,
+  waits: { input: producerIngressWait },
   steps: [
     step(
       { kind: "create", executionId: "exec-pa", requestKey: producerSharedKey, producer: "prod-a", initialInput: producerAInput, definitionRevision: FAKE_RUNTIME_V1 },
@@ -1405,6 +1415,42 @@ export const producerScopedCreateIdentity: Scenario = {
         ],
       },
     ),
+    step(
+      { kind: "dispatch", executionId: "exec-pa", bound: 1 },
+      { label: "pin only the initial input before later ingress", observation: producerIngressObservation([]) },
+    ),
+    step(
+      { kind: "accept_event", event: producerIngressA },
+      { label: "producer A sends to X under raw key k", observation: producerIngressObservation(["input-a"]) },
+    ),
+    step(
+      { kind: "accept_event", event: producerIngressB },
+      { label: "producer B sends to the same X under the same raw key k: a distinct acceptance", observation: producerIngressObservation(["input-a", "input-b"]) },
+    ),
+    step(
+      { kind: "accept_event", event: producerIngressA },
+      { label: "exact same-producer ingress replay retains its original acceptance position", observation: producerIngressObservation(["input-a", "input-b"]) },
+    ),
+    step(
+      { kind: "accept_event", event: producerIngressConflict },
+      { label: "same full ingress identity with different content is a conflict and accepts nothing", observation: producerIngressObservation(["input-a", "input-b"], { rejection: { classification: "duplicate_conflict", reason: "same input identity with different content" } }) },
+    ),
+    step(
+      { kind: "submit_outcome", outcome: outcome({ executionId: "exec-pa", activationId: "act-pa", next: { step: "await", wait: producerIngressWait } }) },
+      { label: "W-2 path A sees both accepted producers after acknowledging only the pinned batch", observation: obs("exec-pa", { progressRevision: 1, acknowledged: ["in-pa"], queued: ["input-a", "input-b"], receipt: "receipt:input-wait", writerEpoch: 1, waitEndedReadiness: [{ generation: "g-input", species: "event" }] }) },
+    ),
+    step(
+      { kind: "dispatch", executionId: "exec-pa", bound: 1 },
+      { label: "B-6 bounded selection keeps first accepted producer first", observation: obs("exec-pa", { state: "RUNNING", progressRevision: 1, acknowledged: ["in-pa"], queued: ["input-a", "input-b"], activationId: "act-pa-2", dispatchedBatch: ["input-a"], receipt: "receipt:input-wait", writerEpoch: 1 }) },
+    ),
+    step(
+      { kind: "submit_outcome", outcome: outcome({ executionId: "exec-pa", activationId: "act-pa-2", baseProgressRevision: 1, next: { step: "complete", result: "done" } }) },
+      { label: "terminal acceptance acknowledges selected input and disposes the other producer input", observation: obs("exec-pa", { state: "COMPLETED", progressRevision: 2, acknowledged: ["in-pa", "input-a"], terminalDispositions: ["input-b"], receipt: "receipt:input-complete", writerEpoch: 1 }) },
+    ),
+    step(
+      { kind: "accept_event", event: applicationInput("input-late", "exec-pa", "continue", "prod-b", "late") },
+      { label: "new application identity after terminal is refused without an acceptance position", observation: obs("exec-pa", { state: "COMPLETED", progressRevision: 2, acknowledged: ["in-pa", "input-a"], terminalDispositions: ["input-b"], receipt: "receipt:input-complete", writerEpoch: 1, ingressRefused: "input-late" }) },
+    ),
   ],
 };
 
@@ -1428,7 +1474,8 @@ export const producerScopedCreateIdentity: Scenario = {
  * minimal step submits a valid subscription-only wait inside an envelope that is malformed for an
  * unrelated reason (duplicate emission key). Its conforming result is a correct `malformed_envelope`
  * refusal with no wait, no deadline, no readiness and no next-state change; the violating transcript
- * arms only readiness for that valid generation.
+ * arms only readiness for that valid generation. Round 11 adds cont-1 after reservation:
+ * W-2 step 2 would find it and B-6 path A would end g-good if the Outcome were accepted.
  */
 const validWaitInMalformedEnvelope: WaitRecord = {
   dependencies: [],
@@ -1614,6 +1661,10 @@ export const wholeEnvelopeValidation: Scenario = {
       },
     ),
     step(
+      { kind: "accept_event", event: continueInput },
+      { label: "eligible input accepted after reservation remains outside the pinned batch", observation: obs(X, { state: "RUNNING", queued: ["in-1", "cont-1"], activationId: "act-1", dispatchedBatch: ["in-1"], receipt: "receipt:create:req-x", writerEpoch: 1, rejection: { classification: "malformed_envelope", reason: "dependency alternative supplies an empty kind set" } }) },
+    ),
+    step(
       {
         kind: "submit_outcome",
         outcome: outcome({
@@ -1622,7 +1673,8 @@ export const wholeEnvelopeValidation: Scenario = {
           progress: { cursor: 1 },
           // Malformed for an unrelated reason: the wait itself is valid (subscription-only, well formed
           // under W-1 rule 1), but the emission list reuses its key, so OA-3 refuses the whole envelope.
-          // A readiness writer that runs before validation could arm a readiness for g-good even though
+          // Correct W-2 step 2 finds accepted cont-1 outside the pinned batch and would end g-good.
+          // A readiness writer that commits this B-6 path-A result before validation leaks it even though
           // validation correctly refuses and correctly registers no wait, no deadline and no next-state.
           emissions: [
             { emissionId: "em-1", value: { partial: "a" } },
@@ -1635,7 +1687,7 @@ export const wholeEnvelopeValidation: Scenario = {
         label: "a valid wait inside a malformed envelope earns nothing: no wait, readiness or next-state transition",
         observation: obs(X, {
           state: "RUNNING",
-          queued: ["in-1"],
+          queued: ["in-1", "cont-1"],
           activationId: "act-1",
           dispatchedBatch: ["in-1"],
           receipt: "receipt:create:req-x",
@@ -1663,6 +1715,7 @@ export const wholeEnvelopeValidation: Scenario = {
           progress: { cursor: 1 },
           emissions: ["em-1"],
           acknowledged: ["in-1"],
+          queued: ["cont-1"],
           receipt: "receipt:outcome:act-1",
           writerEpoch: 1,
         }),

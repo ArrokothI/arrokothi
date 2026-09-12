@@ -30,7 +30,7 @@ offline with no model, network, container or database.
 | `k0-trace` | 001's K0 trace end to end, as W-8's cases 1–5; distinct Outcome receipts across acceptances | — |
 | `delayed-runtime-non-blocking` | a delayed Runtime does not block another Execution; W-4; distinct create receipts across keys | — |
 | `identity-create-and-activation` | create-key conflict; ordinary redelivery (same ID/epoch/input); distinct Activation IDs; takeover under the same ID with pinned input; stale old-epoch fencing | — |
-| `identity-producer-scope` | two producers reusing one raw request-key text do not collide (ID-2) | — |
+| `identity-producer-scope` | cross-producer create and same-destination application ingress; exact replay and conflicting content (ID-2) | — |
 | `control-whole-envelope-validation` | a valid prefix earns nothing; a structurally empty wait is refused; OA-5's whole-envelope zero-partial-state family (progress/emissions/ack/intent/deadline/wait/readiness/next-state) plus rejected-mints-none | — |
 | `control-duplicate-conflicting-outcome` | receipt replay versus conflict, including conflicting-mints-none | M-1, §11 row 3 |
 | `control-stale-timer-and-lost-wake` | lost wake at registration; generation fencing; timer idempotency; both B-6 entry boundaries for a deadline-bearing wait | M-1, §11 row 5 |
@@ -44,13 +44,13 @@ offline with no model, network, container or database.
 Four of these were added after round-1 review, one after round-3 review and one after round-10 review; see §§8, 10 and 17.
 
 [`coverage.ts`](../../../../tests/conformance/k0/coverage.ts) maps the scenarios onto §11 at the
-granularity of the **independently distinguishable assertion** — 114 entries across the ten rows, not
+granularity of the **independently distinguishable assertion** — 118 entries across the ten rows, not
 ten row entries and not the 33 prose-level obligations of two revisions ago. The unit is
 behavioural rather than editorial: two clauses in one cell are separate assertions when a plausible
 implementation can get one right and the other wrong, because that is the candidate the oracle has to
 be able to fail. §11 row 5 states the standard itself — "Each of these is **separately** observable".
 
-Of the 114, **104** resolve to a scenario step plus at least one counterexample the oracle demonstrably
+Of the 118, **108** resolve to a scenario step plus at least one counterexample the oracle demonstrably
 rejects at that step; **four** (R3-c3, R6-a1, R8-b2, R2-c4) are marked `shared`, meaning two §11 rows name
 one observable fact and one transcript is the honest evidence for both, with the identity written down
 and checked; **one** (R10-b) is a negative obligation enforced by scanning the corpus; **five** are
@@ -714,13 +714,14 @@ now at the whole-envelope-validation writer rather than the CX-6 fence, which ha
 - **R3-c6** owns next-state at the duplicate-emission envelope (step 2), which already carries a valid
   `next: continue`: correct refusal with no progress/emissions/acknowledgment, but `READY`. Single
   `state` move, distinct from every other half there.
-- **R3-c7** owns readiness-only on a new minimal schedule (step 7): a valid subscription-only wait
-  (`g-good`) inside an envelope malformed for an unrelated reason (duplicate emission key). Correct
-  refusal with no wait, no deadline and `RUNNING`, but a wait-ended readiness for `g-good`. No existing
-  rejected schedule could distinguish this honestly — every other await here is malformed or absent, so
-  arming a readiness for `g-bad` or for no wait would model a doubly-wrong candidate — hence the new
-  step rather than a bundled move. `waitEndedReadiness` is deliberately ungrouped, so no atomicity note
-  is owed.
+- **R3-c7** owns readiness-only (now step 8). Round 11 found that a valid wait alone was
+  insufficient: without an eligible Event it would not end. The corrected schedule first accepts
+  `cont-1` after reservation, outside `[in-1]`. The subscription-only `g-good` would match it under
+  W-2 step 2 / B-6 path A if accepted. An unrelated duplicate emission still requires
+  `malformed_envelope`. The violating transcript preserves that rejection, RUNNING, the pinned
+  Activation/batch, no progress/emissions/acknowledgment, no live wait and no accepted deadline,
+  changing only `waitEndedReadiness` to `{ generation: g-good, species: event }`. No CX-6 evidence
+  is reused and readiness stays ungrouped.
 
 **K02-R10-02 — row 2 still under-covered ID-3/ID-4/ID-9.** Takeover is three facts (same ID in R2-c1,
 advanced epoch in R2-c2, same immutable input), but only the first two were owned, and ordinary
@@ -778,3 +779,49 @@ including row 8's shared rejection paths, were re-swept after the surface change
 re-enforces no-shared-transcript, no-shared-field-set and bidirectional row attribution, and
 `blind-spot-regression.test.ts` pins the three round-10 families, the redelivery/takeover field
 division with its shared stale link, and the producer/receipt splits.
+
+
+## 18. Round-11 correction: readiness preconditions and application-input identity
+
+Revision 12 fixes forward from C11/H11 under [review-11.md](review-11.md). R11-01/-02/-03 are
+implemented and offered for independent review; the earlier claims that R10-01/-03 were fully
+closed were superseded by that review. R10-02 and the accepted prior corrections remain intact.
+
+R3-c7's schedule now supplies an already accepted eligible Event outside the reserved batch (§17).
+Its regression derives eligibility and proves the Event survives hypothetical W-2 step-1 batch
+acknowledgment. This distinguishes a premature readiness commit from invented readiness.
+R2-b2's later valid-Outcome evidence moves to step 9 and still acknowledges exactly `[in-1]`,
+retaining `cont-1` for a later exchange.
+
+`FixtureEvent` now requires authenticated `producer` and `requestKey` for application inputs;
+Kernel Events/timeouts keep their own provenance. All existing application input schedules supply
+explicit identities; the default single producer preserves their meaning. Create command identity
+and initial input metadata agree. `accept_event` uses producer + destination + requestKey, with
+exact-content replay retaining the original acceptance position and changed content recording
+`duplicate_conflict`. The observation's rejection field documents create/input as well as Outcome
+rejections. Input acceptance evidence is the per-Execution queued Event order, not a new opaque
+receipt; creation/Outcome receipt and Activation-ID families keep their existing normalization.
+
+The original three create steps of `identity-producer-scope` remain. Nine appended steps pin the
+initial input, accept `prod-a` and `prod-b` at `exec-pa` under raw key `k`, replay A exactly, reject
+A's conflicting content, evaluate a subscription wait, reserve with bound 1, complete and refuse
+fresh terminal ingress. The second producer is a new identity with a distinct Event; destination
+and raw key stay fixed. R1-e1 rejects a plausible `(destination, requestKey)` index that omits
+producer and silently drops B while all unrelated observations remain correct. R1-e2 rejects
+re-appending exact replay; R1-e3 owns the conflict answer; R1-e4 owns unchanged accepted content/order
+beside a correct conflict. Each moves one field; none adds an atomicity note.
+
+The assertion-granular sweep rechecks row 1's create/ingress identity and acceptance relations;
+row 5's subscription eligibility, W-2 registration and both B-6 paths; row 6's pinned input and
+no-readiness ingress; and rows 2/3/7/8's input acknowledgment, receipt, cancellation and terminal
+consumers. Existing owners remain at their actual boundaries. The new producer scenario's downstream
+steps are interaction evidence, not duplicate row attribution. The corpus-wide ingress audit derives
+fresh/replay/conflict/refusal from the full triple, checks queue order, unchanged opaque receipt and
+exchange, and wait/deadline/readiness effects. Both-producer input survives W-2/B-6, B-3 acknowledgment
+and B-5 disposal. All existing interaction, deadline, receipt-family and discrimination guards run.
+
+**Current totals:** 118 obligations = 108 scenario + 4 shared + 1 corpus + 5 assigned;
+108 violating transcripts; 20 atomicity notes; 13 scenarios / 108 steps. Per-row counts are
+13, 11, 16, 7, 34, 5, 17, 9, 2, 4. The 114/104/98 figures in §17 describe the prior correction's
+historical delta, not this revision. Both P3 live descriptions are corrected. Historical reports and
+reviews are unchanged. C8 remains `BLOCKED_EXTERNAL`; K0 stays open and K1.0 stays unreleased.

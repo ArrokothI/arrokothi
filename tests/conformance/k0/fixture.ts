@@ -33,7 +33,11 @@ export type Command =
   | { readonly kind: "create"; readonly executionId: string; readonly requestKey: string; readonly producer?: string; readonly initialInput: FixtureEvent; readonly definitionRevision: string }
   /** A retried create under the same producer-scoped request key (same producer, same key text). */
   | { readonly kind: "create_retry"; readonly executionId: string; readonly requestKey: string; readonly producer?: string; readonly initialInput: FixtureEvent; readonly definitionRevision: string }
-  /** Accept an Event into the destination mailbox through its own ingress boundary. */
+  /** Accept an Event through its own ingress boundary. Application Events carry authenticated
+   * producer + destination + requestKey (ID-2). Exact identity/content replay keeps its original
+   * acceptance position; conflicting content records duplicate_conflict and accepts no edit.
+   * New ordinary input to a terminal destination is refused. Kernel Event provenance is separate.
+   */
   | { readonly kind: "accept_event"; readonly event: FixtureEvent }
   /** Reserve a batch and dispatch. `bound` is the implementation-owned batch bound (B-1: at least 1). */
   | { readonly kind: "dispatch"; readonly executionId: string; readonly bound: number }
@@ -149,8 +153,8 @@ export interface Observation {
    */
   readonly activationId: string | null;
   /**
-   * The Event ID of an ingress the Kernel refused rather than accepting into the mailbox; `null` when
-   * the last command refused nothing. execution-protocol.md: "Terminal ingress refuses new ordinary
+   * The Event ID of new ordinary ingress refused because its destination is terminal; `null`
+   * otherwise. An ID-2 content conflict is recorded in `rejection` instead. execution-protocol.md: "Terminal ingress refuses new ordinary
    * input." A refusal is not a queued Event and not a B-5 disposition; it is a third answer.
    */
   readonly ingressRefused: string | null;
@@ -181,7 +185,7 @@ export interface Observation {
    * the prior accepted receipt). Spelling is implementation-owned (§2 Left open).
    */
   readonly receipt: string | null;
-  /** The rejection recorded by the most recent rejected Outcome, if any. */
+  /** The most recent recorded create/input/Outcome rejection, if any (including ID-2 content conflict). */
   readonly rejection: OutcomeRejection | null;
   /** Writer epoch of the current exchange. A takeover advances it under the same Activation ID (ID-9). */
   readonly writerEpoch: number;

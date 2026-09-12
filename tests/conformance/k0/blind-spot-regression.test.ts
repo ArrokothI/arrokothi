@@ -27,7 +27,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { VIOLATIONS } from "./candidate.ts";
-import { checkWaitWellFormed } from "./protocol-vocabulary.ts";
+import { checkWaitWellFormed, isEligibleUnderWait } from "./protocol-vocabulary.ts";
 import { ALL_SCENARIOS } from "./scenarios.ts";
 import type { Observation } from "./fixture.ts";
 
@@ -724,6 +724,22 @@ describe("round-10: the whole-envelope-validation writer owns wait, readiness an
     assert.equal(expected.acceptedDeadline, null);
     assert.deepEqual(changedFields(expected, readinessLeak.mutate(expected)), ["waitEndedReadiness"]);
     assert.deepEqual(readinessLeak.mutate(expected).waitEndedReadiness, [{ generation: "g-good", species: "event" }]);
+    // W-2 acknowledges the pinned batch first. A mere valid wait is insufficient (R11-01).
+    const before = target.steps[readinessLeak.stepIndex - 1]!;
+    assert.equal(before.command.kind, "accept_event");
+    assert.ok(before.command.kind === "accept_event");
+    const eligible = before.command.event;
+    assert.ok(before.expect.observation.queued.includes(eligible.eventId));
+    assert.ok(!before.expect.observation.dispatchedBatch!.includes(eligible.eventId));
+    assert.ok(wait && isEligibleUnderWait(wait, eligible), "correct W-2 step 2 must actually end this wait under B-6 path A");
+    assert.deepEqual(expected.queued, before.expect.observation.queued);
+    assert.deepEqual(expected.dispatchedBatch, before.expect.observation.dispatchedBatch);
+    assert.deepEqual(expected.acknowledged, []);
+    assert.deepEqual(expected.emissions, []);
+    assert.equal(expected.progressRevision, 0);
+    const emissions = step.command.outcome.emissions;
+    assert.ok(new Set(emissions.map((e) => e.emissionId)).size < emissions.length);
+
   });
 
   test("none of the three reuses the CX-6 fence: different scenarios and classifications", () => {
@@ -787,7 +803,7 @@ describe("round-10: takeover keeps the pinned input, redelivery is representable
 describe("round-10: producer scope is representable and receipts are re-derived without overloading", () => {
   test("two producers reuse one raw key without colliding, and same-producer replay still works", () => {
     const target = scenario("identity-producer-scope");
-    assert.equal(target.steps.length, 3);
+    assert.equal(target.steps.length, 12);
     const first = target.steps[0]!.expect.observation;
     const second = target.steps[1]!.expect.observation;
     const retry = target.steps[2]!.expect.observation;
@@ -859,6 +875,30 @@ describe("round-4: the withdrawn subscription rule stays withdrawn", () => {
           `${target.id} step ${index} submits an empty subscription identity and requires rejection; W-1 does not forbid that spelling`,
         );
       }
+    }
+  });
+});
+
+
+describe("round-11 input identity discrimination", () => {
+  test("producer alone varies in the ID-2 triple, with exact replay and changed-content conflict", () => {
+    const target = scenario("identity-producer-scope");
+    const events = [4, 5, 6, 7].map((i) => {
+      const command = target.steps[i]!.command;
+      assert.ok(command.kind === "accept_event" && command.event.category === "application_input");
+      return command.event;
+    });
+    const [a, b, replay, conflict] = events;
+    assert.equal(a!.destination, b!.destination);
+    assert.equal(a!.requestKey, b!.requestKey);
+    assert.notEqual(a!.producer, b!.producer);
+    assert.notEqual(a!.eventId, b!.eventId);
+    assert.notEqual(a!.subscriptionClass, conflict!.subscriptionClass);
+    assert.deepEqual(a, replay);
+    assert.deepEqual([a!.producer, a!.destination, a!.requestKey], [conflict!.producer, conflict!.destination, conflict!.requestKey]);
+    for (const entry of VIOLATIONS.filter((v) => v.id.startsWith("input-identity/"))) {
+      const expected = target.steps[entry.stepIndex]!.expect.observation;
+      assert.deepEqual(changedFields(expected, entry.mutate(expected)), entry.mustNameFields);
     }
   });
 });

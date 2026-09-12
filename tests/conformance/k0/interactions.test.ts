@@ -483,3 +483,88 @@ describe("interaction: Effect intents do not exist at K1, anywhere in the corpus
     assert.ok(proposesAnEffect, "no scenario proposes an Effect, so the empty-intent invariant proves nothing");
   });
 });
+
+
+describe("interaction: ID-2 application ingress across receipts, waits, batches and terminal paths", () => {
+  test("every application ingress preserves the exchange and opaque receipt; only fresh accepted identities append", () => {
+    let fresh = 0, replay = 0, conflict = 0, terminal = 0, running = 0, waiting = 0;
+    for (const scenario of ALL_SCENARIOS) {
+      const accepted = new Map<string, FixtureEvent>();
+      for (const [index, step] of scenario.steps.entries()) {
+        const command = step.command;
+        if (command.kind === "create" || command.kind === "create_retry") {
+          const input = command.initialInput;
+          assert.ok(input.category === "application_input");
+          assert.equal(input.producer, command.producer ?? "prod-default");
+          assert.equal(input.requestKey, command.requestKey);
+          if (step.expect.observation.rejection === null) accepted.set(JSON.stringify([input.producer, input.destination, input.requestKey]), input);
+        }
+        if (command.kind !== "accept_event" || command.event.category !== "application_input") continue;
+        const event = command.event;
+        assert.ok(event.producer.length && event.requestKey.length);
+        const before = previousObservationFor(scenario, index, event.destination);
+        assert.ok(before);
+        const after = step.expect.observation;
+        // Rows 1/6: neither identity validation nor mailbox acceptance resolves the current exchange.
+        for (const field of ["activationId", "dispatchedBatch", "acknowledged", "progress", "progressRevision", "emissions", "receipt", "terminalDispositions"] as const) {
+          assert.deepEqual(after[field], before[field], `${scenario.id} ${index}: ingress changed ${field}`);
+        }
+        const key = JSON.stringify([event.producer, event.destination, event.requestKey]);
+        const prior = accepted.get(key);
+        if (prior) {
+          assert.deepEqual(after.queued, before.queued);
+          if (JSON.stringify(prior) === JSON.stringify(event)) {
+            replay++;
+            assert.deepEqual(after.rejection, before.rejection);
+          } else {
+            conflict++;
+            assert.equal(after.rejection?.classification, "duplicate_conflict");
+          }
+        } else if (["COMPLETED", "FAILED", "CANCELLED"].includes(before.state)) {
+          terminal++;
+          assert.equal(after.ingressRefused, event.eventId);
+          assert.deepEqual(after.queued, before.queued);
+        } else {
+          fresh++;
+          accepted.set(key, event);
+          assert.equal(after.ingressRefused, null);
+          assert.deepEqual(after.queued, [...before.queued, event.eventId]);
+          if (before.state === "RUNNING") running++;
+          if (before.state === "WAITING") waiting++;
+        }
+        // Rows 5/6: producer keys are identity metadata, never a fourth wait selector.
+        if (before.liveWaitGeneration === null) {
+          assert.deepEqual(after.waitEndedReadiness, before.waitEndedReadiness);
+          assert.equal(after.state, before.state);
+          assert.equal(after.acceptedDeadline, before.acceptedDeadline);
+        } else {
+          const wait = Object.values(scenario.waits ?? {}).find((w) => w.generation === before.liveWaitGeneration);
+          assert.ok(wait);
+          if (prior || !isEligibleUnderWait(wait, event)) {
+            assert.equal(after.liveWaitGeneration, before.liveWaitGeneration);
+            assert.equal(after.acceptedDeadline, before.acceptedDeadline);
+          } else {
+            assert.equal(after.state, "READY");
+            assert.equal(after.liveWaitGeneration, null);
+            assert.equal(after.acceptedDeadline, null);
+            assert.deepEqual(after.waitEndedReadiness, [{ generation: wait.generation, species: "event" }]);
+          }
+        }
+      }
+    }
+    assert.ok(fresh > 0 && replay > 0 && conflict > 0 && terminal > 0 && running > 0 && waiting > 0);
+  });
+
+  test("same-destination producers survive W-2, B-6 bound 1, B-3 acknowledgment and B-5 disposal", () => {
+    const target = ALL_SCENARIOS.find((s) => s.id === "identity-producer-scope")!;
+    const registered = target.steps[8]!.expect.observation;
+    assert.deepEqual(registered.queued, ["input-a", "input-b"]);
+    assert.deepEqual(registered.acknowledged, ["in-pa"]);
+    assert.deepEqual(registered.waitEndedReadiness, [{ generation: "g-input", species: "event" }]);
+    assert.deepEqual(target.steps[9]!.expect.observation.dispatchedBatch, ["input-a"]);
+    const completed = target.steps[10]!.expect.observation;
+    assert.deepEqual(completed.acknowledged, ["in-pa", "input-a"]);
+    assert.deepEqual(completed.terminalDispositions, ["input-b"]);
+    assert.deepEqual(completed.queued, []);
+  });
+});

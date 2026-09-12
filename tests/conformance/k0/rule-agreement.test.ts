@@ -35,9 +35,9 @@ import { ALL_SCENARIOS, k0Trace, staleTimerAndLostWake, subscriptionWaitDeadline
 // Rebuilt here from the worksheet rather than imported from the scenarios, so that agreement between
 // the two is an actual finding and not a shared definition.
 const X = "exec-x";
-const billingOne: FixtureEvent = { eventId: "bq-1", destination: X, kind: "external.input", category: "application_input", subscriptionClass: "billing.question" };
-const billingTwo: FixtureEvent = { eventId: "bq-2", destination: X, kind: "external.input", category: "application_input", subscriptionClass: "billing.question" };
-const continueInput: FixtureEvent = { eventId: "cont-1", destination: X, kind: "external.input", category: "application_input", subscriptionClass: "continue" };
+const billingOne: FixtureEvent = { eventId: "bq-1", destination: X, kind: "external.input", category: "application_input", producer: "prod-default", requestKey: "bq-1", subscriptionClass: "billing.question" };
+const billingTwo: FixtureEvent = { eventId: "bq-2", destination: X, kind: "external.input", category: "application_input", producer: "prod-default", requestKey: "bq-2", subscriptionClass: "billing.question" };
+const continueInput: FixtureEvent = { eventId: "cont-1", destination: X, kind: "external.input", category: "application_input", producer: "prod-default", requestKey: "cont-1", subscriptionClass: "continue" };
 const resultEvent: FixtureEvent = { eventId: "res-1", destination: X, kind: "effect.result", category: "kernel_event", correlation: "corr-1" };
 const timeout: FixtureEvent = { eventId: "to-g1", destination: X, kind: "kernel.wait.timeout", category: "kernel_timeout", waitGeneration: "g1" };
 

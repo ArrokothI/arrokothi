@@ -275,6 +275,30 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     evidence: { kind: "scenario", scenario: "identity-create-and-activation", stepIndex: 2, counterexamples: ["identity-create/conflict-mints-a-fresh-receipt"] },
   },
 
+  {
+    id: "R1-e1",
+    row: 1,
+    obligation: "Distinct producers at the same destination under the same raw request key have distinct input acceptance positions (ID-2).",
+    evidence: { kind: "scenario", scenario: "identity-producer-scope", stepIndex: 5, counterexamples: ["input-identity/producer-omitted-drops-second-input"] },
+  },
+  {
+    id: "R1-e2",
+    row: 1,
+    obligation: "Exact full-identity/content application replay retains one original acceptance position (ID-2, ID-6).",
+    evidence: { kind: "scenario", scenario: "identity-producer-scope", stepIndex: 6, counterexamples: ["input-identity/exact-replay-appends-again"] },
+  },
+  {
+    id: "R1-e3",
+    row: 1,
+    obligation: "Same application input identity with different content records a conflict (ID-2), never a successful replay.",
+    evidence: { kind: "scenario", scenario: "identity-producer-scope", stepIndex: 7, counterexamples: ["input-identity/conflict-silently-replayed"] },
+  },
+  {
+    id: "R1-e4",
+    row: 1,
+    obligation: "A correctly rejected input identity conflict leaves accepted input content and order unchanged (ID-2, ID-6).",
+    evidence: { kind: "scenario", scenario: "identity-producer-scope", stepIndex: 7, counterexamples: ["input-identity/conflict-appends-input"] },
+  },
   // == Row 2: Activation dispatch intent =====================================
   {
     id: "R2-a",
@@ -292,7 +316,7 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     id: "R2-b2",
     row: 2,
     obligation: "A later Outcome can be checked against that batch exactly — no less: an accepted Outcome acknowledges the entire pinned batch, not the subset it happened to reference.",
-    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 8, counterexamples: ["envelope/accepted-outcome-leaves-its-batch-unacknowledged"] },
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 9, counterexamples: ["envelope/accepted-outcome-leaves-its-batch-unacknowledged"] },
   },
   {
     id: "R2-b3",
@@ -479,13 +503,14 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     // than the independently plausible partial — a readiness writer leaking for a valid generation
     // while registration, deadline and lifecycle correctly stay refused. The new step submits a valid
     // subscription-only wait (g-good) inside an envelope malformed for an unrelated reason (duplicate
-    // emission), so only readiness leaks. `waitEndedReadiness` is deliberately ungrouped, so no
+    // emission). Round 11 inserts cont-1 outside the reserved batch: correct W-2 step 2
+    // would find that eligible Event and end g-good under B-6 path A, so only readiness leaks. `waitEndedReadiness` is deliberately ungrouped, so no
     // atomicity note is owed; bundling it with lifecycle or deadline to avoid another schedule is
     // exactly what this entry exists to forbid.
     id: "R3-c7",
     row: 3,
     obligation: "It leaves no wait-ended readiness behind either (OA-5): even a valid wait named in a refused envelope creates no readiness, so a correct `malformed_envelope` refusal with no wait, no deadline and RUNNING still has empty readiness.",
-    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 7, counterexamples: ["envelope/valid-wait-in-malformed-envelope-arms-readiness"] },
+    evidence: { kind: "scenario", scenario: "control-whole-envelope-validation", stepIndex: 8, counterexamples: ["envelope/valid-wait-in-malformed-envelope-arms-readiness"] },
   },
   {
     // Added by round-10 review finding K02-R10-03, re-deriving ID-6/ID-7 at the Outcome boundary. Exact

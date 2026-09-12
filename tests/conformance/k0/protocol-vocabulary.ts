@@ -43,11 +43,11 @@ export type EventSourceCategory =
   /** Runtime-established results, settlements, child results, peer messages. Eligible via a dependency alternative. */
   | "kernel_event";
 
-export interface FixtureEvent {
+interface FixtureEventBase {
   readonly eventId: string;
   readonly destination: string;
   readonly kind: string;
-  readonly category: EventSourceCategory;
+
   /** Correlation identity where the envelope carries one. */
   readonly correlation?: string;
   /**
@@ -59,6 +59,14 @@ export interface FixtureEvent {
   /** For `kernel_timeout`, the wait generation whose deadline expired (W-9 exact generation correlation). */
   readonly waitGeneration?: string;
 }
+
+/** ID-2 identity is carried by authenticated application ingress, not inferred from Event ID.
+ * Kernel-minted Events use their own provenance and do not borrow an application producer key.
+ */
+export type FixtureEvent = FixtureEventBase & (
+  | { readonly category: "application_input"; readonly producer: string; readonly requestKey: string }
+  | { readonly category: "kernel_event" | "kernel_timeout" }
+);
 
 // -- Waits -------------------------------------------------------------------
 

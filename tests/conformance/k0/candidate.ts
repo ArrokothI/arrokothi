@@ -452,7 +452,8 @@ export const VIOLATIONS: readonly Violation[] = [
     // writer, on the new minimal schedule that submits a *valid* wait inside an envelope malformed for
     // an unrelated reason (duplicate emission key). The envelope is correctly refused, correctly
     // registers no wait, correctly accepts no deadline and correctly stays RUNNING — but a readiness
-    // writer outside the fence arms a wait-ended readiness for the valid generation it names.
+    // writer prematurely runs W-2 step 2 on accepted cont-1 outside the pinned batch and
+    // commits the B-6 path-A readiness before the outer validation rejection.
     // `waitEndedReadiness` is deliberately ungrouped (round 5), so this single-field move needs no
     // atomicity note; bundling it with lifecycle or deadline to avoid another schedule would hide the
     // independence this packet exists to prove. The CX-6 writer's readiness half (R7-a6d) is a
@@ -461,10 +462,10 @@ export const VIOLATIONS: readonly Violation[] = [
     scenarioId: "control-whole-envelope-validation",
     plausibleBug:
       "a readiness writer outside the whole-envelope-validation fence arms a wait-ended readiness for the " +
-      "valid generation named in a refused envelope, while the Execution correctly stays RUNNING with no " +
+      "valid generation after prematurely evaluating W-2 step 2 against accepted cont-1 outside the pinned batch (B-6 path A), while the Execution correctly stays RUNNING with no " +
       "wait registered and no deadline fact",
     forbiddenBy: "OA-5 with §11 row 3: a rejected Outcome creates no readiness; B-8, readiness is created only by a wait ending, never by a refused envelope naming a valid wait",
-    stepIndex: 7,
+    stepIndex: 8,
     mustNameFields: ["waitEndedReadiness"],
     mutate: (observation) => ({ ...observation, waitEndedReadiness: [{ generation: "g-good", species: "event" }] }),
   },
@@ -724,6 +725,42 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, rejection: null }),
   },
   {
+    id: "input-identity/producer-omitted-drops-second-input",
+    scenarioId: "identity-producer-scope",
+    plausibleBug: "the application ingress dedup index uses (destination, requestKey) and omits producer; prod-b is silently absorbed as prod-a replay, dropping only its mailbox acceptance",
+    forbiddenBy: "Distinct producers at the same destination under the same raw request key have distinct input acceptance positions (ID-2).",
+    stepIndex: 5,
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: ["in-pa", "input-a"] }),
+  },
+  {
+    id: "input-identity/exact-replay-appends-again",
+    scenarioId: "identity-producer-scope",
+    plausibleBug: "the application ingress replay path appends the already accepted Event a second time instead of retaining its original position",
+    forbiddenBy: "Exact full-identity/content application replay retains one original acceptance position (ID-2, ID-6).",
+    stepIndex: 6,
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: ["in-pa", "input-a", "input-b", "input-a"] }),
+  },
+  {
+    id: "input-identity/conflict-silently-replayed",
+    scenarioId: "identity-producer-scope",
+    plausibleBug: "the input identity lookup skips content comparison and returns a successful replay without recording the conflict",
+    forbiddenBy: "Same application input identity with different content records a conflict (ID-2), never a successful replay.",
+    stepIndex: 7,
+    mustNameFields: ["rejection"],
+    mutate: (observation) => ({ ...observation, rejection: null }),
+  },
+  {
+    id: "input-identity/conflict-appends-input",
+    scenarioId: "identity-producer-scope",
+    plausibleBug: "the ingress mailbox append runs before content-conflict validation, retaining the conflicting input beside the correct rejection",
+    forbiddenBy: "A correctly rejected input identity conflict leaves accepted input content and order unchanged (ID-2, ID-6).",
+    stepIndex: 7,
+    mustNameFields: ["queued"],
+    mutate: (observation) => ({ ...observation, queued: ["in-pa", "input-a", "input-b", "input-conflict"] }),
+  },
+  {
     // Round-10 review finding K02-R10-03. ID-2 scopes input identity by producer namespace +
     // destination + producer request key, not by raw key text. A candidate globally deduplicating raw
     // key text returns the first producer's Execution for the second producer's same-text key. Single
@@ -794,7 +831,7 @@ export const VIOLATIONS: readonly Violation[] = [
       "acknowledgment is derived from the Events the Outcome explicitly references rather than from the pinned batch, " +
       "so a reserved Event the Runtime did not mention stays unacknowledged and is re-delivered in the next batch",
     forbiddenBy: "B-3 and §11 row 2: an accepted Outcome acknowledges its *entire* pinned batch, which is what makes the batch checkable exactly",
-    stepIndex: 8,
+    stepIndex: 9,
     mustNameFields: ["acknowledged"],
     mutate: (observation) => ({ ...observation, acknowledged: [] }),
   },
