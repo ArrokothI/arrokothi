@@ -439,6 +439,62 @@ describe("round-6: no observation constrains physical timer lifetime", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Round 7: every accepted-deadline transition owns a transcript
+// ---------------------------------------------------------------------------
+
+/**
+ * Round-7 review finding K02-R7-01: the neutral `acceptedDeadline` field could see five lifecycle
+ * transitions no assertion owned — the visible-but-unattributed failure mode round 4 corrected.
+ * The complete structural observation would incidentally reject these transcripts, but C7/C9 require
+ * one owned violating transcript per independently distinguishable assertion, and `forbids` prose
+ * or corpus invariants do not substitute. Each entry below moves *only* `acceptedDeadline` at its
+ * step, so none is a rebundling; the D-vs-R5-c3 pair additionally pins a proper narrowing.
+ */
+describe("round-7: accepted-deadline lifecycle transitions each move only the deadline fact", () => {
+  const NEW_DEADLINE_TRANSCRIPTS: readonly { readonly id: string; readonly value: unknown }[] = [
+    { id: "subscription-deadline/registered-wait-drops-the-accepted-deadline", value: null },
+    { id: "subscription-deadline/path-A-retirement-leaves-the-accepted-deadline", value: 1 },
+    { id: "control-stale-timer/immediate-retirement-leaves-the-accepted-deadline", value: 1_000 },
+    { id: "control-stale-timer/expiry-retirement-leaves-the-accepted-deadline", value: 2_000 },
+    { id: "control-stale-timer/stale-delivery-clears-the-live-deadline", value: null },
+  ];
+
+  test("the five new transcripts each move exactly acceptedDeadline, at five distinct steps", () => {
+    const points = new Set<string>();
+    for (const { id, value } of NEW_DEADLINE_TRANSCRIPTS) {
+      const entry = violation(id);
+      const target = scenario(entry.scenarioId);
+      const expected = target.steps[entry.stepIndex]!.expect.observation;
+      assert.deepEqual(changedFields(expected, entry.mutate(expected)), ["acceptedDeadline"]);
+      assert.deepEqual(entry.mutate(expected).acceptedDeadline, value);
+      const point = `${entry.scenarioId}#${entry.stepIndex}`;
+      assert.ok(!points.has(point), `${id} shares its step with another new deadline transcript; one of them is redundant`);
+      points.add(point);
+    }
+    assert.equal(points.size, 5);
+  });
+
+  test("the path-A leftover narrows R5-c3's ordering-swap transcript rather than restating it", () => {
+    // R5-c3's swap persists WAITING outright (five moved fields); the new transcript at the same
+    // step keeps the correct immediate retirement and leaks only the deadline fact (one field).
+    // A future edit that rebundles them fails here before it can weaken the split.
+    const broad = violation("subscription-deadline/past-deadline-persisted-as-a-live-wait");
+    const narrow = violation("subscription-deadline/path-A-retirement-leaves-the-accepted-deadline");
+    assert.equal(broad.scenarioId, narrow.scenarioId);
+    assert.equal(broad.stepIndex, narrow.stepIndex);
+    const target = scenario(broad.scenarioId);
+    const expected = target.steps[broad.stepIndex]!.expect.observation;
+    const broadFields = changedFields(expected, broad.mutate(expected));
+    const narrowFields = changedFields(expected, narrow.mutate(expected));
+    assert.deepEqual(narrowFields, ["acceptedDeadline"]);
+    for (const field of narrowFields) {
+      assert.ok(broadFields.includes(field), `${field} is moved by the narrow transcript but was not in the bundled set`);
+    }
+    assert.ok(broadFields.length > narrowFields.length, "the narrow transcript is not narrower than the bundled one");
+  });
+});
+
 describe("round-4: the withdrawn subscription rule stays withdrawn", () => {
   test("an empty declared subscription identity is well formed, because W-1 leaves the spelling to K1.3", () => {
     // Round-4 review finding K02-R4-01. This is a regression guard in the opposite direction from the

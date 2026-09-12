@@ -8,7 +8,7 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 7.** Revision 6 corrected revision 5 after round-6 review (finding K02-R6-01): C6's new deadline observation conflated the accepted logical deadline fact with the implementation-owned physical timer mechanism, pinning a timer-registration lifetime W-9 leaves open and W-3 contradicts (a retained timer for a retired generation arrives as a stale no-op). Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
+**Contract revision 8.** Revision 7 corrected revision 6 after round-7 review (finding K02-R7-01): C7's neutral deadline observation owned only three of its lifecycle transitions, leaving positive persistence and retirement cleanup to incidental structural rejection — visible but unattributed — rather than owned counterexamples. Revision 6 corrected revision 5 after round-6 review (finding K02-R6-01): C6's new deadline observation conflated the accepted logical deadline fact with the implementation-owned physical timer mechanism, pinning a timer-registration lifetime W-9 leaves open and W-3 contradicts (a retained timer for a retired generation arrives as a stale no-op). Revision 2 corrected revision 1 after round-1 review (findings K02-R1-01,
 K02-R1-02, K02-R1-03), where three criteria were *understating* what they had to establish. Revision 3
 corrected revision 2 after round-2 review (findings K02-R2-01, K02-R2-02), where one criterion had
 begun *overstating* it — C6/C7/C9 required a rejection-reason distinction the protocol does not make —
@@ -311,13 +311,17 @@ for declared subscription identities that W-9 assigns to K1.3. Revision 5's coup
 Activation-ID namespaces that the worksheet leaves independent, rejecting a conforming representation,
 and treated normative transaction coupling as proof partial writers are implausible — leaving the
 duplicate-conflict record-and-merge writer without a discriminating candidate and CX-6's zero-deadline
-clause without a schedule or an observation. Revision 6's observed the deadline as a physical timer
+clause without a schedule or an observation. Revision 7's observed the deadline neutrally but owned only three of its lifecycle transitions, leaving persistence and retirement cleanup unowned. Revision 6's observed the deadline as a physical timer
 registration whose lifetime the worksheet leaves open, so R7-a6c could fail a conforming stale-timer
 mechanism. **And normative coupling never counts as proof a partial
 writer is impossible** (round-5 finding K02-R5-02): `COUPLED_FIELD_GROUPS` is a review heuristic, and
 every retained composite names its specific writers. **And timer mechanism is never the deadline
 fact** (round-6 finding K02-R6-01): the accepted deadline is observed as logical state beside the
-live generation, with retirement clearing the fact while permitting late stale delivery.
+live generation, with retirement clearing the fact while permitting late stale delivery. **And a
+visible field still needs an owning transcript** (round-7 finding K02-R7-01): the deadline lifecycle
+— persistence on durable registration, cleanup on eligible-wake, path-A and path-B retirement, and
+fencing of stale deliveries — now carries one single-field counterexample per transition, because
+incidental structural rejection is not assertion-level evidence.
 Under-coverage lets a wrong candidate pass; over-constraint fails a right one, and is the worse
 failure of the two.
 **Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`.

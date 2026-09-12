@@ -338,6 +338,35 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, state: "WAITING", liveWaitGeneration: "gd2", queued: ["bq-1"], waitEndedReadiness: [], acceptedDeadline: 1 }),
   },
   {
+    // Round-7 review finding K02-R7-01: the positive persistence half. A future-deadline wait can
+    // register durably — WAITING with the right live generation — while the deadline writer is
+    // skipped, e.g. by treating the deadline as a scheduler-only hint rather than an accepted fact
+    // (the W-9 over-reading in the other direction). Nothing else is wrong.
+    id: "subscription-deadline/registered-wait-drops-the-accepted-deadline",
+    scenarioId: "control-subscription-wait-deadline",
+    plausibleBug:
+      "registration persists the wait but skips the deadline write, so a future-deadline wait parks durably " +
+      "with the correct live generation and no accepted deadline fact",
+    forbiddenBy: "W-2 step 4 and OA-4: an accepted future-deadline wait persists WAITING with its live registration, generation and deadline as one accepted set",
+    stepIndex: 3,
+    mustNameFields: ["acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, acceptedDeadline: null }),
+  },
+  {
+    // The path-A cleanup half at the same step as R5-c3's ordering swap: retirement itself is
+    // correct (READY, timeout minted, readiness committed) but the deadline evaluated-then-committed
+    // during the walk leaks. Narrower than the swap transcript, which persists WAITING outright.
+    id: "subscription-deadline/path-A-retirement-leaves-the-accepted-deadline",
+    scenarioId: "control-subscription-wait-deadline",
+    plausibleBug:
+      "the already-due deadline is committed during the registration walk before the due-check, and the " +
+      "path-A immediate retirement clears generation and readiness bookkeeping but not the deadline fact",
+    forbiddenBy: "W-2 step 3 with B-7 path A: an already-due deadline retires immediately with no durable deadline fact",
+    stepIndex: 6,
+    mustNameFields: ["acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, acceptedDeadline: 1 }),
+  },
+  {
     id: "completion/owned-work-proposed-in-the-completing-outcome-is-accepted",
     scenarioId: "control-completion-obligations",
     plausibleBug:
@@ -746,6 +775,35 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, liveWaitGeneration: "gd1" }),
   },
   {
+    // Round-7 review finding K02-R7-01: the eligible-wake cleanup half. A deadline-bearing wait
+    // retired at registration by an already-accepted Event (W-2 step 2 into B-6 path A) must leave
+    // no durable deadline fact; here the walk commits the deadline first and the immediate
+    // retirement clears generation and readiness bookkeeping but not the deadline.
+    id: "control-stale-timer/immediate-retirement-leaves-the-accepted-deadline",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "the registration walk commits the deadline before the mailbox check, and the immediate B-6 " +
+      "retirement clears the generation and readiness bookkeeping but not the accepted deadline fact",
+    forbiddenBy: "W-2 step 2 with B-6 path A and OA-5: a wait retired at registration by an already-accepted Event leaves no durable deadline fact",
+    stepIndex: 3,
+    mustNameFields: ["acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, acceptedDeadline: 1_000 }),
+  },
+  {
+    // The current-expiry cleanup half (B-7 path B): timeout minted, generation retired, readiness
+    // committed — but the deadline-clearing write missed. Narrower than lazy-retirement, which
+    // leaves the generation live outright.
+    id: "control-stale-timer/expiry-retirement-leaves-the-accepted-deadline",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "the expiry handler mints the timeout Event, retires the generation and creates readiness but " +
+      "misses the deadline-clearing write, so the retired wait's deadline fact stays live",
+    forbiddenBy: "B-7 path B with OA-5: a current-generation deadline expiry retires the registration, generation and deadline together",
+    stepIndex: 7,
+    mustNameFields: ["acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, acceptedDeadline: 2_000 }),
+  },
+  {
     id: "wait-structure/re-registered-dependency-treated-as-already-satisfied",
     scenarioId: "wait-structure-not-satisfiability",
     plausibleBug:
@@ -1039,6 +1097,20 @@ export const VIOLATIONS: readonly Violation[] = [
     stepIndex: 6,
     mustNameFields: ["liveWaitGeneration"],
     mutate: (observation) => ({ ...observation, liveWaitGeneration: null }),
+  },
+  {
+    // The fencing counterpart for the deadline fact: wake and retirement correctly fenced, but the
+    // stale handler clears deadline state by Execution instead of by generation, wiping the live
+    // wait's deadline while retiring nothing.
+    id: "control-stale-timer/stale-delivery-clears-the-live-deadline",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "stale-delivery fencing covers wake and retirement but clears deadline state by Execution instead of " +
+      "by generation, so a fenced delivery for a retired generation wipes the live wait's accepted deadline",
+    forbiddenBy: "W-3: a timer naming a superseded generation is a no-op that changes nothing, including the live generation's accepted deadline",
+    stepIndex: 6,
+    mustNameFields: ["acceptedDeadline"],
+    mutate: (observation) => ({ ...observation, acceptedDeadline: null }),
   },
   {
     id: "delayed-runtime/runtime-local-work-gets-a-waitingFor-record",

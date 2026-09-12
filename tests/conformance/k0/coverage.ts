@@ -484,8 +484,24 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(c) Step 3 evaluates an already-due deadline before persisting, so a past deadline is never persisted as live (B-7 path A).",
     atomicity:
-      "One bug construction: the Outcome-acceptance writer persists WAITING with its accepted deadline before the deadline-evaluator runs, so the W-2 step-3 branch that would mint the timeout, retire immediately and create deadline-readiness never executes. The live generation, live accepted deadline, absent timeout and absent readiness are one ordering swap plus the absence of the one path-A transaction. A persister that writes the live generation without its deadline (or vice versa) would be registration sub-transaction failure by the same writer split further; the live-generation field alone already discriminates the ordering swap, and accepted-deadline partials via other writers are separately covered by R7-a6c. Nothing here constrains physical timer handles.",
+      "One bug construction: the Outcome-acceptance writer persists WAITING with its accepted deadline before the deadline-evaluator runs, so the W-2 step-3 branch that would mint the timeout, retire immediately and create deadline-readiness never executes. The live generation, live accepted deadline, absent timeout and absent readiness are one ordering swap plus the absence of the one path-A transaction. A persister that writes the live generation without its deadline is now owned separately as R5-c4, and immediate-retirement deadline leftovers as R5-c5/R5-d4/R5-d5/R5-f4; the live-generation field alone already discriminates this entry's ordering swap, and the cancellation-loser leak is separately R7-a6c. Nothing here constrains physical timer handles.",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 6, counterexamples: ["subscription-deadline/past-deadline-persisted-as-a-live-wait"] },
+  },
+  {
+    // Split by round-7 review finding K02-R7-01. R5-c3 owns the ordering swap that persists WAITING
+    // outright; these own the accepted-deadline halves a candidate can get right and wrong
+    // separately: persisting the wait without its deadline, and retiring immediately without
+    // clearing it. Each transcript moves only `acceptedDeadline`, so no atomicity note is owed.
+    id: "R5-c4",
+    row: 5,
+    obligation: "(c) Step 4 persists the accepted deadline with the live registration: a future-deadline wait that registers durably carries its deadline as an accepted fact.",
+    evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 3, counterexamples: ["subscription-deadline/registered-wait-drops-the-accepted-deadline"] },
+  },
+  {
+    id: "R5-c5",
+    row: 5,
+    obligation: "(c) Step 3 leaves no accepted deadline behind: an already-due deadline retires immediately via B-7 path A with no durable deadline fact, even though the retirement is otherwise correct.",
+    evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 6, counterexamples: ["subscription-deadline/path-A-retirement-leaves-the-accepted-deadline"] },
   },
 
   // == Row 5(d): retirement ==================================================
@@ -508,6 +524,21 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     atomicity:
       "One bug construction: retirement records which alternative settled and carries that flag across generations, so the re-registration is judged already satisfied before it persists and the correct B-6 writer immediately retires it with readiness. The moves are one flag-read plus one downstream retirement transaction. A flag that arms readiness without retiring, or retires without readiness, would be a different writer failure, separately covered by R5-f1a2 and R6-b2.",
     evidence: { kind: "scenario", scenario: "wait-structure-not-satisfiability", stepIndex: 7, counterexamples: ["wait-structure/re-registered-dependency-treated-as-already-satisfied"] },
+  },
+  {
+    // Both retirement species of row 5(d), for the deadline fact: R5-d1/d2 own retiring the
+    // registration and generation; these own retiring the accepted deadline beside them. Each moves
+    // only `acceptedDeadline`.
+    id: "R5-d4",
+    row: 5,
+    obligation: "(d) An eligible wake retires the accepted deadline with the registration: a deadline-bearing wait retired by an eligible Event leaves no accepted deadline fact.",
+    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 3, counterexamples: ["control-stale-timer/immediate-retirement-leaves-the-accepted-deadline"] },
+  },
+  {
+    id: "R5-d5",
+    row: 5,
+    obligation: "(d) A current-generation deadline expiry retires the accepted deadline with the generation: timeout minted, generation retired, no deadline fact left live.",
+    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 7, counterexamples: ["control-stale-timer/expiry-retirement-leaves-the-accepted-deadline"] },
   },
 
   // == Row 5(e): next-batch selection, both species ==========================
@@ -560,6 +591,15 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     row: 5,
     obligation: "(f) An authenticated result Event is never generation-fenced and remains observable by a later wait that correlates to it (W-6).",
     evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 9, counterexamples: ["control-stale-timer/late-result-discarded-as-stale"] },
+  },
+  {
+    // The fencing counterpart for the deadline fact, completing R5-f1a/f1a2/f1b: wake fenced,
+    // retirement fenced, Event fenced — and the live deadline untouched. Moves only
+    // `acceptedDeadline`.
+    id: "R5-f4",
+    row: 5,
+    obligation: "(f) A stale timer clears no accepted fact either: the live generation's accepted deadline survives a fenced delivery for a retired generation.",
+    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 6, counterexamples: ["control-stale-timer/stale-delivery-clears-the-live-deadline"] },
   },
 
   // == Row 5(g): Runtime-local work ==========================================
