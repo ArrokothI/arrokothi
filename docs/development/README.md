@@ -46,8 +46,9 @@ candidates; their earlier holds do not override the ledger and subsequent owner 
 The structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is itself K1
 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared fixtures and
 a structural pass are not an E1 result. **The owner released K1.0 on 2026-09-13**, directing that the
-E1 dependency be treated as the already-built but unaccepted preparation; its round-2 candidate is
-`WAITING_FOR_REVIEW` and is accepted by nobody (round 1 drew CHANGES_REQUIRED for K10-R1-01 and
-K10-R1-02, both closed in round 2). See the [status ledger](007-work-packets.md) and
+E1 dependency be treated as the already-built but unaccepted preparation; its round-3 candidate is
+`WAITING_FOR_REVIEW` and is accepted by nobody (rounds 1 and 2 drew CHANGES REQUIRED; round 2
+reopened both finding families at the invariant level, and round 3 rebuilds the two affected
+subsystems rather than patching the reported examples). See the [status ledger](007-work-packets.md) and
 [K1.0's contract](work/K1.0/contract.md). That release names no successor: `next_release: none`.
 Benchmark owns its evidence preparation and release decisions separately.

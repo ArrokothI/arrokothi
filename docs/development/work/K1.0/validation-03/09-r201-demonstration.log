@@ -1,0 +1,173 @@
+# r201-demonstration - K10-R2-01 demonstrated, payload C 839b32d085306b96358295edf86fec85836ce462
+
+Output-only evidence under 006. Run from the repository root against the clean payload
+tree. It adds no script, fixture, evaluator rule, threshold or configuration to the
+candidate: the file was written outside the repository, copied in, run, and removed.
+Full source is quoted here so the run is reproducible.
+
+$ node --experimental-strip-types ./k1-0-r201-demo.mjs
+
+--- begin source ---
+// K10-R2-01 demonstrated: the reviewer's counterexample driven through the real guard path with the
+// round-2 extractor and with the committed one, plus a whole-corpus check that the rebuild changed
+// nothing about real repository files. Output-only evidence; this source is quoted in the log.
+import ts from "typescript";
+import { mkdtemp, mkdir, rm, writeFile, readFile, readdir } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, resolve } from "node:path";
+import {
+  loadWorkspace,
+  walkModuleGraph,
+  resolveDependency,
+  moduleDependenciesIn,
+} from "./tests/conformance/architecture/module-graph.ts";
+import {
+  boundaryViolations,
+  traversableUnder,
+  TARGET_KERNEL_RULES,
+} from "./tests/conformance/architecture/boundary-policy.ts";
+
+const ROOT = process.cwd();
+const NL = String.fromCharCode(10);
+
+// The round-2 extractor, quoted from tests/conformance/architecture/module-graph.ts at
+// d4347837699b80e5cbffa83d48dd7a8c9e53f7e6 (the reviewed H2). Four node kinds, no ImportTypeNode,
+// no reference directives, no ambient module declarations.
+const ROUND2_SENTINEL = "__non_literal_dynamic_import__";
+function round2Extractor(source) {
+  const sf = ts.createSourceFile("guard-scan.ts", source, ts.ScriptTarget.ESNext, true, ts.ScriptKind.TS);
+  const specifiers = [];
+  const visit = (node) => {
+    if (ts.isImportDeclaration(node)) {
+      const s = node.moduleSpecifier;
+      if (s !== undefined && ts.isStringLiteralLike(s)) specifiers.push(s.text);
+    } else if (ts.isExportDeclaration(node)) {
+      if (node.moduleSpecifier !== undefined && ts.isStringLiteralLike(node.moduleSpecifier)) {
+        specifiers.push(node.moduleSpecifier.text);
+      }
+    } else if (ts.isImportEqualsDeclaration(node)) {
+      const r = node.moduleReference;
+      if (ts.isExternalModuleReference(r) && r.expression !== undefined && ts.isStringLiteralLike(r.expression)) {
+        specifiers.push(r.expression.text);
+      }
+    } else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+      const a = node.arguments[0];
+      if (a !== undefined && ts.isStringLiteralLike(a)) specifiers.push(a.text);
+      else specifiers.push(ROUND2_SENTINEL);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sf);
+  return specifiers;
+}
+
+const COUNTEREXAMPLES = {
+  "import type property (the review's example)": 'export type L = import("@arrokothi/core").ExecutionContext;' + NL,
+  "typeof import": 'export type L = typeof import("@arrokothi/core");' + NL,
+  "import type in a parameter": 'export function f(a: import("@arrokothi/core").A): void { void a; }' + NL,
+  "import type nested in a generic": 'export type L = ReadonlyArray<import("@arrokothi/core").A>;' + NL,
+  "triple-slash reference path": '/// <reference path="../../core/src/runtime/harness.ts" />' + NL + "export const m = 1;" + NL,
+  "triple-slash reference types": '/// <reference types="@arrokothi/core" />' + NL + "export const m = 1;" + NL,
+  "ambient module declaration": 'declare module "@arrokothi/core" { interface Q { a: 1 } }' + NL + "export const m = 1;" + NL,
+  "ordinary import type (already worked)": 'import type { A } from "@arrokothi/core";' + NL + "export type B = A;" + NL,
+  "ordinary import (already worked)": 'export { legacy } from "@arrokothi/core";' + NL,
+};
+
+const FIXTURE = {
+  "packages/kernel/package.json": JSON.stringify({ name: "@arrokothi/kernel", private: true, exports: { ".": "./src/index.ts" } }),
+  "packages/core/package.json": JSON.stringify({ name: "@arrokothi/core", exports: { ".": "./src/index.ts" } }),
+  "packages/core/src/index.ts": "export const legacy = 1;" + NL,
+  "packages/core/src/runtime/harness.ts": "export class LegacyHarness {}" + NL,
+};
+
+const ENTRY = "packages/kernel/src/index.ts";
+
+async function withFixture(kernelSource, run) {
+  const root = await mkdtemp(resolve(tmpdir(), "k1-0-r201-"));
+  try {
+    const files = { ...FIXTURE, [ENTRY]: kernelSource };
+    for (const [p, c] of Object.entries(files)) {
+      await mkdir(dirname(resolve(root, p)), { recursive: true });
+      await writeFile(resolve(root, p), c);
+    }
+    return await run(await loadWorkspace(root), files);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}
+
+const round2Violations = (source) =>
+  withFixture(source, async (ws, files) => {
+    const edges = round2Extractor(files[ENTRY]).map((specifier) => ({
+      from: ENTRY,
+      specifier,
+      form: "import-declaration",
+      resolution: resolveDependency(ws, ENTRY, { specifier, form: "import-declaration", target: "specifier" }),
+    }));
+    return boundaryViolations({ files: new Set([ENTRY]), edges, external: new Map() }, TARGET_KERNEL_RULES);
+  });
+
+const committedViolations = (source) =>
+  withFixture(source, async (ws) =>
+    boundaryViolations(await walkModuleGraph(ws, [ENTRY], traversableUnder(TARGET_KERNEL_RULES)), TARGET_KERNEL_RULES),
+  );
+
+console.log("Each source below names @arrokothi/core, or a file inside it, from the target zone.");
+console.log("A correct guard reports one violation for every row.");
+console.log("");
+console.log("Counterexample".padEnd(46) + "| round-2 | committed");
+console.log("-".repeat(70));
+for (const [name, source] of Object.entries(COUNTEREXAMPLES)) {
+  const before = await round2Violations(source);
+  const after = await committedViolations(source);
+  console.log(name.padEnd(46) + "|" + String(before.length).padStart(8) + " |" + String(after.length).padStart(10));
+}
+
+console.log("");
+console.log("Whole-corpus check: did the rebuild change extraction on any real repository file?");
+const files = [];
+for (const d of ["packages", "tests", "examples", "scripts"]) {
+  const entries = await readdir(resolve(ROOT, d), { recursive: true });
+  files.push(...entries.filter((p) => p.endsWith(".ts") && !p.includes("node_modules")).map((p) => d + "/" + p));
+}
+files.sort();
+let identical = 0;
+const changed = [];
+for (const f of files) {
+  const src = await readFile(resolve(ROOT, f), "utf8");
+  const before = [...new Set(round2Extractor(src))].sort();
+  const after = [...new Set(moduleDependenciesIn(src).map((d) => d.specifier))].sort();
+  if (before.join(String.fromCharCode(1)) === after.join(String.fromCharCode(1))) {
+    identical += 1;
+    continue;
+  }
+  changed.push([f, before.filter((x) => !after.includes(x)), after.filter((x) => !before.includes(x))]);
+}
+console.log("  files: " + files.length + "   identical: " + identical + "   changed: " + changed.length);
+for (const [f, lost, gained] of changed) {
+  console.log("  " + f);
+  console.log("    only round-2: " + JSON.stringify(lost));
+  console.log("    only committed: " + JSON.stringify(gained));
+}
+--- end source ---
+
+--- begin output ---
+Each source below names @arrokothi/core, or a file inside it, from the target zone.
+A correct guard reports one violation for every row.
+
+Counterexample                                | round-2 | committed
+----------------------------------------------------------------------
+import type property (the review's example)   |       0 |         1
+typeof import                                 |       0 |         1
+import type in a parameter                    |       0 |         1
+import type nested in a generic               |       0 |         1
+triple-slash reference path                   |       0 |         1
+triple-slash reference types                  |       0 |         1
+ambient module declaration                    |       0 |         1
+ordinary import type (already worked)         |       1 |         1
+ordinary import (already worked)              |       1 |         1
+
+Whole-corpus check: did the rebuild change extraction on any real repository file?
+  files: 326   identical: 326   changed: 0
+exit code: 0
+--- end output ---
