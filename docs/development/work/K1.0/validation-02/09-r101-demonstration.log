@@ -1,0 +1,86 @@
+# K10-R1-01 demonstration - both counterexamples through the real guard path, payload C 960a446b77bbd7d6973900eb23e10558c2584763
+
+Output-only evidence under 006. Temp fixture repositories through the same
+loadWorkspace/walkModuleGraph/boundaryViolations path the real guard uses.
+The script was written outside the repository, copied in, run, and removed.
+Full source is quoted here so the run is reproducible.
+
+$ node --experimental-strip-types ./k10-r101-demo-tmp.mts
+
+--- begin source ---
+// Demonstrates the K10-R1-01 correction through the real guard path:
+// scanner → workspace resolver → graph → boundary-violation, with the whole forbidden
+// result asserted. Output-only evidence: temp fixture repos, removed after the run.
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, resolve } from "node:path";
+import { loadWorkspace, walkModuleGraph, NON_LITERAL_DYNAMIC_IMPORT } from "./tests/conformance/architecture/module-graph.ts";
+import { TARGET_KERNEL_ENTRY_MODULES, TARGET_KERNEL_RULES, boundaryViolations, traversableUnder } from "./tests/conformance/architecture/boundary-policy.ts";
+
+const MANIFESTS: Record<string, string> = {
+  "packages/kernel/package.json": JSON.stringify({ name: "@arrokothi/kernel", private: true, exports: { ".": "./src/index.ts" } }),
+  "packages/core/package.json": JSON.stringify({ name: "@arrokothi/core", exports: { ".": "./src/index.ts", "./ports": "./src/ports/index.ts" } }),
+  "packages/sdk/package.json": JSON.stringify({ name: "@arrokothi/sdk", exports: { ".": "./src/index.ts" } }),
+};
+const OUTSIDE: Record<string, string> = {
+  "packages/core/src/index.ts": 'export * from "./runtime/harness.ts";\nexport * from "./ports/index.ts";\n',
+  "packages/core/src/ports/index.ts": 'export * from "../runtime/harness.ts";\nexport type LegacyController = { readonly kind: string };\n',
+  "packages/core/src/runtime/harness.ts": "export class LegacyHarness {}\n",
+  "packages/sdk/src/index.ts": "export const bootstrapApplication = 1;\n",
+};
+
+async function violationsFor(kernelSources: Record<string, string>) {
+  const root = await mkdtemp(resolve(tmpdir(), "arrokothi-k10-r1-01-"));
+  try {
+    for (const [p, c] of Object.entries({ ...MANIFESTS, ...OUTSIDE, ...kernelSources })) {
+      const abs = resolve(root, p);
+      await mkdir(dirname(abs), { recursive: true });
+      await writeFile(abs, c, "utf8");
+    }
+    const ws = await loadWorkspace(root);
+    const graph = await walkModuleGraph(ws, TARGET_KERNEL_ENTRY_MODULES, traversableUnder(TARGET_KERNEL_RULES));
+    return boundaryViolations(graph, TARGET_KERNEL_RULES);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}
+
+// Case A: regex after control-flow paren must not hide the forbidden import.
+const regexCase = await violationsFor({
+  "packages/kernel/src/index.ts": 'if (true) /["\']/.test(\'x\');\nimport { LegacyHarness } from "@arrokothi/core";\nexport const use = LegacyHarness;\n',
+});
+console.log("regex/control-flow case violations:", JSON.stringify(regexCase, null, 2));
+console.log(`regex case: ${regexCase.length} violation(s), specifier=${regexCase[0]?.specifier}`);
+
+// Case B: non-literal dynamic import must fail closed, not record silence.
+const nonLiteralCase = await violationsFor({
+  "packages/kernel/src/index.ts": 'const target = "@arrokothi/core";\nexport const load = async () => import(target);\n',
+});
+console.log("non-literal case violations:", JSON.stringify(nonLiteralCase, null, 2));
+console.log(`non-literal case: ${nonLiteralCase.length} violation(s), specifier=${nonLiteralCase[0]?.specifier}, sentinel=${NON_LITERAL_DYNAMIC_IMPORT}`);
+
+if (regexCase.length !== 1 || regexCase[0]?.specifier !== "@arrokothi/core") throw new Error("regex case did not yield exactly the planted forbidden edge");
+if (nonLiteralCase.length !== 1 || nonLiteralCase[0]?.specifier !== NON_LITERAL_DYNAMIC_IMPORT) throw new Error("non-literal case did not fail closed");
+console.log("K10-R1-01 demonstration: both counterexamples yield exactly one forbidden violation through the real guard path.");
+--- end source ---
+
+--- begin output ---
+regex/control-flow case violations: [
+  {
+    "from": "packages/kernel/src/index.ts",
+    "specifier": "@arrokothi/core",
+    "reason": "reaches packages/core/src/index.ts, which is outside the zone and is not an approved portable leaf"
+  }
+]
+regex case: 1 violation(s), specifier=@arrokothi/core
+non-literal case violations: [
+  {
+    "from": "packages/kernel/src/index.ts",
+    "specifier": "__non_literal_dynamic_import__",
+    "reason": "uses a non-literal dynamic import whose target cannot be statically verified; the zone must use only literal specifiers"
+  }
+]
+non-literal case: 1 violation(s), specifier=__non_literal_dynamic_import__, sentinel=__non_literal_dynamic_import__
+K10-R1-01 demonstration: both counterexamples yield exactly one forbidden violation through the real guard path.
+exit code: 0
+--- end output ---
