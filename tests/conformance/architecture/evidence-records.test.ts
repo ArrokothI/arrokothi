@@ -14,8 +14,11 @@
  *    visible as history without the record as a whole being wrong.
  * 3. No token presented as a digest has an impossible length outside a correction section.
  *
- * A manifest that does not exist yet is not checked; this file only ever sees the rounds already
- * committed in the payload tree it runs against.
+ * A validation directory whose manifest does not exist yet is a capture still in progress: it
+ * records no digests, so it has none that can be wrong, and checking it would make the suite result
+ * depend on whether the manifest happened to be written before the tests ran. Those directories are
+ * skipped, and a floor on the number of manifests actually checked keeps that from becoming a way
+ * for the guard to see nothing.
  */
 
 import { test, describe } from "node:test";
@@ -28,14 +31,27 @@ import { fileURLToPath } from "node:url";
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const WORK = "docs/development/work/K1.0";
 
-/** Repo-relative validation directories, oldest first. */
-async function validationDirectories(): Promise<string[]> {
+/** Rounds whose manifest exists, oldest first. A round mid-capture has none and is skipped. */
+async function manifestedRounds(): Promise<string[]> {
   const entries = await readdir(resolve(REPO_ROOT, WORK), { withFileTypes: true });
-  return entries
+  const directories = entries
     .filter((entry) => entry.isDirectory() && entry.name.startsWith("validation-"))
     .map((entry) => entry.name)
     .sort();
+
+  const manifested: string[] = [];
+  for (const directory of directories) {
+    const names = await readdir(resolve(REPO_ROOT, WORK, directory));
+    if (names.includes("MANIFEST.md")) manifested.push(directory);
+  }
+  return manifested;
 }
+
+/**
+ * Rounds whose evidence is already reviewed, so their manifests must always be present and correct.
+ * A later round may be mid-capture; these cannot be.
+ */
+const SETTLED_ROUNDS = 4;
 
 const HEX_TOKEN = /`([0-9a-fA-F]{20,})`/g;
 
@@ -60,15 +76,24 @@ function sections(markdown: string): Map<string, string> {
 const isCorrection = (heading: string): boolean => heading.toLowerCase().startsWith("correction");
 
 describe("K1.0 evidence records", () => {
-  test("there is at least one validation round to check", async () => {
-    const directories = await validationDirectories();
-    assert.ok(directories.length > 0, "non-vacuity: the packet has committed validation evidence");
+  test("every settled round's manifest is present and checked", async () => {
+    // Non-vacuity, and the floor that stops "skip what has no manifest" from becoming "check
+    // nothing". Rounds 1 to 4 are already reviewed; their manifests cannot go missing.
+    const manifested = await manifestedRounds();
+    assert.ok(
+      manifested.length >= SETTLED_ROUNDS,
+      `expected at least ${SETTLED_ROUNDS} manifests, saw ${manifested.length}: ${manifested.join(", ")}`,
+    );
+    for (let round = 1; round <= SETTLED_ROUNDS; round += 1) {
+      const name = `validation-0${round}`;
+      assert.ok(manifested.includes(name), `${name} has a manifest`);
+    }
   });
 
   test("every recorded digest is the digest of the file it names", async () => {
     const problems: string[] = [];
 
-    for (const directory of await validationDirectories()) {
+    for (const directory of await manifestedRounds()) {
       const manifestPath = `${WORK}/${directory}/MANIFEST.md`;
       const manifest = await readFile(resolve(REPO_ROOT, manifestPath), "utf8");
       const logs = (await readdir(resolve(REPO_ROOT, WORK, directory)))
@@ -119,7 +144,7 @@ describe("K1.0 evidence records", () => {
     // wrong historical value stays visible in its original row without the record being wrong.
     const problems: string[] = [];
 
-    for (const directory of await validationDirectories()) {
+    for (const directory of await manifestedRounds()) {
       const manifest = await readFile(resolve(REPO_ROOT, WORK, directory, "MANIFEST.md"), "utf8");
       const parts = sections(manifest);
       const corrections = [...parts]
