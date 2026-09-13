@@ -48,6 +48,16 @@
  * reprocessed as a second transition, so literal code cannot become a further table; a heading
  * inside a raw block is raw content, so it cannot truncate a governed section and hide a later
  * table. Heading/table recognition runs only where the block context permits Markdown structure.
+ *
+ * Cell *values* are decoded whole, never in part (K10-CLEANUP-01). Total row accounting says that
+ * every row reaches one outcome; it does not say that the outcome used everything the row asserted.
+ * A prefix numeric parse, a substring sentinel and a subset token extraction each read part of a
+ * cell and discarded the rest, so `2.5` and `2oops` were the count `2`, a cell reading
+ * "nothing, `@arrokothi/core`" was the empty set, and prose beside a code span vanished. Every
+ * governed cell now has one decoder that must consume the cell from end to end, and a cell that
+ * does not decode makes its row unreadable instead of making it mean less than it says. The
+ * direction is the tie-breaker K10-R15-01 settled for character classes: too strict only adds
+ * reports, while reading a prefix deletes the remainder of the claim silently.
  */
 
 import type { PackageEntry, Workspace } from "./module-graph.ts";
@@ -65,8 +75,125 @@ export interface ParsedInventory {
   readonly unreadable: readonly string[];
 }
 
-const backticked = (cell: string): string[] =>
-  (cell.match(/`([^`]+)`/g) ?? []).map((token) => token.replace(/`/g, ""));
+/**
+ * Complete-cell value decoding (K10-CLEANUP-01).
+ *
+ * Row *accounting* was already total, but totality only says that every row reaches exactly one
+ * outcome; it says nothing about whether that outcome used everything the row asserted. The value
+ * decoders were the layer that still failed open, in three shapes that are all the same mistake -
+ * read a *part* of a cell and discard the rest, so the document can assert something the oracle
+ * never compares:
+ *
+ * - **Prefix numeric parse.** `Number.parseInt("2.5", 10)` and `Number.parseInt("2oops", 10)` are
+ *   both `2`, so a fractional or junk-suffixed file count was indistinguishable from the correct
+ *   one and the measured-tree recomputation stayed green on a false claim.
+ * - **Substring sentinel.** `cell.includes("nothing")` made a cell that both denies and names an
+ *   edge - `nothing, ` + "`@arrokothi/core`" - the empty set, deleting the named edge; the same
+ *   shape let `startsWith("yes")` / `startsWith("no")` take a publishability claim from a cell's
+ *   first word while the rest of the cell said something else.
+ * - **Subset extraction.** The previous `backticked` helper collected the code spans occurring
+ *   anywhere in a cell and ignored every other character, so prose beside a key vanished, a second
+ *   span in a single-valued cell was dropped, and an unquoted token in a list cell was not read.
+ *
+ * The rule that replaces all three: **a cell is decoded as a whole or the row is unreadable.**
+ * Each decoder below is a left-to-right walk that must consume the entire cell; anything it cannot
+ * account for returns `undefined`, which `readKeyedTable` turns into a reported row rather than
+ * into a row that means less than it says. The direction is the tie-breaker K10-R15-01 settled for
+ * character classes, applied to values: a decoder that is too strict only adds reports, while one
+ * that reads a prefix deletes the remainder of the document's claim silently.
+ *
+ * These decoders see a cell whose SPACE/TAB padding `splitGfmRow` has already removed, which is the
+ * tables extension's own trim and the only normalisation applied to it. They apply no host
+ * normalizer of their own - no `trim`, no case folding, no numeric coercion of free text.
+ */
+
+/**
+ * A comma-separated list of single-backtick code spans, consuming the whole cell.
+ *
+ * The inventory writes every zone id, root, package name, subpath, path and specifier as one code
+ * span, and writes a list as `` `a`, `b` `` with block whitespace permitted around the comma.
+ * Nothing else is a list: prose beside the spans, a missing or unterminated span, an empty span, a
+ * multi-backtick span, a trailing comma, or any character after the final span returns `undefined`.
+ * A token repeated inside one cell is rejected rather than collapsed, because a set would erase the
+ * second claim and an array would turn it into a length disagreement that reads as a different
+ * defect.
+ */
+function decodeCodeSpanList(cell: string): string[] | undefined {
+  const tokens: string[] = [];
+  let i = 0;
+  for (;;) {
+    if (cell[i] !== "`") return undefined;
+    const close = cell.indexOf("`", i + 1);
+    // `close === i + 1` is an empty span, which asserts no token.
+    if (close === -1 || close === i + 1) return undefined;
+    const token = cell.slice(i + 1, close);
+    if (tokens.includes(token)) return undefined;
+    tokens.push(token);
+    i = close + 1;
+    while (isBlockWhitespace(cell[i])) i++;
+    if (i === cell.length) return tokens;
+    if (cell[i] !== ",") return undefined;
+    i++;
+    while (isBlockWhitespace(cell[i])) i++;
+  }
+}
+
+/** Exactly one code span and nothing else: a key cell, or a single-valued path cell. */
+function decodeCodeSpan(cell: string): string | undefined {
+  const tokens = decodeCodeSpanList(cell);
+  return tokens !== undefined && tokens.length === 1 ? tokens[0] : undefined;
+}
+
+/**
+ * A whole-cell decimal count: `0`, or a non-zero digit followed by digits, and nothing else.
+ *
+ * The column asserts a measured number of files, so the decoded value must be the number the cell
+ * spells and the cell must spell exactly one number. A sign, a decimal point, an exponent, a digit
+ * separator, a leading zero or any suffix is not this document's spelling of a count and is
+ * reported rather than silently truncated to its parsable prefix. A run of digits too large to be
+ * an exact JavaScript integer is reported for the same reason: the decoded value would not be the
+ * value the cell asserts.
+ */
+function decodeCount(cell: string): number | undefined {
+  if (!/^(?:0|[1-9][0-9]*)$/.test(cell)) return undefined;
+  const files = Number(cell);
+  return Number.isSafeInteger(files) ? files : undefined;
+}
+
+/**
+ * A dependency edge cell: either exactly one of that column's empty sentinels, or a complete
+ * code-span list.
+ *
+ * The sentinel is matched against the whole cell, never searched for inside it, so a cell that
+ * denies every edge and then names one is a contradiction the reader reports instead of resolving
+ * in the denial's favour. `nothing` is an explicit empty set in both columns; the em dash
+ * additionally means "self, not cross-boundary" and is accepted only in the column that uses it.
+ */
+function decodeEdgeCell(cell: string, emptySentinels: readonly string[]): Set<string> | undefined {
+  if (emptySentinels.includes(cell)) return new Set<string>();
+  const tokens = decodeCodeSpanList(cell);
+  return tokens === undefined ? undefined : new Set(tokens);
+}
+
+/** Workspace-reach column: "nothing" is the empty set, U+2014 is "self, not cross-boundary". */
+const REACHES_EMPTY = ["nothing", "\u2014"] as const;
+/** Third-party column: only "nothing" denies every edge; it has no self-reference to spell. */
+const THIRD_PARTY_EMPTY = ["nothing"] as const;
+
+/**
+ * The document's normalised `Published?` vocabulary, matched as a whole cell and exactly.
+ *
+ * The inventory states that this column carries "a normalised `Published?` value", so the column is
+ * a closed vocabulary rather than free text with a yes/no prefix. Matching is exact and
+ * case-sensitive: the spellings below are the document's own, and no host case folding is applied
+ * at a position whose vocabulary is fixed ASCII (the same reasoning that keeps `toLowerCase` out of
+ * every other governed cell).
+ */
+const PUBLISHED_VOCABULARY: ReadonlyMap<string, boolean> = new Map([
+  ["Yes", true],
+  ["No", false],
+  ["No (private)", false],
+]);
 
 /** Whether the `|` at `pos` is escaped by an odd run of preceding backslashes (GFM Example 200). */
 function isEscapedPipe(line: string, pos: number): boolean {
@@ -90,9 +217,11 @@ function containsUnescapedPipe(line: string): boolean {
  * pipes are recommended but not required and may be inconsistent (Example 199), spaces around
  * cells are trimmed, and a pipe is a delimiter only when it is not escaped (Example 200:
  * `\|`, including inside other inline spans, stays inside the cell). Body rows may carry fewer
- * cells than the header (empty cells are inserted) or more (the excess is ignored, Example 204);
- * that padding/truncation is left to each table's `valueOf`, which already fails closed on a
- * missing cell while `readKeyedTable` has already accounted for the key.
+ * cells than the header (empty cells are inserted) or more (a renderer ignores the excess,
+ * Example 204). This function reports the cells the row actually has; what an arity that differs
+ * from the header's means is `readKeyedTable`'s decision, which fails closed on a missing governed
+ * cell through that column's own decoder and reports an excess cell that no column reads
+ * (K1.0-SELF-29), in both cases after the key has already been accounted for.
  *
  * "Spaces around cells are trimmed" is block-structure whitespace — SPACE and TAB — and not a
  * host `trim()` (K1.0-SELF-24) and not the §2.1 six (K10-R15-01). The extension's published
@@ -1291,6 +1420,12 @@ interface RowSpec<T> {
  * read as an empty relation, and every row of any further table in the section - its header
  * included - is reported, so a planted delimiter line cannot promote a contradictory row out of the
  * body and into a silently skipped header.
+ *
+ * Key before arity before value (K10-CLEANUP-01, K1.0-SELF-29). Once the key is accounted for, a
+ * row carrying more cells than its header declares is reported, because those cells are document
+ * content that no column reads and no comparison can contradict. Everything else is decided by the
+ * column decoders, each of which consumes its whole cell or gives up, so a row that "parses" can no
+ * longer mean less than the document says.
  */
 function readKeyedTable<T>(
   tables: readonly DiscoveredTable[],
@@ -1321,6 +1456,17 @@ function readKeyedTable<T>(
       continue;
     }
     seen.add(key);
+    if (cells.length > governed.header.length) {
+      // K1.0-SELF-29. GFM Example 204 lets a renderer ignore cells past the header's arity, which
+      // is a rendering rule; for this oracle an ignored cell is document content that no column
+      // reads and therefore no comparison can contradict. Short rows need no such rule: a missing
+      // governed cell already fails its own decoder, and a column the header declares but no
+      // relation governs asserts nothing the policy could disagree with.
+      unreadable.push(
+        `${spec.table} row for ${key} carries ${cells.length} cells but its header declares ${governed.header.length}; the excess is read by no column: ${cells.join(" | ")}`,
+      );
+      continue;
+    }
     const value = spec.valueOf(cells);
     if (value === undefined) {
       unreadable.push(`${spec.table} row for ${key} is malformed: ${cells.join(" | ")}`);
@@ -1348,12 +1494,9 @@ export function parseInventory(markdown: string): ParsedInventory {
     {
       table: "Zones",
       expectedHeaderFirstCell: "Zone id",
-      keyOf: (cells) => backticked(cells[0] ?? "")[0],
+      keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
       duplicate: (key) => `duplicate Zones row for zone ${key}`,
-      valueOf: (cells) => {
-        const roots = backticked(cells[1] ?? "");
-        return roots.length === 0 ? undefined : roots;
-      },
+      valueOf: (cells) => decodeCodeSpanList(cells[1] ?? ""),
     },
     zones,
     unreadable,
@@ -1367,7 +1510,7 @@ export function parseInventory(markdown: string): ParsedInventory {
       keyOf: (cells) => (/^DX-\d+$/.test(cells[0] ?? "") ? cells[0] : undefined),
       duplicate: (key) => `duplicate Deferred row for ${key}`,
       valueOf: (cells) => {
-        const currentPath = backticked(cells[1] ?? "")[0];
+        const currentPath = decodeCodeSpan(cells[1] ?? "");
         const disposition = cells[2];
         const owner = cells[3];
         if (currentPath === undefined || disposition === undefined || owner === undefined) return undefined;
@@ -1383,15 +1526,12 @@ export function parseInventory(markdown: string): ParsedInventory {
     {
       table: "Export",
       expectedHeaderFirstCell: "Package",
-      keyOf: (cells) => backticked(cells[0] ?? "")[0],
+      keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
       duplicate: (key) => `duplicate Export row for package ${key}`,
       valueOf: (cells) => {
-        const subpaths = backticked(cells[1] ?? "");
-        const publishedCell = cells[2];
-        if (subpaths.length === 0 || publishedCell === undefined) return undefined;
-        const normalised = publishedCell.toLowerCase();
-        const published = normalised.startsWith("yes");
-        if (!published && !normalised.startsWith("no")) return undefined;
+        const subpaths = decodeCodeSpanList(cells[1] ?? "");
+        const published = PUBLISHED_VOCABULARY.get(cells[2] ?? "");
+        if (subpaths === undefined || published === undefined) return undefined;
         return { subpaths, published };
       },
     },
@@ -1432,17 +1572,13 @@ export function parseDependencyTable(markdown: string): ParsedDependencyTable {
     {
       table: "Dependency",
       expectedHeaderFirstCell: "Zone",
-      keyOf: (cells) => backticked(cells[0] ?? "")[0],
+      keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
       duplicate: (key) => `duplicate Dependency row for zone ${key}`,
       valueOf: (cells) => {
-        const files = Number.parseInt(cells[1] ?? "", 10);
-        const reachesCell = cells[2];
-        const thirdCell = cells[3];
-        if (Number.isNaN(files) || reachesCell === undefined || thirdCell === undefined) return undefined;
-        // An em-dash means "self, not cross-boundary"; "nothing" means an empty set.
-        const reaches =
-          reachesCell.includes("nothing") || reachesCell === "\u2014" ? new Set<string>() : new Set(backticked(reachesCell));
-        const thirdParty = thirdCell.includes("nothing") ? new Set<string>() : new Set(backticked(thirdCell));
+        const files = decodeCount(cells[1] ?? "");
+        const reaches = decodeEdgeCell(cells[2] ?? "", REACHES_EMPTY);
+        const thirdParty = decodeEdgeCell(cells[3] ?? "", THIRD_PARTY_EMPTY);
+        if (files === undefined || reaches === undefined || thirdParty === undefined) return undefined;
         return { files, reaches, thirdParty };
       },
     },

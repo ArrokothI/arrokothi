@@ -31,18 +31,31 @@ import { fileURLToPath } from "node:url";
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const WORK = "docs/development/work/K1.0";
 
-/** Rounds whose manifest exists, oldest first. A round mid-capture has none and is skipped. */
-async function manifestedRounds(): Promise<string[]> {
-  const entries = await readdir(resolve(REPO_ROOT, WORK), { withFileTypes: true });
-  const directories = entries
-    .filter((entry) => entry.isDirectory() && entry.name.startsWith("validation-"))
-    .map((entry) => entry.name)
-    .sort();
+/**
+ * Every work root whose raw evidence this guard owns. K1.0's correction packet keeps its own
+ * report and validation directory, so it is listed here rather than left outside the check: an
+ * evidence directory nothing verifies is exactly the gap this guard exists to close. Roots are
+ * named explicitly rather than discovered, so adding a packet is a deliberate decision about who
+ * checks its records instead of a silent widening of this one.
+ */
+const WORK_ROOTS = [WORK, "docs/development/work/K1.0-correction-01"] as const;
 
+/**
+ * Validation directories whose manifest exists, as `root/directory`, oldest first within each
+ * root. A round mid-capture has no manifest and is skipped.
+ */
+async function manifestedRounds(): Promise<string[]> {
   const manifested: string[] = [];
-  for (const directory of directories) {
-    const names = await readdir(resolve(REPO_ROOT, WORK, directory));
-    if (names.includes("MANIFEST.md")) manifested.push(directory);
+  for (const root of WORK_ROOTS) {
+    const entries = await readdir(resolve(REPO_ROOT, root), { withFileTypes: true });
+    const directories = entries
+      .filter((entry) => entry.isDirectory() && entry.name.startsWith("validation-"))
+      .map((entry) => entry.name)
+      .sort();
+    for (const directory of directories) {
+      const names = await readdir(resolve(REPO_ROOT, root, directory));
+      if (names.includes("MANIFEST.md")) manifested.push(`${root}/${directory}`);
+    }
   }
   return manifested;
 }
@@ -85,7 +98,7 @@ describe("K1.0 evidence records", () => {
       `expected at least ${SETTLED_ROUNDS} manifests, saw ${manifested.length}: ${manifested.join(", ")}`,
     );
     for (let round = 1; round <= SETTLED_ROUNDS; round += 1) {
-      const name = `validation-0${round}`;
+      const name = `${WORK}/validation-0${round}`;
       assert.ok(manifested.includes(name), `${name} has a manifest`);
     }
   });
@@ -94,9 +107,9 @@ describe("K1.0 evidence records", () => {
     const problems: string[] = [];
 
     for (const directory of await manifestedRounds()) {
-      const manifestPath = `${WORK}/${directory}/MANIFEST.md`;
+      const manifestPath = `${directory}/MANIFEST.md`;
       const manifest = await readFile(resolve(REPO_ROOT, manifestPath), "utf8");
-      const logs = (await readdir(resolve(REPO_ROOT, WORK, directory)))
+      const logs = (await readdir(resolve(REPO_ROOT, directory)))
         .filter((name) => name.endsWith(".log"))
         .sort();
       assert.ok(logs.length > 0, `${directory} has attachments to check`);
@@ -108,7 +121,7 @@ describe("K1.0 evidence records", () => {
 
       for (const log of logs) {
         const actual = createHash("sha256")
-          .update(await readFile(resolve(REPO_ROOT, WORK, directory, log)))
+          .update(await readFile(resolve(REPO_ROOT, directory, log)))
           .digest("hex");
 
         // 1. The true digest is recorded somewhere in the manifest.
@@ -145,7 +158,7 @@ describe("K1.0 evidence records", () => {
     const problems: string[] = [];
 
     for (const directory of await manifestedRounds()) {
-      const manifest = await readFile(resolve(REPO_ROOT, WORK, directory, "MANIFEST.md"), "utf8");
+      const manifest = await readFile(resolve(REPO_ROOT, directory, "MANIFEST.md"), "utf8");
       const parts = sections(manifest);
       const corrections = [...parts]
         .filter(([heading]) => isCorrection(heading))

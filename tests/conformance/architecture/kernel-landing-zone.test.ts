@@ -2853,6 +2853,392 @@ describe("K1.0 policy and inventory agree", () => {
     });
   });
 
+  describe("whole-cell value decoding (K10-CLEANUP-01)", () => {
+    // Owner-delegated cleanup reproduced the last fail-open layer under C4. Row accounting was
+    // total — every row reached exactly one outcome — but the decoders that turned a row's cells
+    // into values each read a *part* of a cell and discarded the rest, so a row could "parse"
+    // while meaning less than the document says:
+    //
+    //   `Number.parseInt("2.5")` and `Number.parseInt("2oops")` are both 2, so a fractional or
+    //   junk-suffixed file count was indistinguishable from the measured one; `includes("nothing")`
+    //   made a cell that denies every edge and then names one the empty set; `startsWith("yes")` /
+    //   `startsWith("no")` took a publishability claim from a cell's first word; and the old
+    //   `backticked` helper collected code spans from anywhere in a cell and ignored every other
+    //   character, so prose beside a key or an unquoted token in a list simply vanished.
+    //
+    // The correction is one rule rather than four patches: a governed cell is decoded whole or its
+    // row is unreadable. These controls therefore come in pairs — a family of malformed or
+    // contradictory spellings that must be reported, and the permitted spellings beside them that
+    // must still parse — so a decoder that is merely stricter about the four reported strings would
+    // fail the first half, and one that is stricter about everything would fail the second.
+    const REAL_DEPENDENCY_ROW = "| `target-kernel` | 2 | nothing | nothing |";
+    const REAL_HOST_SDK_ROW =
+      "| `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing |";
+    const REAL_ZONE_ROW =
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+    const REAL_PRIVATE_PACKAGE_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";
+    const REAL_PUBLISHED_PACKAGE_ROW = "| `@arrokothi/sdk` | `.` | Yes |";
+    const REAL_DX1_ROW =
+      "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |";
+    const REAL_DX3_ROW =
+      "| DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 | Same packet: accept/reject results at the dispatch boundary. |";
+
+    /** Every message the dependency table produces for one mutated document. */
+    const dependencyUnreadable = async (from: string, to: string): Promise<readonly string[]> =>
+      parseDependencyTable(mutate(await realInventory(), [[from, to]])).unreadable;
+
+    /** Every message the three ownership relations produce for one mutated document. */
+    const ownershipDisagreements = async (from: string, to: string): Promise<string[]> =>
+      inventoryDisagreements(
+        parseInventory(mutate(await realInventory(), [[from, to]])),
+        policy,
+        await loadWorkspace(REPO_ROOT),
+      );
+
+    test("the cleanup's four counterexamples are reported, not equated with the measured row", async () => {
+      // The reproduced finding, through the production entry point. Each of these documents
+      // asserted something false about the target zone and parsed deeply equal to the correct one:
+      // same count, same empty edge sets, nothing unreadable, so the measured-tree comparison
+      // downstream could not distinguish it from the truth it accepts.
+      for (const [name, replacement] of [
+        ["a fractional count", "| `target-kernel` | 2.5 | nothing | nothing |"],
+        ["a count with a junk suffix", "| `target-kernel` | 2oops | nothing | nothing |"],
+        ["an empty claim that then names a workspace edge", "| `target-kernel` | 2 | nothing, `@arrokothi/core` | nothing |"],
+        ["an empty claim that then names a third-party edge", "| `target-kernel` | 2 | nothing | nothing, `evil-package` |"],
+      ] as const) {
+        const unreadable = await dependencyUnreadable(REAL_DEPENDENCY_ROW, replacement);
+        assert.ok(
+          unreadable.some((message) => /Dependency row for target-kernel is malformed/.test(message)),
+          `${name} must be reported; got: ${JSON.stringify(unreadable)}`,
+        );
+        const { rows } = parseDependencyTable(mutate(await realInventory(), [[REAL_DEPENDENCY_ROW, replacement]]));
+        assert.ok(!rows.has("target-kernel"), `${name} must not also be recorded as a readable relation`);
+      }
+    });
+
+    test("a count cell is a whole decimal number or it is unreadable", async () => {
+      // The family, not the two reported strings. Every spelling below has a parsable prefix or is
+      // otherwise not this document's spelling of a measured count, and each would have been read
+      // as some number while the rest of the cell went unread.
+      for (const count of ["2.5", "2oops", "+2", "-2", "02", "2e0", "0x2", "2,000", "1/2", "two", "2 files", ""]) {
+        const unreadable = await dependencyUnreadable(
+          REAL_DEPENDENCY_ROW,
+          `| \`target-kernel\` | ${count} | nothing | nothing |`,
+        );
+        assert.ok(
+          unreadable.some((message) => /Dependency row for target-kernel is malformed/.test(message)),
+          `${JSON.stringify(count)} is not a count; got: ${JSON.stringify(unreadable)}`,
+        );
+      }
+    });
+
+    test("a genuine count still decodes, including zero and a multi-digit measurement", async () => {
+      // The other side of the same boundary. A decoder that rejected everything would pass the
+      // control above and destroy the relation; these must reach the comparison as numbers.
+      const real = await realInventory();
+      assert.deepEqual(parseDependencyTable(real).unreadable, [], "the real counts decode");
+      assert.equal(parseDependencyTable(real).rows.get("legacy-core")?.files, 143);
+      for (const [count, expected] of [["0", 0], ["7", 7], ["143", 143]] as const) {
+        const { rows, unreadable } = parseDependencyTable(
+          mutate(real, [[REAL_DEPENDENCY_ROW, `| \`target-kernel\` | ${count} | nothing | nothing |`]]),
+        );
+        assert.deepEqual(unreadable, [], `${count} is a well-formed count`);
+        assert.equal(rows.get("target-kernel")?.files, expected, `${count} decodes to itself`);
+      }
+    });
+
+    test("an edge cell denies every edge or names them all; it cannot do both", async () => {
+      // The substring sentinel, generalised. The sentinel is now matched against the whole cell,
+      // so a cell that says "nothing" and then names an edge is a contradiction the reader reports
+      // rather than resolving in the denial's favour — in either order, and in either column.
+      for (const cell of [
+        "nothing, `@arrokothi/core`",
+        "`@arrokothi/core`, nothing",
+        "nothing at all",
+        "Nothing",
+        "nothing (for now)",
+        "`@arrokothi/core` and nothing else",
+      ]) {
+        const workspaceColumn = await dependencyUnreadable(
+          REAL_DEPENDENCY_ROW,
+          `| \`target-kernel\` | 2 | ${cell} | nothing |`,
+        );
+        assert.ok(
+          workspaceColumn.some((message) => /Dependency row for target-kernel is malformed/.test(message)),
+          `${JSON.stringify(cell)} is not a whole-cell workspace claim; got: ${JSON.stringify(workspaceColumn)}`,
+        );
+        const thirdPartyColumn = await dependencyUnreadable(
+          REAL_DEPENDENCY_ROW,
+          `| \`target-kernel\` | 2 | nothing | ${cell} |`,
+        );
+        assert.ok(
+          thirdPartyColumn.some((message) => /Dependency row for target-kernel is malformed/.test(message)),
+          `${JSON.stringify(cell)} is not a whole-cell third-party claim; got: ${JSON.stringify(thirdPartyColumn)}`,
+        );
+      }
+    });
+
+    test("each empty sentinel is accepted only in the column whose grammar names it", async () => {
+      // `nothing` denies every edge in both columns; the em dash means "self, not cross-boundary"
+      // and belongs only to the workspace column. In the third-party column it previously produced
+      // an empty set through the token extractor, which is the same silent denial in another
+      // spelling.
+      const emDash = await dependencyUnreadable(REAL_DEPENDENCY_ROW, "| `target-kernel` | 2 | nothing | — |");
+      assert.ok(
+        emDash.some((message) => /Dependency row for target-kernel is malformed/.test(message)),
+        `an em dash is not a third-party claim; got: ${JSON.stringify(emDash)}`,
+      );
+      assert.deepEqual(
+        parseDependencyTable(await realInventory()).rows.get("legacy-core")?.reaches,
+        new Set<string>(),
+        "the em dash still denies every workspace edge in the column that uses it",
+      );
+    });
+
+    test("a list cell is read to its end, so an unquoted or repeated token cannot hide in it", async () => {
+      // The subset extraction, which is the shape the other three share. Collecting the code spans
+      // and ignoring everything else meant a list could carry an extra claim the oracle never saw.
+      // Each case below leaves the correct tokens in place and appends or repeats one, so a token
+      // set comparison stays green and only whole-cell reading can report it.
+      for (const [name, from, to] of [
+        [
+          "an unquoted root beside the correct one",
+          REAL_ZONE_ROW,
+          REAL_ZONE_ROW.replace("`packages/kernel/src`", "`packages/kernel/src`, packages/evil/src"),
+        ],
+        [
+          "a repeated root",
+          REAL_ZONE_ROW,
+          REAL_ZONE_ROW.replace("`packages/kernel/src`", "`packages/kernel/src`, `packages/kernel/src`"),
+        ],
+        ["an unquoted subpath beside the correct one", REAL_PUBLISHED_PACKAGE_ROW, "| `@arrokothi/sdk` | `.`, ./secret | Yes |"],
+        [
+          "a second path in a single-valued deferred cell",
+          REAL_DX1_ROW,
+          REAL_DX1_ROW.replace(
+            "`packages/core/src/util/hash.ts`",
+            "`packages/core/src/util/hash.ts` or `packages/core/src/util/json.ts`",
+          ),
+        ],
+        [
+          "prose appended to a key cell",
+          REAL_ZONE_ROW,
+          REAL_ZONE_ROW.replace("| `target-kernel` |", "| `target-kernel` (deprecated) |"),
+        ],
+      ] as const) {
+        const disagreements = await ownershipDisagreements(from, to);
+        assert.ok(
+          disagreements.some((message) => /^unreadable row: /.test(message)),
+          `${name} must reach the unreadable channel; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("an unquoted specifier appended to a dependency list is reported", async () => {
+      // The same family in the table read through the other entry point, where the extra token
+      // would otherwise be compared against nothing at all.
+      const unreadable = await dependencyUnreadable(
+        REAL_HOST_SDK_ROW,
+        REAL_HOST_SDK_ROW.replace("`@arrokothi/core/reference` |", "`@arrokothi/core/reference` and evil-package |"),
+      );
+      assert.ok(
+        unreadable.some((message) => /Dependency row for host-sdk is malformed/.test(message)),
+        `an unquoted specifier must be reported; got: ${JSON.stringify(unreadable)}`,
+      );
+    });
+
+    test("the permitted list spellings still parse: one token, several, and block-whitespace padding", async () => {
+      // The positive twins for the rule above. The document's own spelling is a comma-separated
+      // list of code spans, and the tables extension's SPACE/TAB padding is permitted around each
+      // separator, so a correction that simply demanded one exact byte sequence would fail here.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      assert.deepEqual(parseInventory(real).unreadable, [], "every real list cell decodes");
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(
+            mutate(real, [
+              [
+                "| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes |",
+                "| `@arrokothi/core` | `.`,`./execution` ,  `./ports`,	`./reference` , `./testing` | Yes |",
+              ],
+            ]),
+          ),
+          policy,
+          workspace,
+        ),
+        [],
+        "spaces and tabs around each comma are permitted padding, not part of the token",
+      );
+      assert.deepEqual(
+        parseDependencyTable(
+          mutate(real, [
+            [
+              REAL_HOST_SDK_ROW,
+              "| `host-sdk` | 4 | `@arrokothi/core` ,`@arrokothi/core/ports`,  `@arrokothi/core/reference` | nothing |",
+            ],
+          ]),
+        ).unreadable,
+        [],
+        "the same padding is permitted in a dependency list",
+      );
+    });
+
+    test("a publishability cell is a whole normalised answer, not a first word", async () => {
+      // `startsWith` read the answer from the front of the cell and ignored the rest, so a cell
+      // could carry the opposite claim after a matching prefix. Both directions matter: the first
+      // three would have been read as "published" and the last three as "not published", and in
+      // each case the claim the document actually makes went unread.
+      for (const cell of ["Yes, but only in theory", "Yes (private)", "Yes — see below", "No, it is published", "nope", "No."]) {
+        const disagreements = await ownershipDisagreements(
+          REAL_PRIVATE_PACKAGE_ROW,
+          `| \`@arrokothi/kernel\` | \`.\` | ${cell} |`,
+        );
+        assert.ok(
+          disagreements.some((message) => /^unreadable row: Export row for @arrokothi\/kernel is malformed/.test(message)),
+          `${JSON.stringify(cell)} is not a normalised publishability answer; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("the document's own publishability vocabulary still decodes in both directions", async () => {
+      // Positive twin, and the proof that the vocabulary is a vocabulary rather than one literal:
+      // the private row's `No (private)` and the published rows' `Yes` both decode today, and the
+      // bare `No` spelling decodes to the same claim as `No (private)`.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [[REAL_PRIVATE_PACKAGE_ROW, "| `@arrokothi/kernel` | `.` | No |"]])),
+          policy,
+          workspace,
+        ),
+        [],
+        "`No` and `No (private)` are the same normalised answer",
+      );
+      assert.equal(parseInventory(real).packages.get("@arrokothi/kernel")?.published, false);
+      assert.equal(parseInventory(real).packages.get("@arrokothi/sdk")?.published, true);
+      // And the claim is still compared, so the vocabulary did not become a way to agree.
+      const wrong = await ownershipDisagreements(REAL_PRIVATE_PACKAGE_ROW, "| `@arrokothi/kernel` | `.` | Yes |");
+      assert.ok(
+        wrong.some((message) => /package @arrokothi\/kernel is private but the document says it is published/.test(message)),
+        `a decoded but false claim must still disagree; got: ${JSON.stringify(wrong)}`,
+      );
+    });
+
+    test("a disposition or owner cell is compared whole, so an appended word is a different token", async () => {
+      // The adjacent members of the same decoder family. These two cells were already read whole
+      // and compared exactly; the audit re-asserts it here so the whole-cell rule is visible for
+      // every governed column of every table rather than only where it had to change.
+      for (const [from, to, expect] of [
+        [
+          REAL_DX3_ROW,
+          REAL_DX3_ROW.replace("| migratable |", "| migratable (probably) |"),
+          /deferred row DX-3 is migratable but the document says migratable \(probably\)/,
+        ],
+        [
+          REAL_DX3_ROW,
+          REAL_DX3_ROW.replace("| K1.1 |", "| K1.1 or later |"),
+          /deferred row DX-3 is owned by K1\.1 but the document says K1\.1 or later/,
+        ],
+      ] as const) {
+        const disagreements = await ownershipDisagreements(from, to);
+        assert.ok(
+          disagreements.some((message) => expect.test(message)),
+          `an appended word is a different token; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("a row carrying more cells than its header declares is reported (K1.0-SELF-29)", async () => {
+      // Self-found while tracing the decoders through all four tables. GFM Example 204 lets a
+      // renderer ignore cells past the header's arity; this oracle cannot, because an ignored cell
+      // is document content that no column reads and no comparison can contradict — the same
+      // fail-open shape as a prefix parse, one level up. The trailing vertical tab is the case the
+      // K10-R15-01 audit recorded as past the cells the relation reads; it is now observable.
+      const VT = "";
+      for (const [name, from, to] of [
+        ["an appended cell on a deferred row", REAL_DX3_ROW, `${REAL_DX3_ROW} and another claim |`],
+        ["an appended cell on a zone row", REAL_ZONE_ROW, `${REAL_ZONE_ROW} stale contradictory column |`],
+        ["a vertical tab after the final edge pipe", REAL_DX3_ROW, `${REAL_DX3_ROW}${VT}`],
+      ] as const) {
+        const disagreements = await ownershipDisagreements(from, to);
+        assert.ok(
+          disagreements.some((message) =>
+            /carries \d+ cells but its header declares \d+; the excess is read by no column/.test(message),
+          ),
+          `${name} must be reported; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("a row with fewer cells than its header keeps its established outcome (K1.0-SELF-29)", async () => {
+      // The other side of the excess rule, so it cannot be mistaken for "any arity difference is an
+      // error". A short row asserts nothing extra: a missing governed cell already fails its own
+      // decoder (K1.0-SELF-08), and a column the header declares but no relation governs — the
+      // Deferred table's closing prose column — carries nothing the policy could disagree with.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(
+            mutate(real, [[REAL_DX3_ROW, "| DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 |"]]),
+          ),
+          policy,
+          workspace,
+        ),
+        [],
+        "dropping the ungoverned prose column changes no governed relation",
+      );
+      const short = await ownershipDisagreements(
+        REAL_DX3_ROW,
+        "| DX-3 | `packages/core/src/util/result.ts` | migratable |",
+      );
+      assert.ok(
+        short.some((message) => /^unreadable row: Deferred row for DX-3 is malformed/.test(message)),
+        `a missing governed cell still fails closed; got: ${JSON.stringify(short)}`,
+      );
+    });
+
+    test("the decoders are not vacuous: every governed cell of the real inventory is read", async () => {
+      // Non-vacuity for the whole layer. A decoder family that returned undefined for everything
+      // would pass every negative control above; one that was never reached would pass them for the
+      // wrong reason. The real document must decode completely, and the decoded values must be the
+      // ones the relations then compare.
+      const real = await realInventory();
+      const parsed = parseInventory(real);
+      const dependency = parseDependencyTable(real);
+      assert.deepEqual(parsed.unreadable, []);
+      assert.deepEqual(dependency.unreadable, []);
+      assert.equal(parsed.zones.size, ZONES.length);
+      assert.equal(parsed.deferred.size, DEFERRED_EXTRACTIONS.length);
+      assert.equal(dependency.rows.size, ZONES.length);
+      assert.deepEqual(parsed.zones.get("runtime-integrations"), [
+        "packages/agents/strands/src",
+        "packages/models/gemini/src",
+        "packages/retrieval/local/src",
+        "packages/interoperability/mcp/src",
+      ]);
+      assert.deepEqual(parsed.packages.get("@arrokothi/core")?.subpaths, [
+        ".",
+        "./execution",
+        "./ports",
+        "./reference",
+        "./testing",
+      ]);
+      assert.deepEqual(parsed.deferred.get("DX-12"), {
+        currentPath: "packages/core/src/ports/controller.ts",
+        disposition: "refused",
+        owner: "K1.1",
+      });
+      assert.equal(dependency.rows.get("runtime-integrations")?.thirdParty.size, 5);
+      assert.deepEqual(
+        [...(dependency.rows.get("host-sdk")?.reaches ?? [])],
+        ["@arrokothi/core", "@arrokothi/core/ports", "@arrokothi/core/reference"],
+      );
+    });
+  });
+
   describe("container-owned leaf lifetime (K10-R10-01)", () => {
     // A raw leaf never outlives the list container that owns it: container continuation is
     // resolved before any open fence/HTML state, so a dedented line ends the owning
