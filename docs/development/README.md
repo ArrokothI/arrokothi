@@ -51,9 +51,12 @@ E1 dependency be treated as the already-built but unaccepted preparation. Its ro
 [review-17](work/K1.0/review-17.md). That historical verdict is preserved, but delegated final cleanup
 reproduced C4 defect **K10-CLEANUP-01**. **Cleanup is REOPENED; C4 claims and integration are ON HOLD.**
 The [cleanup record](work/K1.0/cleanup-01.md) links the evidence and
-[K1.0-correction-01 fixing handoff](work/K1.0-correction-01/handoff-01.md). That corrective packet now
-has a `WAITING_FOR_REVIEW` candidate — every governed inventory cell is decoded whole rather than by
-prefix, substring or subset — which is accepted by nobody; the hold stands until a fresh independent
+[K1.0-correction-01 fixing handoff](work/K1.0-correction-01/handoff-01.md). That corrective packet's round 1 closed the decoder defects but its review
+([review-01](work/K1.0-correction-01/review-01.md)) required changes on K10-CORR1-R1-01, the same
+silent-discard shape one level up in header/arity handling. Round 2 now
+has a `WAITING_FOR_REVIEW` candidate — every governed table carries an independent schema, so every
+governed inventory cell is both decoded whole and owned by a position no document-controlled width
+can widen — which is accepted by nobody; the hold stands until a fresh independent
 review of the cumulative interval returns ACCEPT. No successor is released:
 `next_release: none`. The [status ledger](007-work-packets.md) remains authoritative.
 Benchmark owns its evidence preparation and release decisions separately.

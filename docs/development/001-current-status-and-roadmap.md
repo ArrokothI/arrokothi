@@ -10,8 +10,12 @@ Round-16 H `f3aa29d7ecba2a23aa85788b7efdebdd383cab24` received independent ACCEP
 [review-17](work/K1.0/review-17.md). Final cleanup then found C4 defect K10-CLEANUP-01:
 whole-cell inventory meaning can be lost while the guard stays green. **Cleanup is REOPENED;
 C4 claims and integration are ON HOLD**, and [K1.0-correction-01](work/K1.0-correction-01/contract.md)
-now has a `WAITING_FOR_REVIEW` candidate that closes K10-CLEANUP-01 by decoding every governed cell
-whole instead of reading a prefix, a substring or a subset of it. It is accepted by nobody and the
+closed K10-CLEANUP-01 in round 1 by decoding every governed cell
+whole instead of reading a prefix, a substring or a subset of it — but round-1 review
+([review-01](work/K1.0-correction-01/review-01.md), CHANGES REQUIRED) found the same fail-open shape
+one level up as K10-CORR1-R1-01: excess was measured against the document's own header. Round 2 now
+has a `WAITING_FOR_REVIEW` candidate that gives every governed table an independent schema, so no
+document-controlled width is trusted. It is accepted by nobody and the
 hold stands until a fresh independent review of the cumulative interval returns ACCEPT. See
 [cleanup-01](work/K1.0/cleanup-01.md) and the ledger row.
 No E1 result, K1 closure, merge or successor release is claimed (`next_release: none`).

@@ -1,0 +1,287 @@
+== K10-CORR1-R1-01 distinguishing demonstration: reviewed C vs committed C ==
+
+$ node --experimental-strip-types /tmp/corr1-demo.mts
+case | reviewed C 76ce9380 | new C | required
+----------------------------------------------------------------------------------------------------
+--- dependency widened header+delimiter+extra body cell (review counterexample)
+    old: silent (unreadable=0 relation==baseline:true)
+    new: LOUD (unreadable=2 recorded-target=false)
+    required: new LOUD (header + excess), old SILENT
+--- zones widened header+delimiter+extra body cell
+    old: silent (unreadable=0)
+    new: LOUD (unreadable=2)
+    required: new LOUD, old SILENT
+--- export widened header+delimiter+extra body cell
+    old: silent (unreadable=0)
+    new: LOUD (unreadable=2)
+    required: new LOUD, old SILENT
+--- deferred widened header+delimiter+extra body cell
+    old: silent (unreadable=0)
+    new: LOUD (unreadable=2)
+    required: new LOUD, old SILENT
+--- renamed middle dependency header cell (first label still Zone)
+    old: silent (unreadable=0)
+    new: LOUD (unreadable=1)
+    required: new LOUD, old SILENT
+--- narrowed dependency header, schema-correct bodies
+    old: LOUD (unreadable=4 recorded-target=false)
+    new: LOUD (unreadable=1 files=2)
+    required: new header-LOUD bodies-recorded, old body-EXCESS
+--- ordinary excess body cell, correct header (dependency)
+    old: LOUD (unreadable=1)
+    new: LOUD (unreadable=1)
+    required: BOTH loud (preservation)
+----------------------------------------------------------------------------------------------------
+cases 7; old-silent/new-loud distinguishing 5; new fails its requirement 0
+reviewed oracle: git blob (from 76ce938074ffa910fbd74374e388ba8d226af4c6) sha256 22a822a46a1eac786b2d0190c25d4fada3685b306f23b676dd825b1ded2dd6b2
+new oracle: git blob 1305b0873cc77c393d50a8a5513b989626f17eeb sha256 a4a4bcbadf434fca685382646b682b5560e3f261cc662bf0b3c17fc27e82d256
+payload C under test: 36460438e95e968beec0b354b07a616b53981256
+
+exit: 0
+
+== provenance of the two columns ==
+reviewed column: a verbatim copy of  git show 76ce938074ffa910fbd74374e388ba8d226af4c6:tests/conformance/architecture/inventory-oracle.ts
+  (materialized at run time, imported, then deleted; it enters no tracked path)
+  git blob of that revision's file: 014a07dbcfcf04679602fd5ab1493e0fe566f5c1
+  git show sha256: 22a822a46a1eac786b2d0190c25d4fada3685b306f23b676dd825b1ded2dd6b2
+  its imports are type-only and erased by --experimental-strip-types, so it runs
+  standalone and is the reviewed code rather than a paraphrase.
+new column: the committed production parser imported from its real repository path
+  git blob:          1305b0873cc77c393d50a8a5513b989626f17eeb
+  working sha256:    a4a4bcbadf434fca685382646b682b5560e3f261cc662bf0b3c17fc27e82d256
+
+== the program, quoted in full (it enters no tracked path) ==
+--- /tmp/corr1-demo.mts ---
+/* K10-CORR1-R1-01 demonstration: reviewed C 76ce9380 vs new C on the 7 schema-ownership cases.
+ * Run from the repo root AFTER committing the new payload C:
+ *   node --experimental-strip-types /tmp/corr1-demo.mts
+ * Writes nothing; prints the log body for validation-02/08 (header/footer added by the caller).
+ * Creates and deletes tests/conformance/architecture/__tmp_reviewed_oracle.ts (verbatim
+ * `git show 76ce9380...:tests/conformance/architecture/inventory-oracle.ts`).
+ */
+import { execSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { readFile, writeFile, rm } from "node:fs/promises";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = process.cwd();
+const ORACLE = "tests/conformance/architecture/inventory-oracle.ts";
+const TMP = "tests/conformance/architecture/__tmp_reviewed_oracle.ts";
+const REVIEWED_C = "76ce938074ffa910fbd74374e388ba8d226af4c6";
+
+const oldSource: string = execSync(`git show ${REVIEWED_C}:${ORACLE}`, { cwd: ROOT, encoding: "utf8" });
+await writeFile(resolve(ROOT, TMP), oldSource, "utf8");
+try {
+  const fresh = (await import(`./nothing-${Date.now()}.mts`).catch(() => null)) as null;
+  void fresh;
+  const NewOracle = await import(resolve(ROOT, ORACLE));
+  const OldOracle = await import(resolve(ROOT, TMP));
+
+  const real: string = await readFile(resolve(ROOT, "docs/development/work/K1.0/ownership-inventory.md"), "utf8");
+  const mutate = (markdown: string, edits: readonly (readonly [string, string])[]): string => {
+    let mutated = markdown;
+    for (const [from, to] of edits) {
+      if (mutated.split(from).length - 1 !== 1) throw new Error(`anchor not unique: ${from}`);
+      mutated = mutated.replace(from, to);
+    }
+    return mutated;
+  };
+
+  const DEP_HEADER = "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |";
+  const DEP_DELIM = "|---|---|---|---|";
+  const DEP_ROW = "| `target-kernel` | 2 | nothing | nothing |";
+  const ZONES_HEADER = "| Zone id | Roots | Owner and status |";
+  const ZONES_DELIM = "|---|---|---|";
+  const ZONES_ROW =
+    "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+  const EXPORT_HEADER = "| Package | Exported subpaths | Published? |";
+  const EXPORT_DELIM = "|---|---|---|";
+  const EXPORT_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";
+  const DEFERRED_HEADER = "| Id | Current path | Disposition | Owner | Why it is assigned there |";
+  const DEFERRED_DELIM = "|---|---|---|---|---|";
+  const DEFERRED_ROW =
+    "| DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 | Same packet: accept/reject results at the dispatch boundary. |";
+
+  const depRows = (oracle: typeof NewOracle, doc: string) => oracle.parseDependencyTable(doc);
+  const invRows = (oracle: typeof NewOracle, doc: string) => oracle.parseInventory(doc);
+
+  interface Case {
+    name: string;
+    entry: "dependency" | "ownership";
+    edits: readonly (readonly [string, string])[];
+    required: string;
+    checkNew: (doc: string) => { loud: boolean; note: string };
+    checkOld: (doc: string) => { loud: boolean; note: string };
+  }
+
+  const attackEdits: readonly (readonly [string, string])[] = [
+    [`${DEP_HEADER}\n${DEP_DELIM}`, `${DEP_HEADER} Extra claim |\n${DEP_DELIM}---|`],
+    [DEP_ROW, "| `target-kernel` | 2 | nothing | nothing | `evil-package` |"],
+  ];
+
+  const cases: Case[] = [
+    {
+      name: "dependency widened header+delimiter+extra body cell (review counterexample)",
+      entry: "dependency",
+      edits: attackEdits,
+      required: "new LOUD (header + excess), old SILENT",
+      checkNew: (doc) => {
+        const { rows, unreadable } = depRows(NewOracle, doc);
+        const loud =
+          unreadable.some((m: string) => /Dependency table header must be/.test(m)) &&
+          unreadable.some((m: string) => /governed schema allows 4/.test(m)) &&
+          !rows.has("target-kernel");
+        return { loud, note: `unreadable=${unreadable.length} recorded-target=${rows.has("target-kernel")}` };
+      },
+      checkOld: (doc) => {
+        const { rows, unreadable } = depRows(OldOracle, doc);
+        const base = depRows(OldOracle, real);
+        const same =
+          JSON.stringify([...rows.entries()].map(([k, v]) => [k, v.files, [...v.reaches].sort(), [...v.thirdParty].sort()])) ===
+          JSON.stringify([...base.rows.entries()].map(([k, v]) => [k, v.files, [...v.reaches].sort(), [...v.thirdParty].sort()]));
+        return { loud: unreadable.length > 0, note: `unreadable=${unreadable.length} relation==baseline:${same}` };
+      },
+    },
+    {
+      name: "zones widened header+delimiter+extra body cell",
+      entry: "ownership",
+      edits: [
+        [`${ZONES_HEADER}\n${ZONES_DELIM}`, `${ZONES_HEADER} Extra claim |\n${ZONES_DELIM}---|`],
+        [ZONES_ROW, `${ZONES_ROW.slice(0, -1)} | \`packages/evil/src\` |`],
+      ],
+      required: "new LOUD, old SILENT",
+      checkNew: (doc) => {
+        const { parsed } = { parsed: invRows(NewOracle, doc) };
+        const loud =
+          parsed.unreadable.some((m: string) => /Zones table header must be/.test(m)) &&
+          parsed.unreadable.some((m: string) => /governed schema allows 3/.test(m)) &&
+          !parsed.zones.has("target-kernel");
+        return { loud, note: `unreadable=${parsed.unreadable.length}` };
+      },
+      checkOld: (doc) => {
+        const parsed = invRows(OldOracle, doc);
+        return { loud: parsed.unreadable.length > 0, note: `unreadable=${parsed.unreadable.length}` };
+      },
+    },
+    {
+      name: "export widened header+delimiter+extra body cell",
+      entry: "ownership",
+      edits: [
+        [`${EXPORT_HEADER}\n${EXPORT_DELIM}`, `${EXPORT_HEADER} Extra claim |\n${EXPORT_DELIM}---|`],
+        [EXPORT_ROW, "| `@arrokothi/kernel` | `.` | No (private) | `sneaky-subpath` |"],
+      ],
+      required: "new LOUD, old SILENT",
+      checkNew: (doc) => {
+        const parsed = invRows(NewOracle, doc);
+        const loud =
+          parsed.unreadable.some((m: string) => /Export table header must be/.test(m)) &&
+          parsed.unreadable.some((m: string) => /governed schema allows 3/.test(m)) &&
+          !parsed.packages.has("@arrokothi/kernel");
+        return { loud, note: `unreadable=${parsed.unreadable.length}` };
+      },
+      checkOld: (doc) => {
+        const parsed = invRows(OldOracle, doc);
+        return { loud: parsed.unreadable.length > 0, note: `unreadable=${parsed.unreadable.length}` };
+      },
+    },
+    {
+      name: "deferred widened header+delimiter+extra body cell",
+      entry: "ownership",
+      edits: [
+        [`${DEFERRED_HEADER}\n${DEFERRED_DELIM}`, `${DEFERRED_HEADER} Extra claim |\n${DEFERRED_DELIM}---|`],
+        [DEFERRED_ROW, `${DEFERRED_ROW.slice(0, -1)} | \`evil-claim\` |`],
+      ],
+      required: "new LOUD, old SILENT",
+      checkNew: (doc) => {
+        const parsed = invRows(NewOracle, doc);
+        const loud =
+          parsed.unreadable.some((m: string) => /Deferred table header must be/.test(m)) &&
+          parsed.unreadable.some((m: string) => /governed schema allows 5/.test(m)) &&
+          !parsed.deferred.has("DX-3");
+        return { loud, note: `unreadable=${parsed.unreadable.length}` };
+      },
+      checkOld: (doc) => {
+        const parsed = invRows(OldOracle, doc);
+        return { loud: parsed.unreadable.length > 0, note: `unreadable=${parsed.unreadable.length}` };
+      },
+    },
+    {
+      name: "renamed middle dependency header cell (first label still Zone)",
+      entry: "dependency",
+      edits: [[`${DEP_HEADER}\n${DEP_DELIM}`, `${DEP_HEADER.replace("Reaches \`legacy-core\` via", "Reaches legacy-core via")}\n${DEP_DELIM}`]],
+      required: "new LOUD, old SILENT",
+      checkNew: (doc) => {
+        const { unreadable } = depRows(NewOracle, doc);
+        return { loud: unreadable.some((m: string) => /Dependency table header must be/.test(m)), note: `unreadable=${unreadable.length}` };
+      },
+      checkOld: (doc) => {
+        const { unreadable } = depRows(OldOracle, doc);
+        return { loud: unreadable.length > 0, note: `unreadable=${unreadable.length}` };
+      },
+    },
+    {
+      name: "narrowed dependency header, schema-correct bodies",
+      entry: "dependency",
+      edits: [[`${DEP_HEADER}\n${DEP_DELIM}`, "| Zone | `.ts` files | Reaches `legacy-core` via |\n|---|---|---|"]],
+      required: "new header-LOUD bodies-recorded, old body-EXCESS",
+      checkNew: (doc) => {
+        const { rows, unreadable } = depRows(NewOracle, doc);
+        const loud = unreadable.some((m: string) => /Dependency table header must be/.test(m));
+        const bodiesOk = rows.get("target-kernel")?.files === 2 && !unreadable.some((m: string) => /excess is read by no column/.test(m));
+        return { loud: loud && bodiesOk, note: `unreadable=${unreadable.length} files=${rows.get("target-kernel")?.files}` };
+      },
+      checkOld: (doc) => {
+        const { rows, unreadable } = depRows(OldOracle, doc);
+        const excess = unreadable.some((m: string) => /excess is read by no column/.test(m));
+        return { loud: excess && !rows.has("target-kernel"), note: `unreadable=${unreadable.length} recorded-target=${rows.has("target-kernel")}` };
+      },
+    },
+    {
+      name: "ordinary excess body cell, correct header (dependency)",
+      entry: "dependency",
+      edits: [[DEP_ROW, `${DEP_ROW.slice(0, -1)} | \`evil-package\` |`]],
+      required: "BOTH loud (preservation)",
+      checkNew: (doc) => {
+        const { rows, unreadable } = depRows(NewOracle, doc);
+        return { loud: unreadable.some((m: string) => /governed schema allows 4/.test(m)) && !rows.has("target-kernel"), note: `unreadable=${unreadable.length}` };
+      },
+      checkOld: (doc) => {
+        const { rows, unreadable } = depRows(OldOracle, doc);
+        return { loud: unreadable.some((m: string) => /excess is read by no column/.test(m)) && !rows.has("target-kernel"), note: `unreadable=${unreadable.length}` };
+      },
+    },
+  ];
+
+  console.log("case | reviewed C 76ce9380 | new C | required");
+  console.log("-".repeat(100));
+  let distinguishing = 0;
+  let newFails = 0;
+  for (const c of cases) {
+    const doc = mutate(real, c.edits);
+    const o = c.checkOld(doc);
+    const n = c.checkNew(doc);
+    const oText = o.loud ? `LOUD (${o.note})` : `silent (${o.note})`;
+    const nText = n.loud ? `LOUD (${n.note})` : `SILENT (${n.note})`;
+    console.log(`--- ${c.name}`);
+    console.log(`    old: ${oText}`);
+    console.log(`    new: ${nText}`);
+    console.log(`    required: ${c.required}`);
+    if (o.loud !== n.loud && c.required.includes("old SILENT")) distinguishing++;
+    if (!n.loud) newFails++;
+  }
+  console.log("-".repeat(100));
+  console.log(`cases ${cases.length}; old-silent/new-loud distinguishing ${distinguishing}; new fails its requirement ${newFails}`);
+
+  const newBlob: string = execSync(`git hash-object ${ORACLE}`, { cwd: ROOT, encoding: "utf8" }).trim();
+  const newSha = createHash("sha256").update(await readFile(resolve(ROOT, ORACLE), "utf8")).digest("hex");
+  const oldSha = createHash("sha256").update(oldSource).digest("hex");
+  console.log(`reviewed oracle: git blob (from ${REVIEWED_C}) sha256 ${oldSha}`);
+  console.log(`new oracle: git blob ${newBlob} sha256 ${newSha}`);
+  const head: string = execSync("git rev-parse HEAD", { cwd: ROOT, encoding: "utf8" }).trim();
+  console.log(`payload C under test: ${head}`);
+} finally {
+  await rm(resolve(ROOT, TMP), { force: true });
+}
+void dirname(fileURLToPath(import.meta.url));
+--- end /tmp/corr1-demo.mts ---
