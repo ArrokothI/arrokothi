@@ -46,11 +46,12 @@ candidates; their earlier holds do not override the ledger and subsequent owner 
 The structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is itself K1
 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared fixtures and
 a structural pass are not an E1 result. **The owner released K1.0 on 2026-09-13**, directing that the
-E1 dependency be treated as the already-built but unaccepted preparation; its round-15 candidate is
+E1 dependency be treated as the already-built but unaccepted preparation; its round-16 candidate is
 `WAITING_FOR_REVIEW` and is accepted by nobody (rounds 1–13 each drew CHANGES REQUIRED; round 14 was
 accepted by one reviewer and then invalidated for integration by a second independent review over a
-C4 heading-identity defect; round 15 governs every C4 heading and table row/cell identity with the
-pinned GFM character classes instead of `String.prototype.trim()`, preserving every earlier
-reconstruction). See the [status ledger](007-work-packets.md) and
+C4 heading-identity defect; round 15 replaced the host trimmer with a GFM whitespace class broader
+than the heading grammar's own, which reopened that hole for a vertical tab; round 16 derives the
+class each ATX and table position's production names, preserving every earlier reconstruction). See
+the [status ledger](007-work-packets.md) and
 [K1.0's contract](work/K1.0/contract.md). That release names no successor: `next_release: none`.
 Benchmark owns its evidence preparation and release decisions separately.
