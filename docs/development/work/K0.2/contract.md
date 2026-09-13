@@ -8,7 +8,20 @@ accepted post-K0.1 [process review](../K0.1-process-review/integration-01.md)).
 integrated as `42731300266eea00a9a24d867d5e82d9887c280d` ([receipt](../K0.1/integration-01.md)).
 **Owner release:** explicit owner instruction, 2026-09-11 — see *Release provenance* below.
 **Base commit:** `c079237ee7aff428481426f93e87a68b79f170d4`. **Branch:** `codex/k0.2-public-controls-e0-gate`.
-**Contract revision 15.** Fixes forward from A15 under [review-15.md](review-15.md).
+**Contract revision 16.** Fixes forward from A16 under [review-16.md](review-16.md), which found
+C1–C8 passing and C9 failing on K02-R16-01 alone. B-2's wait-ended batch rule fixes four facts a
+plausible implementation can fail one at a time — retain the species' mandatory member, retain the
+*earliest-accepted* eligible one when a B-6 reservation truncates, treat ineligible Events as
+candidates for nothing, and fill what remains only with eligible Events in acceptance order — and
+every wait-ended reservation in the corpus was either at bound 1 with a single candidate or had no
+ineligible Event queued, so the first three coincided in one observation. The decomposition is
+completed in both species, on schedules the corpus already had plus five appended steps to the row-5
+control, and each new construction is proved independent by running it across the whole corpus rather
+than only at its own step. C8's accepted benchmark E0 binding from H15 is preserved exactly and the
+stale `BLOCKED_EXTERNAL` prose round 16 flagged is corrected. Prior accepted corrections stand.
+C1–C9 are offered for accountable Round 17 review of H16; no self-acceptance is claimed.
+
+Revision 15 fixed forward from A15 under [review-15.md](review-15.md).
 [The full independence audit](cited-decision-audit-15.md) refines all 51 cited decisions into
 455 clause references / 269 assertion owners. Selector counterexamples now preserve independent
 W-3 lifecycle/generation invariants. Explicit refinement judgments and separate corpus checks make
@@ -319,10 +332,25 @@ independent fixture preparation").
 and the actual external decision recorded here — **or** a named blocker with responsible actor and a
 concrete unblock condition.
 **Status entering this packet:** the benchmark repository at `98756f8c10bd806125da8318f1a129bc030aca61`
-states E0–E6 are planned and not implemented. This criterion is expected to close as
-**BLOCKED_EXTERNAL**, not PASS. The owner released the packet as written with that consequence stated
-in advance. No E0 acceptance may be claimed, implied or self-granted, and nothing is written in the
-benchmark repository by this packet.
+stated E0–E6 were planned and not implemented, so this criterion was expected to close as
+**BLOCKED_EXTERNAL**, not PASS, and the owner released the packet as written with that consequence
+stated in advance.
+**Status now: PASS.** After clean C15 the benchmark owner produced the deliverable and accepted it.
+The evidence recorded here is accepted E0 H `26d274fad53b2aa4fc2c7f596cae52e072cd24b5` (payload C
+`516e77ff2f3cd93eb407990040259a7524802372`), independent ACCEPT A
+`ac1445fb8144ffab8a9153b243d4b9237d1927b0`, the owner's own ACCEPT/integration receipt
+`9b816d47e83ff210fa32400aa91994f8055138d5`, and benchmark `main`
+`4d83c245c8f6bb0886c1035ec1c6bba3f91f0ddd` descending that lineage; fixture `e0-public-controls/4`
+under protocol `e0-public-controls-v1`, configuration `e0-observation-policy-v1`, freshness reference
+`e0-private-corpus-v1`, evaluator `e0-gate-v1` with freshness check `e0-freshness-v3`, and the pinned
+raw-observation manifest. [implementation-15.md](implementation-15.md) binds those identities in full
+and round-16 review verified the chain against the benchmark repository independently.
+**What still may not be claimed.** The deliverable's own mechanical gate verdict is not the decision,
+an independent ACCEPT without the owner receipt that follows it is not the decision, and the accepted
+H's historical `ownerDecision: pending` field is deliberately not rewritten — a later receipt
+supersedes a status, it does not edit reviewed evidence. No E0 acceptance is self-granted, nothing is
+written in the benchmark repository by this packet at any round, and E0 remains fixture preparation:
+no execution-system quality, durability, containment or comparative claim follows from it.
 
 ### K0.2-C9 — the coverage machinery proves assertions, not row numbers or prose groupings
 
@@ -419,6 +447,22 @@ neither direction and disposed of each explicitly — W-2 step 2's no-timeout cl
 counterexample, W-2 step 3's single-clock-read and non-strict-due clauses are assigned to K1.3 because
 K0.2 supplies no accepted-time observation, and ID-1's non-reissue-after-deletion clause is assigned to
 K5.2 because K0.2 has no deletion command.
+**And a schedule that makes two rules coincide owns neither of them separately** (round-16 finding
+K02-R16-01): B-2's wait-ended rule fixes mandatory-member retention, the earliest-accepted truncation
+choice, candidacy, and eligible-only filling of what remains, and every wait-ended reservation in the
+corpus was at bound 1 with a single candidate or had no ineligible Event queued — shapes in which
+"nothing displaces the wake" is the only observation available, so a selector that keeps the right
+member and tops the batch up from the whole mailbox, or truncates from the wrong end, passed. Each
+species is decomposed on a schedule that presents its own separating condition — room left over with
+ineligible backlog queued, and more eligible candidates than the bound can hold — and, because the B-7
+mandatory member is Kernel-minted at expiry and therefore younger than the backlog beside it, the two
+species are evidenced separately rather than assumed to share a selector. **Independence is
+demonstrated by exclusion, not asserted**: each new construction is written once as a rule over any
+schedule and run across the whole corpus, and must fail only where its clause is observable while the
+schedules it was split from still accept it. A clause whose only constructible form the protocol
+forecloses is recorded as such rather than manufactured: an Event eligible under a retired rule can
+never be accepted *before* a B-7 timeout, because while the wait was live that Event would have ended
+it through B-6.
 Under-coverage lets a wrong candidate pass; over-constraint fails a right one, and is the worse
 failure of the two.
 **Evidence:** `tests/conformance/k0/coverage.ts`, `coverage.test.ts`, `interactions.test.ts`,

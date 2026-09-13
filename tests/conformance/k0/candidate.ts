@@ -18,6 +18,8 @@
  */
 
 import type { Command, K0Candidate, Observation, Scenario, CandidateRun, CandidateRefusal } from "./fixture.ts";
+import { isEligibleUnderWait } from "./protocol-vocabulary.ts";
+import type { FixtureEvent } from "./protocol-vocabulary.ts";
 import type { OperationSink } from "./operation-sink.ts";
 
 // -- The refusing candidate --------------------------------------------------
@@ -197,6 +199,25 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (o) => ({ ...o, waitEndedReadiness: [{ generation: "edge-g3", species: "deadline" }] }),
   },
 
+  {
+    // Self-found in round-16's dependent re-audit of the B-2 neighbourhood (K02-R16-01). B-2 has two
+    // selection rules and the *readiness species* is what chooses between them: wait-ended readiness
+    // selects by the retired wait's rule, ordinary readiness selects by acceptance order. Clause B-6.4
+    // asserted that path B "retires the live registration **and** becomes ready", and its only
+    // transcript moved the generation. A wake that retires correctly and then commits ordinary
+    // readiness is a coherent state machine — §3 row 5 is exactly that state — and nothing could fail
+    // it at the step where the mistake is made.
+    id: "k0-trace/path-B-wake-arms-ordinary-readiness",
+    scenarioId: "k0-trace",
+    plausibleBug:
+      "the Event-acceptance wake handler retires the registration and its generation correctly and then simply marks the " +
+      "Execution READY, because readiness looked like one flag rather than a record with a species and a retired " +
+      "generation — so the next reservation falls through to B-2's ordinary acceptance-order selection",
+    forbiddenBy: "B-6 with B-8 and §3 rows 2/5: an eligible wake commits *Event-triggered wait-ended* readiness naming the retired generation, which is what binds the next batch to the retired rule; ordinary READY carries none and is a different selection case",
+    stepIndex: 6,
+    mustNameFields: ["waitEndedReadiness"],
+    mutate: (observation) => ({ ...observation, waitEndedReadiness: [] }),
+  },
   {
     id: "k0-trace/backlog-displaces-the-wake",
     scenarioId: "k0-trace",
@@ -1226,6 +1247,56 @@ export const VIOLATIONS: readonly Violation[] = [
     mutate: (observation) => ({ ...observation, acceptedDeadline: 3_000 }),
   },
   {
+    // Round-16 review finding K02-R16-01, the B-6 species. Every wait-ended reservation the corpus
+    // had was either at bound 1 or had no ineligible Event queued, so "the wake is not displaced"
+    // and "ineligible backlog is never a candidate" were one observation. This is the construction
+    // that separates them: the mandatory member is retained, the bound is not reached, presentation
+    // is still acceptance order, and the batch is still wrong.
+    id: "control-stale-timer/spare-capacity-admits-ineligible-backlog",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "the wait-ended selector retains the mandatory member correctly and then tops the batch up from the mailbox " +
+      "in acceptance order without re-applying the retired wait's rule to the filler, on the reasoning that the " +
+      "Runtime may as well see everything outstanding while there is room in the bound",
+    forbiddenBy: "B-2's wait-ended rule: the batch is the mandatory member together with Events eligible under the retired rule, and ineligible backlog is never a candidate at any bound, however old it is (B-4 keeps it queued instead)",
+    stepIndex: 14,
+    mustNameFields: ["dispatchedBatch"],
+    mutate: (observation) => ({ ...observation, dispatchedBatch: ["res-3", "res-off"] }),
+  },
+  {
+    // The same finding's B-7 species, and a different selector branch: here the mandatory member is
+    // Kernel-minted and younger than the backlog, so a candidate topping up in acceptance order puts
+    // the ineligible Event *first*. R5-e2 owns the bound-1 case where that would displace the timeout;
+    // this one has room for both, so nothing is displaced and the batch is still wrong.
+    id: "control-stale-timer/deadline-batch-appends-older-ineligible-backlog",
+    scenarioId: "control-stale-timer-and-lost-wake",
+    plausibleBug:
+      "the deadline-ended selector treats the retired rule as a priority hint rather than a candidacy test: it puts " +
+      "the mandatory timeout in, then fills the remaining slots from the whole unacknowledged mailbox in acceptance " +
+      "order, so the older off-correlation result is presented ahead of the timeout that actually caused the wake",
+    forbiddenBy: "B-2's wait-ended rule with B-7: the deadline species' batch is the generation's timeout together with Events eligible under the retired rule; an ineligible Event is not a candidate however old it is, and B-4 keeps it queued",
+    stepIndex: 17,
+    mustNameFields: ["dispatchedBatch"],
+    mutate: (observation) => ({ ...observation, dispatchedBatch: ["res-off", "to-g4"] }),
+  },
+  {
+    // The same finding's third half, on the one schedule in the corpus that offers a wait-ended
+    // reservation more eligible candidates than its bound can hold. B-2 fixes truncation: retain the
+    // mandatory member first, and for B-6 that member is the *earliest-accepted* eligible Event. A
+    // candidate that excludes ineligible backlog perfectly can still pick the wrong eligible member,
+    // and at bound 1 there is no presentation order for R5-j3b to catch it with.
+    id: "identity-producer/wait-ended-bound-1-takes-the-later-eligible-member",
+    scenarioId: "identity-producer-scope",
+    plausibleBug:
+      "the wait-ended selector collects the eligible candidates correctly and then truncates from the wrong end — " +
+      "taking the most recently accepted eligible Event as the one that fits, which reads as 'the freshest input' " +
+      "and silently starves the producer that got there first",
+    forbiddenBy: "B-2's truncation rule: retain the species' mandatory member first, and at bound 1 a B-6 batch is the earliest-accepted eligible Event; acceptance order is per-Execution and does not restart per producer (B-4, ID-2)",
+    stepIndex: 9,
+    mustNameFields: ["dispatchedBatch"],
+    mutate: (observation) => ({ ...observation, dispatchedBatch: ["input-b"] }),
+  },
+  {
     id: "wait-structure/re-registered-dependency-treated-as-already-satisfied",
     scenarioId: "wait-structure-not-satisfiability",
     plausibleBug:
@@ -1930,5 +2001,93 @@ export const emptyDependencyShortcutCandidate: K0Candidate = scriptedCandidate({
         return expected;
       }
       return { ...expected, state: "WAITING" as const, liveWaitGeneration: next.wait.generation, waitEndedReadiness: [] };
+    }),
+});
+
+// -- Wait-ended selector candidates ------------------------------------------
+
+/**
+ * Which Events a wait-ended reservation may choose from, derived from the schedule the way the
+ * `emptyDependencyShortcutCandidate` derives its branch: from the retired wait and the mailbox, never
+ * from the expectation the candidate is supposed to be judged against.
+ */
+function waitEndedShape(scenario: Scenario, stepIndex: number) {
+  const command = scenario.steps[stepIndex]!.command;
+  if (command.kind !== "dispatch") return null;
+  const before = scenario.steps[stepIndex - 1]?.expect.observation;
+  if (before === undefined || before.executionId !== command.executionId) return null;
+  if (before.waitEndedReadiness.length !== 1) return null;
+  const readiness = before.waitEndedReadiness[0]!;
+  const wait = Object.values(scenario.waits ?? {}).find((entry) => entry.generation === readiness.generation);
+  if (wait === undefined) return null;
+
+  const events = new Map<string, FixtureEvent>();
+  for (const step of scenario.steps) {
+    const issued = step.command;
+    if (issued.kind === "accept_event") events.set(issued.event.eventId, issued.event);
+    if (issued.kind === "create" || issued.kind === "create_retry") events.set(issued.initialInput.eventId, issued.initialInput);
+    if (issued.kind === "deliver_timer") events.set(issued.timeoutEvent.eventId, issued.timeoutEvent);
+  }
+  const eligible = before.queued.filter((id) => {
+    const event = events.get(id);
+    return event !== undefined && isEligibleUnderWait(wait, event);
+  });
+  const mandatory = readiness.species === "deadline"
+    ? before.queued.filter((id) => events.get(id)?.waitGeneration === readiness.generation)
+    : eligible.slice(0, 1);
+  return { bound: command.bound, queued: before.queued, eligible, mandatory, candidates: [...new Set([...mandatory, ...eligible])] };
+}
+
+/**
+ * **A selector that keeps the mandatory member and then tops the batch up from the whole mailbox.**
+ *
+ * Round-16 review finding K02-R16-01. B-2 states two rules that a bound-1 schedule cannot tell apart:
+ * ineligible backlog can never *displace* the mandatory member, and ineligible backlog is never a
+ * *candidate* "at any bound, however old it is". At bound 1 with one candidate the batch is full, so
+ * the second rule has nothing to say; the corpus had no wait-ended reservation with slots to spare and
+ * an ineligible Event queued, and so nothing could fail this implementation.
+ *
+ * The bug is written once, as a rule over any schedule: retain whatever the conforming batch retains,
+ * then fill the remaining slots from the unacknowledged mailbox in acceptance order, and present the
+ * result in acceptance order. Running one candidate across the corpus is a statement about the corpus
+ * — it must fail exactly where the rule is observable, and be accepted everywhere the bound is already
+ * full, which is precisely why R5-e1/R5-e2's bound-1 schedules cannot own the candidacy clause.
+ */
+export const waitEndedTopUpCandidate: K0Candidate = scriptedCandidate({
+  name: "wait-ended-batch-tops-up-from-the-whole-mailbox",
+  observationsFor: (scenario: Scenario) =>
+    scenario.steps.map((step, index) => {
+      const expected = step.expect.observation;
+      const shape = waitEndedShape(scenario, index);
+      if (shape === null || expected.dispatchedBatch === null) return expected;
+      const selected = new Set(expected.dispatchedBatch);
+      for (const id of shape.queued) {
+        if (selected.size >= shape.bound) break;
+        selected.add(id);
+      }
+      return { ...expected, dispatchedBatch: shape.queued.filter((id) => selected.has(id)) };
+    }),
+});
+
+/**
+ * **A selector that truncates a wait-ended batch from the wrong end.**
+ *
+ * The other half of K02-R16-01. B-2's truncation rule says the retained member is the species'
+ * mandatory one, and for B-6 that is the *earliest-accepted* eligible Event. A candidate can exclude
+ * ineligible backlog perfectly and still keep the freshest eligible Event instead of the first, and at
+ * bound 1 the resulting one-member batch carries no presentation order for R5-j3b to catch. This keeps
+ * the last candidates rather than the first, which changes nothing wherever the bound already holds
+ * every candidate — so, again, only a schedule that genuinely offers a choice can own the clause.
+ */
+export const waitEndedLateTruncationCandidate: K0Candidate = scriptedCandidate({
+  name: "wait-ended-batch-truncates-from-the-wrong-end",
+  observationsFor: (scenario: Scenario) =>
+    scenario.steps.map((step, index) => {
+      const expected = step.expect.observation;
+      const shape = waitEndedShape(scenario, index);
+      if (shape === null || expected.dispatchedBatch === null) return expected;
+      if (shape.candidates.length <= shape.bound) return expected;
+      const kept = new Set(shape.candidates.slice(-shape.bound));
+      return { ...expected, dispatchedBatch: shape.queued.filter((id) => kept.has(id)) };
     }),
 });

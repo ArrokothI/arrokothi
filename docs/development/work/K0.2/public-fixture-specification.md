@@ -220,28 +220,53 @@ results.
 | Unknown work is never reported as done | Kernel (certainty versus responsibility) | terminal result versus ledger disposition | both, compared | none | a terminal success over an `unknown` settlement fails |
 | Laboratory protection earns no subject credit | Laboratory | sink containment | intervention log | containment always on | a subject that attempted an unsafe action fails its prevention claim even though the sink was harmless |
 
-## 6. E0 ownership, and why this criterion is blocked
+## 6. E0 ownership, and how this criterion was satisfied
 
 E0 is owned by the benchmark repository, not by this one. This repository can prepare the fixture and
 specify the shapes — that is criteria C1–C7 above — but it cannot produce, grant or infer an E0 result.
+That division is unchanged by C8 now passing: what changed is that the benchmark's owner made the
+decision, and this packet records it rather than deriving it.
 
-**Observed external state.** The benchmark repository at revision
-`98756f8c10bd806125da8318f1a129bc030aca61` states in `docs/roadmap.md:3` that "E0–E6 are **planned**,
-not implemented by this documentation revision", and `docs/current-state.md:79` still lists "Start E0
-ownership/claim fixtures" under next useful work. It was inspected read-only; no file, ref,
-configuration or evidence in it was changed by this packet.
+**Current external state.** The benchmark's E0 deliverable was accepted by its own independent review
+and then by its repository owner, and the accepted lineage is integrated on its `main`. Round-16
+independent review verified that chain against the benchmark repository directly rather than through
+this record.
 
 | Field | Value |
 |---|---|
 | Criterion | K0.2-C8, "obtain pinned E0 evidence" |
-| State | **BLOCKED_EXTERNAL** |
-| Unavailable input | any E0 fixture, ownership record, baseline contract, evaluator version or control result |
-| Responsible actor | benchmark repository owner |
-| Unblock condition | E0's deliverable produced and accepted in that repository at a pinned revision, with artifact identities recordable here |
-| Claimed | nothing. No E0 acceptance is claimed, implied or self-granted |
+| State | **PASS** |
+| Accepted E0 candidate | benchmark H `26d274fad53b2aa4fc2c7f596cae52e072cd24b5` (payload C `516e77ff2f3cd93eb407990040259a7524802372`) |
+| Independent ACCEPT | A `ac1445fb8144ffab8a9153b243d4b9237d1927b0`, whose `review-04.md` ends `ACCEPT` and names that H |
+| Actual owner decision | ACCEPT E0 and integrate that H, recorded in the owner's integration receipt `9b816d47e83ff210fa32400aa91994f8055138d5` |
+| Integrated lineage | benchmark `main` `4d83c245c8f6bb0886c1035ec1c6bba3f91f0ddd`, which descends A |
+| Fixture / protocol | `e0-public-controls/4`, `e0-public-controls-v1`, fixture-set `sha256:f4f3b493…e937a0` |
+| Configuration | `e0-observation-policy-v1` = `sha256:9a248638…23b8ccf`; freshness reference `e0-private-corpus-v1` = `sha256:db65b91c…50ae28f5` |
+| Evaluator | `e0-gate-v1`, with freshness check `e0-freshness-v3`; deterministic, no semantic judge |
+| Claimed | exactly the external decision above, and nothing past it |
 
-The owner released this packet with that consequence stated in advance. Because K0.2 is K0's final
-gate packet, **K0 does not close** while C8 is open, regardless of how C1–C7 are judged.
+**What is deliberately not rewritten.** The accepted benchmark H carries
+`ownerDecision.state: "pending"` as its own historical content, because E0's independent review said
+the owner action had to come later — and `integration-04.md` *is* that later action. Superseding a
+status by a subsequent receipt is correct provenance; editing reviewed evidence to agree with a later
+decision would not be. Nothing in the benchmark repository was written, changed or rerun by this
+packet, at this round or any earlier one.
+
+**And the mechanical gate is still not the decision.** E0's own deterministic gate reports `PASS`;
+that is a statement about the benchmark's fixtures. C8 is satisfied by the independent ACCEPT plus the
+owner's recorded decision, with the pinned identities above — never by the gate verdict, a commit
+message, or an ACCEPT read without the owner receipt that follows it.
+
+Because K0.2 is K0's final gate packet, C8 passing is a precondition for closing K0 and not the
+closure itself: K0 closes when this packet is independently accepted as a whole.
+
+**Historical note.** Through round 15 this section read "why this criterion is blocked", and recorded
+the benchmark at `98756f8c10bd806125da8318f1a129bc030aca61` stating that "E0–E6 are **planned**, not
+implemented by this documentation revision". That was true when written, and the packet was released
+with `BLOCKED_EXTERNAL` stated in advance as the expected consequence. Round-16 review confirmed the
+external gate now passes and flagged the surviving blocked wording here as non-blocking drift;
+round 16 corrects it with the payload it was already changing. Earlier §§ below are attempt history
+and are left as they were written.
 
 ## 7. What this material does not establish
 
@@ -1024,3 +1049,127 @@ The published target protocol, observation shape, selector grammar, epoch relati
 adaptation are unchanged. These counts supersede historical §20 totals; they establish fixture
 validation only. C8 remains `BLOCKED_EXTERNAL`, with both freshly inspected benchmark branch owner
 decisions pending. H15 is submitted for accountable Round-16 independent review, not self-accepted.
+
+## 22. Round-16 correction: B-2's wait-ended batch, decomposed
+
+Revision 16 fixes forward from C15/H15 under [review-16.md](review-16.md), which found C1–C8 passing
+and C9 failing on one finding. C15's payload is preserved unchanged; every existing scenario step in
+the corpus is byte-identical, and the only schedule change is five steps appended to the row-5 control.
+
+### K02-R16-01 — one schedule shape was making four rules look like one
+
+B-2's wait-ended batch is `{ the species' mandatory member, if it has one } ∪ { Events eligible under
+the retired wait's rule }`, selected over the Events unacknowledged **at reservation**, with three
+determinacy details: truncation retains the mandatory member first and then fills from the
+earliest-accepted remaining candidates; ineligible backlog "is never a candidate at any bound, however
+old it is"; and the selected batch is *presented* in per-Execution acceptance order regardless of which
+member was mandatory. That is four facts a plausible implementation fails one at a time.
+
+Every wait-ended reservation in the corpus was one of two shapes, and neither could tell them apart:
+
+- **bound 1 with a single candidate** — `k0-trace` step 7, `control-subscription-wait-deadline` step 5,
+  `cited-decision-edges` step 10, `wait-structure-not-satisfiability` step 6. The batch is full, so
+  "retain the mandatory member" and "exclude ineligible backlog" are the same observation, and a
+  one-member batch has no presentation order for R5-j3b to disagree with;
+- **no ineligible Event queued** — `control-stale-timer-and-lost-wake` steps 4 and 10,
+  `cited-decision-edges` step 6, `identity-producer-scope` step 9. There is nothing to exclude.
+
+So two implementations passed the whole corpus. One retains the correct mandatory member and then tops
+the batch up from the unacknowledged mailbox in acceptance order while the bound has room — nothing is
+displaced, the bound is respected, presentation order is right, and the batch is still wrong. The other
+collects the eligible candidates correctly and truncates from the wrong end, keeping the freshest
+eligible Event rather than the earliest.
+
+### The decomposition
+
+| Assertion | Owner | Schedule, and what makes it the owner |
+|---|---|---|
+| B-6 mandatory-member retention at bound 1 | `R5-e1` | `k0-trace` step 7 — unchanged; its text is narrowed to the displacement fact it genuinely proves |
+| B-6 truncation keeps the **earliest-accepted** eligible candidate | `R5-e1b` | `identity-producer-scope` step 9 — the corpus's only wait-ended reservation offered more eligible candidates than its bound holds; already present for row 1, so row 5 is attributed to it rather than duplicated |
+| B-6 candidacy with room to spare | `R5-e1c` | `control-stale-timer-and-lost-wake` step 14 — bound 4, one candidate, one ineligible Event queued |
+| B-7 mandatory-member retention at bound 1 | `R5-e2` | `control-subscription-wait-deadline` step 5 — unchanged |
+| B-7 candidacy with room to spare, backlog older than the mandatory member | `R5-e2b` | `control-stale-timer-and-lost-wake` step 17 — bound 4, the timeout is the only candidate, and the ineligible Event precedes it in acceptance order |
+| Remaining slots are filled by eligible Events | `R5-j3` | unchanged schedule; its text is narrowed to the fill half its transcript exercises |
+| Presentation in acceptance order | `R5-j3b` | unchanged |
+
+The two species are evidenced separately rather than assumed to share a selector, because their
+mandatory members arrive differently: a B-6 mandatory member is chosen *from* the mailbox, while a B-7
+timeout is Kernel-minted at expiry and is therefore **younger** than the backlog beside it. A top-up in
+acceptance order consequently presents the ineligible Event first in the deadline case and second in
+the Event case — different observable shapes from different branches.
+
+### The five appended steps
+
+`control-stale-timer-and-lost-wake` previously ended with a B-6 path-B readiness it never consumed.
+The tail consumes it and reuses one Event for both species. `res-off` is an `effect.result` like the
+wakes themselves, so the *only* reason it is never a candidate is the retired wait's selector — W-1's
+source-category rule is not doing the work, and R5-b1's application-input arm is not re-proved.
+
+1. `res-off` is accepted while `READY`: a mailbox fact creating no readiness (B-8, §3 row 6).
+2. Bound-4 B-6 reservation: three slots stay unused rather than taking it.
+3. A fourth wait parks durably under `g4`, leaving `res-off` as backlog older than any timeout.
+4. `g4`'s own deadline expires (B-7 path B), minting `to-g4` behind `res-off` in acceptance order.
+5. Bound-4 B-7 reservation: the mandatory timeout is retained and `res-off` is still not appended.
+
+### Independence is demonstrated, not asserted
+
+Each new bug is written **once, as a rule over any schedule**, and run across the whole corpus —
+the construction round 13 introduced for the empty-dependency shortcut:
+
+- `waitEndedTopUpCandidate` keeps whatever the conforming batch keeps, then fills remaining slots from
+  the mailbox in acceptance order. It must fail at exactly steps 14 and 17 of the row-5 control, and be
+  **accepted** by `k0-trace` step 7 and `control-subscription-wait-deadline` step 5 — which is what
+  makes R5-e1c/R5-e2b independent assertions rather than restatements of R5-e1/R5-e2.
+- `waitEndedLateTruncationCandidate` keeps the latest candidates instead of the earliest. It must fail
+  at exactly `identity-producer-scope` step 9 and nowhere else.
+- Neither reproduces the other's failures, which is C9's split test applied to the constructions.
+
+Structural regressions independently check that each owning schedule genuinely presents its separating
+condition — spare capacity with ineligible backlog queued, or more eligible candidates than the bound
+holds — derived from the retired wait and the mailbox rather than from the expectation being judged.
+`cited-decisions.test.ts` gains a named guard so the three B-2 owners cannot be re-bundled by editing
+the inventory and recomputing its seal.
+
+### Self-found in the dependent re-audit
+
+Recorded separately from the reviewer's finding.
+
+- **R5-d1b (added, with a counterexample).** Clause B-6.4 asserted that a path-B wake "retires the live
+  registration **and** becomes ready", and only retirement had a transcript. Readiness is not a flag:
+  §3 distinguishes wait-ended readiness, which names the retired generation and its species, from
+  ordinary `READY`, which carries none — and that distinction is precisely the input to B-2's choice
+  between the wait-ended rule and acceptance-order selection. A handler that retires perfectly and then
+  marks the Execution plainly `READY` is a coherent §3 row 5 state, is the failure R5-e1's batch
+  transcript sees only one step later and only sometimes, and had no owner at the step where the
+  mistake is made. Single-field move on `waitEndedReadiness` at `k0-trace` step 6.
+- **R5-j3's text was overclaiming.** It said a batch with room "includes both its mandatory timeout and
+  the later eligible result" while its transcript only ever exercised the fill half. The mandatory half
+  is R5-e2's bug model and is capacity-independent, so restating it here would have added a second name
+  for one construction rather than a second assertion; the entry is narrowed to the fill half instead.
+- **B-4.4's genus-level exclusion clause is split by species** and trimmed to the exclusion fact alone;
+  the retention half it also mentioned is already owned by R6-a2.
+
+**Checked and found already owned**, so the re-audit is reviewable rather than asserted: B-7's
+positive readiness commit is inside R5-b4's declared atomicity note at
+`control-subscription-wait-deadline` step 4, where one timeout-routing bug produces the whole absent
+transaction; W-7 case 5's exclusion statement is re-bound to the capacity owner that actually proves
+it; and B-2's bound, nonempty, ordinary-selection and empty-ordinary-batch owners are unchanged.
+
+**Foreclosed rather than manufactured.** B-2's "at bound 1 a B-7 batch is exactly the timeout Event
+even if a result was accepted before it" has no constructible form in which the earlier Event is
+*eligible under the retired rule*: while the wait was live such an Event would have ended it through
+B-6, so it can never still be waiting at the expiry. The ineligible reading is owned by R5-e2/R5-e2b.
+
+### Non-blocking prose corrected with this payload
+
+Round 16's documentation-drift note: §6 of this document and the introduction of
+`007-work-packets.md` still described C8 as `BLOCKED_EXTERNAL`. Both are corrected. The accepted
+benchmark E0 evidence H15 bound is reproduced exactly and is not re-derived, re-run or edited, and the
+accepted benchmark H's historical `ownerDecision: pending` field is deliberately left alone.
+
+**Current totals:** 51 decisions / **460 clause references** / **273 obligations = 130 scenario +
+4 shared + 20 corpus + 119 assigned**; **130 violating transcripts; 26 atomicity notes; 15 scenarios /
+142 steps**; 36 explicit refinement groups. Per-row counts: 20, 22, 27, 21, 104, 5, 28, 14, 26, 6.
+These supersede §21's totals and establish fixture validation only. C8 is **PASS** on the accepted
+external decision recorded in §6. H16 is submitted for accountable Round-17 independent review, not
+self-accepted; K0 stays open and K1.0 unreleased.

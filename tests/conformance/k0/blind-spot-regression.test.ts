@@ -33,6 +33,8 @@ import {
   emptyDependencyShortcutCandidate,
   epochPolicyCandidate,
   violatingCandidate,
+  waitEndedLateTruncationCandidate,
+  waitEndedTopUpCandidate,
 } from "./candidate.ts";
 import { checkWaitWellFormed, isEligibleUnderWait } from "./protocol-vocabulary.ts";
 import { ALL_SCENARIOS } from "./scenarios.ts";
@@ -1091,5 +1093,142 @@ describe("round-13: the empty-dependency clause of W-2 step 2 has an owner that 
     assert.equal(result.outcome, "FAIL");
     if (result.outcome !== "FAIL") return;
     assert.ok(result.failures.some((failure) => failure.stepIndex === 3));
+  });
+});
+
+describe("round-16: B-2's wait-ended facts are separated where the schedules used to make them coincide", () => {
+  // K02-R16-01. B-2 fixes four facts about a wait-ended batch that a plausible implementation can
+  // fail one at a time: retain the species' mandatory member; for B-6, retain the *earliest-accepted*
+  // eligible one when the bound truncates; treat ineligible Events as candidates for nothing; and fill
+  // what remains only with eligible Events, in acceptance order. Every wait-ended reservation in the
+  // corpus used to be at bound 1 with a single candidate, or had no ineligible Event queued, so the
+  // first three collapsed into one observation. These tests establish that the schedules now present
+  // the separating conditions, that each new counterexample is caught where its clause lives, and —
+  // the half a scenario-scoped transcript cannot state — that it is invisible everywhere else.
+
+  /** Candidates for a wait-ended batch, derived from the retired wait rather than from the expectation. */
+  function waitEndedCandidates(target: (typeof ALL_SCENARIOS)[number], stepIndex: number) {
+    const events = new Map<string, import("./protocol-vocabulary.ts").FixtureEvent>();
+    for (const step of target.steps) {
+      const command = step.command;
+      if (command.kind === "accept_event") events.set(command.event.eventId, command.event);
+      if (command.kind === "create" || command.kind === "create_retry") events.set(command.initialInput.eventId, command.initialInput);
+      if (command.kind === "deliver_timer") events.set(command.timeoutEvent.eventId, command.timeoutEvent);
+    }
+    const dispatch = target.steps[stepIndex]!;
+    assert.equal(dispatch.command.kind, "dispatch");
+    assert.ok(dispatch.command.kind === "dispatch");
+    const before = target.steps[stepIndex - 1]!.expect.observation;
+    assert.equal(before.waitEndedReadiness.length, 1, "this must be a wait-ended reservation");
+    const readiness = before.waitEndedReadiness[0]!;
+    const wait = Object.values(target.waits ?? {}).find((entry) => entry.generation === readiness.generation);
+    assert.ok(wait, `no submitted wait declares generation ${readiness.generation}`);
+    const eligible = before.queued.filter((id) => events.get(id) !== undefined && isEligibleUnderWait(wait, events.get(id)!));
+    const mandatory = readiness.species === "deadline"
+      ? before.queued.filter((id) => events.get(id)?.waitGeneration === readiness.generation)
+      : eligible.slice(0, 1);
+    const candidates = [...new Set([...mandatory, ...eligible])];
+    return {
+      bound: dispatch.command.bound,
+      species: readiness.species,
+      queued: before.queued,
+      candidates,
+      ineligible: before.queued.filter((id) => !candidates.includes(id)),
+      batch: dispatch.expect.observation.dispatchedBatch ?? [],
+    };
+  }
+
+  test("the corpus now has a wait-ended reservation with room to spare and ineligible backlog queued, in each species", () => {
+    // The precondition the finding turns on. Without spare capacity, "retain the mandatory member" and
+    // "exclude ineligible backlog" cannot be told apart by any observation of the batch.
+    for (const [scenarioId, stepIndex, species] of [
+      ["control-stale-timer-and-lost-wake", 14, "event"],
+      ["control-stale-timer-and-lost-wake", 17, "deadline"],
+    ] as const) {
+      const shape = waitEndedCandidates(scenario(scenarioId), stepIndex);
+      assert.equal(shape.species, species);
+      assert.ok(shape.ineligible.length > 0, `${scenarioId}#${stepIndex}: no ineligible Event is queued, so exclusion is unobservable`);
+      assert.ok(
+        shape.bound > shape.candidates.length,
+        `${scenarioId}#${stepIndex}: bound ${shape.bound} leaves no slot spare beyond ${shape.candidates.length} candidates, so nothing distinguishes exclusion from displacement`,
+      );
+      assert.deepEqual(shape.batch, shape.candidates, `${scenarioId}#${stepIndex}: the batch must be exactly the candidates`);
+    }
+  });
+
+  test("and the older-backlog direction is real: the deadline species' mandatory member is younger than the Event it must not admit", () => {
+    // B-2 says ineligible backlog is excluded "however old it is". A timeout Event is minted at expiry,
+    // so it can never be the older member; this is the shape that reads the phrase in the direction
+    // that can actually fail, with the ineligible Event ahead of the mandatory one in acceptance order.
+    const shape = waitEndedCandidates(scenario("control-stale-timer-and-lost-wake"), 17);
+    assert.deepEqual(shape.queued, ["res-off", "to-g4"]);
+    assert.deepEqual(shape.batch, ["to-g4"]);
+  });
+
+  test("a B-6 reservation that must truncate is offered more eligible candidates than its bound holds", () => {
+    // The other separating condition: B-2's truncation rule only says something when there is a choice.
+    const shape = waitEndedCandidates(scenario("identity-producer-scope"), 9);
+    assert.equal(shape.species, "event");
+    assert.deepEqual(shape.ineligible, [], "this schedule separates the truncation choice, not exclusion");
+    const eligible = shape.queued;
+    assert.ok(eligible.length > shape.bound, "truncation is only observable when more candidates exist than fit");
+    assert.deepEqual(shape.batch, [eligible[0]], "the retained member must be the earliest accepted of them");
+  });
+
+  for (const [violationId, scenarioId, stepIndex] of [
+    ["control-stale-timer/spare-capacity-admits-ineligible-backlog", "control-stale-timer-and-lost-wake", 14],
+    ["control-stale-timer/deadline-batch-appends-older-ineligible-backlog", "control-stale-timer-and-lost-wake", 17],
+    ["identity-producer/wait-ended-bound-1-takes-the-later-eligible-member", "identity-producer-scope", 9],
+  ] as const) {
+    test(`${violationId} is rejected at its own step, moving only the batch`, () => {
+      const target = scenario(scenarioId);
+      const entry = violation(violationId);
+      const expected = target.steps[stepIndex]!.expect.observation;
+      assert.deepEqual(changedFields(expected, entry.mutate(expected)), ["dispatchedBatch"]);
+      const result = runScenario(violatingCandidate(entry), target, createOperationSink());
+      assert.equal(result.outcome, "FAIL", `${violationId} was accepted by the oracle`);
+      if (result.outcome !== "FAIL") return;
+      assert.deepEqual(result.failures.map((failure) => failure.stepIndex), [stepIndex]);
+      assert.ok(result.failures[0]!.detail.includes("dispatchedBatch"));
+    });
+  }
+
+  test("the top-up selector fails exactly where candidacy is observable, and is accepted by both displacement owners", () => {
+    // Ownership by exclusion, the half a scenario-scoped transcript cannot state. The bug is written
+    // once as a rule over any schedule — keep what the conforming batch keeps, then fill the remaining
+    // slots from the whole mailbox in acceptance order — and run across the corpus. It must fail at the
+    // two reservations with room to spare and be **accepted** everywhere the bound is already full,
+    // including `k0-trace` step 7 and `control-subscription-wait-deadline` step 5. If it failed there,
+    // R5-e1c/R5-e2b would be restatements of R5-e1/R5-e2 rather than independent assertions.
+    const failures = new Map<string, readonly number[]>();
+    for (const target of ALL_SCENARIOS) {
+      const result = runScenario(waitEndedTopUpCandidate, target, createOperationSink());
+      if (result.outcome === "FAIL") failures.set(target.id, result.failures.map((failure) => failure.stepIndex));
+    }
+    assert.deepEqual([...failures.keys()], ["control-stale-timer-and-lost-wake"]);
+    assert.deepEqual(failures.get("control-stale-timer-and-lost-wake"), [14, 17]);
+  });
+
+  test("the wrong-end truncation selector fails exactly where a choice exists, and nowhere else", () => {
+    // The same construction for B-2's truncation rule. Keeping the latest candidates instead of the
+    // earliest changes nothing wherever the bound already holds every candidate, which is every
+    // wait-ended reservation in the corpus except the one this entry owns.
+    const failures = new Map<string, readonly number[]>();
+    for (const target of ALL_SCENARIOS) {
+      const result = runScenario(waitEndedLateTruncationCandidate, target, createOperationSink());
+      if (result.outcome === "FAIL") failures.set(target.id, result.failures.map((failure) => failure.stepIndex));
+    }
+    assert.deepEqual([...failures.keys()], ["identity-producer-scope"]);
+    assert.deepEqual(failures.get("identity-producer-scope"), [9]);
+  });
+
+  test("and the two selector defects are different defects: neither candidate reproduces the other's failures", () => {
+    // C9's split test, applied to the constructions themselves rather than to the prose. One selector
+    // can top up from the mailbox while truncating correctly, and the other can truncate from the wrong
+    // end while excluding ineligible Events perfectly; the corpus must be able to tell them apart.
+    const stale = scenario("control-stale-timer-and-lost-wake");
+    const producer = scenario("identity-producer-scope");
+    assert.equal(runScenario(waitEndedLateTruncationCandidate, stale, createOperationSink()).outcome, "PASS");
+    assert.equal(runScenario(waitEndedTopUpCandidate, producer, createOperationSink()).outcome, "PASS");
   });
 });

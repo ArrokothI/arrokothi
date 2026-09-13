@@ -27,7 +27,7 @@ function checkReconciliation(decisions = CITED_DECISIONS, obligations = K0_OBLIG
       assert.ok(owner.evidence, `${clause.id} has no evidence disposition`);
     }
   }
-  assert.equal(sha(JSON.stringify(decisions)), "fd3f9d703461ea177ccc4c093220d907abfba2a31ca821f516dfb7de1160514e", "clause inventory changed: reconcile the source assertions and review the new seal; labels alone are insufficient");
+  assert.equal(sha(JSON.stringify(decisions)), "54b4d21d342c0ec4e971de49e5002459129c7ea75141a82c3deb337803d0a289", "clause inventory changed: reconcile the source assertions and review the new seal; labels alone are insufficient");
 }
 
 function checkRefinements(decisions = CITED_DECISIONS): void {
@@ -79,6 +79,19 @@ describe("cited decisions: explicit inventory and reconciliation", () => {
     const broken = CITED_DECISIONS.map(d => ({ ...d, clauses: d.clauses.map(c =>
       c.obligation.startsWith("R5-k6-") ? { ...c, obligation: "R5-k6" } : c) }));
     assert.throws(() => checkRefinements(broken), /independent clause rebound/);
+  });
+  test("B-2's wait-ended facts cannot silently share one owner again", () => {
+    // Round-16 review finding K02-R16-01. Displacement at bound one, the truncation choice and
+    // candidacy with room to spare are three writers; the same guard shape as the timeout envelope's,
+    // so a later revision cannot re-bundle them by editing the inventory and recomputing its seal.
+    for (const rebundled of ["R5-e1b", "R5-e1c"]) {
+      const broken = CITED_DECISIONS.map(d => ({ ...d, clauses: d.clauses.map(c =>
+        c.obligation === rebundled ? { ...c, obligation: "R5-e1" } : c) }));
+      assert.throws(() => checkRefinements(broken), /independent clause rebound/, rebundled);
+    }
+    const deadline = CITED_DECISIONS.map(d => ({ ...d, clauses: d.clauses.map(c =>
+      c.obligation === "R5-e2b" ? { ...c, obligation: "R5-e2" } : c) }));
+    assert.throws(() => checkRefinements(deadline), /independent clause rebound/);
   });
   test("assignments name an actual implementing packet from 007", async () => {
     const source = await readFile(ledger, "utf8");

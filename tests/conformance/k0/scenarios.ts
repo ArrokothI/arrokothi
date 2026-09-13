@@ -525,6 +525,28 @@ const timeoutForG2 = timeoutEvent("to-g2", X, "g2");
  */
 const finalResult = kernelEvent("res-3", X, "effect.result", "corr-3");
 const waitOnCorr3: WaitRecord = { dependencies: [{ kinds: ["effect.result"], correlation: "corr-3" }], subscriptions: [], deadline: 3_000, generation: "g3" };
+/**
+ * Round-16 review finding K02-R16-01. B-2's wait-ended rule fixes four facts a candidate can fail one
+ * at a time, and the corpus proved them only where two of them coincide. Every wait-ended dispatch in
+ * the corpus was either at bound 1 with a single candidate — where "retain the mandatory member" and
+ * "exclude ineligible backlog" are the same observation — or had no ineligible Event queued at all. So
+ * a selector that retained the correct mandatory member and then **appended ineligible backlog into
+ * the slots left over** passed everything: nothing was displaced, the batch was still within bound,
+ * and presentation order was still acceptance order.
+ *
+ * `res-off` is the Event that catches it. It is an `effect.result` like the wake itself, so the *only*
+ * reason it is not a candidate is the retired wait's selector — W-1's source-category rule is not doing
+ * the work here, and R5-b1's application-input arm is not being re-proved. It stays queued across two
+ * retirements and is a candidate under neither g4 nor the g3 rule that precedes it, which lets one
+ * accepted Event carry the B-6 species at step 14 and the B-7 species at step 17.
+ *
+ * `waitOnCorr4` then parks durably so the same Event becomes genuinely *older* backlog before the
+ * timeout that ends g4 is minted — the worksheet's "however old it is" read in the direction that
+ * matters, since a timeout Event can never be older than the mailbox it joins.
+ */
+const offCorrelationResult = kernelEvent("res-off", X, "effect.result", "corr-9");
+const waitOnCorr4: WaitRecord = { dependencies: [{ kinds: ["effect.result"], correlation: "corr-4" }], subscriptions: [], deadline: 4_000, generation: "g4" };
+const timeoutForG4 = timeoutEvent("to-g4", X, "g4");
 
 export const staleTimerAndLostWake: Scenario = {
   id: "control-stale-timer-and-lost-wake",
@@ -537,7 +559,7 @@ export const staleTimerAndLostWake: Scenario = {
   ],
   k0BoundaryRows: [5, 6],
   isUnsafeControl: true,
-  waits: { waitOnCorr1, waitOnCorr2, waitOnCorr3 },
+  waits: { waitOnCorr1, waitOnCorr2, waitOnCorr3, waitOnCorr4 },
   steps: [
     step(
       { kind: "create", executionId: X, requestKey: "req-x", initialInput, definitionRevision: FAKE_RUNTIME_V1 },
@@ -796,6 +818,125 @@ export const staleTimerAndLostWake: Scenario = {
           "waitEndedReadiness must be exactly one Event-triggered entry for g3: a deadline species here would claim a timeout Event that was never minted",
           "progressRevision must not advance and acknowledged must not grow: waking is not acknowledging, which requires an accepted Outcome (B-3)",
           "res-3 must stay queued and unacknowledged: the Event that ended the wait is a mailbox fact, not a consumed one",
+        ],
+      },
+    ),
+    // Round-16 review finding K02-R16-01. The five steps below consume the path-B readiness step 12
+    // created — which the scenario previously left outstanding — and use the two reservations it
+    // produces to separate B-2's wait-ended facts where the corpus had them coinciding. Each
+    // reservation has **room left over** after its mandatory member, which is the condition under which
+    // "ineligible backlog is never a candidate at any bound" stops being the same observation as
+    // "nothing displaces the wake".
+    step(
+      { kind: "accept_event", event: offCorrelationResult },
+      {
+        label: "an off-correlation result is accepted while READY: a mailbox fact under B-8, and a candidate under nothing",
+        observation: obs(X, {
+          state: "READY",
+          progressRevision: 3,
+          progress: { phase: "awaiting-3" },
+          acknowledged: ["in-1", "res-1", "to-g2", "res-2"],
+          queued: ["res-3", "res-off"],
+          liveWaitGeneration: null,
+          waitEndedReadiness: [{ generation: "g3", species: "event" }],
+          receipt: "receipt:outcome:act-3",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "waitEndedReadiness must stay exactly one entry for g3: no generation is live, so B-8 creates nothing and a second readiness could re-select an already-reserved batch",
+          "state must stay READY and liveWaitGeneration null: this Event ends nothing, because nothing is registered to end",
+          "res-3 must stay queued: an unrelated arrival neither consumes nor reorders the Event this Execution was woken for",
+        ],
+      },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 4 },
+      {
+        label: "B-6 with room to spare: the leftover slots stay empty rather than taking backlog that is not a candidate",
+        observation: obs(X, {
+          state: "RUNNING",
+          progressRevision: 3,
+          progress: { phase: "awaiting-3" },
+          acknowledged: ["in-1", "res-1", "to-g2", "res-2"],
+          queued: ["res-3", "res-off"],
+          dispatchedBatch: ["res-3"],
+          activationId: "act-4",
+          receipt: "receipt:outcome:act-3",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "dispatchedBatch must be exactly ['res-3']: three of this reservation's four slots are unused, and B-2 leaves them unused rather than filling them with an Event that is not eligible under g3's retired rule",
+          "res-off must not join the batch: 'ineligible backlog is never a candidate at any bound' is a rule about candidacy, not about displacement, and nothing here is displaced",
+          "res-off must stay queued and unacknowledged: an Event excluded from a batch keeps its own per-entry disposition (B-4)",
+        ],
+      },
+    ),
+    step(
+      {
+        kind: "submit_outcome",
+        outcome: outcome({ executionId: X, activationId: "act-4", baseProgressRevision: 3, progress: { phase: "awaiting-4" }, next: { step: "await", wait: waitOnCorr4 } }),
+      },
+      {
+        label: "a fourth wait parks durably under g4, leaving the off-correlation result as backlog older than any timeout",
+        observation: obs(X, {
+          state: "WAITING",
+          progressRevision: 4,
+          progress: { phase: "awaiting-4" },
+          acknowledged: ["in-1", "res-1", "to-g2", "res-2", "res-3"],
+          queued: ["res-off"],
+          liveWaitGeneration: "g4",
+          acceptedDeadline: 4_000,
+          receipt: "receipt:outcome:act-4",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "state must be WAITING: W-2 step 2 finds res-off ineligible under g4's rule exactly as it was under g3's, so registration reaches step 4",
+          "res-off must stay queued and unacknowledged: W-2 step 1 acknowledges this Outcome's own reserved batch, which was ['res-3'] alone",
+          "acceptedDeadline must be 4000: the live registration carries its deadline as one accepted set (OA-4, W-2 step 4)",
+        ],
+      },
+    ),
+    step(
+      { kind: "deliver_timer", executionId: X, generation: "g4", timeoutEvent: timeoutForG4 },
+      {
+        label: "g4's own deadline expires, so the mandatory member of the next batch is a Kernel-minted timeout younger than the backlog beside it",
+        observation: obs(X, {
+          state: "READY",
+          progressRevision: 4,
+          progress: { phase: "awaiting-4" },
+          acknowledged: ["in-1", "res-1", "to-g2", "res-2", "res-3"],
+          queued: ["res-off", "to-g4"],
+          liveWaitGeneration: null,
+          waitEndedReadiness: [{ generation: "g4", species: "deadline" }],
+          receipt: "receipt:outcome:act-4",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "acceptedDeadline must be null: the expiry retires the registration and the deadline fact together (B-7 path B)",
+          "waitEndedReadiness must be deadline-triggered: the species decides which member the next batch must carry",
+          "res-off must keep its acceptance position ahead of to-g4: the timeout joins the mailbox after it, which is what makes the next step's exclusion a statement about older backlog",
+        ],
+      },
+    ),
+    step(
+      { kind: "dispatch", executionId: X, bound: 4 },
+      {
+        label: "B-7 with room to spare: the mandatory timeout is retained and the older ineligible backlog is still not appended",
+        observation: obs(X, {
+          state: "RUNNING",
+          progressRevision: 4,
+          progress: { phase: "awaiting-4" },
+          acknowledged: ["in-1", "res-1", "to-g2", "res-2", "res-3"],
+          queued: ["res-off", "to-g4"],
+          dispatchedBatch: ["to-g4"],
+          activationId: "act-5",
+          receipt: "receipt:outcome:act-4",
+          writerEpoch: 1,
+        }),
+        forbids: [
+          "dispatchedBatch must be exactly ['to-g4']: the deadline species' mandatory member is retained and the three remaining slots stay empty, because g4's retired rule makes res-off a candidate for none of them",
+          "res-off must not be appended even though it is older than the timeout and the bound has room: B-2 excludes it on candidacy, and 'however old it is' is the worksheet's own phrase",
+          "the batch must not be presented as ['res-off','to-g4']: that is what admitting it in acceptance order would produce, and it is the shape this step exists to reject",
         ],
       },
     ),

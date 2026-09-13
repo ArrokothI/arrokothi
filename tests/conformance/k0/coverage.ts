@@ -871,6 +871,20 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 6, counterexamples: ["k0-trace/wake-leaves-the-generation-live"] },
   },
   {
+    // Self-found in round-16's dependent re-audit of the B-2 neighbourhood. Clause B-6.4 bundled
+    // retirement with "becomes ready", and only retirement had a transcript. The readiness a wake
+    // commits is not a flag: §3 distinguishes wait-ended readiness, which names the retired generation
+    // and its species, from ordinary READY, which carries none — and that distinction is the input to
+    // B-2's choice between the wait-ended rule and acceptance-order selection. A handler that retires
+    // perfectly and then marks the Execution plainly READY is coherent, is the failure R5-e1's batch
+    // transcript sees only one step later and only sometimes, and had no owner at the step where the
+    // mistake is made.
+    id: "R5-d1b",
+    row: 5,
+    obligation: "(d) That same wake commits **wait-ended** readiness — Event-triggered, naming the generation it just retired — rather than plain ordinary readiness, because the species and generation are what bind the next reservation to the retired rule instead of to acceptance order.",
+    evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 6, counterexamples: ["k0-trace/path-B-wake-arms-ordinary-readiness"] },
+  },
+  {
     id: "R5-d2",
     row: 5,
     obligation: "(d) A current-generation deadline expiry retires them likewise, in the transaction that mints the timeout Event.",
@@ -920,17 +934,60 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
   },
 
   // == Row 5(e): next-batch selection, both species ==========================
+  //
+  // Round-16 review finding K02-R16-01 decomposed this group. B-2's wait-ended rule fixes four facts
+  // that a plausible implementation can fail one at a time — retain the species' mandatory member,
+  // choose the *earliest-accepted* eligible member when B-6 must truncate, treat ineligible Events as
+  // candidates for nothing, and fill what remains only with eligible Events in acceptance order — and
+  // the corpus proved them only on schedules where the first three coincide. Every wait-ended
+  // reservation was at bound 1 with one candidate, or had no ineligible Event queued, so "nothing
+  // displaces the wake" was the only observation available. R5-e1/R5-e2 keep the displacement fact,
+  // which is what their bound-1 schedules genuinely prove; R5-e1b owns the truncation choice; and
+  // R5-e1c/R5-e2b own candidacy on schedules with capacity left over, where a selector that retains
+  // the right mandatory member and tops the batch up from the whole mailbox is still wrong.
   {
     id: "R5-e1",
     row: 5,
-    obligation: "(e) Older ineligible backlog can never displace what the Execution was woken for, at any bound including 1 — the B-6 species.",
+    obligation: "(e) At bound 1, older ineligible backlog can never displace what the Execution was woken for — the B-6 species, where the mandatory member is an Event eligible under the retired rule.",
     evidence: { kind: "scenario", scenario: "k0-trace", stepIndex: 7, counterexamples: ["k0-trace/backlog-displaces-the-wake"] },
+  },
+  {
+    // The truncation half. B-2: "Retain the species' mandatory member first, then fill the remaining
+    // slots with the earliest-accepted remaining candidates ... a `B-6` batch is the earliest-accepted
+    // eligible Event." A candidate can exclude ineligible backlog perfectly and still truncate from
+    // the wrong end, and at bound 1 the resulting one-member batch has no presentation order for
+    // R5-j3b to catch. `identity-producer-scope` step 9 is the only wait-ended reservation in the
+    // corpus offered more eligible candidates than its bound can hold, and it already exists for
+    // row 1's producer-scoped ingress, so row 5 is attributed to it rather than duplicated.
+    id: "R5-e1b",
+    row: 5,
+    obligation: "(e) When a B-6 reservation must truncate, the member it retains is the earliest-accepted eligible Event: acceptance order decides which candidate is mandatory, and it does not restart per producer.",
+    evidence: { kind: "scenario", scenario: "identity-producer-scope", stepIndex: 9, counterexamples: ["identity-producer/wait-ended-bound-1-takes-the-later-eligible-member"] },
+  },
+  {
+    // The candidacy half, for the B-6 species. Displacement and exclusion are the same observation
+    // only while the bound is full; with slots to spare they are different rules and different code.
+    id: "R5-e1c",
+    row: 5,
+    obligation: "(e) Ineligible backlog is never a *candidate* for a B-6 wait-ended batch, not merely never a displacer: with the mandatory member retained and slots still unused, the leftover capacity stays empty rather than being filled from the mailbox.",
+    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 14, counterexamples: ["control-stale-timer/spare-capacity-admits-ineligible-backlog"] },
   },
   {
     id: "R5-e2",
     row: 5,
-    obligation: "(e) The same holds for the B-7 species, where the generation-correlated timeout Event is the mandatory member (W-8 case 6).",
+    obligation: "(e) At bound 1 the same displacement rule holds for the B-7 species, where the generation-correlated timeout Event is the mandatory member (W-8 case 6).",
     evidence: { kind: "scenario", scenario: "control-subscription-wait-deadline", stepIndex: 5, counterexamples: ["subscription-deadline/backlog-takes-the-slot-from-the-timeout"] },
+  },
+  {
+    // The candidacy half for the deadline species, kept separate from R5-e1c rather than assumed to
+    // share its code: the mandatory member here is Kernel-minted at expiry rather than selected from
+    // the mailbox, so it is *younger* than the backlog beside it and a top-up in acceptance order
+    // presents the ineligible Event first. That is a different observable shape produced by a
+    // different branch, which is why the two species get separate schedules and separate transcripts.
+    id: "R5-e2b",
+    row: 5,
+    obligation: "(e) Ineligible backlog is never a candidate for a B-7 wait-ended batch either: with the mandatory timeout retained and slots still unused, backlog accepted *before* that timeout is still not appended — B-2's \"however old it is\".",
+    evidence: { kind: "scenario", scenario: "control-stale-timer-and-lost-wake", stepIndex: 17, counterexamples: ["control-stale-timer/deadline-batch-appends-older-ineligible-backlog"] },
   },
 
   // == Row 5(f): fencing =====================================================
@@ -2041,9 +2098,17 @@ export const K0_OBLIGATIONS: readonly BoundaryObligation[] = [
     }
   },
   {
+    // Narrowed by round-16's dependent re-audit of the B-2 group (K02-R16-01). The text used to claim
+    // that the batch "includes both its mandatory timeout and the later eligible result", which is two
+    // facts a candidate fails separately, while `clauses/r5-j3` only ever exercised one of them: it
+    // keeps the timeout and drops the eligible result. The other half — a selector that filters the
+    // mandatory timeout out because it matches no dependency alternative — is the bug model R5-e2
+    // already owns, and it is capacity-independent, so restating it here with room to spare would add
+    // a second name for one construction rather than a second assertion. This entry is the positive
+    // fill half alone.
     "id": "R5-j3",
     "row": 5,
-    "obligation": "B-2/W-9 case 3: a wait-ended batch with room includes both its mandatory timeout and the later eligible result.",
+    "obligation": "B-2/W-9 case 3: when a wait-ended batch has room beyond its mandatory member, Events eligible under the retired rule and present at reservation do fill the remaining slots rather than being held back to the next dispatch.",
     "evidence": {
       "kind": "scenario",
       "scenario": "control-stale-timer-and-lost-wake",
