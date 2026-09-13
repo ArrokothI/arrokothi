@@ -1,0 +1,542 @@
+C15: 839f1619bc9a628c55a9c60eeef01992727cc613
+C8 follow-up after owner message: E0 is finished; inspect benchmark.
+UTC: 2026-09-13T02:09:31.267781+00:00
+Cwd: /Users/rex-shih/Documents/Codex/projects/benchmark
+Fetched main: 4d83c245c8f6bb0886c1035ec1c6bba3f91f0ddd
+Read-only pinned-source inspection; no benchmark tests rerun.
+
+$ git merge-base --is-ancestor 26d274fad53b2aa4fc2c7f596cae52e072cd24b5 ac1445fb8144ffab8a9153b243d4b9237d1927b0
+Exit: 0
+
+$ git diff --name-only 26d274fad53b2aa4fc2c7f596cae52e072cd24b5 ac1445fb8144ffab8a9153b243d4b9237d1927b0
+docs/development/work/E0/review-04.md
+Exit: 0
+
+$ git merge-base --is-ancestor ac1445fb8144ffab8a9153b243d4b9237d1927b0 4d83c245c8f6bb0886c1035ec1c6bba3f91f0ddd
+Exit: 0
+
+$ git show 26d274fad53b2aa4fc2c7f596cae52e072cd24b5:fixtures/e0/evidence-record.json
+{
+  "schemaVersion": "e0-evidence-record-v1",
+  "recordId": "e0-public-controls/4",
+  "producedFor": "Any consumer that needs to pin E0's deliverable at an exact identity — including the agent-kernel K0.2 packet, whose criterion C8 asks for benchmark revision, E0 fixture and configuration identities, raw observations, evaluator version and an external decision. This record supplies the first four and the mechanical gate verdict. It does not supply, imply or self-grant an acceptance, and nothing in the agent-kernel repository is written, changed or claimed by producing it.",
+  "benchmarkRevision": {
+    "branch": "e0-correction-round-2",
+    "commit": null,
+    "note": "A commit cannot contain its own SHA, so the revision is supplied by the handoff rather than pinned here. The content identities below are what actually fix this deliverable, and they are recomputed from bytes on disk by `npm run validate:e0` — they do not depend on a git ref."
+  },
+  "fixtureIdentity": {
+    "fixtureVersion": "e0-public-controls/4",
+    "protocol": "e0-public-controls-v1",
+    "fixtureSetHash": "sha256:f4f3b4932b8375f907cf3ae93ec4c37c5b6e897b6a5666609484db7c37e937a0",
+    "observationPolicyVersion": "e0-observation-policy-v1",
+    "observationPolicyHash": "sha256:9a24863833807db998c2e6a198e82c10cfba77504d8f61e3ebc27ba2623b8ccf"
+  },
+  "rawObservations": {
+    "material": [
+      "fixtures/e0/shapes/shape-a-reviewed-artifact-publication.json",
+      "fixtures/e0/shapes/shape-b-restartable-request.json",
+      "fixtures/e0/baseline-contract.json",
+      "fixtures/e0/claim-ledger.json",
+      "fixtures/e0/fixture-set.json"
+    ],
+    "traces": "Observation traces are recomputed deterministically from the committed schedules and probes rather than stored, so a stale copy cannot drift away from the fixtures it claims to describe. `runScenario` in `src/e0/laboratory.ts` produces them; the gate projects them onto the sources each property declares.",
+    "reproduce": [
+      "npm run validate:e0",
+      "node --test --experimental-strip-types tests/e0-public-controls.test.ts",
+      "node --test --experimental-strip-types tests/e0-gate-discrimination.test.ts",
+      "node --test --experimental-strip-types tests/e0-freshness.test.ts"
+    ]
+  },
+  "evaluator": {
+    "version": "e0-gate-v1",
+    "kind": "Deterministic. The gate executes each witness scenario against every conforming probe and the violating probe, projects each observation onto only the sources the property declares, and requires the conforming probes to agree at the witness step, the violating probe to be indistinguishable before it, and distinguishable at it.",
+    "semanticJudgment": "none"
+  },
+  "gate": {
+    "verdict": "PASS",
+    "advertisedProperties": 10,
+    "unsupportedProperties": 10,
+    "provedDiscriminations": 10,
+    "restingOnSubjectReportAlone": 0,
+    "shapes": [
+      {
+        "shapeId": "shape-a",
+        "scenarios": 4,
+        "unsafeControls": 1,
+        "stateLossControls": 1
+      },
+      {
+        "shapeId": "shape-b",
+        "scenarios": 5,
+        "unsafeControls": 1,
+        "stateLossControls": 1
+      }
+    ],
+    "statement": "Every property either public shape advertises has an independent observation, proved by executing the fixture rather than by asserting it in prose; every property E0 does not support is declared unsupported with a reason and a named owner. This is a statement about the fixtures, not about any execution system."
+  },
+  "freshness": {
+    "check": "e0-freshness-v3",
+    "obligation": "Roadmap E0: the public fixtures are fresh, not copies of private P0X cases. Contract E0-C1 forbids reuse of private case, scenario, persona or requirement text, which an identifier scan cannot establish because renaming the identifiers defeats it. This check compares normalised content with every identifier-shaped token removed: no run of 8+ consecutive words may be shared with the sealed corpus, and no sealed file may have more than 60% of its distinctive vocabulary — the words at most 8% of sealed files use — present in one public document. The corpus is the material the methodology calls sealed: P0X case and design material under `benchmarks/`, and the evaluator's mappings and sentinels under `evaluator/`.",
+    "corpusRoots": [
+      "benchmarks",
+      "evaluator"
+    ],
+    "rules": {
+      "forbiddenRunLength": 8,
+      "maxDistinctiveContainment": 0.6,
+      "distinctivenessShare": 0.08,
+      "minDistinctiveTokens": 12
+    },
+    "verdict": "CLEAN",
+    "limits": [
+      "The recorded verdict has three inputs and this record pins all three. The public side is exactly the union of the two content identities above, so every public byte the verdict reads is hashed by `e0-fixture-set-v1` or `e0-observation-policy-v1`. The sealed corpus it is compared against is hashed by `e0-private-corpus-v1` in `privateCorpusIdentity`. The verdict cannot move while all three stand still, and `tests/e0-freshness.test.ts` proves each leg: file-by-file mutation of the public surface, and a corpus mutation that flips the verdict while both public hashes stay byte-identical.",
+      "Round 3 recorded only the two public identities and claimed the same immovability. That claim was false, and an independent review supplied the exact counterexample: add one sealed file carrying an eight-word run from a pinned public document and the verdict flips from CLEAN to CONTAMINATED with both advertised hashes unchanged. The corpus identity closes it; this limit records that the earlier record overclaimed, rather than quietly correcting it.",
+      "The corpus is the files git *tracks* under those roots, not everything on disk, and that distinction decided a verdict. Round 3 walked the working tree, which on the machine that produced it carried a `.DS_Store` and two gitignored build artifacts under `runs/` — three files no clone has. Check out round 3's payload `876f66f` into a clean worktree and run its own unmodified validator: it exits 1 with publication hygiene CONTAMINATED at 0.6667, where its committed attachment records CLEAN at 0.4444. That earlier verdict was real on one machine and reproducible on none. The identity publishes the digest, the roots and per-root counts and never a path: the file names under `benchmarks/` are private evaluation-case identifiers. A consumer holding the corpus recomputes the digest; one without it cannot recompute the digest or the verdict, which is the boundary rather than a gap.",
+      "`runs/` was a corpus root in versions 1 and 2 of this check and is not one in version 3. Everything it holds is the neutral-change-request canary evidence this repository publishes, not sealed case material, and treating it as sealed produced the false positive above: a public document's overlap with a generated npm application's build vocabulary (`experimental`, `strip`, `types`, `scripts`, `node`). This narrowing is load-bearing for the verdict recorded here and is stated as such rather than hidden: measured on this payload, a reproducible corpus with `runs/` kept reports CONTAMINATED on both surfaces, and without it CLEAN on both. Every combination, with its observed maxima and findings, is in this round's validation attachments; observed values are not pinned in this record, so quoting them here would make this file an input to its own numbers. What the narrowing does not touch is the check's ability to fail: the copied-case and rewritten-copy counterexamples still reach containment 1.0. And `runs/` is still watched — `npm run validate:e0` fails if any tracked path under it falls outside the declared public canary trees, so a future P0X campaign's output landing there is a decision point rather than a silent hole.",
+      "Observed values are not pinned here. `npm run validate:e0` prints them on every run and the packet record carries the run they came from.",
+      "The check reads sealed material and emits none: its findings carry lengths, ratios and file paths only, so a contaminated result can be published without republishing what it found. The corpus identity is subject to the same rule, which is why it carries no path list.",
+      "It establishes that no sealed text and no sealed file's distinctive vocabulary was copied. It cannot establish that no sealed scenario was re-authored from memory in new words about a new domain — at that point the shared thing is an idea, and deciding whether an idea was reused is the independent reviewer's judgement, not a script's.",
+      "A sealed file with fewer than twelve distinctive words has no fingerprint the vocabulary rule could measure — a ratio over five or six words moves in 20% steps and means nothing — so such a file is covered by the verbatim rule alone. On the corpus as committed that leaves 57 of 118 P0X case files inside the vocabulary rule and all 118 inside the verbatim rule. Raising that floor to silence the false positive was measured and rejected: at a floor of 20 only 17 of the 118 stay inside the rule, and at 40 none do.",
+      "The distinctiveness statistic measures rarity inside the sealed corpus only, so a sealed file that is itself infrastructure-shaped — a baseline config, a README — still offers repository-plumbing vocabulary as its fingerprint. That, not any real overlap, is what the remaining hygiene headroom is made of, and it is the thinnest margin either surface carries. The principled fix is to measure rarity against a declared public reference population as well, which would itself need an identity; attempting it in this round would reopen the finding this round closes. It is open work, owned by a later E0 round or by the independent reviewer's judgement, not by a threshold."
+    ],
+    "identityPinnedSurface": [
+      "fixtures/e0/baseline-contract.json",
+      "fixtures/e0/claim-ledger.json",
+      "fixtures/e0/shapes/shape-a-reviewed-artifact-publication.json",
+      "fixtures/e0/shapes/shape-b-restartable-request.json",
+      "protocols/e0-public-controls-v1.md",
+      "schemas/e0-application-shape.schema.json",
+      "schemas/e0-baseline-contract.schema.json",
+      "schemas/e0-claim-ledger.schema.json",
+      "schemas/e0-evidence-record.schema.json",
+      "schemas/e0-fixture-set.schema.json",
+      "scripts/validate-e0-fixtures.mjs",
+      "src/e0"
+    ],
+    "publicationHygieneSurface": [
+      "docs/benchmark-v3-e0-claims-ownership-and-public-controls.md",
+      "fixtures/e0/README.md",
+      "fixtures/e0/evidence-record.json",
+      "fixtures/e0/fixture-set.json"
+    ],
+    "privateCorpusIdentity": {
+      "corpusVersion": "e0-private-corpus-v1",
+      "corpusHash": "sha256:db65b91cc597ce6b077f1a417eb516a489a40aaddb8b5010db9e512050ae28f5",
+      "roots": [
+        {
+          "root": "benchmarks",
+          "fileCount": 194,
+          "bytes": 1913807
+        },
+        {
+          "root": "evaluator",
+          "fileCount": 3,
+          "bytes": 21520
+        }
+      ],
+      "fileCount": 197,
+      "totalBytes": 1935327
+    }
+  },
+  "ownerDecision": {
+    "state": "pending",
+    "actor": "benchmark repository owner",
+    "note": "The gate verdict above is mechanical. Whether this deliverable is accepted as E0 is the repository owner's decision and is recorded by the owner, not by the implementation. No acceptance is claimed, implied or self-granted here, and no consumer of this record may read the PASS above as one."
+  },
+  "doesNotEstablish": [
+    "Nothing about any Kernel, framework or execution system: no arm — direct or candidate — is implemented, run or scored at E0.",
+    "No durability, isolation, performance, cost or application-value claim. The restart is a scheduled command, not process death; E4 with agent-kernel K3 owns that.",
+    "No model or provider result: E0 makes no provider call, runs no model and records no provider request or usage.",
+    "No semantic or judged verdict: no judge model, prompt or rubric is frozen here and no sentinel is calibrated for this track.",
+    "No comparative result. E5 is where these shapes are run against a competent direct baseline; the probes shipped here are laboratory instruments for proving the observation surface discriminates, not arms.",
+    "No readiness transition for any local-p0x task, and no change to any frozen framework input, canary definition, construction-policy identity or run evidence."
+  ]
+}
+
+Exit: 0
+sha256: d45c6e28bf3b83a9cdc13f80de56be5f6a8020fbbfb0f89e3e9b4e768991c5c0
+
+$ git show 9b816d47e83ff210fa32400aa91994f8055138d5:docs/development/work/E0/integration-04.md
+# E0 integration receipt — round 4
+
+## Identity and provenance
+
+- **Packet:** E0 — claims, ownership and public controls.
+- **Date:** 2026-09-12.
+- **Accepted candidate H:** `26d274fad53b2aa4fc2c7f596cae52e072cd24b5`.
+- **Acceptance record A:** `ac1445fb8144ffab8a9153b243d4b9237d1927b0`, containing `docs/development/work/E0/review-04.md` with outcome `ACCEPT`.
+- **Owner action provenance:** the repository owner explicitly requested the E0 administrative acceptance/integration in the active ChatGPT session on 2026-09-12 using the universal 006/008 administrative-action prompt. No reviewer identity or owner identity beyond that provenance is invented here.
+- **Pre-integration remote `main`:** `98756f8c10bd806125da8318f1a129bc030aca61`.
+- **Integration method:** fast-forward of remote `main` to A. There is no separate merge-commit object; the integration point is A itself.
+- **Integration commit / observed `main` immediately after integration:** `ac1445fb8144ffab8a9153b243d4b9237d1927b0`.
+
+## Verification
+
+The accepted H is an ancestor of A and A is a direct child of H. Exact H..A comparison contains one path only:
+
+- `docs/development/work/E0/review-04.md`
+
+That file is the authentic independent review record and ends with the exact outcome `ACCEPT`. H..A changes no implementation, fixture, schema, evaluator, threshold, test, configuration, raw evidence or contract content.
+
+The previous remote `main` (`98756f8c10bd806125da8318f1a129bc030aca61`) is the E0 base and an ancestor of H and A. Moving `main` to A was therefore a non-force fast-forward, not a rebase, squash or content-changing merge. The accepted H tree is preserved exactly as an ancestor; the only tree difference at the integration point is the review record in A.
+
+There is no substantive integration difference requiring another review. No historical implementation report or review record was rewritten.
+
+## Owner decision and discussion
+
+**Owner decision: ACCEPT E0 and integrate the independently accepted H.** The owner requested this administrative action after the independent round-4 review returned ACCEPT.
+
+Under the E0 separation between mechanical evidence, independent review and owner action:
+
+- the mechanical E0 gate remains evidence about the fixture set, not an owner decision;
+- the independent ACCEPT remains an event about exact H `26d274fad53b2aa4fc2c7f596cae52e072cd24b5`;
+- this receipt records the subsequent owner acceptance/integration decision without rewriting H's committed `fixtures/e0/evidence-record.json`, whose `ownerDecision: pending` is preserved as part of the reviewed historical candidate;
+- current administrative status is owned by `docs/current-state.md` and this receipt, not by mutating accepted evidence after H.
+
+**Understood result:** E0 supplies the accepted public-control fixture/evidence preparation required by its contract. It does not establish execution-system quality, durability, isolation, model/provider quality or a comparative result; those remain assigned to later evidence packets as stated by the accepted E0 records.
+
+**Remaining concern:** the accepted review records the distinctiveness-reference-population limitation as non-blocking for this exact revision. It remains future improvement work and is not silently promoted into a stronger claim here.
+
+**Merged/closed decision:** E0 is accepted and integrated on `main` at the integration point above.
+
+**next_release:** `none` — this administrative action authorizes no successor release. E1 may now satisfy its E0 prerequisite, but releasing or implementing E1 requires a separate owner action.
+
+## Ledger handling
+
+This repository has no integrated `docs/development/007-work-packets.md` on the accepted E0 lineage. The similarly named PROC-1 material is an unaccepted process candidate and is not imported or treated as authority by this action. The existing authoritative status owner is `docs/current-state.md`; it is updated after this receipt to record the accepted/integrated E0 state and to link here.
+
+No successor packet is implemented or released by this receipt.
+
+Exit: 0
+sha256: da3d9184b6bf97d3f29bd36859587803ae4af0aa34e9cee046d88e6043f000e9
+
+$ git show ac1445fb8144ffab8a9153b243d4b9237d1927b0:docs/development/work/E0/review-04.md
+# Independent review — E0, round 4
+
+## Review identity
+
+- **Reviewer/session/model:** independent ChatGPT review session, GPT-5.6 Sol. No externally exposed session identifier is available.
+- **Review date:** 2026-09-12.
+- **Packet:** E0 — claims, ownership and public controls.
+- **Branch reviewed:** `e0-correction-round-2`.
+- **Base:** `98756f8c10bd806125da8318f1a129bc030aca61`.
+- **Prior review record:** `2c60205ff71a914adb1ab907e40071165fd66424:docs/development/work/E0/review-03.md`.
+- **Payload C:** `516e77ff2f3cd93eb407990040259a7524802372`.
+- **Candidate H:** `26d274fad53b2aa4fc2c7f596cae52e072cd24b5`.
+- **Contract:** `docs/development/work/E0/contract.md`, revision 4.
+- **Governing review baseline:** `ArrokothI/arrokothi@5b72d6d0ca420d3f58755dff8f4cb5d37fae2444`, especially development 006, 008 and 012, plus the benchmark roadmap, architecture and methodology at base `98756f8` and the owner's E0-only correction instruction. PROC-1 was not treated as governing authority.
+- **Source access:** exact GitHub commits, files, trees and compare metadata through the authorized GitHub connector.
+- **Execution access:** no local executable checkout. I did **not** rerun commands. I inspected the immutable round-4 validation attachments in H, including the deliberately failing clean-worktree reproduction of round 3.
+
+This review binds only to H `26d274fad53b2aa4fc2c7f596cae52e072cd24b5`. The later commit containing this review is an administrative review record and is not part of the candidate accepted here.
+
+## Independent cumulative coverage
+
+The base E0 obligations remain: exactly two fresh public synthetic applications with complete ownership/attempt/input/failure boundaries; a competent direct-baseline contract; methodology-form attribution; planned unsafe and state-loss controls; versioned and recomputable evidence identity; a non-vacuous independent-observation gate; meaningful comparative questions; and strict separation of preparation, mechanical execution and acceptance.
+
+Round 4 also had to close `E0-R3-ID-01` and `E0-R3-REC-02` without repairing PROC-1 or rewriting prior records. I reviewed the full cumulative base-to-H candidate as well as the round-4 correction delta, including the contract, identity/freshness implementation, validator, schemas, evidence record, tests, current status/report prose and raw validation attachments. Unchanged E0 fixture/gate behavior was reconsidered against the changed corpus assumptions rather than grandfathered.
+
+## Git and evidence identity
+
+The advertised branch was exactly at H before this review. C is a direct child of review-03 commit `2c60205ff71a914adb1ab907e40071165fd66424`; H is one administrative commit directly above C.
+
+The corrected accounting is truthful:
+
+- `98756f8..516e77f`: 62 cumulative paths;
+- `98756f8..26d274f`: 76 cumulative candidate paths;
+- `2c60205..516e77f`: 13-path round-4 correction delta;
+- `516e77f..26d274f`: exactly 14 administrative paths — `implementation-04.md`, twelve validation outputs and `MANIFEST.md`.
+
+No script, fixture, schema, evaluator rule, threshold, test or configuration first appears in H. Prior round-2/round-3 records remain preserved, while the separate round-1 lineage remains unrewritten.
+
+## Prior finding dispositions
+
+| Finding | Round-4 disposition |
+|---|---|
+| `E0-R1-ID-01` | **CLOSED.** The correction lineage remains E0-only and C→H is administrative-only. |
+| `E0-R1-FRESH-02` | **CLOSED.** Identifier-stripped and rewritten-copy counterexamples remain exercised; no threshold was weakened. |
+| `E0-R1-EVID-03` | **CLOSED.** Exact-C raw observations are committed and inspectable. |
+| `E0-R2-ID-01` | **CLOSED.** The pinned public freshness surface remains derived from and covered by the fixture/policy identities. |
+| `E0-R2-GOV-02` | **CLOSED.** The live E0 packet is sourced to the integrated ArrokothI baseline and benchmark base methodology/roadmap, not PROC-1. |
+| `E0-R3-ID-01` | **CLOSED.** `e0-private-corpus-v1` now pins the reference corpus that can change the recorded freshness verdict, and the negative control proves the corpus identity moves while the two public identities remain fixed. |
+| `E0-R3-REC-02` | **CLOSED.** Round 4 distinguishes the true cumulative candidate, substantive subset, correction delta and C→H administrative interval with correct path counts. |
+
+## Round-4 identity correction
+
+The new `e0-private-corpus-v1` is the right type of repair. The freshness verdict has three independently moving inputs: fixture bytes, observation-policy bytes and reference-corpus bytes. The first two retain their existing identities; the third now has a deterministic SHA-256 over a sorted path-and-content-digest manifest of the git-tracked corpus. The path list is kept private while the record publishes the digest, roots and per-root counts.
+
+The implementation and validator agree on the boundary: the text comparison reads only tracked files in the declared corpus, every read file is covered by the corpus manifest, untracked local debris enters neither the comparison nor the identity, dirty corpus material cannot be written as a new authoritative identity, and the evidence record is checked against the recomputed third identity. The committed negative control reproduces `E0-R3-ID-01`: adding sealed content can flip CLEAN→CONTAMINATED while fixture/policy hashes remain fixed, but `e0-private-corpus-v1` moves.
+
+The clean-C evidence records:
+
+- `e0-fixture-set-v1`: `sha256:f4f3b4932b8375f907cf3ae93ec4c37c5b6e897b6a5666609484db7c37e937a0` over 4 files;
+- `e0-observation-policy-v1`: `sha256:9a24863833807db998c2e6a198e82c10cfba77504d8f61e3ebc27ba2623b8ccf` over 16 files;
+- `e0-private-corpus-v1`: `sha256:db65b91cc597ce6b077f1a417eb516a489a40aaddb8b5010db9e512050ae28f5` over 197 tracked files;
+- `fixtureVersion`: `e0-public-controls/4`;
+- `construction-policy-v1` remains `sha256:097e73c9773f3112f5cf3cf35df6ee1238c0f602e5fa224a2f5d40955b74ce98` over 65 files.
+
+## `runs/` narrowing
+
+I independently accept the removal of `runs/` from the sealed reference corpus for this candidate.
+
+The base architecture classifies `canaries/` and `runs/` as predeclared public builder experiments/current run evidence, and the base current-state document specifically calls `runs/neutral-change-request-v{1,2,3}/` **public neutral canary runs**. The base methodology requires public diagnostic material to be separated from sealed case material. Therefore treating the currently published canary run trees as sealed P0X material was the wrong boundary, not a stronger form of the same requirement.
+
+The narrowing is transparently load-bearing and was not hidden behind a threshold change. The committed 2×2 ledger shows tracked+`runs/` produces the false-positive contamination against a published generated `package.json`; tracked without `runs/` is clean. The copied-case and rewritten-copy controls still reach containment 1.0 against the shipped corpus. The alternative of raising `minDistinctiveTokens` was measured and correctly rejected because it would remove most P0X cases from the vocabulary control. A tripwire rejects tracked `runs/` material outside the declared public canary trees, so future campaign material cannot silently enter the excluded class merely by appearing under `runs/`.
+
+Round 4 also correctly exposes why round 3's evidence was not reproducible: round 3 walked on-disk files and passed only because two gitignored build artifacts changed the distinctiveness population. The committed clean-worktree reproduction runs round 3's own validator and exits 1. Preserving that contradiction rather than rewriting the prior record strengthens, rather than weakens, the evidence chain.
+
+## Criterion verdicts
+
+| Criterion | Verdict | Independent reason |
+|---|---|---|
+| **E0-C1** — two fresh public shapes and ownership records | **PASS** | The two required shapes and ownership/failure boundaries remain intact. The corrected reference corpus is reproducible and appropriately excludes published canary evidence. Exact-C evidence reports both freshness surfaces CLEAN; identifier-stripped and rewritten private-case controls remain CONTAMINATED at the intended failure direction. The declared semantic-rewrite/distinctiveness limitations do not establish a defect in the current fixtures and are not represented as stronger proof than they provide. |
+| **E0-C2** — direct-baseline contract | **PASS** | Shared identical instances, fairness, allowed differences and comparable/incomparable observations remain explicit; both arms remain unimplemented at E0. |
+| **E0-C3** — methodology claim ledger | **PASS** | Required ownership/attribution/observation/intervention/verdict fields remain present and gate-enforced. |
+| **E0-C4** — unsafe and state-loss controls | **PASS** | Both shapes retain linked unsafe and state-loss controls; the negative gate suite rejects missing/orphaned controls. |
+| **E0-C5** — versioned fixtures and recomputable identity | **PASS** | All three verdict-changing inputs are now identity-bound. The public and corpus mutation controls distinguish the prior broken implementations; exact-C identity recomputation matches the committed record. |
+| **E0-C6** — independent observable gate | **PASS** | Exact-C evidence reports 10 advertised properties each discriminating, 10 unsupported explicit and zero resting on self-report alone; the positive control and 25 rejecting single-change mutations remain green. |
+| **E0-C7** — meaningful comparative question | **PASS** | Both shapes retain non-empty comparative questions/differing outcomes and the gate rejects absent/non-differing questions. |
+| **E0-C8** — preparation is not a result | **PASS** | No arm is implemented/run/scored; mechanical gate/freshness results remain separate from `ownerDecision: pending`; no successor is released and no acceptance is self-granted. |
+| **E0-C9** — truthful isolated review identity | **PASS** | Base/C/H are exact, the cumulative/correction accounting is now truthful, C→H is administrative-only, prior records are preserved, and PROC-1 remains outside E0's authority and payload. |
+
+## Evidence classification
+
+- **Reviewer-inspected exact source:** base/C/H topology and cumulative/delta metadata; revision-4 contract; freshness, corpus-identity and validator implementation; evidence schema/record; affected tests and status/report prose.
+- **Reviewer-inspected immutable execution observations:** round-4 repository check, E0 validation, public-control/gate/freshness tests, canary/freeze validation, identity recomputation, corpus-identity non-vacuity control, narrowing ledger and round-3 clean-worktree reproduction.
+- **Reviewer reruns:** none; no executable checkout was available in this review.
+- **External blocker:** none. The source and immutable evidence are sufficient for this verdict under the governing rule that lack of reviewer shell access alone does not prohibit acceptance when the observations are inspectable.
+
+`npm run check` on exact C reports 475 tests, 471 pass, 0 fail and 4 Docker-dependent skips, none E0. `npm run validate:e0` reports both freshness passes CLEAN against the same 197-file corpus identity and the E0 gate PASS.
+
+## Non-blocking limits
+
+The implementation report's remaining distinctiveness-reference-population concern is real but does not fail this candidate. It is a limitation of the supplementary vocabulary heuristic and its false-positive headroom, not evidence that these public fixtures reuse sealed material. The verbatim rule remains independent of that statistic, the vocabulary counterexample still fails at containment 1.0, thresholds were not relaxed, and the limitation is explicitly disclosed rather than generalized away. Treat a future public-reference-population refinement as separate improvement work, not as a condition retroactively required for this exact E0 revision.
+
+Likewise, an outside consumer without the sealed corpus cannot independently derive `e0-private-corpus-v1`; that is an inherent consequence of keeping sealed material private. The exact repository revision plus the published corpus digest/counts provide the handoff identity, while a reviewer with corpus access can recompute it.
+
+## Acceptance and next state
+
+This review accepts **candidate H `26d274fad53b2aa4fc2c7f596cae52e072cd24b5`** under contract revision 4.
+
+This ACCEPT is the independent review outcome. It does **not** edit `fixtures/e0/evidence-record.json`, does not set the repository owner's separate `ownerDecision`, does not integrate the candidate, and does not release E1. Those remain explicit owner actions under the governing process. A downstream K0.2 criterion that requires an owner-accepted E0 revision therefore still waits for the owner to record that separate decision/integration step.
+
+## Outcome
+
+ACCEPT
+Exit: 0
+sha256: af9762074cb665e3559edbb77a79015345820f59a64143752f9ba43e4e535f98
+
+$ git show 26d274fad53b2aa4fc2c7f596cae52e072cd24b5:docs/development/work/E0/validation-04/MANIFEST.md
+# E0 round 4 — raw validation output
+
+Output-only attachments, committed with the administrative commit H under the C/H/A convention in
+ArrokothI 006 at `5b72d6d0ca420d3f58755dff8f4cb5d37fae2444`: an H attachment "may not introduce or
+change scripts, fixtures, evaluator rules, thresholds or configuration. Those are payload in C."
+None of these files does. Every one is the captured output of a command that already existed in the
+payload, or of a throwaway verification script described below.
+
+## What produced them
+
+| | |
+|---|---|
+| Payload C | `516e77ff2f3cd93eb407990040259a7524802372` |
+| Working tree | clean at C — `git status --porcelain` empty — before, during and after every command |
+| Working directory | `/Users/rex-shih/Documents/Codex/projects/benchmark` (repository root) |
+| Date | 2026-09-12 |
+| Host | darwin arm64, macOS 26.6.2 |
+| Node | v25.2.1 (`package.json` requires >= 22.9.0) |
+| npm | 11.6.2 |
+| git | 2.39.5 |
+| Network | none. No provider call, no model, no judge, no container. |
+
+Each file begins with the exact command as `$ …` and ends with `[exit status] N`.
+
+**Captured outside the tree, then placed.** The identifier scan in `tests/e0-public-controls.test.ts`
+covers every committed file of this packet, `validation-0N/` included, so writing a raw log directly
+into this directory makes `npm run check` scan a file it is in the middle of producing. Round 3 hit
+exactly that. Every command here was run from the clean C tree with output going to a scratch
+directory, redacted there, and only then copied in.
+
+**One exception to "from clean C", stated rather than hidden.** `09` is run over the **H** tree,
+because two of the documents whose links it checks — `implementation-04.md` and this manifest — are H's
+own. It reads and changes nothing. Every other attachment is from clean C.
+
+## Files
+
+| File | Command | Exit | What it shows |
+|---|---|---|---|
+| `01-npm-run-check.txt` | `npm run check` | 0 | The repository gate: typecheck, every artifact validator, and 475 tests — 471 pass, 0 fail, 4 skipped. The 4 skips are builder-isolation tests needing a container runtime this host lacks; none is an E0 test. **Redacted; see below.** |
+| `02-npm-run-validate-e0.txt` | `npm run validate:e0` | 0 | Schema; all three identities recomputed from bytes on disk; the gate (10 advertised properties each proved discriminating, 10 explicitly unsupported, 0 resting on a participant's own report); and both freshness passes, each reporting the corpus identity it was measured against. |
+| `03-tests-e0-public-controls.txt` | `node --test … tests/e0-public-controls.test.ts` | 0 | 14 tests, 0 failures: protocol behaviour, probe behaviour, fixture identity, and the identifier scan over every committed file of this packet — including these attachments. |
+| `04-tests-e0-gate-discrimination.txt` | `node --test … tests/e0-gate-discrimination.test.ts` | 0 | 24 tests, 0 failures: one positive control and 25 single-change mutations the gate must reject. |
+| `05-tests-e0-freshness.txt` | `node --test … tests/e0-freshness.test.ts` | 0 | 14 tests, 0 failures, in three groups: four public-identity controls from round 3, **four new corpus-identity controls**, and round 2's six freshness counterexamples unchanged. |
+| `06-npm-run-validate-neutral-canary.txt` | `npm run validate:neutral-canary` | 0 | All three canary generations still consistent with their committed inputs, so the `construction-policy-v1` pin they carry is unmoved. |
+| `07-npm-run-validate-framework-freeze.txt` | `npm run validate:framework-freeze` | 0 | Both frozen framework inputs re-frozen and their identities reproduced. |
+| `08-identity-recomputation.txt` | `node --experimental-strip-types <recompute script>` | 0 | `e0-fixture-set-v1`, `e0-observation-policy-v1`, `e0-private-corpus-v1` and `construction-policy-v1` recomputed from disk, with full member lists for the first two. The corpus identity's per-file entries are deliberately **not** printed — those paths are private evaluation-case identifiers — but its publishable projection is, verbatim as the evidence record carries it. |
+| `09-relative-link-check.txt` | `node <link check script>` | 0 | Every relative link and anchor in the documents this packet adds or edits, its own records included. This branch carries no documentation link checker — that script is PROC-1 payload — so it is checked ad hoc. Run over the H tree, per the note above. |
+| `10-corpus-identity-control-non-vacuity.txt` | `node --experimental-strip-types <non-vacuity script>` | 0 | `E0-R3-ID-01`'s counterexample run against **round 3's** identity set and **round 4's** in one scratch repository. The verdict flips CLEAN → CONTAMINATED; round 3's two public hashes do not move, so the control **fails** there; `e0-private-corpus-v1` does move, so it holds here. A control that cannot fail proves nothing. |
+| `11-corpus-narrowing-ledger.txt` | `node --experimental-strip-types <ledger script>` | 0 | The ledger for the two narrowings. All four combinations of {on-disk, git-tracked} × {three roots, two roots} with observed maxima and verdicts; the exact findings the failing combination produces; the copied-case and rewritten-copy counterexamples still at containment 1.0000; and the `minDistinctiveTokens` table showing why raising the floor was rejected. |
+| `12-round-3-in-a-clean-worktree.txt` | round 3's own validator at `876f66f`, in a fresh worktree | **1** | Round 3's payload failing its own gate in a clean checkout. See below. |
+
+## `12` exits 1, and that is the point
+
+It is the only attachment that does not exit 0. It runs round 3's payload `876f66f` with its own
+unmodified validator in a worktree — which is what a clone contains — and it exits 1 with publication
+hygiene CONTAMINATED at 0.6667. Round 3's committed `validation-03/02-npm-run-validate-e0.txt` records
+the same command at the same commit exiting 0 with CLEAN at 0.4444.
+
+Both are honest reports of their own machine. They disagree because round 3's corpus was every file on
+disk under three roots, and the producing machine held two gitignored JSON build artifacts under
+`runs/` whose vocabulary was keeping a generated `package.json`'s words below the distinctiveness
+cutoff. Two files nobody committed were the difference between a pass and a fail. That is why round 4
+defines the corpus over tracked files and gives it an identity.
+
+Nothing in round 3's record is edited. It stays exactly as committed, describing exactly what it
+described.
+
+## Redaction in `01-npm-run-check.txt`
+
+`npm run check` runs the local-p0x corpus validators, whose test names print private evaluation-case
+identifiers. Those are sealed material, which the methodology's "separate public diagnostic fixtures
+from sealed case material" keeps out of published records, so 21 case identifiers and 1 requirement
+identifier were replaced with `[case id redacted]` and `[requirement id redacted]` before the file was
+committed. Task, visibility, ordering, counts, timings, every validator line and the exit status are
+preserved unchanged — the redaction removes which sealed case ran, never whether it passed.
+
+Every one of the twelve files was passed through the same redaction, not just this one, so "needed no
+redaction" is a checked result rather than an assumption; the other eleven needed none.
+
+The file's own header records the substitution counts and the SHA-256 of the log exactly as produced,
+before redaction. That digest identifies a payload a reviewer cannot read, so it is corroboration, not
+evidence: what the claim rests on is the redacted log, which carries every fact except the sealed
+identifiers. A reviewer with a checkout reproduces both by running the command.
+
+## The scripts behind `08`, `09`, `10` and `11`
+
+Throwaway verification, run from a scratch directory and deliberately not committed: a check this
+packet ships would be payload in C, and these exist to inspect the payload rather than to be part of
+it.
+
+- `08` recomputes what `src/e0/identity.ts`, `src/e0/private-corpus.ts` and
+  `src/identity/construction-policy.ts` already expose and `npm run validate:e0` already enforces.
+- `10` re-derives, against an identity set no longer in the tree, the same failure that
+  `tests/e0-freshness.test.ts` asserts against the current one. The committed control is the binding
+  one; `10` only shows it has teeth.
+- `11` calls `assessFreshness` with different corpora and reproduces round 3's enumeration, so the
+  argument for the narrowing can be checked rather than taken on the report's word.
+
+## Digests as committed
+
+```text
+a1c0a077afe09977b63c76d946100bf3c4214de0a3da463ff503d2177b3d6f5d  01-npm-run-check.txt
+07d440f77c30167d1cc303afe97df4c0fcef08a6776e61d55bb8e33da0bf6e0d  02-npm-run-validate-e0.txt
+831cc32de6345b9856789aa1432076293875bba6c3ab93771a915563404b164c  03-tests-e0-public-controls.txt
+2741315945e079ad2de9fd22bb18e8ebfd96e3353805e4e6d4e6a89814634fd0  04-tests-e0-gate-discrimination.txt
+507e499e871d27957576a83668e940eb0bbbd88a2ebff963a8be6c43a84161fd  05-tests-e0-freshness.txt
+cc9f8bf578d935ba47a795b31078c37fbb38663d3dd8d5891d7abaf554e1e605  06-npm-run-validate-neutral-canary.txt
+298e45d487e1ada344e921c38432ee10878261692ba16018b1e0dd9c945b1bf9  07-npm-run-validate-framework-freeze.txt
+74290c7908def43bc85aa984d0ca8519124640ccf6034ba7db62cecefaf79f39  08-identity-recomputation.txt
+08e7b1e597f3a3cccb39f26c9af97511cf7ea3f42933c041140d0b79aca779e6  09-relative-link-check.txt
+75f3e01c8df2300953f79c6506c6a3097f2038ec1390bcf560ff469eadc9f049  10-corpus-identity-control-non-vacuity.txt
+b630f8881f385e9c39e201e6511d4579b3e61027ef3bfb8fe1ee73672521adbf  11-corpus-narrowing-ledger.txt
+41e97e96298d6ac09b4220dea6c6ba44b9f25da3c6e5bacf4ac03099132c034b  12-round-3-in-a-clean-worktree.txt
+```
+
+These digests are also the bytes Git stores, so
+`git show H:docs/development/work/E0/validation-04/<file>` is the authoritative copy and this list is
+a convenience. The attachments under `validation-02/` and `validation-03/` are unchanged and describe
+round 2's payload `6441b68` and round 3's `876f66f`, not this one.
+
+**None of this is an acceptance.** Eleven commands exited 0 on E0's own material and one exited 1 on a
+superseded candidate's; those are mechanical results about fixtures, not a decision, and not a
+statement about any execution system.
+
+Exit: 0
+sha256: b8607f14d8a2c59af960a27d661a07629d61ea68bfc6c9d46531744d2f2a16fd
+
+$ git show 26d274fad53b2aa4fc2c7f596cae52e072cd24b5:docs/development/work/E0/validation-04/02-npm-run-validate-e0.txt
+$ npm run validate:e0
+
+
+> @arrokothi/benchmark@0.1.0 validate:e0
+> node --experimental-strip-types scripts/validate-e0-fixtures.mjs
+
+  freshness e0-freshness-v3 (pinned, 12 surface entries, every byte hashed by an E0 identity): 20 document(s) against 197 private files (202121 words, 116 fingerprinted); longest shared run 5/8, distinctive-vocabulary containment 0.3929/0.6 — CLEAN
+  freshness e0-freshness-v3 (publication hygiene, build gate only): 4 document(s) against 197 private files (202121 words, 116 fingerprinted); longest shared run 7/8, distinctive-vocabulary containment 0.5/0.6 — CLEAN (not recorded as a pinned observation)
+  private corpus e0-private-corpus-v1: sha256:db65b91cc597ce6b0… over 197 tracked files (1935327 bytes; benchmarks 194, evaluator 3)
+  shape-a: 4 scenarios, 1 unsafe + 1 state-loss control(s)
+  shape-b: 5 scenarios, 1 unsafe + 1 state-loss control(s)
+  claims: 10 advertised with an independent observation, 10 explicitly unsupported, 0 resting on the participant's own report alone
+  fixture set e0-public-controls/4: sha256:f4f3b4932b8375f90… over 4 files; observation policy sha256:9a24863833807db99… over 16 files
+E0 OK: 10 advertised properties each proved discriminating, 10 explicitly unsupported, gate PASS
+
+[exit status] 0
+
+Exit: 0
+sha256: 07d440f77c30167d1cc303afe97df4c0fcef08a6776e61d55bb8e33da0bf6e0d
+
+$ git show 26d274fad53b2aa4fc2c7f596cae52e072cd24b5:docs/development/work/E0/validation-04/08-identity-recomputation.txt
+$ node --experimental-strip-types <recompute script>
+
+e0-fixture-set-v1        (what E0 advertises)
+  sha256:f4f3b4932b8375f907cf3ae93ec4c37c5b6e897b6a5666609484db7c37e937a0
+  4 files, 51652 bytes
+    sha256:433e46a4f732480eb67bc46c05555a1165dffb1c08c389e7153fe6fe6abd7e72     5583  baseline-contract.json  [direct-baseline contract]
+    sha256:fb604510c7b38817aa9ae3dea8ef0c627dcdc790d25134e207ec40bec0ba2dcd    16823  claim-ledger.json  [ownership and claim records]
+    sha256:f35d1d62849af56dff3d7a1a4126c3fd2cd9c707ea3c672e44a687ae45bf9a66    11832  shapes/shape-a-reviewed-artifact-publication.json  [public application shape A]
+    sha256:701f0ebe3c580a519531c8c1cffe5c81d97ef4c1e9c6a3dfc97f8c936f768190    17414  shapes/shape-b-restartable-request.json  [public application shape B]
+
+e0-observation-policy-v1 (what an E0 observation means)
+  sha256:9a24863833807db998c2e6a198e82c10cfba77504d8f61e3ebc27ba2623b8ccf
+  16 files, 168245 bytes
+  declared surface: protocols/e0-public-controls-v1.md, schemas/e0-application-shape.schema.json, schemas/e0-baseline-contract.schema.json, schemas/e0-claim-ledger.schema.json, schemas/e0-evidence-record.schema.json, schemas/e0-fixture-set.schema.json, scripts/validate-e0-fixtures.mjs, src/e0
+    sha256:16d4d031609558d27f1b63287bb76b490f7322636377fbc825e01fc78d27f2b8     4305  protocols/e0-public-controls-v1.md
+    sha256:e61e22b5ff02ab485c49b202b24144615eb2333f9142b1dd64d273768aebfb8e     7073  schemas/e0-application-shape.schema.json
+    sha256:eb5f368591d2d12285cf1fd56fae262574539ebf74b8e8052e2172149b805abf     3091  schemas/e0-baseline-contract.schema.json
+    sha256:7169107ece20c6e187555ec309f37b3147083c818c7bed591603d8e4a79c23a1     4066  schemas/e0-claim-ledger.schema.json
+    sha256:7dca5d24a6808b1ce4cc232ce6f48268f87eb073288217e82c4a1c8743bf6fec     9308  schemas/e0-evidence-record.schema.json
+    sha256:c45f577b74ad1fdabf3a3b32e5031e4d067cfb279024632c6050e1403a9c8a14     2601  schemas/e0-fixture-set.schema.json
+    sha256:7339c1c1673ec85bbb798b9bc46bb5b39494635ca37a26b5b334554a2fa0ae7f    22628  scripts/validate-e0-fixtures.mjs
+    sha256:3a498046358be87a142cdf790eafafca0cbb31be0fbe8bdae6cd7be6879627d1     3127  src/e0/fixtures.ts
+    sha256:d47f7d0ef35c70ccc851a0537ad38e72045c6a9daad145c12196c6f8bafaa9ad    24327  src/e0/freshness.ts
+    sha256:4440666c5e07bd03d6bcc7cb0e3a66b8b2f0a0d8cecfcd24a48667db5cf04911    21693  src/e0/gate.ts
+    sha256:eab45868ed9c5ea4de7307bdf88e46130a69437b672163749c7d9b731e965a91     6745  src/e0/identity.ts
+    sha256:3267c74b63975bb01f1cddfe7a88678e754ac7b5750b67433b857bd9520142b3     2028  src/e0/index.ts
+    sha256:ca2a30ad5e26d6303dbdd15975eaca06fd74827789b80ab01c73b738d2edd2f8     7925  src/e0/laboratory.ts
+    sha256:8d0ce73d6cf8a4c0f32c17486974a08d30ee5d834ff040755fa71220ecce8502    13600  src/e0/private-corpus.ts
+    sha256:180f9db547da4754a4f3ff88cf1f735604c0f47a78dc5307b7b4b8ee47858b34    20738  src/e0/probes.ts
+    sha256:1cf28781b7fd12c856648da08871a4093182ccc24628ff2466505d264c8eb302    14990  src/e0/types.ts
+
+e0-private-corpus-v1     (the sealed corpus a freshness verdict is measured against)
+  sha256:db65b91cc597ce6b077f1a417eb516a489a40aaddb8b5010db9e512050ae28f5
+  197 tracked files, 1935327 bytes, 0 uncommitted path(s)
+    benchmarks    194 files   1913807 bytes
+    evaluator       3 files     21520 bytes
+  per-file entries are deliberately NOT printed: the paths under benchmarks/ are private
+  evaluation-case identifiers, and this file is a published record.
+  publishable projection, verbatim as the evidence record carries it:
+    {"corpusVersion":"e0-private-corpus-v1","corpusHash":"sha256:db65b91cc597ce6b077f1a417eb516a489a40aaddb8b5010db9e512050ae28f5","roots":[{"root":"benchmarks","fileCount":194,"bytes":1913807},{"root":"evaluator","fileCount":3,"bytes":21520}],"fileCount":197,"totalBytes":1935327}
+
+construction-policy-v1   (unmoved by this packet -- reported because unmoved is a result)
+  sha256:097e73c9773f3112f5cf3cf35df6ee1238c0f602e5fa224a2f5d40955b74ce98
+  65 files
+
+[exit status] 0
+
+Exit: 0
+sha256: 74290c7908def43bc85aa984d0ca8519124640ccf6034ba7db62cecefaf79f39
+Verified committed raw attachment 01-npm-run-check.txt sha256:a1c0a077afe09977b63c76d946100bf3c4214de0a3da463ff503d2177b3d6f5d
+Verified committed raw attachment 02-npm-run-validate-e0.txt sha256:07d440f77c30167d1cc303afe97df4c0fcef08a6776e61d55bb8e33da0bf6e0d
+Verified committed raw attachment 03-tests-e0-public-controls.txt sha256:831cc32de6345b9856789aa1432076293875bba6c3ab93771a915563404b164c
+Verified committed raw attachment 04-tests-e0-gate-discrimination.txt sha256:2741315945e079ad2de9fd22bb18e8ebfd96e3353805e4e6d4e6a89814634fd0
+Verified committed raw attachment 05-tests-e0-freshness.txt sha256:507e499e871d27957576a83668e940eb0bbbd88a2ebff963a8be6c43a84161fd
+Verified committed raw attachment 06-npm-run-validate-neutral-canary.txt sha256:cc9f8bf578d935ba47a795b31078c37fbb38663d3dd8d5891d7abaf554e1e605
+Verified committed raw attachment 07-npm-run-validate-framework-freeze.txt sha256:298e45d487e1ada344e921c38432ee10878261692ba16018b1e0dd9c945b1bf9
+Verified committed raw attachment 08-identity-recomputation.txt sha256:74290c7908def43bc85aa984d0ca8519124640ccf6034ba7db62cecefaf79f39
+Verified committed raw attachment 09-relative-link-check.txt sha256:08e7b1e597f3a3cccb39f26c9af97511cf7ea3f42933c041140d0b79aca779e6
+Verified committed raw attachment 10-corpus-identity-control-non-vacuity.txt sha256:75f3e01c8df2300953f79c6506c6a3097f2038ec1390bcf560ff469eadc9f049
+Verified committed raw attachment 11-corpus-narrowing-ledger.txt sha256:b630f8881f385e9c39e201e6511d4579b3e61027ef3bfb8fe1ee73672521adbf
+Verified committed raw attachment 12-round-3-in-a-clean-worktree.txt sha256:41e97e96298d6ac09b4220dea6c6ba44b9f25da3c6e5bacf4ac03099132c034b
+
+All 12 public attachment digests verified against pinned H. Owner acceptance is the later integration receipt, not historical pending or mechanical PASS.
