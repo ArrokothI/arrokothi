@@ -344,10 +344,21 @@ export interface ModuleGraph {
 /**
  * Transitive closure over every import form, starting from repo-relative entry modules.
  *
+ * `shouldTraverse` decides which resolved files the walk continues through. A guard supplies one so
+ * that a file the policy forbids is recorded as an edge and then stopped at, rather than walked into:
+ * without it, one forbidden import of a package barrel would report a violation for every edge
+ * *inside* that package, attributed to files that are not in the zone being guarded at all. Files
+ * the policy does permit - an approved portable leaf, say - are still traversed, because approving a
+ * leaf must not silently approve whatever that leaf imports.
+ *
  * A file that cannot be read stops that branch rather than throwing, so a guard reports the broken
  * boundary it was asked about instead of a read error from somewhere else in the graph.
  */
-export async function walkModuleGraph(workspace: Workspace, entries: readonly string[]): Promise<ModuleGraph> {
+export async function walkModuleGraph(
+  workspace: Workspace,
+  entries: readonly string[],
+  shouldTraverse: (file: string) => boolean = () => true,
+): Promise<ModuleGraph> {
   const files = new Set<string>();
   const edges: Edge[] = [];
   const external = new Map<string, string[]>();
@@ -369,7 +380,7 @@ export async function walkModuleGraph(workspace: Workspace, entries: readonly st
       const resolution = resolveSpecifier(workspace, file, specifier);
       edges.push({ from: file, specifier, resolution });
       if (resolution.kind === "internal") {
-        queue.push(resolution.file);
+        if (shouldTraverse(resolution.file)) queue.push(resolution.file);
         continue;
       }
       external.set(specifier, [...(external.get(specifier) ?? []), file]);

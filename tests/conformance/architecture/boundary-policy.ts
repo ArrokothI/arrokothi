@@ -108,6 +108,18 @@ const isUnder = (file: string, roots: readonly string[]): boolean =>
   roots.some((root) => file === root || file.startsWith(`${root}/`));
 
 /**
+ * Whether the walk should continue through a resolved file.
+ *
+ * Permitted files are traversed, so approving a portable leaf does not silently approve that leaf's
+ * own imports. Forbidden files are recorded and stopped at, so one forbidden barrel import reports
+ * one violation rather than one per edge inside the package it reached.
+ */
+export const traversableUnder =
+  (rules: BoundaryRules) =>
+  (file: string): boolean =>
+    isUnder(file, rules.zoneRoots) || rules.allowedLeaves.includes(file);
+
+/**
  * Every edge in `graph` that the rules forbid.
  *
  * One predicate covers every import form because `walkModuleGraph` has already normalised them:

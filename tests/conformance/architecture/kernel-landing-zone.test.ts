@@ -32,6 +32,7 @@ import {
 } from "./module-graph.ts";
 import {
   DEFERRED_EXTRACTIONS,
+  traversableUnder,
   TARGET_KERNEL,
   TARGET_KERNEL_ENTRY_MODULES,
   TARGET_KERNEL_RULES,
@@ -62,10 +63,13 @@ const FIXTURE_MANIFESTS: Record<string, string> = {
 
 /** Legacy and host sources the controls import forbidden things from. */
 const FIXTURE_OUTSIDE_SOURCES: Record<string, string> = {
-  "packages/core/src/index.ts": "export const legacyBarrel = 1;\n",
-  "packages/core/src/ports/index.ts": "export type LegacyController = { readonly kind: string };\n",
+  // The legacy barrel re-exports two further legacy modules, exactly as the real one does. A walk
+  // that continued through a forbidden edge would report those inner edges as violations too.
+  "packages/core/src/index.ts": 'export * from "./runtime/harness.ts";\nexport * from "./ports/index.ts";\n',
+  "packages/core/src/ports/index.ts": 'export * from "../runtime/harness.ts";\nexport type LegacyController = { readonly kind: string };\n',
   "packages/core/src/runtime/harness.ts": "export class LegacyHarness {}\n",
   "packages/core/src/util/hash.ts": "export const hashValue = (value: string): string => value;\n",
+  "packages/core/src/util/composite.ts": 'export { unaudited } from "./unaudited.ts";\n',
   "packages/core/src/util/unaudited.ts": "export const unaudited = 1;\n",
   "packages/sdk/src/index.ts": "export const bootstrapApplication = 1;\n",
 };
@@ -84,7 +88,7 @@ async function violationsFor(
       await writeFile(absolute, contents, "utf8");
     }
     const workspace = await loadWorkspace(root);
-    const graph = await walkModuleGraph(workspace, TARGET_KERNEL_ENTRY_MODULES);
+    const graph = await walkModuleGraph(workspace, TARGET_KERNEL_ENTRY_MODULES, traversableUnder(rules));
     return boundaryViolations(graph, rules);
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -92,7 +96,11 @@ async function violationsFor(
 }
 
 const realGraph = async (): Promise<ModuleGraph> =>
-  walkModuleGraph(await loadWorkspace(REPO_ROOT), TARGET_KERNEL_ENTRY_MODULES);
+  walkModuleGraph(
+    await loadWorkspace(REPO_ROOT),
+    TARGET_KERNEL_ENTRY_MODULES,
+    traversableUnder(TARGET_KERNEL_RULES),
+  );
 
 describe("K1.0 target Kernel landing zone", () => {
   test("the target zone exists, is a workspace member, and cannot be published", async () => {
@@ -247,6 +255,34 @@ describe("K1.0 forbidden-edge controls", () => {
     );
     assert.equal(sibling.length, 1, "approval is per file, not per directory");
     assert.match(sibling[0]!.reason, /unaudited\.ts/);
+  });
+
+  test("approving a leaf does not approve what that leaf imports", async () => {
+    // The failure 013 names: a shared leaf that quietly reconnects the target zone to the legacy
+    // tree. An approved file is still walked through, so its own dependencies face the same rule.
+    const rules: BoundaryRules = { ...TARGET_KERNEL_RULES, allowedLeaves: ["packages/core/src/util/composite.ts"] };
+    const violations = await violationsFor(
+      { "packages/kernel/src/index.ts": 'export { unaudited } from "../../core/src/util/composite.ts";\n' },
+      rules,
+    );
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0]!.from, "packages/core/src/util/composite.ts");
+    assert.match(violations[0]!.reason, /unaudited\.ts/);
+  });
+
+  test("one forbidden barrel import reports one violation, not one per edge behind it", async () => {
+    // Self-found defect K1.0-SELF-01. The walk used to continue through a forbidden file, so a
+    // single import of the legacy barrel reported a violation for every edge inside the legacy
+    // package, attributed to legacy files that are not in the guarded zone at all.
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts": 'export * from "@arrokothi/core";\n',
+    });
+    assert.deepEqual(
+      violations.map((violation) => violation.from),
+      ["packages/kernel/src/index.ts"],
+      "every violation is attributed to a file in the guarded zone",
+    );
+    assert.equal(violations.length, 1);
   });
 });
 
