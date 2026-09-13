@@ -9,8 +9,11 @@ The owner released **K1.0** on 2026-09-13 against built-but-unaccepted E1 prepar
 Round-16 H `f3aa29d7ecba2a23aa85788b7efdebdd383cab24` received independent ACCEPT, preserved in
 [review-17](work/K1.0/review-17.md). Final cleanup then found C4 defect K10-CLEANUP-01:
 whole-cell inventory meaning can be lost while the guard stays green. **Cleanup is REOPENED;
-C4 claims and integration are ON HOLD**, with [K1.0-correction-01](work/K1.0-correction-01/handoff-01.md)
-requiring new C/H and independent review. See [cleanup-01](work/K1.0/cleanup-01.md).
+C4 claims and integration are ON HOLD**, and [K1.0-correction-01](work/K1.0-correction-01/contract.md)
+now has a `WAITING_FOR_REVIEW` candidate that closes K10-CLEANUP-01 by decoding every governed cell
+whole instead of reading a prefix, a substring or a subset of it. It is accepted by nobody and the
+hold stands until a fresh independent review of the cumulative interval returns ACCEPT. See
+[cleanup-01](work/K1.0/cleanup-01.md) and the ledger row.
 No E1 result, K1 closure, merge or successor release is claimed (`next_release: none`).
 Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.

@@ -1,0 +1,283 @@
+== K10-CLEANUP-01 distinguishing demonstration: accepted H vs committed C ==
+
+$ node --experimental-strip-types demo-cleanup01.mts
+
+== Part 1: the cleanup's own reproduction, run against both parsers ==
+
+Quoted from docs/development/work/K1.0/cleanup-evidence-01/cell-decoding-counterexamples.log:
+  const anchor = '| `target-kernel` | 2 | nothing | nothing |';
+  assert.deepEqual(parsed, baseline);
+  assert.deepEqual(inventoryDisagreements(parseInventory(changed), {...}, workspace), []);
+
+--- baseline
+    cell   | `target-kernel` | 2 | nothing | nothing |
+    H      INDISTINGUISHABLE from baseline; ownership messages 0; unreadable 0; files=2 reaches=[] thirdParty=[]
+    C      INDISTINGUISHABLE from baseline; ownership messages 0; unreadable 0; files=2 reaches=[] thirdParty=[]
+--- fractional count
+    cell   | `target-kernel` | 2.5 | nothing | nothing |
+    H      INDISTINGUISHABLE from baseline; ownership messages 0; unreadable 0; files=2 reaches=[] thirdParty=[]
+    C      distinguished; ownership messages 0; unreadable 1; row rejected
+--- count with junk suffix
+    cell   | `target-kernel` | 2oops | nothing | nothing |
+    H      INDISTINGUISHABLE from baseline; ownership messages 0; unreadable 0; files=2 reaches=[] thirdParty=[]
+    C      distinguished; ownership messages 0; unreadable 1; row rejected
+--- mixed empty/workspace claim
+    cell   | `target-kernel` | 2 | nothing, `@arrokothi/core` | nothing |
+    H      INDISTINGUISHABLE from baseline; ownership messages 0; unreadable 0; files=2 reaches=[] thirdParty=[]
+    C      distinguished; ownership messages 0; unreadable 1; row rejected
+--- mixed empty/external claim
+    cell   | `target-kernel` | 2 | nothing | nothing, `evil-package` |
+    H      INDISTINGUISHABLE from baseline; ownership messages 0; unreadable 0; files=2 reaches=[] thirdParty=[]
+    C      distinguished; ownership messages 0; unreadable 1; row rejected
+
+== Part 2: the downstream measured-tree consumer sees the difference ==
+
+`kernel-landing-zone.test.ts` asserts, for the real document:
+  assert.deepEqual(unreadable, [], 'every dependency row is readable, unique and accounted for');
+  assert.deepEqual([...rows.keys()].sort(), ZONES.map((z) => z.id).sort(), ...);
+
+document                           H: unreadable / zones covered      C: unreadable / zones covered
+----------------------------------------------------------------------------------------------------------------
+baseline                           0 / all four                       0 / all four
+fractional count                   0 / all four                       1 / INCOMPLETE
+count with junk suffix             0 / all four                       1 / INCOMPLETE
+mixed empty/workspace claim        0 / all four                       1 / INCOMPLETE
+mixed empty/external claim         0 / all four                       1 / INCOMPLETE
+
+== Part 3: the family, and the permitted spellings beside it ==
+
+case                                                       H f3aa29d7     C 76ce938      required
+----------------------------------------------------------------------------------------------------------------
+baseline, unmutated inventory                              GREEN          GREEN          accepted 
+unquoted root beside the correct one                       GREEN          RED(2)         reported 
+repeated root                                              RED(1)         RED(2)         reported 
+prose appended to a key cell                               GREEN          RED(2)         reported 
+second path in a single-valued deferred cell               GREEN          RED(2)         reported 
+unquoted subpath beside the correct one                    GREEN          RED(2)         reported 
+publishability answer with a matching prefix               RED(1)         RED(2)         reported 
+publishability answer read from the wrong word             GREEN          RED(2)         reported 
+an appended cell past the header's arity                   GREEN          RED(2)         reported 
+a vertical tab after the final edge pipe                   GREEN          RED(2)         reported 
+permitted: one code span                                   GREEN          GREEN          accepted 
+permitted: comma list with no padding                      GREEN          GREEN          accepted 
+permitted: comma list with space and tab padding           GREEN          GREEN          accepted 
+permitted: the bare `No` spelling                          GREEN          GREEN          accepted 
+permitted: a short row missing only the ungoverned prose column GREEN          GREEN          accepted 
+preserved: a duplicate zone row is still a duplicate       RED(1)         RED(1)         reported 
+preserved: a reassigned deferred owner still disagrees     RED(1)         RED(1)         reported 
+preserved: a private package claimed published still disagrees RED(1)         RED(1)         reported 
+----------------------------------------------------------------------------------------------------------------
+cases 18; distinguishing (H != C) 9; C fails its own requirement on 0
+
+The cleanup's first counterexample, verbatim messages from C:
+  - Dependency row for target-kernel is malformed: `target-kernel` | 2.5 | nothing | nothing
+Same document under the accepted H:
+  (nothing: 2.5 is read as the count 2 and the row is accepted)
+
+exit: 0
+
+== provenance of the two columns ==
+H column: a verbatim copy of  git show f3aa29d7ecba2a23aa85788b7efdebdd383cab24:tests/conformance/architecture/inventory-oracle.ts
+  local copy sha256 628a9cc7617e2a2577c6161404ca770709f66fed8c77ad6fe932e5108752d2f8
+  git blob          cdb06c345f4841faa70e1668c1830e5bce92786d
+  git show sha256   628a9cc7617e2a2577c6161404ca770709f66fed8c77ad6fe932e5108752d2f8
+  Its two imports are type-only and erased by --experimental-strip-types, so it runs
+  standalone and is the accepted code rather than a paraphrase.
+C column: the committed production parser imported from its real repository path
+  git blob          014a07dbcfcf04679602fd5ab1493e0fe566f5c1
+  working sha256    22a822a46a1eac786b2d0190c25d4fada3685b306f23b676dd825b1ded2dd6b2
+
+== the program, quoted in full (it enters no tracked path) ==
+--- demo-cleanup01.mts ---
+/**
+ * K10-CLEANUP-01 distinguishing demonstration: the accepted H vs the committed C.
+ *
+ * Part 1 re-runs the cleanup's own reproduction on both parsers, unchanged in substance: the same
+ * anchor, the same four mutations, the same two assertions (the mutated parse is deeply equal to the
+ * baseline parse, and the ownership relations report nothing). Under H both assertions hold for all
+ * four documents — which is the defect. Under C each one is refused, which is the correction.
+ *
+ * Part 2 carries the same documents into the downstream consumers the cleanup named: the measured
+ * cross-boundary comparison in `kernel-landing-zone.test.ts` asserts that the dependency table has
+ * no unreadable rows and covers exactly the declared zones, so a rejected row is observable there
+ * and not only inside the parser.
+ *
+ * Part 3 is the family, not the four reported strings: the same shapes in the other governed
+ * columns and the other three tables, plus the permitted spellings beside each of them, so a reader
+ * can see that the correction moved a boundary rather than blacklisting a list.
+ *
+ * The H column is `git show f3aa29d7ecba2a23aa85788b7efdebdd383cab24:tests/conformance/architecture/inventory-oracle.ts`
+ * byte-for-byte. Its two imports are type-only and erased by `--experimental-strip-types`, so it
+ * runs standalone and is the accepted code rather than a paraphrase.
+ */
+
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+
+const REPO = "/Users/rex-shih/Documents/ArrokothI/arrokothi";
+const ARCH = `${REPO}/tests/conformance/architecture`;
+
+const H = await import(new URL("./oracle-H16.ts", import.meta.url).pathname);
+const C = await import(`${ARCH}/inventory-oracle.ts`);
+const { ZONES, DEFERRED_EXTRACTIONS } = await import(`${ARCH}/boundary-policy.ts`);
+const { loadWorkspace } = await import(`${ARCH}/module-graph.ts`);
+
+const real = await readFile(resolve(REPO, "docs/development/work/K1.0/ownership-inventory.md"), "utf8");
+const workspace = await loadWorkspace(REPO);
+const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
+
+const pad = (text: string, width: number): string => (text.length >= width ? text : text + " ".repeat(width - text.length));
+
+// ------------------------------------------------------------------ part 1
+console.log("== Part 1: the cleanup's own reproduction, run against both parsers ==");
+console.log("");
+console.log("Quoted from docs/development/work/K1.0/cleanup-evidence-01/cell-decoding-counterexamples.log:");
+console.log("  const anchor = '| `target-kernel` | 2 | nothing | nothing |';");
+console.log("  assert.deepEqual(parsed, baseline);");
+console.log("  assert.deepEqual(inventoryDisagreements(parseInventory(changed), {...}, workspace), []);");
+console.log("");
+
+const ANCHOR = "| `target-kernel` | 2 | nothing | nothing |";
+assert.equal(real.split(ANCHOR).length - 1, 1, "the cleanup's anchor is still unique");
+
+const CLEANUP_MUTATIONS: readonly (readonly [string, string])[] = [
+  ["baseline", ANCHOR],
+  ["fractional count", "| `target-kernel` | 2.5 | nothing | nothing |"],
+  ["count with junk suffix", "| `target-kernel` | 2oops | nothing | nothing |"],
+  ["mixed empty/workspace claim", "| `target-kernel` | 2 | nothing, `@arrokothi/core` | nothing |"],
+  ["mixed empty/external claim", "| `target-kernel` | 2 | nothing | nothing, `evil-package` |"],
+];
+
+/** The cleanup's two assertions, reported rather than thrown, for one parser and one document. */
+const cleanupVerdict = (module: typeof C, changed: string): string => {
+  const baseline = module.parseDependencyTable(real);
+  const parsed = module.parseDependencyTable(changed);
+  let equalsBaseline: boolean;
+  try {
+    assert.deepEqual(parsed, baseline);
+    equalsBaseline = true;
+  } catch {
+    equalsBaseline = false;
+  }
+  const disagreements = module.inventoryDisagreements(module.parseInventory(changed), policy, workspace);
+  const row = parsed.rows.get("target-kernel");
+  const decoded =
+    row === undefined
+      ? "row rejected"
+      : `files=${row.files} reaches=[${[...row.reaches].join(",")}] thirdParty=[${[...row.thirdParty].join(",")}]`;
+  return `${equalsBaseline ? "INDISTINGUISHABLE from baseline" : "distinguished"}; ownership messages ${disagreements.length}; unreadable ${parsed.unreadable.length}; ${decoded}`;
+};
+
+for (const [name, replacement] of CLEANUP_MUTATIONS) {
+  const changed = real.replace(ANCHOR, replacement);
+  console.log(`--- ${name}`);
+  console.log(`    cell   ${replacement}`);
+  console.log(`    H      ${cleanupVerdict(H, changed)}`);
+  console.log(`    C      ${cleanupVerdict(C, changed)}`);
+}
+
+// ------------------------------------------------------------------ part 2
+console.log("");
+console.log("== Part 2: the downstream measured-tree consumer sees the difference ==");
+console.log("");
+console.log("`kernel-landing-zone.test.ts` asserts, for the real document:");
+console.log("  assert.deepEqual(unreadable, [], 'every dependency row is readable, unique and accounted for');");
+console.log("  assert.deepEqual([...rows.keys()].sort(), ZONES.map((z) => z.id).sort(), ...);");
+console.log("");
+console.log(pad("document", 34), pad("H: unreadable / zones covered", 34), "C: unreadable / zones covered");
+console.log("-".repeat(112));
+const declared = ZONES.map((zone: { id: string }) => zone.id).sort().join(",");
+for (const [name, replacement] of CLEANUP_MUTATIONS) {
+  const changed = real.replace(ANCHOR, replacement);
+  const observe = (module: typeof C): string => {
+    const { rows, unreadable } = module.parseDependencyTable(changed);
+    const covered = [...rows.keys()].sort().join(",");
+    return `${unreadable.length} / ${covered === declared ? "all four" : "INCOMPLETE"}`;
+  };
+  console.log(pad(name, 34), pad(observe(H), 34), observe(C));
+}
+
+// ------------------------------------------------------------------ part 3
+console.log("");
+console.log("== Part 3: the family, and the permitted spellings beside it ==");
+console.log("");
+
+type Case = { readonly name: string; readonly from: string; readonly to: string; readonly want: "reported" | "accepted" };
+
+const ZONE_ROW =
+  "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+const DX1_ROW =
+  "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |";
+const DX3_ROW =
+  "| DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 | Same packet: accept/reject results at the dispatch boundary. |";
+const KERNEL_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";
+const SDK_ROW = "| `@arrokothi/sdk` | `.` | Yes |";
+const CORE_ROW = "| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes |";
+const TAB = String.fromCharCode(0x09);
+const VT = String.fromCharCode(0x0b);
+
+const cases: readonly Case[] = [
+  { name: "baseline, unmutated inventory", from: ZONE_ROW, to: ZONE_ROW, want: "accepted" },
+
+  // subset extraction, across three tables
+  { name: "unquoted root beside the correct one", from: ZONE_ROW, to: ZONE_ROW.replace("`packages/kernel/src`", "`packages/kernel/src`, packages/evil/src"), want: "reported" },
+  { name: "repeated root", from: ZONE_ROW, to: ZONE_ROW.replace("`packages/kernel/src`", "`packages/kernel/src`, `packages/kernel/src`"), want: "reported" },
+  { name: "prose appended to a key cell", from: ZONE_ROW, to: ZONE_ROW.replace("| `target-kernel` |", "| `target-kernel` (deprecated) |"), want: "reported" },
+  { name: "second path in a single-valued deferred cell", from: DX1_ROW, to: DX1_ROW.replace("`packages/core/src/util/hash.ts`", "`packages/core/src/util/hash.ts` or `packages/core/src/util/json.ts`"), want: "reported" },
+  { name: "unquoted subpath beside the correct one", from: SDK_ROW, to: "| `@arrokothi/sdk` | `.`, ./secret | Yes |", want: "reported" },
+
+  // prefix sentinel
+  { name: "publishability answer with a matching prefix", from: KERNEL_ROW, to: "| `@arrokothi/kernel` | `.` | Yes, but only in theory |", want: "reported" },
+  { name: "publishability answer read from the wrong word", from: KERNEL_ROW, to: "| `@arrokothi/kernel` | `.` | nope |", want: "reported" },
+
+  // row arity (K1.0-SELF-29)
+  { name: "an appended cell past the header's arity", from: DX3_ROW, to: `${DX3_ROW} and another claim |`, want: "reported" },
+  { name: "a vertical tab after the final edge pipe", from: DX3_ROW, to: `${DX3_ROW}${VT}`, want: "reported" },
+
+  // the permitted spellings: these must stay accepted, or the correction is a regression
+  { name: "permitted: one code span", from: ZONE_ROW, to: ZONE_ROW, want: "accepted" },
+  { name: "permitted: comma list with no padding", from: CORE_ROW, to: "| `@arrokothi/core` | `.`,`./execution`,`./ports`,`./reference`,`./testing` | Yes |", want: "accepted" },
+  { name: "permitted: comma list with space and tab padding", from: CORE_ROW, to: `| \`@arrokothi/core\` | \`.\` , \`./execution\`,${TAB}\`./ports\` ,  \`./reference\`, \`./testing\` | Yes |`, want: "accepted" },
+  { name: "permitted: the bare `No` spelling", from: KERNEL_ROW, to: "| `@arrokothi/kernel` | `.` | No |", want: "accepted" },
+  { name: "permitted: a short row missing only the ungoverned prose column", from: DX3_ROW, to: "| DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 |", want: "accepted" },
+
+  // preserved prior corrections, identical in both columns
+  { name: "preserved: a duplicate zone row is still a duplicate", from: ZONE_ROW, to: `${ZONE_ROW}\n| \`target-kernel\` | \`packages/core/src\` | stale contradictory duplicate |`, want: "reported" },
+  { name: "preserved: a reassigned deferred owner still disagrees", from: DX1_ROW, to: DX1_ROW.replace("| K1.1 |", "| K3.1 |"), want: "reported" },
+  { name: "preserved: a private package claimed published still disagrees", from: KERNEL_ROW, to: "| `@arrokothi/kernel` | `.` | Yes |", want: "reported" },
+];
+
+const verdict = (module: typeof C, markdown: string): string => {
+  const messages: string[] = module.inventoryDisagreements(module.parseInventory(markdown), policy, workspace);
+  return messages.length === 0 ? "GREEN" : `RED(${messages.length})`;
+};
+
+let distinguishing = 0;
+let cWrong = 0;
+console.log(pad("case", 58), pad("H f3aa29d7", 14), pad("C 76ce938", 14), "required");
+console.log("-".repeat(112));
+for (const item of cases) {
+  if (real.split(item.from).length - 1 !== 1) throw new Error(`anchor is not unique: ${item.from}`);
+  const markdown = item.from === item.to ? real : real.replace(item.from, item.to);
+  const h = verdict(H, markdown);
+  const c = verdict(C, markdown);
+  const ok = item.want === "accepted" ? c === "GREEN" : c.startsWith("RED");
+  if (!ok) cWrong++;
+  if (h !== c) distinguishing++;
+  console.log(pad(item.name, 58), pad(h, 14), pad(c, 14), item.want, ok ? "" : "  <- C FAILED ITS OWN REQUIREMENT");
+}
+console.log("-".repeat(112));
+console.log(`cases ${cases.length}; distinguishing (H != C) ${distinguishing}; C fails its own requirement on ${cWrong}`);
+
+console.log("");
+console.log("The cleanup's first counterexample, verbatim messages from C:");
+for (const message of C.parseDependencyTable(real.replace(ANCHOR, "| `target-kernel` | 2.5 | nothing | nothing |")).unreadable) {
+  console.log(`  - ${message}`);
+}
+console.log("Same document under the accepted H:");
+const hMessages: string[] = H.parseDependencyTable(real.replace(ANCHOR, "| `target-kernel` | 2.5 | nothing | nothing |")).unreadable;
+console.log(hMessages.length === 0 ? "  (nothing: 2.5 is read as the count 2 and the row is accepted)" : hMessages.map((m) => `  - ${m}`).join("\n"));
+
+if (cWrong !== 0) process.exitCode = 1;
+--- end demo-cleanup01.mts ---
