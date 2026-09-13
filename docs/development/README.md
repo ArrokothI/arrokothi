@@ -46,10 +46,10 @@ candidates; their earlier holds do not override the ledger and subsequent owner 
 The structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is itself K1
 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared fixtures and
 a structural pass are not an E1 result. **The owner released K1.0 on 2026-09-13**, directing that the
-E1 dependency be treated as the already-built but unaccepted preparation; its round-12 candidate is
-`WAITING_FOR_REVIEW` and is accepted by nobody (rounds 1–11 each drew CHANGES REQUIRED; round 12 corrects
-the type-6 raw-HTML boundary to the structural whitespace/`>`/exact-`/>`/EOL grammar, so a lone slash or
-dollar after a block tag cannot open a raw block, while valid open/closing/EOL boundaries still do,
-preserving every earlier reconstruction). See the [status ledger](007-work-packets.md) and
+E1 dependency be treated as the already-built but unaccepted preparation; its round-13 candidate is
+`WAITING_FOR_REVIEW` and is accepted by nobody (rounds 1–12 each drew CHANGES REQUIRED; round 13 reconstructs
+the raw-HTML whitespace/blank-line lexical classes, so VT/FF are valid tag whitespace, NBSP is neither a
+start boundary nor blank, and SPACE/TAB-only lines still terminate blocks, preserving every earlier
+reconstruction). See the [status ledger](007-work-packets.md) and
 [K1.0's contract](work/K1.0/contract.md). That release names no successor: `next_release: none`.
 Benchmark owns its evidence preparation and release decisions separately.
