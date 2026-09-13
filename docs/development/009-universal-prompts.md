@@ -79,6 +79,8 @@ merge commit. For corrections provide 008's compact handoff referencing the immu
 required outcomes, not a growing transcript of policy. Do not prescribe a patch as the only allowed
 in-scope correction. Put all explanations before one final standalone line: ACCEPT, CHANGES REQUIRED,
 or BLOCKED — ARCHITECTURE DECISION. Do not merge or release a successor.
+
+If the same substantive defect or defect family survives multiple correction rounds, or you judge that the implementation process is repeating the same conceptual mistake or has reached a local minimum, tell the owner explicitly. Do this outside the reviewer report as a separate owner note, so the owner can consider switching or escalating the implementation agent.
 ```
 
 ## Prompt C — Codex final cleanup, close or reopen, and push
