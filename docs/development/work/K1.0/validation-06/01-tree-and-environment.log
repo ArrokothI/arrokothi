@@ -1,0 +1,141 @@
+# 01 - tree and environment, clean payload C 459be4e51370ebb8e859a46b29a966944bbd755a
+
+$ git rev-parse HEAD
+459be4e51370ebb8e859a46b29a966944bbd755a
+
+$ git log --oneline c9a9ed7e6e538ab0542fc6a999426264abb6212a..HEAD
+459be4e fix(K1.0): make C4 row discovery follow GFM edge-pipe grammar (K10-R5-01, K1.0-SELF-11)
+86fbd84 review(K1.0): round 5 changes required
+2b274e6 report(K1.0): round-5 report, status transcription and clean-C validation
+6fd225e fix(K1.0): the evidence-record guard must tolerate a capture in progress (K1.0-SELF-09)
+bbc9a9d fix(K1.0): make inventory parsing total and guard evidence records (K10-R4-01, K10-R4-02)
+a9775ab review(K1.0): round 4 changes required
+14cc1c1 report(K1.0): round-4 report, status transcription and clean-C validation
+0f012d4 fix(K1.0): close K10-R3-01 duplicate-key oracle hole
+d069407 review(K1.0): round 3 changes required
+bddbbc6 report(K1.0): round-3 report, status transcription and clean-C validation
+839b32d fix(K1.0): rebuild dependency extraction and the inventory oracle (K10-R2-01, K10-R2-02)
+eef87cc review(K1.0): round 2 changes required
+d434783 report(K1.0): round-2 report, status transcription and clean-C validation
+960a446 fix(K1.0): close K10-R1-01 scanner bypass and K10-R1-02 inventory provenance
+bded42d review(K1.0): round 1 changes required
+40bb07a report(K1.0): round-1 report, status transcription and clean-C validation
+811758e docs(K1.0): reconcile the contract with the delivered controls
+2ed8523 fix(K1.0): stop the boundary walk at a forbidden edge (K1.0-SELF-01)
+0eb068d feat(K1.0): establish the target Kernel landing zone and quarantine 0.8.x
+
+$ git status --porcelain --untracked-files=all  (validation-06/ excluded: written by this run)
+(clean except validation-06/)
+
+$ node --version
+v25.2.1
+
+$ npm --version
+11.6.2
+
+$ npx tsc --version
+Version 5.9.3
+
+$ uname -sr
+Darwin 25.6.0
+
+$ git diff --stat -M 2b274e6ecbaa8cdcc4600d8574234fc027c2b37e HEAD   (correction delta from reviewed H5; review record 86fbd84 has no code)
+ docs/development/work/K1.0/contract.md             |  19 +-
+ docs/development/work/K1.0/review-05.md            | 209 +++++++++++++++++++++
+ tests/conformance/architecture/inventory-oracle.ts | 120 +++++++++++-
+ .../architecture/kernel-landing-zone.test.ts       | 194 +++++++++++++++++++
+ 4 files changed, 533 insertions(+), 9 deletions(-)
+
+$ git diff --stat -M c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD   (cumulative)
+ docs/development/001-current-status-and-roadmap.md |    6 +-
+ .../development/002-implemented-kernel-baseline.md |   10 +
+ docs/development/007-work-packets.md               |   17 +-
+ docs/development/README.md                         |   14 +-
+ docs/development/work/K1.0/contract.md             |  170 ++
+ docs/development/work/K1.0/implementation-01.md    |  224 ++
+ docs/development/work/K1.0/implementation-02.md    |  322 +++
+ docs/development/work/K1.0/implementation-03.md    |  299 +++
+ docs/development/work/K1.0/implementation-04.md    |  230 ++
+ docs/development/work/K1.0/implementation-05.md    |  243 ++
+ docs/development/work/K1.0/ownership-inventory.md  |  116 +
+ docs/development/work/K1.0/review-01.md            |  211 ++
+ docs/development/work/K1.0/review-02.md            |  223 ++
+ docs/development/work/K1.0/review-03.md            |  220 ++
+ docs/development/work/K1.0/review-04.md            |  206 ++
+ docs/development/work/K1.0/review-05.md            |  209 ++
+ .../K1.0/validation-01/01-tree-and-environment.log |   44 +
+ .../work/K1.0/validation-01/02-typecheck.log       |   10 +
+ .../work/K1.0/validation-01/03-test-full.log       | 2418 +++++++++++++++++++
+ .../K1.0/validation-01/04-test-conformance.log     | 2265 ++++++++++++++++++
+ .../K1.0/validation-01/05-check-builder-docs.log   |   11 +
+ .../work/K1.0/validation-01/06-test-kernel.log     |   24 +
+ .../work/K1.0/validation-01/07-test-sdk.log        |   40 +
+ .../K1.0/validation-01/08-scanner-comparison.log   |  130 +
+ .../validation-01/09-self-01-demonstration.log     |   53 +
+ .../work/K1.0/validation-01/MANIFEST.md            |   46 +
+ .../K1.0/validation-02/01-tree-and-environment.log |   79 +
+ .../work/K1.0/validation-02/02-typecheck.log       |    5 +
+ .../work/K1.0/validation-02/03-test-full.log       | 2422 +++++++++++++++++++
+ .../K1.0/validation-02/04-test-conformance.log     | 2269 ++++++++++++++++++
+ .../K1.0/validation-02/05-check-builder-docs.log   |    6 +
+ .../work/K1.0/validation-02/06-test-kernel.log     |   19 +
+ .../work/K1.0/validation-02/07-test-sdk.log        |   35 +
+ .../K1.0/validation-02/08-scanner-comparison.log   |  127 +
+ .../K1.0/validation-02/09-r101-demonstration.log   |   86 +
+ .../work/K1.0/validation-02/MANIFEST.md            |   65 +
+ .../K1.0/validation-03/01-tree-and-environment.log |   90 +
+ .../work/K1.0/validation-03/02-typecheck.log       |   10 +
+ .../work/K1.0/validation-03/03-test-full.log       | 2474 +++++++++++++++++++
+ .../K1.0/validation-03/04-test-conformance.log     | 2321 ++++++++++++++++++
+ .../K1.0/validation-03/05-check-builder-docs.log   |   11 +
+ .../work/K1.0/validation-03/06-test-kernel.log     |   24 +
+ .../work/K1.0/validation-03/07-test-sdk.log        |   40 +
+ .../validation-03/08-two-extractor-comparison.log  |   99 +
+ .../K1.0/validation-03/09-r201-demonstration.log   |  173 ++
+ .../K1.0/validation-03/10-r202-demonstration.log   |  135 ++
+ .../work/K1.0/validation-03/MANIFEST.md            |   56 +
+ .../K1.0/validation-04/01-tree-and-environment.log |   10 +
+ .../work/K1.0/validation-04/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-04/03-test-full.log       | 2475 +++++++++++++++++++
+ .../K1.0/validation-04/04-test-conformance.log     | 2322 ++++++++++++++++++
+ .../K1.0/validation-04/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-04/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-04/07-test-sdk.log        |   34 +
+ .../K1.0/validation-04/08-r301-demonstration.log   |    8 +
+ .../work/K1.0/validation-04/MANIFEST.md            |   64 +
+ .../K1.0/validation-05/01-tree-and-environment.log |  122 +
+ .../work/K1.0/validation-05/02-typecheck.log       |   10 +
+ .../work/K1.0/validation-05/03-test-full.log       | 2490 ++++++++++++++++++++
+ .../K1.0/validation-05/04-test-conformance.log     | 2337 ++++++++++++++++++
+ .../K1.0/validation-05/05-check-builder-docs.log   |   11 +
+ .../work/K1.0/validation-05/06-test-kernel.log     |   24 +
+ .../work/K1.0/validation-05/07-test-sdk.log        |   40 +
+ .../K1.0/validation-05/08-r401-demonstration.log   |  128 +
+ .../work/K1.0/validation-05/09-digest-audit.log    |  126 +
+ .../work/K1.0/validation-05/MANIFEST.md            |   59 +
+ package-lock.json                                  |    9 +
+ package.json                                       |    6 +-
+ packages/kernel/package.json                       |   14 +
+ packages/kernel/src/index.ts                       |   20 +
+ packages/kernel/src/unsupported.ts                 |   31 +
+ packages/kernel/tests/unsupported.test.ts          |   46 +
+ tests/conformance/architecture/boundary-policy.ts  |  211 ++
+ .../architecture/evidence-records.test.ts          |  193 ++
+ .../architecture/import-scanner.test.ts            |  395 ++++
+ tests/conformance/architecture/inventory-oracle.ts |  408 ++++
+ .../architecture/kernel-landing-zone.test.ts       | 1034 ++++++++
+ ...ries.test.ts => legacy-core-boundaries.test.ts} |   76 +-
+ tests/conformance/architecture/module-graph.ts     |  345 +++
+ 79 files changed, 31346 insertions(+), 36 deletions(-)
+
+$ git diff --name-only c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD -- tests/conformance/k0 (must be empty: frozen)
+(end k0 check)
+
+$ git diff 2b274e6ecbaa8cdcc4600d8574234fc027c2b37e HEAD -- tests/conformance/architecture/inventory-oracle.ts | grep -c readKeyedTable (must show readKeyedTable unchanged except comments? check)
+readKeyedTable signature unchanged
+
+$ git diff --stat -M 86fbd8423bf6fbfda1febcab6a9d3c59f0115f4b HEAD   (review-record to payload C: substantive correction only)
+ docs/development/work/K1.0/contract.md             |  19 +-
+ tests/conformance/architecture/inventory-oracle.ts | 120 ++++++++++++-
+ .../architecture/kernel-landing-zone.test.ts       | 194 +++++++++++++++++++++
+ 3 files changed, 324 insertions(+), 9 deletions(-)
