@@ -1,0 +1,34 @@
+# 01 — tree and environment, clean payload C (round 11)
+$ git rev-parse HEAD
+6880b4825ed1aa2363f8366431052f88d6955be8
+$ git status --short
+(only untracked validation-11, which this run writes)
+$ git log --oneline -4
+6880b48 fix(K1.0): subordinate leaf lifetime to containers; complete attr grammar; pin GFM 0.29 (K10-R10-01..03)
+74aee7a review(K1.0): round 10 independent review
+a0a4988 report(K1.0): round-10 report, status transcription and clean-C validation
+549e215 fix(K1.0): track list containers and complete type-7 grammar (K10-R9-01, K10-R9-02)
+$ node --version; npm --version; npx tsc --version; uname -a
+v25.2.1
+11.6.2
+Version 5.9.3
+Darwin shiyufeideMacBook-Air.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:17:12 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8103 arm64
+$ git diff --stat 74aee7a (review-10 record) HEAD  [correction interval]
+ docs/development/work/K1.0/contract.md             |  33 ++-
+ tests/conformance/architecture/inventory-oracle.ts | 250 ++++++++++-----------
+ .../architecture/kernel-landing-zone.test.ts       | 246 +++++++++++++++++++-
+ 3 files changed, 390 insertions(+), 139 deletions(-)
+$ git diff --stat base HEAD  [cumulative tail]
+ tests/conformance/architecture/boundary-policy.ts  |  211 ++
+ .../architecture/evidence-records.test.ts          |  193 ++
+ .../architecture/import-scanner.test.ts            |  395 +++
+ tests/conformance/architecture/inventory-oracle.ts | 1293 ++++++++++
+ .../architecture/kernel-landing-zone.test.ts       | 2361 ++++++++++++++++++
+ ...ries.test.ts => legacy-core-boundaries.test.ts} |   76 +-
+ tests/conformance/architecture/module-graph.ts     |  345 +++
+ 138 files changed, 63890 insertions(+), 36 deletions(-)
+$ git diff --quiet base HEAD -- tests/conformance/k0 && echo byte-identical
+tests/conformance/k0 byte-identical to base
+$ git ls-remote origin main; git ls-remote origin branch
+c9a9ed7e6e538ab0542fc6a999426264abb6212a	refs/heads/main
+74aee7aa5585fb036bc413a8591b6dbb428ffc1f	refs/heads/codex/k1.0-target-boundary-legacy-quarantine

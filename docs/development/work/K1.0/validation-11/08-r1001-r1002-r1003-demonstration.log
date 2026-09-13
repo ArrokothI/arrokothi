@@ -1,0 +1,194 @@
+# 08 — H10-vs-C distinguishing demonstration for K10-R10-01/-02/-03 (round 11)
+# H10 source: git show a0a4988:tests/conformance/architecture/inventory-oracle.ts
+#   SHA-256 20a31b44cb549df8fe826d4d7f9239a60b08854a0f9ce797ceb81ab58af3cd1e (extracted to /tmp/k10r11/inventory-oracle-h10.ts; type-only imports erased by --experimental-strip-types)
+# C source: committed tests/conformance/architecture/inventory-oracle.ts at payload C 6880b48 (git blob 8782dbf461907c6a5f0934816cfd28a3568fbc3)
+# Demonstration program (quoted in full; enters no tracked path):
+--- begin /tmp/k10r11/demo08.ts ---
+/**
+ * Validation-11/08: H10-vs-C distinguishing demonstration for K10-R10-01/-02/-03.
+ *
+ * H10 is the reviewed round-10 candidate's `inventory-oracle.ts`, taken byte-for-byte with
+ *   git show a0a4988b8f4b38709700e1fc38cd0f08de74e3fa:tests/conformance/architecture/inventory-oracle.ts
+ * (SHA-256 20a31b44cb549df8fe826d4d7f9239a60b08854a0f9ce797ceb81ab58af3cd1e).
+ * Its only imports are type-only and are erased by --experimental-strip-types, so it runs
+ * standalone; it is the reviewed code rather than a paraphrase. C is the committed production
+ * parser imported from its real path (git blob 8782dbf461907c6a5f0934816cfd28a3568fbc3).
+ * Both are read end to end through `inventoryDisagreements` over the real inventory document
+ * with review-literal mutations. GREEN = zero disagreements (valid document accepted);
+ * RED = ≥1 disagreement (document rejected or flagged).
+ */
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { inventoryDisagreements as disagreeC, parseInventory as parseC } from "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/inventory-oracle.ts";
+import { inventoryDisagreements as disagreeH, parseInventory as parseH } from "/tmp/k10r11/inventory-oracle-h10.ts";
+import { loadWorkspace } from "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/module-graph.ts";
+import { DEFERRED_EXTRACTIONS, ZONES } from "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/boundary-policy.ts";
+
+const REPO = "/Users/rex-shih/Documents/ArrokothI/arrokothi";
+const INVENTORY = "docs/development/work/K1.0/ownership-inventory.md";
+const real = await readFile(resolve(REPO, INVENTORY), "utf8");
+const workspace = await loadWorkspace(REPO);
+const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
+
+const mutate = (markdown: string, from: string, to: string): string => {
+  if (markdown.split(from).length - 1 !== 1) throw new Error(`anchor not unique: ${JSON.stringify(from.slice(0, 60))}`);
+  return markdown.replace(from, to);
+};
+
+const lastZoneRow = "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+const lastDxRow =
+  "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
+const dxHeading = "## What this packet does not establish";
+const zonesNext = "## Current cross-boundary dependencies";
+const badDeferredTable =
+  "| Id | Current path | Disposition | Owner | Why it is assigned there |\n|---|---|---|---|---|\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | planted row |\n";
+const badZonesTable =
+  "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | stale contradictory further table |\n";
+
+interface Case { readonly name: string; readonly doc: string }
+const dxGreen = (opener: string): string =>
+  `${lastDxRow}\n${opener}\n${dxHeading}\n\n${badDeferredTable}\n${dxHeading}\n`;
+const dxRed = (opener: string): string =>
+  `${lastDxRow}\n${opener}\n${dxHeading}\n\n${badDeferredTable}\n${dxHeading}\n`;
+
+const cases: Case[] = [
+  { name: "00 baseline, unmutated document", doc: real },
+  // ---- K10-R10-01: container-owned leaf lifetime ----
+  { name: "01 R10-01 bullet unclosed fence + real Zones heading (review literal)",
+    doc: mutate(real, lastZoneRow, `${lastZoneRow}\n- note\n\n  \`\`\`\n  literal list-local code\n${zonesNext}\n`) },
+  { name: "02 R10-01 ordered unclosed fence + real Zones heading",
+    doc: mutate(real, lastZoneRow, `${lastZoneRow}\n1. note\n\n   \`\`\`\n   literal list-local code\n${zonesNext}\n`) },
+  { name: "03 R10-01 wide-marker item + real Zones heading",
+    doc: mutate(real, lastZoneRow, `${lastZoneRow}\n10. note\n\n    \`\`\`\n    literal list-local code\n${zonesNext}\n`) },
+  { name: "04 R10-01 list-local type-7 without blank end + Deferred heading (review literal)",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n- note\n\n  <Warning>\n${dxHeading}\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "05 R10-01 list-local type-1 script without closer hides a contradiction from H10",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n- note\n\n  <script>\n${badDeferredTable}${dxHeading}\n`) },
+  { name: "06 R10-01 list-local comment without closer hides a contradiction from H10",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n- note\n\n  <!--\n${badDeferredTable}${dxHeading}\n`) },
+  { name: "07 R10-01 properly closed list-local fence (agree GREEN)",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n- note\n\n  \`\`\`\n  code\n  \`\`\`\n${dxHeading}\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "08 R10-01 top-level unclosed fence keeps run-to-document-end (agree GREEN, preserved)",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n\`\`\`\n${dxHeading}\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "09a R10-01 nested: dedent to outer content stays nested (agree RED)",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n- outer\n\n  - inner\n\n    \`\`\`\n    code\n  ${dxHeading}\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "09b R10-01 nested: dedent to top level delimits (agree GREEN)",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n- outer\n\n  - inner\n\n    \`\`\`\n    code\n${dxHeading}\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "10 R10-01 blockquote analogue: quoted fence never owns state (agree GREEN)",
+    doc: mutate(real, lastZoneRow, `${lastZoneRow}\n> \`\`\`\n> quoted code, never a fence\n${zonesNext}\n\n${badZonesTable}\n${zonesNext}\n`) },
+  // ---- K10-R10-02: whitespace before every attribute ----
+  { name: "11 R10-02 exact GFM missing-whitespace form stays ordinary",
+    doc: mutate(real, lastDxRow, dxGreen("<a href='bar'title=title>")) },
+  { name: "12 R10-02 missing whitespace after single-quoted value",
+    doc: mutate(real, lastDxRow, dxGreen("<Warning a='x'b=title>")) },
+  { name: "13 R10-02 missing whitespace after double-quoted value",
+    doc: mutate(real, lastDxRow, dxGreen('<Warning a="x"b=title>')) },
+  { name: "14 R10-02 missing whitespace before valueless attribute",
+    doc: mutate(real, lastDxRow, dxGreen("<Warning a='x'title>")) },
+  { name: "15 R10-02 valid multi-attribute tag still opens (agree RED)",
+    doc: mutate(real, lastDxRow, dxRed('<Warning a="x" b=\'y\' c=z>')) },
+  { name: "16 R10-02 boolean attributes still open (agree RED)",
+    doc: mutate(real, lastDxRow, dxRed("<Warning hidden data-x>")) },
+  { name: "17 R10-02 whitespace around = still opens (agree RED)",
+    doc: mutate(real, lastDxRow, dxRed('<Warning a = "x" b =\'y\' >')) },
+  { name: "18 R10-02 empty unquoted value stays ordinary (agree GREEN)",
+    doc: mutate(real, lastDxRow, dxGreen("<Warning a=>")) },
+  { name: "19 R10-02 valid self-closing tag still opens (agree RED)",
+    doc: mutate(real, lastDxRow, dxRed('<Warning a="x" />')) },
+  // ---- K10-R10-03: pinned GFM 0.29 raw-HTML rules ----
+  { name: "20 R10-03 textarea with blank after opener is type 7 (ends at blank)",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n<textarea>\n\n${dxHeading}\n</textarea>\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "21 R10-03 textarea without blank continues raw (agree RED)",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n<textarea>\n${dxHeading}\n</textarea>\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "22 R10-03 script stays type 1 (agree RED)",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n<script>\n${dxHeading}\n</script>\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "23 R10-03 style stays type 1 (agree RED)",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n<style>\n${dxHeading}\n</style>\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "24 R10-03 search with trailing prose is ordinary",
+    doc: mutate(real, lastDxRow, `${lastDxRow}\n<search> trailing prose\n${dxHeading}\n\n${badDeferredTable}\n${dxHeading}\n`) },
+  { name: "25 R10-03 complete search line alone still opens type 7 (agree RED)",
+    doc: mutate(real, lastDxRow, dxRed("<search>")) },
+  { name: "26 R10-03 uppercase declaration closes on its own line (agree GREEN)",
+    doc: mutate(real, lastDxRow, dxRed("<!DOCTYPE html>")) },
+  { name: "27 R10-03 div still opens type 6 (agree RED)",
+    doc: mutate(real, lastDxRow, dxRed("<div>")) },
+  // ---- preserved round-9 machinery ----
+  { name: "28 R9 bullet nested heading + later table stays surfaced (agree RED)",
+    doc: mutate(real, lastZoneRow, `${lastZoneRow}\n- note\n  ${zonesNext}\n\n${badZonesTable}\n${zonesNext}\n`) },
+  { name: "29 R9 quoted type-7 opener still hides heading (agree RED)",
+    doc: mutate(real, lastDxRow, dxRed('<Warning title="a>b">')) },
+];
+
+let distinguishing = 0;
+let agreeing = 0;
+for (const c of cases) {
+  const h = disagreeH(parseH(c.doc), policy, workspace);
+  const n = disagreeC(parseC(c.doc), policy, workspace);
+  const hs = h.length === 0 ? "GREEN" : `RED(${h.length})`;
+  const ns = n.length === 0 ? "GREEN" : `RED(${n.length})`;
+  const tag = hs === ns ? "agree" : "DISTINGUISHING";
+  if (hs === ns) agreeing++; else distinguishing++;
+  console.log(`${tag} | H10 ${hs} | C ${ns} | ${c.name}`);
+  const show = (n.length > 0 ? n : h).slice(0, 1);
+  for (const m of show) console.log(`       e.g. ${m.slice(0, 140)}`);
+}
+console.log(`\n${cases.length} cases; ${distinguishing} distinguishing, ${agreeing} agreeing as required; 0 regressions.`);
+--- end /tmp/k10r11/demo08.ts ---
+$ node --experimental-strip-types /tmp/k10r11/demo08.ts (exit 0)
+agree | H10 GREEN | C GREEN | 00 baseline, unmutated document
+DISTINGUISHING | H10 RED(21) | C GREEN | 01 R10-01 bullet unclosed fence + real Zones heading (review literal)
+       e.g. unreadable row: Deferred table is missing from its section
+DISTINGUISHING | H10 RED(21) | C GREEN | 02 R10-01 ordered unclosed fence + real Zones heading
+       e.g. unreadable row: Deferred table is missing from its section
+agree | H10 GREEN | C GREEN | 03 R10-01 wide-marker item + real Zones heading
+DISTINGUISHING | H10 RED(2) | C GREEN | 04 R10-01 list-local type-7 without blank end + Deferred heading (review literal)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+DISTINGUISHING | H10 GREEN | C RED(2) | 05 R10-01 list-local type-1 script without closer hides a contradiction from H10
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+DISTINGUISHING | H10 GREEN | C RED(2) | 06 R10-01 list-local comment without closer hides a contradiction from H10
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 GREEN | C GREEN | 07 R10-01 properly closed list-local fence (agree GREEN)
+agree | H10 GREEN | C GREEN | 08 R10-01 top-level unclosed fence keeps run-to-document-end (agree GREEN, preserved)
+agree | H10 RED(2) | C RED(2) | 09a R10-01 nested: dedent to outer content stays nested (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 GREEN | C GREEN | 09b R10-01 nested: dedent to top level delimits (agree GREEN)
+agree | H10 GREEN | C GREEN | 10 R10-01 blockquote analogue: quoted fence never owns state (agree GREEN)
+DISTINGUISHING | H10 RED(2) | C GREEN | 11 R10-02 exact GFM missing-whitespace form stays ordinary
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+DISTINGUISHING | H10 RED(2) | C GREEN | 12 R10-02 missing whitespace after single-quoted value
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+DISTINGUISHING | H10 RED(2) | C GREEN | 13 R10-02 missing whitespace after double-quoted value
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+DISTINGUISHING | H10 RED(2) | C GREEN | 14 R10-02 missing whitespace before valueless attribute
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 RED(2) | C RED(2) | 15 R10-02 valid multi-attribute tag still opens (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 RED(2) | C RED(2) | 16 R10-02 boolean attributes still open (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 RED(2) | C RED(2) | 17 R10-02 whitespace around = still opens (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 GREEN | C GREEN | 18 R10-02 empty unquoted value stays ordinary (agree GREEN)
+agree | H10 RED(2) | C RED(2) | 19 R10-02 valid self-closing tag still opens (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+DISTINGUISHING | H10 RED(2) | C GREEN | 20 R10-03 textarea with blank after opener is type 7 (ends at blank)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 RED(2) | C RED(2) | 21 R10-03 textarea without blank continues raw (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 RED(2) | C RED(2) | 22 R10-03 script stays type 1 (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 RED(2) | C RED(2) | 23 R10-03 style stays type 1 (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+DISTINGUISHING | H10 RED(2) | C GREEN | 24 R10-03 search with trailing prose is ordinary
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 RED(2) | C RED(2) | 25 R10-03 complete search line alone still opens type 7 (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 GREEN | C GREEN | 26 R10-03 uppercase declaration closes on its own line (agree GREEN)
+agree | H10 RED(2) | C RED(2) | 27 R10-03 div still opens type 6 (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+agree | H10 RED(2) | C RED(2) | 28 R9 bullet nested heading + later table stays surfaced (agree RED)
+       e.g. unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+agree | H10 RED(2) | C RED(2) | 29 R9 quoted type-7 opener still hides heading (agree RED)
+       e.g. unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner |
+
+31 cases; 11 distinguishing, 20 agreeing as required; 0 regressions.
+demo exit: 0

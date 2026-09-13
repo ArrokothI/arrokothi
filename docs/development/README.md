@@ -46,10 +46,11 @@ candidates; their earlier holds do not override the ledger and subsequent owner 
 The structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is itself K1
 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared fixtures and
 a structural pass are not an E1 result. **The owner released K1.0 on 2026-09-13**, directing that the
-E1 dependency be treated as the already-built but unaccepted preparation; its round-10 candidate is
-`WAITING_FOR_REVIEW` and is accepted by nobody (rounds 1–9 each drew CHANGES REQUIRED; round 10 gives the
-inventory oracle container depth and a grammar-complete type-7 recognizer, so a heading nested in a list
-cannot delimit a section and a valid quoted tag cannot fall through into structure, preserving every earlier
+E1 dependency be treated as the already-built but unaccepted preparation; its round-11 candidate is
+`WAITING_FOR_REVIEW` and is accepted by nobody (rounds 1–10 each drew CHANGES REQUIRED; round 11 subordinates
+raw-leaf lifetime to container lifetime, requires whitespace before every HTML attribute and pins the raw-HTML
+rules to the cited GFM 0.29, so a list-local raw block cannot swallow a dedented heading, a whitespace-less
+attribute cannot open a raw block, and textarea/search follow the published lifetimes, preserving every earlier
 reconstruction). See the [status ledger](007-work-packets.md) and
 [K1.0's contract](work/K1.0/contract.md). That release names no successor: `next_release: none`.
 Benchmark owns its evidence preparation and release decisions separately.
