@@ -1,0 +1,326 @@
+# 08 — K10-R6-01 distinguishing demonstration, clean payload C
+
+Two readers over one document. H6 is the reviewed candidate
+5dd570002c082872914291ef0b3cc244bf9bc205's inventory-oracle.ts, taken byte-for-byte with
+`git show`; its two imports are `import type` and are erased by --experimental-strip-types,
+so the copy runs standalone and is the reviewed code, not a paraphrase of it. C is the
+committed production parser, imported from its real path in the payload tree. Every case is
+the real ownership inventory with one mutation, read through inventoryDisagreements plus
+parseDependencyTable — the same end-to-end path C4 asserts on.
+
+$ git show 5dd570002c082872914291ef0b3cc244bf9bc205:tests/conformance/architecture/inventory-oracle.ts > h6-oracle.ts
+$ sha256sum h6-oracle.ts
+ca0dd45facfd97f195d8ec90a24b39f1bbde4384b315ceb02d4a6e9ac10dc78c  h6-oracle.ts
+
+The two H6 lines this demonstration turns on:
+
+```ts
+  const section = markdown.split(heading)[1]?.split(nextHeading)[0] ?? "";
+    if (cells[0] === spec.headerFirstCell) continue;
+```
+
+and their replacements in C:
+
+```ts
+function sectionText(markdown: string, heading: string, nextHeading: string): string {
+  const from = markdown.indexOf(heading);
+  if (from === -1) return "";
+  const rest = markdown.slice(from + heading.length);
+  const to = rest.indexOf(nextHeading);
+  return to === -1 ? rest : rest.slice(0, to);
+}
+  const [governed, ...further] = tables;
+  if (governed === undefined) {
+    unreadable.push(`${spec.table} table is missing from its section`);
+    return;
+  }
+  if (governed.header[0] !== spec.expectedHeaderFirstCell) {
+    unreadable.push(
+      `${spec.table} table header starts with "${governed.header[0] ?? ""}", not "${spec.expectedHeaderFirstCell}": ${governed.header.join(" | ")}`,
+    );
+  }
+```
+
+---
+
+$ node --experimental-strip-types demo-r601.ts
+
+## Baseline — the unmutated inventory must stay green under both readers
+
+H6: 0 messages; C: 0 messages
+C relations: zones=4 deferred=12 packages=7 dependency=4 unreadable=0
+
+## review-06 literal counterexample
+
+| Case | H6 (reviewed) | C (committed) |
+|---|---|---|
+| review-06 literal: `| Zone id | \`packages/core/src\` | stale contradictory body row |` before the correct row | SILENT (0 messages) | reported (1) |
+
+## Header-label body rows — 4 governed tables x {full, omitted-both edge pipes} x {before, after}
+
+| Case | H6 (reviewed) | C (committed) |
+|---|---|---|
+| Zones, full edge pipes, before the correct row | SILENT (0 messages) | reported (1) |
+| Zones, full edge pipes, after the correct row | SILENT (0 messages) | reported (1) |
+| Zones, omitted-both edge pipes, before the correct row | SILENT (0 messages) | reported (1) |
+| Zones, omitted-both edge pipes, after the correct row | SILENT (0 messages) | reported (1) |
+| Deferred, full edge pipes, before the correct row | SILENT (0 messages) | reported (1) |
+| Deferred, full edge pipes, after the correct row | SILENT (0 messages) | reported (1) |
+| Deferred, omitted-both edge pipes, before the correct row | SILENT (0 messages) | reported (1) |
+| Deferred, omitted-both edge pipes, after the correct row | SILENT (0 messages) | reported (1) |
+| Export, full edge pipes, before the correct row | SILENT (0 messages) | reported (1) |
+| Export, full edge pipes, after the correct row | SILENT (0 messages) | reported (1) |
+| Export, omitted-both edge pipes, before the correct row | SILENT (0 messages) | reported (1) |
+| Export, omitted-both edge pipes, after the correct row | SILENT (0 messages) | reported (1) |
+| Dependency, full edge pipes, before the correct row | SILENT (0 messages) | reported (1) |
+| Dependency, full edge pipes, after the correct row | SILENT (0 messages) | reported (1) |
+| Dependency, omitted-both edge pipes, before the correct row | SILENT (0 messages) | reported (1) |
+| Dependency, omitted-both edge pipes, after the correct row | SILENT (0 messages) | reported (1) |
+
+## Adjacent silent exits found in the same audit
+
+| Case | H6 (reviewed) | C (committed) |
+|---|---|---|
+| K1.0-SELF-12: a repeated `## Zones` heading with a contradictory table under it | SILENT (0 messages) | reported (2) |
+| K1.0-SELF-13: a contradictory row promoted to a further table's header by a planted delimiter | reported (1) | reported (1) |
+| a renamed Zones header must not be silently accepted as the header | reported (1) | reported (1) |
+| a governed table that is not discoverable at all | reported (4) | reported (5) |
+
+## Round-6 / round-5 / round-3 controls must stay reported under C
+
+| Case | H6 (reviewed) | C (committed) |
+|---|---|---|
+| round-6 Zones omitted trailing pipe, before | reported (2) | reported (2) |
+| round-6 Zones omitted trailing pipe, after | reported (1) | reported (1) |
+| round-6 Zones omitted leading pipe, before | reported (2) | reported (2) |
+| round-6 Zones omitted leading pipe, after | reported (1) | reported (1) |
+| round-6 Zones omitted both edge pipes, before | reported (2) | reported (2) |
+| round-6 Zones omitted both edge pipes, after | reported (1) | reported (1) |
+| round-6 pipe-less continuation row (GFM Example 202) | reported (3) | reported (3) |
+| round-6 escaped pipe stays inside its cell (GFM Example 200) | reported (2) | reported (2) |
+| round-5 malformed keyed dependency row | reported (2) | reported (2) |
+| round-3 duplicate export row | reported (2) | reported (2) |
+| round-2 relational: two zones' roots swapped | reported (2) | reported (2) |
+
+cases=32 newly-distinguishing=18 regressions=0
+DEMONSTRATION OK
+
+exit: 0
+
+---
+
+## Demonstration source, quoted in full (output-only attachment; no script enters the tree)
+
+```ts
+/**
+ * K10-R6-01 distinguishing demonstration.
+ *
+ * Two readers over one document:
+ *   H6  = the reviewed candidate 5dd570002c082872914291ef0b3cc244bf9bc205, byte-for-byte
+ *         (`git show 5dd5700:tests/conformance/architecture/inventory-oracle.ts`), whose only
+ *         runtime-relevant lines are `split(heading)[1]?.split(nextHeading)[0]` for section
+ *         selection and `if (cells[0] === spec.headerFirstCell) continue;` for classification.
+ *         Its two imports are `import type` and are erased by --experimental-strip-types, so the
+ *         copy runs standalone.
+ *   C   = the committed production parser in the payload tree, imported from its real path.
+ *
+ * Every case is the real ownership inventory with one mutation. "silent" means the mutated row
+ * produced no unreadable row and no disagreement at all.
+ */
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+
+import * as H6 from "./h6-oracle.ts";
+import * as C from "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/inventory-oracle.ts";
+import { ZONES, DEFERRED_EXTRACTIONS } from "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/boundary-policy.ts";
+import { loadWorkspace } from "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/module-graph.ts";
+
+const ROOT = "/Users/rex-shih/Documents/ArrokothI/arrokothi";
+const INV = "docs/development/work/K1.0/ownership-inventory.md";
+const real = await readFile(resolve(ROOT, INV), "utf8");
+const ws = await loadWorkspace(ROOT);
+const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
+
+const mut = (m: string, from: string, to: string): string => {
+  if (m.split(from).length - 1 !== 1) throw new Error(`anchor not unique: ${from}`);
+  return m.replace(from, to);
+};
+
+/** Everything either reader says about a document, ownership tables and dependency table together. */
+const say = (mod: typeof C | typeof H6, doc: string): string[] => [
+  ...mod.inventoryDisagreements(mod.parseInventory(doc) as never, policy, ws),
+  ...mod.parseDependencyTable(doc).unreadable,
+];
+
+let rows = 0;
+let distinguishing = 0;
+let regressions = 0;
+
+const report = (label: string, doc: string, want: RegExp, expectH6Silent: boolean): void => {
+  const h6 = say(H6, doc);
+  const c = say(C, doc);
+  const h6Hit = h6.some((m) => want.test(m));
+  const cHit = c.some((m) => want.test(m));
+  rows++;
+  if (expectH6Silent && !h6Hit && cHit) distinguishing++;
+  if (expectH6Silent && (h6Hit || !cHit)) regressions++;
+  if (!expectH6Silent && !cHit) regressions++;
+  console.log(
+    `| ${label} | ${h6Hit ? `reported (${h6.length})` : h6.length === 0 ? "SILENT (0 messages)" : `silent about this row (${h6.length} other)`} | ${cHit ? `reported (${c.length})` : "MISSED"} |`,
+  );
+};
+
+console.log("## Baseline — the unmutated inventory must stay green under both readers\n");
+console.log(`H6: ${say(H6, real).length} messages; C: ${say(C, real).length} messages`);
+const cReal = C.parseInventory(real);
+console.log(
+  `C relations: zones=${cReal.zones.size} deferred=${cReal.deferred.size} packages=${cReal.packages.size} dependency=${C.parseDependencyTable(real).rows.size} unreadable=${cReal.unreadable.length}`,
+);
+
+console.log("\n## review-06 literal counterexample\n");
+console.log("| Case | H6 (reviewed) | C (committed) |");
+console.log("|---|---|---|");
+const zCorrect =
+  "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+report(
+  "review-06 literal: `| Zone id | \\`packages/core/src\\` | stale contradictory body row |` before the correct row",
+  mut(real, zCorrect, `| Zone id | \`packages/core/src\` | stale contradictory body row |\n${zCorrect}`),
+  /Zones row has no recognisable key: Zone id/,
+  true,
+);
+
+console.log("\n## Header-label body rows — 4 governed tables x {full, omitted-both edge pipes} x {before, after}\n");
+console.log("| Case | H6 (reviewed) | C (committed) |");
+console.log("|---|---|---|");
+const labelCases = [
+  {
+    table: "Zones",
+    correct: zCorrect,
+    bads: {
+      full: "| Zone id | `packages/core/src` | stale contradictory body row |",
+      "omitted-both": "Zone id | `packages/core/src` | stale contradictory body row",
+    },
+    want: /Zones row has no recognisable key: Zone id/,
+  },
+  {
+    table: "Deferred",
+    correct:
+      "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |",
+    bads: {
+      full: "| Id | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory body row |",
+      "omitted-both": "Id | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory body row",
+    },
+    want: /Deferred row has no recognisable key: Id/,
+  },
+  {
+    table: "Export",
+    correct: "| `@arrokothi/kernel` | `.` | No (private) |",
+    bads: { full: "| Package | `.` | Yes |", "omitted-both": "Package | `.` | Yes" },
+    want: /Export row has no recognisable key: Package/,
+  },
+  {
+    table: "Dependency",
+    correct: "| `target-kernel` | 2 | nothing | nothing |",
+    bads: {
+      full: "| Zone | 999 | `@arrokothi/core` | nothing |",
+      "omitted-both": "Zone | 999 | `@arrokothi/core` | nothing",
+    },
+    want: /Dependency row has no recognisable key: Zone/,
+  },
+] as const;
+for (const { table, correct, bads, want } of labelCases) {
+  for (const [edge, bad] of Object.entries(bads)) {
+    for (const position of ["before", "after"] as const) {
+      const doc =
+        position === "before" ? mut(real, correct, `${bad}\n${correct}`) : mut(real, correct, `${correct}\n${bad}`);
+      report(`${table}, ${edge} edge pipes, ${position} the correct row`, doc, want, true);
+    }
+  }
+}
+
+console.log("\n## Adjacent silent exits found in the same audit\n");
+console.log("| Case | H6 (reviewed) | C (committed) |");
+console.log("|---|---|---|");
+const lastZoneRow = "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+report(
+  "K1.0-SELF-12: a repeated `## Zones` heading with a contradictory table under it",
+  mut(
+    real,
+    lastZoneRow,
+    `${lastZoneRow}\n## Zones\n\n| Zone id | Roots | Owner and status |\n|---|---|---|\n| \`target-kernel\` | \`packages/core/src\` | stale contradictory row |\n`,
+  ),
+  /Zones section contains a further table[\s\S]*target-kernel|duplicate Zones row for zone target-kernel/,
+  true,
+);
+report(
+  "K1.0-SELF-13: a contradictory row promoted to a further table's header by a planted delimiter",
+  mut(real, lastZoneRow, `${lastZoneRow}\n| \`target-kernel\` | \`packages/core/src\` | stale contradictory row |\n|---|---|---|\n`),
+  /Zones section contains a further table[\s\S]*target-kernel|duplicate Zones row for zone target-kernel/,
+  false,
+);
+report(
+  "a renamed Zones header must not be silently accepted as the header",
+  mut(real, "| Zone id | Roots | Owner and status |", "| Zone identifier | Roots | Owner and status |"),
+  /Zones table header starts with "Zone identifier"|Zones row has no recognisable key: Zone identifier/,
+  false,
+);
+report(
+  "a governed table that is not discoverable at all",
+  mut(real, "| Zone id | Roots | Owner and status |\n|---|---|---|\n", ""),
+  /Zones table is missing from its section|zone .* is declared by the policy but not documented/,
+  false,
+);
+
+console.log("\n## Round-6 / round-5 / round-3 controls must stay reported under C\n");
+console.log("| Case | H6 (reviewed) | C (committed) |");
+console.log("|---|---|---|");
+const edgeBads: Record<string, string> = {
+  "omitted trailing pipe": "| `target-kernel` | `packages/core/src` | stale contradictory duplicate",
+  "omitted leading pipe": "`target-kernel` | `packages/core/src` | stale contradictory duplicate |",
+  "omitted both edge pipes": "`target-kernel` | `packages/core/src` | stale contradictory duplicate",
+};
+for (const [edge, bad] of Object.entries(edgeBads)) {
+  for (const position of ["before", "after"] as const) {
+    const doc = position === "before" ? mut(real, zCorrect, `${bad}\n${zCorrect}`) : mut(real, zCorrect, `${zCorrect}\n${bad}`);
+    report(`round-6 Zones ${edge}, ${position}`, doc, /duplicate Zones row for zone target-kernel/, false);
+  }
+}
+report(
+  "round-6 pipe-less continuation row (GFM Example 202)",
+  mut(real, zCorrect, `\`target-kernel\`\n${zCorrect}`),
+  /Zones row .*target-kernel/,
+  false,
+);
+report(
+  "round-6 escaped pipe stays inside its cell (GFM Example 200)",
+  mut(real, zCorrect, `| \`target-kernel\` | \`packages/core/src\` | stale \\| contradictory duplicate |\n${zCorrect}`),
+  /duplicate Zones row for zone target-kernel/,
+  false,
+);
+report(
+  "round-5 malformed keyed dependency row",
+  mut(real, "| `target-kernel` | 2 | nothing | nothing |", "| `target-kernel` | not-a-count | `@arrokothi/core` | nothing |\n| `target-kernel` | 2 | nothing | nothing |"),
+  /Dependency row .*target-kernel/,
+  false,
+);
+report(
+  "round-3 duplicate export row",
+  mut(real, "| `@arrokothi/kernel` | `.` | No (private) |", "| `@arrokothi/kernel` | `.` | Yes |\n| `@arrokothi/kernel` | `.` | No (private) |"),
+  /duplicate Export row for package @arrokothi\/kernel/,
+  false,
+);
+report(
+  "round-2 relational: two zones' roots swapped",
+  mut(
+    mut(mut(real, zCorrect, "| `target-kernel` | `PLACEHOLDER` | x |"), "| `legacy-core` | `packages/core/src` |", "| `legacy-core` | `packages/kernel/src` |"),
+    "| `target-kernel` | `PLACEHOLDER` | x |",
+    "| `target-kernel` | `packages/core/src` | x |",
+  ),
+  /zone target-kernel owns \[packages\/kernel\/src\] but the document gives it \[packages\/core\/src\]/,
+  false,
+);
+
+console.log(`\ncases=${rows} newly-distinguishing=${distinguishing} regressions=${regressions}`);
+if (regressions !== 0) { console.log("DEMONSTRATION FAILED"); process.exit(1); }
+console.log("DEMONSTRATION OK");
+```
