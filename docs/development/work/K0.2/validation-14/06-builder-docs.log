@@ -1,0 +1,15 @@
+C14: 377bcbeda14b16bfebd325064db1d2617feedc4a
+Command: npm run check:builder-docs
+UTC start: 2026-09-12T19:17:32.483964+00:00
+Environment: {"node": "v25.2.1", "npm": "11.6.2", "typescript": "Version 5.9.3", "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O", "cwd": "/Users/rex-shih/Documents/Codex/projects/agent-kernel"}
+Working tree before command: clean
+
+
+> arrokothi-agent-kernel@0.8.1 check:builder-docs
+> node --experimental-strip-types scripts/check-builder-docs.ts
+
+Builder checks passed: 26 Markdown files, 280 local links/anchors, 38 public package imports. Named symbols are checked by npm run typecheck.
+
+Exit code: 0
+Working tree after command: clean
+UTC end: 2026-09-12T19:17:32.938130+00:00

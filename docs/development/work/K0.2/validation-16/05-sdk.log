@@ -1,0 +1,34 @@
+
+> arrokothi-agent-kernel@0.8.1 test:sdk
+> node --test --experimental-strip-types packages/sdk/tests/*.test.ts
+
+✔ a pure Function Workflow needs no model or policy and preserves emission versus terminal result (11.140375ms)
+✔ registration is idempotent, rejects version changes, and start pins definitions (1.824584ms)
+✔ registration validates a whole batch before inserting conflicting versions (0.2825ms)
+✔ missing handlers/models fail before any Execution is queued and preflight does no inference (1.252833ms)
+✔ preflight finds a missing provider and incompatible static model features (0.486709ms)
+✔ custom model resolution, policy, and custom view resolvers are never probed by preflight (0.190833ms)
+✔ catalog and exposure never grant dispatch permission (6.174541ms)
+✔ operation ceiling is independent from policy; default views use the supplied runtime store (1.482375ms)
+✔ approved exact payload dispatches once through the shared catalog, store, and authorizer (3.962709ms)
+✔ memory binding and write exposure do not authorize a WriteMemory Effect (3.40625ms)
+✔ a slow model yields; host timeout/abort preserve pending work and later resume exactly once (18.755375ms)
+✔ slow capabilities settle without an unbounded drain and cancellation remains explicit (19.475875ms)
+✔ conversation response yields input_required and cumulative budgets are unchanged (1.676041ms)
+✔ bounded loops report activation_limit, leaving the Execution runnable (2.114583ms)
+✔ SDK start serializes initial input ahead of concurrent scheduler driving (2.531792ms)
+✔ malformed initial data refuses before creation and a failed start does not poison the SDK lock (0.698958ms)
+✔ controller hooks receive actual services and diagnostics reflect the effective registries (0.447542ms)
+✔ child definitions are preflighted recursively; confirmation in a called child reaches the host (4.748416ms)
+✔ preflight checks child kind, absent spawn credits, child input waits, and memory bindings (0.379459ms)
+✔ recursive definition graphs remain legal and terminate preflight traversal (3.982375ms)
+✔ Function adapters and explicit fork/join execute inside one Workflow (3.053625ms)
+✔ distinct colon-bearing grants and Agent requests survive authority and view deduplication (21.573042ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 309.837166

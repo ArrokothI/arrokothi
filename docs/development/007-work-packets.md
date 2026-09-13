@@ -7,11 +7,16 @@ binding: splitting work does not remove any exit requirement or change canonical
 K0.1 is independently **ACCEPTED**, integrated and owner-closed; see the
 [integration receipt](work/K0.1/integration-01.md). The post-K0.1 process review is also independently
 **ACCEPTED** at H4 and integrated; see its [integration receipt](work/K0.1-process-review/integration-01.md).
-All successors remain **PLANNED**. The owner explicitly holds K0.2 after that process integration and
-sets `next_release: none`; integration does not release it. Proposed sequence: K0.2 → K1.0 structural
-preparation → K1.1. K1.0 is the first K1 implementation packet, so the benchmark-owned E1 fixture
-preparation precedes it as well as K1.1; K1.0 is also unimplemented and unreleased. No benchmark
-acceptance or E0–E6 status is changed here.
+That process integration set `next_release: none` and held K0.2; that receipt stands as the record of
+the hold at its own date. By a **separate later instruction on 2026-09-11 the owner released K0.2**,
+choosing implementation as written over a scope amendment. K0.2 is still in correction; its external
+E0 dependency is no longer blocked, and the authoritative round count, candidate identities, external
+evidence and remaining work live in the K0.2 row below, which this paragraph does not restate.
+Correction is not acceptance: K0.2 is not accepted, merged or closed here. Every other successor remains **PLANNED**,
+and this release extends to no other packet. Sequence: K0.2 → K1.0 structural preparation → K1.1.
+K1.0 is the first K1 implementation packet, so the benchmark-owned E1 fixture preparation precedes it
+as well as K1.1; K1.0 is unimplemented and unreleased. No benchmark acceptance or E0–E6 status is
+changed here.
 
 ## How to read a packet
 
@@ -306,7 +311,7 @@ there is no second editable “done” checkbox in 001.
 | Packet | Status | Report / review / candidate |
 |---|---|---|
 | K0.1 | ACCEPTED | Round 12 accepted by [review-12.md](work/K0.1/review-12.md), OpenAI GPT-5.6 Sol (High), 2026-09-11. Accepted H12 `bab7bf6635781e6d2f9b0e8e333f58440ae0b047`; clean-validated C12 `7a51801afcdf5c13d481e92c5d219a8c9be7c0eb`; base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`. K0.1-C1–C6 PASS; no findings. Reviewer inspected pinned GitHub source/diffs and implementation-12 evidence; no shell commands independently rerun. Acceptance is for H12 only. Integrated on main as `42731300266eea00a9a24d867d5e82d9887c280d` (PR #19); owner considers K0.1 merged/closed. [Integration and discussion receipt](work/K0.1/integration-01.md) separately verifies A12 and the merge. `next_release: none`; workflow review/improvement precedes any K0.2 release. |
-| K0.2 | PLANNED | Unimplemented and unreleased. Owner hold remains after the accepted/integrated [process review](work/K0.1-process-review/integration-01.md); `next_release: none`. Separate explicit owner release is required. |
+| K0.2 | WAITING_FOR_REVIEW | Released by explicit owner instruction 2026-09-11; current correction and C16/H16 authorized, no successor release. **Round 16 implementation / accountable Round 17 review:** [implementation-16.md](work/K0.2/implementation-16.md), contract revision 16; branch `codex/k0.2-public-controls-e0-gate`, base `c079237ee7aff428481426f93e87a68b79f170d4`, preserved C15 `839f1619bc9a628c55a9c60eeef01992727cc613`, clean C16 `9821cc27dbe5990f86028846b07edfb31cb65380`; H16 is the commit containing the report. [Review 16](work/K0.2/review-16.md), A16 `96de003c89681b5904c85747bdd03c42c1e4b98d`, found C1–C8 PASS and C9 FAIL on **K02-R16-01** alone, as the residual of K02-R15-02. B-2's wait-ended batch fixes four facts an implementation fails one at a time, and every wait-ended reservation in the corpus was at bound 1 with a single candidate or had no ineligible Event queued, so mandatory retention, the earliest-accepted truncation choice and candidacy coincided in one observation. Decomposed in both species: R5-e1/R5-e2 keep the bound-1 displacement fact, R5-e1b owns B-6 truncation at `identity-producer-scope` step 9, and R5-e1c/R5-e2b own candidacy with room to spare at five steps appended to the row-5 control. Independence is proved by exclusion — each bug is written once as a rule over any schedule and must fail only where its clause is observable while the schedules it was split from still accept it. Self-found separately: R5-d1b (B-6.4 bundled retirement with readiness), R5-j3's overclaiming text, and B-4.4's genus-level clause split by species; one B-7 clause the protocol forecloses is recorded rather than manufactured. All 137 prior steps are byte-identical and every prior closure is preserved. Totals: 51 decisions / 460 clause references / 273 obligations (130 scenario, 4 shared, 20 corpus, 119 assigned); 130 transcripts; 26 atomicity notes; 15 scenarios / 142 steps; 36 refinement groups. Exact clean-C16 validation: typecheck, full 1775, conformance 1666, K0 810, SDK 22 and builder-docs all pass, zero skips. **C8 PASS, preserved from H15 and re-inspected read-only:** benchmark accepted E0 H `26d274fad53b2aa4fc2c7f596cae52e072cd24b5`, independent ACCEPT A `ac1445fb8144ffab8a9153b243d4b9237d1927b0`, owner ACCEPT/integration receipt `9b816d47e83ff210fa32400aa91994f8055138d5`, benchmark main `4d83c245c8f6bb0886c1035ec1c6bba3f91f0ddd` descending both. Nothing in the benchmark repository was written, changed or rerun; its accepted H's historical pending field is deliberately not edited. Stale `BLOCKED_EXTERNAL` prose in this file's introduction and specification §6 is corrected. C1–C9 offered for independent review, not self-accepted. K0.2-SELF-01 remains assigned to its separate packet. K0 open, K1.0 unreleased; no merge, no successor, no K1 start. |
 | K1.0 | PLANNED | Target boundary/legacy quarantine proposal; K0.2 plus the benchmark-owned E1 fixture preparation required before K1 implementation are prerequisites, and separate explicit owner release is required. No implementation; no E1 credit. |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
