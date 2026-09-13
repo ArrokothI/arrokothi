@@ -20,6 +20,18 @@
  * itself a disagreement, so a contradictory row cannot be erased by last-write-wins overwriting
  * (K10-R3-01). The first row for a key is kept; the duplicate is preserved as a disagreement rather
  * than silently overwriting it.
+ *
+ * Row *identity* is structural, never textual (K10-R6-01). Discovery returns a table as a header
+ * plus a body, so the header is the line that structurally precedes the delimiter row and nothing
+ * else can be mistaken for it. Earlier revisions returned one undifferentiated row stream and let
+ * the reader recognise the header by comparing the first cell against a configured label, which
+ * meant any ordinary body row repeating that label - GFM allows arbitrary inline text in a data
+ * cell - took the header's silent exit. The configured label is now a *check* on the structurally
+ * identified header rather than the rule that selects it: a header that does not carry it is
+ * reported, and no body row is ever compared against it. A section is expected to hold exactly one
+ * governed table, so a missing table and every row of any further table in the same section are
+ * reported too; otherwise a planted delimiter line could promote a contradictory row to "a header"
+ * and reopen the same escape through structure instead of through text.
  */
 
 import type { PackageEntry, Workspace } from "./module-graph.ts";
@@ -95,32 +107,57 @@ function isDelimiterCells(cells: readonly string[]): boolean {
   return cells.length > 0 && cells.every((cell) => /^:?-+:?$/.test(cell));
 }
 
+/** One GFM table discovered inside a section, with its header held apart from its body. */
+interface DiscoveredTable {
+  /** The line that structurally precedes the delimiter row. This is the header, by position. */
+  readonly header: readonly string[];
+  /** Every candidate data row of that table, in document order. */
+  readonly body: readonly (readonly string[])[];
+}
+
 /**
- * The body rows of every GFM table inside a section, as cell arrays.
+ * The text of one section, from its heading to the next one.
  *
- * Rebuilt for K10-R5-01. The previous version accepted only lines that both began and ended with
- * `|`, so a valid GFM data row with an omitted edge pipe never reached the shared keyed reader and
- * the C4 total-accounting claim held only over the subset `tableRows` chose to return. GFM states
- * the edge pipes are recommended, not required, and Example 199 deliberately mixes rows with and
- * without them.
- *
- * Discovery now follows the table forms this document uses: a header line carrying an unescaped
- * `|` immediately followed by a delimiter row with the same cell count (GFM: the header must match
- * the delimiter in cell count, Example 203, or there is no table), then every subsequent non-blank
- * line until the table breaks as a body candidate — including a line with no `|` at all, which GFM
- * still renders as a single-cell row padded with empties (Example 202). The table breaks at the
- * first blank line or at the start of another block-level structure (fence, ATX heading,
- * blockquote; Example 201); prose before the header or after the break is not a candidate, so the
- * surrounding inventory prose is unaffected. Fenced code is skipped so pipes inside code stay out
- * of the relations. The header's own delimiter is the only delimiter skipped silently; any later
- * delimiter-shaped line inside the body reaches `readKeyedTable` as unreadable rather than
- * disappearing. The header row itself is still returned and skipped by each table's
- * `headerFirstCell` rule inside the unchanged `readKeyedTable`.
+ * `indexOf` rather than `split`: splitting on the heading truncates the section at a *second*
+ * occurrence of the same heading text, so a duplicated heading carrying contradictory rows used to
+ * delete those rows from the candidate stream entirely (K1.0-SELF-12). Slicing from the first
+ * heading to the first following next-heading keeps that material inside the section, where the
+ * repeated ATX heading breaks the table body (GFM Example 201) and the contradictory table after it
+ * is discovered as a further table and reported.
  */
-function tableRows(markdown: string, heading: string, nextHeading: string): string[][] {
-  const section = markdown.split(heading)[1]?.split(nextHeading)[0] ?? "";
-  const lines = section.split("\n");
-  const rows: string[][] = [];
+function sectionText(markdown: string, heading: string, nextHeading: string): string {
+  const from = markdown.indexOf(heading);
+  if (from === -1) return "";
+  const rest = markdown.slice(from + heading.length);
+  const to = rest.indexOf(nextHeading);
+  return to === -1 ? rest : rest.slice(0, to);
+}
+
+/**
+ * Every GFM table inside a section, each as a structurally identified header plus its body rows.
+ *
+ * Rebuilt for K10-R5-01, then again for K10-R6-01. Round 5's version accepted only lines that both
+ * began and ended with `|`, so a valid GFM data row with an omitted edge pipe never reached the
+ * shared keyed reader. Round 6 fixed that but still returned header and body in one stream, leaving
+ * the reader to tell them apart by content. Discovery now carries the distinction itself, because
+ * only discovery can know it: the header is the line immediately above the delimiter row.
+ *
+ * The row grammar is unchanged and remains the accepted round-6 reconstruction. A header line
+ * carrying an unescaped `|` immediately followed by a delimiter row with the same cell count (GFM:
+ * the header must match the delimiter in cell count, Example 203, or there is no table) opens a
+ * table; then every subsequent non-blank line until the table breaks is a body candidate -
+ * including a line with no `|` at all, which GFM still renders as a single-cell row padded with
+ * empties (Example 202). The table breaks at the first blank line or at the start of another
+ * block-level structure (fence, ATX heading, blockquote; Example 201); prose before the header or
+ * after the break is not a candidate, so the surrounding inventory prose is unaffected. Fenced code
+ * is skipped so pipes inside code stay out of the relations - such a line renders as code, so the
+ * document does not assert it as a row. The delimiter row of a discovered table is the only line
+ * consumed without becoming a candidate; any later delimiter-shaped line inside a body is an
+ * ordinary body row and reaches the reader as unreadable rather than disappearing.
+ */
+function sectionTables(markdown: string, heading: string, nextHeading: string): DiscoveredTable[] {
+  const lines = sectionText(markdown, heading, nextHeading).split("\n");
+  const tables: DiscoveredTable[] = [];
   let inFence = false;
   let i = 0;
   while (i < lines.length) {
@@ -140,7 +177,7 @@ function tableRows(markdown: string, heading: string, nextHeading: string): stri
       if (!nextTrimmed.startsWith("```") && !nextTrimmed.startsWith("~~~")) {
         const delimiterCells = splitGfmRow(nextTrimmed);
         if (delimiterCells.length === headerCells.length && isDelimiterCells(delimiterCells)) {
-          rows.push(headerCells);
+          const body: string[][] = [];
           i += 2;
           while (i < lines.length) {
             const bodyTrimmed = lines[i]!.trim();
@@ -148,24 +185,31 @@ function tableRows(markdown: string, heading: string, nextHeading: string): stri
             if (bodyTrimmed.startsWith("```") || bodyTrimmed.startsWith("~~~")) break;
             if (/^#{1,6}\s/.test(bodyTrimmed)) break;
             if (bodyTrimmed.startsWith(">")) break;
-            rows.push(splitGfmRow(bodyTrimmed));
+            body.push(splitGfmRow(bodyTrimmed));
             i++;
           }
+          tables.push({ header: headerCells, body });
           continue;
         }
       }
     }
     i++;
   }
-  return rows;
+  return tables;
 }
 
 /** How one keyed table is read. */
 interface RowSpec<T> {
   /** Name used in disagreement messages. */
   readonly table: string;
-  /** First cell of the header row, which is the only row that may be skipped silently. */
-  readonly headerFirstCell: string;
+  /**
+   * The first cell the structurally identified header is expected to carry.
+   *
+   * This is a *check* on the header discovery already found by position, never the rule that picks
+   * it out (K10-R6-01). A header that does not carry this label is reported; a body row that does
+   * carry it is an ordinary body row and is keyed, duplicate-checked and parsed like any other.
+   */
+  readonly expectedHeaderFirstCell: string;
   /** The row's key, or undefined when the row carries no recognisable key. */
   readonly keyOf: (cells: readonly string[]) => string | undefined;
   /** How a duplicate is described, so each table keeps its own established wording. */
@@ -175,25 +219,50 @@ interface RowSpec<T> {
 }
 
 /**
- * Reads one keyed table so that **every candidate data row ends in exactly one outcome**: recorded,
- * reported as a duplicate key, or reported as unreadable. Nothing is discarded silently.
+ * Reads one keyed table so that **every candidate row ends in exactly one outcome**: the governed
+ * table's header is accepted (or reported when it is not the expected header), and every body row
+ * is recorded, reported as a duplicate key, or reported as unreadable. Nothing is discarded
+ * silently, and nothing is classified by its text.
  *
- * The ordering matters and is the substance of K10-R4-01. The key is taken and the duplicate check
- * runs *before* the rest of the row is parsed, and a key is marked seen even when the rest fails to
- * parse. Without that, a row carrying a recognisable key and a malformed cell vanished before
- * uniqueness was ever considered, so a contradictory duplicate could be erased by its own
- * malformedness - the same disappearing-row failure K10-R3-01 closed for well-formed duplicates,
- * reached by a different route. Failing to parse a row is now never a way to be ignored.
+ * Two orderings carry the whole claim.
+ *
+ * Header before body, structurally (K10-R6-01). The header is whichever line discovery found above
+ * the delimiter row, so exactly one row per table can take the header exit and it is chosen before
+ * any cell is compared to anything. The previous version skipped `cells[0] === headerFirstCell`
+ * inside the body loop, which gave every later row repeating that label the same silent exit: GFM
+ * allows arbitrary inline text in a data cell, so `| Zone id | ... |` was an ordinary body row that
+ * vanished. The label survives only as an assertion about the header it no longer selects.
+ *
+ * Key before value (K10-R4-01). The key is taken and the duplicate check runs *before* the rest of
+ * the row is parsed, and a key is marked seen even when the rest fails to parse. Without that, a
+ * row carrying a recognisable key and a malformed cell vanished before uniqueness was ever
+ * considered, so a contradictory duplicate could be erased by its own malformedness. Failing to
+ * parse a row is never a way to be ignored.
+ *
+ * A section is expected to hold exactly one governed table. A missing table is reported rather than
+ * read as an empty relation, and every row of any further table in the section - its header
+ * included - is reported, so a planted delimiter line cannot promote a contradictory row out of the
+ * body and into a silently skipped header.
  */
 function readKeyedTable<T>(
-  rows: readonly (readonly string[])[],
+  tables: readonly DiscoveredTable[],
   spec: RowSpec<T>,
   into: Map<string, T>,
   unreadable: string[],
 ): void {
+  const [governed, ...further] = tables;
+  if (governed === undefined) {
+    unreadable.push(`${spec.table} table is missing from its section`);
+    return;
+  }
+  if (governed.header[0] !== spec.expectedHeaderFirstCell) {
+    unreadable.push(
+      `${spec.table} table header starts with "${governed.header[0] ?? ""}", not "${spec.expectedHeaderFirstCell}": ${governed.header.join(" | ")}`,
+    );
+  }
+
   const seen = new Set<string>();
-  for (const cells of rows) {
-    if (cells[0] === spec.headerFirstCell) continue;
+  for (const cells of governed.body) {
     const key = spec.keyOf(cells);
     if (key === undefined || key === "") {
       unreadable.push(`${spec.table} row has no recognisable key: ${cells.join(" | ")}`);
@@ -211,6 +280,12 @@ function readKeyedTable<T>(
     }
     into.set(key, value);
   }
+
+  for (const extra of further) {
+    for (const cells of [extra.header, ...extra.body]) {
+      unreadable.push(`${spec.table} section contains a further table; this row is outside the governed table: ${cells.join(" | ")}`);
+    }
+  }
 }
 
 /** Parses the inventory's three ownership tables into the relations they assert. */
@@ -221,10 +296,10 @@ export function parseInventory(markdown: string): ParsedInventory {
   const unreadable: string[] = [];
 
   readKeyedTable(
-    tableRows(markdown, "## Zones", "## Current cross-boundary"),
+    sectionTables(markdown, "## Zones", "## Current cross-boundary"),
     {
       table: "Zones",
-      headerFirstCell: "Zone id",
+      expectedHeaderFirstCell: "Zone id",
       keyOf: (cells) => backticked(cells[0] ?? "")[0],
       duplicate: (key) => `duplicate Zones row for zone ${key}`,
       valueOf: (cells) => {
@@ -237,10 +312,10 @@ export function parseInventory(markdown: string): ParsedInventory {
   );
 
   readKeyedTable(
-    tableRows(markdown, "## Deferred extraction", "## What this packet"),
+    sectionTables(markdown, "## Deferred extraction", "## What this packet"),
     {
       table: "Deferred",
-      headerFirstCell: "Id",
+      expectedHeaderFirstCell: "Id",
       keyOf: (cells) => (/^DX-\d+$/.test(cells[0] ?? "") ? cells[0] : undefined),
       duplicate: (key) => `duplicate Deferred row for ${key}`,
       valueOf: (cells) => {
@@ -256,10 +331,10 @@ export function parseInventory(markdown: string): ParsedInventory {
   );
 
   readKeyedTable(
-    tableRows(markdown, "## Export ownership", "## What the target zone may import"),
+    sectionTables(markdown, "## Export ownership", "## What the target zone may import"),
     {
       table: "Export",
-      headerFirstCell: "Package",
+      expectedHeaderFirstCell: "Package",
       keyOf: (cells) => backticked(cells[0] ?? "")[0],
       duplicate: (key) => `duplicate Export row for package ${key}`,
       valueOf: (cells) => {
@@ -305,10 +380,10 @@ export function parseDependencyTable(markdown: string): ParsedDependencyTable {
   const unreadable: string[] = [];
 
   readKeyedTable(
-    tableRows(markdown, "## Current cross-boundary", "## Export ownership"),
+    sectionTables(markdown, "## Current cross-boundary", "## Export ownership"),
     {
       table: "Dependency",
-      headerFirstCell: "Zone",
+      expectedHeaderFirstCell: "Zone",
       keyOf: (cells) => backticked(cells[0] ?? "")[0],
       duplicate: (key) => `duplicate Dependency row for zone ${key}`,
       valueOf: (cells) => {

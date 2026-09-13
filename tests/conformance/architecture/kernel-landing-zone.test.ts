@@ -1026,6 +1026,218 @@ describe("K1.0 policy and inventory agree", () => {
     );
   });
 
+  describe("header identity is structural, not textual (K10-R6-01)", () => {
+    // The reader used to decide "is this the header?" by comparing the first cell against a
+    // configured label. GFM allows arbitrary inline text in a data cell, so an ordinary body row
+    // repeating that label took the header's silent exit: discovered by the round-6 front door,
+    // then erased by value before keying, duplicate detection or the unreadable channel. Discovery
+    // now returns header and body apart, so exactly one row per table - the line above the
+    // delimiter - can be a header, and it is chosen by position before any cell is read.
+    //
+    // Each control below plants a header-label body row in one governed table, before and after an
+    // otherwise correct keyed row, with full and with omitted edge pipes, and requires it back out
+    // of the production parser through the same relation comparison C4 asserts on.
+    const headerLabelControls = [
+      {
+        table: "Zones",
+        correct:
+          "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |",
+        badByEdge: {
+          "full edge pipes": "| Zone id | `packages/core/src` | stale contradictory body row |",
+          "omitted both edge pipes": "Zone id | `packages/core/src` | stale contradictory body row",
+        },
+        expect: /Zones row has no recognisable key: Zone id \| `packages\/core\/src`/,
+      },
+      {
+        table: "Deferred",
+        correct:
+          "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |",
+        badByEdge: {
+          "full edge pipes": "| Id | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory body row |",
+          "omitted both edge pipes": "Id | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory body row",
+        },
+        expect: /Deferred row has no recognisable key: Id \| `packages\/core\/src\/util\/json\.ts`/,
+      },
+      {
+        table: "Export",
+        correct: "| `@arrokothi/kernel` | `.` | No (private) |",
+        badByEdge: {
+          "full edge pipes": "| Package | `.` | Yes |",
+          "omitted both edge pipes": "Package | `.` | Yes",
+        },
+        expect: /Export row has no recognisable key: Package \| `\.` \| Yes/,
+      },
+    ] as const;
+
+    for (const { table, correct, badByEdge, expect } of headerLabelControls) {
+      for (const [edge, bad] of Object.entries(badByEdge)) {
+        for (const position of ["before", "after"] as const) {
+          test(`a ${table} body row beginning with the header label is accounted for, ${position} the correct row, with ${edge}`, async () => {
+            const real = await realInventory();
+            const workspace = await loadWorkspace(REPO_ROOT);
+            const mutated =
+              position === "before"
+                ? mutate(real, [[correct, `${bad}\n${correct}`]])
+                : mutate(real, [[correct, `${correct}\n${bad}`]]);
+            const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+            assert.ok(
+              disagreements.some((message) => expect.test(message)),
+              `the header-label body row must reach normal accounting, not the header exit; got: ${JSON.stringify(disagreements)}`,
+            );
+          });
+        }
+      }
+    }
+
+    // The dependency table shares the same reader and is read through its own entry point, so its
+    // `Zone` label gets the same control rather than being assumed covered by the three above.
+    for (const [edge, bad] of Object.entries({
+      "full edge pipes": "| Zone | 999 | `@arrokothi/core` | nothing |",
+      "omitted both edge pipes": "Zone | 999 | `@arrokothi/core` | nothing",
+    })) {
+      for (const position of ["before", "after"] as const) {
+        test(`a Dependency body row beginning with the header label is accounted for, ${position} the correct row, with ${edge}`, async () => {
+          const real = await realInventory();
+          const correct = "| `target-kernel` | 2 | nothing | nothing |";
+          const mutated =
+            position === "before"
+              ? mutate(real, [[correct, `${bad}\n${correct}`]])
+              : mutate(real, [[correct, `${correct}\n${bad}`]]);
+          const { unreadable } = parseDependencyTable(mutated);
+          assert.ok(
+            unreadable.some((message) => /Dependency row has no recognisable key: Zone \| 999/.test(message)),
+            `the header-label body row must reach normal accounting, not the header exit; got: ${JSON.stringify(unreadable)}`,
+          );
+        });
+      }
+    }
+
+    test("the real structural header of each governed table is accepted and is not read as data", async () => {
+      // The positive half. Each header must be consumed as a header - so no relation gains a row
+      // keyed from a header cell, and every relation is exactly the size the policy declares - and
+      // the whole document must still parse with nothing unreadable.
+      const real = await realInventory();
+      const parsed = parseInventory(real);
+      const dependency = parseDependencyTable(real);
+      assert.deepEqual(parsed.unreadable, [], "the three ownership headers are accepted, not reported");
+      assert.deepEqual(dependency.unreadable, [], "the dependency header is accepted, not reported");
+      assert.equal(parsed.zones.size, ZONES.length);
+      assert.equal(parsed.deferred.size, DEFERRED_EXTRACTIONS.length);
+      assert.equal(parsed.packages.size, (await loadWorkspace(REPO_ROOT)).packages.size);
+      assert.equal(dependency.rows.size, ZONES.length);
+      for (const label of ["Zone id", "Id", "Package", "Zone"]) {
+        assert.ok(!parsed.zones.has(label), `no zone is keyed from the header label ${label}`);
+        assert.ok(!parsed.deferred.has(label), `no deferred row is keyed from the header label ${label}`);
+        assert.ok(!parsed.packages.has(label), `no package is keyed from the header label ${label}`);
+        assert.ok(!dependency.rows.has(label), `no dependency row is keyed from the header label ${label}`);
+      }
+    });
+
+    test("a header that does not carry its expected label is reported, not silently accepted", async () => {
+      // Position picks the header out; the configured label survives as a check on it. Without that
+      // check, making header identity structural would have *weakened* the oracle: a renamed header
+      // used to fall through to the body loop and surface as an unreadable row.
+      const real = await realInventory();
+      const renames: { table: string; from: string; to: string; expect: RegExp }[] = [
+        {
+          table: "Zones",
+          from: "| Zone id | Roots | Owner and status |",
+          to: "| Zone identifier | Roots | Owner and status |",
+          expect: /Zones table header starts with "Zone identifier", not "Zone id"/,
+        },
+        {
+          table: "Deferred",
+          from: "| Id | Current path | Disposition | Owner | Why it is assigned there |",
+          to: "| Ident | Current path | Disposition | Owner | Why it is assigned there |",
+          expect: /Deferred table header starts with "Ident", not "Id"/,
+        },
+        {
+          table: "Export",
+          from: "| Package | Exported subpaths | Published? |",
+          to: "| Module | Exported subpaths | Published? |",
+          expect: /Export table header starts with "Module", not "Package"/,
+        },
+      ];
+      for (const { table, from, to, expect } of renames) {
+        const parsed = parseInventory(mutate(real, [[from, to]]));
+        assert.ok(
+          parsed.unreadable.some((message) => expect.test(message)),
+          `a renamed ${table} header must be reported; got: ${JSON.stringify(parsed.unreadable)}`,
+        );
+      }
+      const dependencyParsed = parseDependencyTable(
+        mutate(real, [
+          [
+            "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |",
+            "| Boundary | `.ts` files | Reaches `legacy-core` via | Reaches third-party |",
+          ],
+        ]),
+      );
+      assert.ok(
+        dependencyParsed.unreadable.some((message) => /Dependency table header starts with "Boundary", not "Zone"/.test(message)),
+        `a renamed Dependency header must be reported; got: ${JSON.stringify(dependencyParsed.unreadable)}`,
+      );
+    });
+
+    test("a contradictory row promoted to a further table's header is still accounted for (K1.0-SELF-13)", async () => {
+      // Self-found adjacent challenger, aimed at the silent exit a naive structural fix creates
+      // rather than at another Markdown spelling. Skipping "the header" by position is only safe
+      // while a section holds one governed table: plant a delimiter line under a contradictory row
+      // placed after the real table, and that row becomes the header of a second table - which a
+      // reader that silently skips every header would drop, reopening K10-R6-01 through structure
+      // instead of through text. Every row of a further table in the section is reported instead.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const lastZoneRow = "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+      const promoted = "| `target-kernel` | `packages/core/src` | stale contradictory row |";
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}\n${promoted}\n|---|---|---|\n`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.ok(
+        disagreements.some((message) =>
+          /Zones section contains a further table; this row is outside the governed table: `target-kernel` \| `packages\/core\/src`/.test(message),
+        ),
+        `a row promoted to a further table's header must not take the header exit; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a repeated section heading cannot delete the rows after it (K1.0-SELF-12)", async () => {
+      // Self-found while auditing section selection, the first stage of the pipeline. Section text
+      // was taken with `split(heading)[1]`, which ends at a *second* occurrence of the same heading
+      // text, so a duplicated `## Zones` carrying a contradictory table deleted those rows from the
+      // candidate stream before discovery ever ran: no key, no duplicate, no unreadable row. The
+      // section is now sliced from the first heading to the first following next-heading, so the
+      // repeated heading breaks the body (GFM Example 201) and the table under it is reported.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const lastZoneRow = "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+      const repeated =
+        `${lastZoneRow}\n## Zones\n\n| Zone id | Roots | Owner and status |\n|---|---|---|\n| \`target-kernel\` | \`packages/core/src\` | stale contradictory row |\n`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, repeated]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) =>
+          /Zones section contains a further table; this row is outside the governed table: `target-kernel` \| `packages\/core\/src`/.test(message),
+        ),
+        `rows under a repeated heading must not disappear; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a governed table that is not discoverable at all is reported, not read as an empty relation", async () => {
+      // The other end of the same accounting: discovery returning nothing must be an observable
+      // disagreement about the table, not a quietly empty map that only the reverse-direction
+      // comparison happens to notice.
+      const real = await realInventory();
+      const parsed = parseInventory(mutate(real, [["| Zone id | Roots | Owner and status |\n|---|---|---|\n", ""]]));
+      assert.ok(
+        parsed.unreadable.some((message) => /Zones table is missing from its section/.test(message)),
+        `a missing governed table must be reported; got: ${JSON.stringify(parsed.unreadable)}`,
+      );
+    });
+  });
+
   test("the allowed-leaf list is empty, and the inventory says why", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
     assert.deepEqual(TARGET_KERNEL_RULES.allowedLeaves, [], "K1.0 approves no portable leaf");
