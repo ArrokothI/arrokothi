@@ -31,7 +31,7 @@ import {
   resolveSpecifier,
   type ModuleGraph,
 } from "./module-graph.ts";
-import { inventoryDisagreements, parseDependencyTable, parseInventory } from "./inventory-oracle.ts";
+import { inventoryDisagreements, parseDependencyTable, parseInventory, scanTransitions } from "./inventory-oracle.ts";
 import {
   DEFERRED_EXTRACTIONS,
   traversableUnder,
@@ -2152,6 +2152,154 @@ describe("K1.0 policy and inventory agree", () => {
         );
       }
     });
+
+  describe("GFM line endings (K10-R13-01)", () => {
+    // GFM §2.1: a line ending is LF, lone CR, or CRLF. Tokenization happens before
+    // any per-line predicate, so recoding a document's line endings changes no
+    // section, raw-block-lifetime or table boundary. Every control below drives the
+    // production parser; LF twins pin the expected outcome and CR/CRLF/mixed twins
+    // must agree with them exactly.
+    const lastDxRow =
+      "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
+    const badDeferredTable =
+      "| Id | Current path | Disposition | Owner | Why it is assigned there |\n|---|---|---|---|---|\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | planted row |\n";
+    const furtherDeferred = /Deferred section contains a further table; this row is outside the governed table: (Id \| Current path|DX-1 \| `packages\/core\/src\/util\/json\.ts`)/;
+    const toCrOnly = (value: string): string => value.replace(/\r?\n/g, "\r");
+    const toCrlf = (value: string): string => value.replace(/\r?\n/g, "\r\n");
+    const toMixed = (value: string): string => {
+      // Line-wise: each original LF becomes exactly one cycled ending attached to its
+      // preceding line. A "\r" ending is only used when the next line is non-blank:
+      // emitting "\r" before a blank line's own "\n" would fuse into one CRLF and
+      // delete a GFM line, while LF before any next line can never fuse.
+      const endings = ["\n", "\r\n", "\r"];
+      const parts = value.split("\n");
+      return parts.map((line, i) => {
+        if (i >= parts.length - 1) return line;
+        if (parts[i + 1] === "") return `${line}\n`;
+        return `${line}${endings[i % endings.length]!}`;
+      }).join("");
+    };
+
+    test("the whole real inventory recoded LF → lone CR stays baseline-green", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(toCrOnly(real)), policy, workspace),
+        [],
+        "lone CR is a line ending, so the CR-only inventory is the same lines, headings, tables and relations",
+      );
+    });
+
+    test("the whole real inventory recoded LF → CRLF stays baseline-green", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(toCrlf(real)), policy, workspace),
+        [],
+        "CRLF is one line ending, so the recoded inventory is unchanged",
+      );
+    });
+
+    test("mixed LF/CRLF/lone-CR preserves governed section and table boundaries", async () => {
+      // A contradictory further table must surface identically under mixed endings.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastDxRow}\n<div>\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
+      const expected = inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, insertion]])), policy, workspace);
+      assert.ok(
+        expected.some((message) => furtherDeferred.test(message)),
+        `the LF twin must catch the planted table; got: ${JSON.stringify(expected)}`,
+      );
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(toMixed(mutate(real, [[lastDxRow, insertion]]))), policy, workspace),
+        expected,
+        "mixed endings must preserve the exact same section and table boundaries",
+      );
+    });
+
+    test("physical-line primitives: CR, CRLF and LF all delimit", async () => {
+      for (const source of ["a\rb", "a\r\nb", "a\nb"]) {
+        const seen = scanTransitions(source);
+        assert.equal(seen.length, 2, `${JSON.stringify(source)} is two GFM lines`);
+        assert.deepEqual(seen.map((t) => t.text), ["a", "b"]);
+      }
+    });
+
+    test("a lone-CR-separated exact next heading terminates its section", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastDxRow}\n<div>\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
+      const lfDoc = mutate(real, [[lastDxRow, insertion]]);
+      const expected = inventoryDisagreements(parseInventory(lfDoc), policy, workspace);
+      assert.ok(
+        expected.some((message) => furtherDeferred.test(message)),
+        `the LF twin must catch the planted table; got: ${JSON.stringify(expected)}`,
+      );
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(toCrOnly(lfDoc)), policy, workspace),
+        expected,
+        "the CR-only twin terminates the section identically",
+      );
+    });
+
+    test("lone-CR raw-block lifetime matches the LF twin (type-6 and type-7)", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const opener of ["<div>", "<Warning>"]) {
+        const lfDoc = mutate(real, [[
+          lastDxRow,
+          `${lastDxRow}\n${opener}\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`,
+        ]]);
+        const expected = inventoryDisagreements(parseInventory(lfDoc), policy, workspace);
+        assert.ok(
+          expected.some((message) => furtherDeferred.test(message)),
+          `the LF twin of ${opener} must hide the heading; got: ${JSON.stringify(expected)}`,
+        );
+        assert.deepEqual(
+          inventoryDisagreements(parseInventory(toCrOnly(lfDoc)), policy, workspace),
+          expected,
+          `the CR-only twin of ${opener} must keep the heading raw across the same lifetime`,
+        );
+      }
+    });
+
+    test("CR-only table header/delimiter/body rows remain distinct physical rows", async () => {
+      // If CR did not delimit, header, delimiter and body would merge into one scanner
+      // line and no table — governed or further — could be discovered here.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const crTable =
+        `| Id | Current path | Disposition | Owner | Why it is assigned there |\r|---|---|---|---|---|\r| DX-1 | \`packages/core/src/util/json.ts\` | migratable | K1.1 | planted row |\r`;
+      const insertion = `${lastDxRow}\n<div>\n## What this packet does not establish\n\n${crTable}\n## What this packet does not establish\n`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherDeferred.test(message)),
+        `CR-separated rows must still form a further table; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("final line with and without a trailing line ending behaves intentionally", async () => {
+      assert.deepEqual(scanTransitions("a").map((t) => t.text), ["a"], "no trailing ending yields no final empty line");
+      assert.deepEqual(scanTransitions("a\n").map((t) => t.text), ["a", ""], "trailing LF yields one final empty line");
+      assert.deepEqual(scanTransitions("a\r").map((t) => t.text), ["a", ""], "trailing lone CR yields one final empty line");
+      assert.deepEqual(scanTransitions("a\r\n").map((t) => t.text), ["a", ""], "trailing CRLF yields one final empty line");
+      assert.deepEqual(scanTransitions("").map((t) => t.text), [""], "the empty document is one empty line");
+      // The governed tables parse identically whether or not the document ends with LF.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(real.replace(/\n$/, "")), policy, workspace),
+        [],
+        "dropping the final LF changes no governed relation",
+      );
+    });
+  });
 
   describe("container-owned leaf lifetime (K10-R10-01)", () => {
     // A raw leaf never outlives the list container that owns it: container continuation is

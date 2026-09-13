@@ -302,6 +302,30 @@ function isGfmBlankLine(line: string): boolean {
 }
 
 /**
+ * Physical-line tokenization (K10-R13-01).
+ *
+ * Published GFM 0.29 §2.1 defines a line ending as LF, lone CR, or CRLF, in
+ * that preference order: a CR immediately followed by LF is one ending, never
+ * two. C4 block parsing first tokenizes the source by this production; only
+ * then are per-line whitespace, blankness, container, raw-block, heading and
+ * table predicates evaluated. In particular a CR is a line boundary here, never
+ * in-line GFM whitespace: tokenization happens first.
+ *
+ * EOF/final-empty-line behavior is deliberate and matches what LF-only
+ * documents have always produced: a trailing line ending yields one final
+ * empty line (`"a\n"`, `"a\r"` and `"a\r\n"` all tokenize to `["a", ""]`),
+ * no trailing ending yields none (`"a"` tokenizes to `["a"]`), and the empty
+ * document is one empty line (`""` tokenizes to `[""]`). For inputs without
+ * any CR this is byte-for-byte identical to the previous LF-only split, so no
+ * LF-document behavior changes. This is the single physical-line model for the
+ * C4 evidence parser: `scanTransitions` is its only consumer, and every
+ * section/table decision below consumes that scan rather than splitting again.
+ */
+function splitPhysicalLines(markdown: string): string[] {
+  return markdown.split(/\r\n|\r|\n/);
+}
+
+/**
  * Whether the line is a thematic break (GFM §4.1): 0–3 spaces of indentation, then three or
  * more of the same `-`/`_`/`*` character, each optionally followed by spaces/tabs, and nothing
  * else. Thematic breaks take precedence over list items when both readings are possible
@@ -699,10 +723,12 @@ function paragraphContinues(out: readonly LineTransition[]): boolean {
  * governed sections or form inventory tables.
  *
  * The single coherent block-state transition layer shared by section selection and table
- * discovery (K10-R8-01/K10-R8-02 reconstruction, K10-R9-01/K10-R9-02 container and grammar
- * completion). Every physical source line has one structural identity — leaf/raw context
- * plus container depth — computed through exactly one transition per scan position, and only
- * top-level eligible blocks define governed section/table structure. Heading recognition
+  * discovery (K10-R8-01/K10-R8-02 reconstruction, K10-R9-01/K10-R9-02 container and grammar
+  * completion). Every physical source line has one structural identity — leaf/raw context
+  * plus container depth — computed through exactly one transition per scan position, and only
+  * top-level eligible blocks define governed section/table structure. Physical lines come from
+  * `splitPhysicalLines` (GFM §2.1 CRLF | LF | CR, K10-R13-01), so lone-CR documents scan as the
+  * same line sequence as their LF twins. Heading recognition
  * (`parseAtxHeading`) feeds section identity only on ordinary depth-0 lines, so
  * heading-looking text inside fenced code, raw HTML, quotes, code or list containers can
  * neither start nor end a governed section. Table recognition runs only on lines with
@@ -725,7 +751,7 @@ function paragraphContinues(out: readonly LineTransition[]): boolean {
  * reporting, never toward silence.
  */
 export function scanTransitions(markdown: string): LineTransition[] {
-  const lines = markdown.split("\n");
+  const lines = splitPhysicalLines(markdown);
   const out: LineTransition[] = [];
   let fence: FenceState | null = null;
   let html: HtmlState | null = null;
