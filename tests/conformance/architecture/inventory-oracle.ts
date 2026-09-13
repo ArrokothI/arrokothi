@@ -58,6 +58,20 @@
  * does not decode makes its row unreadable instead of making it mean less than it says. The
  * direction is the tie-breaker K10-R15-01 settled for character classes: too strict only adds
  * reports, while reading a prefix deletes the remainder of the claim silently.
+ *
+ * Table *schemas* own their arity, never the candidate header (K10-CORR1-R1-01). Round 1 measured
+ * a body row's excess cells against `governed.header.length` and checked only the header's first
+ * cell, so the document could widen its own header and delimiter by one column and thereby
+ * authorize a fifth body cell that no decoder consumes: the widened row was not excess (the header
+ * was five too), the dependency `valueOf` still read only cells 1-4, and the fifth claim was
+ * silently discarded with the relation indistinguishable from baseline. Each keyed table now states
+ * its exact expected header in `RowSpec.expectedHeader` — arity and every label, including the
+ * labels of deliberately ungoverned prose positions — and a header that is not exactly that shape
+ * is reported. A body row carrying more cells than the *schema* allows is reported even when the
+ * document's header is widened to match it; short rows still fall through to their own decoders,
+ * so a missing governed cell fails its decoder while an absent trailing ungoverned prose cell
+ * asserts nothing. The reader withholds trailing ungoverned prose from the decoders physically by
+ * passing `valueOf` only the governed prefix.
  */
 
 import type { PackageEntry, Workspace } from "./module-graph.ts";
@@ -219,9 +233,9 @@ function containsUnescapedPipe(line: string): boolean {
  * `\|`, including inside other inline spans, stays inside the cell). Body rows may carry fewer
  * cells than the header (empty cells are inserted) or more (a renderer ignores the excess,
  * Example 204). This function reports the cells the row actually has; what an arity that differs
- * from the header's means is `readKeyedTable`'s decision, which fails closed on a missing governed
+ * from the schema's means is `readKeyedTable`'s decision, which fails closed on a missing governed
  * cell through that column's own decoder and reports an excess cell that no column reads
- * (K1.0-SELF-29), in both cases after the key has already been accounted for.
+ * (K1.0-SELF-29, K10-CORR1-R1-01), in both cases after the key has already been accounted for.
  *
  * "Spaces around cells are trimmed" is block-structure whitespace — SPACE and TAB — and not a
  * host `trim()` (K1.0-SELF-24) and not the §2.1 six (K10-R15-01). The extension's published
@@ -1380,19 +1394,47 @@ interface RowSpec<T> {
   /** Name used in disagreement messages. */
   readonly table: string;
   /**
-   * The first cell the structurally identified header is expected to carry.
+   * The exact header the governed table must carry, one cell per schema position.
    *
-   * This is a *check* on the header discovery already found by position, never the rule that picks
-   * it out (K10-R6-01). A header that does not carry this label is reported; a body row that does
-   * carry it is an ordinary body row and is keyed, duplicate-checked and parsed like any other.
+   * This is the table's *schema*, stated independently of the candidate document — never inferred
+   * from the header discovery found (K10-CORR1-R1-01). Discovery still picks the header out by
+   * position (K10-R6-01); this is the *check* on what it found, over the whole shape rather than
+   * only the first label: arity and every cell must match exactly. A header that adds, drops,
+   * renames or reorders any position is reported, so the document cannot authorize new unread body
+   * cells merely by adding header cells. The labels of deliberately ungoverned prose positions are
+   * part of the fixed schema too: the Zones `Owner and status` and Deferred `Why it is assigned
+   * there` headers must read exactly so, even though the body prose beneath them is not decoded.
    */
-  readonly expectedHeaderFirstCell: string;
+  readonly expectedHeader: readonly string[];
+  /**
+   * How many trailing schema positions are deliberately ungoverned prose (0 or 1 in this
+   * document). Those body cells carry no claim the executable policy could contradict, so the
+   * reader withholds them from `valueOf` physically: the decoder receives only the governed
+   * prefix and can neither read nor be confused by them. This declaration is what owns those
+   * cells; any body cell past the schema's arity is owned by nothing and is reported.
+   *
+   * Per-table ownership:
+   *
+   * | Table | Schema | Governed positions | Ungoverned trailing |
+   * |---|---|---|---|
+   * | Zones | `Zone id`, `Roots`, `Owner and status` | 0: zone key, 1: root list | 1: owner/status prose |
+   * | Dependency | `Zone`, `` `.ts` files ``, `` Reaches `legacy-core` via ``, `Reaches third-party` | 0: zone key, 1: count, 2: workspace edges, 3: third-party edges | 0 |
+   * | Export | `Package`, `Exported subpaths`, `Published?` | 0: package key, 1: subpath list, 2: publishability | 0 |
+   * | Deferred | `Id`, `Current path`, `Disposition`, `Owner`, `Why it is assigned there` | 0: DX key, 1: path, 2: disposition, 3: owner | 1: assignment rationale |
+   */
+  readonly ungovernedTrailing: number;
   /** The row's key, or undefined when the row carries no recognisable key. */
   readonly keyOf: (cells: readonly string[]) => string | undefined;
   /** How a duplicate is described, so each table keeps its own established wording. */
   readonly duplicate: (key: string) => string;
-  /** The row's value, or undefined when the remaining cells are malformed. */
-  readonly valueOf: (cells: readonly string[]) => T | undefined;
+  /**
+   * The row's value, or undefined when the governed cells are malformed. Receives the governed
+   * prefix — the first `expectedHeader.length - ungovernedTrailing` cells, with missing cells
+   * already absent so `cells[i] ?? ""` still fails a governed decoder exactly as before. Never
+   * sees trailing ungoverned prose or excess cells: short rows reach it directly, excess rows are
+   * reported before it runs.
+   */
+  readonly valueOf: (governedCells: readonly string[]) => T | undefined;
 }
 
 /**
@@ -1421,11 +1463,16 @@ interface RowSpec<T> {
  * included - is reported, so a planted delimiter line cannot promote a contradictory row out of the
  * body and into a silently skipped header.
  *
- * Key before arity before value (K10-CLEANUP-01, K1.0-SELF-29). Once the key is accounted for, a
- * row carrying more cells than its header declares is reported, because those cells are document
- * content that no column reads and no comparison can contradict. Everything else is decided by the
- * column decoders, each of which consumes its whole cell or gives up, so a row that "parses" can no
- * longer mean less than the document says.
+ * Key before arity before value (K10-CLEANUP-01, K1.0-SELF-29, K10-CORR1-R1-01). Once the key
+ * is accounted for, a row carrying more cells than its *schema* allows is reported, because those
+ * cells are document content that no column reads and no comparison can contradict. The authority
+ * is the schema's arity, never the header the document wrote: a widened header is itself reported
+ * and cannot authorize the extra body cells. Everything else is decided by the column decoders,
+ * each of which consumes its whole cell or gives up, so a row that "parses" can no longer mean
+ * less than the document says. Short rows need no arity rule and keep their established outcome:
+ * a missing governed cell already fails its own decoder (K1.0-SELF-08) and an absent trailing
+ * ungoverned prose cell asserts nothing — but that exception never widens the schema, so a short
+ * row is still loud when its header is.
  */
 function readKeyedTable<T>(
   tables: readonly DiscoveredTable[],
@@ -1438,10 +1485,27 @@ function readKeyedTable<T>(
     unreadable.push(`${spec.table} table is missing from its section`);
     return;
   }
-  if (governed.header[0] !== spec.expectedHeaderFirstCell) {
-    unreadable.push(
-      `${spec.table} table header starts with "${governed.header[0] ?? ""}", not "${spec.expectedHeaderFirstCell}": ${governed.header.join(" | ")}`,
-    );
+  // Schema before body (K10-CORR1-R1-01). The header's validity and the schema's arity are both
+  // checked against `spec.expectedHeader`, independently of each other and of any body data: the
+  // candidate header is never the oracle for its own allowable width. A renamed first cell keeps
+  // the established wording with the governed schema appended; any other header widening,
+  // narrowing, rename or reorder takes the must-be wording. Either way the reader continues to
+  // the bodies, judging each against the schema — so a widened header cannot hide an excess body
+  // cell, and a broken header cannot turn a schema-correct body into excess.
+  const schemaArity = spec.expectedHeader.length;
+  const headerIsSchema =
+    governed.header.length === schemaArity &&
+    governed.header.every((cell, index) => cell === spec.expectedHeader[index]);
+  if (!headerIsSchema) {
+    if (governed.header[0] !== spec.expectedHeader[0]) {
+      unreadable.push(
+        `${spec.table} table header starts with "${governed.header[0] ?? ""}", not "${spec.expectedHeader[0]}": ${governed.header.join(" | ")} (governed schema: ${spec.expectedHeader.join(" | ")})`,
+      );
+    } else {
+      unreadable.push(
+        `${spec.table} table header must be "${spec.expectedHeader.join(" | ")}" but the document has "${governed.header.join(" | ")}"`,
+      );
+    }
   }
 
   const seen = new Set<string>();
@@ -1456,18 +1520,25 @@ function readKeyedTable<T>(
       continue;
     }
     seen.add(key);
-    if (cells.length > governed.header.length) {
-      // K1.0-SELF-29. GFM Example 204 lets a renderer ignore cells past the header's arity, which
-      // is a rendering rule; for this oracle an ignored cell is document content that no column
-      // reads and therefore no comparison can contradict. Short rows need no such rule: a missing
-      // governed cell already fails its own decoder, and a column the header declares but no
-      // relation governs asserts nothing the policy could disagree with.
+    if (cells.length > schemaArity) {
+      // K1.0-SELF-29, hardened by K10-CORR1-R1-01. GFM Example 204 lets a renderer ignore cells
+      // past the header's arity, which is a rendering rule; for this oracle an ignored cell is
+      // document content that no column reads and therefore no comparison can contradict. The
+      // comparison is against the schema's arity, never the header the document wrote: when the
+      // document widens its own header the extra body cells are still excess here, and the header
+      // itself is already reported above. The established wording is kept with the schema's
+      // allowance appended, so the earlier arity controls still match. Short rows need no such
+      // rule: a missing governed cell already fails its own decoder, and a column the schema
+      // declares but no relation governs asserts nothing the policy could disagree with.
       unreadable.push(
-        `${spec.table} row for ${key} carries ${cells.length} cells but its header declares ${governed.header.length}; the excess is read by no column: ${cells.join(" | ")}`,
+        `${spec.table} row for ${key} carries ${cells.length} cells but its header declares ${governed.header.length}; the excess is read by no column (governed schema allows ${schemaArity}): ${cells.join(" | ")}`,
       );
       continue;
     }
-    const value = spec.valueOf(cells);
+    // Only the governed prefix reaches the decoder: trailing ungoverned prose is withheld by
+    // slicing, so it can neither satisfy nor corrupt a governed column, and an absent trailing
+    // prose cell simply leaves a shorter prefix whose governed cells still decode.
+    const value = spec.valueOf(cells.slice(0, schemaArity - spec.ungovernedTrailing));
     if (value === undefined) {
       unreadable.push(`${spec.table} row for ${key} is malformed: ${cells.join(" | ")}`);
       continue;
@@ -1493,7 +1564,9 @@ export function parseInventory(markdown: string): ParsedInventory {
     sectionTables(markdown, "Zones", "Current cross-boundary dependencies"),
     {
       table: "Zones",
-      expectedHeaderFirstCell: "Zone id",
+      expectedHeader: ["Zone id", "Roots", "Owner and status"],
+      // Position 2 is owner/status prose: asserted by no relation, withheld from the decoder.
+      ungovernedTrailing: 1,
       keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
       duplicate: (key) => `duplicate Zones row for zone ${key}`,
       valueOf: (cells) => decodeCodeSpanList(cells[1] ?? ""),
@@ -1506,7 +1579,9 @@ export function parseInventory(markdown: string): ParsedInventory {
     sectionTables(markdown, "Deferred extraction and bridge owners", "What this packet does not establish"),
     {
       table: "Deferred",
-      expectedHeaderFirstCell: "Id",
+      expectedHeader: ["Id", "Current path", "Disposition", "Owner", "Why it is assigned there"],
+      // Position 4 is the assignment rationale: asserted by no relation, withheld from the decoder.
+      ungovernedTrailing: 1,
       keyOf: (cells) => (/^DX-\d+$/.test(cells[0] ?? "") ? cells[0] : undefined),
       duplicate: (key) => `duplicate Deferred row for ${key}`,
       valueOf: (cells) => {
@@ -1525,7 +1600,9 @@ export function parseInventory(markdown: string): ParsedInventory {
     sectionTables(markdown, "Export ownership", "What the target zone may import"),
     {
       table: "Export",
-      expectedHeaderFirstCell: "Package",
+      expectedHeader: ["Package", "Exported subpaths", "Published?"],
+      // Every position is governed; there is no prose column to withhold.
+      ungovernedTrailing: 0,
       keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
       duplicate: (key) => `duplicate Export row for package ${key}`,
       valueOf: (cells) => {
@@ -1571,7 +1648,9 @@ export function parseDependencyTable(markdown: string): ParsedDependencyTable {
     sectionTables(markdown, "Current cross-boundary dependencies", "Export ownership"),
     {
       table: "Dependency",
-      expectedHeaderFirstCell: "Zone",
+      expectedHeader: ["Zone", "`.ts` files", "Reaches `legacy-core` via", "Reaches third-party"],
+      // Every position is governed; there is no prose column to withhold.
+      ungovernedTrailing: 0,
       keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
       duplicate: (key) => `duplicate Dependency row for zone ${key}`,
       valueOf: (cells) => {

@@ -8,7 +8,22 @@ under 006's invalidated-acceptance rule.
 **Governing process baseline:** `c9a9ed7e6e538ab0542fc6a999426264abb6212a`.
 **Base commit:** `c9a9ed7e6e538ab0542fc6a999426264abb6212a` (K1.0's own base; correction closure is
 reviewed over the cumulative base-to-H interval, not over the correction delta alone).
-**Branch:** `codex/k1.0-target-boundary-legacy-quarantine`. **Revision 1.**
+**Branch:** `codex/k1.0-target-boundary-legacy-quarantine`. **Revision 2.**
+
+**Revision 2 changes (same corrective packet, no new criterion).** Round 1 (payload C
+`76ce938074ffa910fbd74374e388ba8d226af4c6`, candidate H
+`61133e9c8fd6fc80c6995fd26495e11e9f7f2e57`) closed K10-CLEANUP-01's four decoder defects but left
+the same silent-discard invariant open one structural level up: independent review
+([review-01](review-01.md), CHANGES REQUIRED) found **K10-CORR1-R1-01** — SELF-29 measured excess
+cells against the document's mutable header and checked only the header's first cell, so a widened
+header and delimiter could authorize an unread body cell. Round 2 reconstructs the table-schema
+ownership layer instead: every governed table states an independent schema (`RowSpec.expectedHeader`
+plus the declared trailing ungoverned-prose width), header validity and body arity are each checked
+against that schema rather than against each other, every body cell is owned either by a governed
+decoder or by an explicitly declared ungoverned prose position, and the short-row exception for an
+absent trailing prose cell cannot widen the schema. K10-CLEANUP-01's four decoder cases stay closed
+and its whole-cell rule is unchanged; the revision-17 prose it relied on is superseded in place by
+K1.0 contract revision 18. All identities, holds and limits below are otherwise unchanged.
 
 ## What this packet is, and what it is not
 
@@ -64,6 +79,16 @@ the measured file-count / workspace / third-party relations — not from a list 
    whole-cell decoders are audited whether or not they had to change.
 4. **Positive formatting controls and earlier regressions are preserved**: the permitted padding
    twins, the structural/duplicate/scanner controls, and every closed reviewer finding.
+5. **Round 2: no document-controlled width is trusted (K10-CORR1-R1-01).** Every governed table has
+   an independent schema, not an arity inferred from the candidate document. Header
+   validity and schema arity are checked independently of body data: a header cannot authorize new
+   unread columns merely by adding cells, and a broken header cannot turn schema-correct bodies
+   into excess. Every body cell is owned either by a governed decoder or by an explicitly declared
+   ungoverned prose position; anything else is reported. The deliberately ungoverned trailing prose
+   cell may be absent where the contract permits that short form, without permitting arbitrary
+   schema widening. Zones, Dependency, Export and Deferred are audited under the same rule, every
+   header cell is decided as schema rather than only the first label, and the round-1 whole-cell
+   decoders are kept unchanged.
 
 ## Evidence and closure
 
@@ -74,9 +99,10 @@ independent review of the cumulative interval from the original base to the new 
 an earlier candidate exempts no dependency. Integration and any dependent release stay held until
 that review returns ACCEPT and the owner acts on it.
 
-- Report: `implementation-01.md` in this directory.
-- Raw evidence: `validation-01/` in this directory, covered by the same mechanical digest guard as
-  K1.0's own rounds (`tests/conformance/architecture/evidence-records.test.ts`).
+- Report: `implementation-01.md` (round 1, now CHANGES REQUIRED under [review-01](review-01.md))
+  and `implementation-02.md` (round 2) in this directory.
+- Raw evidence: `validation-01/` (round 1) and `validation-02/` (round 2) in this directory, covered
+  by the same mechanical digest guard as K1.0's own rounds (`tests/conformance/architecture/evidence-records.test.ts`).
 
 Both are administrative records that belong to the candidate H rather than to the clean payload C,
 so they are named here rather than linked: at C they do not yet exist, and a contract that linked

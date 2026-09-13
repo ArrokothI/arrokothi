@@ -3239,6 +3239,304 @@ describe("K1.0 policy and inventory agree", () => {
     });
   });
 
+  describe("governed table schemas own their arity (K10-CORR1-R1-01)", () => {
+    // Round 1 measured a body row's excess cells against `governed.header.length` and checked only
+    // the header's first cell, so the document could widen its own header and delimiter by one
+    // column and thereby authorize a fifth body cell that no decoder consumes. Every control below
+    // runs through the production entry points on the real document, and each pairs a widened or
+    // reshaped header with the schema-correct bodies beside it, so a fix that merely blacklists one
+    // literal table would fail the other shapes and one that rejects every width change would fail
+    // the short-row and correct-body twins.
+    const DEP_HEADER = "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |";
+    const DEP_DELIM = "|---|---|---|---|";
+    const DEP_ROW = "| `target-kernel` | 2 | nothing | nothing |";
+    const ZONES_HEADER = "| Zone id | Roots | Owner and status |";
+    const ZONES_DELIM = "|---|---|---|";
+    const ZONES_ROW =
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+    const EXPORT_HEADER = "| Package | Exported subpaths | Published? |";
+    const EXPORT_DELIM = "|---|---|---|";
+    const EXPORT_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";
+    const DEFERRED_HEADER = "| Id | Current path | Disposition | Owner | Why it is assigned there |";
+    const DEFERRED_DELIM = "|---|---|---|---|---|";
+    const DEFERRED_ROW =
+      "| DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 | Same packet: accept/reject results at the dispatch boundary. |";
+
+    const depResult = async (edits: readonly (readonly [string, string])[]) =>
+      parseDependencyTable(mutate(await realInventory(), edits));
+    const ownershipResult = async (edits: readonly (readonly [string, string])[]) => {
+      const mutated = mutate(await realInventory(), edits);
+      return {
+        parsed: parseInventory(mutated),
+        disagreements: inventoryDisagreements(parseInventory(mutated), policy, await loadWorkspace(REPO_ROOT)),
+      };
+    };
+
+    test("a widened dependency header cannot authorize an unread fifth body cell", async () => {
+      // The review's exact counterexample: header and delimiter widened by one column, the target
+      // row widened with them, every other real row left at four cells. Under the reviewed C this
+      // is silent — five-cell header, first cell still `Zone`, five-cell row not excess, `valueOf`
+      // still reading cells 1–4, the fifth claim discarded with the relation indistinguishable
+      // from baseline. Under the schema it is loud twice: the header is not the schema, and the
+      // row carries more cells than the schema allows.
+      const real = await realInventory();
+      const baseline = parseDependencyTable(real);
+      const mutated = await depResult([
+        [`${DEP_HEADER}\n${DEP_DELIM}`, `${DEP_HEADER} Extra claim |\n${DEP_DELIM}---|`],
+        [DEP_ROW, "| `target-kernel` | 2 | nothing | nothing | `evil-package` |"],
+      ]);
+      assert.ok(
+        mutated.unreadable.some((message) =>
+          /Dependency table header must be "Zone \| `\.ts` files \| Reaches `legacy-core` via \| Reaches third-party" but the document has/.test(
+            message,
+          ),
+        ),
+        `the widened header must be reported against the schema; got: ${JSON.stringify(mutated.unreadable)}`,
+      );
+      assert.ok(
+        mutated.unreadable.some((message) =>
+          /Dependency row for target-kernel carries 5 cells but its header declares 5; the excess is read by no column \(governed schema allows 4\)/.test(
+            message,
+          ),
+        ),
+        `the fifth body cell must be reported against the schema; got: ${JSON.stringify(mutated.unreadable)}`,
+      );
+      assert.ok(!mutated.rows.has("target-kernel"), "the widened row must not be recorded as a readable relation");
+      assert.equal(
+        mutated.rows.size,
+        baseline.rows.size - 1,
+        "only the attacked row drops out; the short existing rows remain readable",
+      );
+      assert.deepEqual(
+        [...(mutated.rows.get("legacy-core")?.reaches ?? [])],
+        [...(baseline.rows.get("legacy-core")?.reaches ?? [])],
+        "an untouched row still decodes to the same value",
+      );
+    });
+
+    test("the same widening is loud in Zones, Export and Deferred", async () => {
+      // The shared reader carries one schema per table, so the attack generalizes and so must the
+      // fix: a five-column header cannot authorize a fourth Zones/Export cell or a sixth Deferred
+      // cell either.
+      for (const [name, header, delim, row, wideRow, check] of [
+        [
+          "Zones",
+          ZONES_HEADER,
+          ZONES_DELIM,
+          ZONES_ROW,
+          `${ZONES_ROW.slice(0, -1)} | \`packages/evil/src\` |`,
+          async (edits: readonly (readonly [string, string])[]) => {
+            const { parsed } = await ownershipResult(edits);
+            return { unreadable: parsed.unreadable, recorded: parsed.zones.has("target-kernel"), arity: 3 };
+          },
+        ],
+        [
+          "Export",
+          EXPORT_HEADER,
+          EXPORT_DELIM,
+          EXPORT_ROW,
+          "| `@arrokothi/kernel` | `.` | No (private) | `sneaky-subpath` |",
+          async (edits: readonly (readonly [string, string])[]) => {
+            const { parsed } = await ownershipResult(edits);
+            return { unreadable: parsed.unreadable, recorded: parsed.packages.has("@arrokothi/kernel"), arity: 3 };
+          },
+        ],
+        [
+          "Deferred",
+          DEFERRED_HEADER,
+          DEFERRED_DELIM,
+          DEFERRED_ROW,
+          `${DEFERRED_ROW.slice(0, -1)} | \`evil-claim\` |`,
+          async (edits: readonly (readonly [string, string])[]) => {
+            const { parsed } = await ownershipResult(edits);
+            return { unreadable: parsed.unreadable, recorded: parsed.deferred.has("DX-3"), arity: 5 };
+          },
+        ],
+      ] as const) {
+        const { unreadable, recorded, arity } = await check([
+          [`${header}\n${delim}`, `${header} Extra claim |\n${delim}---|`],
+          [row, wideRow],
+        ]);
+        assert.ok(
+          unreadable.some((message) => new RegExp(`${name} table header must be`).test(message)),
+          `a widened ${name} header must be reported against its schema; got: ${JSON.stringify(unreadable)}`,
+        );
+        assert.ok(
+          unreadable.some((message) =>
+            new RegExp(`the excess is read by no column \\(governed schema allows ${arity}\\)`).test(message),
+          ),
+          `a widened ${name} body row must be reported against its schema; got: ${JSON.stringify(unreadable)}`,
+        );
+        assert.ok(!recorded, `a widened ${name} row must not be recorded`);
+      }
+    });
+
+    test("one width means different things under each schema", async () => {
+      // The proof that arity comes from four independent schemas rather than from one global width
+      // or from each document header: four cells are correct for Dependency, excess for Zones and
+      // Export, and a short-but-accepted form for Deferred.
+      const real = await realInventory();
+      const zonesWide = await ownershipResult([[ZONES_ROW, `${ZONES_ROW.slice(0, -1)} | \`packages/evil/src\` |`]]);
+      assert.ok(
+        zonesWide.parsed.unreadable.some((message) =>
+          /Zones row for target-kernel carries 4 cells but its header declares 3; the excess is read by no column \(governed schema allows 3\)/.test(
+            message,
+          ),
+        ),
+        `four Zones cells are excess; got: ${JSON.stringify(zonesWide.parsed.unreadable)}`,
+      );
+      const exportWide = await ownershipResult([
+        [EXPORT_ROW, "| `@arrokothi/kernel` | `.` | No (private) | `sneaky-subpath` |"],
+      ]);
+      assert.ok(
+        exportWide.parsed.unreadable.some((message) =>
+          /Export row for @arrokothi\/kernel carries 4 cells but its header declares 3; the excess is read by no column \(governed schema allows 3\)/.test(
+            message,
+          ),
+        ),
+        `four Export cells are excess; got: ${JSON.stringify(exportWide.parsed.unreadable)}`,
+      );
+      assert.deepEqual(
+        parseDependencyTable(real).unreadable,
+        [],
+        "the same width four is the schema-correct Dependency row",
+      );
+      assert.deepEqual(
+        (
+          await ownershipResult([
+            [DEFERRED_ROW, "| DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 |"],
+          ])
+        ).disagreements,
+        [],
+        "the same width four is the accepted short Deferred form, missing only ungoverned prose",
+      );
+    });
+
+    test("a header that renames or reorders a non-first position is reported", async () => {
+      // First-cell-only validation accepts all of these: the first label is still correct while a
+      // governed middle label, the order, or a trailing ungoverned-prose label no longer matches
+      // the fixed schema. Bodies still match the schema, so they still decode — the document is
+      // loud because of its header, not because correct rows became excess.
+      const renamedMiddle = await depResult([
+        [`${DEP_HEADER}\n${DEP_DELIM}`, `${DEP_HEADER.replace("Reaches \`legacy-core\` via", "Reaches legacy-core via")}\n${DEP_DELIM}`],
+      ]);
+      assert.ok(
+        renamedMiddle.unreadable.some((message) => /Dependency table header must be/.test(message)),
+        `a renamed middle header cell must be reported; got: ${JSON.stringify(renamedMiddle.unreadable)}`,
+      );
+      assert.equal(
+        renamedMiddle.rows.get("target-kernel")?.files,
+        2,
+        "schema-correct bodies still decode when only the header is wrong",
+      );
+      const reordered = await depResult([
+        [
+          `${DEP_HEADER}\n${DEP_DELIM}`,
+          "| Zone | Reaches third-party | Reaches `legacy-core` via | `.ts` files |\n|---|---|---|---|",
+        ],
+      ]);
+      assert.ok(
+        reordered.unreadable.some((message) => /Dependency table header must be/.test(message)),
+        `a reordered header must be reported; got: ${JSON.stringify(reordered.unreadable)}`,
+      );
+      for (const [name, header, delim, edit] of [
+        ["Zones", ZONES_HEADER, ZONES_DELIM, `${ZONES_HEADER.replace("Owner and status", "Owner")}\n${ZONES_DELIM}`],
+        ["Export", EXPORT_HEADER, EXPORT_DELIM, `${EXPORT_HEADER.replace("Published?", "Published")}\n${EXPORT_DELIM}`],
+        [
+          "Deferred",
+          DEFERRED_HEADER,
+          DEFERRED_DELIM,
+          `${DEFERRED_HEADER.replace("Why it is assigned there", "Rationale")}\n${DEFERRED_DELIM}`,
+        ],
+      ] as const) {
+        const { parsed } = await ownershipResult([[`${header}\n${delim}`, edit]]);
+        assert.ok(
+          parsed.unreadable.some((message) => new RegExp(`${name} table header must be`).test(message)),
+          `a renamed ${name} header position must be reported; got: ${JSON.stringify(parsed.unreadable)}`,
+        );
+      }
+    });
+
+    test("a narrowed or widened header cannot change what a schema-correct body means", async () => {
+      // Both directions of the same authority claim. A three-cell Dependency header is itself
+      // reported, but the four-cell bodies still match the schema and still decode; a five-cell
+      // header with four-cell bodies is likewise header-loud with the relations intact.
+      const narrowed = await depResult([
+        [`${DEP_HEADER}\n${DEP_DELIM}`, "| Zone | `.ts` files | Reaches `legacy-core` via |\n|---|---|---|"],
+      ]);
+      assert.ok(
+        narrowed.unreadable.some((message) => /Dependency table header must be/.test(message)),
+        `a narrowed header must be reported; got: ${JSON.stringify(narrowed.unreadable)}`,
+      );
+      assert.equal(
+        narrowed.rows.get("target-kernel")?.files,
+        2,
+        "a narrowed header must not turn a schema-correct body into excess",
+      );
+      const widenedHeaderOnly = await depResult([
+        [`${DEP_HEADER}\n${DEP_DELIM}`, `${DEP_HEADER} Extra claim |\n${DEP_DELIM}---|`],
+      ]);
+      assert.ok(
+        widenedHeaderOnly.unreadable.some((message) => /Dependency table header must be/.test(message)),
+        `a widened header must be reported even with correct bodies; got: ${JSON.stringify(widenedHeaderOnly.unreadable)}`,
+      );
+      assert.deepEqual(
+        widenedHeaderOnly.unreadable.filter((message) => /the excess is read by no column/.test(message)),
+        [],
+        "schema-correct bodies are not excess merely because the header widened",
+      );
+      assert.equal(
+        widenedHeaderOnly.rows.get("target-kernel")?.files,
+        2,
+        "the relation survives a header-only widening; the header report carries the loudness",
+      );
+    });
+
+    test("an ordinary excess body cell with a correct header is still loud in every table", async () => {
+      // The round-1 SELF-29 direction, re-asserted for the two tables its controls did not name, now
+      // against the schema's arity rather than the header's width.
+      const depWide = await depResult([[DEP_ROW, `${DEP_ROW.slice(0, -1)} | \`evil-package\` |`]]);
+      assert.ok(
+        depWide.unreadable.some((message) =>
+          /Dependency row for target-kernel carries 5 cells but its header declares 4; the excess is read by no column \(governed schema allows 4\)/.test(
+            message,
+          ),
+        ),
+        `got: ${JSON.stringify(depWide.unreadable)}`,
+      );
+      assert.ok(!depWide.rows.has("target-kernel"), "the excess Dependency row must not be recorded");
+      const exportWide = await ownershipResult([
+        [EXPORT_ROW, "| `@arrokothi/kernel` | `.` | No (private) | `sneaky-subpath` |"],
+      ]);
+      assert.ok(
+        exportWide.parsed.unreadable.some((message) =>
+          /Export row for @arrokothi\/kernel carries 4 cells but its header declares 3; the excess is read by no column \(governed schema allows 3\)/.test(
+            message,
+          ),
+        ),
+        `got: ${JSON.stringify(exportWide.parsed.unreadable)}`,
+      );
+      assert.ok(!exportWide.parsed.packages.has("@arrokothi/kernel"), "the excess Export row must not be recorded");
+    });
+
+    test("a short row omitting only trailing ungoverned prose is still accepted", async () => {
+      // The established exception, pinned so the new arity rule cannot be mistaken for "any width
+      // difference is an error": a Zones row without its owner/status prose asserts nothing extra
+      // and still records its governed cells. Omitting a governed cell still fails that cell's own
+      // decoder.
+      const short = await ownershipResult([[ZONES_ROW, "| `target-kernel` | `packages/kernel/src` |"]]);
+      assert.deepEqual(short.disagreements, [], `got: ${JSON.stringify(short.disagreements)}`);
+      assert.deepEqual(short.parsed.zones.get("target-kernel"), ["packages/kernel/src"]);
+      const missingGoverned = await ownershipResult([[ZONES_ROW, "| `target-kernel` |"]]);
+      assert.ok(
+        missingGoverned.disagreements.some((message) =>
+          /^unreadable row: Zones row for target-kernel is malformed/.test(message),
+        ),
+        `a missing governed cell still fails closed; got: ${JSON.stringify(missingGoverned.disagreements)}`,
+      );
+    });
+  });
+
   describe("container-owned leaf lifetime (K10-R10-01)", () => {
     // A raw leaf never outlives the list container that owns it: container continuation is
     // resolved before any open fence/HTML state, so a dedented line ends the owning
