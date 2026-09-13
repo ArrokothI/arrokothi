@@ -175,10 +175,16 @@ function parseFenceCandidate(line: string): { readonly char: string; readonly le
   return { char, length: run.length, info };
 }
 
-/** Tracked fenced-code state while scanning block structure top to bottom. */
+/**
+ * Tracked fenced-code state while scanning block structure top to bottom. `ownerDepth` is the
+ * list-container stack depth that owns this leaf (0 = document top level): per GFM an unclosed
+ * fence ends at the end of its containing block, so the leaf dies when that container does
+ * (K10-R10-01). Top-level leaves (owner 0) still run to their normal end or document end.
+ */
 interface FenceState {
   readonly char: string;
   readonly length: number;
+  readonly ownerDepth: number;
 }
 
 /**
@@ -192,10 +198,10 @@ interface FenceState {
  * scan position via `scanBlocks` below, so a fence that terminates a table body cannot be
  * reprocessed as a second transition.
  */
-function updateFence(state: FenceState | null, line: string): FenceState | null {
+function updateFence(state: FenceState | null, line: string, ownerDepth = 0): FenceState | null {
   const candidate = parseFenceCandidate(line);
   if (state === null) {
-    if (candidate !== undefined) return { char: candidate.char, length: candidate.length };
+    if (candidate !== undefined) return { char: candidate.char, length: candidate.length, ownerDepth };
     return null;
   }
   if (
@@ -218,18 +224,24 @@ function updateFence(state: FenceState | null, line: string): FenceState | null 
  */
 interface HtmlState {
   readonly kind: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  /**
+   * The list-container stack depth that owns this leaf (0 = document top level). Like fences,
+   * an HTML block ends at the last line of its containing container when its ordinary end
+   * condition is not reached first (K10-R10-01).
+   */
+  readonly ownerDepth: number;
 }
 
 /**
- * Block tag names that open a type-6 HTML block (GFM §4.6, case-insensitive). This is the union
- * of the GFM 0.29-gfm list and CommonMark 0.31's addition (`search`), so detection errs toward
- * entering a raw block (fail-loud: later tables stay inside the section and are reported) rather
- * than toward missing a true block start (fail-open: a heading inside the block truncates the
- * section). Over-approximation here can only keep the section open longer and report more, never
- * silently delete a contradictory table.
+ * Block tag names that open a type-6 HTML block under the pinned published GFM 0.29 rule set
+ * (GFM §4.6, case-insensitive). This is exactly the 0.29 list: newer CommonMark additions such
+ * as `search` are deliberately not included, so `<search> trailing prose` stays ordinary
+ * Markdown (it is neither a type-6 start nor, with trailing prose, a complete type-7 tag)
+ * while a complete `<search>` line alone still opens type 7 through the tag recognizer.
+ * Adopting a newer hybrid list would be an explicit owner/version decision, not a silent edit.
  */
 const HTML_BLOCK_TAGS =
-  "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|nav|noframes|ol|optgroup|option|p|param|section|source|search|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul";
+  "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul";
 
 /**
  * Whether the line is a thematic break (GFM §4.1): 0–3 spaces of indentation, then three or
@@ -325,10 +337,12 @@ interface ListFrame {
 
 /**
  * A complete HTML open or closing tag occupying its whole line (GFM §4.6 type 7, tag grammar
- * §6.10), or null. Open tags carry zero or more attributes whose values may be unquoted (no
- * whitespace, `"`, `'`, `=`, `<`, `>` or backtick), single-quoted (only `'` ends them) or
- * double-quoted (only `"` ends them) — so quoted `<`/`>` never end the tag early. Closing tags
- * are `</name>` with optional whitespace only and can never carry attributes.
+ * §6.10), or null. Open tags carry zero or more attributes, each beginning with whitespace
+ * (so `<a href='bar'title=title>` is ordinary text); values may be unquoted (no whitespace,
+ * `"`, `'`, `=`, `<`, `>` or backtick), single-quoted (only `'` ends them) or double-quoted
+ * (only `"` ends them) — so quoted `<`/`>` never end the tag early — with optional whitespace
+ * around `=` and before the closing `>`/`/>`. Closing tags are `</name>` with optional
+ * whitespace only and can never carry attributes.
  */
 interface CompleteTag {
   readonly close: boolean;
@@ -355,6 +369,11 @@ function parseCompleteTag(rest: string): CompleteTag | null {
     return { close: true, tag: name };
   }
   for (;;) {
+    // GFM defines each attribute as whitespace plus a name plus an optional value: the tag
+    // end (`>`/`/>`) needs no whitespace, but another attribute cannot start without any
+    // since the tag name or previous attribute, so `<a href='bar'title=title>` and
+    // `<Warning a='x'b=title>` stay ordinary Markdown rather than opening a raw block.
+    const sepStart = i;
     while (rest[i] === " " || rest[i] === "\t") i++;
     const ch = rest[i];
     if (ch === ">") {
@@ -365,24 +384,27 @@ function parseCompleteTag(rest: string): CompleteTag | null {
       i += 2;
       break;
     }
-    // Another attribute must start here: whitespace above already consumed, so a bare name is
-    // required (this also rejects `<a href='bar'title=...>` with no separating space).
+    if (i === sepStart) return null;
     const attr = rest.slice(i).match(/^[A-Za-z_:][A-Za-z0-9_.:-]*/)?.[0];
     if (attr === undefined) return null;
     i += attr.length;
-    while (rest[i] === " " || rest[i] === "\t") i++;
-    if (rest[i] === "=") {
-      i++;
-      while (rest[i] === " " || rest[i] === "\t") i++;
-      const quote = rest[i];
+    // Optional `=` value with optional surrounding whitespace. When there is no `=`, `i`
+    // stays right after the name so the next iteration's separator check sees the gap that
+    // follows (this keeps valueless attributes such as `hidden` working).
+    let j = i;
+    while (rest[j] === " " || rest[j] === "\t") j++;
+    if (rest[j] === "=") {
+      j++;
+      while (rest[j] === " " || rest[j] === "\t") j++;
+      const quote = rest[j];
       if (quote === '"' || quote === "'") {
-        const end = rest.indexOf(quote, i + 1);
+        const end = rest.indexOf(quote, j + 1);
         if (end === -1) return null;
         i = end + 1;
       } else {
-        const value = rest.slice(i).match(/^[^ \t\r\n"'=`<>]+/)?.[0];
+        const value = rest.slice(j).match(/^[^ \t\r\n"'=`<>]+/)?.[0];
         if (value === undefined) return null;
-        i += value.length;
+        i = j + value.length;
       }
     }
   }
@@ -394,23 +416,25 @@ function parseCompleteTag(rest: string): CompleteTag | null {
  * Whether the line opens a GFM raw-HTML block, assuming the scanner is outside fenced code and
  * outside any HTML block and the line is not blank, indented code or blockquote content.
  *
- * Order follows the specification: type 1 (script/pre/style/textarea) first, then comment,
- * processing instruction, CDATA, declaration, type-6 block tags, and finally type 7 (a complete
- * open tag — any name except script/style/pre/textarea, which belong to type 1 — or a complete
- * closing tag with no attributes, alone on the line). Matching is case-insensitive per GFM.
+ * Order follows the pinned published GFM 0.29 specification: type 1 (script/pre/style) first,
+ * then comment, processing instruction, CDATA, declaration, type-6 block tags, and finally
+ * type 7 (a complete open tag — any name except script/style/pre — or a complete closing tag
+ * with no attributes, alone on the line). `textarea` is not type 1 under 0.29: a complete
+ * `<textarea>` line opens type 7 instead and therefore ends at a following blank line rather
+ * than running to `</textarea>`. Matching is case-insensitive per GFM.
  * Type 4 follows the published uppercase-ASCII rule (`<!DOCTYPE …>` opens; `<!doctype …>` is
  * ordinary prose). Type 7 additionally requires `allowType7`, which the scanner denies while an
  * open paragraph could be interrupted: type-7 blocks cannot start mid-paragraph (GFM Example
  * 156), so a complete tag right after paragraph text stays inline prose rather than opening a
  * raw block. Types 1–6 may interrupt a paragraph and ignore that flag.
  */
-function parseHtmlBlockStart(line: string, allowType7: boolean): HtmlState | null {
+function parseHtmlBlockStart(line: string, allowType7: boolean): { readonly kind: 1 | 2 | 3 | 4 | 5 | 6 | 7 } | null {
   const indent = line.match(/^ */)?.[0].length ?? 0;
   if (indent > 3) return null;
   if (line.startsWith("\t")) return null;
   const rest = line.slice(indent);
   if (rest.startsWith(">")) return null;
-  if (/^<(script|pre|style|textarea)(\s|>|$)/i.test(rest)) return { kind: 1 };
+  if (/^<(script|pre|style)(\s|>|$)/i.test(rest)) return { kind: 1 };
   if (rest.startsWith("<!--")) return { kind: 2 };
   if (rest.startsWith("<?")) return { kind: 3 };
   if (rest.startsWith("<![CDATA[")) return { kind: 5 };
@@ -421,7 +445,7 @@ function parseHtmlBlockStart(line: string, allowType7: boolean): HtmlState | nul
   const tag = parseCompleteTag(rest);
   if (tag !== null) {
     const name = tag.tag.toLowerCase();
-    if (name !== "script" && name !== "style" && name !== "pre" && name !== "textarea") return { kind: 7 };
+    if (name !== "script" && name !== "style" && name !== "pre") return { kind: 7 };
   }
   return null;
 }
@@ -429,7 +453,7 @@ function parseHtmlBlockStart(line: string, allowType7: boolean): HtmlState | nul
 function htmlClosesOnLine(kind: 1 | 2 | 3 | 4 | 5, line: string): boolean {
   switch (kind) {
     case 1:
-      return /<\/(script|pre|style|textarea)>/i.test(line);
+      return /<\/(script|pre|style)>/i.test(line);
     case 2:
       return line.includes("-->");
     case 3:
@@ -541,14 +565,20 @@ export interface LineTransition {
   readonly fenceAfter: string | null;
   readonly htmlAfter: string | null;
   readonly consumedOnce: true;
+  /**
+   * True when this line's container matching ended an open raw leaf before the line itself
+   * was processed: the leaf died with its container (K10-R10-01) and the line then ran the
+   * normal path at the surviving depth, so its eligibility below already reflects the close.
+   */
+  readonly containerClosedLeaf: boolean;
   readonly headingAllowed: boolean;
   readonly tableAllowed: boolean;
 }
 
 const fenceName = (fence: FenceState | null): string | null =>
-  fence === null ? null : `open(${fence.char}x${fence.length})`;
+  fence === null ? null : `open(${fence.char}x${fence.length})@${fence.ownerDepth}`;
 const htmlName = (html: HtmlState | null): string | null =>
-  html === null ? null : `html${html.kind}`;
+  html === null ? null : `html${html.kind}@${html.ownerDepth}`;
 
 /**
  * Every line's transition through the shared block-state layer, in order. This is the primary
@@ -643,18 +673,46 @@ export function scanTransitions(markdown: string): LineTransition[] {
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index]!;
     const depthBefore = lists.length;
+    const fenceBefore = fenceName(fence);
+    const htmlBefore = htmlName(html);
+    let containerClosedLeaf = false;
+    const common = (
+      classification: LineTransition["classification"],
+      extra: Partial<LineTransition> = {},
+    ): LineTransition => ({
+      index, text: line,
+      fenceBefore, htmlBefore,
+      classification,
+      fenceAfter: fenceName(fence), htmlAfter: htmlName(html),
+      consumedOnce: true, headingAllowed: false, tableAllowed: false,
+      depthBefore, depthAfter: lists.length, containers: containers(),
+      containerClosedLeaf,
+      ...extra,
+    });
+
+    // Container continuation comes before any open leaf/raw state (K10-R10-01): a raw leaf
+    // never outlives the list container that owns it. A non-blank line dedented below the
+    // owner's content indent ends those containers first; a leaf they own dies with them and
+    // the line is then processed normally at the surviving depth (a real heading there is
+    // eligible again on that same line). Blank lines never close containers. Top-level
+    // leaves (owner depth 0) are unaffected and keep their normal end-of-document lifetime.
+    // The stack cannot grow while a leaf is open (raw lines never push), so the owner frame,
+    // when one exists, is exactly lists[ownerDepth - 1].
+    if (fence !== null || html !== null) {
+      const ownerDepth = fence !== null ? fence.ownerDepth : (html as HtmlState).ownerDepth;
+      const owner = ownerDepth > 0 ? lists[ownerDepth - 1] : undefined;
+      if (owner !== undefined && !isBlankLine(line) && indentWidth(line) < owner.contentIndent) {
+        popTo(indentWidth(line));
+        fence = null;
+        html = null;
+        containerClosedLeaf = true;
+      }
+    }
+
     if (fence !== null) {
-      const before = fenceName(fence);
       fence = updateFence(fence, line);
       const closed = fence === null;
-      out.push({
-        index, text: line,
-        fenceBefore: before, htmlBefore: htmlName(html),
-        classification: closed ? "fence-closer" : "fence-raw",
-        fenceAfter: fenceName(fence), htmlAfter: htmlName(html),
-        consumedOnce: true, headingAllowed: false, tableAllowed: false,
-        depthBefore, depthAfter: lists.length, containers: containers(),
-      });
+      out.push(common(closed ? "fence-closer" : "fence-raw"));
       continue;
     }
     if (html !== null) {
@@ -662,105 +720,53 @@ export function scanTransitions(markdown: string): LineTransition[] {
         const closes = htmlClosesOnLine(html.kind as 1 | 2 | 3 | 4 | 5, line);
         const kind = html.kind;
         if (closes) html = null;
-        out.push({
-          index, text: line,
-          fenceBefore: null, htmlBefore: `html${kind}`,
-          classification: closes ? "html-close-line" : "html-raw",
-          fenceAfter: null, htmlAfter: htmlName(html),
-          consumedOnce: true, headingAllowed: false, tableAllowed: false,
-          depthBefore, depthAfter: lists.length, containers: containers(),
-        });
+        out.push(common(closes ? "html-close-line" : "html-raw"));
         continue;
       }
       if (isBlankLine(line)) {
         const kind = html.kind;
         html = null;
-        out.push({
-          index, text: line,
-          fenceBefore: null, htmlBefore: `html${kind}`,
-          classification: "html-end-blank",
-          fenceAfter: null, htmlAfter: null,
-          consumedOnce: true, headingAllowed: false, tableAllowed: false,
-          depthBefore, depthAfter: lists.length, containers: containers(),
-        });
+        out.push(common("html-end-blank"));
         continue;
       }
-      out.push({
-        index, text: line,
-        fenceBefore: null, htmlBefore: htmlName(html),
-        classification: "html-raw",
-        fenceAfter: null, htmlAfter: htmlName(html),
-        consumedOnce: true, headingAllowed: false, tableAllowed: false,
-        depthBefore, depthAfter: lists.length, containers: containers(),
-      });
+      out.push(common("html-raw"));
       continue;
     }
     if (isBlankLine(line)) {
-      out.push({
-        index, text: line, fenceBefore: null, htmlBefore: null, classification: "blank",
-        fenceAfter: null, htmlAfter: null, consumedOnce: true, headingAllowed: false, tableAllowed: false,
-        depthBefore, depthAfter: lists.length, containers: containers(),
-      });
+      out.push(common("blank"));
       continue;
     }
     if (isIndentedCode(line)) {
-      out.push({
-        index, text: line,
-        fenceBefore: null, htmlBefore: null, classification: "indented-code",
-        fenceAfter: null, htmlAfter: null,
-        consumedOnce: true, headingAllowed: false, tableAllowed: false,
-        depthBefore, depthAfter: lists.length, containers: containers(),
-      });
+      out.push(common("indented-code"));
       continue;
     }
     if (isBlockquote(line)) {
       // A dedented quote ends open items; a quote at content indent stays item content (GFM
       // containers compose). Either way the line itself is quoted, never top-level structure.
+      // Quote-prefixed fence/HTML markers never enter leaf state, so a quote owns no open
+      // leaf and there is nothing container-close here beyond the stack pop itself.
       popTo(indentWidth(line));
-      out.push({
-        index, text: line,
-        fenceBefore: null, htmlBefore: null, classification: "blockquote",
-        fenceAfter: null, htmlAfter: null,
-        consumedOnce: true, headingAllowed: false, tableAllowed: false,
-        depthBefore, depthAfter: lists.length, containers: containers(),
-      });
+      out.push(common("blockquote"));
       continue;
     }
     const fenceCandidate = parseFenceCandidate(line);
     if (fenceCandidate !== undefined) {
       // Fences are never lazy continuations: a dedented marker ends open items first, then
-      // opens at the surviving depth (container-local when still nested).
+      // opens at the surviving depth (container-local when still nested, recording that
+      // depth as the new leaf's owner).
       popTo(indentWidth(line));
-      fence = updateFence(fence, line);
-      out.push({
-        index, text: line,
-        fenceBefore: null, htmlBefore: null, classification: "fence-marker-open",
-        fenceAfter: fenceName(fence), htmlAfter: null,
-        consumedOnce: true, headingAllowed: false, tableAllowed: false,
-        depthBefore, depthAfter: lists.length, containers: containers(),
-      });
+      fence = updateFence(fence, line, lists.length);
+      out.push(common("fence-marker-open"));
       continue;
     }
     const htmlStart = parseHtmlBlockStart(line, !paragraphContinues(out));
     if (htmlStart !== null) {
       popTo(indentWidth(line));
       if (htmlStart.kind <= 5 && htmlClosesOnLine(htmlStart.kind as 1 | 2 | 3 | 4 | 5, line)) {
-        out.push({
-          index, text: line,
-          fenceBefore: null, htmlBefore: null, classification: "html-open-close-same-line",
-          fenceAfter: null, htmlAfter: null,
-          consumedOnce: true, headingAllowed: false, tableAllowed: false,
-          depthBefore, depthAfter: lists.length, containers: containers(),
-        });
+        out.push(common("html-open-close-same-line"));
       } else {
-        html = htmlStart;
-        out.push({
-          index, text: line,
-          fenceBefore: null, htmlBefore: null, classification: "html-open",
-          fenceAfter: null, htmlAfter: htmlName(html),
-          consumedOnce: true, headingAllowed: false, tableAllowed: false,
-          depthBefore, depthAfter: lists.length, containers: containers(),
-        });
+        html = { ...htmlStart, ownerDepth: lists.length };
+        out.push(common("html-open"));
       }
       continue;
     }
@@ -775,13 +781,7 @@ export function scanTransitions(markdown: string): LineTransition[] {
       } else {
         popTo(marker.indent);
         lists.push({ markerIndent: marker.indent, contentIndent: marker.contentIndent });
-        out.push({
-          index, text: line,
-          fenceBefore: null, htmlBefore: null, classification: "list-marker",
-          fenceAfter: null, htmlAfter: null,
-          consumedOnce: true, headingAllowed: false, tableAllowed: false,
-          depthBefore, depthAfter: lists.length, containers: containers(),
-        });
+        out.push(common("list-marker"));
         continue;
       }
     }
@@ -801,22 +801,10 @@ export function scanTransitions(markdown: string): LineTransition[] {
       (containsUnescapedPipe(line) && !paragraphContinues(out));
     if (structural || (afterBlank && lists.length > 0)) popTo(indentWidth(line));
     if (lists.length > 0) {
-      out.push({
-        index, text: line,
-        fenceBefore: null, htmlBefore: null, classification: "list-content",
-        fenceAfter: null, htmlAfter: null,
-        consumedOnce: true, headingAllowed: false, tableAllowed: false,
-        depthBefore, depthAfter: lists.length, containers: containers(),
-      });
+      out.push(common("list-content"));
       continue;
     }
-    out.push({
-      index, text: line,
-      fenceBefore: null, htmlBefore: null, classification: "ordinary",
-      fenceAfter: null, htmlAfter: null,
-      consumedOnce: true, headingAllowed: heading !== undefined, tableAllowed: true,
-      depthBefore, depthAfter: 0, containers: null,
-    });
+    out.push(common("ordinary", { headingAllowed: heading !== undefined, tableAllowed: true }));
   }
   return out;
 }
