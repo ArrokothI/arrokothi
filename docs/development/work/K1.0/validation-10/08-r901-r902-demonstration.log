@@ -1,0 +1,20 @@
+H9 oracle pinned via git show 4d7ebb9590c4a0a8da8fff4f5fa79c753eff2120:tests/conformance/architecture/inventory-oracle.ts
+SHA-256: dfaa9aa14abe92a20e1318300b9eb594409d15f31c34b51cf9333dd40afb1f37
+OK   C-bullet nested heading (want H9 GREEN-silent / C RED): H9=GREEN C=RED (newly distinguishing)
+OK   C-ordered nested heading (want GREEN / RED): H9=GREEN C=RED (newly distinguishing)
+OK   C-pop-to-outer nested (want GREEN / RED): H9=GREEN C=RED (newly distinguishing)
+OK   C-wide+3sp table top-level (want RED / RED): H9=RED C=RED
+OK   C-bullet+3sp table nested (want RED / GREEN): H9=RED C=GREEN (newly distinguishing)
+OK   C-wide marker top-level 3sp (want GREEN / GREEN): H9=GREEN C=GREEN
+OK   C-nested-4sp is code everywhere (want RED / RED): H9=RED C=RED
+OK   C-task list (want GREEN / RED): H9=GREEN C=RED (newly distinguishing)
+OK   C-thematic no container (want GREEN / GREEN): H9=GREEN C=GREEN
+OK   H-dblquote gt (want GREEN / RED): H9=GREEN C=RED (newly distinguishing)
+OK   H-singlequote lt (want GREEN / RED): H9=GREEN C=RED (newly distinguishing)
+OK   H-unquoted attrs (want GREEN / RED): H9=RED C=RED
+OK   H-closing opener (want RED / RED): H9=RED C=RED
+OK   H-closing with attrs malformed (want RED / GREEN): H9=RED C=GREEN (newly distinguishing)
+OK   H-paragraph exception (want H9 RED / C GREEN): H9=RED C=GREEN (newly distinguishing)
+OK   H-lowercase declaration (want RED / GREEN): H9=RED C=GREEN (newly distinguishing)
+OK   CRLF type7 (want H9 GREEN / C RED): H9=GREEN C=RED (newly distinguishing)
+newly distinguishing cases: 11
