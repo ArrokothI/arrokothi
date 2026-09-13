@@ -1,0 +1,464 @@
+# 09 — silent-exit audit of the whole C4 row pipeline, clean payload C
+
+$ node --experimental-strip-types audit.ts
+
+The audit program, in full (it enters no tracked path; it reads the committed inventory and
+the production parser from their real paths and prints every branch's whole observable result):
+
+```ts
+/**
+ * 09 — silent-exit audit of the whole C4 row pipeline, clean payload C.
+ *
+ * Every branch that can end a row's life is driven with an input that actually reaches it,
+ * through the production parser, and its whole observable result is printed. Stage 1 repeats the
+ * section-selection part of the audit with the full heading-context matrix: every way a candidate
+ * heading token can be encountered (real ATX heading, paragraph text, inline code, fenced code,
+ * escaped text, malformed heading-like line), with the reason each starts/ends the section,
+ * remains ordinary content, or produces an explicit disagreement.
+ */
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+
+const REPO = "/Users/rex-shih/Documents/ArrokothI/arrokothi";
+const oracle = await import(pathToFileURL(resolve(REPO, "tests/conformance/architecture/inventory-oracle.ts")).href);
+const { loadWorkspace } = await import(pathToFileURL(resolve(REPO, "tests/conformance/architecture/module-graph.ts")).href);
+const { ZONES, DEFERRED_EXTRACTIONS } = await import(pathToFileURL(resolve(REPO, "tests/conformance/architecture/boundary-policy.ts")).href);
+
+const inventory = await readFile(resolve(REPO, "docs/development/work/K1.0/ownership-inventory.md"), "utf8");
+const workspace = await loadWorkspace(REPO);
+const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
+
+const show = (title: string, messages: string[]): void => {
+  console.log(`### ${title}`);
+  if (messages.length === 0) console.log("  (no message)");
+  for (const m of messages) console.log(`  - ${m}`);
+};
+
+const zonesDisagreements = (mutated: string): string[] =>
+  oracle.inventoryDisagreements(oracle.parseInventory(mutated), policy, workspace);
+
+const lastZoneRow = "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+const badZonesTable =
+  "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | stale contradictory further table |\n";
+
+console.log("## Stage 1 — section selection (heading-context matrix)");
+show("1a — the section heading itself is absent (renamed heading)", zonesDisagreements(inventory.replace("## Zones\n", "## Zone catalogue\n")));
+show(
+  "1b — the next heading is absent, so the section runs on into the following table",
+  zonesDisagreements(inventory.replace("## Current cross-boundary dependencies\n", "")),
+);
+show(
+  "1c — a real ATX next heading terminates: planted Zones rows after it are outside (green)",
+  zonesDisagreements(
+    inventory.replace("## Current cross-boundary dependencies\n", `## Current cross-boundary dependencies\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1d — the heading occurs a second time, with a contradictory table under it (K1.0-SELF-12 stays inside, reported)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\n## Zones\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1e — paragraph text carrying the full next-heading bytes stays content (reported)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\nThe literal token ## Current cross-boundary dependencies is mentioned here.\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1f — the bytes inside an inline code span stay content (reported)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\nThe literal token \`## Current cross-boundary dependencies\` is mentioned here.\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1g — the bytes inside a fenced code block stay code (reported)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\n\`\`\`\n## Current cross-boundary dependencies\n\`\`\`\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1h — an escaped hash is paragraph text, not a heading (K1.0-SELF-14, reported)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\n\\## Current cross-boundary dependencies\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1i — a hash run with no required whitespace is paragraph text (K1.0-SELF-15, reported)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\n##Current cross-boundary dependencies\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1j — seven hashes are not a heading (K1.0-SELF-16, reported)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\n####### Current cross-boundary dependencies\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1j2 — four-space indented heading bytes are code (K1.0-SELF-16, reported)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\n    ## Current cross-boundary dependencies\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1k — a mismatched fence closer leaves the fence open; the table after the matching closer is reported (K1.0-SELF-17)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\n\`\`\`\n## Current cross-boundary dependencies\n~~~\n\`\`\`\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1l — a blockquote carrying heading bytes is a quote, not the section heading (reported)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\n> ## Current cross-boundary dependencies\n\n${badZonesTable}`),
+  ),
+);
+show(
+  "1m — prose before the real heading is outside the section (green)",
+  zonesDisagreements(
+    inventory.replace("## Zones\n", `See ## Zones below.\n\n${badZonesTable}## Zones\n`),
+  ),
+);
+show(
+  "1n — a fenced current-heading mention is code, not the start (green)",
+  zonesDisagreements(
+    inventory.replace("## Zones\n", `\`\`\`\n## Zones\n\`\`\`\n\n${badZonesTable}## Zones\n`),
+  ),
+);
+
+console.log("## Stage 2 — table discovery");
+show(
+  "2a — no header/delimiter pair at all: the governed table is undiscoverable",
+  zonesDisagreements(inventory.replace("| Zone id | Roots | Owner and status |\n|---|---|---|\n", "")),
+);
+show(
+  "2b — the delimiter cell count does not match the header (GFM Example 203: no table)",
+  zonesDisagreements(inventory.replace("|---|---|---|\n| `target-kernel`", "|---|---|\n| `target-kernel`")),
+);
+show(
+  "2c — a further table in the same section (K1.0-SELF-13)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `${lastZoneRow}\n| \`target-kernel\` | \`packages/core/src\` | stale |\n|---|---|---|\n`),
+  ),
+);
+show(
+  "2d — a fence opened before the first body row: the table breaks and the rows are code",
+  zonesDisagreements(
+    inventory.replace(
+      "|---|---|---|\n| `target-kernel` | `packages/kernel/src`",
+      "|---|---|---|\n```\n| `target-kernel` | `packages/kernel/src`",
+    ),
+  ),
+);
+show(
+  "2e — a fenced block appended after the last body row (renders as code, asserts nothing)",
+  zonesDisagreements(inventory.replace(lastZoneRow, `${lastZoneRow}\n\`\`\`\n| \`target-kernel\` | \`packages/core/src\` | code, not a row |\n\`\`\`\n`)),
+);
+show(
+  "2f — a blockquote line inside the body breaks the table (GFM Example 201)",
+  zonesDisagreements(
+    inventory.replace(lastZoneRow, `> quote breaks the body\n${lastZoneRow}`),
+  ),
+);
+
+console.log("## Stage 3 — header/delimiter recognition");
+show(
+  "3a — the structural header does not carry its expected label",
+  zonesDisagreements(inventory.replace("| Zone id | Roots | Owner and status |", "| Zone identifier | Roots | Owner and status |")),
+);
+show(
+  "3b — an alignment delimiter is still the delimiter, not a data row (valid variant)",
+  zonesDisagreements(inventory.replace("|---|---|---|", "| :--- | ---: | :---: |")),
+);
+show(
+  "3c — a later delimiter-shaped line inside the body is an ordinary row",
+  zonesDisagreements(inventory.replace(lastZoneRow, `${lastZoneRow}|---|---|---|\n`)),
+);
+
+console.log("## Stage 4 — row splitting");
+show(
+  "4a — an escaped pipe stays inside its cell (GFM Example 200)",
+  zonesDisagreements(
+    inventory.replace(
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |",
+      "| `target-kernel` | `packages/core/src` | stale \\| contradictory duplicate |\n| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |",
+    ),
+  ),
+);
+show(
+  "4b — excess cells beyond the header count (GFM Example 204: not rendered; row still recorded)",
+  zonesDisagreements(
+    inventory.replace(
+      "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |",
+      "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. | extra |",
+    ),
+  ),
+);
+show(
+  "4c — a pipe-less continuation line is still a row (GFM Example 202)",
+  zonesDisagreements(inventory.replace(lastZoneRow, "`target-kernel`\n" + lastZoneRow)),
+);
+
+console.log("## Stage 5 — header/body classification (K10-R6-01)");
+for (const position of ["before", "after"] as const) {
+  const correct =
+    "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+  const bad = "| Zone id | `packages/core/src` | stale contradictory body row |";
+  const mutated =
+    position === "before" ? inventory.replace(correct, `${bad}\n${correct}`) : inventory.replace(correct, `${correct}\n${bad}`);
+  show(`5 — Zones / Zone id: header-label body row ${position} the correct row`, zonesDisagreements(mutated));
+}
+
+console.log("## Stage 6 — key extraction, duplicates, values, propagation, comparison");
+show(
+  "6a — a row with no recognisable key",
+  zonesDisagreements(inventory.replace(lastZoneRow, `${lastZoneRow}| not-a-zone | x | y |\n`)),
+);
+show(
+  "6b — duplicate zone row before the correct row (the after-order twin lives in the committed suite)",
+  zonesDisagreements(
+    inventory.replace(
+      "| `target-kernel` | `packages/kernel/src` |",
+      "| `target-kernel` | `packages/core/src` | stale |\n| `target-kernel` | `packages/kernel/src` |",
+    ),
+  ),
+);
+show(
+  "6c — a short row with a recognisable key fails closed after the key is seen",
+  zonesDisagreements(inventory.replace(
+    "| `target-kernel` | `packages/kernel/src` |",
+    "| `target-kernel` |\n| `target-kernel` | `packages/kernel/src` |",
+  )),
+);
+show(
+  "6e — a second backticked token inside the key cell (recorded under the first-token rule)",
+  zonesDisagreements(
+    inventory.replace(
+      "| `target-kernel` | `packages/kernel/src` |",
+      "| `target-kernel` `legacy-core` | `packages/kernel/src` |",
+    ),
+  ),
+);
+show(
+  "6d — two zones' roots swapped (relational, token sets unchanged)",
+  zonesDisagreements(
+    inventory
+      .replace("| `target-kernel` | `packages/kernel/src` |", "| `target-kernel` | `PLACEHOLDER` |")
+      .replace("| `legacy-core` | `packages/core/src` |", "| `legacy-core` | `packages/kernel/src` |")
+      .replace("| `target-kernel` | `PLACEHOLDER` |", "| `target-kernel` | `packages/core/src` |"),
+  ),
+);
+```
+
+---
+
+Output (exit 0):
+
+## Stage 1 — section selection (heading-context matrix)
+### 1a — the section heading itself is absent (renamed heading)
+  - unreadable row: Zones table is missing from its section
+  - zone target-kernel is declared by the policy but not documented
+  - zone legacy-core is declared by the policy but not documented
+  - zone runtime-integrations is declared by the policy but not documented
+  - zone host-sdk is declared by the policy but not documented
+### 1b — the next heading is absent, so the section runs on into the following table
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | 2 | nothing | nothing
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `legacy-core` | 143 | — | nothing
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk`
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Package | Exported subpaths | Published?
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/kernel` | `.` | No (private)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/sdk` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/integration-strands` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/provider-gemini` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/retrieval-local` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/integration-mcp` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why it is assigned there
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-2 | `packages/core/src/util/json.ts` | migratable | K1.1 | Same packet: canonical value encoding for pinned progress.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 | Same packet: accept/reject results at the dispatch boundary.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-4 | `packages/core/src/schema/value-schema.ts` | migratable | K1.2 | Whole-envelope Outcome validation is where a value schema first earns its place.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-5 | `packages/core/src/runtime/harness.ts` | legacy-only | K1.4 | The synchronous Harness is the legacy Runtime bridge, not target Kernel code.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-6 | `packages/core/src/runtime/resumption-processor.ts` | legacy-only | K1.4 | `ControllerResumption` may survive privately inside a legacy Runtime adapter; it must stop driving Kernel wait types.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-7 | `packages/core/src/runtime/effect-processor.ts` | legacy-only | K2.1 | Effect mediation is K2's responsibility; K1 refuses Effects.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-8 | `packages/core/src/ports/runtime-store.ts` | legacy-only | K3.1 | Persistence profile work owns the store contract.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-9 | `packages/core/src/ports/scheduler.ts` | legacy-only | K3.1 | Same packet: scheduling belongs with the persistent profile.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-10 | `packages/core/src/controllers` | legacy-only | R2.1 | Stock Agent/Workflow controllers are Runtime behaviour, not Kernel semantics.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-11 | `packages/agents/strands/src/agent-executor.ts` | legacy-only | R1.1 | A step adapter whose fidelity is R1's claim to test, not a whole-native-Runtime Driver.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape.
+### 1c — a real ATX next heading terminates: planted Zones rows after it are outside (green)
+  (no message)
+### 1d — the heading occurs a second time, with a contradictory table under it (K1.0-SELF-12 stays inside, reported)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1e — paragraph text carrying the full next-heading bytes stays content (reported)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1f — the bytes inside an inline code span stay content (reported)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1g — the bytes inside a fenced code block stay code (reported)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1h — an escaped hash is paragraph text, not a heading (K1.0-SELF-14, reported)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1i — a hash run with no required whitespace is paragraph text (K1.0-SELF-15, reported)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1j — seven hashes are not a heading (K1.0-SELF-16, reported)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1j2 — four-space indented heading bytes are code (K1.0-SELF-16, reported)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1k — a mismatched fence closer leaves the fence open; the table after the matching closer is reported (K1.0-SELF-17)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1l — a blockquote carrying heading bytes is a quote, not the section heading (reported)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### 1m — prose before the real heading is outside the section (green)
+  (no message)
+### 1n — a fenced current-heading mention is code, not the start (green)
+  (no message)
+## Stage 2 — table discovery
+### 2a — no header/delimiter pair at all: the governed table is undiscoverable
+  - unreadable row: Zones table is missing from its section
+  - zone target-kernel is declared by the policy but not documented
+  - zone legacy-core is declared by the policy but not documented
+  - zone runtime-integrations is declared by the policy but not documented
+  - zone host-sdk is declared by the policy but not documented
+### 2b — the delimiter cell count does not match the header (GFM Example 203: no table)
+  - unreadable row: Zones table is missing from its section
+  - zone target-kernel is declared by the policy but not documented
+  - zone legacy-core is declared by the policy but not documented
+  - zone runtime-integrations is declared by the policy but not documented
+  - zone host-sdk is declared by the policy but not documented
+### 2c — a further table in the same section (K1.0-SELF-13)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale
+### 2d — a fence opened before the first body row: the table breaks and the rows are code
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | 2 | nothing | nothing
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `legacy-core` | 143 | — | nothing
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk`
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Package | Exported subpaths | Published?
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/kernel` | `.` | No (private)
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/sdk` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/integration-strands` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/provider-gemini` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/retrieval-local` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `@arrokothi/integration-mcp` | `.` | Yes
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why it is assigned there
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-2 | `packages/core/src/util/json.ts` | migratable | K1.1 | Same packet: canonical value encoding for pinned progress.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 | Same packet: accept/reject results at the dispatch boundary.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-4 | `packages/core/src/schema/value-schema.ts` | migratable | K1.2 | Whole-envelope Outcome validation is where a value schema first earns its place.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-5 | `packages/core/src/runtime/harness.ts` | legacy-only | K1.4 | The synchronous Harness is the legacy Runtime bridge, not target Kernel code.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-6 | `packages/core/src/runtime/resumption-processor.ts` | legacy-only | K1.4 | `ControllerResumption` may survive privately inside a legacy Runtime adapter; it must stop driving Kernel wait types.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-7 | `packages/core/src/runtime/effect-processor.ts` | legacy-only | K2.1 | Effect mediation is K2's responsibility; K1 refuses Effects.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-8 | `packages/core/src/ports/runtime-store.ts` | legacy-only | K3.1 | Persistence profile work owns the store contract.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-9 | `packages/core/src/ports/scheduler.ts` | legacy-only | K3.1 | Same packet: scheduling belongs with the persistent profile.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-10 | `packages/core/src/controllers` | legacy-only | R2.1 | Stock Agent/Workflow controllers are Runtime behaviour, not Kernel semantics.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-11 | `packages/agents/strands/src/agent-executor.ts` | legacy-only | R1.1 | A step adapter whose fidelity is R1's claim to test, not a whole-native-Runtime Driver.
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape.
+  - unreadable row: Deferred table is missing from its section
+  - unreadable row: Export table is missing from its section
+  - zone target-kernel is declared by the policy but not documented
+  - zone legacy-core is declared by the policy but not documented
+  - zone runtime-integrations is declared by the policy but not documented
+  - zone host-sdk is declared by the policy but not documented
+  - deferred row DX-1 is declared by the policy but not documented
+  - deferred row DX-2 is declared by the policy but not documented
+  - deferred row DX-3 is declared by the policy but not documented
+  - deferred row DX-4 is declared by the policy but not documented
+  - deferred row DX-5 is declared by the policy but not documented
+  - deferred row DX-6 is declared by the policy but not documented
+  - deferred row DX-7 is declared by the policy but not documented
+  - deferred row DX-8 is declared by the policy but not documented
+  - deferred row DX-9 is declared by the policy but not documented
+  - deferred row DX-10 is declared by the policy but not documented
+  - deferred row DX-11 is declared by the policy but not documented
+  - deferred row DX-12 is declared by the policy but not documented
+  - package @arrokothi/sdk exists in the workspace but is not documented
+  - package @arrokothi/retrieval-local exists in the workspace but is not documented
+  - package @arrokothi/provider-gemini exists in the workspace but is not documented
+  - package @arrokothi/kernel exists in the workspace but is not documented
+  - package @arrokothi/integration-mcp exists in the workspace but is not documented
+  - package @arrokothi/core exists in the workspace but is not documented
+  - package @arrokothi/integration-strands exists in the workspace but is not documented
+### 2e — a fenced block appended after the last body row (renders as code, asserts nothing)
+  (no message)
+### 2f — a blockquote line inside the body breaks the table (GFM Example 201)
+  - zone host-sdk is declared by the policy but not documented
+## Stage 3 — header/delimiter recognition
+### 3a — the structural header does not carry its expected label
+  - unreadable row: Zones table header starts with "Zone identifier", not "Zone id": Zone identifier | Roots | Owner and status
+### 3b — an alignment delimiter is still the delimiter, not a data row (valid variant)
+  (no message)
+### 3c — a later delimiter-shaped line inside the body is an ordinary row
+  - unreadable row: Zones row has no recognisable key: --- | --- | ---
+## Stage 4 — row splitting
+### 4a — an escaped pipe stays inside its cell (GFM Example 200)
+  - unreadable row: duplicate Zones row for zone target-kernel: `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.**
+  - zone target-kernel owns [packages/kernel/src] but the document gives it [packages/core/src]
+### 4b — excess cells beyond the header count (GFM Example 204: not rendered; row still recorded)
+  (no message)
+### 4c — a pipe-less continuation line is still a row (GFM Example 202)
+  - unreadable row: duplicate Zones row for zone target-kernel: `target-kernel`
+## Stage 5 — header/body classification (K10-R6-01)
+### 5 — Zones / Zone id: header-label body row before the correct row
+  - unreadable row: Zones row has no recognisable key: Zone id | `packages/core/src` | stale contradictory body row
+### 5 — Zones / Zone id: header-label body row after the correct row
+  - unreadable row: Zones row has no recognisable key: Zone id | `packages/core/src` | stale contradictory body row
+## Stage 6 — key extraction, duplicates, values, propagation, comparison
+### 6a — a row with no recognisable key
+  - unreadable row: Zones row has no recognisable key: not-a-zone | x | y
+### 6b — duplicate zone row before the correct row (the after-order twin lives in the committed suite)
+  - unreadable row: duplicate Zones row for zone target-kernel: `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.**
+  - zone target-kernel owns [packages/kernel/src] but the document gives it [packages/core/src]
+### 6c — a short row with a recognisable key fails closed after the key is seen
+  - unreadable row: Zones row for target-kernel is malformed: `target-kernel`
+  - unreadable row: duplicate Zones row for zone target-kernel: `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.**
+  - zone target-kernel is declared by the policy but not documented
+### 6e — a second backticked token inside the key cell (recorded under the first-token rule)
+  (no message)
+### 6d — two zones' roots swapped (relational, token sets unchanged)
+  - zone target-kernel owns [packages/kernel/src] but the document gives it [packages/core/src]
+  - zone legacy-core owns [packages/core/src] but the document gives it [packages/kernel/src]
+
+## Reading 09 — branch disposition
+
+Every way a candidate heading token can be encountered, and why it starts/ends the section,
+remains ordinary content, or produces an explicit disagreement:
+
+| Encounter | Structural status | Disposition |
+|---|---|---|
+| Real level-2 ATX heading with the expected current title, outside fenced code (1a present / 1d repeated) | Section start (first) / ordinary content that breaks the table body (later) | First occurrence opens the section; a repeated one stays inside, ends the governed table body per GFM Example 201, and its table is reported as a further table (SELF-12) |
+| Real level-2 ATX heading with the expected next title, outside fenced code (1b absent / 1c present) | Section end | Present: terminates, later rows belong to later sections (1c green). Absent: the section runs to end of document and every later table is a reported further table (1b) |
+| Paragraph text carrying heading bytes — prose mention (1e) or inline code span (1f) | Not a heading: the marker is not at line start | Ordinary content; a later contradictory table stays in the section and is reported |
+| Heading bytes inside fenced code (1g, 1k, 1n) | Literal code: fence tracking suppresses block recognition | Ordinary code; never starts/ends the section. A mismatched closer (1k) does not exit the fence, so bytes up to the matching closer stay code. Content before the real start heading (1n) is outside the section |
+| Escaped `\#` (1h) | Paragraph text: the line starts with `\`, not `#` | Ordinary content; the following table is reported |
+| Hash run with no required whitespace `##Current` (1i), over-long run `#######` (1j), four-space indented code (1j2) | Paragraph text / code per the ATX grammar (whitespace-or-EOL, ≤6 hashes, ≤3 spaces indent) | Ordinary content; the following table is reported |
+| Blockquote-carried heading bytes `> ## …` (1l) | Quote block, not a top-level section heading | Ordinary content; the following table is reported. (Fences inside blockquotes are likewise not tracked as section-level fences; any rows there break on the quote marker and surface as disagreements rather than silence.) |
+| Prose mention of the current title before the real heading (1m) | Paragraph text before the section starts | Outside the section; planted rows there change nothing (green) |
+
+Four branches are quiet, each for a stated reason the invariant allows: 1c/1m/1n drop
+nothing that belongs to the section (content outside it by structure); 2e drops fenced lines
+that GFM renders as code, so the document asserts no row there; 3b is a valid delimiter variant
+(the table parses green); 4b records the row and ignores only excess cells, matching GFM
+Example 204's own rendering. Everything else produces at least one message.
+
+Change note on 2d: under round 7 an unclosed fence before the first body row showed only four
+reverse-direction messages, because substring section selection never consulted fence state and
+the later section headings still delimited. Under structural selection the unclosed fence
+swallows the next heading too (GFM renders it as code), so the section runs on and every
+downstream table — plus the now-missing Deferred/Export sections — is reported. That is the
+louder, GFM-faithful consequence of the same input; the invariant (no silent row loss) holds
+either way, and the committed suite pins the closed-fence shapes while this audit records the
+unclosed shape explicitly.
