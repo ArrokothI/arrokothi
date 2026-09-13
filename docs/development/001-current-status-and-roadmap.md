@@ -6,10 +6,9 @@ status and dependencies. K0.1, the post-K0.1 process review and K0.2 are accepte
 owner-closed. The [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure, with the accepted
 benchmark E0 evidence; this establishes the contract/fixture gate, not a working target Kernel.
 The owner released **K1.0** on 2026-09-13, treating the benchmark-owned E1 fixture preparation as
-built but unaccepted; its round-11 candidate is `WAITING_FOR_REVIEW`, accepted by nobody, and closes
-no E1 criterion (rounds 1–10 each drew CHANGES REQUIRED; round 11 subordinates raw-leaf lifetime to
-container lifetime, requires whitespace before every HTML attribute and pins the raw-HTML rules to the
-cited GFM 0.29, closing the container-owned-leaf, missing-whitespace and textarea/search defects while
+built but unaccepted; its round-12 candidate is `WAITING_FOR_REVIEW`, accepted by nobody, and closes
+no E1 criterion (rounds 1–11 each drew CHANGES REQUIRED; round 12 corrects the type-6 raw-HTML boundary
+to the structural whitespace/`>`/exact-`/>`/EOL grammar, closing the lone-slash/dollar defect while
 preserving every earlier reconstruction). That release names no successor (`next_release: none`). Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the

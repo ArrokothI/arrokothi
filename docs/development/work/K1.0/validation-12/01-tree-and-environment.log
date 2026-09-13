@@ -1,0 +1,50 @@
+# 01 — tree and environment, clean payload C (round 12)
+$ git rev-parse HEAD
+ec713563b8b76273411231aff6f1f3ad49e4ffb0
+$ git status --short
+(only untracked validation-12, which this run writes)
+$ git log --oneline -4
+ec71356 fix(K1.0): correct type-6 boundary to structural whitespace/>/EOL (K10-R11-01)
+f227861 review(K1.0): round 11 independent review
+4cd711f report(K1.0): round-11 report, status transcription and clean-C validation
+6880b48 fix(K1.0): subordinate leaf lifetime to containers; complete attr grammar; pin GFM 0.29 (K10-R10-01..03)
+$ node --version; npm --version; npx tsc --version; uname -a
+v25.2.1
+11.6.2
+Version 5.9.3
+Darwin 10-17-106-242.dynapool.wireless.nyu.edu 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:17:12 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8103 arm64
+$ git diff --stat f22786173120976be7b8bdfac23c6fa1db660f30 HEAD  [correction interval]
+ docs/development/work/K1.0/contract.md             |  22 +++-
+ .../work/K1.0/validation-11/MANIFEST.md            |  14 +++
+ tests/conformance/architecture/inventory-oracle.ts |  12 +-
+ .../architecture/kernel-landing-zone.test.ts       | 130 +++++++++++++++++++++
+ 4 files changed, 176 insertions(+), 2 deletions(-)
+$ git diff --stat base HEAD  [cumulative tail]
+ .../K1.0/validation-11/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-11/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-11/07-test-sdk.log        |   34 +
+ .../08-r1001-r1002-r1003-demonstration.log         |  194 ++
+ .../09-structural-transition-audit.log             |  114 +
+ .../work/K1.0/validation-11/MANIFEST.md            |  114 +
+ package-lock.json                                  |    9 +
+ package.json                                       |    6 +-
+ packages/kernel/package.json                       |   14 +
+ packages/kernel/src/index.ts                       |   20 +
+ packages/kernel/src/unsupported.ts                 |   31 +
+ packages/kernel/tests/unsupported.test.ts          |   46 +
+ tests/conformance/architecture/boundary-policy.ts  |  211 ++
+ .../architecture/evidence-records.test.ts          |  193 ++
+ .../architecture/import-scanner.test.ts            |  395 +++
+ tests/conformance/architecture/inventory-oracle.ts | 1303 ++++++++++
+ .../architecture/kernel-landing-zone.test.ts       | 2491 +++++++++++++++++++
+ ...ries.test.ts => legacy-core-boundaries.test.ts} |   76 +-
+ tests/conformance/architecture/module-graph.ts     |  345 +++
+ 150 files changed, 70065 insertions(+), 36 deletions(-)
+$ git diff --quiet base HEAD -- tests/conformance/k0 && echo byte-identical
+tests/conformance/k0 byte-identical to base
+$ git ls-remote origin main; git ls-remote origin branch
+c9a9ed7e6e538ab0542fc6a999426264abb6212a	refs/heads/main
+f22786173120976be7b8bdfac23c6fa1db660f30	refs/heads/codex/k1.0-target-boundary-legacy-quarantine
+$ git show H11 oracle blob; C oracle blob
+H11 tests/conformance/architecture/inventory-oracle.ts git blob 8782dbf461907c6a5fc0934816cfd28a3568fbc3
+C   tests/conformance/architecture/inventory-oracle.ts git blob dabb174996df48518ad449c18dea54e212abfcb0
