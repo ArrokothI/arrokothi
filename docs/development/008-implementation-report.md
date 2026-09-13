@@ -91,3 +91,18 @@ substantive differences. Record owner's discussion provenance, understood result
 merged/closed decision and `next_release`. Link it from 007; do not change the old ACCEPT. The receipt
 names already-existing commits and never needs its own SHA. A later owner decision is another dated
 record, not a silent rewrite of an earlier hold or release.
+
+## Final cleanup record
+
+Append `work/<packet-id>/cleanup-<n>.md` under 006's owner-delegated cleanup policy. Record the owner
+instruction, actual cleanup role/date, full base/C/H and A if present, inspected pre-cleanup head,
+remote main, authentic review or its absence, post-review diff disposition, checks/evidence and limits.
+Record cleanup separately from packet acceptance and integration: complete with integration pending,
+reopened with finding IDs and corrective-packet link where required, or blocked with an exact unblock
+condition. State the next owner action and `next_release`. Link the record from 007; update live
+summaries without rewriting historical evidence. New findings use the review finding fields above
+and honest provenance.
+
+The external handoff supplies the final pushed head and verified remote SHA after the push. The
+record never names its own containing commit or claims a future push. A later verified manual merge
+gets the separate integration receipt above; cleanup is not that receipt or a fresh independent ACCEPT.

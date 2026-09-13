@@ -1,4 +1,4 @@
-# Role launchers for coding, review and integration
+# Role launchers for coding, review and final cleanup
 
 These universal entry points select work; they do not reproduce the whole workflow or substitute for
 packet-specific proof. [006](006-development-process.md) owns policy, [007](007-work-packets.md)
@@ -15,8 +15,7 @@ scope; they are not ordinary packet implementation.
 ## Using these prompts
 
 Use Prompt A for implementation or correction, Prompt B in a separate reviewer session with the
-exact candidate H and accessible source/evidence, and Prompt C for an explicitly requested record
-or integration action. For a correction, include 008's compact handoff rather than the accumulated
+exact candidate H and accessible source/evidence, and Prompt C for Codex final cleanup and push before the owner manually merges on GitHub. For a correction, include 008's compact handoff rather than the accumulated
 conversation. These prompts are for agents developing this repository.
 
 Resolve current status and release from 007 and the subsequent owner records it links. Earlier
@@ -82,17 +81,54 @@ in-scope correction. Put all explanations before one final standalone line: ACCE
 or BLOCKED — ARCHITECTURE DECISION. Do not merge or release a successor.
 ```
 
-## Prompt C — record review or integration on the owner's instruction
+## Prompt C — Codex final cleanup, close or reopen, and push
 
 ```text
-Perform only the explicitly requested ArrokothI administrative action under 006 and 008. Verify the
-pinned candidate and authentic review before transcribing a verdict; record provenance without
-inventing reviewer identity or rewriting historical records. A review transcription is A naming H.
+Act as the owner's delegated final-cleanup agent for the submitted ArrokothI packet. Follow
+AGENTS.md, 006's final-cleanup policy, 007 scope/status, 008 records and 012 review methods.
+This instruction authorizes the final check, administrative closure or evidence-based reopening,
+commits and a non-force push of the scoped branch. The owner will merge manually on GitHub.
+Honor explicit branch/worktree instructions and preserve other agents' work. If the checkout is on
+main, use a scoped non-main branch without switching a checkout another agent is using; if branch
+creation is explicitly prohibited, report the conflict instead of pushing main.
 
-For completed owner integration, verify current remote main, ancestry and tree/content equivalence;
-account for H..A separately from integration changes. Append an integration receipt naming the actual
-merge commit and verification, then update the authoritative ledger. Preserve the ACCEPT as an event
-about H. Record the owner's discussion decision and explicit next_release, or none when held. Supply
-branch/commit/push evidence without embedding a record's own SHA. Do not infer release from merge and
-do not implement a successor. Any substantive integration difference needs review under 006.
+Identify the packet from the handoff and authentic review; if ambiguous, ask for the exact target.
+Verify full base/C/H, release, prerequisites, independent ACCEPT, open findings, raw evidence and
+current local/remote state. Read the cumulative candidate and all post-review changes, not only the
+report. Apply the contract's relevant checks to the exact tree being handed off; reuse pinned logs
+only where their source/evidence identity still applies, and distinguish inspected logs from reruns.
+Check current remote main for conflicts and relevant changes that could invalidate the review.
+A green suite cannot replace semantic coverage or an authentic independent ACCEPT.
+
+If OK: faithfully record any missing acceptance transcription A naming H. Finish administrative
+records, links and current status summaries, preserving historical records. Append
+008's cleanup record and link it from 007. Record cleanup complete, independent acceptance at H,
+integration pending owner merge, and next_release: none unless separately authorized. Close only
+pre-merge implementation/review/cleanup obligations; do not claim merged, integrated or a parent
+milestone closed when its gate or owner decision is still pending.
+
+Keep H..A limited to authentic review/status transcription; put later cleanup records in separate
+administrative commits. Inspect every staged change and confirm no unreviewed payload is included.
+Commit the scoped cleanup, push only its non-main branch, and verify the advertised remote SHA equals
+the local pushed head. Do not force-push, merge, enable auto-merge, push main, delete the branch or
+release/implement a successor. Report ready for owner merge only after push verification succeeds.
+
+If not OK: do not close the work or advertise it as merge-ready. Append a numbered cleanup finding
+record naming the affected revision, concrete defect or missing evidence, required outcome and
+validation. Under 006, reopen an unaccepted packet for correction; for invalidated accepted work,
+preserve the historical ACCEPT, append an invalidation notice, hold the affected claims/integration
+and create a linked corrective packet. Use the appropriate blocker for unavailable evidence or a
+normative decision. Supply 008's compact correction handoff for a fresh independent review. Fix
+administrative omissions within this role; substantive fixes require a new C/H and independent
+review, never cleanup self-acceptance. Commit and push scoped reopening records when possible.
+
+A transport-only push failure leaves push pending with the exact error and offline handoff; it does
+not itself invalidate accepted content. If the owner later reports the manual merge, verify the
+actual remote merge, ancestry and tree/content equivalence before writing an integration receipt.
+
+Finish with one concise owner handoff: CLEANUP COMPLETE — AWAITING OWNER MERGE, REOPENED, or BLOCKED;
+packet and branch; full accepted H if one exists and final pushed head if available; verified push
+or exact blocker; checks, remaining limits, and the next owner action. Supply the PR link if available.
+Do not fabricate a review identity, a successful push, a merge receipt or independent acceptance of
+your own edits.
 ```

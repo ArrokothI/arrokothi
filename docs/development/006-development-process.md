@@ -47,8 +47,8 @@ its full SHA; never use a moving `main` as an unrecorded review base.
 | PLANNED | Owner; planner proposing a new packet | Bounded contract, dependencies and non-goals in 007. Not automatically eligible. |
 | IN_PROGRESS | Coding agent | Owner release, all prerequisite acceptances integrated, clean scoped branch/base, recorded contract and command plan. |
 | WAITING_FOR_REVIEW | Coding agent | Immutable candidate, complete report and available evidence for every criterion. All claimed gates actually run; whole-packet self-review and correction closure recorded under 012; no known mandatory defect, unresolved owned semantic case or missing result. |
-| CHANGES_REQUESTED | Reviewer, or owner transcribing its verdict | Versioned review, reviewed base/head and actionable findings. Correction resumes this packet, not the next. |
-| ACCEPTED | Independent reviewer, or owner transcribing its ACCEPT | Every packet criterion passes; exact base/head, contract revision and evidence identities recorded. Coding agent cannot grant or invent acceptance. |
+| CHANGES_REQUESTED | Reviewer, owner transcribing its verdict, or owner-delegated cleanup agent under the final-cleanup policy | Versioned review or delegated cleanup finding, affected base/head and actionable findings. Correction resumes this packet, not the next. |
+| ACCEPTED | Independent reviewer, or owner / explicitly delegated cleanup agent transcribing its ACCEPT | Every packet criterion passes; exact base/head, contract revision and evidence identities recorded. Coding agent cannot grant or invent acceptance. |
 | BLOCKED_ARCHITECTURE | Either agent or owner | Conflicting/missing semantic obligation, smallest owner decision, affected sources and dependents. No dependent implementation. |
 | BLOCKED_EXTERNAL | Either agent or owner | Named unavailable input, credential, service, evidence run or review access; responsible actor and concrete unblock condition. |
 | DEFERRED | Owner | Reason, trigger and claim/dependency consequences. Missing mandatory evidence cannot be relabeled optional. |
@@ -139,6 +139,37 @@ checks its implementation. Never weaken a gate solely because an implementation 
 If later evidence invalidates accepted work, retain its historical ACCEPT for that exact revision,
 append an invalidation notice, mark affected integration/claims on hold and create a corrective packet.
 Do not rewrite history to pretend it was never accepted or keep releasing dependent claims.
+
+## Owner-delegated final cleanup before manual merge
+
+Invoking Prompt C delegates final cleanup to Codex for the identified packet: final verification,
+faithful review transcription, administrative completion, evidence-based reopening, scoped commits
+and a non-force branch push. This is a distinct owner-delegated role, not a new permission for the
+coding agent to self-accept. Record the owner instruction and actual role. Independent acceptance
+still requires the separate reviewer and exact candidate required above.
+
+Cleanup complete means accepted work is ready for the owner's manual GitHub merge. Integration
+remains pending until the actual merge is verified; no integration receipt or dependent milestone
+closure may be fabricated in advance. Keep the packet's authentic ACCEPTED state and record cleanup
+and integration separately in 008's cleanup record, linked from 007. This adds no packet lifecycle
+state. A successor remains held unless separately released.
+
+The cleanup agent may transcribe an authentic verdict as the owner's delegate. It may also record
+new cleanup findings and reopen an unaccepted packet as CHANGES_REQUESTED under this explicit owner
+authority; it must identify those findings as its own, not attribute them to the independent reviewer.
+When new evidence invalidates accepted work, use the existing invalidation/corrective-packet rule:
+retain the historical ACCEPT, hold affected claims and integration, and create the linked corrective
+packet. Missing evidence or normative authority uses the existing blocker states. A failed push alone
+is a transport blocker, not a substantive invalidation.
+
+Administrative omissions can be repaired during cleanup. Code, tests, fixtures, contract, policy or
+other substantive changes require new C/H validation and independent review. Preserve H..A's exact
+review/status-only scope; later cleanup records are separate administrative commits. Check the final
+branch against current remote main and account for post-review changes. Do not resolve substantive
+conflicts and silently extend the old ACCEPT. Push only the scoped non-main branch, verify its remote
+SHA and leave the merge to the owner. Branch deletion, force-push, auto-merge and successor release
+are outside this delegation. Explicit owner branch instructions take precedence; do not switch a
+checkout another agent is using.
 
 ## Git and artifact handoff
 
