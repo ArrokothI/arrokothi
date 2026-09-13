@@ -244,6 +244,64 @@ const HTML_BLOCK_TAGS =
   "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul";
 
 /**
+ * C4 Markdown lexical model (K10-R12-01).
+ *
+ * Published GFM 0.29 §2.1 defines three separate concepts that host-language
+ * `\s` and `String.prototype.trim()` conflate:
+ *
+ * - **whitespace character**: exactly U+0020 SPACE, U+0009 TAB, U+000A LF,
+ *   U+000B LINE TABULATION (vertical tab), U+000C FORM FEED, U+000D CR;
+ * - **Unicode whitespace**: a broader class that additionally contains
+ *   characters such as U+00A0 NO-BREAK SPACE;
+ * - **blank line**: a line containing no characters, or only U+0020 SPACE
+ *   and U+0009 TAB.
+ *
+ * Round 12 re-derived *which tokens* may follow a type-6 tag name but inherited
+ * the host meaning of "whitespace", so `\s` admitted NBSP as a type-1/6
+ * boundary while the hand-written `[ \t]` loops in `parseCompleteTag` rejected
+ * valid VT/FF attribute whitespace, and `trim()` closed raw blocks on
+ * NBSP/VT/FF-only lines that GFM does not call blank.
+ *
+ * Invariant: every C4 Markdown lexical predicate uses the character class
+ * defined by the governing GFM production. GFM whitespace, Unicode whitespace
+ * and blank-line whitespace are separate concepts and cannot be substituted
+ * with host-language `\s` or `trim()`.
+ *
+ * Scope: the helpers below serve raw-HTML start recognition (§4.6 types 1/6),
+ * the complete-tag grammar (§6.10: attribute separators, whitespace around
+ * `=`, pre-close and trailing whitespace, unquoted-value terminators), and
+ * blank-line termination of type-6/7 blocks, which is the same blank-line
+ * decision the table/section scan consumes. List markers, indentation, thematic
+ * breaks, ATX heading text and table-cell normalization keep their own
+ * grammar rules and are deliberately untouched.
+ */
+
+/** Inner source of the GFM-whitespace regex atom: exactly the §2.1 six. */
+const GFM_WS_INNER = " \\t\\n\\x0B\\x0C\\r";
+/** One GFM whitespace character, as a regex atom shared by all start boundaries. */
+const GFM_WS_ATOM = `[${GFM_WS_INNER}]`;
+const GFM_WS_ONE = new RegExp(`^${GFM_WS_ATOM}$`);
+/** A trailing run of GFM whitespace (complete-tag tails, §6.10/§4.6 type 7). */
+const GFM_WS_TAIL = new RegExp(`^${GFM_WS_ATOM}*$`);
+/** An unquoted attribute value: anything but GFM whitespace or `"`, `'`, `=`, `<`, `>`, backtick. */
+const GFM_UNQUOTED_VALUE = new RegExp(`^[^${GFM_WS_INNER}"'=\`<>]+`);
+
+/** Whether `ch` is a GFM §2.1 whitespace character (never Unicode-only whitespace such as NBSP). */
+function isGfmWhitespace(ch: string | undefined): boolean {
+  return ch !== undefined && GFM_WS_ONE.test(ch);
+}
+
+/**
+ * Whether the split physical line is a GFM blank line: only U+0020 SPACE and
+ * U+0009 TAB, tolerating one trailing U+000D left by CRLF splitting (SELF-20).
+ * Lines containing only NBSP, VT, FF or any other character are content, so an
+ * open type-6/7 block continues across them.
+ */
+function isGfmBlankLine(line: string): boolean {
+  return /^[ \t]*\r?$/.test(line);
+}
+
+/**
  * Whether the line is a thematic break (GFM §4.1): 0–3 spaces of indentation, then three or
  * more of the same `-`/`_`/`*` character, each optionally followed by spaces/tabs, and nothing
  * else. Thematic breaks take precedence over list items when both readings are possible
@@ -337,12 +395,13 @@ interface ListFrame {
 
 /**
  * A complete HTML open or closing tag occupying its whole line (GFM §4.6 type 7, tag grammar
- * §6.10), or null. Open tags carry zero or more attributes, each beginning with whitespace
- * (so `<a href='bar'title=title>` is ordinary text); values may be unquoted (no whitespace,
- * `"`, `'`, `=`, `<`, `>` or backtick), single-quoted (only `'` ends them) or double-quoted
- * (only `"` ends them) — so quoted `<`/`>` never end the tag early — with optional whitespace
- * around `=` and before the closing `>`/`/>`. Closing tags are `</name>` with optional
- * whitespace only and can never carry attributes.
+ * §6.10), or null. Open tags carry zero or more attributes, each beginning with GFM
+ * whitespace (so `<a href='bar'title=title>` is ordinary text, while VT/FF also begin
+ * attributes); values may be unquoted (no GFM whitespace, `"`, `'`, `=`, `<`, `>` or
+ * backtick), single-quoted (only `'` ends them) or double-quoted (only `"` ends them) — so
+ * quoted `<`/`>` never end the tag early — with optional GFM whitespace around `=` and
+ * before the closing `>`/`/>`. Closing tags are `</name>` with optional GFM whitespace
+ * only and can never carry attributes; trailing whitespace after the tag is GFM whitespace.
  */
 interface CompleteTag {
   readonly close: boolean;
@@ -362,10 +421,10 @@ function parseCompleteTag(rest: string): CompleteTag | null {
   if (name === undefined) return null;
   i += name.length;
   if (close) {
-    while (rest[i] === " " || rest[i] === "\t") i++;
+    while (isGfmWhitespace(rest[i])) i++;
     if (rest[i] !== ">") return null;
     i++;
-    if (!/^[ \t\r]*$/.test(rest.slice(i))) return null;
+    if (!GFM_WS_TAIL.test(rest.slice(i))) return null;
     return { close: true, tag: name };
   }
   for (;;) {
@@ -374,7 +433,7 @@ function parseCompleteTag(rest: string): CompleteTag | null {
     // since the tag name or previous attribute, so `<a href='bar'title=title>` and
     // `<Warning a='x'b=title>` stay ordinary Markdown rather than opening a raw block.
     const sepStart = i;
-    while (rest[i] === " " || rest[i] === "\t") i++;
+    while (isGfmWhitespace(rest[i])) i++;
     const ch = rest[i];
     if (ch === ">") {
       i++;
@@ -388,27 +447,27 @@ function parseCompleteTag(rest: string): CompleteTag | null {
     const attr = rest.slice(i).match(/^[A-Za-z_:][A-Za-z0-9_.:-]*/)?.[0];
     if (attr === undefined) return null;
     i += attr.length;
-    // Optional `=` value with optional surrounding whitespace. When there is no `=`, `i`
+    // Optional `=` value with optional surrounding GFM whitespace. When there is no `=`, `i`
     // stays right after the name so the next iteration's separator check sees the gap that
     // follows (this keeps valueless attributes such as `hidden` working).
     let j = i;
-    while (rest[j] === " " || rest[j] === "\t") j++;
+    while (isGfmWhitespace(rest[j])) j++;
     if (rest[j] === "=") {
       j++;
-      while (rest[j] === " " || rest[j] === "\t") j++;
+      while (isGfmWhitespace(rest[j])) j++;
       const quote = rest[j];
       if (quote === '"' || quote === "'") {
         const end = rest.indexOf(quote, j + 1);
         if (end === -1) return null;
         i = end + 1;
       } else {
-        const value = rest.slice(j).match(/^[^ \t\r\n"'=`<>]+/)?.[0];
+        const value = rest.slice(j).match(GFM_UNQUOTED_VALUE)?.[0];
         if (value === undefined) return null;
         i = j + value.length;
       }
     }
   }
-  if (!/^[ \t\r]*$/.test(rest.slice(i))) return null;
+  if (!GFM_WS_TAIL.test(rest.slice(i))) return null;
   return { close: false, tag: name };
 }
 
@@ -434,22 +493,23 @@ function parseHtmlBlockStart(line: string, allowType7: boolean): { readonly kind
   if (line.startsWith("\t")) return null;
   const rest = line.slice(indent);
   if (rest.startsWith(">")) return null;
-  if (/^<(script|pre|style)(\s|>|$)/i.test(rest)) return { kind: 1 };
+  if (new RegExp(`^<(script|pre|style)(${GFM_WS_ATOM}|>|$)`, "i").test(rest)) return { kind: 1 };
   if (rest.startsWith("<!--")) return { kind: 2 };
   if (rest.startsWith("<?")) return { kind: 3 };
   if (rest.startsWith("<![CDATA[")) return { kind: 5 };
   if (/^<![A-Z]/.test(rest)) return { kind: 4 };
   // GFM 0.29 §4.6 type 6: a recognized block tag name followed by exactly one of
-  // whitespace, `>`, the two-character string `/>`, or end of line. This is a
+  // GFM whitespace, `>`, the two-character string `/>`, or end of line. This is a
   // structural alternation, not a character class: a lone `/` is insufficient and
   // `$` is an end anchor, never a literal boundary token, so `<div/ x>`,
   // `<div/foo>`, `<div/` and `<div$foo>` stay ordinary text while `<div>`,
-  // `<div/>` and `<div class=x>` still open type 6. Neighbor audit (K10-R11-01):
-  // type 1 already uses the structural `(\s|>|$)` (no `/`, no literal `$`);
-  // types 2/3/5 are fixed prefixes needing no boundary; type 4 is `<!` + ASCII
-  // uppercase; type 7 is a complete tag via `parseCompleteTag`, so the malformed
-  // forms above fail there too and stay ordinary.
-  const type6 = new RegExp(`^<\\/?(?:${HTML_BLOCK_TAGS})(?=\\s|>|/>|$)`, "i");
+  // `<div/>` and `<div class=x>` still open type 6. The whitespace alternative is
+  // the shared GFM class (K10-R12-01), never host `\s`: NBSP and other Unicode-only
+  // whitespace are not boundaries. Neighbor audit: type 1 uses the same shared
+  // class; types 2/3/5 are fixed prefixes needing no boundary; type 4 is `<!` plus
+  // ASCII uppercase; type 7 is a complete tag via `parseCompleteTag`, so the
+  // malformed forms above fail there too and stay ordinary.
+  const type6 = new RegExp(`^<\\/?(?:${HTML_BLOCK_TAGS})(?=${GFM_WS_ATOM}|>|/>|$)`, "i");
   if (type6.test(rest)) return { kind: 6 };
   if (!allowType7) return null;
   const tag = parseCompleteTag(rest);
@@ -475,11 +535,6 @@ function htmlClosesOnLine(kind: 1 | 2 | 3 | 4 | 5, line: string): boolean {
   }
 }
 
-/** Whether the line is blank (spaces/tabs only). Blank lines break tables and end type-6/7 HTML blocks. */
-function isBlankLine(line: string): boolean {
-  return line.trim() === "";
-}
-
 /**
  * Column width of leading indentation with tab stops of 4 (GFM §2.2). Lines reaching column 4
  * before any non-whitespace character are indented code at top level, never headings, fences,
@@ -497,7 +552,7 @@ function indentWidth(line: string): number {
 
 /** Whether the line is indented code (non-blank, indented four or more columns). */
 function isIndentedCode(line: string): boolean {
-  return !isBlankLine(line) && indentWidth(line) >= 4;
+  return !isGfmBlankLine(line) && indentWidth(line) >= 4;
 }
 
 /**
@@ -711,7 +766,7 @@ export function scanTransitions(markdown: string): LineTransition[] {
     if (fence !== null || html !== null) {
       const ownerDepth = fence !== null ? fence.ownerDepth : (html as HtmlState).ownerDepth;
       const owner = ownerDepth > 0 ? lists[ownerDepth - 1] : undefined;
-      if (owner !== undefined && !isBlankLine(line) && indentWidth(line) < owner.contentIndent) {
+      if (owner !== undefined && !isGfmBlankLine(line) && indentWidth(line) < owner.contentIndent) {
         popTo(indentWidth(line));
         fence = null;
         html = null;
@@ -733,7 +788,7 @@ export function scanTransitions(markdown: string): LineTransition[] {
         out.push(common(closes ? "html-close-line" : "html-raw"));
         continue;
       }
-      if (isBlankLine(line)) {
+      if (isGfmBlankLine(line)) {
         const kind = html.kind;
         html = null;
         out.push(common("html-end-blank"));
@@ -742,7 +797,7 @@ export function scanTransitions(markdown: string): LineTransition[] {
       out.push(common("html-raw"));
       continue;
     }
-    if (isBlankLine(line)) {
+    if (isGfmBlankLine(line)) {
       out.push(common("blank"));
       continue;
     }

@@ -2483,6 +2483,182 @@ describe("K1.0 policy and inventory agree", () => {
     });
   });
 
+  describe("GFM whitespace and blank-line lexical classes (K10-R12-01)", () => {
+    // GFM §2.1 defines whitespace as exactly SPACE/TAB/LF/VT/FF/CR, keeps Unicode
+    // whitespace (e.g. NBSP) separate, and defines blank lines as SPACE/TAB only.
+    // Host `\s`/`trim()` conflate all three. Each opener below is followed by the
+    // exact next governed heading and a contradictory well-formed table after it
+    // (GREEN = heading real, planted table outside; RED = heading raw, planted
+    // table caught inside Deferred), except where the shape itself varies the
+    // blank-line lifetime. VT/FF/NBSP are written with escapes so the source stays
+    // printable; the parser sees the real characters.
+    const lastDxRow =
+      "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
+    const badDeferredTable =
+      "| Id | Current path | Disposition | Owner | Why it is assigned there |\n|---|---|---|---|---|\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | planted row |\n";
+    const furtherDeferred = /Deferred section contains a further table; this row is outside the governed table: (Id \| Current path|DX-1 \| `packages\/core\/src\/util\/json\.ts`)/;
+    // The opener goes after a blank following the governed table, so the type-7
+    // cannot-interrupt-a-paragraph rule can never be the reason a block opens.
+    const blankShape = (opener: string): string =>
+      `${lastDxRow}\n\n${opener}\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
+    const shape = (opener: string): string =>
+      `${lastDxRow}\n${opener}\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
+    const VT = "";
+    const FF = "";
+    const NBSP = " ";
+
+    test("vertical-tab and form-feed begin attributes in a complete type-7 tag", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const opener of [`<Warning${VT}title="x">`, `<Warning${FF}title="x">`]) {
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, blankShape(opener)]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherDeferred.test(message)),
+          `${JSON.stringify(opener)} is a valid complete tag, so the heading is raw and the planted table surfaces; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("optional and trailing tag whitespace accepts vertical-tab and form-feed", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const opener of [
+        `<Warning a${VT}=${VT}"x">`,
+        `<Warning a="x"${FF}>`,
+        `<Warning> ${VT}`,
+      ]) {
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, blankShape(opener)]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherDeferred.test(message)),
+          `${JSON.stringify(opener)} carries only GFM whitespace around =/before >/after >, so it still opens type 7; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("no-break space is not a type-6 or type-1 boundary", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const opener of [`<div${NBSP}x>`, `<script${NBSP}x>`]) {
+        const mutated = mutate(real, [[lastDxRow, shape(opener)]]);
+        assert.deepEqual(
+          inventoryDisagreements(parseInventory(mutated), policy, workspace),
+          [],
+          `${JSON.stringify(opener)} is ordinary text: NBSP is Unicode whitespace, not a GFM boundary, so the heading delimits`,
+        );
+      }
+    });
+
+    test("a script boundary in NBSP opens no raw block that swallows later sections", async () => {
+      // `<script\u00A0x>` is ordinary, so a Zones-placed opener must leave every later
+      // governed table exactly where it is. A host-`\s` type-1 opener instead swallows
+      // the rest of the document and reports later tables missing.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const lastZoneRow =
+        "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+      const badZonesTable =
+        "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | stale contradictory further table |\n";
+      const insertion = `${lastZoneRow}\n<script${NBSP}x>\n## Current cross-boundary dependencies\n\n${badZonesTable}\n## Current cross-boundary dependencies\n`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastZoneRow, insertion]])), policy, workspace),
+        [],
+        "the NBSP script line is ordinary prose: the heading delimits and later sections parse normally",
+      );
+    });
+
+    test("NBSP-only, vertical-tab-only and form-feed-only lines do not end raw blocks", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const filler of [NBSP, VT, FF]) {
+        for (const opener of ["<Warning>", "<div>"]) {
+          const insertion = `${lastDxRow}\n\n${opener}\n${filler}\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
+          const disagreements = inventoryDisagreements(
+            parseInventory(mutate(real, [[lastDxRow, insertion]])),
+            policy,
+            workspace,
+          );
+          assert.ok(
+            disagreements.some((message) => furtherDeferred.test(message)),
+            `${JSON.stringify(opener)} with a ${JSON.stringify(filler)}-only line keeps the heading raw; got: ${JSON.stringify(disagreements)}`,
+          );
+        }
+      }
+    });
+
+    test("space-only and tab-only lines still end raw blocks", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const filler of [" ", "\t"]) {
+        for (const opener of ["<Warning>", "<div>"]) {
+          const insertion = `${lastDxRow}\n\n${opener}\n${filler}\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
+          assert.deepEqual(
+            inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, insertion]])), policy, workspace),
+            [],
+            `${JSON.stringify(opener)} with a ${JSON.stringify(filler)}-only line ends there, so the heading delimits`,
+          );
+        }
+      }
+    });
+
+    test("ordinary ASCII syntax, CRLF tolerance and the round-12 token matrix are unchanged", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      // ASCII multi-attribute tags still open; missing-whitespace forms stay ordinary.
+      assert.ok(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, blankShape('<Warning a="x" b=\'y\'>')]])),
+          policy,
+          workspace,
+        ).some((message) => furtherDeferred.test(message)),
+        "ASCII attribute syntax still opens type 7",
+      );
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, blankShape("<a href='bar'title=title>")]])),
+          policy,
+          workspace,
+        ),
+        [],
+        "missing attribute whitespace stays ordinary",
+      );
+      // Round-12 token matrix: lone slash/dollar ordinary, valid forms raw.
+      for (const opener of ["<div/ x>", "<div/foo>", "<div/", "<div$foo>"]) {
+        assert.deepEqual(
+          inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, shape(opener)]])), policy, workspace),
+          [],
+          `${opener} stays ordinary`,
+        );
+      }
+      for (const opener of ["<div/>", "<div>", "<div class=x>"]) {
+        assert.ok(
+          inventoryDisagreements(
+            parseInventory(mutate(real, [[lastDxRow, shape(opener)]])),
+            policy,
+            workspace,
+          ).some((message) => furtherDeferred.test(message)),
+          `${opener} still opens type 6`,
+        );
+      }
+      // A VT attribute next to a CRLF line ending stays a valid complete tag.
+      assert.ok(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, blankShape(`<Warning${VT}title="x">\r`)]])),
+          policy,
+          workspace,
+        ).some((message) => furtherDeferred.test(message)),
+        "trailing CR does not disturb VT attribute parsing",
+      );
+    });
+  });
+
   test("the allowed-leaf list is empty, and the inventory says why", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
     assert.deepEqual(TARGET_KERNEL_RULES.allowedLeaves, [], "K1.0 approves no portable leaf");
