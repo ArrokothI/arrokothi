@@ -224,7 +224,7 @@ describe("K1.0 forbidden-edge controls", () => {
     assert.match(violations[0]!.reason, /node: builtins only/);
   });
 
-  test("a workspace subpath that is not an declared export is rejected as unresolved", async () => {
+  test("a workspace subpath that is not a declared export is rejected as unresolved", async () => {
     const violations = await violationsFor({
       "packages/kernel/src/index.ts": 'import { hidden } from "@arrokothi/core/internals";\nexport const use = hidden;\n',
     });
