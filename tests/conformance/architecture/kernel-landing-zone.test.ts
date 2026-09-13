@@ -1689,6 +1689,432 @@ describe("K1.0 policy and inventory agree", () => {
     });
   });
 
+  describe("list containers (K10-R9-01)", () => {
+    // A governed section boundary is an exact expected level-2 ATX heading at the document's
+    // top-level block/container depth: "parses as an ATX heading" is insufficient, because GFM
+    // list items may contain any block including headings. The shared scan now tracks
+    // list-item containers (marker-width-derived content indents, nesting), so a nested
+    // heading breaks a table body but never delimits a section, while a dedented heading still
+    // terminates normally and a column-0 table after the list is still discovered.
+    const lastDxRow =
+      "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
+    const badDeferredTable =
+      "| Id | Current path | Disposition | Owner | Why it is assigned there |\n|---|---|---|---|---|\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory further table |\n";
+    const furtherDeferred = /Deferred section contains a further table; this row is outside the governed table: (Id \| Current path|DX-1 \| `packages\/core\/src\/util\/json\.ts`)/;
+
+    test("a next-heading line nested in a bullet item cannot truncate the section", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n- note\n\n  ## What this packet does not establish\n\n${badDeferredTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.equal(disagreements.length, 2, `the nested heading must not delimit and the later table must surface exactly; got: ${JSON.stringify(disagreements)}`);
+      assert.ok(
+        disagreements.every((message) => furtherDeferred.test(message)),
+        `both rows of the later table must surface; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("an ordered-list equivalent cannot truncate the section", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n1. note\n\n   ## What this packet does not establish\n\n${badDeferredTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.equal(disagreements.length, 2, `got: ${JSON.stringify(disagreements)}`);
+      assert.ok(disagreements.every((message) => furtherDeferred.test(message)), `got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("a wider ordered marker derives a deeper continuation indent", async () => {
+      // `10. ` opens content at column 4 while `- ` opens at column 2: the same three-space
+      // table is top-level after the wide marker (reported) but list content after the
+      // bullet (ignored), and a three-space heading ends the wide item normally (green).
+      // Indentation comes from GFM marker rules, not a hard-coded two spaces.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const wideTable =
+        "   | Id | Current path | Disposition | Owner | Why |\n   |---|---|---|---|---|\n   | DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale |\n";
+      const wide = mutate(real, [[lastDxRow, `${lastDxRow}\n10. note\n\n${wideTable}`]]);
+      assert.ok(
+        inventoryDisagreements(parseInventory(wide), policy, workspace).some((message) =>
+          furtherDeferred.test(message),
+        ),
+        "a three-space table escapes the wide item and is reported",
+      );
+      const bullet = mutate(real, [[lastDxRow, `${lastDxRow}\n- note\n\n${wideTable}`]]);
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(bullet), policy, workspace),
+        [],
+        "the same table stays list content after the bullet and is ignored",
+      );
+      const topLevel = mutate(real, [[lastDxRow, `${lastDxRow}\n10. note\n\n   ## What this packet does not establish\n\n${badDeferredTable}`]]);
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(topLevel), policy, workspace),
+        [],
+        "three-space heading ends the wide item, terminates normally, and leaves the later table outside",
+      );
+    });
+
+    test("a heading nested two containers deep cannot truncate the section", async () => {
+      // The inner item (`  - inner`, content at column 4) closes at the dedented heading,
+      // which remains content of the outer item (content at column 2): the section stays
+      // open through the pop and the later table still surfaces. (Doubly nested headings at
+      // four-plus spaces are indented code in every implementation, so the depth is
+      // exercised through the pop rather than the indent.)
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n- outer\n\n  - inner\n\n  ## What this packet does not establish\n\n${badDeferredTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.equal(disagreements.length, 2, `got: ${JSON.stringify(disagreements)}`);
+      assert.ok(disagreements.every((message) => furtherDeferred.test(message)), `got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("a list-contained heading equal to the current title stays inside", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n- note\n\n  ## Deferred extraction and bridge owners\n\n${badDeferredTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherDeferred.test(message)),
+        `a repeated current heading inside the list must still report its table; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a genuine top-level exact next heading after the container still terminates", async () => {
+      // The container must not swallow the real delimiter: with no contradictory table, the
+      // section ends normally and stays green; the Zones twin below locks the count.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n- note\n\n  ## What this packet does not establish\n`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, insertion]])), policy, workspace),
+        [],
+        "a nested heading plus no later table stays green and the real heading still delimits",
+      );
+    });
+
+    test("a normal list with no dangerous heading is supported behavior", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n- note\n\n  continued prose inside the item\n`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, insertion]])), policy, workspace),
+        [],
+        "ordinary list content without headings or tables changes nothing",
+      );
+      // Dedented prose after the blank closes the container (no lazy continuation is
+      // possible), so a later top-level heading still terminates normally and green.
+      const closed = `${lastDxRow}\n- note\n\nclosed prose ends the item\n\n  ## What this packet does not establish\n\n${badDeferredTable}`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, closed]])), policy, workspace),
+        [],
+        "prose after a blank pops the container, so the heading delimits",
+      );
+    });
+
+    test("a task-list item is a list container too", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n- [ ] note\n\n  ## What this packet does not establish\n\n${badDeferredTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherDeferred.test(message)),
+        `got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a thematic break does not open a list container", async () => {
+      // `* * *` is a break (GFM precedence over lists), so the following indented heading is
+      // top-level and terminates normally, leaving the later table outside and green.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n* * *\n\n  ## What this packet does not establish\n\n${badDeferredTable}`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, insertion]])), policy, workspace),
+        [],
+        "the break is not a marker, so the heading delimits and the table is outside",
+      );
+    });
+
+    test("restricted markers after prose stay prose", async () => {
+      // Empty items and non-1 ordered starts cannot interrupt a paragraph: `2. item` and a
+      // lone `*` after prose are text, so the following indented heading is top-level and the
+      // section ends normally (green). Ten digits never form a marker at all.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const marker of ["2. item", "*", "1234567890. item"]) {
+        const insertion = `${lastDxRow}\nSome prose about deferrals.\n${marker}\n\n  ## What this packet does not establish\n\n${badDeferredTable}`;
+        assert.deepEqual(
+          inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, insertion]])), policy, workspace),
+          [],
+          `${JSON.stringify(marker)} after prose is not a container, so the heading delimits`,
+        );
+      }
+    });
+
+    test("a dash line that is really a second item keeps the container open", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n- first\n- second\n\n  ## What this packet does not establish\n\n${badDeferredTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherDeferred.test(message)),
+        `got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("the container boundary holds for the Zones relation as well", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const lastZoneRow =
+        "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+      const badZonesTable =
+        "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | stale contradictory further table |\n";
+      const insertion = `${lastZoneRow}\n- note\n\n  ## Current cross-boundary dependencies\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.equal(disagreements.length, 2, `the nested heading must not delimit and termination must hold exactly; got: ${JSON.stringify(disagreements)}`);
+    });
+  });
+
+  describe("complete type-7 tags (K10-R9-02)", () => {
+    // GFM type-7 blocks start from a complete open tag (any name except script/style/pre) or a
+    // complete closing tag alone on the line. Quoted attribute values may contain `<`/`>` when
+    // those are not the quote delimiter, closing tags carry no attributes, and type 7 cannot
+    // interrupt a paragraph. The previous recognizer rejected any `<`/`>` in attributes, always
+    // allowed attributes on closing tags, and ignored the paragraph rule.
+    const lastDxRow =
+      "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
+    const badDeferredTable =
+      "| Id | Current path | Disposition | Owner | Why it is assigned there |\n|---|---|---|---|---|\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory further table |\n";
+    const furtherDeferred = /Deferred section contains a further table; this row is outside the governed table: (Id \| Current path|DX-1 \| `packages\/core\/src\/util\/json\.ts`)/;
+
+    test("a double-quoted value containing > still opens the raw block", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n<Warning title="a>b">\n## What this packet does not establish\n\n${badDeferredTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.equal(disagreements.length, 2, `the heading is raw block content and the table must surface exactly; got: ${JSON.stringify(disagreements)}`);
+      assert.ok(disagreements.every((message) => furtherDeferred.test(message)), `got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("a single-quoted value containing < still opens the raw block", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n<Warning title='a<b'>\n## What this packet does not establish\n\n${badDeferredTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.equal(disagreements.length, 2, `got: ${JSON.stringify(disagreements)}`);
+      assert.ok(disagreements.every((message) => furtherDeferred.test(message)), `got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("ordinary and unquoted attributes still open the raw block", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const opener of ['<Warning foo=bar baz="qux">', '<Warning data-note>', "<i class='foo'>"]) {
+        const insertion = `${lastDxRow}\n${opener}\n## What this packet does not establish\n\n${badDeferredTable}`;
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, insertion]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherDeferred.test(message)),
+          `${opener} must open a raw block; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("a complete closing tag opens the raw block but carries no attributes", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const openInsertion = `${lastDxRow}\n</Warning>\n## What this packet does not establish\n\n${badDeferredTable}`;
+      const openDisagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, openInsertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        openDisagreements.some((message) => furtherDeferred.test(message)),
+        `a bare closing tag is a valid opener; got: ${JSON.stringify(openDisagreements)}`,
+      );
+      const attrInsertion = `${lastDxRow}\n</Warning title="x">\n## What this packet does not establish\n\n${badDeferredTable}`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, attrInsertion]])), policy, workspace),
+        [],
+        "attributes on a closing tag are malformed, so the heading delimits and the table is outside",
+      );
+    });
+
+    test("malformed near-tags remain ordinary Markdown", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const opener of ['<Warning title="a>b>', "<3Warning>", "<Warning foo=a>b>", "<Warning foo=bar'baz'>"]) {
+        const insertion = `${lastDxRow}\n${opener}\n## What this packet does not establish\n\n${badDeferredTable}`;
+        assert.deepEqual(
+          inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, insertion]])), policy, workspace),
+          [],
+          `${opener} is not a complete tag, so the heading delimits and the table is outside`,
+        );
+      }
+    });
+
+    test("type 7 cannot interrupt a paragraph", async () => {
+      // The tag right after prose (no blank) stays inline text, so the following exact heading
+      // is real, terminates normally, and leaves the later table outside and green.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\nSome prose about deferrals.\n<Warning title="x">\n## What this packet does not establish\n\n${badDeferredTable}`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, insertion]])), policy, workspace),
+        [],
+        "a mid-paragraph tag opens no block, so the heading delimits",
+      );
+    });
+
+    test("a tag after a table row still opens the raw block", async () => {
+      // Table rows are not paragraph text: with no blank after the governed body row, the tag
+      // still starts its block (fail-loud direction), hiding its heading but not the table.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n<Warning title="x">\n## What this packet does not establish\n\n${badDeferredTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastDxRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherDeferred.test(message)),
+        `got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("type-4 declarations use the uppercase-ASCII rule", async () => {
+      // A single-line declaration opens and closes on the same line (GFM: a block whose
+      // first line meets both conditions contains just that line), so the hiding case needs
+      // a multi-line declaration whose first line carries no `>`.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const upperInsertion = `${lastDxRow}\n<!DOCTYPE greeting [\n## What this packet does not establish\n]>\n\n${badDeferredTable}`;
+      assert.ok(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, upperInsertion]])), policy, workspace).some((message) =>
+          furtherDeferred.test(message),
+        ),
+        "an uppercase declaration opens a raw block",
+      );
+      const lowerInsertion = `${lastDxRow}\n<!doctype greeting [\n## What this packet does not establish\n]>\n\n${badDeferredTable}`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, lowerInsertion]])), policy, workspace),
+        [],
+        "a lowercase declaration is ordinary prose, so the heading delimits",
+      );
+      const singleInsertion = `${lastDxRow}\n<!DOCTYPE html>\n## What this packet does not establish\n\n${badDeferredTable}`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, singleInsertion]])), policy, workspace),
+        [],
+        "a single-line declaration closes on itself, so the next heading is ordinary",
+      );
+    });
+
+    test("type-6 starts match the declared tag boundary", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const openInsertion = `${lastDxRow}\n<Div class="x">\n## What this packet does not establish\n\n${badDeferredTable}`;
+      assert.ok(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, openInsertion]])), policy, workspace).some((message) =>
+          furtherDeferred.test(message),
+        ),
+        "mixed-case block tag with attributes opens a raw block",
+      );
+      const customInsertion = `${lastDxRow}\n<divfoo>\n## What this packet does not establish\n\n${badDeferredTable}`;
+      assert.ok(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, customInsertion]])), policy, workspace).some((message) =>
+          furtherDeferred.test(message),
+        ),
+        "a longer name is still a valid complete custom tag, so type 7 hides the heading",
+      );
+      const trailingInsertion = `${lastDxRow}\n<divfoo> trailing prose\n## What this packet does not establish\n\n${badDeferredTable}`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, trailingInsertion]])), policy, workspace),
+        [],
+        "a tag with trailing prose is not alone on its line, so the heading delimits",
+      );
+    });
+
+    test("a textarea opener is a type-1 block", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastDxRow}\n<textarea>\n## What this packet does not establish\n</textarea>\n\n${badDeferredTable}`;
+      assert.ok(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, insertion]])), policy, workspace).some((message) =>
+          furtherDeferred.test(message),
+        ),
+        "textarea follows the script/pre/style rule",
+      );
+    });
+  });
+
+  test("CRLF line endings do not reopen the escapes (K1.0-SELF-20)", async () => {
+      // Self-found while auditing block boundaries: a trailing CR made a complete type-7 tag
+      // fail its alone-on-the-line check, so the tag became an unreadable body row while the
+      // nested heading truncated the section and hid the later table. Block-boundary
+      // whitespace now tolerates CR; both the tag and the bullet shapes stay loud under CRLF.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const lastDxRow =
+        "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
+      const badDeferredTable =
+        "| Id | Current path | Disposition | Owner | Why it is assigned there |\n|---|---|---|---|---|\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory further table |\n";
+      const crlf = (value: string): string => value.replace(/\n/g, "\r\n");
+      const furtherDeferred = /Deferred section contains a further table; this row is outside the governed table: (Id \| Current path|DX-1 \| `packages\/core\/src\/util\/json\.ts`)/;
+      for (const insertion of [
+        crlf(`${lastDxRow}\n<Warning title="a>b">\n## What this packet does not establish\n\n${badDeferredTable}`),
+        crlf(`${lastDxRow}\n- note\n\n  ## What this packet does not establish\n\n${badDeferredTable}`),
+      ]) {
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, insertion]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherDeferred.test(message)),
+          `CRLF must not hide the later table; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
   test("the allowed-leaf list is empty, and the inventory says why", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
     assert.deepEqual(TARGET_KERNEL_RULES.allowedLeaves, [], "K1.0 approves no portable leaf");

@@ -150,7 +150,7 @@ function parseAtxHeading(line: string): { readonly level: number; readonly text:
   const hashes = rest.match(/^#{1,6}/)?.[0];
   if (hashes === undefined) return undefined;
   const after = rest.slice(hashes.length);
-  if (after !== "" && !/^[ \t]/.test(after)) return undefined;
+  if (after !== "" && !/^[ \t\r]/.test(after)) return undefined;
   const content = after.trim().replace(/[ \t]+#+[ \t]*$/, "").trim();
   return { level: hashes.length, text: content };
 }
@@ -202,7 +202,7 @@ function updateFence(state: FenceState | null, line: string): FenceState | null 
     candidate !== undefined &&
     candidate.char === state.char &&
     candidate.length >= state.length &&
-    /^[ \t]*$/.test(candidate.info)
+    /^[ \t\r]*$/.test(candidate.info)
   ) {
     return null;
   }
@@ -232,18 +232,179 @@ const HTML_BLOCK_TAGS =
   "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|nav|noframes|ol|optgroup|option|p|param|section|source|search|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul";
 
 /**
+ * Whether the line is a thematic break (GFM §4.1): 0–3 spaces of indentation, then three or
+ * more of the same `-`/`_`/`*` character, each optionally followed by spaces/tabs, and nothing
+ * else. Thematic breaks take precedence over list items when both readings are possible
+ * (GFM Example 30: `* * *` is a break, not a list), so list-marker detection must exclude them.
+ * They remain ordinary lines for table discovery (a thematic line inside a table body reaches
+ * the reader as an unreadable row — fail-loud), but like other structural lines they end open
+ * list containers when dedented.
+ */
+function isThematicBreak(line: string): boolean {
+  const indent = line.match(/^ */)?.[0].length ?? 0;
+  if (indent > 3 || line.startsWith("\t")) return false;
+  return /^([*_-])(?:[ \t]*\1){2,}[ \t\r]*$/.test(line.slice(indent));
+}
+
+/**
+ * A parsed GFM list-item marker (CommonMark 0.31 §5.2 / GFM §5.2): bullets `-`/`+`/`*` or an
+ * ordered run of 1–9 ASCII digits plus `.`/`)` (ten digits, as in `1234567890.`, never open an
+ * item), followed by whitespace or end of line. Markers may be indented 0–3 spaces; four or
+ * more columns is indented code and never reaches here.
+ */
+interface ListMarker {
+  /** True for `N.`/`N)` forms, false for bullets. */
+  readonly ordered: boolean;
+  /** The ordered start number, or null for bullets. */
+  readonly startNumber: number | null;
+  /** Width of the marker itself (`-` → 1, `10.` → 3), in columns. */
+  readonly markerWidth: number;
+  /** Absolute indentation of the marker, in columns (0–3 here). */
+  readonly indent: number;
+  /** True when nothing but whitespace follows the marker (an empty item). */
+  readonly empty: boolean;
+  /** Absolute column at which this item's block content starts (marker + following gap). */
+  readonly contentIndent: number;
+}
+
+/**
+ * Parses a list-item marker at the start of `line`, or returns null. The content indent is
+ * derived from GFM marker/continuation rules rather than a fixed width: marker width plus the
+ * following 1–4 spaces (tab-expanded to tab stops); a gap of 5 or more columns collapses to 1
+ * per the specification, and an empty item defaults to marker width plus 1. Callers must check
+ * `isThematicBreak` first so `* * *` and `- - -` stay breaks rather than items.
+ */
+function parseListMarker(line: string): ListMarker | null {
+  const indent = line.match(/^ */)?.[0].length ?? 0;
+  if (indent > 3 || line.startsWith("\t")) return null;
+  const rest = line.slice(indent);
+  const bullet = rest[0] === "-" || rest[0] === "+" || rest[0] === "*";
+  const ordered = rest.match(/^[0-9]{1,9}[.)]/)?.[0];
+  // Ten or more digits never form an ordered marker: the ordered pattern above cannot match
+  // `1234567890.` (no `.`/`)` within nine digits), so `ordered` stays undefined and this guard
+  // keeps the line prose — as do digit runs with no delimiter at all (`123 abc`).
+  if (!bullet && ordered === undefined) return null;
+  const markerWidth = bullet ? 1 : ordered!.length;
+  const after = rest.slice(markerWidth);
+  if (after !== "" && !/^[ \t\r]/.test(after)) return null;
+  // Column just past the marker, then expand the following gap with tab stops of 4.
+  let col = indent + markerWidth;
+  let k = 0;
+  while (k < after.length && (after[k] === " " || after[k] === "\t")) {
+    col += after[k] === " " ? 1 : 4 - (col % 4);
+    k++;
+  }
+  const trailing = after.slice(k);
+  if (!/^[ \t\r]*$/.test(trailing)) {
+    let gap = col - (indent + markerWidth);
+    if (gap >= 5) gap = 1;
+    return {
+      ordered: ordered !== undefined,
+      startNumber: ordered !== undefined ? Number.parseInt(ordered.slice(0, -1), 10) : null,
+      markerWidth,
+      indent,
+      empty: false,
+      contentIndent: indent + markerWidth + gap,
+    };
+  }
+  return {
+    ordered: ordered !== undefined,
+    startNumber: ordered !== undefined ? Number.parseInt(ordered.slice(0, -1), 10) : null,
+    markerWidth,
+    indent,
+    empty: true,
+    contentIndent: indent + markerWidth + 1,
+  };
+}
+
+/** One open list-item container frame: where the marker sits and where its content lives. */
+interface ListFrame {
+  readonly markerIndent: number;
+  readonly contentIndent: number;
+}
+
+/**
+ * A complete HTML open or closing tag occupying its whole line (GFM §4.6 type 7, tag grammar
+ * §6.10), or null. Open tags carry zero or more attributes whose values may be unquoted (no
+ * whitespace, `"`, `'`, `=`, `<`, `>` or backtick), single-quoted (only `'` ends them) or
+ * double-quoted (only `"` ends them) — so quoted `<`/`>` never end the tag early. Closing tags
+ * are `</name>` with optional whitespace only and can never carry attributes.
+ */
+interface CompleteTag {
+  readonly close: boolean;
+  readonly tag: string;
+}
+
+function parseCompleteTag(rest: string): CompleteTag | null {
+  let i = 0;
+  if (rest[i] !== "<") return null;
+  i++;
+  let close = false;
+  if (rest[i] === "/") {
+    close = true;
+    i++;
+  }
+  const name = rest.slice(i).match(/^[A-Za-z][A-Za-z0-9-]*/)?.[0];
+  if (name === undefined) return null;
+  i += name.length;
+  if (close) {
+    while (rest[i] === " " || rest[i] === "\t") i++;
+    if (rest[i] !== ">") return null;
+    i++;
+    if (!/^[ \t\r]*$/.test(rest.slice(i))) return null;
+    return { close: true, tag: name };
+  }
+  for (;;) {
+    while (rest[i] === " " || rest[i] === "\t") i++;
+    const ch = rest[i];
+    if (ch === ">") {
+      i++;
+      break;
+    }
+    if (ch === "/" && rest[i + 1] === ">") {
+      i += 2;
+      break;
+    }
+    // Another attribute must start here: whitespace above already consumed, so a bare name is
+    // required (this also rejects `<a href='bar'title=...>` with no separating space).
+    const attr = rest.slice(i).match(/^[A-Za-z_:][A-Za-z0-9_.:-]*/)?.[0];
+    if (attr === undefined) return null;
+    i += attr.length;
+    while (rest[i] === " " || rest[i] === "\t") i++;
+    if (rest[i] === "=") {
+      i++;
+      while (rest[i] === " " || rest[i] === "\t") i++;
+      const quote = rest[i];
+      if (quote === '"' || quote === "'") {
+        const end = rest.indexOf(quote, i + 1);
+        if (end === -1) return null;
+        i = end + 1;
+      } else {
+        const value = rest.slice(i).match(/^[^ \t\r\n"'=`<>]+/)?.[0];
+        if (value === undefined) return null;
+        i += value.length;
+      }
+    }
+  }
+  if (!/^[ \t\r]*$/.test(rest.slice(i))) return null;
+  return { close: false, tag: name };
+}
+
+/**
  * Whether the line opens a GFM raw-HTML block, assuming the scanner is outside fenced code and
  * outside any HTML block and the line is not blank, indented code or blockquote content.
  *
  * Order follows the specification: type 1 (script/pre/style/textarea) first, then comment,
- * processing instruction, declaration, CDATA, type-6 block tags, and finally type 7 (a complete
- * open or closing tag alone on the line, excluding script/style/pre which belong to type 1).
- * Matching is case-insensitive per GFM. Type 7's "cannot interrupt a paragraph" exception is
- * deliberately not honoured: treating a type-7 candidate inside a paragraph as a block start
- * keeps the section open and reports (fail-loud) rather than truncating silently, so the
- * simplification is sound in the prohibited direction and is stated here rather than hidden.
+ * processing instruction, CDATA, declaration, type-6 block tags, and finally type 7 (a complete
+ * open tag — any name except script/style/pre/textarea, which belong to type 1 — or a complete
+ * closing tag with no attributes, alone on the line). Matching is case-insensitive per GFM.
+ * Type 4 follows the published uppercase-ASCII rule (`<!DOCTYPE …>` opens; `<!doctype …>` is
+ * ordinary prose). Type 7 additionally requires `allowType7`, which the scanner denies while an
+ * open paragraph could be interrupted: type-7 blocks cannot start mid-paragraph (GFM Example
+ * 156), so a complete tag right after paragraph text stays inline prose rather than opening a
+ * raw block. Types 1–6 may interrupt a paragraph and ignore that flag.
  */
-function parseHtmlBlockStart(line: string): HtmlState | null {
+function parseHtmlBlockStart(line: string, allowType7: boolean): HtmlState | null {
   const indent = line.match(/^ */)?.[0].length ?? 0;
   if (indent > 3) return null;
   if (line.startsWith("\t")) return null;
@@ -253,17 +414,17 @@ function parseHtmlBlockStart(line: string): HtmlState | null {
   if (rest.startsWith("<!--")) return { kind: 2 };
   if (rest.startsWith("<?")) return { kind: 3 };
   if (rest.startsWith("<![CDATA[")) return { kind: 5 };
-  if (/^<![A-Za-z]/.test(rest)) return { kind: 4 };
+  if (/^<![A-Z]/.test(rest)) return { kind: 4 };
   const type6 = new RegExp(`^<\\/?(?:${HTML_BLOCK_TAGS})(?=[\\s>\\/$]|$)`, "i");
   if (type6.test(rest)) return { kind: 6 };
-  const type7 = rest.match(/^<\/?([A-Za-z][A-Za-z0-9-]*)(\s[^<>]*)?\s*\/?>\s*$/);
-  if (type7 !== null) {
-    const tag = type7[1]!.toLowerCase();
-    if (tag !== "script" && tag !== "style" && tag !== "pre") return { kind: 7 };
+  if (!allowType7) return null;
+  const tag = parseCompleteTag(rest);
+  if (tag !== null) {
+    const name = tag.tag.toLowerCase();
+    if (name !== "script" && name !== "style" && name !== "pre" && name !== "textarea") return { kind: 7 };
   }
   return null;
 }
-
 /** Whether a line inside an open HTML block of kinds 1–5 ends that block (the line is raw either way). */
 function htmlClosesOnLine(kind: 1 | 2 | 3 | 4 | 5, line: string): boolean {
   switch (kind) {
@@ -329,7 +490,11 @@ export interface ScannedLine {
   readonly inRaw: boolean;
   /** True for blank lines (table break; ends type-6/7 HTML blocks). */
   readonly isBlank: boolean;
-  /** True for indented-code or blockquote lines (table break; never a top-level table row). */
+  /**
+   * True for indented-code, blockquote and list-container lines (table break; never a
+   * top-level table row or section heading). List markers and their content break an open
+   * table exactly like blockquotes do.
+   */
   readonly isQuotedOrCode: boolean;
   /** The ATX heading on this line, if it is ordinary Markdown that parses as one. */
   readonly heading: { readonly level: number; readonly text: string } | undefined;
@@ -338,35 +503,14 @@ export interface ScannedLine {
 }
 
 /**
- * The single coherent block-state transition layer shared by section selection and table
- * discovery (K10-R8-01/K10-R8-02 reconstruction).
- *
- * Invariant: every physical source line is consumed through exactly one block-state transition
- * at a given parser position. The scan walks top to bottom; each line advances the
- * (fence, html) state at most once and is annotated as raw, blank, quoted/code, or ordinary.
- * Heading recognition (`parseAtxHeading`) runs only on ordinary lines outside raw blocks, so
- * heading-looking text inside fenced code (round 8) or inside a GFM raw-HTML block (round 9)
- * cannot start or end a governed section. Table recognition runs only on lines with
- * `allowsTable`, so literal code (fenced, indented) and quoted/raw lines cannot become
- * inventory relations merely because they resemble the table grammar.
- *
- * Supported Markdown contexts for this governed artifact: ATX headings (any level breaks a
- * table body; exact level-2 titles delimit sections), fenced code (backtick/tilde, GFM §4.5),
- * raw HTML blocks types 1–7 (GFM §4.6, tracked as raw), blank lines, blockquote breaks and
- * indented-code exclusion. Refused/unsupported without silent misreading: setext headings,
- * thematic breaks, lists, link reference definitions and tables nested inside blockquotes or
- * lists are not given their own block states; where they appear inside a table body they become
- * ordinary body candidates and reach the reader as unreadable/duplicate rows (fail-loud),
- * never as silent exits. Type-7 HTML's paragraph-interruption exception is intentionally
- * over-approximated toward raw (stated in `parseHtmlBlockStart`); indented lines are always
- * code regardless of a preceding blank line (both err toward reporting, never toward silence).
- */
-/**
- * One line's block-state transition, recorded for the state-transition audit.
+ * One line's block-state transition, recorded for the structural-transition audit.
  *
  * `consumedOnce` is always true: the scan advances exactly one line per step and never
  * reprocesses a line for a second fence/HTML transition. It is recorded per line so the audit
- * can show the K10-R8-01 property directly rather than assert it.
+ * can show the K10-R8-01 property directly rather than assert it. `depthBefore`/`depthAfter`
+ * carry the open list-item container stack (0 = document top level) with content indents in
+ * `containers`; only depth-0 lines may delimit governed sections or form inventory tables
+ * (K10-R9-01). The single coherent layer is documented on `scanTransitions` below.
  */
 export interface LineTransition {
   readonly index: number;
@@ -385,7 +529,15 @@ export interface LineTransition {
     | "blank"
     | "indented-code"
     | "blockquote"
+    | "list-marker"
+    | "list-content"
     | "ordinary";
+  /** Open list-item containers before this line (0 = document top level). */
+  readonly depthBefore: number;
+  /** Open list-item containers after this line. Only top-level lines may delimit sections/tables. */
+  readonly depthAfter: number;
+  /** Content indents of the open containers after this line (`c2>c4`), or null when top-level. */
+  readonly containers: string | null;
   readonly fenceAfter: string | null;
   readonly htmlAfter: string | null;
   readonly consumedOnce: true;
@@ -402,13 +554,95 @@ const htmlName = (html: HtmlState | null): string | null =>
  * Every line's transition through the shared block-state layer, in order. This is the primary
  * scan; `scanBlocks` projects it to the annotations section/table discovery consume.
  */
+/**
+ * Whether `line` (already split, trimmed) is shaped like a GFM delimiter row. Used only as a
+ * paragraph heuristic: a pipeless prose line right after a delimiter-shaped line is plausibly a
+ * table body row rather than paragraph text, so a following type-7 tag or restricted list
+ * marker is still allowed to start its block (fail-loud) instead of being swallowed as prose.
+ */
+function isDelimiterShaped(trimmed: string): boolean {
+  if (trimmed === "") return false;
+  return isDelimiterCells(splitGfmRow(trimmed));
+}
+
+/**
+ * Whether the previous scanned line keeps a paragraph open across the current line, for the
+ * two GFM "cannot interrupt a paragraph" rules this scanner honors: type-7 HTML blocks
+ * (Example 156) and restricted list markers (empty items and ordered starts other than 1,
+ * which cannot interrupt). A denied tag/marker stays ordinary prose — which over-extends the
+ * current container and can only add reports, never silently delete a table. Table-shaped
+ * previous lines (pipes) and delimiter-adjacent pipeless lines do not count as paragraph text,
+ * so a block after a table is still recognized (fail-loud direction).
+ */
+function paragraphContinues(out: readonly LineTransition[]): boolean {
+  const prev = out[out.length - 1];
+  if (prev === undefined) return false;
+  if (prev.classification !== "ordinary" && prev.classification !== "list-content") return false;
+  if (parseAtxHeading(prev.text) !== undefined) return false;
+  if (isThematicBreak(prev.text)) return false;
+  if (containsUnescapedPipe(prev.text)) return false;
+  const prevprev = out[out.length - 2];
+  if (prevprev !== undefined && isDelimiterShaped(prevprev.text.trim())) return false;
+  return true;
+}
+
+/**
+ * Every line's transition through the shared block-state layer, in order. This is the primary
+ * scan; `scanBlocks` projects it to the annotations section/table discovery consume.
+ *
+ * Container model (K10-R9-01): list-item frames `{markerIndent, contentIndent}` form a stack.
+ * A marker indented at least to the innermost content indent nests; a marker or structural
+ * line dedented below it pops back to the fitting level; blank lines, lazily continuable
+ * prose and fenced/HTML raw regions never pop (over-extending a container can only add
+ * further-table reports, never silently delete one, while popping early could truncate a
+ * section at a nested heading). Prose dedented after a blank line does pop: the blank ends
+ * any open item paragraph, so no lazy continuation is possible there.
+ * Pop-eligible structural lines are exactly those that can never be lazy paragraph
+ * continuations: ATX headings, fences, HTML opens, list markers, blockquotes and thematic
+ * breaks always pop when dedented; pipe-carrying lines pop only when no paragraph is open
+ * (otherwise they may be lazy text); other prose never pops. Only depth-0 lines may delimit
+ * governed sections or form inventory tables.
+ *
+ * The single coherent block-state transition layer shared by section selection and table
+ * discovery (K10-R8-01/K10-R8-02 reconstruction, K10-R9-01/K10-R9-02 container and grammar
+ * completion). Every physical source line has one structural identity — leaf/raw context
+ * plus container depth — computed through exactly one transition per scan position, and only
+ * top-level eligible blocks define governed section/table structure. Heading recognition
+ * (`parseAtxHeading`) feeds section identity only on ordinary depth-0 lines, so
+ * heading-looking text inside fenced code, raw HTML, quotes, code or list containers can
+ * neither start nor end a governed section. Table recognition runs only on lines with
+ * `allowsTable`, so literal, quoted or container-local table shapes cannot become inventory
+ * relations merely because they resemble the table grammar.
+ *
+ * Supported Markdown contexts for this governed artifact: top-level ATX headings (any level
+ * breaks a table body; exact level-2 titles delimit sections), list-item containers
+ * (bullets, 1–9-digit ordered markers, marker-width-derived content indents, nesting;
+ * container-local headings break bodies but never delimit), fenced code (backtick/tilde,
+ * GFM §4.5), raw HTML blocks types 1–7 (GFM §4.6 with a complete-tag recognizer, the
+ * uppercase-ASCII type-4 rule and the type-7 paragraph exception), blank lines, blockquote
+ * breaks and indented-code exclusion. Unsupported without silent misreading: setext
+ * headings, link reference definitions, tables nested inside blockquotes or list items, and
+ * multi-paragraph lazy-continuation subtleties beyond the stated pop rules reach the reader
+ * as unreadable/duplicate rows or extra further-table reports (fail-loud), never as silent
+ * exits. Residual documented corners: a pipe-less table-body row immediately followed by a
+ * type-7 tag or restricted marker is read as paragraph text (the tag/marker stays prose);
+ * indented lines are always code regardless of a preceding blank line. Both err toward
+ * reporting, never toward silence.
+ */
 export function scanTransitions(markdown: string): LineTransition[] {
   const lines = markdown.split("\n");
   const out: LineTransition[] = [];
   let fence: FenceState | null = null;
   let html: HtmlState | null = null;
+  const lists: ListFrame[] = [];
+  const containers = (): string | null =>
+    lists.length === 0 ? null : lists.map((frame) => `c${frame.contentIndent}`).join(">");
+  const popTo = (indent: number): void => {
+    while (lists.length > 0 && indent < lists[lists.length - 1]!.contentIndent) lists.pop();
+  };
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index]!;
+    const depthBefore = lists.length;
     if (fence !== null) {
       const before = fenceName(fence);
       fence = updateFence(fence, line);
@@ -419,6 +653,7 @@ export function scanTransitions(markdown: string): LineTransition[] {
         classification: closed ? "fence-closer" : "fence-raw",
         fenceAfter: fenceName(fence), htmlAfter: htmlName(html),
         consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        depthBefore, depthAfter: lists.length, containers: containers(),
       });
       continue;
     }
@@ -433,6 +668,7 @@ export function scanTransitions(markdown: string): LineTransition[] {
           classification: closes ? "html-close-line" : "html-raw",
           fenceAfter: null, htmlAfter: htmlName(html),
           consumedOnce: true, headingAllowed: false, tableAllowed: false,
+          depthBefore, depthAfter: lists.length, containers: containers(),
         });
         continue;
       }
@@ -445,6 +681,7 @@ export function scanTransitions(markdown: string): LineTransition[] {
           classification: "html-end-blank",
           fenceAfter: null, htmlAfter: null,
           consumedOnce: true, headingAllowed: false, tableAllowed: false,
+          depthBefore, depthAfter: lists.length, containers: containers(),
         });
         continue;
       }
@@ -454,6 +691,7 @@ export function scanTransitions(markdown: string): LineTransition[] {
         classification: "html-raw",
         fenceAfter: null, htmlAfter: htmlName(html),
         consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        depthBefore, depthAfter: lists.length, containers: containers(),
       });
       continue;
     }
@@ -461,38 +699,58 @@ export function scanTransitions(markdown: string): LineTransition[] {
       out.push({
         index, text: line, fenceBefore: null, htmlBefore: null, classification: "blank",
         fenceAfter: null, htmlAfter: null, consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        depthBefore, depthAfter: lists.length, containers: containers(),
       });
       continue;
     }
-    if (isIndentedCode(line) || isBlockquote(line)) {
+    if (isIndentedCode(line)) {
       out.push({
         index, text: line,
-        fenceBefore: null, htmlBefore: null,
-        classification: isIndentedCode(line) ? "indented-code" : "blockquote",
+        fenceBefore: null, htmlBefore: null, classification: "indented-code",
         fenceAfter: null, htmlAfter: null,
         consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        depthBefore, depthAfter: lists.length, containers: containers(),
+      });
+      continue;
+    }
+    if (isBlockquote(line)) {
+      // A dedented quote ends open items; a quote at content indent stays item content (GFM
+      // containers compose). Either way the line itself is quoted, never top-level structure.
+      popTo(indentWidth(line));
+      out.push({
+        index, text: line,
+        fenceBefore: null, htmlBefore: null, classification: "blockquote",
+        fenceAfter: null, htmlAfter: null,
+        consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        depthBefore, depthAfter: lists.length, containers: containers(),
       });
       continue;
     }
     const fenceCandidate = parseFenceCandidate(line);
     if (fenceCandidate !== undefined) {
+      // Fences are never lazy continuations: a dedented marker ends open items first, then
+      // opens at the surviving depth (container-local when still nested).
+      popTo(indentWidth(line));
       fence = updateFence(fence, line);
       out.push({
         index, text: line,
         fenceBefore: null, htmlBefore: null, classification: "fence-marker-open",
         fenceAfter: fenceName(fence), htmlAfter: null,
         consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        depthBefore, depthAfter: lists.length, containers: containers(),
       });
       continue;
     }
-    const htmlStart = parseHtmlBlockStart(line);
+    const htmlStart = parseHtmlBlockStart(line, !paragraphContinues(out));
     if (htmlStart !== null) {
+      popTo(indentWidth(line));
       if (htmlStart.kind <= 5 && htmlClosesOnLine(htmlStart.kind as 1 | 2 | 3 | 4 | 5, line)) {
         out.push({
           index, text: line,
           fenceBefore: null, htmlBefore: null, classification: "html-open-close-same-line",
           fenceAfter: null, htmlAfter: null,
           consumedOnce: true, headingAllowed: false, tableAllowed: false,
+          depthBefore, depthAfter: lists.length, containers: containers(),
         });
       } else {
         html = htmlStart;
@@ -501,16 +759,63 @@ export function scanTransitions(markdown: string): LineTransition[] {
           fenceBefore: null, htmlBefore: null, classification: "html-open",
           fenceAfter: null, htmlAfter: htmlName(html),
           consumedOnce: true, headingAllowed: false, tableAllowed: false,
+          depthBefore, depthAfter: lists.length, containers: containers(),
         });
       }
       continue;
     }
+    const marker = isThematicBreak(line) ? null : parseListMarker(line);
+    if (marker !== null) {
+      const restricted =
+        marker.empty || (marker.ordered && marker.startNumber !== 1);
+      if (restricted && paragraphContinues(out)) {
+        // GFM keeps this line as paragraph text (empty items and non-1 ordered starts cannot
+        // interrupt): fall through to ordinary prose below with no pop and no push, exactly as
+        // if the marker bytes were not there.
+      } else {
+        popTo(marker.indent);
+        lists.push({ markerIndent: marker.indent, contentIndent: marker.contentIndent });
+        out.push({
+          index, text: line,
+          fenceBefore: null, htmlBefore: null, classification: "list-marker",
+          fenceAfter: null, htmlAfter: null,
+          consumedOnce: true, headingAllowed: false, tableAllowed: false,
+          depthBefore, depthAfter: lists.length, containers: containers(),
+        });
+        continue;
+      }
+    }
+    // Ordinary content. Structural lines (ATX headings, pipe-carrying table candidates and
+    // thematic breaks) end dedented items first — none of them can be lazy continuations —
+    // while other prose pops only after a blank line (a blank ends the item paragraph, so no
+    // lazy continuation is possible and a dedented paragraph truthfully closes the container;
+    // without a preceding blank the prose may be lazy text and the container stays open, so a
+    // lazily continued item paragraph is never mistaken for a closed container).
     const heading = parseAtxHeading(line);
+    const prev = out[out.length - 1];
+    const afterBlank =
+      prev !== undefined &&
+      (prev.classification === "blank" || prev.classification === "html-end-blank");
+    const structural =
+      heading !== undefined || isThematicBreak(line) ||
+      (containsUnescapedPipe(line) && !paragraphContinues(out));
+    if (structural || (afterBlank && lists.length > 0)) popTo(indentWidth(line));
+    if (lists.length > 0) {
+      out.push({
+        index, text: line,
+        fenceBefore: null, htmlBefore: null, classification: "list-content",
+        fenceAfter: null, htmlAfter: null,
+        consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        depthBefore, depthAfter: lists.length, containers: containers(),
+      });
+      continue;
+    }
     out.push({
       index, text: line,
       fenceBefore: null, htmlBefore: null, classification: "ordinary",
       fenceAfter: null, htmlAfter: null,
       consumedOnce: true, headingAllowed: heading !== undefined, tableAllowed: true,
+      depthBefore, depthAfter: 0, containers: null,
     });
   }
   return out;
@@ -524,6 +829,8 @@ export function scanBlocks(markdown: string): ScannedLine[] {
         return { text: t.text, inRaw: false, isBlank: true, isQuotedOrCode: false, heading: undefined, allowsTable: false };
       case "indented-code":
       case "blockquote":
+      case "list-marker":
+      case "list-content":
         return { text: t.text, inRaw: false, isBlank: false, isQuotedOrCode: true, heading: undefined, allowsTable: false };
       case "fence-marker-open":
       case "fence-closer":
@@ -565,8 +872,13 @@ export function scanBlocks(markdown: string): ScannedLine[] {
  * missing); a missing next heading runs the section to end of document, so following tables
  * become further tables rather than vanishing.
  */
-function sectionRange(markdown: string, currentTitle: string, nextTitle: string): { readonly start: number; readonly end: number } | null {
-  const scanned = scanBlocks(markdown);
+/**
+ * A governed section boundary is an exact expected level-2 ATX heading at the document's
+ * top-level block/container depth (K10-R9-01): “parses as an ATX heading” is insufficient, so
+ * container-local headings (list items, quotes, code, raw HTML) can break a table body but
+ * never delimit a section. Section consumers share one precomputed scan per call below.
+ */
+function rangeFromScanned(scanned: readonly ScannedLine[], currentTitle: string, nextTitle: string): { readonly start: number; readonly end: number } | null {
   let start: number | null = null;
   let end = scanned.length;
   for (let i = 0; i < scanned.length; i++) {
@@ -585,10 +897,15 @@ function sectionRange(markdown: string, currentTitle: string, nextTitle: string)
   return { start, end };
 }
 
+function sectionRange(markdown: string, currentTitle: string, nextTitle: string): { readonly start: number; readonly end: number } | null {
+  return rangeFromScanned(scanBlocks(markdown), currentTitle, nextTitle);
+}
+
 function sectionLines(markdown: string, currentTitle: string, nextTitle: string): string[] {
-  const range = sectionRange(markdown, currentTitle, nextTitle);
+  const scanned = scanBlocks(markdown);
+  const range = rangeFromScanned(scanned, currentTitle, nextTitle);
   if (range === null) return [];
-  return markdown.split("\n").slice(range.start + 1, range.end);
+  return scanned.slice(range.start + 1, range.end).map((entry) => entry.text);
 }
 
 /**
@@ -628,8 +945,10 @@ function sectionText(markdown: string, currentTitle: string, nextTitle: string):
  * body per GFM Example 201, while only the exact expected level-2 titles delimit sections.
  */
 function sectionTables(markdown: string, currentTitle: string, nextTitle: string): DiscoveredTable[] {
+  // One precomputed scan serves both the range and the table pass: the block-state model is
+  // coherent per scan, and no line is re-transitioned between selection and discovery.
   const scanned = scanBlocks(markdown);
-  const range = sectionRange(markdown, currentTitle, nextTitle);
+  const range = rangeFromScanned(scanned, currentTitle, nextTitle);
   if (range === null) return [];
   // Single linear pass over the shared annotations between the section boundaries. The index
   // always advances by at least one per iteration and block transitions are never recomputed
