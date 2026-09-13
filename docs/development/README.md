@@ -46,12 +46,12 @@ candidates; their earlier holds do not override the ledger and subsequent owner 
 The structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is itself K1
 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared fixtures and
 a structural pass are not an E1 result. **The owner released K1.0 on 2026-09-13**, directing that the
-E1 dependency be treated as the already-built but unaccepted preparation; its round-16 candidate is
-`WAITING_FOR_REVIEW` and is accepted by nobody (rounds 1–13 each drew CHANGES REQUIRED; round 14 was
-accepted by one reviewer and then invalidated for integration by a second independent review over a
-C4 heading-identity defect; round 15 replaced the host trimmer with a GFM whitespace class broader
-than the heading grammar's own, which reopened that hole for a vertical tab; round 16 derives the
-class each ATX and table position's production names, preserving every earlier reconstruction). See
-the [status ledger](007-work-packets.md) and
-[K1.0's contract](work/K1.0/contract.md). That release names no successor: `next_release: none`.
+E1 dependency be treated as the already-built but unaccepted preparation. Its round-16 H
+`f3aa29d7ecba2a23aa85788b7efdebdd383cab24` received independent ACCEPT in
+[review-17](work/K1.0/review-17.md). That historical verdict is preserved, but delegated final cleanup
+reproduced C4 defect **K10-CLEANUP-01**. **Cleanup is REOPENED; C4 claims and integration are ON HOLD.**
+The [cleanup record](work/K1.0/cleanup-01.md) links the evidence and
+[K1.0-correction-01 fixing handoff](work/K1.0-correction-01/handoff-01.md). New C/H validation and
+fresh independent review are required before a later cleanup/manual merge. No successor is released:
+`next_release: none`. The [status ledger](007-work-packets.md) remains authoritative.
 Benchmark owns its evidence preparation and release decisions separately.

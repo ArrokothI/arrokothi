@@ -1,5 +1,32 @@
 # ArrokothI and benchmark: completed foundations and the next step
 
+## Current owner update — K1.0 cleanup reopened, 2026-09-13
+
+**Do not merge K1.0 yet.** The owner released it against already-built but unaccepted benchmark E1
+preparation. Round 16 received an authentic independent ACCEPT at
+`f3aa29d7ecba2a23aa85788b7efdebdd383cab24`, but final cleanup found a reproducible C4 evidence defect:
+the inventory guard accepts `2.5` as two files and can discard a named dependency if the same cell
+also says “nothing.” The actual inventory is correct; the check cannot reliably reject these false
+claims. All 2,030 tests, typecheck and builder-doc checks passed during cleanup, showing why the
+additional semantic counterexamples matter.
+
+The historical ACCEPT remains. **C4 claims and integration are on hold**, with corrective packet
+**K1.0-correction-01** requesting correction of whole-cell parsing and fresh cumulative independent
+review. The private target Kernel location and legacy quarantine exist on the branch, but nothing
+has been merged and no asynchronous protocol or E1 result is established. K0 remains closed; K1
+remains open. Benchmark E1 preparation remains unaccepted. `next_release: none`.
+
+**Next owner action:** hand the [copy-ready fixing prompt](work/K1.0-correction-01/handoff-01.md) to
+a coding session. After correction, obtain new C/H validation, independent ACCEPT and a repeated
+cleanup before manual GitHub merge. [Cleanup finding and evidence](work/K1.0/cleanup-01.md);
+[authoritative ledger](007-work-packets.md). The requested universal Prompt B/C improvements remain
+pending under the owner's “if accept” condition; the immediate corrective fixing prompt is supplied.
+
+## Earlier foundation snapshot — historical
+
+The remainder records the snapshot before the K1.0 release. Its “next step” and release-hold wording
+is superseded by the current update above; the completed-foundation explanations remain useful.
+
 **Status snapshot: 2026-09-13, America/New_York.**
 
 The contract, public fixtures, evidence preparation and development workflows are accepted and

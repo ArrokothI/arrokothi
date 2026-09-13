@@ -5,15 +5,14 @@ scope and gates; the [work-packet ledger](007-work-packets.md) owns current impl
 status and dependencies. K0.1, the post-K0.1 process review and K0.2 are accepted, integrated and
 owner-closed. The [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure, with the accepted
 benchmark E0 evidence; this establishes the contract/fixture gate, not a working target Kernel.
-The owner released **K1.0** on 2026-09-13, treating the benchmark-owned E1 fixture preparation as
-built but unaccepted; its round-16 candidate is `WAITING_FOR_REVIEW`, accepted by nobody, and closes
-no E1 criterion. Rounds 1–13 each drew CHANGES REQUIRED. Round 14 was ACCEPTED by one reviewer and
-then invalidated for integration by a second independent review, which found that a level-2 heading
-carrying U+00A0 could be trimmed onto a governed section's title and hide a contradictory table.
-Round 15 closed that but replaced the host trimmer with a GFM whitespace class broader than the one
-the heading grammar names, so a vertical tab before a trailing hash run reopened the same hole;
-round 16 closes it by deriving the class each position's own production names, preserving every
-earlier reconstruction. That release names no successor (`next_release: none`). Historical planning source starting point:
+The owner released **K1.0** on 2026-09-13 against built-but-unaccepted E1 preparation.
+Round-16 H `f3aa29d7ecba2a23aa85788b7efdebdd383cab24` received independent ACCEPT, preserved in
+[review-17](work/K1.0/review-17.md). Final cleanup then found C4 defect K10-CLEANUP-01:
+whole-cell inventory meaning can be lost while the guard stays green. **Cleanup is REOPENED;
+C4 claims and integration are ON HOLD**, with [K1.0-correction-01](work/K1.0-correction-01/handoff-01.md)
+requiring new C/H and independent review. See [cleanup-01](work/K1.0/cleanup-01.md).
+No E1 result, K1 closure, merge or successor release is claimed (`next_release: none`).
+Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the
 [review](004-architecture-review.md) records decisions and the disposition of P1–P7/B1–B3.
