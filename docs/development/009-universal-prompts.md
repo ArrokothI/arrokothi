@@ -9,8 +9,19 @@ The owner supplies repository/artifact access and selects the actual independent
 
 A launcher needs no manual packet substitution when the release record identifies exactly one
 packet. An ambiguous or absent release requires clarification; merely pasting Prompt A does not
-release K0.2 or any other successor. Process maintenance and integration use the explicit owner
+release any successor. Process maintenance and integration use the explicit owner
 scope; they are not ordinary packet implementation.
+
+## Using these prompts
+
+Use Prompt A for implementation or correction, Prompt B in a separate reviewer session with the
+exact candidate H and accessible source/evidence, and Prompt C for an explicitly requested record
+or integration action. For a correction, include 008's compact handoff rather than the accumulated
+conversation. These prompts are for agents developing this repository.
+
+Resolve current status and release from 007 and the subsequent owner records it links. Earlier
+holds in accepted worksheets or reports describe their historical candidate; preserve them and
+follow the later decision. Acceptance alone does not release the next packet.
 
 ## Prompt A — coding agent
 
@@ -19,6 +30,8 @@ Implement or correct the one owner-released ArrokothI packet identified by repos
 owner's instruction. Follow AGENTS.md, applicable instructions/skills and the development front door.
 Read 006 policy, 007 scope/status, 008 records and 012 review methods. Establish a clean scoped branch,
 full integrated base and release identity; preserve unrelated work. Prioritize the released correction.
+Honor the owner's explicit branch/worktree instructions; do not switch a checkout another agent is
+using. Record any owner-authorized departure from the default branch workflow in the handoff.
 Do not start a successor without explicit owner release.
 
 Read the mental model, relevant canonical/detail owners and actual affected source/tests. Read the

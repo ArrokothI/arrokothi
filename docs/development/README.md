@@ -37,13 +37,13 @@ When implementing a slice, update the code, conformance, baseline and guides tog
 Preserve useful behavior, move Runtime machinery out of Kernel semantics, version incompatible
 contracts explicitly, and distinguish tests of current code from future acceptance criteria.
 
-K0.1 is accepted and integrated. K0.2 remains unimplemented and unreleased; the owner requested
-this process review before considering its release. Historical K0.1 worksheet/report/review status
-statements describe their candidate at the time; 007 and the separate integration receipt own current
-status. The process redesign is a candidate for owner inspection, not its author's independent ACCEPT.
+K0.1, the post-K0.1 process review and K0.2 are independently accepted, integrated and owner-closed.
+The [status ledger](007-work-packets.md) links their exact candidates, reviews and integration
+receipts; the [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure with the accepted E0
+evidence. Historical worksheets, assessments and attempt records describe their own dates and
+candidates; their earlier holds do not override the ledger and subsequent owner decisions.
 
-The proposed structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is
+The planned structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is
 itself K1 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared
-fixtures and a structural pass are not an E1 result. Both K0.2 and K1.0
-remain unimplemented and unreleased. Benchmark follow-ups are recommendations for its owner; this
-task does not change that repository.
+fixtures and a structural pass are not an E1 result. K1.0 remains unimplemented and unreleased;
+`next_release: none`. Benchmark owns its evidence preparation and release decisions separately.
