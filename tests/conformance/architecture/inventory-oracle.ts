@@ -94,10 +94,12 @@ function containsUnescapedPipe(line: string): boolean {
  * that padding/truncation is left to each table's `valueOf`, which already fails closed on a
  * missing cell while `readKeyedTable` has already accounted for the key.
  *
- * "Spaces around cells are trimmed" is the §2.1 whitespace class, not a host `trim()`
- * (K1.0-SELF-24): a cell whose content is `DX-1<NBSP>` asserts that token and not `DX-1`, and
- * must reach the keyed reader as itself so the relation can disagree with the policy. The
- * argument is already `gfmRowContent`-normalised row content, never a raw physical line.
+ * "Spaces around cells are trimmed" is block-structure whitespace — SPACE and TAB — and not a
+ * host `trim()` (K1.0-SELF-24) and not the §2.1 six (K10-R15-01). The extension's published
+ * examples surround cell content with spaces and it defines no trim over the wider set, so a
+ * cell whose content is `DX-1<NBSP>` or `DX-1<VT>` asserts that token and not `DX-1`, and must
+ * reach the keyed reader as itself so the relation can disagree with the policy. The argument
+ * is already `gfmRowContent`-normalised row content, never a raw physical line.
  */
 function splitGfmRow(rowContent: string): string[] {
   const parts: string[] = [];
@@ -120,7 +122,7 @@ function splitGfmRow(rowContent: string): string[] {
   if (rowContent.endsWith("|") && !isEscapedPipe(rowContent, rowContent.length - 1)) end = parts.length - 1;
   return parts
     .slice(start, end)
-    .map((cell) => gfmTrim(cell.replace(/\\\|/g, "|")));
+    .map((cell) => blockWsTrim(cell.replace(/\\\|/g, "|")));
 }
 
 /** Whether already-split cells form a GFM delimiter row (dashes with optional alignment colons). */
@@ -255,7 +257,7 @@ const HTML_BLOCK_TAGS =
   "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul";
 
 /**
- * C4 Markdown lexical model (K10-R12-01).
+ * C4 Markdown lexical model (K10-R12-01, K10-R14-01, K10-R15-01).
  *
  * Published GFM 0.29 §2.1 defines three separate concepts that host-language
  * `\s` and `String.prototype.trim()` conflate:
@@ -278,50 +280,52 @@ const HTML_BLOCK_TAGS =
  * and blank-line whitespace are separate concepts and cannot be substituted
  * with host-language `\s` or `trim()`.
  *
- * Scope: the helpers below serve raw-HTML start recognition (§4.6 types 1/6),
- * the complete-tag grammar (§6.10: attribute separators, whitespace around
- * `=`, pre-close and trailing whitespace, unquoted-value terminators),
- * blank-line termination of type-6/7 blocks, which is the same blank-line
- * decision the table/section scan consumes, ATX heading content
- * (K10-R14-01) and table row/cell normalization (K1.0-SELF-24). List
- * markers, indentation and thematic breaks keep their own explicit
- * `[ \t]`-class grammar rules and are deliberately untouched.
+ * **Four classes, and which production owns each** (K10-R12-01, K10-R14-01,
+ * K10-R15-01). §2.1 defines a *whitespace character* set of six and a wider
+ * *Unicode whitespace* set, and §2.2 defines TAB's substitution for SPACE
+ * "in contexts where spaces help to define block structure". Those are separate
+ * definitions, not one shared notion, and a production gets the class its own
+ * sentence names:
  *
- * **Structural-whitespace extension (K10-R14-01, K1.0-SELF-24).** Round 13
- * reconstructed the lexical classes it had named — raw HTML, tags, blank lines —
- * and left "ATX heading text and table-cell normalization keep their own
- * grammar rules" as an unexamined exemption. Those two paths did not in fact
- * have their own grammar rules: they used `String.prototype.trim()`, which
- * removes every ECMAScript `WhiteSpace`/`LineTerminator` character, NBSP
- * U+00A0, U+FEFF, U+2000–U+200A, U+2028/U+2029, U+3000, U+1680, U+202F and
- * U+205F included. Those are Unicode whitespace, not GFM whitespace: GFM keeps
- * them as ordinary heading and cell **content**. Erasing them let a heading
- * whose real content is not the configured title collapse onto it and falsely
- * terminate a governed section, and let a cell whose real token is not the
- * policy's token compare equal to it.
+ * | Class | Members | Productions that name it |
+ * |---|---|---|
+ * | block-structure whitespace | SPACE, TAB | §4.2 ATX at every position; §4.1 thematic-break tail; §4.5 fence tail; §5.2 marker gap; table row and cell edges |
+ * | §2.1 whitespace character | SPACE, TAB, LF, VT, FF, CR | §4.6 type-1/6 start boundaries; §6.10 complete-tag grammar |
+ * | blank line | SPACE, TAB only, whole line | §4.6 type-6/7 termination; the table/section blank decision |
+ * | line ending | LF, CR, CRLF | §2.1 physical-line tokenization, which runs first |
  *
- * The two positions that govern ATX content are **not** the same class, and
- * this is derived from the grammar rather than chosen for convenience:
+ * Unicode whitespace is in none of them here: it is content.
  *
- * - **leading** — §4.2's opening sequence is followed by, and the heading's
- *   raw content begins after, the block-structure whitespace of §2.2: exactly
- *   U+0020 SPACE and U+0009 TAB. A leading VT or FF is content, not padding.
- * - **trailing** — the raw content is right-stripped by the §2.1 whitespace
- *   class, which is also the class the optional closing `#` sequence must be
- *   preceded by.
+ * **Two corrections got this wrong in opposite directions, and the pattern is
+ * the point.** Revision 14 normalised ATX content and table cells with
+ * `String.prototype.trim()`, erasing NBSP, U+FEFF, U+3000, U+2009 and every
+ * other Unicode space, so a heading whose real content was not the configured
+ * title collapsed onto it and falsely terminated a governed section
+ * (K10-R14-01). Revision 15 replaced that host class with the §2.1 six —
+ * one broad project-wide substitute for another — and thereby erased VT and
+ * FF and accepted them before an ATX closing hash run, so `## Title<VT>##`
+ * collapsed onto `Title` in exactly the same fail-open shape (K10-R15-01).
+ * §4.2 names neither class. It says *space* four times and *spaces* once, and
+ * §2.2 adds *tab*. The §2.1 six is cited by §4.6 and §6.10, and those two are
+ * now its only consumers in this file.
  *
- * Table rows follow the tables extension: leading block-structure whitespace
- * (SPACE/TAB, bounded below four columns by indented code), a trailing run of
- * §2.1 whitespace, and each cell trimmed by that same §2.1 class.
+ * **Invariant.** Every C4 Markdown structural predicate uses the class named by
+ * its own production, not the class used by a neighbouring production and not
+ * a host-language notion of "whitespace". Where two readings of a production
+ * are defensible, C4 takes the **narrower** class: too narrow can only miss a
+ * boundary and over-extend a governed section, which adds reports; too broad
+ * manufactures a boundary and truncates the section, which deletes evidence
+ * silently. Total, fail-closed accounting is the obligation, so silence is the
+ * error that must be excluded first.
  *
- * Invariant, restated so it admits no exemption: **every** C4 Markdown lexical
- * predicate — heading identity and table/cell normalization included — uses the
- * character class defined by the governing GFM production. GFM whitespace,
- * block-structure whitespace, Unicode whitespace and blank-line whitespace are
- * four separate concepts, and none of them is `\s`, `trim()` or any other
- * host-language notion of "whitespace". A host normalizer is never the rule for
- * a structural identity, because host classes are defined by Unicode and the
- * governed identities are defined by the pinned grammar.
+ * Scope: the §2.1 helpers immediately below serve raw-HTML start recognition
+ * (§4.6 types 1/6) and the complete-tag grammar (§6.10: attribute separators,
+ * whitespace around `=`, pre-close and trailing whitespace, unquoted-value
+ * terminators). The block-structure helpers after them serve ATX heading
+ * identity and table row/cell normalization. The blank-line predicate serves
+ * type-6/7 termination and the table/section blank decision. List markers,
+ * indentation and thematic breaks keep their own explicit `[ \t]` rules, which
+ * are the same class by a different spelling and are deliberately untouched.
  */
 
 /** Inner source of the GFM-whitespace regex atom: exactly the §2.1 six. */
@@ -334,81 +338,110 @@ const GFM_WS_TAIL = new RegExp(`^${GFM_WS_ATOM}*$`);
 /** An unquoted attribute value: anything but GFM whitespace or `"`, `'`, `=`, `<`, `>`, backtick. */
 const GFM_UNQUOTED_VALUE = new RegExp(`^[^${GFM_WS_INNER}"'=\`<>]+`);
 
-/** A trailing run of GFM §2.1 whitespace, for the right-strips the grammar defines. */
-const GFM_WS_RUN_AT_END = new RegExp(`${GFM_WS_ATOM}+$`);
-/** A leading run of GFM §2.1 whitespace. */
-const GFM_WS_RUN_AT_START = new RegExp(`^${GFM_WS_ATOM}+`);
-/**
- * A leading run of **block-structure** whitespace (§2.2): exactly SPACE and TAB.
- * This is the narrower class that fixes where a block's content starts — the offset
- * past an ATX opening sequence, and a table row's indentation — and it is deliberately
- * not the §2.1 six: a leading VT or FF is content that the grammar does not skip.
- */
-const BLOCK_INDENT_RUN_AT_START = /^[ \t]+/;
-
 /** Whether `ch` is a GFM §2.1 whitespace character (never Unicode-only whitespace such as NBSP). */
 function isGfmWhitespace(ch: string | undefined): boolean {
   return ch !== undefined && GFM_WS_ONE.test(ch);
 }
 
-/** Strips a trailing run of GFM §2.1 whitespace. Never a host `trimEnd()`: NBSP stays content. */
-function gfmRightTrim(text: string): string {
-  return text.replace(GFM_WS_RUN_AT_END, "");
+/**
+ * **Block-structure whitespace: exactly SPACE (U+0020) and TAB (U+0009)** (K10-R15-01).
+ *
+ * This is the class named by the productions that define where a *block's* structure and
+ * content begin and end, and it is narrower than the §2.1 six. §4.2 says "space" at every
+ * ATX structural position — the opening `#` may be indented 0–3 **spaces**, the opening
+ * sequence must be followed by **a space** or end of line, the optional closing sequence
+ * must be **preceded by a space** and **may be followed by spaces only**, and the raw
+ * contents are stripped of leading and trailing **spaces**. §2.2 then admits TAB, and only
+ * TAB, wherever spaces define block structure. Neither sentence admits U+000B LINE
+ * TABULATION or U+000C FORM FEED, which appear in the §2.1 *whitespace character*
+ * definition because other productions — raw-HTML type-1/6 start boundaries, the §6.10
+ * complete-tag grammar — cite that definition by name. §4.2 does not.
+ *
+ * The same class serves the tables extension. Its published examples show cell content
+ * surrounded by spaces and nothing else, and the extension defines no trim over the §2.1
+ * set, so a VT or FF beside a cell's content is part of that cell.
+ *
+ * **Where the reading is not forced, C4 takes the narrower class deliberately.** A class
+ * that is too narrow can only fail to recognise a boundary the grammar allows, which
+ * over-extends a governed section and produces *extra* further-table reports. A class that
+ * is too broad manufactures a boundary the grammar forbids, which truncates the section and
+ * deletes evidence silently. C4's obligation is total, fail-closed accounting, so under any
+ * residual ambiguity the narrow class is the correct one. Revision 15 chose the broad one
+ * and reintroduced exactly the fail-open shape review-15 had just closed.
+ */
+const BLOCK_WS_RUN_AT_START = /^[ \t]+/;
+/** A trailing run of block-structure whitespace. */
+const BLOCK_WS_RUN_AT_END = /[ \t]+$/;
+
+/** Whether `ch` is block-structure whitespace: SPACE or TAB, never VT/FF/CR/LF or Unicode space. */
+function isBlockWhitespace(ch: string | undefined): boolean {
+  return ch === " " || ch === "\t";
 }
 
-/** Strips leading and trailing runs of GFM §2.1 whitespace. Never a host `trim()`. */
-function gfmTrim(text: string): string {
-  return gfmRightTrim(text).replace(GFM_WS_RUN_AT_START, "");
+/** Strips a trailing run of block-structure whitespace. Never a host `trimEnd()`, never the §2.1 six. */
+function blockWsRightTrim(text: string): string {
+  return text.replace(BLOCK_WS_RUN_AT_END, "");
+}
+
+/** Strips leading and trailing runs of block-structure whitespace. Never a host `trim()`. */
+function blockWsTrim(text: string): string {
+  return blockWsRightTrim(text).replace(BLOCK_WS_RUN_AT_START, "");
 }
 
 /**
  * The raw content of an ATX heading, given everything after its opening `#` sequence
- * (GFM 0.29 §4.2, K10-R14-01). Used by `parseAtxHeading` above, and defined here so
- * heading identity lives with the lexical classes that govern it rather than next to a
- * host normalizer.
+ * (published GFM 0.29 §4.2, K10-R14-01 then K10-R15-01). Used by `parseAtxHeading` above,
+ * and defined here so heading identity lives with the class that governs it rather than
+ * next to a host normalizer or a broader class borrowed from another production.
  *
- * Three grammar steps, in order, each with its own class:
+ * §4.2's own sentences, and the class each one names:
  *
- * 1. **Content start.** The opening sequence is followed by block-structure whitespace,
- *    and the content begins at the first character that is not SPACE or TAB. A leading
- *    VT, FF or NBSP is therefore content: `## <VT>Title` is a heading whose text is not
- *    `Title`, and cannot be the exact configured title of a governed section.
- * 2. **Trailing strip.** The raw content is right-stripped by the §2.1 whitespace class.
- * 3. **Optional closing sequence.** A trailing run of `#` is dropped only when it is
- *    preceded by §2.1 whitespace or by the start of the content (the separator is then
- *    what precedes it, so `## ###` is the empty heading), after which step 2 runs again.
- *    A run preceded by any other character — an ordinary letter as in `# foo#`, or the
- *    backslash of an escaped `\###` — is content and stays.
+ * 1. **Content start** — "The raw contents of the heading are stripped of leading and
+ *    trailing **spaces**", with §2.2 admitting TAB where spaces define block structure.
+ *    Content begins at the first character that is neither SPACE nor TAB. A leading VT,
+ *    FF or NBSP is content: `## <VT>Title` is a heading whose text is not `Title`.
+ * 2. **Trailing strip** — the same sentence, the same class. `## Title<VT>` keeps its VT.
+ * 3. **Optional closing sequence** — "The optional closing sequence of `#`s must be
+ *    **preceded by a space** and **may be followed by spaces only**." A trailing run of
+ *    `#` is therefore dropped only when step 2 has already put it at the end (that is what
+ *    "followed by spaces only" means) **and** the character before it is SPACE or TAB, or
+ *    the run reaches the start of the content, where the opening separator is what precedes
+ *    it (`## ###` is the empty heading of Example 47). Step 2 then runs again.
+ *    A run preceded by anything else — the letter in `# foo#`, the backslash of an escaped
+ *    `\###`, a VT or FF — is content and stays.
  *
- * What this deliberately does **not** do is call `String.prototype.trim()`. That removes
- * every ECMAScript whitespace character, so a heading whose real content begins or ends
- * with NBSP (or U+FEFF, U+3000, U+2009 …) collapsed onto the configured title and falsely
- * terminated the governed section, hiding every later row from C4's total accounting.
- * Unicode whitespace is content under this grammar, at every position.
+ * **Two classes were wrong here before, in opposite ways.** Revision 14 used
+ * `String.prototype.trim()`, which erased NBSP and every other Unicode space, so a heading
+ * whose real content was not the configured title collapsed onto it (K10-R14-01). Revision
+ * 15 replaced it with the §2.1 six, which erased VT and FF and accepted them before the
+ * closing run, so `## Title<VT>##` collapsed onto `Title` the same way (K10-R15-01). §4.2
+ * names neither class. It names *space*, and §2.2 adds *tab*. Nothing else normalises a
+ * heading's identity, at any position.
  */
 function stripAtxContent(afterOpeningSequence: string): string {
-  const content = gfmRightTrim(afterOpeningSequence.replace(BLOCK_INDENT_RUN_AT_START, ""));
+  const content = blockWsRightTrim(afterOpeningSequence.replace(BLOCK_WS_RUN_AT_START, ""));
   let n = content.length;
   while (n > 0 && content[n - 1] === "#") n--;
-  if (n !== content.length && (n === 0 || isGfmWhitespace(content[n - 1]))) {
-    return gfmRightTrim(content.slice(0, n));
+  if (n !== content.length && (n === 0 || isBlockWhitespace(content[n - 1]))) {
+    return blockWsRightTrim(content.slice(0, n));
   }
   return content;
 }
 
 /**
  * One physical line reduced to the row content the GFM tables extension sees
- * (K1.0-SELF-24). Leading block-structure whitespace is the line's indentation — already
- * bounded below four columns, since four or more is indented code and never reaches row
- * discovery — and the trailing strip is the §2.1 whitespace class.
+ * (K1.0-SELF-24, narrowed by K10-R15-01). Both ends use block-structure whitespace. The
+ * leading run is the line's indentation, already bounded below four columns because four
+ * or more is indented code and never reaches row discovery; the trailing run is the same
+ * class, so a VT or FF after the final pipe is a further cell rather than padding.
  *
- * The previous `line.trim()` also erased Unicode whitespace, so `<NBSP>| a | b |` lost its
- * first cell and became a two-cell row that could match a delimiter GFM would not match.
- * Under the grammar that leading NBSP is a cell of its own, the cell counts disagree, and
- * the lines are paragraph text — which is what the document actually renders as.
+ * `line.trim()` erased Unicode whitespace here too, so `<NBSP>| a | b |` lost its first
+ * cell and became a two-cell row that could match a delimiter GFM would not match. Under
+ * the grammar that leading NBSP is a cell of its own, the cell counts disagree, and the
+ * lines are paragraph text — which is what the document actually renders as.
  */
 function gfmRowContent(line: string): string {
-  return gfmRightTrim(line.replace(BLOCK_INDENT_RUN_AT_START, ""));
+  return blockWsRightTrim(line.replace(BLOCK_WS_RUN_AT_START, ""));
 }
 
 /**

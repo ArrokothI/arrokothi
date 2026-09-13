@@ -2320,12 +2320,12 @@ describe("K1.0 policy and inventory agree", () => {
     // rather than a blacklist of one literal counterexample. Non-ASCII and control
     // characters are written as escapes so the source stays printable; the parser sees
     // the real characters.
-    const NBSP = "\u00A0";
-    const VT = "\u000B";
-    const FF = "\u000C";
-    const IDEOGRAPHIC = "\u3000";
-    const ZWNBSP = "\uFEFF";
-    const THIN = "\u2009";
+    const NBSP = " ";
+    const VT = "";
+    const FF = "";
+    const IDEOGRAPHIC = "　";
+    const ZWNBSP = "﻿";
+    const THIN = " ";
     const TITLE = "What this packet does not establish";
     const lastDxRow =
       "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
@@ -2399,9 +2399,10 @@ describe("K1.0 policy and inventory agree", () => {
     test("a genuine exact next heading still terminates the section", async () => {
       // The twin of every RED case above. These are the forms GFM renders as exactly the
       // configured title, so the planted table lies outside the governed section and
-      // nothing is reported. The VT-before-closing-run form additionally distinguishes
-      // the correction in the opposite direction: the reviewed `[ \t]+#+` closing rule
-      // did not recognise it, so that candidate over-extended the section there.
+      // nothing is reported. Every separator and closing-sequence position here carries
+      // SPACE or TAB, which is the class GFM 0.29 §4.2 names at all of them; the VT/FF
+      // forms that revision 15 wrongly listed here are RED cases and live in the
+      // K10-R15-01 block below.
       const real = await realInventory();
       const workspace = await loadWorkspace(REPO_ROOT);
       for (const headingLine of [
@@ -2410,9 +2411,8 @@ describe("K1.0 policy and inventory agree", () => {
         `##   ${TITLE}   `,
         `## ${TITLE} ##`,
         `## ${TITLE}\t##   `,
-        `## ${TITLE}${VT}##`,
-        `## ${TITLE}${VT}`,
-        `## ${TITLE}${FF}`,
+        `## ${TITLE} ##\t`,
+        `## ${TITLE}\t##`,
       ]) {
         assert.deepEqual(
           inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, shape(headingLine)]])), policy, workspace),
@@ -2475,9 +2475,15 @@ describe("K1.0 policy and inventory agree", () => {
         ["## Title ##", "Title"],
         ["## Title\t##", "Title"],
         ["## Title ##   ", "Title"],
-        [`## Title${VT}##`, "Title"],
-        [`## Title${VT}`, "Title"],
-        [`## Title${FF}`, "Title"],
+        ["## Title ##\t", "Title"],
+        // VT and FF are §2.1 whitespace characters, but §4.2 names *space* (and §2.2 adds
+        // *tab*) at every ATX position, so neither pads a heading nor precedes a closing
+        // run. Revision 15 asserted the opposite here; K10-R15-01 corrects it.
+        [`## Title${VT}##`, `Title${VT}##`],
+        [`## Title${FF}##`, `Title${FF}##`],
+        [`## Title${VT}`, `Title${VT}`],
+        [`## Title${FF}`, `Title${FF}`],
+        [`## Title ##${VT}`, `Title ##${VT}`],
         // Unicode whitespace is content at every position.
         [`## ${NBSP}Title`, `${NBSP}Title`],
         [`## Title${NBSP}`, `Title${NBSP}`],
@@ -2485,10 +2491,12 @@ describe("K1.0 policy and inventory agree", () => {
         [`## ${IDEOGRAPHIC}Title`, `${IDEOGRAPHIC}Title`],
         [`## ${ZWNBSP}Title`, `${ZWNBSP}Title`],
         [`## Title${THIN}`, `Title${THIN}`],
-        // VT/FF are §2.1 whitespace but not block-structure whitespace, so they pad the
-        // trailing side only.
+        // Leading VT/FF were already content before this round and remain so.
         [`## ${VT}Title`, `${VT}Title`],
         [`## ${FF}Title`, `${FF}Title`],
+        // Neither is the required separator, so these are not headings at all.
+        [`##${VT}Title`, undefined],
+        [`##${FF}Title`, undefined],
         // Closing sequences the grammar does not recognise stay content.
         ["# foo#", "foo#"],
         ["### foo \\###", "foo \\###"],
@@ -2498,13 +2506,237 @@ describe("K1.0 policy and inventory agree", () => {
         ["## ###", ""],
         // Not headings at all.
         [`##${NBSP}Title`, undefined],
-        [`##${VT}Title`, undefined],
         ["##Title", undefined],
         ["####### Title", undefined],
         ["    ## Title", undefined],
       ];
       for (const [line, expected] of cases) {
         assert.equal(headingOf(line), expected, `${JSON.stringify(line)} heading content`);
+      }
+    });
+  });
+
+  describe("ATX and table structural-whitespace classes (K10-R15-01)", () => {
+    // Published GFM 0.29 §4.2 names *space* at every ATX structural position — the opening
+    // `#` may be indented 0-3 spaces, the opening sequence must be followed by a space or
+    // end of line, an optional closing `#` sequence must be preceded by a space and may be
+    // followed by spaces only, and the raw contents are stripped of leading and trailing
+    // spaces — and §2.2 substitutes TAB for SPACE wherever spaces define block structure.
+    // That class is SPACE and TAB. It is NOT §2.1's six-character "whitespace character"
+    // definition, which §4.6 raw-HTML starts and the §6.10 tag grammar cite by name and
+    // §4.2 never does.
+    //
+    // Revision 15 closed review-15's host-`trim()` defect by substituting the §2.1 six at
+    // these positions — one broad class for another — so U+000B and U+000C were stripped
+    // from heading content and accepted before a closing hash run. `## Title<VT>##` then
+    // collapsed onto `Title`, which is the same fail-open shape review-15 had just closed:
+    // a semantically non-exact heading becoming the exact configured next title, ending the
+    // governed section early and hiding whatever follows.
+    //
+    // Every RED case below plants a contradictory further table after a heading the grammar
+    // does not make exact, and requires it to surface. Every GREEN case is the SPACE/TAB
+    // twin of a RED one, so the controls pin the class boundary from both sides rather than
+    // blacklisting two characters.
+    const VT = "";
+    const FF = "";
+    const TITLE = "What this packet does not establish";
+    const lastDxRow =
+      "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
+    const badDeferredTable =
+      "| Id | Current path | Disposition | Owner | Why it is assigned there |\n|---|---|---|---|---|\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | contradictory planted table |\n";
+    const furtherDeferred = /Deferred section contains a further table; this row is outside the governed table: (Id \| Current path|DX-1 \| `packages\/core\/src\/util\/json\.ts`)/;
+    const shape = (headingLine: string): string =>
+      `${lastDxRow}\n${headingLine}\n\n${badDeferredTable}\n## ${TITLE}\n`;
+
+    test("a hash run preceded by VT or FF is not a closing sequence", async () => {
+      // Review-16's distinguishing counterexample, and its FF analogue: the grammar
+      // derivation yields the same result for both, so both are controls.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const headingLine of [`## ${TITLE}${VT}##`, `## ${TITLE}${FF}##`]) {
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, shape(headingLine)]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherDeferred.test(message)),
+          `${JSON.stringify(headingLine)} keeps its trailing hashes as content, so the section runs on and the planted table must surface; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("a hash run followed by VT or FF is not a closing sequence", async () => {
+      // "may be followed by spaces only": a trailing VT/FF after the run disqualifies it,
+      // and is not stripped first either.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const headingLine of [`## ${TITLE} ##${VT}`, `## ${TITLE} ##${FF}`]) {
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, shape(headingLine)]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherDeferred.test(message)),
+          `${JSON.stringify(headingLine)} is not followed by spaces only; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("VT and FF are not stripped from the end of heading content", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const headingLine of [`## ${TITLE}${VT}`, `## ${TITLE}${FF}`]) {
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, shape(headingLine)]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherDeferred.test(message)),
+          `${JSON.stringify(headingLine)} is not the exact title; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("the SPACE and TAB twins of every case above still terminate the section", async () => {
+      // The other side of the class boundary. If the correction had merely refused two
+      // characters, these would be unaffected; they are here so that narrowing the class
+      // too far — to SPACE alone, say — fails loudly instead of passing quietly.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const headingLine of [
+        `## ${TITLE} ##`,
+        `## ${TITLE}\t##`,
+        `## ${TITLE} ## `,
+        `## ${TITLE} ##\t`,
+        `## ${TITLE} `,
+        `## ${TITLE}\t`,
+      ]) {
+        assert.deepEqual(
+          inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, shape(headingLine)]])), policy, workspace),
+          [],
+          `${JSON.stringify(headingLine)} carries only SPACE/TAB at its structural positions, so it is the exact title`,
+        );
+      }
+    });
+
+    test("a VT or FF key cell is not the policy's key", async () => {
+      // The table side of the same substitution. `gfmTrim` stripped the §2.1 six from both
+      // ends of every cell, so `DX-1<VT>` silently became the governed `DX-1` row instead
+      // of a distinct token the reader must report.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const [anchor, padded] of [
+        ["| DX-1 | `packages/core/src/util/hash.ts`", `| DX-1${VT} | \`packages/core/src/util/hash.ts\``],
+        ["| DX-4 | `packages/core/src/schema/value-schema.ts`", `| DX-4${FF} | \`packages/core/src/schema/value-schema.ts\``],
+      ] as const) {
+        const id = anchor.slice(2, anchor.indexOf(" |"));
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[anchor, padded]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => message.includes("Deferred row has no recognisable key")),
+          `${JSON.stringify(padded)} carries no DX key; got: ${JSON.stringify(disagreements)}`,
+        );
+        assert.ok(
+          disagreements.includes(`deferred row ${id} is declared by the policy but not documented`),
+          `and ${id} is then missing from the document; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("a VT or FF value cell is a different token, and is reported", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const [anchor, padded] of [
+        ["| `packages/core/src/util/hash.ts` | migratable |", `| \`packages/core/src/util/hash.ts\` | ${VT}migratable |`],
+        ["| `packages/core/src/util/json.ts` | migratable |", `| \`packages/core/src/util/json.ts\` | migratable${FF} |`],
+      ] as const) {
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[anchor, padded]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => /^deferred row DX-\d+ is migratable but the document says/.test(message)),
+          `${JSON.stringify(padded)} is a different disposition token; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("the permitted SPACE and TAB padding twins still parse", async () => {
+      // Genuine padding must keep working, on both the key and the value cell, or the
+      // correction would be a regression dressed as a fix.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [[
+            "| DX-1 | `packages/core/src/util/hash.ts` | migratable |",
+            "|\tDX-1 \t| `packages/core/src/util/hash.ts` | \tmigratable\t |",
+          ]])),
+          policy,
+          workspace,
+        ),
+        [],
+        "SPACE and TAB around a key or value cell are the class the tables extension trims",
+      );
+    });
+
+    test("a VT-indented row has no leading edge pipe, and a trailing VT is a further cell", async () => {
+      // Row edges use the same class as cell edges. A VT before the first pipe is content,
+      // so the row has no leading delimiter and its cells shift; a VT after the last pipe
+      // is a further cell rather than padding. The first is observable through the keyed
+      // reader; the second is past the four cells the Deferred relation reads, which the
+      // audit records rather than this control asserting a shape it cannot see.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [["| DX-3 | ", `${VT}| DX-3 | `]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => message.includes("Deferred row has no recognisable key")),
+        `the VT-indented row has no key; got: ${JSON.stringify(disagreements)}`,
+      );
+      assert.ok(
+        disagreements.includes("deferred row DX-3 is declared by the policy but not documented"),
+        `and DX-3 is missing; got: ${JSON.stringify(disagreements)}`,
+      );
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [["| DX-3 | ", "   | DX-3 | "]])),
+          policy,
+          workspace,
+        ),
+        [],
+        "three spaces of indentation is block structure and still parses",
+      );
+    });
+
+    test("the §2.1 six still governs the productions that cite it", async () => {
+      // The class did not shrink everywhere: §4.6 type-1/6 start boundaries and the §6.10
+      // complete-tag grammar name "whitespace character" and keep all six. These are the
+      // round-12 controls' subjects, re-asserted here so a future reader can see that
+      // K10-R15-01 narrowed two productions and not the file.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const blankShape = (opener: string): string =>
+        `${lastDxRow}\n\n${opener}\n## ${TITLE}\n\n${badDeferredTable}\n## ${TITLE}\n`;
+      for (const opener of [`<Warning${VT}title="x">`, `<Warning a="x"${FF}>`]) {
+        assert.ok(
+          inventoryDisagreements(
+            parseInventory(mutate(real, [[lastDxRow, blankShape(opener)]])),
+            policy,
+            workspace,
+          ).some((message) => furtherDeferred.test(message)),
+          `${JSON.stringify(opener)} is still a complete type-7 tag: VT/FF remain §6.10 whitespace`,
+        );
       }
     });
   });
@@ -2517,8 +2749,8 @@ describe("K1.0 policy and inventory agree", () => {
     // association survived with the token set unchanged — exactly what C4 forbids. Each
     // case mutates the real document so the reviewed candidate stays silent and the
     // correction reports.
-    const NBSP = "\u00A0";
-    const IDEOGRAPHIC = "\u3000";
+    const NBSP = " ";
+    const IDEOGRAPHIC = "　";
 
     test("a key cell padded with Unicode whitespace is not the policy's key", async () => {
       const real = await realInventory();
@@ -2971,9 +3203,9 @@ describe("K1.0 policy and inventory agree", () => {
       `${lastDxRow}\n\n${opener}\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
     const shape = (opener: string): string =>
       `${lastDxRow}\n${opener}\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
-    const VT = "\u000B";
-    const FF = "\u000C";
-    const NBSP = "\u00A0";
+    const VT = "";
+    const FF = "";
+    const NBSP = " ";
 
     test("vertical-tab and form-feed begin attributes in a complete type-7 tag", async () => {
       const real = await realInventory();
