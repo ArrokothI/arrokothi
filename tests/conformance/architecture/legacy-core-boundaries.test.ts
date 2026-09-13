@@ -10,7 +10,7 @@
  *
  * The one behavioural change is the scanner: `specifiersIn` was a raw-text regex that read prose
  * ending in the preposition "from" before a quoted term as a bare import (K0.2-SELF-01). It is
- * replaced by the shared comment- and string-aware scanner, whose fidelity in both directions is
+ * replaced by the shared TypeScript-parser scanner, whose fidelity in both directions is
  * asserted by `import-scanner.test.ts`.
  */
 
@@ -20,7 +20,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { importSpecifiersIn as specifiersIn } from "./module-graph.ts";
+import { NON_LITERAL_DYNAMIC_IMPORT, importSpecifiersIn as specifiersIn } from "./module-graph.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const CORE_SRC = resolve(REPO_ROOT, "packages/core/src");
@@ -181,6 +181,11 @@ describe("Legacy core (0.8.x) architecture boundaries", () => {
       "@arrokothi/integration-mcp",
       "@modelcontextprotocol/client",
       "@modelcontextprotocol/server",
+      // K10-R1-01 replaces the lexical heuristic with the TypeScript parser, so the shared
+      // architecture scanner imports "typescript" as a dev-only analysis tool. That is a build-time
+      // parser, not a runtime surface the conformance cases assert through, and the target-zone and
+      // legacy guards separately constrain what production sources may reach.
+      "typescript",
     ]);
     const violations: string[] = [];
 
@@ -191,6 +196,13 @@ describe("Legacy core (0.8.x) architecture boundaries", () => {
         // A relative import stays inside the conformance tree; shared fixtures live there.
         if (specifier.startsWith(".")) continue;
         if (allowed.has(specifier)) continue;
+        // A non-literal dynamic import is reported as a sentinel by the fail-closed scanner. No
+        // conformance source may commit one: the guard that enforces literal-only targets must not
+        // itself hide a target. Flagged here with its own message rather than as a package surface.
+        if (specifier === NON_LITERAL_DYNAMIC_IMPORT) {
+          violations.push(`${path} uses a non-literal dynamic import`);
+          continue;
+        }
         violations.push(`${path} imports ${specifier}`);
       }
     }

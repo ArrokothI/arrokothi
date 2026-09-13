@@ -23,6 +23,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  NON_LITERAL_DYNAMIC_IMPORT,
   loadWorkspace,
   walkModuleGraph,
   typeScriptFilesUnder,
@@ -199,6 +200,35 @@ describe("K1.0 forbidden-edge controls", () => {
     assert.equal(violations[0]!.specifier, "@arrokothi/core");
   });
 
+  test("a forbidden import after a regular expression after a control-flow paren is rejected (K10-R1-01)", async () => {
+    // The heuristic scanner read the slash after `)` as division, treated the quote inside `["']`
+    // as a string delimiter, and consumed the forbidden import literal. The parser knows the slash
+    // starts a regular expression, so the same scanner → resolver → graph → violation path still
+    // reports the planted edge.
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts":
+        'if (true) /["\']/.test(\'x\');\nimport { LegacyHarness } from "@arrokothi/core";\nexport const use = LegacyHarness;\n',
+    });
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0]!.from, "packages/kernel/src/index.ts");
+    assert.equal(violations[0]!.specifier, "@arrokothi/core");
+  });
+
+  test("a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)", async () => {
+    // `const target = "@arrokothi/core"; await import(target)` creates a runtime dependency the old
+    // scanner emitted no edge for. K1.0 claims dynamic-import coverage, so an unresolvable target
+    // must be forbidden, not silent. The violation carries the sentinel specifier with its own
+    // reason through the same guard path.
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts":
+        'const target = "@arrokothi/core";\nexport const load = async () => import(target);\n',
+    });
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0]!.from, "packages/kernel/src/index.ts");
+    assert.equal(violations[0]!.specifier, NON_LITERAL_DYNAMIC_IMPORT);
+    assert.match(violations[0]!.reason, /non-literal dynamic import/);
+  });
+
   test("a legacy dependency reached through an in-zone module is rejected", async () => {
     const violations = await violationsFor({
       "packages/kernel/src/index.ts": 'export { relay } from "./internal.ts";\n',
@@ -341,18 +371,39 @@ describe("K1.0 legacy quarantine", () => {
     // Pinned before any K1.0 edit, at base c9a9ed7e6e538ab0542fc6a999426264abb6212a. The count is
     // readable and the digest over the sorted name list catches a rename that preserves it. K1.0
     // moves no legacy source, so both must hold exactly; a later packet that intends to change a
-    // public surface updates these deliberately and says so.
+    // public surface updates these deliberately and says so. Each surface is imported by a literal
+    // specifier (not `import(specifier)`): a non-literal dynamic import would fail the guard's own
+    // fail-closed rule, so the guard must not commit one itself.
     const surfaces = {
-      "@arrokothi/core": { count: 227, digest: "0c293a68bb41b1567bd35297a8eb1fa4c795f1d8708ce69ba0df64a4b1fe4880" },
-      "@arrokothi/core/execution": { count: 227, digest: "0c293a68bb41b1567bd35297a8eb1fa4c795f1d8708ce69ba0df64a4b1fe4880" },
-      "@arrokothi/core/ports": { count: 44, digest: "fe347586965c368ef544d288d3d52088e7f30ed79765401ef9e691f5ac728bed" },
-      "@arrokothi/core/reference": { count: 33, digest: "b73995e69da79b2db9fa6dc1213bb75e1fbca9da8f979bb8b44750d3ec19faa2" },
-      "@arrokothi/core/testing": { count: 21, digest: "83670c5420b104771a67e3d506db12c0f020cd20640625e86050d08d7be61363" },
+      "@arrokothi/core": {
+        count: 227,
+        digest: "0c293a68bb41b1567bd35297a8eb1fa4c795f1d8708ce69ba0df64a4b1fe4880",
+        module: (await import("@arrokothi/core")) as Record<string, unknown>,
+      },
+      "@arrokothi/core/execution": {
+        count: 227,
+        digest: "0c293a68bb41b1567bd35297a8eb1fa4c795f1d8708ce69ba0df64a4b1fe4880",
+        module: (await import("@arrokothi/core/execution")) as Record<string, unknown>,
+      },
+      "@arrokothi/core/ports": {
+        count: 44,
+        digest: "fe347586965c368ef544d288d3d52088e7f30ed79765401ef9e691f5ac728bed",
+        module: (await import("@arrokothi/core/ports")) as Record<string, unknown>,
+      },
+      "@arrokothi/core/reference": {
+        count: 33,
+        digest: "b73995e69da79b2db9fa6dc1213bb75e1fbca9da8f979bb8b44750d3ec19faa2",
+        module: (await import("@arrokothi/core/reference")) as Record<string, unknown>,
+      },
+      "@arrokothi/core/testing": {
+        count: 21,
+        digest: "83670c5420b104771a67e3d506db12c0f020cd20640625e86050d08d7be61363",
+        module: (await import("@arrokothi/core/testing")) as Record<string, unknown>,
+      },
     } as const;
 
     for (const [specifier, expected] of Object.entries(surfaces)) {
-      const surface = (await import(specifier)) as Record<string, unknown>;
-      const names = Object.keys(surface).sort();
+      const names = Object.keys(expected.module).sort();
       assert.equal(names.length, expected.count, `${specifier} runtime export count drifted`);
       assert.equal(
         createHash("sha256").update(names.join("\n")).digest("hex"),
@@ -374,6 +425,38 @@ describe("K1.0 policy and inventory agree", () => {
     }
   });
 
+  test("the inventory names no zone the policy does not declare (K10-R1-02)", async () => {
+    // Reverse direction: a prose-only zone row would otherwise pass the forward substring check
+    // while claiming bidirectional agreement.
+    const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
+    const zonesSection = inventory.split("## Zones")[1]?.split("## Current cross-boundary")[0] ?? "";
+    const documentedIds = new Set<string>();
+    for (const line of zonesSection.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("| `")) continue;
+      const id = trimmed.split("|")[1]?.trim().replace(/`/g, "");
+      if (id !== undefined && id !== "" && id !== "Zone id") documentedIds.add(id);
+    }
+    assert.deepEqual(
+      [...documentedIds].sort(),
+      ZONES.map((zone) => zone.id).sort(),
+      "the Zones table and the executable policy declare exactly the same zone ids",
+    );
+    const documentedRoots = new Set(zonesSection.match(/`packages\/[^`]+src`/g) ?? []);
+    for (const zone of ZONES) {
+      for (const root of zone.roots) {
+        assert.ok(documentedRoots.has(`\`${root}\``), `the Zones table lists root ${root}`);
+      }
+    }
+    for (const token of documentedRoots) {
+      const root = token.replace(/`/g, "");
+      assert.ok(
+        ZONES.some((zone) => (zone.roots as readonly string[]).includes(root)),
+        `the Zones table lists no undeclared root ${root}`,
+      );
+    }
+  });
+
   test("every deferred extraction is assigned an owner in both the policy and the inventory", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
     assert.ok(DEFERRED_EXTRACTIONS.length > 0, "the inventory of what the zone cannot reach yet is not empty");
@@ -382,6 +465,119 @@ describe("K1.0 policy and inventory agree", () => {
       assert.ok(inventory.includes(row.id), `the inventory records ${row.id}`);
       assert.ok(inventory.includes(row.currentPath), `the inventory records ${row.currentPath}`);
       assert.ok(inventory.includes(row.owner), `the inventory records owner ${row.owner}`);
+    }
+  });
+
+  test("the inventory records no deferred row the policy does not declare (K10-R1-02)", async () => {
+    const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
+    const deferredSection = inventory.split("## Deferred extraction")[1]?.split("## What this packet")[0] ?? inventory;
+    const documented = new Set(deferredSection.match(/DX-\d+/g) ?? []);
+    assert.deepEqual(
+      [...documented].sort(),
+      DEFERRED_EXTRACTIONS.map((row) => row.id).sort(),
+      "the deferred table and the executable policy declare exactly the same DX rows",
+    );
+  });
+
+  test("the export-ownership table agrees with the manifests (K10-R1-02)", async () => {
+    const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
+    const workspace = await loadWorkspace(REPO_ROOT);
+    const expected: Record<string, { exports: string[]; isPrivate: boolean }> = {
+      "@arrokothi/kernel": { exports: ["."], isPrivate: true },
+      "@arrokothi/core": { exports: [".", "./execution", "./ports", "./reference", "./testing"], isPrivate: false },
+      "@arrokothi/sdk": { exports: ["."], isPrivate: false },
+      "@arrokothi/integration-strands": { exports: ["."], isPrivate: false },
+      "@arrokothi/provider-gemini": { exports: ["."], isPrivate: false },
+      "@arrokothi/retrieval-local": { exports: ["."], isPrivate: false },
+      "@arrokothi/integration-mcp": { exports: ["."], isPrivate: false },
+    };
+    for (const [name, want] of Object.entries(expected)) {
+      const entry = workspace.packages.get(name);
+      assert.ok(entry, `workspace contains ${name}`);
+      assert.deepEqual([...entry.exports.keys()].sort(), [...want.exports].sort(), `${name} export subpaths drifted`);
+      assert.equal(entry.isPrivate, want.isPrivate, `${name} publishability drifted`);
+      assert.ok(inventory.includes(name), `the inventory names package ${name}`);
+      for (const subpath of want.exports) {
+        assert.ok(inventory.includes(subpath), `the inventory records ${name} subpath ${subpath}`);
+      }
+    }
+    const exportSection = inventory.split("## Export ownership")[1]?.split("## What the target")[0] ?? "";
+    for (const token of exportSection.match(/`@arrokothi\/[^`]+`/g) ?? []) {
+      const name = token.replace(/`/g, "");
+      assert.ok(workspace.packages.has(name), `the export table lists no undeclared package ${name}`);
+    }
+  });
+
+  test("the cross-boundary dependency table matches the measured tree (K10-R1-02)", async () => {
+    const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
+    const tableSection = inventory.split("## Current cross-boundary")[1]?.split("## Export ownership")[0] ?? "";
+    const backticked = (cell: string): Set<string> => new Set(cell.match(/`([^`]+)`/g)?.map((t) => t.replace(/`/g, "")) ?? []);
+    const parsed = new Map<string, { files: number; reaches: Set<string>; thirdParty: Set<string> }>();
+    for (const line of tableSection.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("| `")) continue;
+      const cells = trimmed.split("|").map((c) => c.trim());
+      const zoneId = cells[1]?.replace(/`/g, "");
+      const fileCount = Number.parseInt(cells[2] ?? "", 10);
+      if (zoneId === undefined || zoneId === "" || Number.isNaN(fileCount)) continue;
+      const reachesCell = cells[3] ?? "";
+      const thirdCell = cells[4] ?? "";
+      const reaches = reachesCell.includes("nothing") || reachesCell === "—" ? new Set<string>() : backticked(reachesCell);
+      // The legacy row uses an em-dash for "self, not cross-boundary".
+      const thirdParty = thirdCell.includes("nothing") ? new Set<string>() : backticked(thirdCell);
+      parsed.set(zoneId, { files: fileCount, reaches, thirdParty });
+    }
+    assert.deepEqual(
+      [...parsed.keys()].sort(),
+      ZONES.map((zone) => zone.id).sort(),
+      "the dependency table covers exactly the declared zones",
+    );
+
+    const workspace = await loadWorkspace(REPO_ROOT);
+    for (const zone of ZONES) {
+      let files: string[] = [];
+      for (const root of zone.roots) files.push(...(await typeScriptFilesUnder(REPO_ROOT, root)));
+      const documented = parsed.get(zone.id);
+      assert.ok(documented, `the dependency table has a row for ${zone.id}`);
+      assert.equal(files.length, documented.files, `${zone.id} .ts file count drifted from the inventory`);
+
+      const actualReaches = new Set<string>();
+      const actualThirdParty = new Set<string>();
+      const relativeOutside: string[] = [];
+      for (const file of files) {
+        const source = await readFile(resolve(REPO_ROOT, file), "utf8");
+        for (const specifier of importSpecifiersIn(source)) {
+          if (specifier === NON_LITERAL_DYNAMIC_IMPORT) {
+            relativeOutside.push(`${file} uses a non-literal dynamic import`);
+            continue;
+          }
+          const resolution = resolveSpecifier(workspace, file, specifier);
+          if (resolution.kind === "internal") {
+            const targetInZone = zone.roots.some(
+              (root) => resolution.file === root || resolution.file.startsWith(`${root}/`),
+            );
+            if (!targetInZone) {
+              if (specifier.startsWith(".")) relativeOutside.push(`${file} reaches ${resolution.file} via ${specifier}`);
+              else actualReaches.add(specifier);
+            }
+          } else if (resolution.kind === "external") {
+            if (!specifier.startsWith("node:")) actualThirdParty.add(specifier);
+          } else {
+            actualReaches.add(specifier);
+          }
+        }
+      }
+      assert.deepEqual(relativeOutside, [], `${zone.id} has no unlisted relative cross-boundary edge`);
+      assert.deepEqual(
+        [...actualReaches].sort(),
+        [...documented.reaches].sort(),
+        `${zone.id} workspace reaches drifted from the inventory`,
+      );
+      assert.deepEqual(
+        [...actualThirdParty].sort(),
+        [...documented.thirdParty].sort(),
+        `${zone.id} third-party reaches drifted from the inventory`,
+      );
     }
   });
 

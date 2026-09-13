@@ -9,6 +9,7 @@
  */
 
 import type { ModuleGraph } from "./module-graph.ts";
+import { NON_LITERAL_DYNAMIC_IMPORT } from "./module-graph.ts";
 
 /** One ownership zone: a set of repo-relative path prefixes with a single owner. */
 export interface Zone {
@@ -126,11 +127,21 @@ export const traversableUnder =
  * a static import, a type-only import, a re-export, a package-root barrel, a package subpath and a
  * dynamic import all arrive here as the same resolved edge. That is why a control can demonstrate
  * rejection of a type-only barrel import without the rule needing a clause about type-only imports.
+ * A non-literal dynamic import arrives as NON_LITERAL_DYNAMIC_IMPORT and is always forbidden: its
+ * target cannot be verified, so the guard fails closed rather than recording "no dependency".
  */
 export function boundaryViolations(graph: ModuleGraph, rules: BoundaryRules): BoundaryViolation[] {
   const violations: BoundaryViolation[] = [];
 
   for (const edge of graph.edges) {
+    if (edge.specifier === NON_LITERAL_DYNAMIC_IMPORT) {
+      violations.push({
+        from: edge.from,
+        specifier: edge.specifier,
+        reason: "uses a non-literal dynamic import whose target cannot be statically verified; the zone must use only literal specifiers",
+      });
+      continue;
+    }
     if (edge.resolution.kind === "internal") {
       const target = edge.resolution.file;
       if (isUnder(target, rules.zoneRoots)) continue;

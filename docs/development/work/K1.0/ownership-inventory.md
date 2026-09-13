@@ -27,8 +27,14 @@ rejects directly: "Do not rename files and call that an asynchronous migration."
 
 ## Current cross-boundary dependencies
 
-Measured at base `c9a9ed7e6e538ab0542fc6a999426264abb6212a` by the same analyzer the guards use,
-over every `.ts` file in each zone, following relative paths, package roots and package subpaths.
+Measured over the candidate tree (the payload commit named in the implementation report) by the
+same analyzer the guards use, over every `.ts` file in each zone, following relative paths,
+package roots and package subpaths. For the three zones that already existed at base
+`c9a9ed7e6e538ab0542fc6a999426264abb6212a` the result is identical at that base: K1.0 moves no
+source in those zones (base→payload touches none of their files, verified by
+`git diff --name-only`), so their rows can be reproduced at either tree. The `target-kernel` row
+exists only in the candidate tree, where `packages/kernel` is new; it was never true at the base,
+where that directory did not exist.
 
 | Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |
 |---|---|---|---|

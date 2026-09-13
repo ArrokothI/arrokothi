@@ -11,7 +11,9 @@
  * - It must not miss an import. A scanner that is quiet about prose by being quiet about everything
  *   would turn every boundary guard green while enforcing nothing, so every import form the
  *   repository can contain is asserted positively, including the type-only and dynamic forms K1.0's
- *   acceptance names explicitly.
+ *   acceptance names explicitly. K10-R1-01 showed a lexical heuristic for division versus regular
+ *   expression can hide a real import and that a non-literal dynamic import was invisible; the
+ *   scanner therefore parses with the TypeScript compiler and fails closed on non-literal targets.
  */
 
 import { test, describe } from "node:test";
@@ -20,7 +22,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { importSpecifiersIn, maskSource } from "./module-graph.ts";
+import { NON_LITERAL_DYNAMIC_IMPORT, importSpecifiersIn } from "./module-graph.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
@@ -121,7 +123,7 @@ describe("import scanner: every real import form is still found", () => {
   });
 });
 
-describe("import scanner: the lexer survives real source shapes", () => {
+describe("import scanner: the parser survives real source shapes", () => {
   test("a regular expression containing quote characters does not corrupt the rest of the file", () => {
     const source = [
       "const PATTERN = /(?:\\bfrom\\s*|\\bimport\\s*)[\"']([^\"']+)[\"']/g;",
@@ -132,6 +134,17 @@ describe("import scanner: the lexer survives real source shapes", () => {
       ["./a.ts"],
       "the old guard's own source contains exactly this shape",
     );
+  });
+
+  test("a regular expression after a control-flow closing paren does not hide the next import (K10-R1-01)", () => {
+    // The heuristic scanner treated the slash after `)` as division, read the quote inside the
+    // character class as a string delimiter, and consumed the forbidden import literal. The parser
+    // knows the slash starts a regular expression, so the import is still seen.
+    const source = [
+      'if (true) /["\']/.test(\'x\');',
+      'import { LegacyHarness } from "@arrokothi/core";',
+    ].join("\n");
+    assert.deepEqual(importSpecifiersIn(source), ["@arrokothi/core"]);
   });
 
   test("division is not mistaken for a regular expression", () => {
@@ -152,7 +165,7 @@ describe("import scanner: the lexer survives real source shapes", () => {
     assert.deepEqual(importSpecifiersIn(source), []);
   });
 
-  test("nested template literals are lexed back into code correctly", () => {
+  test("nested template literals are parsed back into code correctly", () => {
     const source = "const s = `a${`b${1}c`}d`;\nimport { a } from \"./a.ts\";";
     assert.deepEqual(importSpecifiersIn(source), ["./a.ts"]);
   });
@@ -162,9 +175,19 @@ describe("import scanner: the lexer survives real source shapes", () => {
     assert.deepEqual(importSpecifiersIn(source), []);
   });
 
-  test("masking preserves literals in source order", () => {
-    const { literals } = maskSource('const a = "one"; // "comment"\nconst b = `two`;');
-    assert.deepEqual(literals, ["one", "two"]);
+  test("a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)", () => {
+    const source = 'const target = "@arrokothi/core";\nconst m = await import(target);\n';
+    assert.deepEqual(importSpecifiersIn(source), [NON_LITERAL_DYNAMIC_IMPORT]);
+  });
+
+  test("a template dynamic import with substitutions fails closed", () => {
+    const source = "const m = await import(`./${name}.ts`);\n";
+    assert.deepEqual(importSpecifiersIn(source), [NON_LITERAL_DYNAMIC_IMPORT]);
+  });
+
+  test("a no-substitution template dynamic import is still a literal", () => {
+    const source = "const m = await import(`./a.ts`);\n";
+    assert.deepEqual(importSpecifiersIn(source), ["./a.ts"]);
   });
 });
 

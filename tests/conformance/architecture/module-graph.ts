@@ -3,12 +3,18 @@
  *
  * Two jobs, deliberately separated so each can be exercised on its own:
  *
- * 1. `importSpecifiersIn` extracts import/export specifiers from one TypeScript source. It masks
- *    comments and string/template literals first, so prose that merely ends in the preposition
- *    "from" before a quoted term is not read as a bare import. That false positive is the
- *    pre-existing guard defect recorded as K0.2-SELF-01; the forbidden-edge controls in
- *    `kernel-landing-zone.test.ts` carry import statements as literal fixture text, so the guards
- *    could not state their own controls until the scanner distinguished code from text.
+ * 1. `importSpecifiersIn` extracts import/export specifiers from one TypeScript source by parsing
+ *    it with the TypeScript compiler, so prose that merely ends in the preposition "from" before
+ *    a quoted term is not read as a bare import, and a regular-expression literal containing quote
+ *    characters cannot corrupt the rest of the file. That false positive is the pre-existing guard
+ *    defect recorded as K0.2-SELF-01; the forbidden-edge controls in `kernel-landing-zone.test.ts`
+ *    carry import statements as literal fixture text, so the guards could not state their own
+ *    controls until the scanner distinguished code from text. Parsing (rather than a lexical
+ *    heuristic for division versus regular expression) also closes K10-R1-01: a `/` after `)` in
+ *    `if (true) /["']/.test('x')` is a regular expression to the parser, not division, so the
+ *    following forbidden import is still seen. A dynamic `import()` whose argument is not a string
+ *    literal cannot be resolved statically, so it is reported as NON_LITERAL_DYNAMIC_IMPORT rather
+ *    than as "no dependency": the guard fails closed on that form.
  * 2. `walkModuleGraph` resolves those specifiers across workspace packages - relative paths,
  *    package roots and package subpath exports alike - and returns the transitive closure plus the
  *    external specifiers it stopped at. Resolution is derived from the manifests actually present
@@ -20,230 +26,56 @@
 
 import { readFile, readdir, stat } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
-
-/** Keywords after which a `/` begins a regular expression rather than a division. */
-const REGEX_PRECEDING_KEYWORDS = new Set([
-  "return",
-  "typeof",
-  "instanceof",
-  "in",
-  "of",
-  "new",
-  "delete",
-  "void",
-  "throw",
-  "case",
-  "do",
-  "else",
-  "yield",
-  "await",
-]);
-
-/** Punctuation after which a `/` begins a regular expression rather than a division. */
-const REGEX_PRECEDING_PUNCTUATION = new Set([
-  "(", ",", "=", ":", "[", "!", "&", "|", "?", "{", "}", ";", "+", "-", "*", "%", "~", "^", "<", ">",
-]);
+import ts from "typescript";
 
 /**
- * Stands in for one string literal in the masked source. A NUL character cannot occur in the
- * TypeScript sources this repository compiles, so a slot is never confused with real code.
+ * Sentinel specifier emitted for a dynamic `import()` whose argument is not statically recoverable
+ * (an identifier, a template with substitutions, or any other non-literal). It is deliberately not
+ * a valid relative path, `node:` specifier, or workspace package name, so `resolveSpecifier`
+ * treats it as external and `boundaryViolations` reports it with its own fail-closed reason rather
+ * than silently recording "no dependency".
  */
-const SLOT = String.fromCharCode(0);
-
-export interface MaskedSource {
-  /** Source text with comments blanked and every string literal replaced by a single slot. */
-  readonly code: string;
-  /** Literal values, in source order, one per slot in `code`. */
-  readonly literals: readonly string[];
-}
+export const NON_LITERAL_DYNAMIC_IMPORT = "__non_literal_dynamic_import__";
 
 /**
- * Replaces comments with whitespace and string literals with slots.
+ * Every import/export specifier in a source, grouped by form, with duplicates retained. A
+ * non-literal dynamic import contributes one NON_LITERAL_DYNAMIC_IMPORT entry per call site.
  *
- * Template literals contribute a slot for their literal text while their interpolated expressions
- * are lexed as ordinary code, so a dynamic import inside an interpolation is still seen. Regular
- * expression literals are recognised and skipped, because a character class such as `["']` would
- * otherwise be lexed as the start of a string and corrupt everything after it.
+ * Covered forms: static `import ... from`, side-effect `import`, `export ... from` (including
+ * `export * as ns from` and type-only variants), `import x = require("...")`, and dynamic
+ * `import("...")` (including a no-substitution template literal). `import.meta` is not an import
+ * and contributes nothing. Bare `require("...")` calls are intentionally out of scope: in this
+ * ESM workspace `require` is not a global, so flagging every identifier named `require` would trade
+ * this scanner's prose soundness for false positives; see the K1.0 contract limits.
  */
-export function maskSource(source: string): MaskedSource {
-  let out = "";
-  const literals: string[] = [];
-  const templates: { raw: string; exprDepth: number }[] = [];
-  let mode: "code" | "template" = "code";
-  let braceDepth = 0;
-  let index = 0;
-
-  const lastSignificantChar = (): string => {
-    for (let cursor = out.length - 1; cursor >= 0; cursor -= 1) {
-      const character = out[cursor]!;
-      if (!/\s/.test(character)) return character;
-    }
-    return "";
-  };
-
-  const lastWord = (): string => /([A-Za-z_$][A-Za-z0-9_$]*)\s*$/.exec(out)?.[1] ?? "";
-
-  const readQuoted = (quote: string): string => {
-    let value = "";
-    index += 1;
-    while (index < source.length) {
-      const character = source[index]!;
-      if (character === "\\") {
-        value += character + (source[index + 1] ?? "");
-        index += 2;
-        continue;
-      }
-      if (character === quote) {
-        index += 1;
-        break;
-      }
-      value += character;
-      index += 1;
-    }
-    return value;
-  };
-
-  const startsRegex = (): boolean => {
-    const word = lastWord();
-    if (word !== "") return REGEX_PRECEDING_KEYWORDS.has(word);
-    const character = lastSignificantChar();
-    return character === "" || REGEX_PRECEDING_PUNCTUATION.has(character);
-  };
-
-  while (index < source.length) {
-    const character = source[index]!;
-
-    if (mode === "template") {
-      const template = templates[templates.length - 1]!;
-      if (character === "\\") {
-        template.raw += character + (source[index + 1] ?? "");
-        index += 2;
-        continue;
-      }
-      if (character === "$" && source[index + 1] === "{") {
-        literals.push(template.raw);
-        template.raw = "";
-        out += SLOT;
-        template.exprDepth = braceDepth;
-        braceDepth += 1;
-        mode = "code";
-        index += 2;
-        continue;
-      }
-      if (character === "`") {
-        literals.push(template.raw);
-        out += SLOT;
-        templates.pop();
-        mode = "code";
-        index += 1;
-        continue;
-      }
-      template.raw += character;
-      index += 1;
-      continue;
-    }
-
-    if (character === "/" && source[index + 1] === "/") {
-      while (index < source.length && source[index] !== "\n") index += 1;
-      out += " ";
-      continue;
-    }
-
-    if (character === "/" && source[index + 1] === "*") {
-      index += 2;
-      while (index < source.length && !(source[index] === "*" && source[index + 1] === "/")) index += 1;
-      index += 2;
-      out += " ";
-      continue;
-    }
-
-    if (character === "/" && startsRegex()) {
-      index += 1;
-      let inClass = false;
-      while (index < source.length) {
-        const regexCharacter = source[index]!;
-        if (regexCharacter === "\\") {
-          index += 2;
-          continue;
-        }
-        if (regexCharacter === "[") inClass = true;
-        else if (regexCharacter === "]") inClass = false;
-        else if (regexCharacter === "/" && !inClass) {
-          index += 1;
-          break;
-        } else if (regexCharacter === "\n") break;
-        index += 1;
-      }
-      while (index < source.length && /[a-z]/.test(source[index]!)) index += 1;
-      out += " ";
-      continue;
-    }
-
-    if (character === '"' || character === "'") {
-      literals.push(readQuoted(character));
-      out += SLOT;
-      continue;
-    }
-
-    if (character === "`") {
-      templates.push({ raw: "", exprDepth: braceDepth });
-      mode = "template";
-      index += 1;
-      continue;
-    }
-
-    if (character === "{") braceDepth += 1;
-    if (character === "}") {
-      braceDepth -= 1;
-      const template = templates[templates.length - 1];
-      if (template !== undefined && braceDepth === template.exprDepth) {
-        mode = "template";
-        out += " ";
-        index += 1;
-        continue;
-      }
-    }
-
-    out += character;
-    index += 1;
-  }
-
-  return { code: out, literals };
-}
-
-/**
- * An import/export clause may only contain identifiers, braces, commas, stars and whitespace
- * between its keyword and `from`. Anything else - a parenthesis, an operator, a string - means the
- * keyword belonged to some other construct, so the pattern stops rather than running on to the next
- * quoted value in the file.
- */
-const FROM_CLAUSE = new RegExp(`(?<![\\w$])(?:import|export)\\b[\\w$\\s{},*]*?\\bfrom\\s*${SLOT}`, "g");
-const SIDE_EFFECT_IMPORT = new RegExp(`(?<![\\w$])import\\s*${SLOT}`, "g");
-const DYNAMIC_IMPORT = new RegExp(`(?<![\\w$])import\\s*\\(\\s*${SLOT}`, "g");
-
-/** Every import/export specifier in a source, grouped by form, with duplicates retained. */
 export function importSpecifiersIn(source: string): string[] {
-  const { code, literals } = maskSource(source);
-
-  const slotIndexByOffset = new Map<number, number>();
-  let slotCount = 0;
-  for (let cursor = 0; cursor < code.length; cursor += 1) {
-    if (code[cursor] === SLOT) {
-      slotIndexByOffset.set(cursor, slotCount);
-      slotCount += 1;
-    }
-  }
-
+  const sourceFile = ts.createSourceFile("guard-scan.ts", source, ts.ScriptTarget.ESNext, true, ts.ScriptKind.TS);
   const specifiers: string[] = [];
-  for (const pattern of [FROM_CLAUSE, SIDE_EFFECT_IMPORT, DYNAMIC_IMPORT]) {
-    for (const match of code.matchAll(pattern)) {
-      const slotOffset = match.index + match[0].length - 1;
-      const slotIndex = slotIndexByOffset.get(slotOffset);
-      if (slotIndex === undefined) continue;
-      const literal = literals[slotIndex];
-      if (literal !== undefined) specifiers.push(literal);
+  const visit = (node: ts.Node): void => {
+    if (ts.isImportDeclaration(node)) {
+      const specifier = node.moduleSpecifier;
+      if (specifier !== undefined && ts.isStringLiteralLike(specifier)) specifiers.push(specifier.text);
+    } else if (ts.isExportDeclaration(node)) {
+      if (node.moduleSpecifier !== undefined && ts.isStringLiteralLike(node.moduleSpecifier)) {
+        specifiers.push(node.moduleSpecifier.text);
+      }
+    } else if (ts.isImportEqualsDeclaration(node)) {
+      const reference = node.moduleReference;
+      if (
+        ts.isExternalModuleReference(reference) &&
+        reference.expression !== undefined &&
+        ts.isStringLiteralLike(reference.expression)
+      ) {
+        specifiers.push(reference.expression.text);
+      }
+    } else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+      const argument = node.arguments[0];
+      if (argument !== undefined && ts.isStringLiteralLike(argument)) specifiers.push(argument.text);
+      else specifiers.push(NON_LITERAL_DYNAMIC_IMPORT);
     }
-  }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
   return specifiers;
 }
 
