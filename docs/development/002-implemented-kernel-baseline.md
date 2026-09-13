@@ -10,6 +10,16 @@ differs in those trees. Fresh `npm test` passed 965 tests and typecheck passed. 
 baseline's scope, not target acceptance. See [the current assessment](010-pipeline-planning-assessment.md)
 for source inspection, process changes and validation limits; historical captures below remain historical.
 
+Structural note, K1.0 (2026-09-13): the package layout below still describes the whole implemented
+system, and every path in it is unchanged. K1.0 added one new package, `packages/kernel`
+(`@arrokothi/kernel`, `private`), as the enforced landing zone for target Kernel work. It contains
+no protocol implementation and no consumer is routed through it. Everything this document maps is
+now the explicitly **legacy** zone, retained with its exports, behaviour and regression suite intact;
+`tests/conformance/architecture/kernel-boundaries.test.ts` was renamed to `legacy-core-boundaries.test.ts`
+with its assertions retained, because the graph it guards is this implementation rather than the
+target Kernel. The zones and the deferred extraction owners are recorded in
+[K1.0's ownership inventory](work/K1.0/ownership-inventory.md). No behaviour below changed.
+
 This document answers one question: **What does the current ArrokothI kernel demonstrably
 implement?** Canonical meaning remains in the documents indexed by [`../README.md`](../README.md).
 Paths below are representative rather than exhaustive; the conformance suite is the executable

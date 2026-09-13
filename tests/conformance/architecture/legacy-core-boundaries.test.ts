@@ -1,4 +1,18 @@
-/** Architecture assertions for the published Execution-kernel surface. */
+/**
+ * Architecture assertions for the published 0.8.x surface of `@arrokothi/core`.
+ *
+ * Renamed from `kernel-boundaries.test.ts` by K1.0 without changing what it asserts. The graph it
+ * walks is the current Harness/controller implementation, which K1.0 classifies as the explicitly
+ * legacy zone; calling it "the kernel" reinforced the ownership model the target architecture
+ * replaces. Every assertion below is retained verbatim, including the vendor-neutrality guard, and
+ * is now attributed to the zone it actually covers. The target Kernel zone has its own guard in
+ * `kernel-landing-zone.test.ts`.
+ *
+ * The one behavioural change is the scanner: `specifiersIn` was a raw-text regex that read prose
+ * ending in the preposition "from" before a quoted term as a bare import (K0.2-SELF-01). It is
+ * replaced by the shared comment- and string-aware scanner, whose fidelity in both directions is
+ * asserted by `import-scanner.test.ts`.
+ */
 
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
@@ -6,12 +20,13 @@ import { readFile, readdir } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { importSpecifiersIn as specifiersIn } from "./module-graph.ts";
+
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const CORE_SRC = resolve(REPO_ROOT, "packages/core/src");
-const IMPORT_SPECIFIER = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)["']([^"']+)["']/g;
 
 /** Entry modules whose transitive graph must remain provider-neutral and dependency-free. */
-const KERNEL_ENTRY_MODULES = [
+const LEGACY_ENTRY_MODULES = [
   "execution-api.ts",
   "controllers/agent/controller.ts",
   "controllers/workflow/controller.ts",
@@ -25,8 +40,8 @@ const KERNEL_ENTRY_MODULES = [
   "testing/contracts/index.ts",
 ];
 
-/** Directories and files the kernel path owns. */
-const KERNEL_OWNED = [
+/** Directories and files the legacy core path owns. */
+const LEGACY_CORE_OWNED = [
   "agent/",
   "controllers/",
   "definitions/",
@@ -40,7 +55,7 @@ const KERNEL_OWNED = [
   "testing/contracts/",
   "workflow/",
 ];
-const KERNEL_OWNED_FILES = [
+const LEGACY_CORE_OWNED_FILES = [
   "execution-api.ts",
   "testing/workflow.ts",
   "testing/agent.ts",
@@ -57,7 +72,7 @@ const KERNEL_OWNED_FILES = [
 ];
 
 /**
- * Dependency-free leaves the kernel path is allowed to reuse. The allowlist is explicit so
+ * Dependency-free leaves the legacy core path is allowed to reuse. The allowlist is explicit so
  * unrelated implementation code cannot drift into the semantic graph.
  */
 const ALLOWED_LEAVES = ["schema/value-schema.ts", "util/hash.ts", "util/json.ts", "util/result.ts"];
@@ -73,12 +88,8 @@ const FORBIDDEN_VENDOR = [
   "@arrokothi/provider-gemini",
 ];
 
-function specifiersIn(source: string): string[] {
-  return [...source.matchAll(IMPORT_SPECIFIER)].map((match) => match[1]!);
-}
-
 function isOwned(relativePath: string): boolean {
-  return KERNEL_OWNED.some((dir) => relativePath.startsWith(dir)) || KERNEL_OWNED_FILES.includes(relativePath);
+  return LEGACY_CORE_OWNED.some((dir) => relativePath.startsWith(dir)) || LEGACY_CORE_OWNED_FILES.includes(relativePath);
 }
 
 interface Graph {
@@ -111,32 +122,32 @@ async function walkGraph(entries: readonly string[]): Promise<Graph> {
   return { files, bare };
 }
 
-function walkKernelGraph(): Promise<Graph> {
-  return walkGraph(KERNEL_ENTRY_MODULES);
+function walkLegacyGraph(): Promise<Graph> {
+  return walkGraph(LEGACY_ENTRY_MODULES);
 }
 
 async function coreSourceFiles(): Promise<string[]> {
   return (await readdir(CORE_SRC, { recursive: true })).filter((path) => path.endsWith(".ts"));
 }
 
-describe("Execution-kernel architecture boundaries", () => {
-  test("the kernel import graph reuses only the declared dependency-free leaves", async () => {
-    const { files } = await walkKernelGraph();
+describe("Legacy core (0.8.x) architecture boundaries", () => {
+  test("the legacy core import graph reuses only the declared dependency-free leaves", async () => {
+    const { files } = await walkLegacyGraph();
     const outside = [...files].filter((path) => !isOwned(path)).sort();
-    assert.deepEqual(outside, [...ALLOWED_LEAVES].sort(), "reuse outside the kernel graph is explicit and small");
+    assert.deepEqual(outside, [...ALLOWED_LEAVES].sort(), "reuse outside the legacy core graph is explicit and small");
   });
 
-  test("the kernel import graph has no external dependency at all", async () => {
-    const { bare } = await walkKernelGraph();
+  test("the legacy core import graph has no external dependency at all", async () => {
+    const { bare } = await walkLegacyGraph();
     assert.deepEqual(
       [...bare.keys()].sort(),
       [],
-      `the kernel path imports no package and no runtime builtin (found: ${[...bare.entries()].map(([s, f]) => `${s} in ${f.join(", ")}`).join("; ")})`,
+      `the legacy core path imports no package and no runtime builtin (found: ${[...bare.entries()].map(([s, f]) => `${s} in ${f.join(", ")}`).join("; ")})`,
     );
   });
 
-  test("no vendor, storage, or application package name appears in kernel sources", async () => {
-    const { files } = await walkKernelGraph();
+  test("no vendor, storage, or application package name appears in legacy core sources", async () => {
+    const { files } = await walkLegacyGraph();
     const violations: string[] = [];
     for (const path of files) {
       const source = await readFile(resolve(CORE_SRC, path), "utf8");
@@ -152,6 +163,11 @@ describe("Execution-kernel architecture boundaries", () => {
     const allowed = new Set([
       "@arrokothi/core",
       "@arrokothi/core/execution",
+      // K1.0's landing-zone guard imports the target zone by its package specifier, which is what
+      // proves the specifier resolves and that the declared entry exposes only the refusal. That is
+      // a published package surface, not a reach into internals, and the same guard separately
+      // asserts it is the only importer of the zone anywhere outside the zone.
+      "@arrokothi/kernel",
       "@arrokothi/core/ports",
       "@arrokothi/core/reference",
       "@arrokothi/core/testing",
@@ -305,7 +321,7 @@ describe("Execution-kernel architecture boundaries", () => {
         reverseImports.push(path);
       }
     }
-    assert.deepEqual(reverseImports, [], "the vendor adapter depends inward; the kernel never depends outward on Gemini");
+    assert.deepEqual(reverseImports, [], "the vendor adapter depends inward; the legacy core never depends outward on Gemini");
   });
 
   test("the published entry points are the ones the package exports", async () => {
