@@ -39,6 +39,15 @@
  * inline code, fenced code, escaped text or malformed heading-like lines never start or end a
  * section; only a real ATX heading does. Call sites name the full expected titles, not loose
  * textual prefixes.
+ *
+ * Block *context* is single-consumption and shared (K10-R8-01/K10-R8-02). One `scanBlocks` pass
+ * computes every line's context exactly once — ordinary Markdown, fenced literal, GFM raw-HTML
+ * block (types 1–7), blank, indented code or blockquote — and both section selection and table
+ * discovery consume those annotations without recomputing fence/HTML transitions. A fence or HTML
+ * marker that terminates a table body therefore closes the table as a break and is never
+ * reprocessed as a second transition, so literal code cannot become a further table; a heading
+ * inside a raw block is raw content, so it cannot truncate a governed section and hide a later
+ * table. Heading/table recognition runs only where the block context permits Markdown structure.
  */
 
 import type { PackageEntry, Workspace } from "./module-graph.ts";
@@ -177,6 +186,11 @@ interface FenceState {
  * inside a fence are literal code, so heading-looking bytes there remain ordinary content. A
  * closing run with a mismatched character (```` ``` ```` opened, `~~~` seen) does not close the
  * block; the fenced region continues until a matching closer or end of document.
+ *
+ * Preserved verbatim for K10-R8-01/R9: the round-8 structural heading reconstruction above is
+ * not undone. Round 9 keeps this transition but guarantees it runs exactly once per line per
+ * scan position via `scanBlocks` below, so a fence that terminates a table body cannot be
+ * reprocessed as a second transition.
  */
 function updateFence(state: FenceState | null, line: string): FenceState | null {
   const candidate = parseFenceCandidate(line);
@@ -196,16 +210,348 @@ function updateFence(state: FenceState | null, line: string): FenceState | null 
 }
 
 /**
+ * Tracked GFM raw-HTML block state (GFM §4.6, seven block types).
+ *
+ * Kinds 1–5 end on a line containing a specific closing sequence, so they continue across blank
+ * lines; kinds 6–7 end at the first blank line. While any HTML block is open its content lines
+ * are raw: heading-looking bytes are not ATX headings and table-looking bytes are not tables.
+ */
+interface HtmlState {
+  readonly kind: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+}
+
+/**
+ * Block tag names that open a type-6 HTML block (GFM §4.6, case-insensitive). This is the union
+ * of the GFM 0.29-gfm list and CommonMark 0.31's addition (`search`), so detection errs toward
+ * entering a raw block (fail-loud: later tables stay inside the section and are reported) rather
+ * than toward missing a true block start (fail-open: a heading inside the block truncates the
+ * section). Over-approximation here can only keep the section open longer and report more, never
+ * silently delete a contradictory table.
+ */
+const HTML_BLOCK_TAGS =
+  "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h1|h2|h3|h4|h5|h6|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|nav|noframes|ol|optgroup|option|p|param|section|source|search|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul";
+
+/**
+ * Whether the line opens a GFM raw-HTML block, assuming the scanner is outside fenced code and
+ * outside any HTML block and the line is not blank, indented code or blockquote content.
+ *
+ * Order follows the specification: type 1 (script/pre/style/textarea) first, then comment,
+ * processing instruction, declaration, CDATA, type-6 block tags, and finally type 7 (a complete
+ * open or closing tag alone on the line, excluding script/style/pre which belong to type 1).
+ * Matching is case-insensitive per GFM. Type 7's "cannot interrupt a paragraph" exception is
+ * deliberately not honoured: treating a type-7 candidate inside a paragraph as a block start
+ * keeps the section open and reports (fail-loud) rather than truncating silently, so the
+ * simplification is sound in the prohibited direction and is stated here rather than hidden.
+ */
+function parseHtmlBlockStart(line: string): HtmlState | null {
+  const indent = line.match(/^ */)?.[0].length ?? 0;
+  if (indent > 3) return null;
+  if (line.startsWith("\t")) return null;
+  const rest = line.slice(indent);
+  if (rest.startsWith(">")) return null;
+  if (/^<(script|pre|style|textarea)(\s|>|$)/i.test(rest)) return { kind: 1 };
+  if (rest.startsWith("<!--")) return { kind: 2 };
+  if (rest.startsWith("<?")) return { kind: 3 };
+  if (rest.startsWith("<![CDATA[")) return { kind: 5 };
+  if (/^<![A-Za-z]/.test(rest)) return { kind: 4 };
+  const type6 = new RegExp(`^<\\/?(?:${HTML_BLOCK_TAGS})(?=[\\s>\\/$]|$)`, "i");
+  if (type6.test(rest)) return { kind: 6 };
+  const type7 = rest.match(/^<\/?([A-Za-z][A-Za-z0-9-]*)(\s[^<>]*)?\s*\/?>\s*$/);
+  if (type7 !== null) {
+    const tag = type7[1]!.toLowerCase();
+    if (tag !== "script" && tag !== "style" && tag !== "pre") return { kind: 7 };
+  }
+  return null;
+}
+
+/** Whether a line inside an open HTML block of kinds 1–5 ends that block (the line is raw either way). */
+function htmlClosesOnLine(kind: 1 | 2 | 3 | 4 | 5, line: string): boolean {
+  switch (kind) {
+    case 1:
+      return /<\/(script|pre|style|textarea)>/i.test(line);
+    case 2:
+      return line.includes("-->");
+    case 3:
+      return line.includes("?>");
+    case 4:
+      return line.includes(">");
+    case 5:
+      return line.includes("]]>");
+  }
+}
+
+/** Whether the line is blank (spaces/tabs only). Blank lines break tables and end type-6/7 HTML blocks. */
+function isBlankLine(line: string): boolean {
+  return line.trim() === "";
+}
+
+/**
+ * Column width of leading indentation with tab stops of 4 (GFM §2.2). Lines reaching column 4
+ * before any non-whitespace character are indented code at top level, never headings, fences,
+ * HTML blocks or tables for this governed artifact.
+ */
+function indentWidth(line: string): number {
+  let col = 0;
+  for (const ch of line) {
+    if (ch === " ") col += 1;
+    else if (ch === "\t") col += 4 - (col % 4);
+    else break;
+  }
+  return col;
+}
+
+/** Whether the line is indented code (non-blank, indented four or more columns). */
+function isIndentedCode(line: string): boolean {
+  return !isBlankLine(line) && indentWidth(line) >= 4;
+}
+
+/**
+ * Whether the line is blockquote content at top level (up to three spaces, then `>`). Quoted
+ * lines never open top-level fences, HTML blocks or inventory tables here; a quoted table is
+ * not a top-level inventory assertion. The `>` line still breaks an open table body per GFM
+ * Example 201, so divergences surface as further-table reports rather than silence.
+ */
+function isBlockquote(line: string): boolean {
+  const indent = line.match(/^ */)?.[0].length ?? 0;
+  if (indent > 3 || line.startsWith("\t")) return false;
+  return line.slice(indent).startsWith(">");
+}
+
+/**
+ * One physical source line with its coherent block context, computed exactly once by
+ * `scanBlocks`. Section selection and table discovery both consume these annotations; neither
+ * recomputes fence/HTML transitions, so a line can never open and close the same block merely
+ * because two parser loops process it independently (K10-R8-01).
+ */
+export interface ScannedLine {
+  readonly text: string;
+  /** True for fence markers, fence content, HTML markers and HTML raw content: no heading/table recognition. */
+  readonly inRaw: boolean;
+  /** True for blank lines (table break; ends type-6/7 HTML blocks). */
+  readonly isBlank: boolean;
+  /** True for indented-code or blockquote lines (table break; never a top-level table row). */
+  readonly isQuotedOrCode: boolean;
+  /** The ATX heading on this line, if it is ordinary Markdown that parses as one. */
+  readonly heading: { readonly level: number; readonly text: string } | undefined;
+  /** True for ordinary Markdown lines on which table recognition may run. */
+  readonly allowsTable: boolean;
+}
+
+/**
+ * The single coherent block-state transition layer shared by section selection and table
+ * discovery (K10-R8-01/K10-R8-02 reconstruction).
+ *
+ * Invariant: every physical source line is consumed through exactly one block-state transition
+ * at a given parser position. The scan walks top to bottom; each line advances the
+ * (fence, html) state at most once and is annotated as raw, blank, quoted/code, or ordinary.
+ * Heading recognition (`parseAtxHeading`) runs only on ordinary lines outside raw blocks, so
+ * heading-looking text inside fenced code (round 8) or inside a GFM raw-HTML block (round 9)
+ * cannot start or end a governed section. Table recognition runs only on lines with
+ * `allowsTable`, so literal code (fenced, indented) and quoted/raw lines cannot become
+ * inventory relations merely because they resemble the table grammar.
+ *
+ * Supported Markdown contexts for this governed artifact: ATX headings (any level breaks a
+ * table body; exact level-2 titles delimit sections), fenced code (backtick/tilde, GFM §4.5),
+ * raw HTML blocks types 1–7 (GFM §4.6, tracked as raw), blank lines, blockquote breaks and
+ * indented-code exclusion. Refused/unsupported without silent misreading: setext headings,
+ * thematic breaks, lists, link reference definitions and tables nested inside blockquotes or
+ * lists are not given their own block states; where they appear inside a table body they become
+ * ordinary body candidates and reach the reader as unreadable/duplicate rows (fail-loud),
+ * never as silent exits. Type-7 HTML's paragraph-interruption exception is intentionally
+ * over-approximated toward raw (stated in `parseHtmlBlockStart`); indented lines are always
+ * code regardless of a preceding blank line (both err toward reporting, never toward silence).
+ */
+/**
+ * One line's block-state transition, recorded for the state-transition audit.
+ *
+ * `consumedOnce` is always true: the scan advances exactly one line per step and never
+ * reprocesses a line for a second fence/HTML transition. It is recorded per line so the audit
+ * can show the K10-R8-01 property directly rather than assert it.
+ */
+export interface LineTransition {
+  readonly index: number;
+  readonly text: string;
+  readonly fenceBefore: string | null;
+  readonly htmlBefore: string | null;
+  readonly classification:
+    | "fence-marker-open"
+    | "fence-closer"
+    | "fence-raw"
+    | "html-open"
+    | "html-open-close-same-line"
+    | "html-close-line"
+    | "html-raw"
+    | "html-end-blank"
+    | "blank"
+    | "indented-code"
+    | "blockquote"
+    | "ordinary";
+  readonly fenceAfter: string | null;
+  readonly htmlAfter: string | null;
+  readonly consumedOnce: true;
+  readonly headingAllowed: boolean;
+  readonly tableAllowed: boolean;
+}
+
+const fenceName = (fence: FenceState | null): string | null =>
+  fence === null ? null : `open(${fence.char}x${fence.length})`;
+const htmlName = (html: HtmlState | null): string | null =>
+  html === null ? null : `html${html.kind}`;
+
+/**
+ * Every line's transition through the shared block-state layer, in order. This is the primary
+ * scan; `scanBlocks` projects it to the annotations section/table discovery consume.
+ */
+export function scanTransitions(markdown: string): LineTransition[] {
+  const lines = markdown.split("\n");
+  const out: LineTransition[] = [];
+  let fence: FenceState | null = null;
+  let html: HtmlState | null = null;
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index]!;
+    if (fence !== null) {
+      const before = fenceName(fence);
+      fence = updateFence(fence, line);
+      const closed = fence === null;
+      out.push({
+        index, text: line,
+        fenceBefore: before, htmlBefore: htmlName(html),
+        classification: closed ? "fence-closer" : "fence-raw",
+        fenceAfter: fenceName(fence), htmlAfter: htmlName(html),
+        consumedOnce: true, headingAllowed: false, tableAllowed: false,
+      });
+      continue;
+    }
+    if (html !== null) {
+      if (html.kind <= 5) {
+        const closes = htmlClosesOnLine(html.kind as 1 | 2 | 3 | 4 | 5, line);
+        const kind = html.kind;
+        if (closes) html = null;
+        out.push({
+          index, text: line,
+          fenceBefore: null, htmlBefore: `html${kind}`,
+          classification: closes ? "html-close-line" : "html-raw",
+          fenceAfter: null, htmlAfter: htmlName(html),
+          consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        });
+        continue;
+      }
+      if (isBlankLine(line)) {
+        const kind = html.kind;
+        html = null;
+        out.push({
+          index, text: line,
+          fenceBefore: null, htmlBefore: `html${kind}`,
+          classification: "html-end-blank",
+          fenceAfter: null, htmlAfter: null,
+          consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        });
+        continue;
+      }
+      out.push({
+        index, text: line,
+        fenceBefore: null, htmlBefore: htmlName(html),
+        classification: "html-raw",
+        fenceAfter: null, htmlAfter: htmlName(html),
+        consumedOnce: true, headingAllowed: false, tableAllowed: false,
+      });
+      continue;
+    }
+    if (isBlankLine(line)) {
+      out.push({
+        index, text: line, fenceBefore: null, htmlBefore: null, classification: "blank",
+        fenceAfter: null, htmlAfter: null, consumedOnce: true, headingAllowed: false, tableAllowed: false,
+      });
+      continue;
+    }
+    if (isIndentedCode(line) || isBlockquote(line)) {
+      out.push({
+        index, text: line,
+        fenceBefore: null, htmlBefore: null,
+        classification: isIndentedCode(line) ? "indented-code" : "blockquote",
+        fenceAfter: null, htmlAfter: null,
+        consumedOnce: true, headingAllowed: false, tableAllowed: false,
+      });
+      continue;
+    }
+    const fenceCandidate = parseFenceCandidate(line);
+    if (fenceCandidate !== undefined) {
+      fence = updateFence(fence, line);
+      out.push({
+        index, text: line,
+        fenceBefore: null, htmlBefore: null, classification: "fence-marker-open",
+        fenceAfter: fenceName(fence), htmlAfter: null,
+        consumedOnce: true, headingAllowed: false, tableAllowed: false,
+      });
+      continue;
+    }
+    const htmlStart = parseHtmlBlockStart(line);
+    if (htmlStart !== null) {
+      if (htmlStart.kind <= 5 && htmlClosesOnLine(htmlStart.kind as 1 | 2 | 3 | 4 | 5, line)) {
+        out.push({
+          index, text: line,
+          fenceBefore: null, htmlBefore: null, classification: "html-open-close-same-line",
+          fenceAfter: null, htmlAfter: null,
+          consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        });
+      } else {
+        html = htmlStart;
+        out.push({
+          index, text: line,
+          fenceBefore: null, htmlBefore: null, classification: "html-open",
+          fenceAfter: null, htmlAfter: htmlName(html),
+          consumedOnce: true, headingAllowed: false, tableAllowed: false,
+        });
+      }
+      continue;
+    }
+    const heading = parseAtxHeading(line);
+    out.push({
+      index, text: line,
+      fenceBefore: null, htmlBefore: null, classification: "ordinary",
+      fenceAfter: null, htmlAfter: null,
+      consumedOnce: true, headingAllowed: heading !== undefined, tableAllowed: true,
+    });
+  }
+  return out;
+}
+
+export function scanBlocks(markdown: string): ScannedLine[] {
+  return scanTransitions(markdown).map((t) => {
+    switch (t.classification) {
+      case "blank":
+      case "html-end-blank":
+        return { text: t.text, inRaw: false, isBlank: true, isQuotedOrCode: false, heading: undefined, allowsTable: false };
+      case "indented-code":
+      case "blockquote":
+        return { text: t.text, inRaw: false, isBlank: false, isQuotedOrCode: true, heading: undefined, allowsTable: false };
+      case "fence-marker-open":
+      case "fence-closer":
+      case "fence-raw":
+      case "html-open":
+      case "html-open-close-same-line":
+      case "html-close-line":
+      case "html-raw":
+        return { text: t.text, inRaw: true, isBlank: false, isQuotedOrCode: false, heading: undefined, allowsTable: false };
+      case "ordinary":
+        return { text: t.text, inRaw: false, isBlank: false, isQuotedOrCode: false, heading: parseAtxHeading(t.text), allowsTable: true };
+    }
+  });
+}
+
+/**
  * The lines of one governed section, selected by Markdown structure rather than substrings.
  *
- * Rebuilt for K10-R7-01. The previous version located the section with
- * `markdown.indexOf(heading)` and `rest.indexOf(nextHeading)`, so any occurrence of those bytes -
- * prose, an inline code span, fenced code, or a malformed heading-like line - truncated the
- * section before table discovery could inspect its block context, silently deleting a later
- * contradictory table. Selection now scans block structure top to bottom with fence tracking: the
- * section starts at the first level-2 ATX heading outside fenced code whose normalised text equals
- * `currentTitle` exactly, and ends at the first later level-2 ATX heading outside fenced code
- * whose text equals `nextTitle` exactly.
+ * Rebuilt for K10-R7-01 and preserved for K10-R8-01/K10-R8-02. The previous version located
+ * the section with `markdown.indexOf(heading)` and `rest.indexOf(nextHeading)`, so any occurrence
+ * of those bytes - prose, an inline code span, fenced code, or a malformed heading-like line -
+ * truncated the section before table discovery could inspect its block context, silently deleting
+ * a later contradictory table. Selection now consumes the shared `scanBlocks` annotations: the
+ * section starts at the first level-2 ATX heading on an ordinary line (outside fenced code and
+ * outside every GFM raw-HTML block) whose normalised text equals `currentTitle` exactly, and ends
+ * at the first later such heading whose text equals `nextTitle` exactly. The round-8 heading
+ * grammar (prose/inline/fenced/escaped/malformed cases) is unchanged; round 9 only widens the
+ * raw context from fenced code to fenced code plus raw HTML, indented code and blockquotes.
  *
  * Titles are the exact expected heading texts (`Zones`, `Current cross-boundary dependencies`,
  * …), not loose prefixes (`## Current cross-boundary`). A prefix convenient for `indexOf` is not
@@ -219,23 +565,14 @@ function updateFence(state: FenceState | null, line: string): FenceState | null 
  * missing); a missing next heading runs the section to end of document, so following tables
  * become further tables rather than vanishing.
  */
-function sectionLines(markdown: string, currentTitle: string, nextTitle: string): string[] {
-  const lines = markdown.split("\n");
-  let fence: FenceState | null = null;
+function sectionRange(markdown: string, currentTitle: string, nextTitle: string): { readonly start: number; readonly end: number } | null {
+  const scanned = scanBlocks(markdown);
   let start: number | null = null;
-  let end = lines.length;
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]!;
-    if (fence !== null) {
-      fence = updateFence(fence, line);
-      continue;
-    }
-    const opened = updateFence(fence, line);
-    if (opened !== null) {
-      fence = opened;
-      continue;
-    }
-    const heading = parseAtxHeading(line);
+  let end = scanned.length;
+  for (let i = 0; i < scanned.length; i++) {
+    const entry = scanned[i]!;
+    if (entry.inRaw || entry.isBlank || entry.isQuotedOrCode) continue;
+    const heading = entry.heading;
     if (heading === undefined || heading.level !== 2) continue;
     if (start === null) {
       if (heading.text === currentTitle) start = i;
@@ -244,8 +581,14 @@ function sectionLines(markdown: string, currentTitle: string, nextTitle: string)
       break;
     }
   }
-  if (start === null) return [];
-  return lines.slice(start + 1, end);
+  if (start === null) return null;
+  return { start, end };
+}
+
+function sectionLines(markdown: string, currentTitle: string, nextTitle: string): string[] {
+  const range = sectionRange(markdown, currentTitle, nextTitle);
+  if (range === null) return [];
+  return markdown.split("\n").slice(range.start + 1, range.end);
 }
 
 /**
@@ -274,74 +617,87 @@ function sectionText(markdown: string, currentTitle: string, nextTitle: string):
  * table; then every subsequent non-blank line until the table breaks is a body candidate -
  * including a line with no `|` at all, which GFM still renders as a single-cell row padded with
  * empties (Example 202). The table breaks at the first blank line or at the start of another
- * block-level structure (fence, ATX heading, blockquote; Example 201); prose before the header or
- * after the break is not a candidate, so the surrounding inventory prose is unaffected. Fenced code
- * is skipped so pipes inside code stay out of the relations - such a line renders as code, so the
+ * block-level structure (fence, HTML block, ATX heading, blockquote, indented code; Example 201); prose before the header or
+ * after the break is not a candidate, so the surrounding inventory prose is unaffected. Fenced code, raw-HTML content, indented code and blockquotes
+ * are skipped so pipes inside non-table blocks stay out of the relations - such a line renders as code, so the
  * document does not assert it as a row. The delimiter row of a discovered table is the only line
  * consumed without becoming a candidate; any later delimiter-shaped line inside a body is an
  * ordinary body row and reaches the reader as unreadable rather than disappearing.
  *
- * Fence tracking and ATX recognition are shared with section selection (`parseFenceCandidate`,
- * `parseAtxHeading`, `updateFence`), so a heading inside fenced code neither opens a table nor
- * breaks a body, and a mismatched fence closer does not silently resume table discovery
- * (K10-R7-01). The heading break accepts any ATX level: any structural heading ends the table
+ * Block context is shared with section selection through scanBlocks, so a heading inside fenced code or inside a raw-HTML block neither opens a table nor truncates a section, and a fence or HTML marker encountered where a table body is open closes that body and is consumed exactly once by the single linear pass below rather than reprocessed as a second transition (K10-R7-01 preserved; K10-R8-01/K10-R8-02). The heading break accepts any ATX level: any structural heading ends the table
  * body per GFM Example 201, while only the exact expected level-2 titles delimit sections.
  */
 function sectionTables(markdown: string, currentTitle: string, nextTitle: string): DiscoveredTable[] {
-  const lines = sectionLines(markdown, currentTitle, nextTitle);
+  const scanned = scanBlocks(markdown);
+  const range = sectionRange(markdown, currentTitle, nextTitle);
+  if (range === null) return [];
+  // Single linear pass over the shared annotations between the section boundaries. The index
+  // always advances by at least one per iteration and block transitions are never recomputed
+  // here, so a fence or HTML marker that terminates a table body is consumed exactly once
+  // (K10-R8-01): it closes the open table as a break and the scan moves past it. There is no
+  // nested body loop that can leave `i` on the terminator for the outer loop to reprocess as a
+  // second transition.
   const tables: DiscoveredTable[] = [];
-  let fence: FenceState | null = null;
-  let i = 0;
-  while (i < lines.length) {
-    const line = lines[i]!;
-    if (fence !== null) {
-      // Inside fenced code: literal text, never a heading or a row. A mismatched closer does not
-      // exit, via `updateFence`.
-      fence = updateFence(fence, line);
+  let open: { readonly header: readonly string[]; readonly body: string[][] } | null = null;
+  let i = range.start + 1;
+  const closeOpen = (): void => {
+    if (open !== null) {
+      tables.push({ header: open.header, body: open.body });
+      open = null;
+    }
+  };
+  while (i < range.end) {
+    const entry = scanned[i]!;
+    const line = entry.text;
+    if (entry.inRaw || entry.isBlank || entry.isQuotedOrCode) {
+      // Fence/HTML markers and raw content, blank lines, indented code and blockquotes all break
+      // an open table body per GFM Example 201 and are never rows themselves. Raw lines stay out
+      // of the relations; quoted/code lines are top-level breaks rather than inventory rows.
+      closeOpen();
       i++;
       continue;
     }
-    if (parseFenceCandidate(line) !== undefined) {
-      // A fence marker opens a code block and breaks any table body; it is never a row itself.
-      fence = updateFence(fence, line);
+    if (entry.heading !== undefined) {
+      // Any structural ATX heading (any level) breaks the body; only exact level-2 titles
+      // delimit sections (handled by `sectionRange`).
+      closeOpen();
+      i++;
+      continue;
+    }
+    if (open !== null) {
+      // Every subsequent ordinary non-blank line until the table breaks is a body candidate,
+      // including a line with no `|` at all (GFM Example 202, padded with empties downstream).
+      // A later delimiter-shaped line is an ordinary body row reaching the reader as unreadable.
+      open.body.push(splitGfmRow(line.trim()));
       i++;
       continue;
     }
     const trimmed = line.trim();
-    if (trimmed === "") {
+    if (!containsUnescapedPipe(trimmed)) {
       i++;
       continue;
     }
-    if (containsUnescapedPipe(trimmed)) {
-      const headerCells = splitGfmRow(trimmed);
-      const nextLine = lines[i + 1] ?? "";
-      if (parseFenceCandidate(nextLine) === undefined) {
-        const delimiterCells = splitGfmRow(nextLine.trim());
-        if (delimiterCells.length === headerCells.length && isDelimiterCells(delimiterCells)) {
-          const body: string[][] = [];
-          i += 2;
-          while (i < lines.length) {
-            const bodyLine = lines[i]!;
-            if (parseFenceCandidate(bodyLine) !== undefined) {
-              fence = updateFence(fence, bodyLine);
-              break;
-            }
-            const bodyTrimmed = bodyLine.trim();
-            if (bodyTrimmed === "") break;
-            if (parseAtxHeading(bodyLine) !== undefined) break;
-            const bodyIndent = bodyLine.match(/^ */)?.[0].length ?? 0;
-            const bodyRest = bodyLine.slice(bodyIndent);
-            if (bodyRest.startsWith(">")) break;
-            body.push(splitGfmRow(bodyTrimmed));
-            i++;
-          }
-          tables.push({ header: headerCells, body });
-          continue;
-        }
-      }
+    // Peek at the delimiter candidate without transitioning block state: the annotation for the
+    // next line was already computed once by `scanBlocks`, so this is a read, not a second
+    // fence/HTML transition. The delimiter must itself be ordinary Markdown with a matching
+    // cell count (GFM Example 203) or there is no table.
+    const next = i + 1 < range.end ? scanned[i + 1]! : undefined;
+    if (next === undefined || next.inRaw || next.isBlank || next.isQuotedOrCode || next.heading !== undefined) {
+      i++;
+      continue;
     }
-    i++;
+    const headerCells = splitGfmRow(trimmed);
+    const delimiterCells = splitGfmRow(next.text.trim());
+    if (delimiterCells.length !== headerCells.length || !isDelimiterCells(delimiterCells)) {
+      i++;
+      continue;
+    }
+    // The delimiter row is the only line consumed without becoming a candidate; it is consumed
+    // here, once, alongside its header.
+    open = { header: headerCells, body: [] };
+    i += 2;
   }
+  closeOpen();
   return tables;
 }
 

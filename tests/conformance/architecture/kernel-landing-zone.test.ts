@@ -1436,6 +1436,259 @@ describe("K1.0 policy and inventory agree", () => {
     });
   });
 
+  describe("fence single-consumption (K10-R8-01)", () => {
+    // A fence marker encountered where a table body is open terminates that body and is consumed
+    // exactly once by the single shared block scan. The round-8 scanner consumed it in the body
+    // loop without advancing `i`, so the outer loop reprocessed the same bare marker as its own
+    // closer and the literal code lines after it became a spurious further table. Each control
+    // below plants a complete three-line table (header + delimiter + body, the shape the round-8
+    // audit's single-row case lacked) inside a fence immediately after the last real Zones body
+    // row and drives the production parser.
+    const lastZoneRow =
+      "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+    const codeTable = (rows: string): string => rows;
+    const completeCodeTable =
+      "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | this is code, not an inventory row |\n";
+    const furtherZones = /Zones section contains a further table; this row is outside the governed table: `target-kernel` \| `packages\/core\/src`/;
+
+    test("a complete table inside a bare backtick fence immediately after the body stays green", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}\`\`\`\n${completeCodeTable}\`\`\`\n`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.deepEqual(disagreements, [], `fenced literal code must not become a further table; got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("the same block with a legitimate fence info string stays green", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}\`\`\`markdown\n${completeCodeTable}\`\`\`\n`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.deepEqual(disagreements, [], `an info string does not change the fence transition; got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("a tilde-fenced equivalent stays green", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}~~~\n${completeCodeTable}~~~\n`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.deepEqual(disagreements, [], `tilde fences share the single-consumption rule; got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("a real second Markdown table at the same location but outside a fence still fails", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const badZonesTable =
+        "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | stale contradictory further table |\n";
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}\n${badZonesTable}`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `an unfenced second table is still a further table; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("mismatched closers remain inside the open fence", async () => {
+      // A `~~~` line does not close a backtick block, so the code table between them stays raw.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}\`\`\`\n~~~\n${completeCodeTable}\`\`\`\n`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.deepEqual(disagreements, [], `a mismatched closer leaves the fence open; got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("a shorter closer than the opener does not close it", async () => {
+      // Four backticks open; three backticks cannot close (closing run must be at least as long).
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}\`\`\`\`\n${completeCodeTable}\`\`\`\n\`\`\`\`\n`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.deepEqual(disagreements, [], `a shorter run leaves the fence open; got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("an unclosed fence before the governed table stays fail-loud (GFM-consistent)", async () => {
+      // An unclosed fence swallows the governed header as code, so discovery reports the table
+      // missing rather than reading an empty relation quietly. This preserves the round-8 audit's
+      // case 2d direction under the reconstructed scanner.
+      const real = await realInventory();
+      const header = "## Zones\n";
+      const parsed = parseInventory(mutate(real, [[header, `${header}\`\`\`\n`]]));
+      assert.ok(
+        parsed.unreadable.some((message) => /Zones table is missing from its section/.test(message)),
+        `an unclosed fence must be loud, not silent; got: ${JSON.stringify(parsed.unreadable)}`,
+      );
+    });
+
+    test("a complete table inside indented code after the body stays green (adjacent block challenger)", async () => {
+      // Four-space indented lines are indented code at top level (GFM §4.4), never inventory
+      // rows. The pre-round-9 table scanner trimmed every line before checking pipes, so an
+      // indented code table would have become a spurious further table through the same
+      // false-positive direction as K10-R8-01.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const indented = completeCodeTable.split("\n").filter((line) => line !== "").map((line) => `    ${line}`).join("\n") + "\n";
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}\n${indented}`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.deepEqual(disagreements, [], `indented code must not become a further table; got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("table-shaped lines inside a blockquote after the body stay green (adjacent block challenger)", async () => {
+      // Quoted lines break the body per GFM Example 201 but never become top-level inventory
+      // rows: a quoted table is not a top-level assertion of this document.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const quoted = completeCodeTable.split("\n").filter((line) => line !== "").map((line) => `> ${line}`).join("\n") + "\n";
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}\n${quoted}\n`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.deepEqual(disagreements, [], `quoted table-shaped lines must not become relations; got: ${JSON.stringify(disagreements)}`);
+    });
+
+    test("a real table after a blockquote break still fails", async () => {
+      // The break must not swallow what follows: a genuine contradictory table after the quote
+      // and a blank line is still reported.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const badZonesTable =
+        "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | stale contradictory further table |\n";
+      const mutated = mutate(real, [[lastZoneRow, `${lastZoneRow}\n> quoted prose, not a row\n\n${badZonesTable}`]]);
+      const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `a table after the quote break is still discovered; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+  });
+
+  describe("raw HTML blocks (K10-R8-02)", () => {
+    // GFM §4.6: material inside a raw HTML block that might otherwise be recognised as a block
+    // start is ignored until that block's end condition. `sectionLines` used to track only
+    // fences, so an exact next-heading line inside `<script>…</script>` truncated the Zones
+    // section and silently excluded a later contradictory table. The shared `scanBlocks` layer
+    // now tracks all seven HTML block types as raw, so neither the heading nor tables inside
+    // the block become structure, while tables after the block (before the real next heading)
+    // remain inside the section and are reported.
+    const lastZoneRow =
+      "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+    const badZonesTable =
+      "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | stale contradictory further table |\n";
+    const furtherZones = /Zones section contains a further table; this row is outside the governed table: `target-kernel` \| `packages\/core\/src`/;
+
+    test("an exact next-heading line inside a script block cannot truncate the section", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\n<script>\n## Current cross-boundary dependencies\n</script>\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `the heading inside <script> is raw HTML content, so the later table must surface; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a script open tag with attributes and mixed case still opens the raw block", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\n<SCRIPT type="text/javascript">\n## Current cross-boundary dependencies\n</script>\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `type-1 matching is case-insensitive and allows attributes; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("an HTML comment block hides its heading but not the later table (adjacent raw-block challenger)", async () => {
+      // Type 2 (`<!--` … `-->`) ends on a different sequence than type 1, so this challenger
+      // falsifies a `<script>`-only implementation rather than re-proving it.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\n<!--\n## Current cross-boundary dependencies\n-->\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `the heading inside the comment is raw, so the later table must surface; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a pre block hides its heading but not the later table", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\n<pre>\n## Current cross-boundary dependencies\n</pre>\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `the heading inside <pre> is raw, so the later table must surface; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a type-6 div block hides its heading until the blank line", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\n<div>\n## Current cross-boundary dependencies\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `the heading inside <div> is raw until the blank line; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("ordinary inline HTML and prose do not open a raw block", async () => {
+      // Control 11 for an interpreting (not refusing) design: a complete tag with trailing prose
+      // is paragraph text (type 7 requires the tag alone on the line), and mid-line tags are
+      // inline HTML. Neither may start a block that hides the later table, and neither is
+      // refused: the contradictory table after them is still reported through the normal channel.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\nThe tokens <code>hi</code> and <a href="https://example.com">link</a> are inline, not blocks.\n\n<a href="https://example.com">link</a> with trailing prose is a paragraph, not a type-7 block.\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `inline HTML must not open a raw block or be refused; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("inline HTML alone without a contradictory table stays green", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\nThe tokens <code>hi</code> and <a href="https://example.com">link</a> are inline, not blocks.\n`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.deepEqual(disagreements, [], `ordinary inline HTML must not be rejected as a block; got: ${JSON.stringify(disagreements)}`);
+    });
+  });
+
   test("the allowed-leaf list is empty, and the inventory says why", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
     assert.deepEqual(TARGET_KERNEL_RULES.allowedLeaves, [], "K1.0 approves no portable leaf");
