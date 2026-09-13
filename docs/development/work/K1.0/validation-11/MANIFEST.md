@@ -98,3 +98,17 @@ inside a wide-marker item (`10.`, content indent 4) reads as indented code in bo
 and never opens a leaf in either. The observable on the pinned controls coincides with GFM
 truth (green), and no committed behavior changes there; container-relative fence/code
 disambiguation is left for a future packet if a real governed document ever needs it.
+
+## Correction, round 12 (K1.0-SELF-23)
+
+The git blob quoted in *Reading 08* above as the C production parser is **not a well-formed
+Git object name**: it has 39 hexadecimal characters, and a Git blob name has 40. The original
+sentence is left exactly as it was recorded, so this is a superseding note rather than a
+rewrite of history.
+
+| | |
+|---|---|
+| Recorded above | `8782dbf461907c6a5f0934816cfd28a3568fbc3` (39 characters) |
+| Actual git blob of the round-11 C `inventory-oracle.ts` | `8782dbf461907c6a5fc0934816cfd28a3568fbc3` |
+| Nature of the defect | Transcription. The recorded value is the true blob name with the `c` at offset 18 dropped; prefix and suffix are otherwise identical. Verified by `git show 6880b4825ed1aa2363f8366431052f88d6955be8:tests/conformance/architecture/inventory-oracle.ts | git hash-object --stdin`. |
+| What it does and does not affect | An evidence-record identity only. The demonstration log's H10-vs-C observables are unchanged; the H10 SHA-256 and every SHA-256 digest in the table above remain well-formed and still match the files they name. No parser behaviour claim changes. |

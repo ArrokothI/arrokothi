@@ -439,7 +439,17 @@ function parseHtmlBlockStart(line: string, allowType7: boolean): { readonly kind
   if (rest.startsWith("<?")) return { kind: 3 };
   if (rest.startsWith("<![CDATA[")) return { kind: 5 };
   if (/^<![A-Z]/.test(rest)) return { kind: 4 };
-  const type6 = new RegExp(`^<\\/?(?:${HTML_BLOCK_TAGS})(?=[\\s>\\/$]|$)`, "i");
+  // GFM 0.29 §4.6 type 6: a recognized block tag name followed by exactly one of
+  // whitespace, `>`, the two-character string `/>`, or end of line. This is a
+  // structural alternation, not a character class: a lone `/` is insufficient and
+  // `$` is an end anchor, never a literal boundary token, so `<div/ x>`,
+  // `<div/foo>`, `<div/` and `<div$foo>` stay ordinary text while `<div>`,
+  // `<div/>` and `<div class=x>` still open type 6. Neighbor audit (K10-R11-01):
+  // type 1 already uses the structural `(\s|>|$)` (no `/`, no literal `$`);
+  // types 2/3/5 are fixed prefixes needing no boundary; type 4 is `<!` + ASCII
+  // uppercase; type 7 is a complete tag via `parseCompleteTag`, so the malformed
+  // forms above fail there too and stay ordinary.
+  const type6 = new RegExp(`^<\\/?(?:${HTML_BLOCK_TAGS})(?=\\s|>|/>|$)`, "i");
   if (type6.test(rest)) return { kind: 6 };
   if (!allowType7) return null;
   const tag = parseCompleteTag(rest);

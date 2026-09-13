@@ -8,7 +8,27 @@ including 006/008/009 as the owner revised them on 2026-09-13).
 **Dependency:** K0.2, independently ACCEPTED at H16 `90a6f37eaeb61009025449a1abc7e6d31dc1dbb2` and
 integrated as `0535160e677231da41b06d9f822e62e2f0364dd1` ([receipt](../K0.2/integration-01.md)).
 **Base commit:** `c9a9ed7e6e538ab0542fc6a999426264abb6212a`.
-**Branch:** `codex/k1.0-target-boundary-legacy-quarantine`. **Contract revision 11.**
+**Branch:** `codex/k1.0-target-boundary-legacy-quarantine`. **Contract revision 12.**
+**Revision 12 changes (same packet, no new semantics).** C4's type-6 raw-HTML start boundary
+is corrected (K10-R11-01). Revision 11 accepted a bare `/` and a literal `$` after a recognized
+block tag name through the character class `[\s>\/$]`, so `<div/ x>`, `<div/foo>`, `<div/` and
+`<div$foo>` opened HTML-6, hid the exact next governed heading until the blank line, and could
+manufacture a further-table disagreement from a valid document. The predicate is now the
+structural grammar whitespace OR `>` OR exact `/>` OR EOL (`(?=\s|>|/>|$)`, with `$` as the end
+anchor, never a literal token), so those four malformed forms stay ordinary text while `<div/>`,
+`<div>`, `<div class=x>`, bare `<div` at EOL and the same closing-tag boundaries still open type 6,
+and a recognized prefix plus an ordinary name character (e.g. `divfoo`) still does not open type 6
+merely from the prefix. Neighbor audit: type 1 already uses the structural `(\s|>|$)` with no `/`
+or literal `$`; types 2/3/5 are fixed prefixes needing no boundary; type 4 is `<!` plus ASCII
+uppercase; type 7 is a complete tag via `parseCompleteTag`, so the malformed forms fail there too.
+The container-owned leaf lifetime with `ownerDepth`, same-line eligibility after container closure,
+top-level leaf lifetime, required whitespace before each type-7 attribute, published GFM 0.29
+rule-set pin, structural top-level section identity, structural header/body identity,
+one-governed-table/further-table accounting, GFM row discovery, key-before-value uniqueness,
+relational comparison, dependency recomputation and the C1/C2/C9 scanner reconstruction are
+unchanged. C4 evidence grows with one compact type-6 boundary matrix (lone-slash/dollar GREEN,
+valid open/closing RED, prefix guard, round-11 textarea/search/attribute/owner-depth spot-check).
+C3 suite 1990 → 1994; C7 architecture suite 290 → 294. C9's 326 count is unchanged.
 **Revision 11 changes (same packet, no new semantics).** C4's container/leaf ownership,
 attribute grammar and raw-HTML rule set are corrected (K10-R10-01, K10-R10-02, K10-R10-03).
 Revision 10 checked open leaves before container continuation, so an unclosed list-local

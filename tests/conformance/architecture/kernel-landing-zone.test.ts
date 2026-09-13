@@ -2353,6 +2353,136 @@ describe("K1.0 policy and inventory agree", () => {
     });
   });
 
+  describe("type-6 boundary tokens (K10-R11-01)", () => {
+    // Published GFM 0.29 §4.6 type 6: a recognized block tag name followed by exactly one of
+    // whitespace, `>`, the exact two-character string `/>`, or end of line. A lone `/` is not
+    // sufficient and `$` is not a boundary token at all. Each malformed opener below is followed
+    // by the exact next governed heading and a contradictory well-formed table after that
+    // heading, so GREEN proves section membership (the heading is real and the planted table is
+    // outside Deferred) rather than merely testing a regex helper; each valid opener hides that
+    // heading until the blank line and manufactures a further-table RED.
+    const lastDxRow =
+      "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
+    const badDeferredTable =
+      "| Id | Current path | Disposition | Owner | Why it is assigned there |\n|---|---|---|---|---|\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | planted row |\n";
+    const furtherDeferred = /Deferred section contains a further table; this row is outside the governed table: (Id \| Current path|DX-1 \| `packages\/core\/src\/util\/json\.ts`)/;
+    const shape = (opener: string): string =>
+      `${lastDxRow}\n${opener}\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
+
+    test("lone-slash and dollar forms stay ordinary", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const opener of ["<div/ x>", "<div/foo>", "<div/", "<div$foo>"]) {
+        const mutated = mutate(real, [[lastDxRow, shape(opener)]]);
+        assert.deepEqual(
+          inventoryDisagreements(parseInventory(mutated), policy, workspace),
+          [],
+          `${opener} is ordinary text: the heading terminates Deferred and the planted table is outside`,
+        );
+      }
+    });
+
+    test("valid open boundaries still open the raw block", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const opener of ["<div/>", "<div>", "<div class=x>", "<div"]) {
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, shape(opener)]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherDeferred.test(message)),
+          `${opener} must open type 6 and hide the heading; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("closing tags keep the same valid boundaries; prefixes do not inherit them", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const opener of ["</div>", "</div/>", "</div class=x>", "</div"]) {
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, shape(opener)]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherDeferred.test(message)),
+          `${opener} must open type 6 and hide the heading; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+      // `divfoo` carries the recognized prefix `div` plus an ordinary name character. If the
+      // prefix alone sufficed for type 6, the trailing-prose line below would still open a raw
+      // block; instead it stays ordinary (GREEN) because after `div` comes `f`, not a boundary,
+      // and with trailing prose it is not a complete type-7 tag either.
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, shape("<divfoo> trailing prose")]])),
+          policy,
+          workspace,
+        ),
+        [],
+        "<divfoo> trailing prose is ordinary: the div prefix alone does not open type 6",
+      );
+      // The same name alone is still a complete custom tag, so type 7 hides the heading (RED):
+      // the prefix guard narrows type 6 without weakening type 7.
+      assert.ok(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, shape("<divfoo>")]])),
+          policy,
+          workspace,
+        ).some((message) => furtherDeferred.test(message)),
+        "a complete <divfoo> line still opens type 7",
+      );
+    });
+
+    test("round-11 textarea/search, attribute-whitespace and owner-depth controls are unchanged", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      // textarea with blank after the opener ends type 7 at the blank (GREEN).
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(
+            mutate(real, [[lastDxRow, shape("<textarea>\n")]]),
+          ),
+          policy,
+          workspace,
+        ),
+        [],
+        "textarea blank split is preserved",
+      );
+      // search with trailing prose stays ordinary (GREEN).
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, shape("<search> trailing prose")]])),
+          policy,
+          workspace,
+        ),
+        [],
+        "search trailing prose is preserved ordinary",
+      );
+      // Missing whitespace between attributes stays ordinary (GREEN).
+      assert.deepEqual(
+        inventoryDisagreements(
+          parseInventory(mutate(real, [[lastDxRow, shape("<a href='bar'title=title>")]])),
+          policy,
+          workspace,
+        ),
+        [],
+        "missing attribute whitespace is preserved ordinary",
+      );
+      // Container-owned leaf lifetime: a list-local type-7 block without its blank terminator
+      // still ends with its item (GREEN).
+      const containerInsertion = `${lastDxRow}\n- note\n\n  <Warning>\n## What this packet does not establish\n\n${badDeferredTable}\n## What this packet does not establish\n`;
+      assert.deepEqual(
+        inventoryDisagreements(parseInventory(mutate(real, [[lastDxRow, containerInsertion]])), policy, workspace),
+        [],
+        "container-owned leaf lifetime is preserved",
+      );
+    });
+  });
+
   test("the allowed-leaf list is empty, and the inventory says why", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
     assert.deepEqual(TARGET_KERNEL_RULES.allowedLeaves, [], "K1.0 approves no portable leaf");
