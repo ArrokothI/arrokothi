@@ -16,7 +16,10 @@
  *
  * Parsing is deliberately strict. A table row this module cannot read is reported as a disagreement
  * rather than skipped, so the oracle cannot go quiet by failing to find the rows it is meant to
- * check.
+ * check. Uniqueness is part of every keyed relation: a duplicate zone id, DX id or package name is
+ * itself a disagreement, so a contradictory row cannot be erased by last-write-wins overwriting
+ * (K10-R3-01). The first row for a key is kept; the duplicate is preserved as a disagreement rather
+ * than silently overwriting it.
  */
 
 import type { PackageEntry, Workspace } from "./module-graph.ts";
@@ -68,6 +71,10 @@ export function parseInventory(markdown: string): ParsedInventory {
       unreadable.push(`Zones row: ${cells.join(" | ")}`);
       continue;
     }
+    if (zones.has(id)) {
+      unreadable.push(`duplicate Zones row for zone ${id}: ${cells.join(" | ")}`);
+      continue;
+    }
     zones.set(id, roots);
   }
 
@@ -77,6 +84,10 @@ export function parseInventory(markdown: string): ParsedInventory {
     const currentPath = pathCell === undefined ? undefined : backticked(pathCell)[0];
     if (!/^DX-\d+$/.test(idCell) || currentPath === undefined || dispositionCell === undefined || ownerCell === undefined) {
       unreadable.push(`Deferred row: ${cells.join(" | ")}`);
+      continue;
+    }
+    if (deferred.has(idCell)) {
+      unreadable.push(`duplicate Deferred row for ${idCell}: ${cells.join(" | ")}`);
       continue;
     }
     deferred.set(idCell, { currentPath, disposition: dispositionCell, owner: ownerCell });
@@ -95,6 +106,10 @@ export function parseInventory(markdown: string): ParsedInventory {
     const published = normalised.startsWith("yes");
     if (!published && !normalised.startsWith("no")) {
       unreadable.push(`Export row has an unreadable Published? cell: ${cells.join(" | ")}`);
+      continue;
+    }
+    if (packages.has(name)) {
+      unreadable.push(`duplicate Export row for package ${name}: ${cells.join(" | ")}`);
       continue;
     }
     packages.set(name, { subpaths, published });

@@ -523,6 +523,40 @@ describe("K1.0 policy and inventory agree", () => {
   const realInventory = async (): Promise<string> => readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
   const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
 
+  /**
+   * Parses the cross-boundary dependency table. A duplicate zone row is returned in `duplicates`
+   * and the first row is kept, so a stale wrong row cannot be silently overwritten by the correct
+   * row that follows it (K10-R3-01). Callers must fail on a non-empty `duplicates`.
+   */
+  const parseDependencyTable = (
+    inventory: string,
+  ): { parsed: Map<string, { files: number; reaches: Set<string>; thirdParty: Set<string> }>; duplicates: string[] } => {
+    const tableSection = inventory.split("## Current cross-boundary")[1]?.split("## Export ownership")[0] ?? "";
+    const backticked = (cell: string): Set<string> =>
+      new Set(cell.match(/`([^`]+)`/g)?.map((t) => t.replace(/`/g, "")) ?? []);
+    const parsed = new Map<string, { files: number; reaches: Set<string>; thirdParty: Set<string> }>();
+    const duplicates: string[] = [];
+    for (const line of tableSection.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("| `")) continue;
+      const cells = trimmed.split("|").map((c) => c.trim());
+      const zoneId = cells[1]?.replace(/`/g, "");
+      const fileCount = Number.parseInt(cells[2] ?? "", 10);
+      if (zoneId === undefined || zoneId === "" || Number.isNaN(fileCount)) continue;
+      if (parsed.has(zoneId)) {
+        duplicates.push(zoneId);
+        continue;
+      }
+      const reachesCell = cells[3] ?? "";
+      const thirdCell = cells[4] ?? "";
+      const reaches = reachesCell.includes("nothing") || reachesCell === "—" ? new Set<string>() : backticked(reachesCell);
+      // The legacy row uses an em-dash for "self, not cross-boundary".
+      const thirdParty = thirdCell.includes("nothing") ? new Set<string>() : backticked(thirdCell);
+      parsed.set(zoneId, { files: fileCount, reaches, thirdParty });
+    }
+    return { parsed, duplicates };
+  };
+
   test("the parser actually reads the three ownership tables", async () => {
     // Non-vacuity. A parser that silently read nothing would report no disagreement about anything.
     const parsed = parseInventory(await realInventory());
@@ -610,6 +644,73 @@ describe("K1.0 policy and inventory agree", () => {
         edits: [["| `host-sdk` | `packages/sdk/src` |", "| `host-sdk` | `packages/sdk/src` |\n| `invented-zone` | `packages/kernel/src` |"]],
         expect: /zone invented-zone is documented but not declared by the policy/,
       },
+      {
+        // K10-R3-01. A stale contradictory row before the correct row must not be silently
+        // overwritten by last-write-wins; the duplicate itself is a disagreement.
+        name: "a duplicate zone row before the correct row is rejected",
+        edits: [
+          [
+            "| `target-kernel` | `packages/kernel/src` |",
+            "| `target-kernel` | `packages/core/src` | stale contradictory duplicate |\n| `target-kernel` | `packages/kernel/src` |",
+          ],
+        ],
+        expect: /duplicate Zones row for zone target-kernel/,
+      },
+      {
+        // K10-R3-01. Order-independence: the same contradiction after the correct row must also fail.
+        name: "a duplicate zone row after the correct row is rejected",
+        edits: [
+          [
+            "| `target-kernel` | `packages/kernel/src` |",
+            "| `target-kernel` | `packages/kernel/src` |\n| `target-kernel` | `packages/core/src` | stale contradictory duplicate |",
+          ],
+        ],
+        expect: /duplicate Zones row for zone target-kernel/,
+      },
+      {
+        // K10-R3-01. Same last-write-wins hole for deferred rows, false row first.
+        name: "a duplicate deferred row before the correct row is rejected",
+        edits: [
+          [
+            "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |",
+            "| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory duplicate |\n| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |",
+          ],
+        ],
+        expect: /duplicate Deferred row for DX-1/,
+      },
+      {
+        // K10-R3-01. Same hole, false row last.
+        name: "a duplicate deferred row after the correct row is rejected",
+        edits: [
+          [
+            "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |",
+            "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory duplicate |",
+          ],
+        ],
+        expect: /duplicate Deferred row for DX-1/,
+      },
+      {
+        // K10-R3-01. Same last-write-wins hole for package rows, false row first.
+        name: "a duplicate package row before the correct row is rejected",
+        edits: [
+          [
+            "| `@arrokothi/kernel` | `.` | No (private) |",
+            "| `@arrokothi/kernel` | `.` | Yes |\n| `@arrokothi/kernel` | `.` | No (private) |",
+          ],
+        ],
+        expect: /duplicate Export row for package @arrokothi\/kernel/,
+      },
+      {
+        // K10-R3-01. Same hole, false row last.
+        name: "a duplicate package row after the correct row is rejected",
+        edits: [
+          [
+            "| `@arrokothi/kernel` | `.` | No (private) |",
+            "| `@arrokothi/kernel` | `.` | No (private) |\n| `@arrokothi/kernel` | `.` | Yes |",
+          ],
+        ],
+        expect: /duplicate Export row for package @arrokothi\/kernel/,
+      },
     ];
 
     for (const control of controls) {
@@ -627,23 +728,8 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("the cross-boundary dependency table matches the measured tree (K10-R1-02)", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
-    const tableSection = inventory.split("## Current cross-boundary")[1]?.split("## Export ownership")[0] ?? "";
-    const backticked = (cell: string): Set<string> => new Set(cell.match(/`([^`]+)`/g)?.map((t) => t.replace(/`/g, "")) ?? []);
-    const parsed = new Map<string, { files: number; reaches: Set<string>; thirdParty: Set<string> }>();
-    for (const line of tableSection.split("\n")) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith("| `")) continue;
-      const cells = trimmed.split("|").map((c) => c.trim());
-      const zoneId = cells[1]?.replace(/`/g, "");
-      const fileCount = Number.parseInt(cells[2] ?? "", 10);
-      if (zoneId === undefined || zoneId === "" || Number.isNaN(fileCount)) continue;
-      const reachesCell = cells[3] ?? "";
-      const thirdCell = cells[4] ?? "";
-      const reaches = reachesCell.includes("nothing") || reachesCell === "—" ? new Set<string>() : backticked(reachesCell);
-      // The legacy row uses an em-dash for "self, not cross-boundary".
-      const thirdParty = thirdCell.includes("nothing") ? new Set<string>() : backticked(thirdCell);
-      parsed.set(zoneId, { files: fileCount, reaches, thirdParty });
-    }
+    const { parsed, duplicates } = parseDependencyTable(inventory);
+    assert.deepEqual(duplicates, [], "the dependency table has no duplicate zone rows");
     assert.deepEqual(
       [...parsed.keys()].sort(),
       ZONES.map((zone) => zone.id).sort(),
@@ -694,6 +780,23 @@ describe("K1.0 policy and inventory agree", () => {
         [...actualThirdParty].sort(),
         [...documented.thirdParty].sort(),
         `${zone.id} third-party reaches drifted from the inventory`,
+      );
+    }
+  });
+
+  test("duplicate cross-boundary dependency rows fail closed (K10-R3-01)", async () => {
+    const real = await realInventory();
+    const anchor = "| `target-kernel` | 2 | nothing | nothing |";
+    const stale = "| `target-kernel` | 999 | nothing | nothing |";
+    const variants = [
+      mutate(real, [[anchor, `${stale}\n${anchor}`]]),
+      mutate(real, [[anchor, `${anchor}\n${stale}`]]),
+    ];
+    for (const mutated of variants) {
+      const { duplicates } = parseDependencyTable(mutated);
+      assert.ok(
+        duplicates.includes("target-kernel"),
+        `a duplicate dependency row must be reported regardless of order; got: ${JSON.stringify(duplicates)}`,
       );
     }
   });
