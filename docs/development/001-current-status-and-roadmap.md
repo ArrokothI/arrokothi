@@ -6,9 +6,9 @@ status and dependencies. K0.1, the post-K0.1 process review and K0.2 are accepte
 owner-closed. The [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure, with the accepted
 benchmark E0 evidence; this establishes the contract/fixture gate, not a working target Kernel.
 The owner released **K1.0** on 2026-09-13, treating the benchmark-owned E1 fixture preparation as
-built but unaccepted; its round-4 candidate is `WAITING_FOR_REVIEW`, accepted by nobody, and closes
-no E1 criterion (rounds 1–3 drew CHANGES REQUIRED; round 4 closes the round-3 duplicate-key oracle
-hole, preserving round 3's reconstructions). That release names no successor (`next_release: none`). Historical planning source starting point:
+built but unaccepted; its round-5 candidate is `WAITING_FOR_REVIEW`, accepted by nobody, and closes
+no E1 criterion (rounds 1–4 each drew CHANGES REQUIRED; round 5 makes inventory parsing total and
+corrects an evidence-record identity, preserving every earlier reconstruction). That release names no successor (`next_release: none`). Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the
 [review](004-architecture-review.md) records decisions and the disposition of P1–P7/B1–B3.

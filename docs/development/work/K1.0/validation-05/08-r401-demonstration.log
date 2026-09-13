@@ -1,0 +1,128 @@
+# r401-demonstration - K10-R4-01 demonstrated, payload C 6fd225e0115d6b91bd5088e22d41d137088d9688
+
+Output-only evidence under 006. Run from the repository root against the clean payload
+tree. It adds no script, fixture, evaluator rule, threshold or configuration to the
+candidate: the file was written outside the repository, copied in, run, and removed.
+Full source is quoted here so the run is reproducible.
+
+$ node --experimental-strip-types ./k1-0-r401-demo.mjs
+
+--- begin source ---
+// K10-R4-01 demonstrated: rows that carry a recognisable key but fail to parse, against the round-4
+// parser and the committed one. Output-only evidence; this source is quoted in the log.
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { parseDependencyTable, parseInventory } from "./tests/conformance/architecture/inventory-oracle.ts";
+
+const ROOT = process.cwd();
+const NL = String.fromCharCode(10);
+const INVENTORY = "docs/development/work/K1.0/ownership-inventory.md";
+const original = await readFile(resolve(ROOT, INVENTORY), "utf8");
+
+// The round-4 dependency-table parser, quoted from kernel-landing-zone.test.ts at
+// 14cc1c1 (the reviewed H4). Note the order: the file count is parsed and NaN continues
+// *before* the duplicate check, and a dropped row is recorded nowhere.
+function round4DependencyTable(inventory) {
+  const tableSection = inventory.split("## Current cross-boundary")[1]?.split("## Export ownership")[0] ?? "";
+  const backticked = (cell) => new Set(cell.match(/`([^`]+)`/g)?.map((t) => t.replace(/`/g, "")) ?? []);
+  const parsed = new Map();
+  const duplicates = [];
+  for (const line of tableSection.split(NL)) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("| `")) continue;
+    const cells = trimmed.split("|").map((c) => c.trim());
+    const zoneId = cells[1]?.replace(/`/g, "");
+    const fileCount = Number.parseInt(cells[2] ?? "", 10);
+    if (zoneId === undefined || zoneId === "" || Number.isNaN(fileCount)) continue;
+    if (parsed.has(zoneId)) {
+      duplicates.push(zoneId);
+      continue;
+    }
+    const reachesCell = cells[3] ?? "";
+    const thirdCell = cells[4] ?? "";
+    const reaches = reachesCell.includes("nothing") || reachesCell === "—" ? new Set() : backticked(reachesCell);
+    const thirdParty = thirdCell.includes("nothing") ? new Set() : backticked(thirdCell);
+    parsed.set(zoneId, { files: fileCount, reaches, thirdParty });
+  }
+  return { parsed, duplicates };
+}
+
+const DEP_CORRECT = "| `target-kernel` | 2 | nothing | nothing |";
+const DEP_MALFORMED = "| `target-kernel` | not-a-count | `@arrokothi/core` | nothing |";
+
+const dependencyCases = [
+  ["baseline, unmutated document", DEP_CORRECT, DEP_CORRECT],
+  ["malformed keyed row BEFORE the correct row", DEP_CORRECT, DEP_MALFORMED + NL + DEP_CORRECT],
+  ["malformed keyed row AFTER the correct row", DEP_CORRECT, DEP_CORRECT + NL + DEP_MALFORMED],
+  ["row with no recognisable key", DEP_CORRECT, "| not-a-zone | 2 | nothing | nothing |" + NL + DEP_CORRECT],
+  ["well-formed duplicate BEFORE (retained K10-R3-01)", DEP_CORRECT, "| `target-kernel` | 999 | nothing | nothing |" + NL + DEP_CORRECT],
+  ["well-formed duplicate AFTER (retained K10-R3-01)", DEP_CORRECT, DEP_CORRECT + NL + "| `target-kernel` | 999 | nothing | nothing |"],
+];
+
+console.log("Cross-boundary dependency table. A row that cannot be parsed must be accounted for,");
+console.log("not discarded; 'complaints' counts duplicates plus unreadable rows.");
+console.log("");
+console.log("Case".padEnd(52) + "| round-4 | committed | what the committed parser says");
+console.log("-".repeat(132));
+for (const [name, from, to] of dependencyCases) {
+  const mutated = from === to ? original : original.replace(from, to);
+  if (from !== to && original.split(from).length - 1 !== 1) {
+    console.log(name.padEnd(52) + "| ANCHOR NOT UNIQUE");
+    continue;
+  }
+  const before = round4DependencyTable(mutated);
+  const after = parseDependencyTable(mutated);
+  const says = after.unreadable.length > 0 ? after.unreadable[0].split(":")[0] : "(nothing)";
+  console.log(
+    name.padEnd(52) +
+      "|" + String(before.duplicates.length).padStart(8) +
+      " |" + String(after.unreadable.length).padStart(10) +
+      " | " + says,
+  );
+}
+
+console.log("");
+console.log("Short rows with a recognisable key, in the three ownership tables (K1.0-SELF-08).");
+console.log("These use parseInventory, whose round-4 Zones loop had the same fail-open shape.");
+console.log("");
+const shortCases = [
+  ["Zones", "| `target-kernel` | `packages/kernel/src` |", "| `target-kernel` |"],
+  ["Deferred", "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 |", "| DX-1 |"],
+  ["Export", "| `@arrokothi/sdk` | `.` | Yes |", "| `@arrokothi/sdk` |"],
+];
+console.log("Table".padEnd(12) + "| committed unreadable rows");
+console.log("-".repeat(100));
+for (const [table, anchor, short] of shortCases) {
+  const mutated = original.replace(anchor, short + NL + anchor);
+  const parsed = parseInventory(mutated);
+  console.log(table.padEnd(12) + "| " + JSON.stringify(parsed.unreadable));
+}
+console.log("");
+console.log("Baseline parseInventory on the unmutated document: " + JSON.stringify(parseInventory(original).unreadable));
+--- end source ---
+
+--- begin output ---
+Cross-boundary dependency table. A row that cannot be parsed must be accounted for,
+not discarded; 'complaints' counts duplicates plus unreadable rows.
+
+Case                                                | round-4 | committed | what the committed parser says
+------------------------------------------------------------------------------------------------------------------------------------
+baseline, unmutated document                        |       0 |         0 | (nothing)
+malformed keyed row BEFORE the correct row          |       0 |         2 | Dependency row for target-kernel is malformed
+malformed keyed row AFTER the correct row           |       0 |         1 | duplicate Dependency row for zone target-kernel
+row with no recognisable key                        |       0 |         1 | Dependency row has no recognisable key
+well-formed duplicate BEFORE (retained K10-R3-01)   |       1 |         1 | duplicate Dependency row for zone target-kernel
+well-formed duplicate AFTER (retained K10-R3-01)    |       1 |         1 | duplicate Dependency row for zone target-kernel
+
+Short rows with a recognisable key, in the three ownership tables (K1.0-SELF-08).
+These use parseInventory, whose round-4 Zones loop had the same fail-open shape.
+
+Table       | committed unreadable rows
+----------------------------------------------------------------------------------------------------
+Zones       | ["Zones row for target-kernel is malformed: `target-kernel`","duplicate Zones row for zone target-kernel: `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.**"]
+Deferred    | ["Deferred row for DX-1 is malformed: DX-1","duplicate Deferred row for DX-1: DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing."]
+Export      | ["Export row for @arrokothi/sdk is malformed: `@arrokothi/sdk`","duplicate Export row for package @arrokothi/sdk: `@arrokothi/sdk` | `.` | Yes"]
+
+Baseline parseInventory on the unmutated document: []
+exit code: 0
+--- end output ---
