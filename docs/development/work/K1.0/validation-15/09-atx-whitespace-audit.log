@@ -1,0 +1,204 @@
+== ATX heading and table row/cell structural-whitespace audit, H14 vs C ==
+
+$ node --experimental-strip-types audit-atx.mts
+
+== ATX heading content (GFM 0.29 section 4.2 with the 2.1/2.2 classes) ==
+
+line                           expected               H14                    C                        rule
+------------------------------------------------------------------------------------------------------------------------------------
+"## Title"                     "Title"                "Title"                "Title"                  4.2 separator + content
+"##\tTitle"                    "Title"                "Title"                "Title"                  2.2 Example 6: TAB separator
+"##   Title   "                "Title"                "Title"                "Title"                  4.2 leading/trailing strip
+"## Title ##"                  "Title"                "Title"                "Title"                  4.2 Example 41 closing sequence
+"## Title\t##"                 "Title"                "Title"                "Title"                  closing run preceded by TAB
+"## Title ##   "               "Title"                "Title"                "Title"                  4.2 Example 43 trailing spaces
+"## Title\u000b##"             "Title"                "Title\u000b##"        "Title"                ! closing run preceded by 2.1 whitespace
+"## Title\u000b"               "Title"                "Title"                "Title"                  2.1 right-strip
+"## Title\f"                   "Title"                "Title"                "Title"                  2.1 right-strip
+"##  Title"                    " Title"               "Title"                " Title"               ! U+00A0 is Unicode whitespace, not 2.2 block-structure whitespace
+"## Title "                    "Title "               "Title"                "Title "               ! U+00A0 is not in the 2.1 right-strip class
+"## Title ## "                 "Title ## "            "Title"                "Title ## "            ! closing run not at end after 2.1 right-strip
+"## 　Title"                    "　Title"               "Title"                "　Title"               ! U+3000 is Unicode whitespace
+"## ﻿Title"                    "﻿Title"               "Title"                "﻿Title"               ! U+FEFF is Unicode whitespace
+"## Title "                    "Title "               "Title"                "Title "               ! U+2009 is Unicode whitespace
+"## \u000bTitle"               "\u000bTitle"          "Title"                "\u000bTitle"          ! VT is 2.1 whitespace but not 2.2 block-structure whitespace
+"## \fTitle"                   "\fTitle"              "Title"                "\fTitle"              ! FF is 2.1 whitespace but not 2.2 block-structure whitespace
+"# foo#"                       "foo#"                 "foo#"                 "foo#"                   4.2 Example 45: run not preceded by whitespace
+"### foo \\###"                "foo \\###"            "foo \\###"            "foo \\###"              4.2 Example 46: escaped hash
+"### foo ### b"                "foo ### b"            "foo ### b"            "foo ### b"              4.2 Example 44: run not at end
+"### ###"                      ""                     "###"                  ""                     ! 4.2 Example 47: empty heading
+"## ###"                       ""                     "###"                  ""                     ! run reaches the start of the content
+"## Title"                     (not a heading)        (not a heading)        (not a heading)          4.2 requires SPACE/TAB or EOL after the opening sequence
+"##\u000bTitle"                (not a heading)        (not a heading)        (not a heading)          same: VT is not the 4.2/2.2 separator
+"##Title"                      (not a heading)        (not a heading)        (not a heading)          4.2 requires the separator
+"####### Title"                (not a heading)        (not a heading)        (not a heading)          4.2 allows at most six hashes
+"    ## Title"                 (not a heading)        (not a heading)        (not a heading)          four columns of indentation is indented code
+------------------------------------------------------------------------------------------------------------------------------------
+heading cases 27; H!=C 11; C wrong 0
+
+== Table row content and cell identity (tables extension with the same classes) ==
+
+row                                                  H14                                      C                                          note
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+"| DX-1 | `p/q.ts` | migratable | K1.1 | why |"      DX-1 -> {p/q.ts, migratable, K1.1}       DX-1 -> {p/q.ts, migratable, K1.1}         ordinary row
+"|  \tDX-1\t  | `p/q.ts` |\tmigratable\t| K1.1 | why |" DX-1 -> {p/q.ts, migratable, K1.1}       DX-1 -> {p/q.ts, migratable, K1.1}         ASCII space/tab padding is 2.1 whitespace and is trimmed
+"| DX-1  | `p/q.ts` | migratable | K1.1 | why |"     DX-1 -> {p/q.ts, migratable, K1.1}       row has no recognisable key              ! U+00A0 stays in the key cell: no key, so the row is reported
+"| DX-1 | `p/q.ts` |  migratable | K1.1 | why |"     DX-1 -> {p/q.ts, migratable, K1.1}       DX-1 -> {p/q.ts,  migratable, K1.1}      ! U+00A0 stays in the value cell: a different disposition token
+" | DX-1 | `p/q.ts` | migratable | K1.1 | why |"     DX-1 -> {p/q.ts, migratable, K1.1}       row has no recognisable key              ! U+00A0 indentation is not block-structure whitespace: no leading edge pipe, cells shift
+"   | DX-1 | `p/q.ts` | migratable | K1.1 | why |"   DX-1 -> {p/q.ts, migratable, K1.1}       DX-1 -> {p/q.ts, migratable, K1.1}         up to three spaces of indentation is block-structure whitespace
+"| DX-1 | `p/q.ts` | migratable | K1.1 | why |   "   DX-1 -> {p/q.ts, migratable, K1.1}       DX-1 -> {p/q.ts, migratable, K1.1}         trailing ASCII whitespace is right-stripped
+"| DX-1 | `p/q.ts` | migratable | K1.1 | why | "     DX-1 -> {p/q.ts, migratable, K1.1}       DX-1 -> {p/q.ts, migratable, K1.1}         U+00A0 after the final pipe is a further cell, not padding (past the four cells the relation reads, so the keyed tuple is unchanged)
+"| DX-1 | `p/q.ts` | migratable | K1.1 | why　 |"     DX-1 -> {p/q.ts, migratable, K1.1}       DX-1 -> {p/q.ts, migratable, K1.1}         U+3000 inside the last cell is content (that cell is past the four the relation reads)
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+row cases 9; H!=C 3
+
+exit: 0
+
+== the program, quoted in full (it enters no tracked path) ==
+--- audit-atx.mts ---
+/**
+ * ATX heading and table-row structural-whitespace audit, H14 vs C.
+ *
+ * Prints what each parser derives for one line at a time, through the exported production
+ * annotation `scanBlocks` (heading identity) and through `parseInventory` on a one-section
+ * synthetic document (cell identity). The "expected" column is derived from published GFM 0.29:
+ *
+ *   section 2.1  whitespace character = SPACE TAB LF VT FF CR; "Unicode whitespace" is a
+ *                separate, wider class that includes U+00A0 and the other Unicode space marks.
+ *   section 2.2  tabs behave as spaces only where spaces define block structure; the classes
+ *                that fix where block content starts are SPACE and TAB.
+ *   section 4.2  ATX headings: the opening sequence is followed by a space (or tab, section 2.2
+ *                Example 6) or end of line; the optional closing "#" sequence must be preceded
+ *                by a space and may be followed by spaces only; the raw contents are stripped
+ *                of leading and trailing spaces. Examples 41-47 pin the closing-sequence cases.
+ *   tables ext.  cells are split on unescaped "|" and their surrounding whitespace is trimmed.
+ *
+ * A "!" in the last column marks a line where the two parsers disagree.
+ */
+const REPO = "/Users/rex-shih/Documents/ArrokothI/arrokothi";
+const ARCH = `${REPO}/tests/conformance/architecture`;
+const H_ORACLE = new URL("./oracle-H14.ts", import.meta.url).pathname;
+
+const H = await import(H_ORACLE);
+const C = await import(`${ARCH}/inventory-oracle.ts`);
+
+const NBSP = " ";
+const VT = "";
+const FF = "";
+const IDEO = "　";
+const ZWNBSP = "﻿";
+const THIN = " ";
+
+const show = (value: string | undefined): string =>
+  value === undefined ? "(not a heading)" : JSON.stringify(value);
+const pad = (text: string, width: number): string =>
+  text.length >= width ? text : text + " ".repeat(width - text.length);
+
+const headingOf = (mod: typeof C, line: string): string | undefined =>
+  mod.scanBlocks(line)[0]?.heading?.text;
+
+type Row = readonly [string, string | undefined, string];
+
+const headingCases: readonly Row[] = [
+  // line, expected content under GFM 0.29, why
+  ["## Title", "Title", "4.2 separator + content"],
+  ["##\tTitle", "Title", "2.2 Example 6: TAB separator"],
+  ["##   Title   ", "Title", "4.2 leading/trailing strip"],
+  ["## Title ##", "Title", "4.2 Example 41 closing sequence"],
+  ["## Title\t##", "Title", "closing run preceded by TAB"],
+  ["## Title ##   ", "Title", "4.2 Example 43 trailing spaces"],
+  [`## Title${VT}##`, "Title", "closing run preceded by 2.1 whitespace"],
+  [`## Title${VT}`, "Title", "2.1 right-strip"],
+  [`## Title${FF}`, "Title", "2.1 right-strip"],
+  [`## ${NBSP}Title`, `${NBSP}Title`, "U+00A0 is Unicode whitespace, not 2.2 block-structure whitespace"],
+  [`## Title${NBSP}`, `Title${NBSP}`, "U+00A0 is not in the 2.1 right-strip class"],
+  [`## Title ##${NBSP}`, `Title ##${NBSP}`, "closing run not at end after 2.1 right-strip"],
+  [`## ${IDEO}Title`, `${IDEO}Title`, "U+3000 is Unicode whitespace"],
+  [`## ${ZWNBSP}Title`, `${ZWNBSP}Title`, "U+FEFF is Unicode whitespace"],
+  [`## Title${THIN}`, `Title${THIN}`, "U+2009 is Unicode whitespace"],
+  [`## ${VT}Title`, `${VT}Title`, "VT is 2.1 whitespace but not 2.2 block-structure whitespace"],
+  [`## ${FF}Title`, `${FF}Title`, "FF is 2.1 whitespace but not 2.2 block-structure whitespace"],
+  ["# foo#", "foo#", "4.2 Example 45: run not preceded by whitespace"],
+  ["### foo \\###", "foo \\###", "4.2 Example 46: escaped hash"],
+  ["### foo ### b", "foo ### b", "4.2 Example 44: run not at end"],
+  ["### ###", "", "4.2 Example 47: empty heading"],
+  ["## ###", "", "run reaches the start of the content"],
+  [`##${NBSP}Title`, undefined, "4.2 requires SPACE/TAB or EOL after the opening sequence"],
+  [`##${VT}Title`, undefined, "same: VT is not the 4.2/2.2 separator"],
+  ["##Title", undefined, "4.2 requires the separator"],
+  ["####### Title", undefined, "4.2 allows at most six hashes"],
+  ["    ## Title", undefined, "four columns of indentation is indented code"],
+];
+
+console.log("== ATX heading content (GFM 0.29 section 4.2 with the 2.1/2.2 classes) ==");
+console.log("");
+console.log(pad("line", 30), pad("expected", 22), pad("H14", 22), pad("C", 22), "  rule");
+console.log("-".repeat(132));
+let headingDisagreements = 0;
+let headingWrong = 0;
+for (const [line, expected, why] of headingCases) {
+  const h = headingOf(H, line);
+  const c = headingOf(C, line);
+  if (h !== c) headingDisagreements++;
+  const ok = c === expected;
+  if (!ok) headingWrong++;
+  console.log(
+    pad(JSON.stringify(line), 30),
+    pad(show(expected), 22),
+    pad(show(h), 22),
+    pad(show(c), 22),
+    (h === c ? "  " : "! ") + why + (ok ? "" : "   <-- C DISAGREES WITH THE GRAMMAR"),
+  );
+}
+console.log("-".repeat(132));
+console.log(`heading cases ${headingCases.length}; H!=C ${headingDisagreements}; C wrong ${headingWrong}`);
+
+// ---------------------------------------------------------------------------
+// Table row and cell identity. Driven through a minimal governed Deferred section so the
+// production path runs end to end and the first cell's exact text is observable: the
+// Deferred key is `cells[0]` matched against /^DX-\d+$/, so a cell that still carries a
+// Unicode-whitespace character has no key and is reported instead of silently matching.
+console.log("");
+console.log("== Table row content and cell identity (tables extension with the same classes) ==");
+console.log("");
+
+const doc = (row: string): string =>
+  `## Deferred extraction and bridge owners\n\n| Id | Current path | Disposition | Owner | Why |\n|---|---|---|---|---|\n${row}\n\n## What this packet does not establish\n`;
+
+const readRow = (mod: typeof C, row: string): string => {
+  const parsed = mod.parseInventory(doc(row));
+  const keyed = [...parsed.deferred].map(
+    ([id, value]) => `${id} -> {${value.currentPath}, ${value.disposition}, ${value.owner}}`,
+  );
+  const problems = parsed.unreadable
+    .filter((entry) => entry.startsWith("Deferred"))
+    .map((entry) => entry.replace(/^Deferred /, "").split(":")[0]!);
+  return [...keyed, ...problems].join(" ; ") || "(nothing)";
+};
+
+const rowCases: readonly (readonly [string, string])[] = [
+  ["| DX-1 | `p/q.ts` | migratable | K1.1 | why |", "ordinary row"],
+  ["|  \tDX-1\t  | `p/q.ts` |\tmigratable\t| K1.1 | why |", "ASCII space/tab padding is 2.1 whitespace and is trimmed"],
+  [`| DX-1${NBSP} | \`p/q.ts\` | migratable | K1.1 | why |`, "U+00A0 stays in the key cell: no key, so the row is reported"],
+  [`| DX-1 | \`p/q.ts\` | ${NBSP}migratable | K1.1 | why |`, "U+00A0 stays in the value cell: a different disposition token"],
+  [`${NBSP}| DX-1 | \`p/q.ts\` | migratable | K1.1 | why |`, "U+00A0 indentation is not block-structure whitespace: no leading edge pipe, cells shift"],
+  ["   | DX-1 | `p/q.ts` | migratable | K1.1 | why |", "up to three spaces of indentation is block-structure whitespace"],
+  ["| DX-1 | `p/q.ts` | migratable | K1.1 | why |   ", "trailing ASCII whitespace is right-stripped"],
+  [`| DX-1 | \`p/q.ts\` | migratable | K1.1 | why |${NBSP}`, "U+00A0 after the final pipe is a further cell, not padding (past the four cells the relation reads, so the keyed tuple is unchanged)"],
+  [`| DX-1 | \`p/q.ts\` | migratable | K1.1 | why${IDEO} |`, "U+3000 inside the last cell is content (that cell is past the four the relation reads)"],
+];
+
+console.log(pad("row", 52), pad("H14", 40), pad("C", 40), "  note");
+console.log("-".repeat(170));
+let rowDisagreements = 0;
+for (const [row, why] of rowCases) {
+  const h = readRow(H, row);
+  const c = readRow(C, row);
+  if (h !== c) rowDisagreements++;
+  console.log(pad(JSON.stringify(row), 52), pad(h, 40), pad(c, 40), (h === c ? "  " : "! ") + why);
+}
+console.log("-".repeat(170));
+console.log(`row cases ${rowCases.length}; H!=C ${rowDisagreements}`);
+
+if (headingWrong !== 0) process.exitCode = 1;
+--- end audit-atx.mts ---

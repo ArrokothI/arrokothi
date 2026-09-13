@@ -1,0 +1,290 @@
+== K1.0 validation-15: tree, environment and identities ==
+
+$ date -u +%Y-%m-%dT%H:%M:%SZ
+2026-09-13T21:11:58Z
+$ pwd
+/Users/rex-shih/Documents/ArrokothI/arrokothi
+$ node -v
+v25.2.1
+$ npm -v
+11.6.2
+$ npx tsc -v
+Version 5.9.3
+$ uname -mrs
+Darwin 25.6.0 arm64
+
+$ git rev-parse --abbrev-ref HEAD
+codex/k1.0-target-boundary-legacy-quarantine
+$ git rev-parse HEAD   # payload C
+2ef6f9803ff6f529ed5ffac0709299b49ebf904c
+$ git rev-parse HEAD~1 # parent of C (inbound branch head at session start)
+3616031dfdacafbc85d15bcf9e3c416638212ef7
+$ git remote -v
+origin	https://github.com/ArrokothI/arrokothi.git (fetch)
+origin	https://github.com/ArrokothI/arrokothi.git (push)
+$ git status --porcelain   # expect only validation-15/, which this run writes
+
+== ancestry and base ==
+$ git merge-base --is-ancestor c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD; echo $?
+0
+$ git ls-remote origin main
+c9a9ed7e6e538ab0542fc6a999426264abb6212a	refs/heads/main
+$ git ls-remote origin codex/k1.0-target-boundary-legacy-quarantine
+3616031dfdacafbc85d15bcf9e3c416638212ef7	refs/heads/codex/k1.0-target-boundary-legacy-quarantine
+
+== correction delta: previous branch head (3616031dfdacafbc85d15bcf9e3c416638212ef7) .. C ==
+$ git diff --stat 3616031dfdacafbc85d15bcf9e3c416638212ef7 HEAD
+ docs/development/007-work-packets.md               | 241 ++++++++++++++-
+ docs/development/work/K1.0/contract.md             |  42 ++-
+ tests/conformance/architecture/inventory-oracle.ts | 218 ++++++++++----
+ .../architecture/kernel-landing-zone.test.ts       | 328 ++++++++++++++++++++-
+ 4 files changed, 768 insertions(+), 61 deletions(-)
+
+$ git diff --stat 0a9333faa7ea9cdf742f01b16af1069357b88bad HEAD   # reviewed H14 .. C
+ docs/development/007-work-packets.md               |   9 +-
+ docs/development/work/K1.0/contract.md             |  42 ++-
+ docs/development/work/K1.0/review-14.md            | 106 +++++++
+ docs/development/work/K1.0/review-15.md            | 105 +++++++
+ tests/conformance/architecture/inventory-oracle.ts | 218 ++++++++++----
+ .../architecture/kernel-landing-zone.test.ts       | 328 ++++++++++++++++++++-
+ 6 files changed, 745 insertions(+), 63 deletions(-)
+
+== cumulative base..C ==
+$ git diff --stat c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD
+ docs/development/001-current-status-and-roadmap.md |    7 +-
+ .../development/002-implemented-kernel-baseline.md |   10 +
+ docs/development/007-work-packets.md               |   20 +-
+ docs/development/README.md                         |   13 +-
+ docs/development/work/K1.0/contract.md             |  401 +++
+ docs/development/work/K1.0/implementation-01.md    |  224 ++
+ docs/development/work/K1.0/implementation-02.md    |  322 ++
+ docs/development/work/K1.0/implementation-03.md    |  299 ++
+ docs/development/work/K1.0/implementation-04.md    |  230 ++
+ docs/development/work/K1.0/implementation-05.md    |  243 ++
+ docs/development/work/K1.0/implementation-06.md    |  252 ++
+ docs/development/work/K1.0/implementation-07.md    |  247 ++
+ docs/development/work/K1.0/implementation-08.md    |  251 ++
+ docs/development/work/K1.0/implementation-09.md    |  236 ++
+ docs/development/work/K1.0/implementation-10.md    |  235 ++
+ docs/development/work/K1.0/implementation-11.md    |  232 ++
+ docs/development/work/K1.0/implementation-12.md    |  219 ++
+ docs/development/work/K1.0/implementation-13.md    |  202 ++
+ docs/development/work/K1.0/implementation-14.md    |  199 ++
+ docs/development/work/K1.0/ownership-inventory.md  |  116 +
+ docs/development/work/K1.0/review-01.md            |  211 ++
+ docs/development/work/K1.0/review-02.md            |  223 ++
+ docs/development/work/K1.0/review-03.md            |  220 ++
+ docs/development/work/K1.0/review-04.md            |  206 ++
+ docs/development/work/K1.0/review-05.md            |  209 ++
+ docs/development/work/K1.0/review-06.md            |  229 ++
+ docs/development/work/K1.0/review-07.md            |  233 ++
+ docs/development/work/K1.0/review-08.md            |  249 ++
+ docs/development/work/K1.0/review-09.md            |  294 ++
+ docs/development/work/K1.0/review-10.md            |  351 +++
+ docs/development/work/K1.0/review-11.md            |  235 ++
+ docs/development/work/K1.0/review-12.md            |  302 ++
+ docs/development/work/K1.0/review-13.md            |  144 +
+ docs/development/work/K1.0/review-14.md            |  106 +
+ docs/development/work/K1.0/review-15.md            |  105 +
+ .../K1.0/validation-01/01-tree-and-environment.log |   44 +
+ .../work/K1.0/validation-01/02-typecheck.log       |   10 +
+ .../work/K1.0/validation-01/03-test-full.log       | 2418 +++++++++++++++
+ .../K1.0/validation-01/04-test-conformance.log     | 2265 ++++++++++++++
+ .../K1.0/validation-01/05-check-builder-docs.log   |   11 +
+ .../work/K1.0/validation-01/06-test-kernel.log     |   24 +
+ .../work/K1.0/validation-01/07-test-sdk.log        |   40 +
+ .../K1.0/validation-01/08-scanner-comparison.log   |  130 +
+ .../validation-01/09-self-01-demonstration.log     |   53 +
+ .../work/K1.0/validation-01/MANIFEST.md            |   46 +
+ .../K1.0/validation-02/01-tree-and-environment.log |   79 +
+ .../work/K1.0/validation-02/02-typecheck.log       |    5 +
+ .../work/K1.0/validation-02/03-test-full.log       | 2422 +++++++++++++++
+ .../K1.0/validation-02/04-test-conformance.log     | 2269 ++++++++++++++
+ .../K1.0/validation-02/05-check-builder-docs.log   |    6 +
+ .../work/K1.0/validation-02/06-test-kernel.log     |   19 +
+ .../work/K1.0/validation-02/07-test-sdk.log        |   35 +
+ .../K1.0/validation-02/08-scanner-comparison.log   |  127 +
+ .../K1.0/validation-02/09-r101-demonstration.log   |   86 +
+ .../work/K1.0/validation-02/MANIFEST.md            |   65 +
+ .../K1.0/validation-03/01-tree-and-environment.log |   90 +
+ .../work/K1.0/validation-03/02-typecheck.log       |   10 +
+ .../work/K1.0/validation-03/03-test-full.log       | 2474 +++++++++++++++
+ .../K1.0/validation-03/04-test-conformance.log     | 2321 +++++++++++++++
+ .../K1.0/validation-03/05-check-builder-docs.log   |   11 +
+ .../work/K1.0/validation-03/06-test-kernel.log     |   24 +
+ .../work/K1.0/validation-03/07-test-sdk.log        |   40 +
+ .../validation-03/08-two-extractor-comparison.log  |   99 +
+ .../K1.0/validation-03/09-r201-demonstration.log   |  173 ++
+ .../K1.0/validation-03/10-r202-demonstration.log   |  135 +
+ .../work/K1.0/validation-03/MANIFEST.md            |   56 +
+ .../K1.0/validation-04/01-tree-and-environment.log |   10 +
+ .../work/K1.0/validation-04/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-04/03-test-full.log       | 2475 ++++++++++++++++
+ .../K1.0/validation-04/04-test-conformance.log     | 2322 +++++++++++++++
+ .../K1.0/validation-04/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-04/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-04/07-test-sdk.log        |   34 +
+ .../K1.0/validation-04/08-r301-demonstration.log   |    8 +
+ .../work/K1.0/validation-04/MANIFEST.md            |   64 +
+ .../K1.0/validation-05/01-tree-and-environment.log |  122 +
+ .../work/K1.0/validation-05/02-typecheck.log       |   10 +
+ .../work/K1.0/validation-05/03-test-full.log       | 2490 ++++++++++++++++
+ .../K1.0/validation-05/04-test-conformance.log     | 2337 +++++++++++++++
+ .../K1.0/validation-05/05-check-builder-docs.log   |   11 +
+ .../work/K1.0/validation-05/06-test-kernel.log     |   24 +
+ .../work/K1.0/validation-05/07-test-sdk.log        |   40 +
+ .../K1.0/validation-05/08-r401-demonstration.log   |  128 +
+ .../work/K1.0/validation-05/09-digest-audit.log    |  126 +
+ .../work/K1.0/validation-05/MANIFEST.md            |   59 +
+ .../K1.0/validation-06/01-tree-and-environment.log |  141 +
+ .../work/K1.0/validation-06/02-typecheck.log       |    8 +
+ .../work/K1.0/validation-06/03-test-full.log       | 2494 ++++++++++++++++
+ .../K1.0/validation-06/04-test-conformance.log     | 2341 +++++++++++++++
+ .../K1.0/validation-06/05-check-builder-docs.log   |    9 +
+ .../work/K1.0/validation-06/06-test-kernel.log     |   22 +
+ .../work/K1.0/validation-06/07-test-sdk.log        |   38 +
+ .../K1.0/validation-06/08-r501-demonstration.log   |  153 +
+ .../work/K1.0/validation-06/MANIFEST.md            |   48 +
+ .../K1.0/validation-07/01-tree-and-environment.log |   83 +
+ .../work/K1.0/validation-07/02-typecheck.log       |    8 +
+ .../work/K1.0/validation-07/03-test-full.log       | 2517 ++++++++++++++++
+ .../K1.0/validation-07/04-test-conformance.log     | 2364 +++++++++++++++
+ .../K1.0/validation-07/05-check-builder-docs.log   |    9 +
+ .../work/K1.0/validation-07/06-test-kernel.log     |   22 +
+ .../work/K1.0/validation-07/07-test-sdk.log        |   38 +
+ .../K1.0/validation-07/08-r601-demonstration.log   |  326 ++
+ .../K1.0/validation-07/09-silent-exit-audit.log    |  272 ++
+ .../work/K1.0/validation-07/MANIFEST.md            |   86 +
+ .../K1.0/validation-08/01-tree-and-environment.log |   87 +
+ .../work/K1.0/validation-08/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-08/03-test-full.log       | 2526 ++++++++++++++++
+ .../K1.0/validation-08/04-test-conformance.log     | 2373 +++++++++++++++
+ .../K1.0/validation-08/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-08/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-08/07-test-sdk.log        |   34 +
+ .../K1.0/validation-08/08-r701-demonstration.log   |  261 ++
+ .../K1.0/validation-08/09-silent-exit-audit.log    |  464 +++
+ .../work/K1.0/validation-08/MANIFEST.md            |   89 +
+ .../K1.0/validation-09/01-tree-and-environment.log |   31 +
+ .../work/K1.0/validation-09/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-09/03-test-full.log       | 2547 ++++++++++++++++
+ .../K1.0/validation-09/04-test-conformance.log     | 2394 +++++++++++++++
+ .../K1.0/validation-09/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-09/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-09/07-test-sdk.log        |   34 +
+ .../validation-09/08-r801-r802-demonstration.log   |   14 +
+ .../validation-09/09-state-transition-audit.log    |  232 ++
+ .../work/K1.0/validation-09/MANIFEST.md            |   73 +
+ .../K1.0/validation-10/01-tree-and-environment.log |   30 +
+ .../work/K1.0/validation-10/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-10/03-test-full.log       | 2574 ++++++++++++++++
+ .../K1.0/validation-10/04-test-conformance.log     | 2421 +++++++++++++++
+ .../K1.0/validation-10/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-10/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-10/07-test-sdk.log        |   34 +
+ .../validation-10/08-r901-r902-demonstration.log   |   20 +
+ .../09-structural-transition-audit.log             |  241 ++
+ .../work/K1.0/validation-10/MANIFEST.md            |   76 +
+ .../K1.0/validation-11/01-tree-and-environment.log |   34 +
+ .../work/K1.0/validation-11/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-11/03-test-full.log       | 2591 ++++++++++++++++
+ .../K1.0/validation-11/04-test-conformance.log     | 2438 +++++++++++++++
+ .../K1.0/validation-11/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-11/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-11/07-test-sdk.log        |   34 +
+ .../08-r1001-r1002-r1003-demonstration.log         |  194 ++
+ .../09-structural-transition-audit.log             |  114 +
+ .../work/K1.0/validation-11/MANIFEST.md            |  114 +
+ .../K1.0/validation-12/01-tree-and-environment.log |   50 +
+ .../work/K1.0/validation-12/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-12/03-test-full.log       | 2597 ++++++++++++++++
+ .../K1.0/validation-12/04-test-conformance.log     | 2444 +++++++++++++++
+ .../K1.0/validation-12/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-12/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-12/07-test-sdk.log        |   34 +
+ .../K1.0/validation-12/08-r1101-demonstration.log  |  121 +
+ .../K1.0/validation-12/09-boundary-token-audit.log |  111 +
+ .../work/K1.0/validation-12/MANIFEST.md            |   89 +
+ .../K1.0/validation-13/01-tree-and-environment.log |   54 +
+ .../work/K1.0/validation-13/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-13/03-test-full.log       | 2606 ++++++++++++++++
+ .../K1.0/validation-13/04-test-conformance.log     | 2453 +++++++++++++++
+ .../K1.0/validation-13/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-13/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-13/07-test-sdk.log        |   34 +
+ .../K1.0/validation-13/08-r1201-demonstration.log  |  129 +
+ .../validation-13/09-lexical-transition-audit.log  |   80 +
+ .../work/K1.0/validation-13/MANIFEST.md            |   84 +
+ .../K1.0/validation-14/01-tree-and-environment.log |   54 +
+ .../work/K1.0/validation-14/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-14/03-test-full.log       | 2616 ++++++++++++++++
+ .../K1.0/validation-14/04-test-conformance.log     | 2463 +++++++++++++++
+ .../K1.0/validation-14/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-14/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-14/07-test-sdk.log        |   34 +
+ .../K1.0/validation-14/08-r1301-demonstration.log  |  112 +
+ .../09-line-ending-transition-audit.log            |   78 +
+ .../work/K1.0/validation-14/MANIFEST.md            |   77 +
+ package-lock.json                                  |    9 +
+ package.json                                       |    6 +-
+ packages/kernel/package.json                       |   14 +
+ packages/kernel/src/index.ts                       |   20 +
+ packages/kernel/src/unsupported.ts                 |   31 +
+ packages/kernel/tests/unsupported.test.ts          |   46 +
+ tests/conformance/architecture/boundary-policy.ts  |  211 ++
+ .../architecture/evidence-records.test.ts          |  193 ++
+ .../architecture/import-scanner.test.ts            |  395 +++
+ tests/conformance/architecture/inventory-oracle.ts | 1498 ++++++++++
+ .../architecture/kernel-landing-zone.test.ts       | 3135 ++++++++++++++++++++
+ ...ries.test.ts => legacy-core-boundaries.test.ts} |   76 +-
+ tests/conformance/architecture/module-graph.ts     |  345 +++
+ 187 files changed, 88654 insertions(+), 36 deletions(-)
+
+== frozen fixture: tests/conformance/k0 must be byte-identical to base ==
+$ git diff --stat c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD -- tests/conformance/k0
+(empty above means byte-identical)
+
+== blob identities for the C4 parser ==
+H14 inventory-oracle.ts git blob:     43b23d18b790dd5595acb2924be665a0e10905d8
+C   inventory-oracle.ts git blob:     292c6a587125d84028769e0f6f31d20bc3ba7f23
+H14 inventory-oracle.ts sha256:       a3cb3ebceb36be36b161865bdd6fdd999f77a3d22f7e4099c47f19e6fee7ca36
+C   inventory-oracle.ts sha256:       de0d8d6ac26cb1be1bd9031c22b726624eff77d5640ddc8c9efd7aa98d08c628
+H14 kernel-landing-zone.test.ts blob: 642283b2ad530713ca6980f45d63d36f6b68a40a
+C   kernel-landing-zone.test.ts blob: 19e016aaefca2c96293737d5e6e5ff120e21db68
+
+== no host trim()/backslash-s survives as a call site in the C4 parser ==
+$ grep -n '\.trim()\|trimStart\|trimEnd' tests/conformance/architecture/inventory-oracle.ts
+261: * `\s` and `String.prototype.trim()` conflate:
+294: * have their own grammar rules: they used `String.prototype.trim()`, which
+354:/** Strips a trailing run of GFM §2.1 whitespace. Never a host `trimEnd()`: NBSP stays content. */
+383: * What this deliberately does **not** do is call `String.prototype.trim()`. That removes
+405: * The previous `line.trim()` also erased Unicode whitespace, so `<NBSP>| a | b |` lost its
+(all matches are prose inside doc comments; no call sites remain)
+
+$ grep -n 'split(' tests/conformance/architecture/inventory-oracle.ts
+445:  return markdown.split(/\r\n|\r|\n/);
+(one physical-line model: splitPhysicalLines, GFM 2.1)
+
+== K1.0-SELF-25: C's 007 differs from 9d66313's 007 only by the K1.0 status text ==
+$ git diff --stat 9d66313 HEAD -- docs/development/007-work-packets.md
+ docs/development/007-work-packets.md | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+$ git diff 9d66313 HEAD -- docs/development/007-work-packets.md | grep -c '^[-+]'
+11
+(11 = the two unified-diff file headers plus 6 inserted and 3 deleted lines: the owner's CHANGES_REQUESTED paragraph and the K1.0 status row. Nothing else in the 381-line ledger differs.)
+
+$ git show 3616031dfdacafbc85d15bcf9e3c416638212ef7 --stat -- docs/development/007-work-packets.md   # the truncation this repairs
+commit 3616031dfdacafbc85d15bcf9e3c416638212ef7
+Author: Rex <pipirex77@gmail.com>
+Date:   Sun Sep 13 16:51:21 2026 -0400
+
+    status(K1.0): reopen after second-review finding
+
+ docs/development/007-work-packets.md | 248 +----------------------------------
+ 1 file changed, 6 insertions(+), 242 deletions(-)
+
+$ git show 3616031dfdacafbc85d15bcf9e3c416638212ef7:docs/development/007-work-packets.md | grep -c '^### K5.2 —'
+0
+$ grep -c '^### K5.2 —' docs/development/007-work-packets.md   # restored in C
+1
