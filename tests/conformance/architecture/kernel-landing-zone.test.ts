@@ -1238,6 +1238,204 @@ describe("K1.0 policy and inventory agree", () => {
     });
   });
 
+  describe("structural section boundaries (K10-R7-01)", () => {
+    // Section membership is determined by Markdown structure, not by occurrence of heading-looking
+    // bytes. The previous `sectionText` cut the section with `indexOf(nextHeading)`, so a literal
+    // mention of the next heading in prose, inline code or fenced code truncated the section before
+    // table discovery could inspect its block context, silently deleting a later contradictory
+    // table. Selection now scans block structure with fence tracking: only a real level-2 ATX
+    // heading outside fenced code carrying the exact expected title starts or ends a section.
+    //
+    // Each control below plants the full next-heading text for the Zones section
+    // (`## Current cross-boundary dependencies`) in a non-heading context, followed by a
+    // well-formed contradictory table still before the real next heading, and requires it back out
+    // of the production parser as a further table. Two further controls show the start boundary is
+    // structural the same way, one shows a real ATX next heading still terminates the section, and
+    // the closing controls are adjacent GFM-grammar challengers (escaped `#`, missing whitespace,
+    // over-long runs, indented code, mismatched fences) plus one second-relation case.
+    const lastZoneRow =
+      "| `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |\n";
+    const badZonesTable =
+      "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | stale contradictory further table |\n";
+    const furtherZones = /Zones section contains a further table; this row is outside the governed table: `target-kernel` \| `packages\/core\/src`/;
+
+    test("a literal next-heading mention in prose does not truncate the section", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\nThe literal token ## Current cross-boundary dependencies is mentioned here; this line is prose, not an ATX heading.\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `prose carrying the next-heading bytes must not end the section; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a next-heading mention inside an inline code span does not truncate the section", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\nThe literal token \`## Current cross-boundary dependencies\` is mentioned here.\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `an inline code span is inline content on a paragraph line, not a heading; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a next-heading mention inside a fenced code block does not truncate the section", async () => {
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\n\`\`\`\n## Current cross-boundary dependencies\n\`\`\`\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `fenced lines are literal code, so the heading bytes there must not end the section; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a real ATX next heading still terminates the section", async () => {
+      // The positive half: a Zones-shaped table planted after the real
+      // `## Current cross-boundary dependencies` heading belongs to a later section, so the Zones
+      // channel must stay green. Without termination the planted rows would be further tables.
+      const real = await realInventory();
+      const heading = "## Current cross-boundary dependencies\n";
+      const parsed = parseInventory(mutate(real, [[heading, `${heading}\n${badZonesTable}`]]));
+      assert.deepEqual(parsed.unreadable, [], `rows after the real next heading are outside the section; got: ${JSON.stringify(parsed.unreadable)}`);
+      assert.equal(parsed.zones.size, ZONES.length);
+    });
+
+    test("a current-heading mention in earlier prose does not select the section start", async () => {
+      // A prose line and a planted table before the real `## Zones` heading are outside the
+      // section. Substring selection would have started at the prose bytes and read the planted
+      // table as governed or further; structural selection stays green.
+      const real = await realInventory();
+      const fakeTable =
+        "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | planted before the section |\n\n";
+      const parsed = parseInventory(
+        mutate(real, [["## Zones\n", `See ## Zones below.\n\n${fakeTable}## Zones\n`]]),
+      );
+      assert.deepEqual(parsed.unreadable, [], `content before the real heading is outside the section; got: ${JSON.stringify(parsed.unreadable)}`);
+    });
+
+    test("a current-heading mention inside a fenced block does not select the section start", async () => {
+      const real = await realInventory();
+      const fakeTable =
+        "| Zone id | Roots | Owner and status |\n|---|---|---|\n| `target-kernel` | `packages/core/src` | planted before the section |\n\n";
+      const parsed = parseInventory(
+        mutate(real, [["## Zones\n", `\`\`\`\n## Zones\n\`\`\`\n\n${fakeTable}## Zones\n`]]),
+      );
+      assert.deepEqual(parsed.unreadable, [], `a fenced heading mention is code, not the section start; got: ${JSON.stringify(parsed.unreadable)}`);
+    });
+
+    test("an escaped hash does not start or end a section (K1.0-SELF-14)", async () => {
+      // Self-found adjacent challenger, aimed at structural heading recognition rather than another
+      // table spelling. Per GFM an escaped `\#` is literal text, so `\## Current cross-boundary
+      // dependencies` is a paragraph line, not an ATX heading, and must not truncate.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastZoneRow}\n\\## Current cross-boundary dependencies\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `an escaped hash is paragraph text, not a heading; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("a heading-like line without the required whitespace is not a heading (K1.0-SELF-15)", async () => {
+      // GFM requires a space, tab or end of line after the opening run: `##Current …` is paragraph
+      // text. It must not truncate the section.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion = `${lastZoneRow}\n##Current cross-boundary dependencies\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `a hash run with no following whitespace is not a heading; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("an over-long hash run and indented code are not headings (K1.0-SELF-16)", async () => {
+      // Seven `#` characters are not an ATX heading (maximum six), and four-space indented
+      // `## …` is indented code, not a heading. Neither may truncate the section.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const line of [
+        "####### Current cross-boundary dependencies",
+        "    ## Current cross-boundary dependencies",
+      ]) {
+        const insertion = `${lastZoneRow}\n${line}\n\n${badZonesTable}`;
+        const disagreements = inventoryDisagreements(
+          parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+          policy,
+          workspace,
+        );
+        assert.ok(
+          disagreements.some((message) => furtherZones.test(message)),
+          `${JSON.stringify(line)} is not an ATX heading; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    });
+
+    test("a mismatched fence closer does not end the fenced region (K1.0-SELF-17)", async () => {
+      // A `~~~` line does not close a ```` ``` ```` block: the closing run must use the same
+      // character. The heading bytes between them stay code and must not truncate; the
+      // contradictory table after the matching closer is ordinary section content and is reported.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const insertion =
+        `${lastZoneRow}\n\`\`\`\n## Current cross-boundary dependencies\n~~~\n\`\`\`\n\n${badZonesTable}`;
+      const disagreements = inventoryDisagreements(
+        parseInventory(mutate(real, [[lastZoneRow, insertion]])),
+        policy,
+        workspace,
+      );
+      assert.ok(
+        disagreements.some((message) => furtherZones.test(message)),
+        `a mismatched closer leaves the fence open; got: ${JSON.stringify(disagreements)}`,
+      );
+    });
+
+    test("the structural boundary holds for the second relation as well", async () => {
+      // The same defect class in the Current cross-boundary section: a fenced mention of its next
+      // heading (`## Export ownership`) before a contradictory dependency table must not truncate.
+      const real = await realInventory();
+      const anchor = "| `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing |\n";
+      const badDependencyTable =
+        "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |\n|---|---|---|---|\n| `target-kernel` | 999 | `@arrokothi/core` | nothing |\n";
+      const mutated = mutate(real, [[
+        anchor,
+        `${anchor}\n\`\`\`\n## Export ownership\n\`\`\`\n\n${badDependencyTable}`,
+      ]]);
+      const { unreadable } = parseDependencyTable(mutated);
+      assert.ok(
+        unreadable.some((message) => /Dependency section contains a further table; this row is outside the governed table: `target-kernel` \| 999/.test(message)),
+        `a fenced next-heading mention must not hide a contradictory dependency row; got: ${JSON.stringify(unreadable)}`,
+      );
+    });
+  });
+
   test("the allowed-leaf list is empty, and the inventory says why", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
     assert.deepEqual(TARGET_KERNEL_RULES.allowedLeaves, [], "K1.0 approves no portable leaf");

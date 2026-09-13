@@ -32,6 +32,13 @@
  * governed table, so a missing table and every row of any further table in the same section are
  * reported too; otherwise a planted delimiter line could promote a contradictory row to "a header"
  * and reopen the same escape through structure instead of through text.
+ *
+ * Section *membership* is likewise structural, never textual (K10-R7-01). The governed section
+ * runs from the first level-2 ATX heading outside fenced code carrying the exact expected title to
+ * the first later such heading carrying the expected next title. Literal heading bytes in prose,
+ * inline code, fenced code, escaped text or malformed heading-like lines never start or end a
+ * section; only a real ATX heading does. Call sites name the full expected titles, not loose
+ * textual prefixes.
  */
 
 import type { PackageEntry, Workspace } from "./module-graph.ts";
@@ -116,21 +123,140 @@ interface DiscoveredTable {
 }
 
 /**
- * The text of one section, from its heading to the next one.
+ * One structural ATX heading on a line that is outside fenced code.
  *
- * `indexOf` rather than `split`: splitting on the heading truncates the section at a *second*
- * occurrence of the same heading text, so a duplicated heading carrying contradictory rows used to
- * delete those rows from the candidate stream entirely (K1.0-SELF-12). Slicing from the first
- * heading to the first following next-heading keeps that material inside the section, where the
- * repeated ATX heading breaks the table body (GFM Example 201) and the contradictory table after it
- * is discovered as a further table and reported.
+ * GFM ATX headings (CommonMark 0.31 §4.2, carried by GFM): up to three spaces of indentation,
+ * one to six `#` characters, then end of line or spaces/tabs followed by heading content. The
+ * content is stripped of an optional closing sequence (` ##`). Anything else that merely contains
+ * heading-looking bytes is paragraph text, not a heading: prose or inline code starting elsewhere
+ * on the line, text inside fenced code, an escaped `\#`, `##foo` with no required whitespace, seven
+ * or more `#`, or four-space indented code. Blockquote content (`> ## …`) is likewise not a
+ * top-level section heading for this document.
  */
-function sectionText(markdown: string, heading: string, nextHeading: string): string {
-  const from = markdown.indexOf(heading);
-  if (from === -1) return "";
-  const rest = markdown.slice(from + heading.length);
-  const to = rest.indexOf(nextHeading);
-  return to === -1 ? rest : rest.slice(0, to);
+function parseAtxHeading(line: string): { readonly level: number; readonly text: string } | undefined {
+  const indent = line.match(/^ */)?.[0].length ?? 0;
+  if (indent > 3) return undefined;
+  const rest = line.slice(indent);
+  if (rest.startsWith(">")) return undefined;
+  const hashes = rest.match(/^#{1,6}/)?.[0];
+  if (hashes === undefined) return undefined;
+  const after = rest.slice(hashes.length);
+  if (after !== "" && !/^[ \t]/.test(after)) return undefined;
+  const content = after.trim().replace(/[ \t]+#+[ \t]*$/, "").trim();
+  return { level: hashes.length, text: content };
+}
+
+/**
+ * A fenced-code marker candidate on one line (GFM fenced code blocks, CommonMark 0.31 §4.5).
+ *
+ * Up to three spaces of indentation, then three or more backticks or tildes. A backtick fence
+ * whose info string contains a backtick is not a fence at all. Whether the candidate opens or
+ * closes a block depends on the tracked state (same character, closing run at least as long as
+ * the opening run, nothing but spaces/tabs after it); see `updateFence`.
+ */
+function parseFenceCandidate(line: string): { readonly char: string; readonly length: number; readonly info: string } | undefined {
+  const indent = line.match(/^ */)?.[0].length ?? 0;
+  if (indent > 3) return undefined;
+  const rest = line.slice(indent);
+  const run = rest.match(/^(```+|~~~+)/)?.[0];
+  if (run === undefined) return undefined;
+  const char = run[0]!;
+  const info = rest.slice(run.length);
+  if (char === "`" && info.includes("`")) return undefined;
+  return { char, length: run.length, info };
+}
+
+/** Tracked fenced-code state while scanning block structure top to bottom. */
+interface FenceState {
+  readonly char: string;
+  readonly length: number;
+}
+
+/**
+ * Advances fence state over one line. Fence lines are never headings and never table rows; lines
+ * inside a fence are literal code, so heading-looking bytes there remain ordinary content. A
+ * closing run with a mismatched character (```` ``` ```` opened, `~~~` seen) does not close the
+ * block; the fenced region continues until a matching closer or end of document.
+ */
+function updateFence(state: FenceState | null, line: string): FenceState | null {
+  const candidate = parseFenceCandidate(line);
+  if (state === null) {
+    if (candidate !== undefined) return { char: candidate.char, length: candidate.length };
+    return null;
+  }
+  if (
+    candidate !== undefined &&
+    candidate.char === state.char &&
+    candidate.length >= state.length &&
+    /^[ \t]*$/.test(candidate.info)
+  ) {
+    return null;
+  }
+  return state;
+}
+
+/**
+ * The lines of one governed section, selected by Markdown structure rather than substrings.
+ *
+ * Rebuilt for K10-R7-01. The previous version located the section with
+ * `markdown.indexOf(heading)` and `rest.indexOf(nextHeading)`, so any occurrence of those bytes -
+ * prose, an inline code span, fenced code, or a malformed heading-like line - truncated the
+ * section before table discovery could inspect its block context, silently deleting a later
+ * contradictory table. Selection now scans block structure top to bottom with fence tracking: the
+ * section starts at the first level-2 ATX heading outside fenced code whose normalised text equals
+ * `currentTitle` exactly, and ends at the first later level-2 ATX heading outside fenced code
+ * whose text equals `nextTitle` exactly.
+ *
+ * Titles are the exact expected heading texts (`Zones`, `Current cross-boundary dependencies`,
+ * …), not loose prefixes (`## Current cross-boundary`). A prefix convenient for `indexOf` is not
+ * a section identity: two different sections can share a prefix, and a prose mention can contain
+ * one. Only the full title at heading level 2 delimits the section.
+ *
+ * Headings with any other text between start and end - including a repeated current heading
+ * (K1.0-SELF-12) - do not end the section. They stay inside it, where the ATX line breaks the
+ * table body (GFM Example 201) and any table after them is discovered as a further table and
+ * reported. A missing current heading yields no lines (the governed table is then reported
+ * missing); a missing next heading runs the section to end of document, so following tables
+ * become further tables rather than vanishing.
+ */
+function sectionLines(markdown: string, currentTitle: string, nextTitle: string): string[] {
+  const lines = markdown.split("\n");
+  let fence: FenceState | null = null;
+  let start: number | null = null;
+  let end = lines.length;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!;
+    if (fence !== null) {
+      fence = updateFence(fence, line);
+      continue;
+    }
+    const opened = updateFence(fence, line);
+    if (opened !== null) {
+      fence = opened;
+      continue;
+    }
+    const heading = parseAtxHeading(line);
+    if (heading === undefined || heading.level !== 2) continue;
+    if (start === null) {
+      if (heading.text === currentTitle) start = i;
+    } else if (heading.text === nextTitle) {
+      end = i;
+      break;
+    }
+  }
+  if (start === null) return [];
+  return lines.slice(start + 1, end);
+}
+
+/**
+ * The text of one section, from its structural heading to the next one.
+ *
+ * Kept as a thin join over `sectionLines` because `sectionTables` consumes lines; the boundary
+ * itself is structural (see above). `indexOf`/`split` on heading bytes must not return here:
+ * slicing on substrings reintroduces K10-R7-01 no matter what the table scanner does.
+ */
+function sectionText(markdown: string, currentTitle: string, nextTitle: string): string {
+  return sectionLines(markdown, currentTitle, nextTitle).join("\n");
 }
 
 /**
@@ -154,37 +280,58 @@ function sectionText(markdown: string, heading: string, nextHeading: string): st
  * document does not assert it as a row. The delimiter row of a discovered table is the only line
  * consumed without becoming a candidate; any later delimiter-shaped line inside a body is an
  * ordinary body row and reaches the reader as unreadable rather than disappearing.
+ *
+ * Fence tracking and ATX recognition are shared with section selection (`parseFenceCandidate`,
+ * `parseAtxHeading`, `updateFence`), so a heading inside fenced code neither opens a table nor
+ * breaks a body, and a mismatched fence closer does not silently resume table discovery
+ * (K10-R7-01). The heading break accepts any ATX level: any structural heading ends the table
+ * body per GFM Example 201, while only the exact expected level-2 titles delimit sections.
  */
-function sectionTables(markdown: string, heading: string, nextHeading: string): DiscoveredTable[] {
-  const lines = sectionText(markdown, heading, nextHeading).split("\n");
+function sectionTables(markdown: string, currentTitle: string, nextTitle: string): DiscoveredTable[] {
+  const lines = sectionLines(markdown, currentTitle, nextTitle);
   const tables: DiscoveredTable[] = [];
-  let inFence = false;
+  let fence: FenceState | null = null;
   let i = 0;
   while (i < lines.length) {
-    const trimmed = lines[i]!.trim();
-    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-      inFence = !inFence;
+    const line = lines[i]!;
+    if (fence !== null) {
+      // Inside fenced code: literal text, never a heading or a row. A mismatched closer does not
+      // exit, via `updateFence`.
+      fence = updateFence(fence, line);
       i++;
       continue;
     }
-    if (inFence || trimmed === "") {
+    if (parseFenceCandidate(line) !== undefined) {
+      // A fence marker opens a code block and breaks any table body; it is never a row itself.
+      fence = updateFence(fence, line);
+      i++;
+      continue;
+    }
+    const trimmed = line.trim();
+    if (trimmed === "") {
       i++;
       continue;
     }
     if (containsUnescapedPipe(trimmed)) {
       const headerCells = splitGfmRow(trimmed);
-      const nextTrimmed = lines[i + 1]?.trim() ?? "";
-      if (!nextTrimmed.startsWith("```") && !nextTrimmed.startsWith("~~~")) {
-        const delimiterCells = splitGfmRow(nextTrimmed);
+      const nextLine = lines[i + 1] ?? "";
+      if (parseFenceCandidate(nextLine) === undefined) {
+        const delimiterCells = splitGfmRow(nextLine.trim());
         if (delimiterCells.length === headerCells.length && isDelimiterCells(delimiterCells)) {
           const body: string[][] = [];
           i += 2;
           while (i < lines.length) {
-            const bodyTrimmed = lines[i]!.trim();
+            const bodyLine = lines[i]!;
+            if (parseFenceCandidate(bodyLine) !== undefined) {
+              fence = updateFence(fence, bodyLine);
+              break;
+            }
+            const bodyTrimmed = bodyLine.trim();
             if (bodyTrimmed === "") break;
-            if (bodyTrimmed.startsWith("```") || bodyTrimmed.startsWith("~~~")) break;
-            if (/^#{1,6}\s/.test(bodyTrimmed)) break;
-            if (bodyTrimmed.startsWith(">")) break;
+            if (parseAtxHeading(bodyLine) !== undefined) break;
+            const bodyIndent = bodyLine.match(/^ */)?.[0].length ?? 0;
+            const bodyRest = bodyLine.slice(bodyIndent);
+            if (bodyRest.startsWith(">")) break;
             body.push(splitGfmRow(bodyTrimmed));
             i++;
           }
@@ -296,7 +443,7 @@ export function parseInventory(markdown: string): ParsedInventory {
   const unreadable: string[] = [];
 
   readKeyedTable(
-    sectionTables(markdown, "## Zones", "## Current cross-boundary"),
+    sectionTables(markdown, "Zones", "Current cross-boundary dependencies"),
     {
       table: "Zones",
       expectedHeaderFirstCell: "Zone id",
@@ -312,7 +459,7 @@ export function parseInventory(markdown: string): ParsedInventory {
   );
 
   readKeyedTable(
-    sectionTables(markdown, "## Deferred extraction", "## What this packet"),
+    sectionTables(markdown, "Deferred extraction and bridge owners", "What this packet does not establish"),
     {
       table: "Deferred",
       expectedHeaderFirstCell: "Id",
@@ -331,7 +478,7 @@ export function parseInventory(markdown: string): ParsedInventory {
   );
 
   readKeyedTable(
-    sectionTables(markdown, "## Export ownership", "## What the target zone may import"),
+    sectionTables(markdown, "Export ownership", "What the target zone may import"),
     {
       table: "Export",
       expectedHeaderFirstCell: "Package",
@@ -380,7 +527,7 @@ export function parseDependencyTable(markdown: string): ParsedDependencyTable {
   const unreadable: string[] = [];
 
   readKeyedTable(
-    sectionTables(markdown, "## Current cross-boundary", "## Export ownership"),
+    sectionTables(markdown, "Current cross-boundary dependencies", "Export ownership"),
     {
       table: "Dependency",
       expectedHeaderFirstCell: "Zone",
