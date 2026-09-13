@@ -43,7 +43,10 @@ receipts; the [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure wit
 evidence. Historical worksheets, assessments and attempt records describe their own dates and
 candidates; their earlier holds do not override the ledger and subsequent owner decisions.
 
-The planned structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is
-itself K1 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared
-fixtures and a structural pass are not an E1 result. K1.0 remains unimplemented and unreleased;
-`next_release: none`. Benchmark owns its evidence preparation and release decisions separately.
+The structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is itself K1
+implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared fixtures and
+a structural pass are not an E1 result. **The owner released K1.0 on 2026-09-13**, directing that the
+E1 dependency be treated as the already-built but unaccepted preparation; its round-1 candidate is
+`WAITING_FOR_REVIEW` and is accepted by nobody. See the [status ledger](007-work-packets.md) and
+[K1.0's contract](work/K1.0/contract.md). That release names no successor: `next_release: none`.
+Benchmark owns its evidence preparation and release decisions separately.

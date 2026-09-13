@@ -1,0 +1,10 @@
+$ npm run typecheck
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+payload C: 811758ee1037c3862d1ebd2ec799fad5f6c3b57f
+
+
+> arrokothi-agent-kernel@0.8.1 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+exit code: 0

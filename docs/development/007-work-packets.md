@@ -13,9 +13,18 @@ choosing implementation as written over a scope amendment. K0.2 is now independe
 H16 by [review-17.md](work/K0.2/review-17.md), integrated as
 `0535160e677231da41b06d9f822e62e2f0364dd1`, and owner-closed; see its
 [integration receipt](work/K0.2/integration-01.md). With K0.1 already accepted/integrated and E0 satisfied,
-parent milestone **K0 is closed**. No successor is released by that closeout: `next_release: none`.
-K1.0 remains **PLANNED** and unreleased, and still requires the benchmark-owned E1 fixture preparation
-plus a separate explicit owner release. Every other successor remains **PLANNED**.
+parent milestone **K0 is closed**. No successor was released by that closeout: `next_release: none`,
+and at that date K1.0 remained **PLANNED** and unreleased, still requiring the benchmark-owned E1
+fixture preparation plus a separate explicit owner release. That paragraph stands as the record of
+the hold at its own date.
+
+By a **separate later instruction on 2026-09-13 the owner released K1.0**, and directed that its
+second dependency be treated as "the already-built but unaccepted fixture preparation" — resolving
+the benchmark E1 prerequisite against this file's general rule that dependencies be independently
+ACCEPTED and integrated. The exact instruction, the E1 identities relied on and their unaccepted
+status are recorded in [K1.0's contract](work/K1.0/contract.md); that preparation is accepted by
+nobody and closes no E1 criterion. K1.0's candidate is now **WAITING_FOR_REVIEW**; see its row below.
+That release names no successor: `next_release: none`, and every other successor remains **PLANNED**.
 
 ## How to read a packet
 
@@ -311,7 +320,7 @@ there is no second editable “done” checkbox in 001.
 |---|---|---|
 | K0.1 | ACCEPTED | Round 12 accepted by [review-12.md](work/K0.1/review-12.md), OpenAI GPT-5.6 Sol (High), 2026-09-11. Accepted H12 `bab7bf6635781e6d2f9b0e8e333f58440ae0b047`; clean-validated C12 `7a51801afcdf5c13d481e92c5d219a8c9be7c0eb`; base `6464be12c11eb75f7dfbc5ece12ca8d3020a5c15`. K0.1-C1–C6 PASS; no findings. Reviewer inspected pinned GitHub source/diffs and implementation-12 evidence; no shell commands independently rerun. Acceptance is for H12 only. Integrated on main as `42731300266eea00a9a24d867d5e82d9887c280d` (PR #19); owner considers K0.1 merged/closed. [Integration and discussion receipt](work/K0.1/integration-01.md) separately verifies A12 and the merge. `next_release: none`; workflow review/improvement precedes any K0.2 release. |
 | K0.2 | ACCEPTED | Round 17 accepted by [review-17.md](work/K0.2/review-17.md), OpenAI GPT-5.6 Sol (High), 2026-09-12. Accepted H16 `90a6f37eaeb61009025449a1abc7e6d31dc1dbb2`; clean-validated C16 `9821cc27dbe5990f86028846b07edfb31cb65380`; base `c079237ee7aff428481426f93e87a68b79f170d4`. K0.2-C1–C9 PASS; no findings. C8 is backed by accepted benchmark E0 H `26d274fad53b2aa4fc2c7f596cae52e072cd24b5`, independent ACCEPT A `ac1445fb8144ffab8a9153b243d4b9237d1927b0`, owner integration receipt `9b816d47e83ff210fa32400aa91994f8055138d5`, and benchmark main `4d83c245c8f6bb0886c1035ec1c6bba3f91f0ddd`. Integrated on main as `0535160e677231da41b06d9f822e62e2f0364dd1`; owner considers K0.2 merged/closed and K0 milestone closed. [Integration and discussion receipt](work/K0.2/integration-01.md) separately verifies H16→A17 administrative scope, tree-equivalent integration, and the owner closeout. `next_release: none`; K1.0 remains PLANNED and unreleased pending E1 fixture preparation and a separate explicit owner release. |
-| K1.0 | PLANNED | Target boundary/legacy quarantine proposal; K0.2 plus the benchmark-owned E1 fixture preparation required before K1 implementation are prerequisites, and separate explicit owner release is required. No implementation; no E1 credit. |
+| K1.0 | WAITING_FOR_REVIEW | Released by the owner on 2026-09-13 with the E1 dependency treated as built-but-unaccepted preparation (see the release paragraph above). Round 1: clean-validated payload C `811758ee1037c3862d1ebd2ec799fad5f6c3b57f`; base `c9a9ed7e6e538ab0542fc6a999426264abb6212a`; branch `codex/k1.0-target-boundary-legacy-quarantine`; [contract](work/K1.0/contract.md) revision 1; report [implementation-01.md](work/K1.0/implementation-01.md) with raw validation under [validation-01/](work/K1.0/validation-01/MANIFEST.md). The exact candidate H is the commit containing that report, so it cannot be named from inside it; the external handoff supplies it. Deliverable is structural: `packages/kernel` as the enforced landing zone (`private`, no protocol implementation), an executable ownership policy with thirteen forbidden-edge controls, the ownership inventory and twelve deferred extraction assignments, and the legacy re-attribution of `kernel-boundaries.test.ts` → `legacy-core-boundaries.test.ts`. Suite 1775 → 1837, 0 fail; no legacy source moved and no public export changed. **It holds no E1 result and no K1 acceptance.** Accepted by nobody; not merged. Two defects were self-found and fixed pre-handoff (K1.0-SELF-01, K1.0-SELF-02); three obligations are recorded unresolved. `next_release: none`. |
 | K1.1 | PLANNED | — |
 | K1.2 | PLANNED | — |
 | K1.3 | PLANNED | — |
