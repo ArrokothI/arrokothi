@@ -40,3 +40,25 @@ duplicate zone to be reported.
 Validation-03's demonstrations 08–10 cover subsystems this round does not touch; the full suite
 above re-verifies them (all ten round-3 mutated-document controls and every extractor/guard-path
 control still pass, 1892/1892 with nothing removed, skipped or weakened).
+
+## Correction, round 5 (K10-R4-02)
+
+The `07-test-sdk.log` digest recorded in the table above is **not a SHA-256 value**: it has 52
+hexadecimal characters, and a hex-encoded SHA-256 has 64. Independent [review-04.md](../review-04.md)
+found it. The original row is left exactly as it was recorded, so this is a superseding note rather
+than a rewrite of history.
+
+| | |
+|---|---|
+| Recorded above | `dd227f9ffd8ab92b4e77570cd9ea294559dbbb575a7f1cad1470` (52 characters) |
+| Actual SHA-256 of `07-test-sdk.log` | `dd227f9ffd8ab92b4e77570cd9ea294559dbbbad00b172e3bb575a7f1cad1470` |
+| Nature of the defect | Transcription. The recorded value is the true digest with a twelve-character run, `ad00b172e3bb`, dropped from offset 38; prefix and suffix are otherwise identical. |
+| The log itself | Unchanged. `git diff 14cc1c1 <this candidate> -- 07-test-sdk.log` is empty, and the file's digest at round-4 H equals the value above. |
+| What it does and does not affect | An evidence-record identity only. The pinned log records 22 SDK tests passing, 0 failing, and the full-suite log in `03-test-full.log` contains the same SDK cases. No SDK behaviour claim changes. |
+
+Every digest recorded in every K1.0 validation manifest was re-audited when this was corrected:
+36 digests across `validation-01` through `validation-04`, of which this was the only defect; the
+other 35 are well-formed SHA-256 values that match the files they name. The audit and its result are
+in round 5's [`09-digest-audit.log`](../validation-05/09-digest-audit.log), and
+`tests/conformance/architecture/evidence-records.test.ts` now checks the same property mechanically
+so the class cannot recur silently.

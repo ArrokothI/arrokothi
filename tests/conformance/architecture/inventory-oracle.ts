@@ -54,6 +54,59 @@ function tableRows(markdown: string, heading: string, nextHeading: string): stri
   return rows;
 }
 
+/** How one keyed table is read. */
+interface RowSpec<T> {
+  /** Name used in disagreement messages. */
+  readonly table: string;
+  /** First cell of the header row, which is the only row that may be skipped silently. */
+  readonly headerFirstCell: string;
+  /** The row's key, or undefined when the row carries no recognisable key. */
+  readonly keyOf: (cells: readonly string[]) => string | undefined;
+  /** How a duplicate is described, so each table keeps its own established wording. */
+  readonly duplicate: (key: string) => string;
+  /** The row's value, or undefined when the remaining cells are malformed. */
+  readonly valueOf: (cells: readonly string[]) => T | undefined;
+}
+
+/**
+ * Reads one keyed table so that **every candidate data row ends in exactly one outcome**: recorded,
+ * reported as a duplicate key, or reported as unreadable. Nothing is discarded silently.
+ *
+ * The ordering matters and is the substance of K10-R4-01. The key is taken and the duplicate check
+ * runs *before* the rest of the row is parsed, and a key is marked seen even when the rest fails to
+ * parse. Without that, a row carrying a recognisable key and a malformed cell vanished before
+ * uniqueness was ever considered, so a contradictory duplicate could be erased by its own
+ * malformedness - the same disappearing-row failure K10-R3-01 closed for well-formed duplicates,
+ * reached by a different route. Failing to parse a row is now never a way to be ignored.
+ */
+function readKeyedTable<T>(
+  rows: readonly (readonly string[])[],
+  spec: RowSpec<T>,
+  into: Map<string, T>,
+  unreadable: string[],
+): void {
+  const seen = new Set<string>();
+  for (const cells of rows) {
+    if (cells[0] === spec.headerFirstCell) continue;
+    const key = spec.keyOf(cells);
+    if (key === undefined || key === "") {
+      unreadable.push(`${spec.table} row has no recognisable key: ${cells.join(" | ")}`);
+      continue;
+    }
+    if (seen.has(key)) {
+      unreadable.push(`${spec.duplicate(key)}: ${cells.join(" | ")}`);
+      continue;
+    }
+    seen.add(key);
+    const value = spec.valueOf(cells);
+    if (value === undefined) {
+      unreadable.push(`${spec.table} row for ${key} is malformed: ${cells.join(" | ")}`);
+      continue;
+    }
+    into.set(key, value);
+  }
+}
+
 /** Parses the inventory's three ownership tables into the relations they assert. */
 export function parseInventory(markdown: string): ParsedInventory {
   const zones = new Map<string, readonly string[]>();
@@ -61,61 +114,114 @@ export function parseInventory(markdown: string): ParsedInventory {
   const packages = new Map<string, { subpaths: readonly string[]; published: boolean }>();
   const unreadable: string[] = [];
 
-  for (const cells of tableRows(markdown, "## Zones", "## Current cross-boundary")) {
-    const [idCell, rootsCell] = cells;
-    if (idCell === undefined || rootsCell === undefined) continue;
-    if (idCell === "Zone id") continue;
-    const id = backticked(idCell)[0];
-    const roots = backticked(rootsCell);
-    if (id === undefined || roots.length === 0) {
-      unreadable.push(`Zones row: ${cells.join(" | ")}`);
-      continue;
-    }
-    if (zones.has(id)) {
-      unreadable.push(`duplicate Zones row for zone ${id}: ${cells.join(" | ")}`);
-      continue;
-    }
-    zones.set(id, roots);
-  }
+  readKeyedTable(
+    tableRows(markdown, "## Zones", "## Current cross-boundary"),
+    {
+      table: "Zones",
+      headerFirstCell: "Zone id",
+      keyOf: (cells) => backticked(cells[0] ?? "")[0],
+      duplicate: (key) => `duplicate Zones row for zone ${key}`,
+      valueOf: (cells) => {
+        const roots = backticked(cells[1] ?? "");
+        return roots.length === 0 ? undefined : roots;
+      },
+    },
+    zones,
+    unreadable,
+  );
 
-  for (const cells of tableRows(markdown, "## Deferred extraction", "## What this packet")) {
-    const [idCell, pathCell, dispositionCell, ownerCell] = cells;
-    if (idCell === undefined || idCell === "Id") continue;
-    const currentPath = pathCell === undefined ? undefined : backticked(pathCell)[0];
-    if (!/^DX-\d+$/.test(idCell) || currentPath === undefined || dispositionCell === undefined || ownerCell === undefined) {
-      unreadable.push(`Deferred row: ${cells.join(" | ")}`);
-      continue;
-    }
-    if (deferred.has(idCell)) {
-      unreadable.push(`duplicate Deferred row for ${idCell}: ${cells.join(" | ")}`);
-      continue;
-    }
-    deferred.set(idCell, { currentPath, disposition: dispositionCell, owner: ownerCell });
-  }
+  readKeyedTable(
+    tableRows(markdown, "## Deferred extraction", "## What this packet"),
+    {
+      table: "Deferred",
+      headerFirstCell: "Id",
+      keyOf: (cells) => (/^DX-\d+$/.test(cells[0] ?? "") ? cells[0] : undefined),
+      duplicate: (key) => `duplicate Deferred row for ${key}`,
+      valueOf: (cells) => {
+        const currentPath = backticked(cells[1] ?? "")[0];
+        const disposition = cells[2];
+        const owner = cells[3];
+        if (currentPath === undefined || disposition === undefined || owner === undefined) return undefined;
+        return { currentPath, disposition, owner };
+      },
+    },
+    deferred,
+    unreadable,
+  );
 
-  for (const cells of tableRows(markdown, "## Export ownership", "## What the target zone may import")) {
-    const [nameCell, subpathCell, publishedCell] = cells;
-    if (nameCell === undefined || nameCell === "Package") continue;
-    const name = backticked(nameCell)[0];
-    const subpaths = subpathCell === undefined ? [] : backticked(subpathCell);
-    if (name === undefined || subpaths.length === 0 || publishedCell === undefined) {
-      unreadable.push(`Export row: ${cells.join(" | ")}`);
-      continue;
-    }
-    const normalised = publishedCell.toLowerCase();
-    const published = normalised.startsWith("yes");
-    if (!published && !normalised.startsWith("no")) {
-      unreadable.push(`Export row has an unreadable Published? cell: ${cells.join(" | ")}`);
-      continue;
-    }
-    if (packages.has(name)) {
-      unreadable.push(`duplicate Export row for package ${name}: ${cells.join(" | ")}`);
-      continue;
-    }
-    packages.set(name, { subpaths, published });
-  }
+  readKeyedTable(
+    tableRows(markdown, "## Export ownership", "## What the target zone may import"),
+    {
+      table: "Export",
+      headerFirstCell: "Package",
+      keyOf: (cells) => backticked(cells[0] ?? "")[0],
+      duplicate: (key) => `duplicate Export row for package ${key}`,
+      valueOf: (cells) => {
+        const subpaths = backticked(cells[1] ?? "");
+        const publishedCell = cells[2];
+        if (subpaths.length === 0 || publishedCell === undefined) return undefined;
+        const normalised = publishedCell.toLowerCase();
+        const published = normalised.startsWith("yes");
+        if (!published && !normalised.startsWith("no")) return undefined;
+        return { subpaths, published };
+      },
+    },
+    packages,
+    unreadable,
+  );
 
   return { zones, deferred, packages, unreadable };
+}
+
+/** One row of the cross-boundary dependency table. */
+export interface DependencyRow {
+  readonly files: number;
+  readonly reaches: ReadonlySet<string>;
+  readonly thirdParty: ReadonlySet<string>;
+}
+
+export interface ParsedDependencyTable {
+  readonly rows: ReadonlyMap<string, DependencyRow>;
+  /** Rows the parser could not read, including duplicates, as human-readable locations. */
+  readonly unreadable: readonly string[];
+}
+
+/**
+ * Parses the cross-boundary dependency table under the same total-accounting rule as the three
+ * ownership tables.
+ *
+ * This lived inline in `kernel-landing-zone.test.ts` and was the one keyed table that did not share
+ * that rule (K10-R4-01). It is here so the strictness is structural rather than repeated by hand,
+ * and so a future table cannot quietly get its own weaker loop.
+ */
+export function parseDependencyTable(markdown: string): ParsedDependencyTable {
+  const rows = new Map<string, DependencyRow>();
+  const unreadable: string[] = [];
+
+  readKeyedTable(
+    tableRows(markdown, "## Current cross-boundary", "## Export ownership"),
+    {
+      table: "Dependency",
+      headerFirstCell: "Zone",
+      keyOf: (cells) => backticked(cells[0] ?? "")[0],
+      duplicate: (key) => `duplicate Dependency row for zone ${key}`,
+      valueOf: (cells) => {
+        const files = Number.parseInt(cells[1] ?? "", 10);
+        const reachesCell = cells[2];
+        const thirdCell = cells[3];
+        if (Number.isNaN(files) || reachesCell === undefined || thirdCell === undefined) return undefined;
+        // An em-dash means "self, not cross-boundary"; "nothing" means an empty set.
+        const reaches =
+          reachesCell.includes("nothing") || reachesCell === "\u2014" ? new Set<string>() : new Set(backticked(reachesCell));
+        const thirdParty = thirdCell.includes("nothing") ? new Set<string>() : new Set(backticked(thirdCell));
+        return { files, reaches, thirdParty };
+      },
+    },
+    rows,
+    unreadable,
+  );
+
+  return { rows, unreadable };
 }
 
 const sorted = (values: readonly string[]): string[] => [...values].sort();

@@ -31,7 +31,7 @@ import {
   resolveSpecifier,
   type ModuleGraph,
 } from "./module-graph.ts";
-import { inventoryDisagreements, parseInventory } from "./inventory-oracle.ts";
+import { inventoryDisagreements, parseDependencyTable, parseInventory } from "./inventory-oracle.ts";
 import {
   DEFERRED_EXTRACTIONS,
   traversableUnder,
@@ -523,39 +523,6 @@ describe("K1.0 policy and inventory agree", () => {
   const realInventory = async (): Promise<string> => readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
   const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
 
-  /**
-   * Parses the cross-boundary dependency table. A duplicate zone row is returned in `duplicates`
-   * and the first row is kept, so a stale wrong row cannot be silently overwritten by the correct
-   * row that follows it (K10-R3-01). Callers must fail on a non-empty `duplicates`.
-   */
-  const parseDependencyTable = (
-    inventory: string,
-  ): { parsed: Map<string, { files: number; reaches: Set<string>; thirdParty: Set<string> }>; duplicates: string[] } => {
-    const tableSection = inventory.split("## Current cross-boundary")[1]?.split("## Export ownership")[0] ?? "";
-    const backticked = (cell: string): Set<string> =>
-      new Set(cell.match(/`([^`]+)`/g)?.map((t) => t.replace(/`/g, "")) ?? []);
-    const parsed = new Map<string, { files: number; reaches: Set<string>; thirdParty: Set<string> }>();
-    const duplicates: string[] = [];
-    for (const line of tableSection.split("\n")) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith("| `")) continue;
-      const cells = trimmed.split("|").map((c) => c.trim());
-      const zoneId = cells[1]?.replace(/`/g, "");
-      const fileCount = Number.parseInt(cells[2] ?? "", 10);
-      if (zoneId === undefined || zoneId === "" || Number.isNaN(fileCount)) continue;
-      if (parsed.has(zoneId)) {
-        duplicates.push(zoneId);
-        continue;
-      }
-      const reachesCell = cells[3] ?? "";
-      const thirdCell = cells[4] ?? "";
-      const reaches = reachesCell.includes("nothing") || reachesCell === "—" ? new Set<string>() : backticked(reachesCell);
-      // The legacy row uses an em-dash for "self, not cross-boundary".
-      const thirdParty = thirdCell.includes("nothing") ? new Set<string>() : backticked(thirdCell);
-      parsed.set(zoneId, { files: fileCount, reaches, thirdParty });
-    }
-    return { parsed, duplicates };
-  };
 
   test("the parser actually reads the three ownership tables", async () => {
     // Non-vacuity. A parser that silently read nothing would report no disagreement about anything.
@@ -728,10 +695,10 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("the cross-boundary dependency table matches the measured tree (K10-R1-02)", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
-    const { parsed, duplicates } = parseDependencyTable(inventory);
-    assert.deepEqual(duplicates, [], "the dependency table has no duplicate zone rows");
+    const { rows, unreadable } = parseDependencyTable(inventory);
+    assert.deepEqual(unreadable, [], "every dependency row is readable, unique and accounted for");
     assert.deepEqual(
-      [...parsed.keys()].sort(),
+      [...rows.keys()].sort(),
       ZONES.map((zone) => zone.id).sort(),
       "the dependency table covers exactly the declared zones",
     );
@@ -740,7 +707,7 @@ describe("K1.0 policy and inventory agree", () => {
     for (const zone of ZONES) {
       let files: string[] = [];
       for (const root of zone.roots) files.push(...(await typeScriptFilesUnder(REPO_ROOT, root)));
-      const documented = parsed.get(zone.id);
+      const documented = rows.get(zone.id);
       assert.ok(documented, `the dependency table has a row for ${zone.id}`);
       assert.equal(files.length, documented.files, `${zone.id} .ts file count drifted from the inventory`);
 
@@ -784,6 +751,70 @@ describe("K1.0 policy and inventory agree", () => {
     }
   });
 
+  test("a malformed keyed dependency row fails closed in either position (K10-R4-01)", async () => {
+    // The row carries a recognisable zone key and a materially wrong dependency assertion, but its
+    // file-count cell does not parse. Before this fix the parser discarded it before uniqueness was
+    // ever considered, so it vanished: no duplicate, no unreadable row, and the correct row made
+    // recomputation green. Both orders are exercised because the old code skipped it either way.
+    const real = await realInventory();
+    const correct = "| `target-kernel` | 2 | nothing | nothing |";
+    const malformed = "| `target-kernel` | not-a-count | `@arrokothi/core` | nothing |";
+
+    for (const [position, replacement] of [
+      ["before", `${malformed}\n${correct}`],
+      ["after", `${correct}\n${malformed}`],
+    ] as const) {
+      const { unreadable } = parseDependencyTable(mutate(real, [[correct, replacement]]));
+      assert.ok(
+        unreadable.length > 0,
+        `a malformed keyed dependency row ${position} the correct row must be accounted for, not dropped`,
+      );
+      assert.ok(
+        unreadable.some((message) => /Dependency row .*target-kernel/.test(message)),
+        `the disagreement must name the zone key; got: ${JSON.stringify(unreadable)}`,
+      );
+    }
+  });
+
+  test("a dependency row with no recognisable key fails closed (K10-R4-01)", async () => {
+    const real = await realInventory();
+    const correct = "| `target-kernel` | 2 | nothing | nothing |";
+    const { unreadable } = parseDependencyTable(mutate(real, [[correct, `| not-a-zone | 2 | nothing | nothing |\n${correct}`]]));
+    assert.ok(
+      unreadable.some((message) => /Dependency row has no recognisable key/.test(message)),
+      `got: ${JSON.stringify(unreadable)}`,
+    );
+  });
+
+  test("a short row with a recognisable key fails closed in every ownership table (K1.0-SELF-08)", async () => {
+    // Self-found while closing K10-R4-01: the Zones loop discarded a row whose later cells were
+    // simply absent, which is the same fail-open shape in a table the round-4 review had cleared.
+    // Every keyed table now shares one total-accounting rule, so this is asserted for all of them.
+    const real = await realInventory();
+    const cases: { table: string; anchor: string; short: string }[] = [
+      { table: "Zones", anchor: "| `target-kernel` | `packages/kernel/src` |", short: "| `target-kernel` |" },
+      {
+        table: "Deferred",
+        anchor: "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 |",
+        short: "| DX-1 |",
+      },
+      { table: "Export", anchor: "| `@arrokothi/sdk` | `.` | Yes |", short: "| `@arrokothi/sdk` |" },
+    ];
+
+    for (const { table, anchor, short } of cases) {
+      const parsed = parseInventory(mutate(real, [[anchor, `${short}\n${anchor}`]]));
+      assert.ok(
+        parsed.unreadable.length > 0,
+        `a short ${table} row with a recognisable key must be accounted for, not dropped`,
+      );
+      assert.ok(
+        parsed.unreadable.some((message) => message.startsWith(table)) ||
+          parsed.unreadable.some((message) => /^duplicate /.test(message)),
+        `the disagreement must name the ${table} table; got: ${JSON.stringify(parsed.unreadable)}`,
+      );
+    }
+  });
+
   test("duplicate cross-boundary dependency rows fail closed (K10-R3-01)", async () => {
     const real = await realInventory();
     const anchor = "| `target-kernel` | 2 | nothing | nothing |";
@@ -793,10 +824,10 @@ describe("K1.0 policy and inventory agree", () => {
       mutate(real, [[anchor, `${anchor}\n${stale}`]]),
     ];
     for (const mutated of variants) {
-      const { duplicates } = parseDependencyTable(mutated);
+      const { unreadable } = parseDependencyTable(mutated);
       assert.ok(
-        duplicates.includes("target-kernel"),
-        `a duplicate dependency row must be reported regardless of order; got: ${JSON.stringify(duplicates)}`,
+        unreadable.some((message) => /duplicate Dependency row for zone target-kernel/.test(message)),
+        `a duplicate dependency row must be reported regardless of order; got: ${JSON.stringify(unreadable)}`,
       );
     }
   });
