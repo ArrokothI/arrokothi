@@ -23,7 +23,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  NON_LITERAL_DYNAMIC_IMPORT,
+  UNRESOLVABLE_MODULE_TARGET,
   loadWorkspace,
   walkModuleGraph,
   typeScriptFilesUnder,
@@ -31,6 +31,7 @@ import {
   resolveSpecifier,
   type ModuleGraph,
 } from "./module-graph.ts";
+import { inventoryDisagreements, parseInventory } from "./inventory-oracle.ts";
 import {
   DEFERRED_EXTRACTIONS,
   traversableUnder,
@@ -225,8 +226,102 @@ describe("K1.0 forbidden-edge controls", () => {
     });
     assert.equal(violations.length, 1);
     assert.equal(violations[0]!.from, "packages/kernel/src/index.ts");
-    assert.equal(violations[0]!.specifier, NON_LITERAL_DYNAMIC_IMPORT);
-    assert.match(violations[0]!.reason, /non-literal dynamic import/);
+    assert.equal(violations[0]!.specifier, UNRESOLVABLE_MODULE_TARGET);
+    // The reason now names the form that carried the unresolvable target, because K10-R2-01's
+    // rebuild made the fail-closed rule general rather than specific to dynamic imports. The
+    // subject of this retained control is unchanged: one violation, from this file, sentinel
+    // specifier, reason stating the target could not be verified.
+    assert.match(violations[0]!.reason, /dynamic-import whose target cannot be statically verified/);
+  });
+
+  test("a type-only import-type dependency on the legacy barrel is rejected (K10-R2-01)", async () => {
+    // The counterexample round 2 missed. `import("x").T` is a legal TypeScript dependency that the
+    // enumerated visitor emitted no edge for, so the whole guard could stay green while target
+    // source named the legacy package in a type. 007 forbids reaching legacy internals "through
+    // direct, type-only or barrel imports"; this is all three at once.
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts":
+        'export type LegacyExecution = import("@arrokothi/core").ExecutionContext;\n',
+    });
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0]!.from, "packages/kernel/src/index.ts");
+    assert.equal(violations[0]!.specifier, "@arrokothi/core");
+    assert.match(violations[0]!.reason, /packages\/core\/src\/index\.ts/);
+  });
+
+  test("a typeof import-type dependency on the legacy barrel is rejected (K10-R2-01)", async () => {
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts": 'export type LegacyModule = typeof import("@arrokothi/core");\n',
+    });
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0]!.specifier, "@arrokothi/core");
+  });
+
+  test("an import type nested in a signature or generic is rejected (K10-R2-01)", async () => {
+    // Depth matters: the dependency is not at statement level, so a visitor that only inspects
+    // top-level declarations would miss it.
+    const parameter = await violationsFor({
+      "packages/kernel/src/index.ts":
+        'export function use(value: import("@arrokothi/core/ports").LegacyController): void { void value; }\n',
+    });
+    assert.equal(parameter.length, 1);
+    assert.equal(parameter[0]!.specifier, "@arrokothi/core/ports");
+
+    const generic = await violationsFor({
+      "packages/kernel/src/index.ts":
+        'export type Many = ReadonlyArray<import("../../core/src/runtime/harness.ts").LegacyHarness>;\n',
+    });
+    assert.equal(generic.length, 1);
+    assert.match(generic[0]!.reason, /packages\/core\/src\/runtime\/harness\.ts/);
+  });
+
+  test("an import type whose target is not a literal fails closed (K10-R2-01)", async () => {
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts":
+        'type Name = "@arrokothi/core";\nexport type Sneaky = import(Name).Anything;\n',
+    });
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0]!.specifier, UNRESOLVABLE_MODULE_TARGET);
+    assert.match(violations[0]!.reason, /import-type whose target cannot be statically verified/);
+  });
+
+  test("a triple-slash reference into the legacy tree is rejected (K10-R2-01)", async () => {
+    // A reference directive is a type dependency written outside any import statement. It resolves
+    // as a path relative to the referring file, which is what TypeScript does with it.
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts":
+        '/// <reference path="../../core/src/runtime/harness.ts" />\nexport const marker = 1;\n',
+    });
+    assert.equal(violations.length, 1);
+    assert.match(violations[0]!.reason, /packages\/core\/src\/runtime\/harness\.ts/);
+  });
+
+  test("a triple-slash types reference on a forbidden package is rejected (K10-R2-01)", async () => {
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts": '/// <reference types="@arrokothi/core" />\nexport const marker = 1;\n',
+    });
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0]!.specifier, "@arrokothi/core");
+  });
+
+  test("an ambient declaration of a forbidden module is rejected (K10-R2-01)", async () => {
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts":
+        'declare module "@arrokothi/core" {\n  interface Added { readonly x: number }\n}\nexport const marker = 1;\n',
+    });
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0]!.specifier, "@arrokothi/core");
+  });
+
+  test("a reference and an import type that stay inside the zone are accepted (K10-R2-01)", async () => {
+    // The other direction: the new forms must not be rejected wholesale, or the guard would be red
+    // on correct code and its green result would mean nothing.
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts":
+        '/// <reference path="./helper.ts" />\nexport type H = typeof import("./helper.ts").helper;\nexport const marker = 1;\n',
+      "packages/kernel/src/helper.ts": "export const helper = 1;\n",
+    });
+    assert.deepEqual(violations, []);
   });
 
   test("a legacy dependency reached through an in-zone module is rejected", async () => {
@@ -415,96 +510,118 @@ describe("K1.0 legacy quarantine", () => {
 });
 
 describe("K1.0 policy and inventory agree", () => {
-  test("every declared zone and zone root appears in the inventory document", async () => {
-    const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
-    for (const zone of ZONES) {
-      assert.ok(inventory.includes(zone.id), `the inventory names zone ${zone.id}`);
-      for (const root of zone.roots) {
-        assert.ok(inventory.includes(root), `the inventory names zone root ${root}`);
-      }
+  /** Applies each replacement once, failing loudly if an anchor is not uniquely present. */
+  const mutate = (markdown: string, edits: readonly (readonly [string, string])[]): string => {
+    let mutated = markdown;
+    for (const [from, to] of edits) {
+      assert.equal(mutated.split(from).length - 1, 1, `the control's anchor appears exactly once: ${from}`);
+      mutated = mutated.replace(from, to);
     }
+    return mutated;
+  };
+
+  const realInventory = async (): Promise<string> => readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
+  const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
+
+  test("the parser actually reads the three ownership tables", async () => {
+    // Non-vacuity. A parser that silently read nothing would report no disagreement about anything.
+    const parsed = parseInventory(await realInventory());
+    assert.deepEqual(parsed.unreadable, [], "every row in the three tables parsed");
+    assert.equal(parsed.zones.size, ZONES.length);
+    assert.equal(parsed.deferred.size, DEFERRED_EXTRACTIONS.length);
+    assert.equal(parsed.packages.size, (await loadWorkspace(REPO_ROOT)).packages.size);
   });
 
-  test("the inventory names no zone the policy does not declare (K10-R1-02)", async () => {
-    // Reverse direction: a prose-only zone row would otherwise pass the forward substring check
-    // while claiming bidirectional agreement.
-    const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
-    const zonesSection = inventory.split("## Zones")[1]?.split("## Current cross-boundary")[0] ?? "";
-    const documentedIds = new Set<string>();
-    for (const line of zonesSection.split("\n")) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith("| `")) continue;
-      const id = trimmed.split("|")[1]?.trim().replace(/`/g, "");
-      if (id !== undefined && id !== "" && id !== "Zone id") documentedIds.add(id);
-    }
-    assert.deepEqual(
-      [...documentedIds].sort(),
-      ZONES.map((zone) => zone.id).sort(),
-      "the Zones table and the executable policy declare exactly the same zone ids",
+  test("the inventory's ownership relations agree with the policy and the manifests", async () => {
+    const disagreements = inventoryDisagreements(
+      parseInventory(await realInventory()),
+      policy,
+      await loadWorkspace(REPO_ROOT),
     );
-    const documentedRoots = new Set(zonesSection.match(/`packages\/[^`]+src`/g) ?? []);
-    for (const zone of ZONES) {
-      for (const root of zone.roots) {
-        assert.ok(documentedRoots.has(`\`${root}\``), `the Zones table lists root ${root}`);
-      }
-    }
-    for (const token of documentedRoots) {
-      const root = token.replace(/`/g, "");
-      assert.ok(
-        ZONES.some((zone) => (zone.roots as readonly string[]).includes(root)),
-        `the Zones table lists no undeclared root ${root}`,
-      );
-    }
+    assert.deepEqual(disagreements, [], "zone roots, deferred rows and export rows all match what is enforced");
   });
 
-  test("every deferred extraction is assigned an owner in both the policy and the inventory", async () => {
-    const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
+  test("every deferred owner names a packet the ledger declares", async () => {
     assert.ok(DEFERRED_EXTRACTIONS.length > 0, "the inventory of what the zone cannot reach yet is not empty");
     for (const row of DEFERRED_EXTRACTIONS) {
       assert.match(row.owner, /^(K1\.[1-4]|K2\.[1-4]|K3\.[1-4]|K4\.[1-5]|R1\.[1-3]|R2\.[1-3]|K5\.[1-3]|S1\.[1-9])$/);
-      assert.ok(inventory.includes(row.id), `the inventory records ${row.id}`);
-      assert.ok(inventory.includes(row.currentPath), `the inventory records ${row.currentPath}`);
-      assert.ok(inventory.includes(row.owner), `the inventory records owner ${row.owner}`);
+      assert.match(row.disposition, /^(migratable|legacy-only|refused)$/);
     }
   });
 
-  test("the inventory records no deferred row the policy does not declare (K10-R1-02)", async () => {
-    const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
-    const deferredSection = inventory.split("## Deferred extraction")[1]?.split("## What this packet")[0] ?? inventory;
-    const documented = new Set(deferredSection.match(/DX-\d+/g) ?? []);
-    assert.deepEqual(
-      [...documented].sort(),
-      DEFERRED_EXTRACTIONS.map((row) => row.id).sort(),
-      "the deferred table and the executable policy declare exactly the same DX rows",
-    );
-  });
+  describe("mutated-document controls (K10-R2-02)", () => {
+    // Each mutation is a plausible wrong row association that leaves every token set unchanged, so
+    // the round-2 oracle stayed green on all of them. The oracle must name the specific relation.
+    const controls: { name: string; edits: readonly (readonly [string, string])[]; expect: RegExp }[] = [
+      {
+        // The review's own counterexample. A one-sided change would remove a root from the page and
+        // be caught by a set comparison; a true swap leaves every token present and only the
+        // association wrong, which is precisely what a set comparison cannot see.
+        name: "two zones' roots are swapped with each other",
+        edits: [
+          ["| `target-kernel` | `packages/kernel/src` |", "| `target-kernel` | `PLACEHOLDER` |"],
+          ["| `legacy-core` | `packages/core/src` |", "| `legacy-core` | `packages/kernel/src` |"],
+          ["| `target-kernel` | `PLACEHOLDER` |", "| `target-kernel` | `packages/core/src` |"],
+        ],
+        expect: /zone target-kernel owns \[packages\/kernel\/src\] but the document gives it \[packages\/core\/src\]/,
+      },
+      {
+        name: "one zone's root is replaced",
+        edits: [["| `target-kernel` | `packages/kernel/src` |", "| `target-kernel` | `packages/core/src` |"]],
+        expect: /zone target-kernel owns \[packages\/kernel\/src\] but the document gives it \[packages\/core\/src\]/,
+      },
+      {
+        name: "a deferred row's owner is reassigned",
+        edits: [["| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 |", "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K3.1 |"]],
+        expect: /deferred row DX-1 is owned by K1\.1 but the document says K3\.1/,
+      },
+      {
+        name: "a deferred row's disposition is changed",
+        edits: [["| DX-5 | `packages/core/src/runtime/harness.ts` | legacy-only | K1.4 |", "| DX-5 | `packages/core/src/runtime/harness.ts` | migratable | K1.4 |"]],
+        expect: /deferred row DX-5 is legacy-only but the document says migratable/,
+      },
+      {
+        name: "a deferred row's path is moved to another subsystem",
+        edits: [["| DX-8 | `packages/core/src/ports/runtime-store.ts` | legacy-only | K3.1 |", "| DX-8 | `packages/core/src/ports/scheduler.ts` | legacy-only | K3.1 |"]],
+        expect: /deferred row DX-8 covers packages\/core\/src\/ports\/runtime-store\.ts but the document gives packages\/core\/src\/ports\/scheduler\.ts/,
+      },
+      {
+        name: "a private package is claimed to be published",
+        edits: [["| `@arrokothi/kernel` | `.` | No (private) |", "| `@arrokothi/kernel` | `.` | Yes |"]],
+        expect: /package @arrokothi\/kernel is private but the document says it is published/,
+      },
+      {
+        name: "a published package is claimed to be private",
+        edits: [["| `@arrokothi/sdk` | `.` | Yes |", "| `@arrokothi/sdk` | `.` | No (private) |"]],
+        expect: /package @arrokothi\/sdk is publishable but the document says it is not published/,
+      },
+      {
+        name: "an exported subpath is dropped from a row",
+        edits: [["| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes |", "| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference` | Yes |"]],
+        expect: /package @arrokothi\/core exports \[.*\.\/testing.*\] but the document gives \[/,
+      },
+      {
+        name: "a package row is deleted entirely",
+        edits: [["| `@arrokothi/provider-gemini` | `.` | Yes |\n", ""]],
+        expect: /package @arrokothi\/provider-gemini exists in the workspace but is not documented/,
+      },
+      {
+        name: "an undeclared zone is added in prose",
+        edits: [["| `host-sdk` | `packages/sdk/src` |", "| `host-sdk` | `packages/sdk/src` |\n| `invented-zone` | `packages/kernel/src` |"]],
+        expect: /zone invented-zone is documented but not declared by the policy/,
+      },
+    ];
 
-  test("the export-ownership table agrees with the manifests (K10-R1-02)", async () => {
-    const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
-    const workspace = await loadWorkspace(REPO_ROOT);
-    const expected: Record<string, { exports: string[]; isPrivate: boolean }> = {
-      "@arrokothi/kernel": { exports: ["."], isPrivate: true },
-      "@arrokothi/core": { exports: [".", "./execution", "./ports", "./reference", "./testing"], isPrivate: false },
-      "@arrokothi/sdk": { exports: ["."], isPrivate: false },
-      "@arrokothi/integration-strands": { exports: ["."], isPrivate: false },
-      "@arrokothi/provider-gemini": { exports: ["."], isPrivate: false },
-      "@arrokothi/retrieval-local": { exports: ["."], isPrivate: false },
-      "@arrokothi/integration-mcp": { exports: ["."], isPrivate: false },
-    };
-    for (const [name, want] of Object.entries(expected)) {
-      const entry = workspace.packages.get(name);
-      assert.ok(entry, `workspace contains ${name}`);
-      assert.deepEqual([...entry.exports.keys()].sort(), [...want.exports].sort(), `${name} export subpaths drifted`);
-      assert.equal(entry.isPrivate, want.isPrivate, `${name} publishability drifted`);
-      assert.ok(inventory.includes(name), `the inventory names package ${name}`);
-      for (const subpath of want.exports) {
-        assert.ok(inventory.includes(subpath), `the inventory records ${name} subpath ${subpath}`);
-      }
-    }
-    const exportSection = inventory.split("## Export ownership")[1]?.split("## What the target")[0] ?? "";
-    for (const token of exportSection.match(/`@arrokothi\/[^`]+`/g) ?? []) {
-      const name = token.replace(/`/g, "");
-      assert.ok(workspace.packages.has(name), `the export table lists no undeclared package ${name}`);
+    for (const control of controls) {
+      test(control.name, async () => {
+        const workspace = await loadWorkspace(REPO_ROOT);
+        const mutated = mutate(await realInventory(), control.edits);
+        const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+        assert.ok(
+          disagreements.some((message) => control.expect.test(message)),
+          `the oracle must name this wrong association; it reported: ${JSON.stringify(disagreements)}`,
+        );
+      });
     }
   });
 
@@ -547,7 +664,7 @@ describe("K1.0 policy and inventory agree", () => {
       for (const file of files) {
         const source = await readFile(resolve(REPO_ROOT, file), "utf8");
         for (const specifier of importSpecifiersIn(source)) {
-          if (specifier === NON_LITERAL_DYNAMIC_IMPORT) {
+          if (specifier === UNRESOLVABLE_MODULE_TARGET) {
             relativeOutside.push(`${file} uses a non-literal dynamic import`);
             continue;
           }

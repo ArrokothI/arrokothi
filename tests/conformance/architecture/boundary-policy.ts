@@ -9,7 +9,7 @@
  */
 
 import type { ModuleGraph } from "./module-graph.ts";
-import { NON_LITERAL_DYNAMIC_IMPORT } from "./module-graph.ts";
+import { UNRESOLVABLE_MODULE_TARGET } from "./module-graph.ts";
 
 /** One ownership zone: a set of repo-relative path prefixes with a single owner. */
 export interface Zone {
@@ -123,22 +123,25 @@ export const traversableUnder =
 /**
  * Every edge in `graph` that the rules forbid.
  *
- * One predicate covers every import form because `walkModuleGraph` has already normalised them:
- * a static import, a type-only import, a re-export, a package-root barrel, a package subpath and a
- * dynamic import all arrive here as the same resolved edge. That is why a control can demonstrate
- * rejection of a type-only barrel import without the rule needing a clause about type-only imports.
- * A non-literal dynamic import arrives as NON_LITERAL_DYNAMIC_IMPORT and is always forbidden: its
- * target cannot be verified, so the guard fails closed rather than recording "no dependency".
+ * One predicate covers every dependency form because `walkModuleGraph` has already normalised them:
+ * a static import, a type-only import, a `type T = import("x").U` import type, a re-export, a
+ * package-root barrel, a package subpath, a dynamic import, an ambient module declaration and a
+ * triple-slash reference all arrive here as the same resolved edge. That is why a control can
+ * demonstrate rejection of a type-only barrel import without the rule needing a clause about
+ * type-only imports, and why K10-R2-01's import-type counterexample needed no new rule here once
+ * the extractor emitted it.
+ * A dependency whose target cannot be recovered statically arrives as UNRESOLVABLE_MODULE_TARGET and
+ * is always forbidden: the guard fails closed rather than recording "no dependency".
  */
 export function boundaryViolations(graph: ModuleGraph, rules: BoundaryRules): BoundaryViolation[] {
   const violations: BoundaryViolation[] = [];
 
   for (const edge of graph.edges) {
-    if (edge.specifier === NON_LITERAL_DYNAMIC_IMPORT) {
+    if (edge.specifier === UNRESOLVABLE_MODULE_TARGET) {
       violations.push({
         from: edge.from,
         specifier: edge.specifier,
-        reason: "uses a non-literal dynamic import whose target cannot be statically verified; the zone must use only literal specifiers",
+        reason: `names a module through ${edge.form} whose target cannot be statically verified; the zone must use only literal specifiers`,
       });
       continue;
     }

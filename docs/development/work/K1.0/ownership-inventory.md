@@ -49,12 +49,20 @@ package is the existing vendor-neutrality property, retained and re-attributed t
 
 ## Export ownership
 
+One row per package, with a normalised `Published?` value, so the agreement oracle can compare the
+row relation against the manifests rather than checking that each name occurs somewhere on the page.
+
 | Package | Exported subpaths | Published? |
 |---|---|---|
-| `@arrokothi/kernel` | `.` | No - `private: true` |
-| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes, unchanged |
-| `@arrokothi/sdk` | `.` | Yes, unchanged |
-| `@arrokothi/integration-strands`, `@arrokothi/provider-gemini`, `@arrokothi/retrieval-local`, `@arrokothi/integration-mcp` | `.` | Unchanged |
+| `@arrokothi/kernel` | `.` | No (private) |
+| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes |
+| `@arrokothi/sdk` | `.` | Yes |
+| `@arrokothi/integration-strands` | `.` | Yes |
+| `@arrokothi/provider-gemini` | `.` | Yes |
+| `@arrokothi/retrieval-local` | `.` | Yes |
+| `@arrokothi/integration-mcp` | `.` | Yes |
+
+Only `@arrokothi/kernel` is new, and only it is private. Every other row is unchanged by this packet.
 
 `@arrokothi/core`'s five subpaths export 227 / 227 / 44 / 33 / 21 runtime names. K1.0 moves no legacy
 source, so those counts and the digests over their sorted name lists are pinned in the guard; a later

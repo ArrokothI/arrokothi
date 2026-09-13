@@ -20,7 +20,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { NON_LITERAL_DYNAMIC_IMPORT, importSpecifiersIn as specifiersIn } from "./module-graph.ts";
+import { UNRESOLVABLE_MODULE_TARGET, importSpecifiersIn as specifiersIn } from "./module-graph.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const CORE_SRC = resolve(REPO_ROOT, "packages/core/src");
@@ -199,7 +199,7 @@ describe("Legacy core (0.8.x) architecture boundaries", () => {
         // A non-literal dynamic import is reported as a sentinel by the fail-closed scanner. No
         // conformance source may commit one: the guard that enforces literal-only targets must not
         // itself hide a target. Flagged here with its own message rather than as a package surface.
-        if (specifier === NON_LITERAL_DYNAMIC_IMPORT) {
+        if (specifier === UNRESOLVABLE_MODULE_TARGET) {
           violations.push(`${path} uses a non-literal dynamic import`);
           continue;
         }

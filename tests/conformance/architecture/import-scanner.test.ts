@@ -22,7 +22,14 @@ import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { NON_LITERAL_DYNAMIC_IMPORT, importSpecifiersIn } from "./module-graph.ts";
+import {
+  UNRESOLVABLE_MODULE_TARGET,
+  astDependencies,
+  importSpecifiersIn,
+  moduleDependenciesIn,
+  preprocessorDependencies,
+  typeScriptFilesUnder,
+} from "./module-graph.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
@@ -177,12 +184,12 @@ describe("import scanner: the parser survives real source shapes", () => {
 
   test("a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)", () => {
     const source = 'const target = "@arrokothi/core";\nconst m = await import(target);\n';
-    assert.deepEqual(importSpecifiersIn(source), [NON_LITERAL_DYNAMIC_IMPORT]);
+    assert.deepEqual(importSpecifiersIn(source), [UNRESOLVABLE_MODULE_TARGET]);
   });
 
   test("a template dynamic import with substitutions fails closed", () => {
     const source = "const m = await import(`./${name}.ts`);\n";
-    assert.deepEqual(importSpecifiersIn(source), [NON_LITERAL_DYNAMIC_IMPORT]);
+    assert.deepEqual(importSpecifiersIn(source), [UNRESOLVABLE_MODULE_TARGET]);
   });
 
   test("a no-substitution template dynamic import is still a literal", () => {
@@ -248,4 +255,141 @@ describe("import scanner: the real tree", () => {
       `the pinned fixture imports node builtins and relative paths only (saw ${bare.join(", ")})`,
     );
   });
+});
+
+
+describe("dependency extractor: every way TypeScript can name a module (K10-R2-01)", () => {
+  // Round 2's extractor enumerated four node kinds. These are the forms that enumeration omitted,
+  // each a legal dependency on `@arrokothi/core` that the whole guard would otherwise not see.
+  const dependencyBearing: Record<string, string> = {
+    "import type at a property position": 'export type A = import("@arrokothi/core").ExecutionContext;',
+    "import type under typeof": 'export type A = typeof import("@arrokothi/core");',
+    "import type with no qualifier": 'export type A = import("@arrokothi/core");',
+    "import type with type arguments": 'export type A = import("@arrokothi/core").Box<string>;',
+    "import type in a parameter": 'export function f(a: import("@arrokothi/core").A): void { void a; }',
+    "import type nested in a generic": 'export type A = ReadonlyArray<import("@arrokothi/core").A>;',
+    "import type in a return position": 'export function f(): import("@arrokothi/core").A { throw new Error("x"); }',
+    "triple-slash types reference": '/// <reference types="@arrokothi/core" />\nexport const a = 1;',
+    "ambient module declaration": 'declare module "@arrokothi/core" { interface Q { a: 1 } }\nexport const a = 1;',
+  };
+
+  for (const [name, source] of Object.entries(dependencyBearing)) {
+    test(name, () => {
+      assert.deepEqual(
+        [...new Set(importSpecifiersIn(source))],
+        ["@arrokothi/core"],
+        `${name} names a module, so every guard must see it`,
+      );
+    });
+  }
+
+  test("a triple-slash path reference is extracted as a path, not a bare specifier", () => {
+    const source = '/// <reference path="../core/src/runtime/harness.ts" />\nexport const a = 1;';
+    assert.deepEqual(moduleDependenciesIn(source), [
+      { specifier: "../core/src/runtime/harness.ts", form: "reference-path", target: "path" },
+    ]);
+  });
+
+  test("a lib reference names a TypeScript library, not a module, and is not a dependency", () => {
+    assert.deepEqual(importSpecifiersIn('/// <reference lib="es2015" />\nexport const a = 1;'), []);
+  });
+
+  test("an import type whose target is not a literal fails closed", () => {
+    const source = 'type N = "@arrokothi/core";\nexport type A = import(N).X;';
+    assert.deepEqual(importSpecifiersIn(source), [UNRESOLVABLE_MODULE_TARGET]);
+  });
+
+  test("a re-export with no module specifier names no module", () => {
+    assert.deepEqual(importSpecifiersIn("const a = 1;\nexport { a };"), []);
+  });
+
+  test("each form is reported with the syntax that carried it", () => {
+    const source = [
+      'import { a } from "./a.ts";',
+      'export * from "./b.ts";',
+      'import c = require("./c.ts");',
+      'const d = await import("./d.ts");',
+      'export type E = import("./e.ts").E;',
+      'declare module "./f.ts" {}',
+    ].join("\n");
+    assert.deepEqual(
+      moduleDependenciesIn(source).map((dependency) => [dependency.specifier, dependency.form]).sort(),
+      [
+        ["./a.ts", "import-declaration"],
+        ["./b.ts", "export-declaration"],
+        ["./c.ts", "import-equals"],
+        ["./d.ts", "dynamic-import"],
+        ["./e.ts", "import-type"],
+        ["./f.ts", "module-declaration"],
+      ],
+    );
+  });
+});
+
+describe("dependency extractor: two independent extractors, and what each is for", () => {
+  test("the AST pass alone already finds everything the compiler's pre-processor finds", async () => {
+    // The union is a safety net against the table in `module-graph.ts` being incomplete, not a
+    // crutch covering a known hole. If this fails, a form is missing from that table.
+    const sources: string[] = Object.values({
+      matrix: [
+        'import { a } from "@arrokothi/core";',
+        'import type { A } from "@arrokothi/core";',
+        'import "@arrokothi/core";',
+        'export { a } from "@arrokothi/core";',
+        'export * from "@arrokothi/core";',
+        'import A = require("@arrokothi/core");',
+        'const m = await import("@arrokothi/core");',
+        'export type A = import("@arrokothi/core").X;',
+        'export type B = typeof import("@arrokothi/core");',
+        '/// <reference path="../core/src/x.ts" />',
+        '/// <reference types="@arrokothi/core" />',
+        'declare module "@arrokothi/core" {}',
+      ].join("\n"),
+    });
+    for (const directory of ["packages", "tests", "examples", "scripts"]) {
+      for (const file of await typeScriptFilesUnder(REPO_ROOT, directory)) {
+        sources.push(await readFile(resolve(REPO_ROOT, file), "utf8"));
+      }
+    }
+    assert.ok(sources.length > 100, `the corpus actually covered the tree (${sources.length} sources)`);
+
+    const uncovered: string[] = [];
+    for (const source of sources) {
+      const ast = new Set(astDependencies(source).map((dependency) => dependency.specifier));
+      for (const dependency of preprocessorDependencies(source)) {
+        if (!ast.has(dependency.specifier)) uncovered.push(dependency.specifier);
+      }
+    }
+    assert.deepEqual(uncovered, [], "no dependency is visible only to the second extractor");
+  });
+
+  test("the union still reports a dependency only one extractor can see", () => {
+    // Demonstrates the safety net actually works, using the one form that is genuinely asymmetric:
+    // an unresolvable target is the AST pass's own fail-closed signal and the pre-processor emits
+    // nothing for it, so the union must keep it.
+    const source = 'const t = "@arrokothi/core";\nexport const load = async () => import(t);';
+    assert.deepEqual(preprocessorDependencies(source), []);
+    assert.deepEqual(importSpecifiersIn(source), [UNRESOLVABLE_MODULE_TARGET]);
+  });
+});
+
+describe("dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)", () => {
+  // Re-asserted after the K10-R2-01 reconstruction rather than assumed to have survived it. The
+  // forbidden-edge controls carry import statements as fixture text, so a regression here would
+  // make the guards report their own controls as committed dependencies.
+  const text: Record<string, string> = {
+    "prose in a line comment": '// indistinguishable from "@arrokothi/core".\nexport const a = 1;',
+    "prose in a documentation block": '/**\n * derives from "@arrokothi/core".\n */\nexport const a = 1;',
+    "an import statement as a string": 'const needle = \'from "@arrokothi/core"\';\nexport const a = needle;',
+    "an import statement in a template": 'const fixture = `import { A } from "@arrokothi/core";`;\nexport const a = fixture;',
+    "a reference directive as fixture text": 'const fixture = `/// <reference types="@arrokothi/core" />`;\nexport const a = fixture;',
+    "an import type as fixture text": 'const fixture = `export type A = import("@arrokothi/core").X;`;\nexport const a = fixture;',
+    "a word list containing the preposition": 'const stop = ["for", "from", "had"];\nexport const a = stop;',
+  };
+
+  for (const [name, source] of Object.entries(text)) {
+    test(name, () => {
+      assert.deepEqual(importSpecifiersIn(source), [], `${name} is text, not a dependency`);
+    });
+  }
 });

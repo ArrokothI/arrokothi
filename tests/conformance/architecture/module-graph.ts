@@ -1,25 +1,60 @@
 /**
- * Import-graph analysis shared by the architecture boundary guards.
+ * Module-dependency analysis shared by the architecture boundary guards.
  *
  * Two jobs, deliberately separated so each can be exercised on its own:
  *
- * 1. `importSpecifiersIn` extracts import/export specifiers from one TypeScript source by parsing
- *    it with the TypeScript compiler, so prose that merely ends in the preposition "from" before
- *    a quoted term is not read as a bare import, and a regular-expression literal containing quote
- *    characters cannot corrupt the rest of the file. That false positive is the pre-existing guard
- *    defect recorded as K0.2-SELF-01; the forbidden-edge controls in `kernel-landing-zone.test.ts`
- *    carry import statements as literal fixture text, so the guards could not state their own
- *    controls until the scanner distinguished code from text. Parsing (rather than a lexical
- *    heuristic for division versus regular expression) also closes K10-R1-01: a `/` after `)` in
- *    `if (true) /["']/.test('x')` is a regular expression to the parser, not division, so the
- *    following forbidden import is still seen. A dynamic `import()` whose argument is not a string
- *    literal cannot be resolved statically, so it is reported as NON_LITERAL_DYNAMIC_IMPORT rather
- *    than as "no dependency": the guard fails closed on that form.
- * 2. `walkModuleGraph` resolves those specifiers across workspace packages - relative paths,
- *    package roots and package subpath exports alike - and returns the transitive closure plus the
- *    external specifiers it stopped at. Resolution is derived from the manifests actually present
- *    in the tree, never from a hardcoded package list, so a new workspace package is covered the
- *    moment it exists.
+ * 1. `moduleDependenciesIn` extracts every module dependency one TypeScript source carries.
+ * 2. `walkModuleGraph` resolves those dependencies across workspace packages and returns the
+ *    transitive closure plus the external specifiers it stopped at. Resolution is derived from the
+ *    manifests actually present in the tree, never from a hardcoded package list.
+ *
+ * ## How the extractor decides what a dependency is
+ *
+ * Rebuilt for K10-R2-01. The previous version enumerated four node kinds that happened to cover the
+ * examples in front of it, and silently emitted nothing for every other way TypeScript can name a
+ * module. Enumerating examples is the defect; the rule below is stated over the whole category, and
+ * a second, independently implemented extractor is run alongside it so completeness does not rest on
+ * one author's enumeration being right.
+ *
+ * **A dependency is any syntax that names another module.** In TypeScript that is:
+ *
+ * | Syntax | Node or field | Resolved as |
+ * |---|---|---|
+ * | `import ... from "x"`, `import "x"` | `ImportDeclaration.moduleSpecifier` | specifier |
+ * | `export ... from "x"`, `export * as ns from "x"` | `ExportDeclaration.moduleSpecifier` | specifier |
+ * | `import A = require("x")` | `ImportEqualsDeclaration` / `ExternalModuleReference` | specifier |
+ * | `import("x")` at a value position | `CallExpression` with the `import` keyword | specifier |
+ * | `import("x").T`, `typeof import("x")`, `import("x")` at a type position | `ImportTypeNode.argument` | specifier |
+ * | `declare module "x" { ... }` | `ModuleDeclaration` with a string-literal name | specifier |
+ * | `/// <reference path="x" />` | `SourceFile.referencedFiles` | path, relative to the file |
+ * | `/// <reference types="x" />` | `SourceFile.typeReferenceDirectives` | specifier |
+ *
+ * Type-only forms are deliberately not a separate case. `import type { T } from "x"` and
+ * `type T = import("x").U` are the same obligation - 007 forbids the target zone reaching legacy
+ * internals "through direct, type-only or barrel imports" - so they reach the same resolver, the
+ * same graph and the same boundary decision. `/// <reference lib="..." />` names a TypeScript
+ * library rather than a module and is not a dependency. JSDoc `import(...)` types are not analysed:
+ * this workspace compiles `.ts` with `checkJs` off, so a JSDoc type annotation is not a dependency;
+ * the K1.0 contract records that limit.
+ *
+ * **Where a target cannot be established statically, the extractor fails closed** rather than
+ * reporting "no dependency": a dynamic `import(someIdentifier)` or an `import(SomeType).T` yields
+ * `UNRESOLVABLE_MODULE_TARGET`, which no policy can permit.
+ *
+ * ## Why there are two extractors
+ *
+ * `astDependencies` walks the parsed tree against the table above. `preprocessorDependencies` asks
+ * the TypeScript compiler's own file pre-processor, which is written and maintained by someone else
+ * for a different purpose. The union of the two is returned, so a form missing from the table is
+ * still reported as long as either extractor sees it. Provenance is kept on each dependency, and
+ * `import-scanner.test.ts` asserts that over both the synthetic matrix and every source in this
+ * repository the AST pass alone already covers everything the pre-processor finds - so the union is
+ * a safety net, never a crutch hiding a hole in the table.
+ *
+ * Parsing rather than pattern-matching text is also what keeps K0.2-SELF-01 closed: prose ending in
+ * the preposition "from" before a quoted term, a quoted import statement used as fixture text, and a
+ * regular-expression literal containing quote characters are all text to a parser, so none of them
+ * becomes an edge. That soundness is re-asserted after this rebuild, not assumed to have survived it.
  *
  * Neither function encodes a boundary policy. The policy lives in `boundary-policy.ts`.
  */
@@ -29,54 +64,111 @@ import { dirname, relative, resolve } from "node:path";
 import ts from "typescript";
 
 /**
- * Sentinel specifier emitted for a dynamic `import()` whose argument is not statically recoverable
- * (an identifier, a template with substitutions, or any other non-literal). It is deliberately not
- * a valid relative path, `node:` specifier, or workspace package name, so `resolveSpecifier`
- * treats it as external and `boundaryViolations` reports it with its own fail-closed reason rather
- * than silently recording "no dependency".
+ * Emitted where a module is named but its target cannot be recovered statically - a dynamic import
+ * of an identifier, an import type over a non-literal, a template with substitutions. Deliberately
+ * not a valid relative path, `node:` specifier or workspace package name, so it resolves as external
+ * and `boundaryViolations` reports it with its own fail-closed reason.
  */
-export const NON_LITERAL_DYNAMIC_IMPORT = "__non_literal_dynamic_import__";
+export const UNRESOLVABLE_MODULE_TARGET = "__unresolvable_module_target__";
 
-/**
- * Every import/export specifier in a source, grouped by form, with duplicates retained. A
- * non-literal dynamic import contributes one NON_LITERAL_DYNAMIC_IMPORT entry per call site.
- *
- * Covered forms: static `import ... from`, side-effect `import`, `export ... from` (including
- * `export * as ns from` and type-only variants), `import x = require("...")`, and dynamic
- * `import("...")` (including a no-substitution template literal). `import.meta` is not an import
- * and contributes nothing. Bare `require("...")` calls are intentionally out of scope: in this
- * ESM workspace `require` is not a global, so flagging every identifier named `require` would trade
- * this scanner's prose soundness for false positives; see the K1.0 contract limits.
- */
-export function importSpecifiersIn(source: string): string[] {
+/** Which syntax carried the dependency. Informational, and used to assert extractor provenance. */
+export type DependencyForm =
+  | "import-declaration"
+  | "export-declaration"
+  | "import-equals"
+  | "dynamic-import"
+  | "import-type"
+  | "module-declaration"
+  | "reference-path"
+  | "reference-types"
+  | "preprocessor-only";
+
+/** How the target should be resolved. */
+export type DependencyTarget = "specifier" | "path";
+
+/** One module dependency carried by one source. */
+export interface ModuleDependency {
+  /** The module named, or `UNRESOLVABLE_MODULE_TARGET`. */
+  readonly specifier: string;
+  readonly form: DependencyForm;
+  readonly target: DependencyTarget;
+}
+
+/** The string target of a node position that must name a module, or the fail-closed sentinel. */
+function literalTarget(node: ts.Node | undefined): string {
+  if (node === undefined) return UNRESOLVABLE_MODULE_TARGET;
+  if (ts.isStringLiteralLike(node)) return node.text;
+  if (ts.isLiteralTypeNode(node) && ts.isStringLiteralLike(node.literal)) return node.literal.text;
+  return UNRESOLVABLE_MODULE_TARGET;
+}
+
+/** Dependencies found by walking the parsed tree against the table above. */
+export function astDependencies(source: string): ModuleDependency[] {
   const sourceFile = ts.createSourceFile("guard-scan.ts", source, ts.ScriptTarget.ESNext, true, ts.ScriptKind.TS);
-  const specifiers: string[] = [];
+  const found: ModuleDependency[] = [];
+  const add = (specifier: string, form: DependencyForm, target: DependencyTarget = "specifier"): void => {
+    found.push({ specifier, form, target });
+  };
+
+  for (const reference of sourceFile.referencedFiles) add(reference.fileName, "reference-path", "path");
+  for (const reference of sourceFile.typeReferenceDirectives) add(reference.fileName, "reference-types");
+
   const visit = (node: ts.Node): void => {
     if (ts.isImportDeclaration(node)) {
-      const specifier = node.moduleSpecifier;
-      if (specifier !== undefined && ts.isStringLiteralLike(specifier)) specifiers.push(specifier.text);
+      add(literalTarget(node.moduleSpecifier), "import-declaration");
     } else if (ts.isExportDeclaration(node)) {
-      if (node.moduleSpecifier !== undefined && ts.isStringLiteralLike(node.moduleSpecifier)) {
-        specifiers.push(node.moduleSpecifier.text);
-      }
+      // A re-export without a module specifier (`export { a };`) names no module.
+      if (node.moduleSpecifier !== undefined) add(literalTarget(node.moduleSpecifier), "export-declaration");
     } else if (ts.isImportEqualsDeclaration(node)) {
       const reference = node.moduleReference;
-      if (
-        ts.isExternalModuleReference(reference) &&
-        reference.expression !== undefined &&
-        ts.isStringLiteralLike(reference.expression)
-      ) {
-        specifiers.push(reference.expression.text);
-      }
+      if (ts.isExternalModuleReference(reference)) add(literalTarget(reference.expression), "import-equals");
     } else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
-      const argument = node.arguments[0];
-      if (argument !== undefined && ts.isStringLiteralLike(argument)) specifiers.push(argument.text);
-      else specifiers.push(NON_LITERAL_DYNAMIC_IMPORT);
+      add(literalTarget(node.arguments[0]), "dynamic-import");
+    } else if (ts.isImportTypeNode(node)) {
+      add(literalTarget(node.argument), "import-type");
+    } else if (ts.isModuleDeclaration(node) && ts.isStringLiteral(node.name)) {
+      add(node.name.text, "module-declaration");
     }
     ts.forEachChild(node, visit);
   };
   visit(sourceFile);
-  return specifiers;
+  return found;
+}
+
+/** Dependencies found by the TypeScript compiler's own file pre-processor. */
+export function preprocessorDependencies(source: string): ModuleDependency[] {
+  const processed = ts.preProcessFile(source, true, true);
+  return [
+    ...processed.referencedFiles.map((file) => ({ specifier: file.fileName, target: "path" as const })),
+    ...processed.importedFiles.map((file) => ({ specifier: file.fileName, target: "specifier" as const })),
+    ...processed.typeReferenceDirectives.map((file) => ({ specifier: file.fileName, target: "specifier" as const })),
+    ...(processed.ambientExternalModules ?? []).map((name) => ({ specifier: name, target: "specifier" as const })),
+  ].map((entry) => ({ ...entry, form: "preprocessor-only" as const }));
+}
+
+/**
+ * Every module dependency one source carries: the union of both extractors, deduplicated by target
+ * and specifier. A dependency only the pre-processor saw keeps the `preprocessor-only` form, which
+ * is what `import-scanner.test.ts` asserts never happens in this repository.
+ */
+export function moduleDependenciesIn(source: string): ModuleDependency[] {
+  const dependencies = astDependencies(source);
+  const seen = new Set(dependencies.map((entry) => `${entry.target}\u0000${entry.specifier}`));
+  for (const entry of preprocessorDependencies(source)) {
+    const key = `${entry.target}\u0000${entry.specifier}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    dependencies.push(entry);
+  }
+  return dependencies;
+}
+
+/**
+ * Specifier strings only, for the guards that scan text rather than walk a graph. Duplicates are
+ * retained; a path-shaped reference directive appears as written.
+ */
+export function importSpecifiersIn(source: string): string[] {
+  return moduleDependenciesIn(source).map((dependency) => dependency.specifier);
 }
 
 /** One workspace package's name and its declared export subpaths, resolved to repo-relative files. */
@@ -137,6 +229,21 @@ export type Resolution =
   | { readonly kind: "external"; readonly specifier: string }
   | { readonly kind: "unresolved"; readonly specifier: string };
 
+/**
+ * Resolves one dependency against the workspace.
+ *
+ * A `path` target - a `/// <reference path="..." />` - is always relative to the file that wrote it,
+ * with or without a leading `./`, because that is what TypeScript does with it. Resolving it as a
+ * bare specifier instead would make a reference into the zone look like an unknown external package.
+ */
+export function resolveDependency(workspace: Workspace, fromFile: string, dependency: ModuleDependency): Resolution {
+  if (dependency.target === "path") {
+    const absolute = resolve(dirname(resolve(workspace.repoRoot, fromFile)), dependency.specifier);
+    return { kind: "internal", file: relative(workspace.repoRoot, absolute) };
+  }
+  return resolveSpecifier(workspace, fromFile, dependency.specifier);
+}
+
 /** Resolves one specifier seen in `fromFile` (repo-relative) against the workspace. */
 export function resolveSpecifier(workspace: Workspace, fromFile: string, specifier: string): Resolution {
   if (specifier.startsWith("node:")) return { kind: "external", specifier };
@@ -157,10 +264,12 @@ export function resolveSpecifier(workspace: Workspace, fromFile: string, specifi
   return { kind: "external", specifier };
 }
 
-/** One resolved import edge. */
+/** One resolved dependency edge. */
 export interface Edge {
   readonly from: string;
   readonly specifier: string;
+  /** The syntax that carried it, so a violation can say how the dependency was written. */
+  readonly form: DependencyForm;
   readonly resolution: Resolution;
 }
 
@@ -208,14 +317,14 @@ export async function walkModuleGraph(
       continue;
     }
 
-    for (const specifier of importSpecifiersIn(source)) {
-      const resolution = resolveSpecifier(workspace, file, specifier);
-      edges.push({ from: file, specifier, resolution });
+    for (const dependency of moduleDependenciesIn(source)) {
+      const resolution = resolveDependency(workspace, file, dependency);
+      edges.push({ from: file, specifier: dependency.specifier, form: dependency.form, resolution });
       if (resolution.kind === "internal") {
         if (shouldTraverse(resolution.file)) queue.push(resolution.file);
         continue;
       }
-      external.set(specifier, [...(external.get(specifier) ?? []), file]);
+      external.set(dependency.specifier, [...(external.get(dependency.specifier) ?? []), file]);
     }
   }
 
