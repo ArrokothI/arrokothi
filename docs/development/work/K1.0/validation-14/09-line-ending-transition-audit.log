@@ -1,0 +1,78 @@
+# 09 — GFM line-ending transition audit (round 14, K10-R13-01)
+# C source: committed tests/conformance/architecture/inventory-oracle.ts at payload C 933e357a2d1fab9660f8af4a89b3031594dd3caa (git blob 43b23d18b790dd5595acb2924be665a0e10905d8)
+# Audit program (quoted in full; enters no tracked path):
+--- begin /tmp/k10r14/demo09.ts ---
+/**
+ * Validation-14/09: line-ending transition audit for K10-R13-01.
+ *
+ * Each window prints one row per physical line: container depth before/after, fence/HTML
+ * state with the owning depth (`@n`), structural classification, heading/table eligibility
+ * on that line, and a `lines == transitions` check, which holds everywhere. C is the
+ * committed production parser imported from its real path.
+ */
+import { scanTransitions } from "/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/inventory-oracle.ts";
+import { readFile } from "node:fs/promises";
+
+const show = (title: string, doc: string): void => {
+  const lines = doc.split(/\r\n|\r|\n/);
+  const tr = scanTransitions(doc);
+  console.log(`--- ${title} (${lines.length} physical lines, ${tr.length} transitions, equal=${lines.length === tr.length})`);
+  for (const t of tr) {
+    console.log(
+      `L${t.index} d${t.depthBefore}->d${t.depthAfter}${t.containers === null ? "" : `(${t.containers})`} ` +
+      `fb=${t.fenceBefore} hb=${t.htmlBefore} => ${t.classification} ` +
+      `fa=${t.fenceAfter} ha=${t.htmlAfter}` +
+      `${t.containerClosedLeaf ? " CLOSED-BY-CONTAINER" : ""} head=${t.headingAllowed ? "Y" : "-"} tab=${t.tableAllowed ? "Y" : "-"} | ${JSON.stringify(t.text.slice(0, 52))}`,
+    );
+  }
+};
+
+show("A lone-CR primitives delimit", "a\rb");
+show("B CRLF primitives delimit", "a\r\nb");
+show("C LF primitives delimit", "a\nb");
+show("D trailing endings each yield one final empty line", "a\r");
+show("E no trailing ending yields none", "a");
+show("F lone-CR raw-block lifetime matches LF", "<div>\r## What this packet does not establish\r\r| Id | X |\r|---|---|---|\r| DX-1 | y |\r");
+show("G mixed endings keep one transition per physical line", "- note\r\n\r  ```\r  code\r\n## Current cross-boundary dependencies\n");
+
+const real = await readFile("/Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.0/ownership-inventory.md", "utf8");
+const tr = scanTransitions(real);
+const crOnly = real.replace(/\r?\n/g, "\r");
+const trCr = scanTransitions(crOnly);
+console.log(`--- H clean-document spot check (LF ${tr.length} transitions for ${real.split("\n").length} LF lines; CR-only ${trCr.length} transitions; equal=${tr.length === trCr.length})`);
+console.log(`texts identical: ${JSON.stringify(tr.map((t) => t.text)) === JSON.stringify(trCr.map((t) => t.text))}`);
+console.log(`containerClosedLeaf ever true: ${tr.some((t) => t.containerClosedLeaf) || trCr.some((t) => t.containerClosedLeaf)}`);
+--- end /tmp/k10r14/demo09.ts ---
+$ node --experimental-strip-types /tmp/k10r14/demo09.ts (exit 0)
+--- A lone-CR primitives delimit (2 physical lines, 2 transitions, equal=true)
+L0 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "a"
+L1 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "b"
+--- B CRLF primitives delimit (2 physical lines, 2 transitions, equal=true)
+L0 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "a"
+L1 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "b"
+--- C LF primitives delimit (2 physical lines, 2 transitions, equal=true)
+L0 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "a"
+L1 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "b"
+--- D trailing endings each yield one final empty line (2 physical lines, 2 transitions, equal=true)
+L0 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "a"
+L1 d0->d0 fb=null hb=null => blank fa=null ha=null head=- tab=- | ""
+--- E no trailing ending yields none (1 physical lines, 1 transitions, equal=true)
+L0 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "a"
+--- F lone-CR raw-block lifetime matches LF (7 physical lines, 7 transitions, equal=true)
+L0 d0->d0 fb=null hb=null => html-open fa=null ha=html6@0 head=- tab=- | "<div>"
+L1 d0->d0 fb=null hb=html6@0 => html-raw fa=null ha=html6@0 head=- tab=- | "## What this packet does not establish"
+L2 d0->d0 fb=null hb=html6@0 => html-end-blank fa=null ha=null head=- tab=- | ""
+L3 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "| Id | X |"
+L4 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "|---|---|---|"
+L5 d0->d0 fb=null hb=null => ordinary fa=null ha=null head=- tab=Y | "| DX-1 | y |"
+L6 d0->d0 fb=null hb=null => blank fa=null ha=null head=- tab=- | ""
+--- G mixed endings keep one transition per physical line (6 physical lines, 6 transitions, equal=true)
+L0 d0->d1(c2) fb=null hb=null => list-marker fa=null ha=null head=- tab=- | "- note"
+L1 d1->d1(c2) fb=null hb=null => blank fa=null ha=null head=- tab=- | ""
+L2 d1->d1(c2) fb=null hb=null => fence-marker-open fa=open(`x3)@1 ha=null head=- tab=- | "  ```"
+L3 d1->d1(c2) fb=open(`x3)@1 hb=null => fence-raw fa=open(`x3)@1 ha=null head=- tab=- | "  code"
+L4 d1->d0 fb=open(`x3)@1 hb=null => ordinary fa=null ha=null CLOSED-BY-CONTAINER head=Y tab=Y | "## Current cross-boundary dependencies"
+L5 d0->d0 fb=null hb=null => blank fa=null ha=null head=- tab=- | ""
+--- H clean-document spot check (LF 117 transitions for 117 LF lines; CR-only 117 transitions; equal=true)
+texts identical: true
+containerClosedLeaf ever true: false
