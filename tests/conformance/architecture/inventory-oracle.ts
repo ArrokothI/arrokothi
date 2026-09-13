@@ -84,7 +84,7 @@ function containsUnescapedPipe(line: string): boolean {
 }
 
 /**
- * Splits one trimmed GFM table row into cells.
+ * Splits one row-content line (see `gfmRowContent`) into GFM table cells.
  *
  * GFM Table extension (https://github.github.com/gfm/#tables-extension-): leading and trailing
  * pipes are recommended but not required and may be inconsistent (Example 199), spaces around
@@ -93,13 +93,18 @@ function containsUnescapedPipe(line: string): boolean {
  * cells than the header (empty cells are inserted) or more (the excess is ignored, Example 204);
  * that padding/truncation is left to each table's `valueOf`, which already fails closed on a
  * missing cell while `readKeyedTable` has already accounted for the key.
+ *
+ * "Spaces around cells are trimmed" is the §2.1 whitespace class, not a host `trim()`
+ * (K1.0-SELF-24): a cell whose content is `DX-1<NBSP>` asserts that token and not `DX-1`, and
+ * must reach the keyed reader as itself so the relation can disagree with the policy. The
+ * argument is already `gfmRowContent`-normalised row content, never a raw physical line.
  */
-function splitGfmRow(trimmed: string): string[] {
+function splitGfmRow(rowContent: string): string[] {
   const parts: string[] = [];
   let current = "";
-  for (let i = 0; i < trimmed.length; i++) {
-    const ch = trimmed[i]!;
-    if (ch === "|" && !isEscapedPipe(trimmed, i)) {
+  for (let i = 0; i < rowContent.length; i++) {
+    const ch = rowContent[i]!;
+    if (ch === "|" && !isEscapedPipe(rowContent, i)) {
       parts.push(current);
       current = "";
     } else {
@@ -110,12 +115,12 @@ function splitGfmRow(trimmed: string): string[] {
   let start = 0;
   let end = parts.length;
   // A leading `|` at position 0 cannot be escaped, so it is always the outer delimiter.
-  if (trimmed.startsWith("|")) start = 1;
+  if (rowContent.startsWith("|")) start = 1;
   // A trailing `|` is the outer delimiter only when it is not itself escaped.
-  if (trimmed.endsWith("|") && !isEscapedPipe(trimmed, trimmed.length - 1)) end = parts.length - 1;
+  if (rowContent.endsWith("|") && !isEscapedPipe(rowContent, rowContent.length - 1)) end = parts.length - 1;
   return parts
     .slice(start, end)
-    .map((cell) => cell.replace(/\\\|/g, "|").trim());
+    .map((cell) => gfmTrim(cell.replace(/\\\|/g, "|")));
 }
 
 /** Whether already-split cells form a GFM delimiter row (dashes with optional alignment colons). */
@@ -141,6 +146,13 @@ interface DiscoveredTable {
  * on the line, text inside fenced code, an escaped `\#`, `##foo` with no required whitespace, seven
  * or more `#`, or four-space indented code. Blockquote content (`> ## …`) is likewise not a
  * top-level section heading for this document.
+ *
+ * The required separator after the opening sequence is exactly SPACE or TAB — the §2.2
+ * block-structure class, never `\s` and never an arbitrary Unicode space (K10-R14-01). CR is
+ * not in it because CR cannot occur inside a physical line at all: `splitPhysicalLines`
+ * (§2.1, K10-R13-01) is the only producer of the lines this sees, and it consumes every CR as
+ * a line ending. Heading *content* is normalised by `stripAtxContent`, which states the three
+ * grammar steps and their separate classes; this function never normalises text itself.
  */
 function parseAtxHeading(line: string): { readonly level: number; readonly text: string } | undefined {
   const indent = line.match(/^ */)?.[0].length ?? 0;
@@ -150,9 +162,8 @@ function parseAtxHeading(line: string): { readonly level: number; readonly text:
   const hashes = rest.match(/^#{1,6}/)?.[0];
   if (hashes === undefined) return undefined;
   const after = rest.slice(hashes.length);
-  if (after !== "" && !/^[ \t\r]/.test(after)) return undefined;
-  const content = after.trim().replace(/[ \t]+#+[ \t]*$/, "").trim();
-  return { level: hashes.length, text: content };
+  if (after !== "" && !/^[ \t]/.test(after)) return undefined;
+  return { level: hashes.length, text: stripAtxContent(after) };
 }
 
 /**
@@ -269,11 +280,48 @@ const HTML_BLOCK_TAGS =
  *
  * Scope: the helpers below serve raw-HTML start recognition (§4.6 types 1/6),
  * the complete-tag grammar (§6.10: attribute separators, whitespace around
- * `=`, pre-close and trailing whitespace, unquoted-value terminators), and
+ * `=`, pre-close and trailing whitespace, unquoted-value terminators),
  * blank-line termination of type-6/7 blocks, which is the same blank-line
- * decision the table/section scan consumes. List markers, indentation, thematic
- * breaks, ATX heading text and table-cell normalization keep their own
- * grammar rules and are deliberately untouched.
+ * decision the table/section scan consumes, ATX heading content
+ * (K10-R14-01) and table row/cell normalization (K1.0-SELF-24). List
+ * markers, indentation and thematic breaks keep their own explicit
+ * `[ \t]`-class grammar rules and are deliberately untouched.
+ *
+ * **Structural-whitespace extension (K10-R14-01, K1.0-SELF-24).** Round 13
+ * reconstructed the lexical classes it had named — raw HTML, tags, blank lines —
+ * and left "ATX heading text and table-cell normalization keep their own
+ * grammar rules" as an unexamined exemption. Those two paths did not in fact
+ * have their own grammar rules: they used `String.prototype.trim()`, which
+ * removes every ECMAScript `WhiteSpace`/`LineTerminator` character, NBSP
+ * U+00A0, U+FEFF, U+2000–U+200A, U+2028/U+2029, U+3000, U+1680, U+202F and
+ * U+205F included. Those are Unicode whitespace, not GFM whitespace: GFM keeps
+ * them as ordinary heading and cell **content**. Erasing them let a heading
+ * whose real content is not the configured title collapse onto it and falsely
+ * terminate a governed section, and let a cell whose real token is not the
+ * policy's token compare equal to it.
+ *
+ * The two positions that govern ATX content are **not** the same class, and
+ * this is derived from the grammar rather than chosen for convenience:
+ *
+ * - **leading** — §4.2's opening sequence is followed by, and the heading's
+ *   raw content begins after, the block-structure whitespace of §2.2: exactly
+ *   U+0020 SPACE and U+0009 TAB. A leading VT or FF is content, not padding.
+ * - **trailing** — the raw content is right-stripped by the §2.1 whitespace
+ *   class, which is also the class the optional closing `#` sequence must be
+ *   preceded by.
+ *
+ * Table rows follow the tables extension: leading block-structure whitespace
+ * (SPACE/TAB, bounded below four columns by indented code), a trailing run of
+ * §2.1 whitespace, and each cell trimmed by that same §2.1 class.
+ *
+ * Invariant, restated so it admits no exemption: **every** C4 Markdown lexical
+ * predicate — heading identity and table/cell normalization included — uses the
+ * character class defined by the governing GFM production. GFM whitespace,
+ * block-structure whitespace, Unicode whitespace and blank-line whitespace are
+ * four separate concepts, and none of them is `\s`, `trim()` or any other
+ * host-language notion of "whitespace". A host normalizer is never the rule for
+ * a structural identity, because host classes are defined by Unicode and the
+ * governed identities are defined by the pinned grammar.
  */
 
 /** Inner source of the GFM-whitespace regex atom: exactly the §2.1 six. */
@@ -286,9 +334,81 @@ const GFM_WS_TAIL = new RegExp(`^${GFM_WS_ATOM}*$`);
 /** An unquoted attribute value: anything but GFM whitespace or `"`, `'`, `=`, `<`, `>`, backtick. */
 const GFM_UNQUOTED_VALUE = new RegExp(`^[^${GFM_WS_INNER}"'=\`<>]+`);
 
+/** A trailing run of GFM §2.1 whitespace, for the right-strips the grammar defines. */
+const GFM_WS_RUN_AT_END = new RegExp(`${GFM_WS_ATOM}+$`);
+/** A leading run of GFM §2.1 whitespace. */
+const GFM_WS_RUN_AT_START = new RegExp(`^${GFM_WS_ATOM}+`);
+/**
+ * A leading run of **block-structure** whitespace (§2.2): exactly SPACE and TAB.
+ * This is the narrower class that fixes where a block's content starts — the offset
+ * past an ATX opening sequence, and a table row's indentation — and it is deliberately
+ * not the §2.1 six: a leading VT or FF is content that the grammar does not skip.
+ */
+const BLOCK_INDENT_RUN_AT_START = /^[ \t]+/;
+
 /** Whether `ch` is a GFM §2.1 whitespace character (never Unicode-only whitespace such as NBSP). */
 function isGfmWhitespace(ch: string | undefined): boolean {
   return ch !== undefined && GFM_WS_ONE.test(ch);
+}
+
+/** Strips a trailing run of GFM §2.1 whitespace. Never a host `trimEnd()`: NBSP stays content. */
+function gfmRightTrim(text: string): string {
+  return text.replace(GFM_WS_RUN_AT_END, "");
+}
+
+/** Strips leading and trailing runs of GFM §2.1 whitespace. Never a host `trim()`. */
+function gfmTrim(text: string): string {
+  return gfmRightTrim(text).replace(GFM_WS_RUN_AT_START, "");
+}
+
+/**
+ * The raw content of an ATX heading, given everything after its opening `#` sequence
+ * (GFM 0.29 §4.2, K10-R14-01). Used by `parseAtxHeading` above, and defined here so
+ * heading identity lives with the lexical classes that govern it rather than next to a
+ * host normalizer.
+ *
+ * Three grammar steps, in order, each with its own class:
+ *
+ * 1. **Content start.** The opening sequence is followed by block-structure whitespace,
+ *    and the content begins at the first character that is not SPACE or TAB. A leading
+ *    VT, FF or NBSP is therefore content: `## <VT>Title` is a heading whose text is not
+ *    `Title`, and cannot be the exact configured title of a governed section.
+ * 2. **Trailing strip.** The raw content is right-stripped by the §2.1 whitespace class.
+ * 3. **Optional closing sequence.** A trailing run of `#` is dropped only when it is
+ *    preceded by §2.1 whitespace or by the start of the content (the separator is then
+ *    what precedes it, so `## ###` is the empty heading), after which step 2 runs again.
+ *    A run preceded by any other character — an ordinary letter as in `# foo#`, or the
+ *    backslash of an escaped `\###` — is content and stays.
+ *
+ * What this deliberately does **not** do is call `String.prototype.trim()`. That removes
+ * every ECMAScript whitespace character, so a heading whose real content begins or ends
+ * with NBSP (or U+FEFF, U+3000, U+2009 …) collapsed onto the configured title and falsely
+ * terminated the governed section, hiding every later row from C4's total accounting.
+ * Unicode whitespace is content under this grammar, at every position.
+ */
+function stripAtxContent(afterOpeningSequence: string): string {
+  const content = gfmRightTrim(afterOpeningSequence.replace(BLOCK_INDENT_RUN_AT_START, ""));
+  let n = content.length;
+  while (n > 0 && content[n - 1] === "#") n--;
+  if (n !== content.length && (n === 0 || isGfmWhitespace(content[n - 1]))) {
+    return gfmRightTrim(content.slice(0, n));
+  }
+  return content;
+}
+
+/**
+ * One physical line reduced to the row content the GFM tables extension sees
+ * (K1.0-SELF-24). Leading block-structure whitespace is the line's indentation — already
+ * bounded below four columns, since four or more is indented code and never reaches row
+ * discovery — and the trailing strip is the §2.1 whitespace class.
+ *
+ * The previous `line.trim()` also erased Unicode whitespace, so `<NBSP>| a | b |` lost its
+ * first cell and became a two-cell row that could match a delimiter GFM would not match.
+ * Under the grammar that leading NBSP is a cell of its own, the cell counts disagree, and
+ * the lines are paragraph text — which is what the document actually renders as.
+ */
+function gfmRowContent(line: string): string {
+  return gfmRightTrim(line.replace(BLOCK_INDENT_RUN_AT_START, ""));
 }
 
 /**
@@ -674,14 +794,15 @@ const htmlName = (html: HtmlState | null): string | null =>
  * scan; `scanBlocks` projects it to the annotations section/table discovery consume.
  */
 /**
- * Whether `line` (already split, trimmed) is shaped like a GFM delimiter row. Used only as a
- * paragraph heuristic: a pipeless prose line right after a delimiter-shaped line is plausibly a
- * table body row rather than paragraph text, so a following type-7 tag or restricted list
- * marker is still allowed to start its block (fail-loud) instead of being swallowed as prose.
+ * Whether one already-split line, reduced to row content by `gfmRowContent`, is shaped like a
+ * GFM delimiter row. Used only as a paragraph heuristic: a pipeless prose line right after a
+ * delimiter-shaped line is plausibly a table body row rather than paragraph text, so a following
+ * type-7 tag or restricted list marker is still allowed to start its block (fail-loud) instead of
+ * being swallowed as prose.
  */
-function isDelimiterShaped(trimmed: string): boolean {
-  if (trimmed === "") return false;
-  return isDelimiterCells(splitGfmRow(trimmed));
+function isDelimiterShaped(rowContent: string): boolean {
+  if (rowContent === "") return false;
+  return isDelimiterCells(splitGfmRow(rowContent));
 }
 
 /**
@@ -701,7 +822,7 @@ function paragraphContinues(out: readonly LineTransition[]): boolean {
   if (isThematicBreak(prev.text)) return false;
   if (containsUnescapedPipe(prev.text)) return false;
   const prevprev = out[out.length - 2];
-  if (prevprev !== undefined && isDelimiterShaped(prevprev.text.trim())) return false;
+  if (prevprev !== undefined && isDelimiterShaped(gfmRowContent(prevprev.text))) return false;
   return true;
 }
 
@@ -926,7 +1047,7 @@ export function scanBlocks(markdown: string): ScannedLine[] {
 }
 
 /**
- * The lines of one governed section, selected by Markdown structure rather than substrings.
+ * The bounds of one governed section, selected by Markdown structure rather than substrings.
  *
  * Rebuilt for K10-R7-01 and preserved for K10-R8-01/K10-R8-02. The previous version located
  * the section with `markdown.indexOf(heading)` and `rest.indexOf(nextHeading)`, so any occurrence
@@ -947,15 +1068,16 @@ export function scanBlocks(markdown: string): ScannedLine[] {
  * Headings with any other text between start and end - including a repeated current heading
  * (K1.0-SELF-12) - do not end the section. They stay inside it, where the ATX line breaks the
  * table body (GFM Example 201) and any table after them is discovered as a further table and
- * reported. A missing current heading yields no lines (the governed table is then reported
- * missing); a missing next heading runs the section to end of document, so following tables
- * become further tables rather than vanishing.
+ * reported. A missing current heading yields no range at all (the governed table is then
+ * reported missing); a missing next heading runs the section to end of document, so following
+ * tables become further tables rather than vanishing.
  */
 /**
  * A governed section boundary is an exact expected level-2 ATX heading at the document's
  * top-level block/container depth (K10-R9-01): “parses as an ATX heading” is insufficient, so
  * container-local headings (list items, quotes, code, raw HTML) can break a table body but
- * never delimit a section. Section consumers share one precomputed scan per call below.
+ * never delimit a section. Its one consumer, `sectionTables`, passes the single `scanBlocks`
+ * result it already computed, so no section decision rescans the document.
  */
 function rangeFromScanned(scanned: readonly ScannedLine[], currentTitle: string, nextTitle: string): { readonly start: number; readonly end: number } | null {
   let start: number | null = null;
@@ -976,27 +1098,19 @@ function rangeFromScanned(scanned: readonly ScannedLine[], currentTitle: string,
   return { start, end };
 }
 
-function sectionRange(markdown: string, currentTitle: string, nextTitle: string): { readonly start: number; readonly end: number } | null {
-  return rangeFromScanned(scanBlocks(markdown), currentTitle, nextTitle);
-}
-
-function sectionLines(markdown: string, currentTitle: string, nextTitle: string): string[] {
-  const scanned = scanBlocks(markdown);
-  const range = rangeFromScanned(scanned, currentTitle, nextTitle);
-  if (range === null) return [];
-  return scanned.slice(range.start + 1, range.end).map((entry) => entry.text);
-}
-
-/**
- * The text of one section, from its structural heading to the next one.
+/*
+ * The `sectionRange` / `sectionLines` / `sectionText` wrappers are deliberately gone
+ * (K1.0-SELF-27). All three were already uncalled at the reviewed candidate: `sectionTables`
+ * below is the one consumer of a section boundary and it calls `rangeFromScanned` against its
+ * own `scanBlocks` result directly. Their removal changes no behaviour, and it removes three
+ * doc comments that described the live invariant from functions no path reached.
  *
- * Kept as a thin join over `sectionLines` because `sectionTables` consumes lines; the boundary
- * itself is structural (see above). `indexOf`/`split` on heading bytes must not return here:
- * slicing on substrings reintroduces K10-R7-01 no matter what the table scanner does.
+ * `sectionText` in particular was `sectionLines(...).join("\n")` — a helper that turns
+ * already-tokenized physical lines back into one blob, which is exactly the shape that invites
+ * a second split or an `indexOf` on heading bytes. K10-R7-01 and K10-R13-01 each had to undo
+ * that mistake. `splitPhysicalLines` now has one producer, one consumer and no path back to a
+ * string.
  */
-function sectionText(markdown: string, currentTitle: string, nextTitle: string): string {
-  return sectionLines(markdown, currentTitle, nextTitle).join("\n");
-}
 
 /**
  * Every GFM table inside a section, each as a structurally identified header plus its body rows.
@@ -1066,12 +1180,12 @@ function sectionTables(markdown: string, currentTitle: string, nextTitle: string
       // Every subsequent ordinary non-blank line until the table breaks is a body candidate,
       // including a line with no `|` at all (GFM Example 202, padded with empties downstream).
       // A later delimiter-shaped line is an ordinary body row reaching the reader as unreadable.
-      open.body.push(splitGfmRow(line.trim()));
+      open.body.push(splitGfmRow(gfmRowContent(line)));
       i++;
       continue;
     }
-    const trimmed = line.trim();
-    if (!containsUnescapedPipe(trimmed)) {
+    const rowContent = gfmRowContent(line);
+    if (!containsUnescapedPipe(rowContent)) {
       i++;
       continue;
     }
@@ -1084,8 +1198,8 @@ function sectionTables(markdown: string, currentTitle: string, nextTitle: string
       i++;
       continue;
     }
-    const headerCells = splitGfmRow(trimmed);
-    const delimiterCells = splitGfmRow(next.text.trim());
+    const headerCells = splitGfmRow(rowContent);
+    const delimiterCells = splitGfmRow(gfmRowContent(next.text));
     if (delimiterCells.length !== headerCells.length || !isDelimiterCells(delimiterCells)) {
       i++;
       continue;
