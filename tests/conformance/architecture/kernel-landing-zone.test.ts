@@ -832,6 +832,200 @@ describe("K1.0 policy and inventory agree", () => {
     }
   });
 
+  test("contradictory zone rows with omitted edge pipes fail closed in either position (K10-R5-01)", async () => {
+    // GFM Table extension: leading/trailing pipes are recommended, not required, and may be
+    // inconsistent (Example 199). The previous `tableRows` required both edge pipes, so a valid
+    // contradictory row without one edge never reached the shared keyed reader. Full-row anchors
+    // are used so the inserted row stands alone instead of merging with the remainder of a split
+    // prefix row.
+    const real = await realInventory();
+    const workspace = await loadWorkspace(REPO_ROOT);
+    const correct =
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+    const badByEdge: Record<string, string> = {
+      "omitted trailing pipe":
+        "| `target-kernel` | `packages/core/src` | stale contradictory duplicate",
+      "omitted leading pipe":
+        "`target-kernel` | `packages/core/src` | stale contradictory duplicate |",
+      "omitted both edge pipes": "`target-kernel` | `packages/core/src` | stale contradictory duplicate",
+    };
+    for (const [edge, bad] of Object.entries(badByEdge)) {
+      for (const position of ["before", "after"] as const) {
+        const mutated =
+          position === "before"
+            ? mutate(real, [[correct, `${bad}\n${correct}`]])
+            : mutate(real, [[correct, `${correct}\n${bad}`]]);
+        const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+        assert.ok(
+          disagreements.some((message) => /duplicate Zones row for zone target-kernel/.test(message)),
+          `a contradictory zone row with ${edge} ${position} the correct row must be reported; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    }
+  });
+
+  test("contradictory deferred rows with omitted edge pipes fail closed in either position (K10-R5-01)", async () => {
+    // Same front door as Zones: the shared parser serves all four keyed tables, so the omitted-edge
+    // bypass is asserted here rather than only for the review's literal Zones example.
+    const real = await realInventory();
+    const workspace = await loadWorkspace(REPO_ROOT);
+    const correct =
+      "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |";
+    const badByEdge: Record<string, string> = {
+      "omitted trailing pipe":
+        "| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory duplicate",
+      "omitted leading pipe":
+        "DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory duplicate |",
+      "omitted both edge pipes":
+        "DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory duplicate",
+    };
+    for (const [edge, bad] of Object.entries(badByEdge)) {
+      for (const position of ["before", "after"] as const) {
+        const mutated =
+          position === "before"
+            ? mutate(real, [[correct, `${bad}\n${correct}`]])
+            : mutate(real, [[correct, `${correct}\n${bad}`]]);
+        const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+        assert.ok(
+          disagreements.some((message) => /duplicate Deferred row for DX-1/.test(message)),
+          `a contradictory deferred row with ${edge} ${position} the correct row must be reported; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    }
+  });
+
+  test("contradictory export rows with omitted edge pipes fail closed in either position (K10-R5-01)", async () => {
+    const real = await realInventory();
+    const workspace = await loadWorkspace(REPO_ROOT);
+    const correct = "| `@arrokothi/kernel` | `.` | No (private) |";
+    const badByEdge: Record<string, string> = {
+      "omitted trailing pipe": "| `@arrokothi/kernel` | `.` | Yes",
+      "omitted leading pipe": "`@arrokothi/kernel` | `.` | Yes |",
+      "omitted both edge pipes": "`@arrokothi/kernel` | `.` | Yes",
+    };
+    for (const [edge, bad] of Object.entries(badByEdge)) {
+      for (const position of ["before", "after"] as const) {
+        const mutated =
+          position === "before"
+            ? mutate(real, [[correct, `${bad}\n${correct}`]])
+            : mutate(real, [[correct, `${correct}\n${bad}`]]);
+        const disagreements = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+        assert.ok(
+          disagreements.some((message) => /duplicate Export row for package @arrokothi\/kernel/.test(message)),
+          `a contradictory export row with ${edge} ${position} the correct row must be reported; got: ${JSON.stringify(disagreements)}`,
+        );
+      }
+    }
+  });
+
+  test("contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)", async () => {
+    const real = await realInventory();
+    const correct = "| `target-kernel` | 2 | nothing | nothing |";
+    const badByEdge: Record<string, string> = {
+      "omitted trailing pipe": "| `target-kernel` | 999 | `@arrokothi/core` | nothing",
+      "omitted leading pipe": "`target-kernel` | 999 | `@arrokothi/core` | nothing |",
+      "omitted both edge pipes": "`target-kernel` | 999 | `@arrokothi/core` | nothing",
+    };
+    for (const [edge, bad] of Object.entries(badByEdge)) {
+      for (const position of ["before", "after"] as const) {
+        const mutated =
+          position === "before"
+            ? mutate(real, [[correct, `${bad}\n${correct}`]])
+            : mutate(real, [[correct, `${correct}\n${bad}`]]);
+        const { unreadable } = parseDependencyTable(mutated);
+        assert.ok(
+          unreadable.some((message) => /duplicate Dependency row for zone target-kernel/.test(message)),
+          `a contradictory dependency row with ${edge} ${position} the correct row must be reported; got: ${JSON.stringify(unreadable)}`,
+        );
+      }
+    }
+  });
+
+  test("a pipe-less contradictory row inside the table block fails closed (K1.0-SELF-11)", async () => {
+    // Self-found while re-deriving the row-discovery boundary from GFM rather than patching only
+    // the reviewer's omitted-trailing-pipe spelling. GFM Example 202 shows a body line with no
+    // `|` at all (`bar`) still renders as a single-cell table row padded with empties, as long as
+    // no blank line or other block breaks the table. Such a line inside the Zones block carries a
+    // recognisable key but no roots, so it must end as unreadable/duplicate rather than vanishing
+    // before the shared reader. The previous `tableRows` ignored every line without an edge pipe.
+    const real = await realInventory();
+    const correct =
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+    const pipeless = "`target-kernel`";
+    for (const position of ["before", "after"] as const) {
+      const mutated =
+        position === "before"
+          ? mutate(real, [[correct, `${pipeless}\n${correct}`]])
+          : mutate(real, [[correct, `${correct}\n${pipeless}`]]);
+      const parsed = parseInventory(mutated);
+      assert.ok(
+        parsed.unreadable.length > 0,
+        `a pipe-less row ${position} the correct row must be accounted for, not dropped; got: ${JSON.stringify(parsed.unreadable)}`,
+      );
+      assert.ok(
+        parsed.unreadable.some((message) => /Zones row .*target-kernel/.test(message)),
+        `the disagreement must name the zone key; got: ${JSON.stringify(parsed.unreadable)}`,
+      );
+    }
+  });
+
+  test("GFM delimiter and header variants do not hide the table (K1.0-SELF-11)", async () => {
+    // Adjacent syntax from the same GFM section: the delimiter may use alignment colons
+    // (`:---`, `---:`, `:---:`) and header/delimiter/body may all omit edge pipes (Example 199).
+    // The previous discovery required both edge pipes and only skipped `^-+$` delimiters, so an
+    // alignment delimiter would have been treated as a data row and a fully edge-less table would
+    // have vanished into "not documented". Both directions are asserted through the production
+    // parser: valid variants stay green, and a contradictory edge-less row beside them still fails.
+    const real = await realInventory();
+    const workspace = await loadWorkspace(REPO_ROOT);
+    const headerAndDelim = "| Zone id | Roots | Owner and status |\n|---|---|---|";
+    const aligned = "| Zone id | Roots | Owner and status |\n| :--- | ---: | :---: |";
+    const alignedDoc = mutate(real, [[headerAndDelim, aligned]]);
+    const alignedParsed = parseInventory(alignedDoc);
+    assert.deepEqual(
+      alignedParsed.unreadable,
+      [],
+      `an alignment delimiter is still the delimiter, not a data row; got: ${JSON.stringify(alignedParsed.unreadable)}`,
+    );
+    assert.equal(alignedParsed.zones.size, ZONES.length);
+
+    const edgelessHeaderAndDelim = "Zone id | Roots | Owner and status\n---|---|---";
+    const edgelessDoc = mutate(real, [[headerAndDelim, edgelessHeaderAndDelim]]);
+    const edgelessParsed = parseInventory(edgelessDoc);
+    assert.deepEqual(
+      edgelessParsed.unreadable,
+      [],
+      `a header/delimiter without edge pipes is still the table start; got: ${JSON.stringify(edgelessParsed.unreadable)}`,
+    );
+    assert.equal(edgelessParsed.zones.size, ZONES.length);
+
+    const correct =
+      "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+    const bad = "`target-kernel` | `packages/core/src` | stale contradictory duplicate";
+    const disagreements = inventoryDisagreements(
+      parseInventory(mutate(alignedDoc, [[correct, `${bad}\n${correct}`]])),
+      policy,
+      workspace,
+    );
+    assert.ok(
+      disagreements.some((message) => /duplicate Zones row for zone target-kernel/.test(message)),
+      `an edge-less contradictory row beside an alignment delimiter must still be reported; got: ${JSON.stringify(disagreements)}`,
+    );
+
+    // An escaped pipe stays inside its cell (Example 200) rather than splitting it: the row below
+    // is still one Zones row with a duplicate key, not two cells that lose the key.
+    const escaped = "| `target-kernel` | `packages/core/src` | stale \\| contradictory duplicate |";
+    const escapedDisagreements = inventoryDisagreements(
+      parseInventory(mutate(real, [[correct, `${escaped}\n${correct}`]])),
+      policy,
+      workspace,
+    );
+    assert.ok(
+      escapedDisagreements.some((message) => /duplicate Zones row for zone target-kernel/.test(message)),
+      `a row with an escaped pipe must still be read as a duplicate key; got: ${JSON.stringify(escapedDisagreements)}`,
+    );
+  });
+
   test("the allowed-leaf list is empty, and the inventory says why", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
     assert.deepEqual(TARGET_KERNEL_RULES.allowedLeaves, [], "K1.0 approves no portable leaf");

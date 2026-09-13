@@ -40,16 +40,122 @@ export interface ParsedInventory {
 const backticked = (cell: string): string[] =>
   (cell.match(/`([^`]+)`/g) ?? []).map((token) => token.replace(/`/g, ""));
 
-/** The body rows of the first Markdown table inside a section, as cell arrays. */
+/** Whether the `|` at `pos` is escaped by an odd run of preceding backslashes (GFM Example 200). */
+function isEscapedPipe(line: string, pos: number): boolean {
+  let backslashes = 0;
+  for (let j = pos - 1; j >= 0 && line[j] === "\\"; j--) backslashes++;
+  return backslashes % 2 === 1;
+}
+
+/** Whether the line carries at least one table-cell delimiter under GFM. */
+function containsUnescapedPipe(line: string): boolean {
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === "|" && !isEscapedPipe(line, i)) return true;
+  }
+  return false;
+}
+
+/**
+ * Splits one trimmed GFM table row into cells.
+ *
+ * GFM Table extension (https://github.github.com/gfm/#tables-extension-): leading and trailing
+ * pipes are recommended but not required and may be inconsistent (Example 199), spaces around
+ * cells are trimmed, and a pipe is a delimiter only when it is not escaped (Example 200:
+ * `\|`, including inside other inline spans, stays inside the cell). Body rows may carry fewer
+ * cells than the header (empty cells are inserted) or more (the excess is ignored, Example 204);
+ * that padding/truncation is left to each table's `valueOf`, which already fails closed on a
+ * missing cell while `readKeyedTable` has already accounted for the key.
+ */
+function splitGfmRow(trimmed: string): string[] {
+  const parts: string[] = [];
+  let current = "";
+  for (let i = 0; i < trimmed.length; i++) {
+    const ch = trimmed[i]!;
+    if (ch === "|" && !isEscapedPipe(trimmed, i)) {
+      parts.push(current);
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  parts.push(current);
+  let start = 0;
+  let end = parts.length;
+  // A leading `|` at position 0 cannot be escaped, so it is always the outer delimiter.
+  if (trimmed.startsWith("|")) start = 1;
+  // A trailing `|` is the outer delimiter only when it is not itself escaped.
+  if (trimmed.endsWith("|") && !isEscapedPipe(trimmed, trimmed.length - 1)) end = parts.length - 1;
+  return parts
+    .slice(start, end)
+    .map((cell) => cell.replace(/\\\|/g, "|").trim());
+}
+
+/** Whether already-split cells form a GFM delimiter row (dashes with optional alignment colons). */
+function isDelimiterCells(cells: readonly string[]): boolean {
+  return cells.length > 0 && cells.every((cell) => /^:?-+:?$/.test(cell));
+}
+
+/**
+ * The body rows of every GFM table inside a section, as cell arrays.
+ *
+ * Rebuilt for K10-R5-01. The previous version accepted only lines that both began and ended with
+ * `|`, so a valid GFM data row with an omitted edge pipe never reached the shared keyed reader and
+ * the C4 total-accounting claim held only over the subset `tableRows` chose to return. GFM states
+ * the edge pipes are recommended, not required, and Example 199 deliberately mixes rows with and
+ * without them.
+ *
+ * Discovery now follows the table forms this document uses: a header line carrying an unescaped
+ * `|` immediately followed by a delimiter row with the same cell count (GFM: the header must match
+ * the delimiter in cell count, Example 203, or there is no table), then every subsequent non-blank
+ * line until the table breaks as a body candidate — including a line with no `|` at all, which GFM
+ * still renders as a single-cell row padded with empties (Example 202). The table breaks at the
+ * first blank line or at the start of another block-level structure (fence, ATX heading,
+ * blockquote; Example 201); prose before the header or after the break is not a candidate, so the
+ * surrounding inventory prose is unaffected. Fenced code is skipped so pipes inside code stay out
+ * of the relations. The header's own delimiter is the only delimiter skipped silently; any later
+ * delimiter-shaped line inside the body reaches `readKeyedTable` as unreadable rather than
+ * disappearing. The header row itself is still returned and skipped by each table's
+ * `headerFirstCell` rule inside the unchanged `readKeyedTable`.
+ */
 function tableRows(markdown: string, heading: string, nextHeading: string): string[][] {
   const section = markdown.split(heading)[1]?.split(nextHeading)[0] ?? "";
+  const lines = section.split("\n");
   const rows: string[][] = [];
-  for (const line of section.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) continue;
-    const cells = trimmed.slice(1, -1).split("|").map((cell) => cell.trim());
-    if (cells.every((cell) => /^-+$/.test(cell))) continue;
-    rows.push(cells);
+  let inFence = false;
+  let i = 0;
+  while (i < lines.length) {
+    const trimmed = lines[i]!.trim();
+    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
+      inFence = !inFence;
+      i++;
+      continue;
+    }
+    if (inFence || trimmed === "") {
+      i++;
+      continue;
+    }
+    if (containsUnescapedPipe(trimmed)) {
+      const headerCells = splitGfmRow(trimmed);
+      const nextTrimmed = lines[i + 1]?.trim() ?? "";
+      if (!nextTrimmed.startsWith("```") && !nextTrimmed.startsWith("~~~")) {
+        const delimiterCells = splitGfmRow(nextTrimmed);
+        if (delimiterCells.length === headerCells.length && isDelimiterCells(delimiterCells)) {
+          rows.push(headerCells);
+          i += 2;
+          while (i < lines.length) {
+            const bodyTrimmed = lines[i]!.trim();
+            if (bodyTrimmed === "") break;
+            if (bodyTrimmed.startsWith("```") || bodyTrimmed.startsWith("~~~")) break;
+            if (/^#{1,6}\s/.test(bodyTrimmed)) break;
+            if (bodyTrimmed.startsWith(">")) break;
+            rows.push(splitGfmRow(bodyTrimmed));
+            i++;
+          }
+          continue;
+        }
+      }
+    }
+    i++;
   }
   return rows;
 }
