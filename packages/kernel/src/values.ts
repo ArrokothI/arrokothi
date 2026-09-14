@@ -129,6 +129,22 @@ interface WalkState {
 }
 
 /**
+ * Whether `name` is a canonical array index in the ECMA-262 sense.
+ *
+ * An array index is a string `P` with `ToString(ToUint32(P)) === P` and
+ * `P !== "4294967295"`. In particular `"01"`, `"00"` and strings above
+ * `2**32 - 2` are *not* indices: they are ordinary own members
+ * that canonical array form would silently drop, so they must be refused
+ * rather than ignored. The previous `/^\d+$/` test accepted `"01"` as an
+ * index and let it escape the extra-member rejection (K11-R1-VAL-01).
+ */
+const isArrayIndex = (name: string): boolean => {
+  if (!/^(0|[1-9]\d*)$/.test(name)) return false;
+  const numeric = Number(name);
+  return Number.isSafeInteger(numeric) && numeric <= 4294967294 && String(numeric) === name;
+};
+
+/**
  * One pass that validates structure, strings, numbers and all three structural limits.
  *
  * `level` counts the containers entered on the path to this value, so the root container is level 1
@@ -186,9 +202,16 @@ function walk(value: unknown, path: string, level: number, state: WalkState): vo
   state.open.add(container);
   try {
     if (Array.isArray(container)) {
-      // An array carrying extra own properties (`a = [1]; a.tag = "x"`) would canonicalize as if
-      // they were not there. Reject it rather than drop them.
-      const extra = Object.getOwnPropertyNames(container).filter((name) => name !== "length" && !/^\d+$/.test(name));
+      // Arrays must be genuine arrays: a subclass instance or a re-prototyped array would
+      // canonicalize as a plain array and lose its exotic identity, so refuse it instead.
+      if (Object.getPrototypeOf(container) !== Array.prototype) {
+        state.issues.push({ path, code: "unsupported_form", message: `expected a plain array, received ${describe(container)}` });
+        return;
+      }
+      // An array carrying extra own properties (`a = [1]; a.tag = "x"`, or `a["01"] = 1`)
+      // would canonicalize as if they were not there. Reject it rather than drop them.
+      // Only canonical indices count; numeric-looking non-indices such as `"01"` are extra.
+      const extra = Object.getOwnPropertyNames(container).filter((name) => name !== "length" && !isArrayIndex(name));
       if (extra.length > 0 || Object.getOwnPropertySymbols(container).length > 0) {
         state.issues.push({ path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
       }
@@ -200,7 +223,12 @@ function walk(value: unknown, path: string, level: number, state: WalkState): vo
         });
       }
       for (let index = 0; index < container.length; index += 1) {
-        const item = container[index];
+        const descriptor = Object.getOwnPropertyDescriptor(container, String(index));
+        if (descriptor !== undefined && !("value" in descriptor)) {
+          state.issues.push({ path: element(path, index), code: "unrepresentable_member", message: "array element is an accessor, which canonical form cannot represent" });
+          continue;
+        }
+        const item = (container as unknown as readonly unknown[])[index];
         if (item === undefined) {
           state.issues.push({ path: element(path, index), code: "undefined_member", message: "array element is undefined; an array has no absent positions" });
           continue;
@@ -243,7 +271,14 @@ function walk(value: unknown, path: string, level: number, state: WalkState): vo
           message: `member name is ${nameLength} Unicode scalar values, above the limit of ${BOUNDARY_LIMITS.stringScalarValues}`,
         });
       }
-      const member = (container as Record<string, unknown>)[key];
+      // Read through the descriptor, never through a getter: an enumerable accessor is not
+      // plain data and canonical form cannot represent it, so it is refused rather than invoked.
+      const descriptor = Object.getOwnPropertyDescriptor(container, key);
+      if (descriptor !== undefined && !("value" in descriptor)) {
+        state.issues.push({ path: child(path, key), code: "unrepresentable_member", message: "member is an accessor, which canonical form cannot represent" });
+        continue;
+      }
+      const member = descriptor !== undefined && "value" in descriptor ? descriptor.value : (container as Record<string, unknown>)[key];
       if (member === undefined) {
         state.issues.push({
           path: child(path, key),
@@ -358,12 +393,35 @@ export function canonicalize(value: unknown): { readonly ok: true; readonly valu
  * this, an application could edit an accepted Event's payload after acceptance - or an observer could
  * edit it through an inspection view - while the canonical bytes that decided its identity stayed the
  * same. The copy is taken once, at the boundary that accepts the value.
+ *
+ * Members are installed with `defineProperty`, never assignment, and the copy preserves the
+ * validated prototype (`Object.prototype` or `null` for objects, `Array.prototype` for arrays).
+ * Plain assignment `sealed[name] = ...` invokes the inherited legacy `__proto__` setter for that
+ * one key instead of creating an own data property: a valid own `"__proto__"` member would vanish
+ * from the record, its value would silently become the copy's prototype, and the retained
+ * structural value would differ from the canonical bytes that accepted it (K02-R2-02, K11-R1-VAL-01).
+ * `defineProperty` creates an own data property whatever the key is, so no member name gets
+ * special treatment. Validation has already refused symbols, non-enumerables, accessors and
+ * array extras, so copying the enumerable string-keyed data members is faithful over the whole
+ * accepted space.
  */
 export function sealBoundaryValue(value: BoundaryValue): BoundaryValue {
   if (value === null || typeof value !== "object") return value;
-  if (Array.isArray(value)) return Object.freeze(value.map(sealBoundaryValue)) as unknown as BoundaryValue[];
-  const sealed: Record<string, BoundaryValue> = {};
-  for (const name of Object.keys(value)) sealed[name] = sealBoundaryValue((value as Record<string, BoundaryValue>)[name] as BoundaryValue);
+  if (Array.isArray(value)) {
+    const out = new Array((value as readonly unknown[]).length);
+    for (let index = 0; index < (value as readonly unknown[]).length; index += 1) {
+      const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+      const member = descriptor !== undefined && "value" in descriptor ? (descriptor.value as BoundaryValue) : (value as readonly BoundaryValue[])[index] as BoundaryValue;
+      Object.defineProperty(out, String(index), { value: sealBoundaryValue(member), writable: true, enumerable: true, configurable: true });
+    }
+    return Object.freeze(out) as unknown as BoundaryValue[];
+  }
+  const sealed: Record<string, BoundaryValue> = Object.create(Object.getPrototypeOf(value) as object | null);
+  for (const name of Object.keys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, name);
+    const member = descriptor !== undefined && "value" in descriptor ? (descriptor.value as BoundaryValue) : (value as Record<string, BoundaryValue>)[name] as BoundaryValue;
+    Object.defineProperty(sealed, name, { value: sealBoundaryValue(member), writable: true, enumerable: true, configurable: true });
+  }
   return Object.freeze(sealed);
 }
 

@@ -167,10 +167,10 @@ describe("K1.0 target Kernel landing zone", () => {
 
   test("the zone refuses unimplemented surfaces rather than answering with a no-op", async () => {
     const kernel = await import("@arrokothi/kernel");
-    // K1.1 implements creation, ingress, reservation, dispatch, redelivery, cancellation and
-    // inspection, so the refusal example moved to a surface a later packet still owns. The mechanism
-    // is unchanged, and `packages/kernel/tests/refusals.test.ts` holds the coordinator's own
-    // K1.2-owned surfaces to it.
+    // K1.1 implements creation, ingress, reservation, dispatch, redelivery and inspection
+    // (cancellation is K1.3's and refuses), so the refusal example moved to a surface a later
+    // packet still owns. The mechanism is unchanged, and `packages/kernel/tests/refusals.test.ts`
+    // holds the coordinator's own K1.2/K1.3-owned surfaces to it.
     assert.throws(
       () => kernel.refuseUnsupportedSurface("acceptOutcome", "K1.2"),
       (error: unknown) => {

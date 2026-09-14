@@ -5,17 +5,19 @@
  * up to, but not including, Outcome acceptance:
  *
  * - one atomic creation per caller-scoped creation key, with the initial input;
- * - post-creation input ingress under the Input ID triple;
+ * - post-creation input ingress under the Input ID triple, including refusal of new ordinary
+ *   input to a terminal destination (the rule is K1.1's; manufacturing a terminal state is not —
+ *   cancellation and terminal disposition are K1.3's, completion/failure are K1.2's, so no
+ *   terminal state is reachable in this packet and the branch is specified-but-unexercised here);
  * - one atomic dispatch intent that reserves an exact batch and pins the exchange;
  * - ordinary redelivery of that same exchange;
- * - accepted cancellation, which fences the exchange and gives unconsumed input its `B-5`
- *   terminal disposition;
  * - minimum inspection.
  *
  * Everything else refuses by name. Outcome acceptance, the writer-epoch advance under an authorized
- * takeover and the recovery hold for unavailable pinned code are K1.2's; wait registration, wait
- * matching and deadlines are K1.3's; Effects are K2's. `refuseUnsupportedSurface` is the K1.0
- * mechanism for saying so, reused rather than reinvented.
+ * takeover and the recovery hold for unavailable pinned code are K1.2's; out-of-band cancellation
+ * and terminal disposition, wait registration, wait matching and deadlines are K1.3's; Effects are
+ * K2's. `refuseUnsupportedSurface` is the K1.0 mechanism for saying so, reused rather than
+ * reinvented.
  *
  * ## What this coordinator is not
  *
@@ -38,6 +40,7 @@ import type { Activation, ActivationEvent, ExecutionDriver } from "./driver.ts";
 import {
   creationKeyIdKey,
   inputIdKey,
+  MISSING_SCOPE_SENTINEL,
   mayReachScope,
   mintReceipt,
   packIdentity,
@@ -139,15 +142,6 @@ export interface DispatchAccepted {
   readonly redelivered: boolean;
 }
 
-export interface CancellationAccepted {
-  readonly executionId: string;
-  readonly state: ExecutionState;
-  /** True when the Execution had already ended and this call reported that result. */
-  readonly alreadyTerminal: boolean;
-  /** Event IDs that received a terminal disposition as part of this cancellation. */
-  readonly terminallyDisposed: readonly string[];
-}
-
 export interface CoordinatorOptions {
   readonly driver: ExecutionDriver;
   /**
@@ -186,7 +180,6 @@ interface ActivationRecord {
   readonly receipt: Receipt;
   readonly batch: readonly string[];
   readonly deliveries: DeliveryAttempt[];
-  fenced: boolean;
 }
 
 interface ExecutionRecord {
@@ -612,7 +605,6 @@ export class ExecutionCoordinator {
       receipt,
       batch: Object.freeze(selected.map((entry) => entry.eventId)),
       deliveries: [],
-      fenced: false,
     };
     record.activation = intent;
     record.state = "RUNNING";
@@ -645,7 +637,7 @@ export class ExecutionCoordinator {
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
 
     const intent = record.activation;
-    if (intent === null || intent.fenced) {
+    if (intent === null) {
       return err(
         this.#refusal(
           "no_unresolved_exchange",
@@ -666,40 +658,6 @@ export class ExecutionCoordinator {
     });
   }
 
-  /**
-   * Accepts a cancellation request: a Kernel control operation, not a mailbox message.
-   *
-   * Acceptance fences the Execution immediately and gives every still-unacknowledged Event - the
-   * reserved batch included - the explicit `B-5` terminal disposition, rather than deleting it or
-   * treating it as processed. A reserved Event is never retroactively acknowledged by ending.
-   *
-   * **Scope note.** 007 assigns cancellation *races* to K1.3: ordering against Outcome acceptance,
-   * Execution-deadline routing and interaction with waits. None of those exist in this packet, and
-   * K1.1's own contract requires refusing new ordinary input to a terminal Execution, which needs a
-   * terminal state to exist. What is implemented here is acceptance and its terminal disposition and
-   * nothing else; it makes no claim about the orderings K1.3 owns.
-   */
-  cancelExecution(caller: AuthenticatedCaller, executionId: string): Result<CancellationAccepted, RefusalRecord> {
-    const record = this.#visible(caller, executionId);
-    if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
-
-    if (isTerminal(record.state)) {
-      // A terminal lifetime never reopens; a later cancel reports the already terminal result.
-      return ok({ executionId: record.executionId, state: record.state, alreadyTerminal: true, terminallyDisposed: [] });
-    }
-
-    const disposed: string[] = [];
-    for (const entry of record.mailbox) {
-      if (entry.disposition.kind !== "queued") continue;
-      entry.disposition = { kind: "terminal", reason: "Execution terminated before this Event was acknowledged" };
-      disposed.push(entry.eventId);
-    }
-    if (record.activation !== null) record.activation.fenced = true;
-    record.state = "CANCELLED";
-
-    return ok({ executionId: record.executionId, state: record.state, alreadyTerminal: false, terminallyDisposed: disposed });
-  }
-
   /** A complete, freshly built snapshot. Reading acknowledges nothing and mutates nothing. */
   inspect(caller: AuthenticatedCaller, executionId: string): Result<ExecutionView, RefusalRecord> {
     const record = this.#visible(caller, executionId);
@@ -711,10 +669,19 @@ export class ExecutionCoordinator {
    * Execution IDs this caller may see, in creation order.
    *
    * Scoped like every other read: an Execution outside the caller's authority scope is absent here
-   * for the same reason `inspect` refuses it.
+   * for the same reason `inspect` refuses it. Each record costs one full `mayReachScope` scan, so
+   * per-record work is uniform and reveals nothing about any specific hidden ID beyond the visible
+   * list itself. Total work is necessarily linear in the number of Executions — listing must look
+   * at each record to decide visibility — so this method does not claim timing independence from
+   * corpus size. What it does not do is branch on the content of any particular hidden record or
+   * reveal a hidden ID through its shape: the returned list contains exactly the visible IDs.
    */
   visibleExecutions(caller: AuthenticatedCaller): readonly string[] {
-    return [...this.#executions.values()].filter((record) => mayReachScope(caller, record.scope)).map((record) => record.executionId);
+    const visible: string[] = [];
+    for (const record of this.#executions.values()) {
+      if (mayReachScope(caller, record.scope)) visible.push(record.executionId);
+    }
+    return visible;
   }
 
   // -- Surfaces later packets own --------------------------------------------
@@ -722,7 +689,7 @@ export class ExecutionCoordinator {
   /**
    * Outcome acceptance is K1.2's. Refuses; it never records a proposal or advances anything.
    *
-   * These three take no arguments deliberately. Giving them a typed proposal shape would advertise a
+   * These take no arguments deliberately. Giving them a typed proposal shape would advertise a
    * contract no accepted packet has settled, and a caller could build against it before the packet
    * that owns it decides what it is.
    */
@@ -740,6 +707,11 @@ export class ExecutionCoordinator {
     return refuseUnsupportedSurface("recoverExecution", "K1.2");
   }
 
+  /** Out-of-band cancellation and terminal disposition are K1.3's (governing 007). */
+  cancelExecution(): never {
+    return refuseUnsupportedSurface("cancelExecution", "K1.3");
+  }
+
   // -- Internals -------------------------------------------------------------
 
   #mint(boundary: ReceiptBoundary): Receipt {
@@ -752,11 +724,24 @@ export class ExecutionCoordinator {
    *
    * One lookup answers both "does it exist?" and "may this caller see it?", because the caller must
    * not be able to tell those apart.
+   *
+   * `identity.md` requires refusal shape *and timing* to not distinguish a hidden record from a
+   * missing one. The previous implementation returned early for a missing ID without touching
+   * `caller.scopes`, while a hidden ID paid for a scope search — a different control-path cost
+   * for the same caller. This version always performs the same work: one map lookup plus one
+   * full scope scan over `caller.scopes.length` comparisons. A missing ID scans for a sentinel
+   * scope that names no Execution, so it costs the same number of comparisons as the hidden
+   * case and answers identically. `mayReachScope` itself scans without early exit, so work does
+   * not depend on where a match sits either.
+   *
+   * This normalizes application-level lookup work. It does not claim cryptographic constant-time
+   * string or hash-table behavior, which JavaScript does not provide; see `identity.ts`.
    */
   #visible(caller: AuthenticatedCaller, executionId: string): ExecutionRecord | null {
     const record = this.#executions.get(executionId);
-    if (record === undefined) return null;
-    return mayReachScope(caller, record.scope) ? record : null;
+    const targetScope = record !== undefined ? record.scope : MISSING_SCOPE_SENTINEL;
+    if (!mayReachScope(caller, targetScope)) return null;
+    return record ?? null;
   }
 
   #refusal(classification: RefusalClassification, reason: string, record: ExecutionRecord | null): RefusalRecord {
@@ -838,7 +823,6 @@ const toActivationView = (intent: ActivationRecord): ActivationView => ({
   batch: [...intent.batch],
   receipt: intent.receipt,
   deliveries: intent.deliveries.map(toDeliveryView),
-  fenced: intent.fenced,
 });
 
 const toMailboxView = (entry: MailboxEntry, reserved: ReadonlySet<string>): MailboxEntryView => ({

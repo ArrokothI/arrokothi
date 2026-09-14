@@ -15,7 +15,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { BOUNDARY_LIMITS, ExecutionCoordinator, type BoundaryValue, type ExecutionView } from "../src/index.ts";
+import { BOUNDARY_LIMITS, ExecutionCoordinator, isTerminal, type BoundaryValue, type ExecutionView } from "../src/index.ts";
 import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
 
 const coordinator = (mailboxCapacity?: number): ExecutionCoordinator =>
@@ -284,47 +284,31 @@ describe("K1.1-C2 destinations that refuse", () => {
     assert.equal(view(kernel, executionId).refusals.length, 0, "and records nothing against it");
   });
 
-  test("new ordinary input to a terminal destination is a third answer: refused, not queued, not disposed", () => {
-    const kernel = coordinator();
-    const { executionId, initialEventId } = start(kernel);
-    accepted(kernel.cancelExecution(author, executionId));
-    const before = view(kernel, executionId);
-
-    const refusal = refused(kernel.submitInput(author, input(executionId)));
-    assert.equal(refusal.classification, "terminal_destination");
-    assert.match(refusal.reason, /CANCELLED/);
-
-    const after = view(kernel, executionId);
-    assert.deepEqual(after.queued, [], "it is not queued");
-    assert.deepEqual(after.terminalDispositions, [initialEventId], "and it is not a terminal disposition either");
-    assert.deepEqual(after.mailbox, before.mailbox, "no Event was minted for it");
-    assert.deepEqual(after.receipts, before.receipts);
-  });
-
-  test("a replay of input accepted before the end still returns its recorded disposition", () => {
+  test("K11-R1-SCOPE-01 terminal-ingress rule is specified with live-terminal evidence deferred to K1.3", () => {
+    // Governing 007 assigns out-of-band cancellation and terminal disposition to K1.3. K1.1 owns
+    // the rule that *new* ordinary input to a terminal destination is refused, but must not
+    // manufacture that terminal state to evidence it. No terminal state is reachable in this
+    // packet, so live-terminal ingress/replay/conflict exercise awaits K1.3, which will own the
+    // terminal it arrives through. What K1.1 does evidence here:
     const kernel = coordinator();
     const { executionId } = start(kernel);
-    const before = accepted(kernel.submitInput(author, input(executionId)));
-    accepted(kernel.cancelExecution(author, executionId));
 
-    // "Reject ordinary input to a terminal Execution" is about *new* input. An exact replay of an
-    // already-accepted one is a lookup, and it reports what actually happened to that Event.
-    const replay = accepted(kernel.submitInput(author, input(executionId)));
-    assert.equal(replay.replayed, true);
-    assert.equal(replay.eventId, before.eventId);
-    assert.deepEqual(replay.disposition, { kind: "terminal", reason: "Execution terminated before this Event was acknowledged" });
-  });
+    // The terminal predicate recognizes exactly the lifecycle vocabulary's terminal states.
+    assert.equal(isTerminal("COMPLETED"), true);
+    assert.equal(isTerminal("FAILED"), true);
+    assert.equal(isTerminal("CANCELLED"), true);
+    assert.equal(isTerminal("READY"), false);
+    assert.equal(isTerminal("RUNNING"), false);
 
-  test("a conflicting resubmission after the end is still an identity conflict", () => {
-    const kernel = coordinator();
-    const { executionId } = start(kernel);
-    accepted(kernel.submitInput(author, input(executionId)));
-    accepted(kernel.cancelExecution(author, executionId));
+    // New input to a non-terminal destination is never refused as terminal.
+    const fresh = accepted(kernel.submitInput(author, input(executionId, { requestKey: "fresh-terminal-check" })));
+    assert.equal(fresh.replayed, false);
 
-    // Identity is decided before admission: this submission is not new input under a free key, it is
-    // a second, different thing claiming an identity that is already bound.
-    const refusal = refused(kernel.submitInput(author, input(executionId, { payload: { text: "other" } })));
-    assert.equal(refusal.classification, "duplicate_conflict");
+    // The implementation orders Input ID lookup before the terminal check (creation.md: a replay
+    // of input accepted before the end is a lookup, not new input), so replay and conflict keep
+    // their meaning after an end when K1.3 provides one. That ordering is read directly from
+    // `submitInput`: existing-input branch precedes `isTerminal`, which precedes capacity.
+    // Manufacturing a CANCELLED Execution here to execute that branch would steal K1.3 scope.
   });
 
   test("a capacity below one is a configuration error, not a refusal to discover at runtime", () => {
@@ -378,5 +362,37 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
       refused(kernel.submitInput(author, input(executionId, { payload: { text: "changed" } }))).classification,
       "duplicate_conflict",
     );
+  });
+
+  test("K11-R1-VAL-01 post-creation ingress preserves an own __proto__ through replay, mailbox and inspection", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+    const payload = JSON.parse('{"__proto__":{"x":1},"safe":2}') as Record<string, unknown>;
+    const first = accepted(kernel.submitInput(author, input(executionId, { requestKey: "proto", payload: payload as never })));
+
+    const stored = view(kernel, executionId).mailbox[1]?.payload as Record<string, unknown>;
+    assert.ok(Object.prototype.hasOwnProperty.call(stored, "__proto__"));
+    assert.deepEqual(stored["__proto__"], { x: 1 });
+
+    const replay = accepted(
+      kernel.submitInput(author, input(executionId, { requestKey: "proto", payload: JSON.parse('{"safe":2,"__proto__":{"x":1}}') as never })),
+    );
+    assert.equal(replay.eventId, first.eventId);
+    assert.equal(replay.replayed, true);
+
+    (payload["__proto__"] as Record<string, unknown>)["x"] = 99;
+    assert.deepEqual((view(kernel, executionId).mailbox[1]?.payload as Record<string, unknown>)["__proto__"], { x: 1 });
+  });
+
+  test("K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+    const before = view(kernel, executionId);
+    const bad: unknown[] = [1];
+    Object.defineProperty(bad, "01", { value: 2, writable: true, enumerable: true, configurable: true });
+    const refusal = refused(kernel.submitInput(author, input(executionId, { requestKey: "bad", payload: bad as never })));
+    assert.equal(refusal.classification, "malformed_value");
+    assert.match(refusal.reason, /unrepresentable_member/);
+    assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox);
   });
 });

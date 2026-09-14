@@ -18,10 +18,13 @@ import type { BoundaryValue } from "./values.ts";
 /**
  * A mailbox entry's own disposition.
  *
- * `B-4`: an Event not in the current batch "remains queued with its own independent disposition",
- * and `B-5` gives every still-unacknowledged Event an explicit record when the Execution ends rather
- * than deleting it or treating it as processed. Acknowledgment is the third disposition and arrives
- * with Outcome acceptance in K1.2; it is absent here because nothing in this packet can produce it.
+ * `B-4`: an Event not in the current batch "remains queued with its own independent disposition".
+ * `B-5` terminal dispositions are K1.3's: they are recorded when cancellation ends an Execution
+ * rather than deleting input or treating it as processed. Acknowledgment is the third disposition
+ * and arrives with Outcome acceptance in K1.2. Neither terminal dispositions nor acknowledgments
+ * can be produced in this packet, so every mailbox entry here is `queued` and both derived lists
+ * below are empty; the variants and fields exist so later packets have a place to record them
+ * without changing this boundary's shape.
  */
 export type MailboxDisposition =
   | { readonly kind: "queued" }
@@ -61,13 +64,6 @@ export interface ActivationView {
   readonly batch: readonly string[];
   readonly receipt: Receipt;
   readonly deliveries: readonly DeliveryAttemptView[];
-  /**
-   * Whether accepted cancellation has fenced this exchange.
-   *
-   * A fenced exchange can no longer be redelivered and no Outcome may be accepted for it. Its
-   * reserved batch keeps its terminal dispositions; it is never retroactively acknowledged.
-   */
-  readonly fenced: boolean;
 }
 
 /** Everything an authorized observer can learn about one Execution. */
@@ -92,7 +88,7 @@ export interface ExecutionView {
   readonly queued: readonly string[];
   /** Event IDs the Runtime is on record as having accounted for. Always empty here (K1.2 owns it). */
   readonly acknowledged: readonly string[];
-  /** Event IDs that received a `B-5` terminal disposition. */
+  /** Event IDs that received a `B-5` terminal disposition. Always empty here (K1.3 owns it). */
   readonly terminalDispositions: readonly string[];
   /** Recorded refusals concerning this Execution, oldest first. */
   readonly refusals: readonly RefusalRecord[];

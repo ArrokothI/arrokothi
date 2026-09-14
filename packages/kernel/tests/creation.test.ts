@@ -260,4 +260,47 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.deepEqual({ ...hidden, position: 0 }, { ...missing, position: 0 }, "the two refusals are indistinguishable");
     assert.deepEqual(kernel.visibleExecutions(outsider), []);
   });
+
+  test("K11-R1-VAL-01 a valid own __proto__ creation payload is retained as own data through inspection", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const payload = JSON.parse('{"__proto__":{"admin":true},"safe":2}') as Record<string, unknown>;
+    const created = accepted(
+      kernel.createExecution(author, createRequest({ creationKey: "proto-1", initialInput: { kind: "application.request", payload: payload as never } })),
+    );
+
+    const view = accepted(kernel.inspect(author, created.executionId));
+    const stored = view.mailbox[0]?.payload as Record<string, unknown>;
+    assert.ok(Object.prototype.hasOwnProperty.call(stored, "__proto__"), "stored state keeps the member as own data");
+    assert.deepEqual(stored["__proto__"], { admin: true });
+    assert.equal(Object.getPrototypeOf(stored), Object.prototype);
+
+    // Replay with an honest re-serialization still finds the same Execution.
+    const replay = accepted(
+      kernel.createExecution(
+        author,
+        createRequest({ creationKey: "proto-1", initialInput: { kind: "application.request", payload: JSON.parse('{"safe":2,"__proto__":{"admin":true}}') as never } }),
+      ),
+    );
+    assert.equal(replay.executionId, created.executionId);
+    assert.equal(replay.replayed, true);
+
+    // Mutating the caller's object afterwards does not reach the record.
+    (payload["__proto__"] as Record<string, unknown>)["admin"] = false;
+    const after = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual((after.mailbox[0]?.payload as Record<string, unknown>)["__proto__"], { admin: true });
+  });
+
+  test("K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const bad: unknown[] = [1, 2];
+    Object.defineProperty(bad, "01", { value: 99, writable: true, enumerable: true, configurable: true });
+    const refusal = refused(
+      kernel.createExecution(author, createRequest({ creationKey: "bad-array", initialInput: { kind: "k", payload: bad as never } })),
+    );
+    assert.equal(refusal.classification, "malformed_value");
+    assert.match(refusal.reason, /unrepresentable_member/);
+    assert.deepEqual(kernel.visibleExecutions(author), []);
+  });
 });

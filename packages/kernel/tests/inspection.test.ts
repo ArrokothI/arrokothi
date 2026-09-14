@@ -103,6 +103,21 @@ describe("K1.1-C9 what a reader can see", () => {
     assert.deepEqual({ ...hidden, position: 0 }, { ...missing, position: 0 });
   });
 
+  test("K11-R1-VAL-01 inspection exposes the same structural value that canonical bytes bound", () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const payload = JSON.parse('{"__proto__":{"x":1},"safe":2}') as Record<string, unknown>;
+    const created = accepted(
+      kernel.createExecution(author, createRequest({ initialInput: { kind: "application.request", payload: payload as never } })),
+    );
+    const stored = accepted(kernel.inspect(author, created.executionId)).mailbox[0]?.payload as Record<string, unknown>;
+    assert.ok(Object.prototype.hasOwnProperty.call(stored, "__proto__"));
+    assert.deepEqual(stored["__proto__"], { x: 1 });
+    assert.deepEqual(Object.keys(stored).sort(), ["__proto__", "safe"]);
+    assert.throws(() => {
+      (stored as Record<string, unknown>)["safe"] = 99;
+    }, TypeError);
+  });
+
   test("visibleExecutions lists what this caller may reach, and nothing else", () => {
     const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
     const inA = accepted(kernel.createExecution(caller("app-a", "tenant-a"), createRequest({ scope: "tenant-a" })));

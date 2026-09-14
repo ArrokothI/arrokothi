@@ -9,8 +9,8 @@ including 006/007/008/012 as they stand there).
 `4f02e6cad2dbc9d5444fededbdc27f0dc695060d` (PR #24). Its formal integration receipts were still owed
 at that commit; see [Entry and owner release](#entry-and-owner-release).
 **Base commit:** `777b9955fb3a443f700b4f3d1f4f2aef1869345b`.
-**Branch:** `codex/k1.1-create-reserve-async-dispatch`. **Contract revision 1.**
-**Implementer:** Claude Opus 5 (`claude-opus-5`), Claude Code session, 2026-09-14. The `codex/` branch
+**Branch:** `codex/k1.1-create-reserve-async-dispatch`. **Contract revision 2 (round-2 correction of review-01: C11 removed, C7 restored to K1.2/K1.2/K1.2/K1.3 refusals, DEC-1 withdrawn, terminal live-evidence deferred to K1.3; values.md unchanged).**
+**Implementer:** Muse Spark, 2026-09-14 correction round. The `codex/` branch
 prefix is 006's naming convention for a packet branch, not a claim about which agent wrote it.
 
 ## Entry and owner release
@@ -136,10 +136,12 @@ Execution and no receipt from one boundary is returned for another. Exact replay
 token; every refusal mints none. Receipt reads authenticate and scope before revealing anything, and
 a caller outside the scope gets the same answer as for an Execution that does not exist.
 
-**K1.1-C7 — explicit refusal of unlanded surfaces.** Outcome submission, authorized takeover and
-cancellation exist as refusing surfaces naming the packet that owns them (K1.2, K1.2, K1.3), never as
-silent no-ops, and change no accepted state when called. The refusal is the K1.0 mechanism, reused
-rather than duplicated.
+**K1.1-C7 — explicit refusal of unlanded surfaces.** Outcome submission, authorized takeover,
+the recovery hold for unavailable pinned code, and out-of-band cancellation exist as refusing
+surfaces naming the packet that owns them (K1.2, K1.2, K1.2, K1.3), never as silent no-ops, and
+change no accepted state when called. The refusal is the K1.0 mechanism, reused rather than
+duplicated. Cancellation acceptance and `B-5` terminal disposition are K1.3's under governing 007;
+K1.1 implements neither (K11-R1-SCOPE-01 correction of K1.1-DEC-1).
 
 **K1.1-C8 — no Agent/Workflow discriminator in the new boundary.** No executable text in the target
 zone contains an Agent or Workflow discriminator, and no exported type carries one. The legacy
@@ -151,15 +153,9 @@ pinned Definition/Runtime-contract revision and progress codec alone.
 lifecycle state, accepted progress and its revision, the unresolved Activation with its writer epoch
 and reserved batch, queued Events in acceptance order with their dispositions, recorded refusals with
 their reasons, and the receipts above. Reading acknowledges no Event and mutates nothing. Inspection
-is authenticated and scoped on the same terms as K1.1-C6.
-
-**K1.1-C11 — accepted cancellation and terminal disposition (scope judgment, see
-[K1.1-DEC-1](#decisions-taken-within-this-contract)).** Accepted cancellation ends a nonterminal
-Execution, fences its unresolved exchange and gives every still-unacknowledged Event — the reserved
-batch included — the explicit terminal disposition `B-5` requires, rather than deleting it or
-treating it as processed. A reserved Event is never retroactively acknowledged by ending. A second
-cancellation reports the already terminal result and disposes nothing new; a terminal lifetime never
-reopens. This packet claims nothing about the orderings K1.3 owns.
+is authenticated and scoped on the same terms as K1.1-C6. `B-5` terminal dispositions and
+acknowledgments are always empty here (K1.3 and K1.2 own them); the fields exist so later packets
+have a place to record them.
 
 **K1.1-C10 — the K1.0 structural boundary still holds, and its inventory matches the tree.** The
 target zone still imports nothing outside itself except `node:` builtins, approves no portable leaf,
@@ -198,14 +194,13 @@ schema relaxed.
 | C6 per-boundary receipts (identity.md ID-6/ID-7) | one Execution through create → input → dispatch | three receipts, each naming its own boundary; none equal to another; replay returns the original | `receipts.test.ts` |
 | C6 refusals mint none (identity.md) | every refusal path in C1, C2, C4 | receipt set unchanged after each | `receipts.test.ts` |
 | C6 scoped lookup (identity.md ID-8) | read a receipt as the wrong scope; read a missing one | identical answers | `receipts.test.ts` |
-| C7 unlanded surfaces (007, K1.0 refusal mechanism) | call Outcome submission, takeover, cancellation | each throws naming its owner packet; full inspection snapshot unchanged before and after | `refusals.test.ts` |
+| C7 unlanded surfaces (007, K1.0 refusal mechanism) | call Outcome submission, takeover, recovery hold, cancellation | each throws naming its owner packet (K1.2, K1.2, K1.2, K1.3); full inspection snapshot unchanged before and after | `refusals.test.ts` |
 | C8 no discriminator (007 acceptance, PC-1, DX-12) | scan the zone's executable text; read the exported surface | zero occurrences outside comments; no exported union over Agent/Workflow | `boundary.test.ts` |
 | C9 inspection is inert (core.md) | full snapshot, read twice around every read-only call | deep-equal snapshots; no acknowledgment, no position change | `inspection.test.ts` |
 | C9 inspection is scoped (identity.md) | inspect another scope's Execution | same refusal as unknown | `inspection.test.ts` |
 | C10 zone rules (K1.0 contract, 015) | the real import graph and the inventory | no violation; document and policy agree on the measured tree | `tests/conformance/architecture/kernel-landing-zone.test.ts` |
 | C10 deferred rows this packet owns (K1.0 inventory) | DX-1, DX-2, DX-3, DX-12 | each disposed in writing by its owner; the approved-leaf list is still empty | `work/K1.0/ownership-inventory.md`, `boundary.test.ts` |
-| C11 terminal disposition (lifecycle.md, B-5) | cancel a READY and a RUNNING Execution | every unacknowledged Event, reserved or not, gets an explicit terminal disposition; **forbidden:** deletion, acknowledgment, installed progress, a reopened lifetime | `cancellation.test.ts` |
-| C11 idempotence and ID-1 (lifecycle.md, identity.md) | cancel twice; create and cancel five Executions | the second cancel reports the terminal result and disposes nothing; no Execution ID is ever reissued | `cancellation.test.ts` |
+| C2 terminal-destination rule, K1.3-evidence route (creation.md, lifecycle.md) | new input while READY/RUNNING; `isTerminal` over the terminal vocabulary | new input to non-terminal is never `terminal_destination`; the `isTerminal` + Input-ID-before-terminal ordering is asserted without manufacturing K1.3 terminal state; live-terminal ingress/replay/conflict exercise awaits K1.3 | `ingress.test.ts` |
 | C3/C2 root independence (values.md) | a payload at exactly the depth limit, and one over, at both boundaries | the at-limit payload is accepted; the envelope adds no level and no bytes | `ingress.test.ts` |
 | C1/C2/C9 accepted content is immutable (creation.md, core.md) | edit the caller's own object after acceptance; edit a returned view | the recorded content is unchanged; the frozen copy throws | `inspection.test.ts` |
 | C4 the intent precedes the send (execution-cycle.md) | a Driver that reads the Kernel back from inside `deliver` | it already sees `RUNNING`, the Activation and the reserved batch; input it submits from there is queued and does not join that batch | `dispatch.test.ts` |
@@ -243,20 +238,19 @@ the standing owner decision this leaves open.
 
 ## Decisions taken within this contract
 
-Routine implementation choices are the agent's under 007. These two are recorded because a reviewer
+Routine implementation choices are the agent's under 007. These are recorded because a reviewer
 should be able to rule on them rather than infer them.
 
-- **K1.1-DEC-1 — cancellation acceptance is implemented here, its races are not.** 007 assigns
-  "out-of-band cancellation and terminal disposition" to K1.3. But K1.1's own acceptance requires
-  that "input to a terminal ... destination is refused with an inspectable reason", and **no other
-  mechanism in this packet can produce a terminal state**: `complete` and `fail` arrive with Outcome
-  acceptance in K1.2, and deadlines in K1.3. Leaving the rule implemented but unreachable would ship
-  a required case with no distinguishing evidence, which 006 forbids at WAITING_FOR_REVIEW. What is
-  implemented is therefore acceptance plus `B-5` disposition and nothing else — no ordering against
-  Outcome acceptance, no deadline path, no wait interaction, because none of those exist yet. K1.3
-  still owns every race and adds the deadline path. If the reviewer judges this out of scope, the
-  correction is to remove it **and** to record how K1.1-C2's terminal case is to be evidenced
-  instead; the two cannot both be resolved by deletion alone.
+- **K1.1-DEC-1 — WITHDRAWN by K11-R1-SCOPE-01 correction (round 2).** The round-1 contract judged
+  that K1.1 should implement cancellation acceptance to evidence C2's terminal case. Governing 007
+  assigns out-of-band cancellation and terminal disposition to K1.3, and the round-1 independent
+  review required removal: K1.1 must not accept the K1.3 cancellation boundary. The correction
+  removes `cancelExecution` acceptance, `CancellationAccepted`, the `fenced` exchange field and
+  `cancellation.test.ts`; `cancelExecution` now refuses naming K1.3 under C7. K1.1 retains the rule
+  that *new* ordinary input to a terminal destination is refused, with the `isTerminal` check and
+  Input-ID-before-terminal ordering in `submitInput`/`dispatch`, but no terminal state is reachable
+  here — live-terminal ingress/replay/conflict evidence awaits K1.3. Preserved here so the
+  withdrawal has provenance; do not reintroduce acceptance without a governing 007 amendment.
 - **K1.1-DEC-2 — one epoch per exchange, starting at 1.** `identity.md` leaves "whether it resets
   for a later Activation" to the implementation and constrains only advances within one unresolved
   exchange. Nothing in this packet advances an epoch, and the takeover that does is K1.2's.

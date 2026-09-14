@@ -10,7 +10,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/index.ts";
+import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, sealBoundaryValue, type BoundaryValue } from "../src/index.ts";
 
 const canonicalOf = (value: unknown): string => {
   const result = canonicalize(value);
@@ -144,6 +144,113 @@ describe("K1.1-C3 boundary values are validated, never repaired", () => {
   test("isBoundaryValue agrees with the issue list", () => {
     assert.equal(isBoundaryValue({ a: [1, "b", true, null] }), true);
     assert.equal(isBoundaryValue({ a: undefined }), false);
+  });
+
+  describe("K11-R1-VAL-01 value-preserving acceptance over the full key space", () => {
+    test("a valid own __proto__ member is accepted and sealed as own data, not a prototype", () => {
+      const input = JSON.parse('{"__proto__":{"admin":true},"safe":2}') as Record<string, unknown>;
+      assert.ok(Object.prototype.hasOwnProperty.call(input, "__proto__"), "the fixture really carries an own member");
+      assert.deepEqual(issueCodes(input), [], "values.md permits arbitrary well-formed member names");
+
+      const result = canonicalize(input);
+      assert.ok(result.ok, "it canonicalizes");
+      const sealed = result.value.value as Record<string, unknown>;
+      assert.ok(Object.prototype.hasOwnProperty.call(sealed, "__proto__"), "the member survives as an own property");
+      assert.deepEqual(Object.keys(sealed).sort(), ["__proto__", "safe"]);
+      assert.deepEqual(sealed["__proto__"], { admin: true });
+      assert.equal(Object.getPrototypeOf(sealed), Object.prototype, "no prototype was grown");
+      assert.ok(Object.isFrozen(sealed), "the copy is frozen");
+      assert.ok(Object.isFrozen(sealed["__proto__"]), "nested values are frozen too");
+
+      // Canonical bytes describe the same structural value that was retained.
+      assert.equal(result.value.canonical, '{"__proto__":{"admin":true},"safe":2}');
+      assert.equal(
+        canonicalOf(sealed),
+        result.value.canonical,
+        "re-canonicalizing the retained copy yields the bound identity",
+      );
+
+      // The weaker assignment-style copy would fail this: the member would vanish and the
+      // value would become the prototype.
+      const weak: Record<string, unknown> = {};
+      for (const name of Object.keys(input)) (weak as Record<string, unknown>)[name] = input[name];
+      assert.equal(Object.prototype.hasOwnProperty.call(weak, "__proto__"), false, "the weak copy loses the member");
+    });
+
+    test("nested and array-embedded __proto__ members survive at depth", () => {
+      const input = JSON.parse('{"a":[{"__proto__":{"deep":true}}],"b":{"c":{"__proto__":1}}}') as unknown;
+      const result = canonicalize(input);
+      assert.ok(result.ok);
+      const sealed = result.value.value as { a: { __proto__?: unknown }[]; b: { c: Record<string, unknown> } };
+      const first = sealed.a[0] as Record<string, unknown>;
+      assert.ok(first && Object.prototype.hasOwnProperty.call(first, "__proto__"));
+      assert.deepEqual(first["__proto__"], { deep: true });
+      assert.ok(Object.prototype.hasOwnProperty.call(sealed.b.c, "__proto__"));
+      assert.equal(sealed.b.c["__proto__"], 1);
+      assert.equal(canonicalOf(sealed), result.value.canonical);
+    });
+
+    test("a null-prototype object keeps its prototype and its members", () => {
+      const input: Record<string, unknown> = Object.create(null);
+      Object.defineProperty(input, "__proto__", { value: { x: 1 }, writable: true, enumerable: true, configurable: true });
+      Object.defineProperty(input, "safe", { value: 2, writable: true, enumerable: true, configurable: true });
+      assert.deepEqual(issueCodes(input), [], "null-prototype plain objects are valid");
+      const result = canonicalize(input);
+      assert.ok(result.ok);
+      const sealed = result.value.value as Record<string, unknown>;
+      assert.equal(Object.getPrototypeOf(sealed), null);
+      assert.ok(Object.prototype.hasOwnProperty.call(sealed, "__proto__"));
+      assert.deepEqual(sealed["__proto__"], { x: 1 });
+    });
+
+    test("numeric-looking non-index array members are refused, never silently dropped", () => {
+      const with01: unknown[] = [1, 2];
+      Object.defineProperty(with01, "01", { value: 99, writable: true, enumerable: true, configurable: true });
+      assert.deepEqual(issueCodes(with01), ["unrepresentable_member"], '"01" is not an index and must be refused');
+
+      const with00: unknown[] = [1];
+      Object.defineProperty(with00, "00", { value: 1, writable: true, enumerable: true, configurable: true });
+      assert.deepEqual(issueCodes(with00), ["unrepresentable_member"]);
+
+      const huge: unknown[] = [];
+      Object.defineProperty(huge, "4294967295", { value: 1, writable: true, enumerable: true, configurable: true });
+      assert.deepEqual(issueCodes(huge), ["unrepresentable_member"], "2**32-1 is not an index");
+
+      // Sanity: genuine indices still pass, including "0" itself.
+      assert.deepEqual(issueCodes([1, 2]), []);
+      assert.deepEqual(issueCodes([]), []);
+    });
+
+    test("accessors and exotic array prototypes are refused rather than invoked or coerced", () => {
+      const accessed: Record<string, unknown> = {};
+      Object.defineProperty(accessed, "ok", { get() { return 1; }, enumerable: true, configurable: true });
+      assert.deepEqual(issueCodes(accessed), ["unrepresentable_member"]);
+
+      const exotic = [1, 2];
+      Object.setPrototypeOf(exotic, Object.create(Array.prototype));
+      assert.deepEqual(issueCodes(exotic), ["unsupported_form"]);
+
+      const subclass = new (class extends Array {})() as unknown[];
+      assert.deepEqual(issueCodes(subclass), ["unsupported_form"]);
+    });
+
+    test("sealBoundaryValue detaches and freezes without invoking getters", () => {
+      let invoked = 0;
+      const input: Record<string, unknown> = { a: 1 };
+      Object.defineProperty(input, "evil", {
+        get() { invoked += 1; return 1; },
+        enumerable: false,
+        configurable: true,
+      });
+      // Non-enumerable accessors are already refused; sealing a valid value never invokes anything.
+      const valid = JSON.parse('{"__proto__":{"x":1},"safe":2}');
+      const sealed = sealBoundaryValue(valid) as Record<string, unknown>;
+      assert.equal(invoked, 0);
+      assert.ok(Object.prototype.hasOwnProperty.call(sealed, "__proto__"));
+      assert.throws(() => {
+        (sealed as Record<string, unknown>)["safe"] = 99;
+      }, TypeError);
+    });
   });
 });
 

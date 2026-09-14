@@ -94,5 +94,29 @@ export const mintReceipt = (boundary: ReceiptBoundary, position: number): Receip
   position,
 });
 
-/** Whether the caller may reach Executions bound to `scope`. */
-export const mayReachScope = (caller: AuthenticatedCaller, scope: string): boolean => caller.scopes.includes(scope);
+/** Whether the caller may reach Executions bound to `scope`.
+ *
+ * Full scan with no early exit: work depends only on `caller.scopes.length`, never on where a
+ * match sits. `Array.prototype.includes` would return early on a match, so a hidden record whose
+ * scope matches early would cost less than a missing one that scans everything. Scanning all
+ * entries keeps hidden and missing lookups on the same control path for the same caller.
+ * This normalizes application-level lookup work; it does not claim cryptographic constant-time
+ * string comparison or hash-table timing, which JavaScript does not provide.
+ */
+export const mayReachScope = (caller: AuthenticatedCaller, scope: string): boolean => {
+  let allowed = false;
+  for (let index = 0; index < caller.scopes.length; index += 1) {
+    if (caller.scopes[index] === scope) allowed = true;
+  }
+  return allowed;
+};
+
+/**
+ * Sentinel scope naming no Execution, for normalizing missing-lookup work.
+ *
+ * Scopes bound at creation are validated boundary values, so they are well-formed Unicode.
+ * This sentinel contains lone surrogates and can never equal a bound scope, nor any
+ * well-formed caller scope a host supplies. Scanning for it costs the same number of
+ * comparisons as scanning for a hidden record's scope with the same caller.
+ */
+export const MISSING_SCOPE_SENTINEL = "\ud800missing\udc00";

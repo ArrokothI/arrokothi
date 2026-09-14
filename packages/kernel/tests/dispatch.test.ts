@@ -76,7 +76,6 @@ describe("K1.1-C4 what one dispatch intent pins", () => {
       batch: [created.initialEventId],
       receipt: result.receipt,
       deliveries: [{ attempt: 1, status: "delivered", failure: null }],
-      fenced: false,
     });
   });
 
@@ -163,7 +162,7 @@ describe("K1.1-C4 what one dispatch intent pins", () => {
     assert.deepEqual(after.activation, before.activation, "the unresolved exchange is untouched");
   });
 
-  test("a terminal or invisible Execution is not dispatched", () => {
+  test("an invisible Execution is not dispatched", () => {
     const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
     const created = started(kernel);
     const outsider = caller("app-c", "tenant-c");
@@ -172,8 +171,10 @@ describe("K1.1-C4 what one dispatch intent pins", () => {
     const missing = refused(kernel.dispatch(outsider, "execution-404", { bound: 1 }));
     assert.deepEqual({ ...hidden, position: 0 }, { ...missing, position: 0 });
 
-    accepted(kernel.cancelExecution(author, created.executionId));
-    assert.equal(refused(kernel.dispatch(author, created.executionId, { bound: 1 })).classification, "terminal_destination");
+    // K11-R1-SCOPE-01: dispatch to a terminal destination remains refused with
+    // `terminal_destination`, but no terminal state is reachable in K1.1 — manufacturing one
+    // via cancellation is K1.3's. The rule is specified and the check remains in `dispatch`;
+    // its live-terminal exercise awaits K1.3 rather than a K1.1-constructed terminal.
   });
 });
 
@@ -333,14 +334,6 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     const created = started(kernel);
 
     assert.equal(refused(kernel.redeliver(author, created.executionId)).classification, "no_unresolved_exchange");
-
-    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
-    accepted(kernel.cancelExecution(author, created.executionId));
-    assert.equal(
-      refused(kernel.redeliver(author, created.executionId)).classification,
-      "no_unresolved_exchange",
-      "a fenced exchange is not redelivered",
-    );
   });
 
   test("redelivering an invisible Execution answers as an unknown one", () => {
@@ -364,5 +357,25 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     // The authorized takeover that does advance it is K1.2's, and this surface says so.
     assert.throws(() => kernel.requestTakeover(), /K1\.2 owns this surface/);
     assert.equal(accepted(kernel.inspect(author, created.executionId)).activation?.writerEpoch, 1);
+  });
+
+  test("K11-R1-VAL-01 Activation construction and redelivery carry the sealed structural value", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const payload = JSON.parse('{"__proto__":{"x":1},"safe":2}') as Record<string, unknown>;
+    const created = accepted(
+      kernel.createExecution(author, createRequest({ initialInput: { kind: "application.request", payload: payload as never } })),
+    );
+    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+
+    const carried = driver.seen[0]?.events[0]?.payload as Record<string, unknown>;
+    assert.ok(Object.prototype.hasOwnProperty.call(carried, "__proto__"), "Activation carries the own member");
+    assert.deepEqual(carried["__proto__"], { x: 1 });
+
+    accepted(kernel.redeliver(author, created.executionId));
+    const recarried = driver.seen[1]?.events[0]?.payload as Record<string, unknown>;
+    assert.ok(Object.prototype.hasOwnProperty.call(recarried, "__proto__"));
+    assert.deepEqual(recarried, carried);
+    assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).mailbox[0]?.payload, carried);
   });
 });
