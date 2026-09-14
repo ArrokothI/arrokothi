@@ -1,0 +1,61 @@
+# 09b round-6 distinguishing ablations of clean payload C6
+
+Payload C6: b3d0d59f18f6c2b1d0a49746428123d84dd80df2.
+Each ablation changes exactly one behaviour in a detached worktree at C6, runs
+packages/kernel/tests/*.test.ts against it, and is reverted before the next.
+An ablation is REJECTED when named packet cases fail; that is what makes those cases
+distinguishing rather than merely green.
+
+Two ablations are new for the two reopened P1s. N1 removes the restored serializer
+environment while keeping the safe clone: the ambient-prototype cases from round 5 still
+pass (the clone still neutralizes them), but the new capture-time `Object.keys` /
+`Array.prototype.join` cases fail — proving the new failure is the execution environment,
+not the clone (contrast P6, which removes the clone while keeping the environment: the
+round-5 `toJSON` cases fail there instead). N3 restores multiple `options.bound` reads.
+
+=== control: unmodified C6 ===
+exit 0; 172 tests, 0 failing
+
+=== ablation [K11-R2-VAL-02 round-6 N1]: serializer runs with live ambient intrinsics (no restored environment; safe clone kept) ===
+packages/kernel/src/values.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    172 tests, 5 failing -> REJECTED by exactly the five round-6 environment cases (values one-shot Object.keys, throwing Object.keys, Array.prototype.join; creation identity/replay; ingress identity/replay). The round-5 ambient-toJSON cases still pass, proving this failure is the execution environment, not the clone (contrast P6 below).
+
+=== ablation [K11-R4-DISP-01 round-6 N3]: options.bound read three times (H5 shape: validate twice, select from a third) ===
+packages/kernel/src/coordinator.ts | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+    172 tests, 2 failing -> REJECTED by the 1,1,0 shifting-getter case (validates as 1, selects 0, reserves an empty prefix; reads 3, not 1) and the non-object-envelope case (throws TypeError instead of refusing invalid_batch_bound). The primordial-validator case still passes, isolating the failure to multiple observations.
+
+=== ablation [K11-R2-VAL-02]: member value taken from an ordinary read instead of its own descriptor (no agreement check) ===
+packages/kernel/src/values.ts | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+    172 tests, 6 failing -> REJECTED
+
+=== ablation [K11-R2-EVID-01]: mintReceipt returns an ordinary unfrozen object ===
+packages/kernel/src/identity.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    172 tests, 6 failing -> REJECTED
+
+=== ablation [K11-R3-ID-03]: scope text validation skipped (authorization first) ===
+packages/kernel/src/coordinator.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    172 tests, 1 failing -> REJECTED by the non-text-scope ordering case
+
+=== ablation [K11-R1-JCS-01]: JSON.stringify substituted for the approved JCS substrate ===
+packages/kernel/src/values.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    172 tests, 10 failing -> REJECTED
+
+=== ablation [K11-R2-VAL-02 round-5]: serializer sees the snapshot directly without the safe clone (ambient toJSON diverts; restored environment kept) ===
+packages/kernel/src/values.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    172 tests, 4 failing -> REJECTED by exactly the round-5 inherited/side-effect toJSON cases. The five round-6 environment cases still pass, proving the restored environment and the safe clone are two independent layers (contrast N1 above, where the environment is removed and only the round-6 cases fail).
+
+=== ablation [K11-R3-LIMIT-01]: over-limit length traverses its full extent before refusing ===
+packages/kernel/src/values.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    121 tests, 1 failing -> REJECTED (unbounded work proved: values.test.ts aborted after ~16s with a node native crash on the 20M traversal; the corrected payload refuses the same root in ~1ms with no index traversal, see LIMIT-01 case)
+
+=== summary ===
+control clean (172/0); 8 of 8 ablations rejected by named cases.
+HEAD still b3d0d59f18f6c2b1d0a49746428123d84dd80df2; worktree status shows only ?? node_modules (see 01-tree-and-environment.log pattern; ablation files reverted via git checkout).
