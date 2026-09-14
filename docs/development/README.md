@@ -19,6 +19,7 @@ paths remain valid evidence locators and are not mass-renamed.
 | [Review methods](012-review-methods.md) | Claim-specific coverage and semantic correction closure |
 | [K0.1 integration receipt](work/K0.1/integration-01.md) | Verified main integration, owner closure and K0.2 hold |
 | [Structure and evidence sequencing](013-structure-and-evidence-sequencing.md) | Read-only benchmark interlock, rename handling and planned K1.0 after E1 fixture preparation, before K1.1 |
+| [Owner progress summary](014-owner-progress-summary.md) | Human-readable account of accepted milestones, what each establishes and does not, and the next steps; rewritten in place after each acceptance |
 | [Implemented baseline](002-implemented-kernel-baseline.md) | Actual 0.8.x surface and useful source/tests; no target recovery claim |
 | [Findings](003-evidence-and-findings.md) | Existing implementation defects, historical results and current disposition |
 | [Architecture review](004-architecture-review.md) | 2026-09-08 decisions, inspected prior art, unresolved questions and old-plan disposition |
