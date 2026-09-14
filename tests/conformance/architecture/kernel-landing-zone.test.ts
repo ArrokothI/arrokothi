@@ -31,7 +31,14 @@ import {
   resolveSpecifier,
   type ModuleGraph,
 } from "./module-graph.ts";
-import { inventoryDisagreements, parseDependencyTable, parseInventory, scanBlocks, scanTransitions } from "./inventory-oracle.ts";
+import {
+  collectionDisagreement,
+  inventoryDisagreements,
+  parseDependencyTable,
+  parseInventory,
+  scanBlocks,
+  scanTransitions,
+} from "./inventory-oracle.ts";
 import {
   DEFERRED_EXTRACTIONS,
   traversableUnder,
@@ -41,6 +48,7 @@ import {
   ZONES,
   boundaryViolations,
   type BoundaryRules,
+  type Zone,
 } from "./boundary-policy.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -564,12 +572,12 @@ describe("K1.0 policy and inventory agree", () => {
           ["| `legacy-core` | `packages/core/src` |", "| `legacy-core` | `packages/kernel/src` |"],
           ["| `target-kernel` | `PLACEHOLDER` |", "| `target-kernel` | `packages/core/src` |"],
         ],
-        expect: /zone target-kernel owns \[packages\/kernel\/src\] but the document gives it \[packages\/core\/src\]/,
+        expect: /zone target-kernel owns \["packages\/kernel\/src"\] \(1 element\) but the document gives \["packages\/core\/src"\] \(1 element\)/,
       },
       {
         name: "one zone's root is replaced",
         edits: [["| `target-kernel` | `packages/kernel/src` |", "| `target-kernel` | `packages/core/src` |"]],
-        expect: /zone target-kernel owns \[packages\/kernel\/src\] but the document gives it \[packages\/core\/src\]/,
+        expect: /zone target-kernel owns \["packages\/kernel\/src"\] \(1 element\) but the document gives \["packages\/core\/src"\] \(1 element\)/,
       },
       {
         name: "a deferred row's owner is reassigned",
@@ -599,7 +607,7 @@ describe("K1.0 policy and inventory agree", () => {
       {
         name: "an exported subpath is dropped from a row",
         edits: [["| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes |", "| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference` | Yes |"]],
-        expect: /package @arrokothi\/core exports \[.*\.\/testing.*\] but the document gives \[/,
+        expect: /package @arrokothi\/core exports \[.*"\.\/testing".*\] \(5 elements\) but the document gives \[.*\] \(4 elements\)/,
       },
       {
         name: "a package row is deleted entirely",
@@ -693,6 +701,57 @@ describe("K1.0 policy and inventory agree", () => {
     }
   });
 
+  /**
+   * What the real tree actually contains for one zone: its `.ts` files, the workspace specifiers it
+   * reaches outside itself, the third-party specifiers it reaches, and the relative cross-boundary
+   * edges the table has no column for.
+   *
+   * Lifted out of the guard below so the dependency controls compare against the same measurement
+   * the guard is held to rather than against a second copy of the rule (K10-CORR2-01). The guard's
+   * behaviour is unchanged: the loop, the resolution order and the sentinel handling are the same
+   * lines, and the caller still does every assertion.
+   */
+  const measuredZoneEdges = async (
+    zone: Zone,
+    workspace: Awaited<ReturnType<typeof loadWorkspace>>,
+  ): Promise<{
+    readonly files: readonly string[];
+    readonly reaches: readonly string[];
+    readonly thirdParty: readonly string[];
+    readonly relativeOutside: readonly string[];
+  }> => {
+    const files: string[] = [];
+    for (const root of zone.roots) files.push(...(await typeScriptFilesUnder(REPO_ROOT, root)));
+
+    const reaches = new Set<string>();
+    const thirdParty = new Set<string>();
+    const relativeOutside: string[] = [];
+    for (const file of files) {
+      const source = await readFile(resolve(REPO_ROOT, file), "utf8");
+      for (const specifier of importSpecifiersIn(source)) {
+        if (specifier === UNRESOLVABLE_MODULE_TARGET) {
+          relativeOutside.push(`${file} uses a non-literal dynamic import`);
+          continue;
+        }
+        const resolution = resolveSpecifier(workspace, file, specifier);
+        if (resolution.kind === "internal") {
+          const targetInZone = zone.roots.some(
+            (root) => resolution.file === root || resolution.file.startsWith(`${root}/`),
+          );
+          if (!targetInZone) {
+            if (specifier.startsWith(".")) relativeOutside.push(`${file} reaches ${resolution.file} via ${specifier}`);
+            else reaches.add(specifier);
+          }
+        } else if (resolution.kind === "external") {
+          if (!specifier.startsWith("node:")) thirdParty.add(specifier);
+        } else {
+          reaches.add(specifier);
+        }
+      }
+    }
+    return { files, reaches: [...reaches], thirdParty: [...thirdParty], relativeOutside };
+  };
+
   test("the cross-boundary dependency table matches the measured tree (K10-R1-02)", async () => {
     const inventory = await readFile(resolve(REPO_ROOT, INVENTORY), "utf8");
     const { rows, unreadable } = parseDependencyTable(inventory);
@@ -705,47 +764,23 @@ describe("K1.0 policy and inventory agree", () => {
 
     const workspace = await loadWorkspace(REPO_ROOT);
     for (const zone of ZONES) {
-      let files: string[] = [];
-      for (const root of zone.roots) files.push(...(await typeScriptFilesUnder(REPO_ROOT, root)));
+      const measured = await measuredZoneEdges(zone, workspace);
       const documented = rows.get(zone.id);
       assert.ok(documented, `the dependency table has a row for ${zone.id}`);
-      assert.equal(files.length, documented.files, `${zone.id} .ts file count drifted from the inventory`);
-
-      const actualReaches = new Set<string>();
-      const actualThirdParty = new Set<string>();
-      const relativeOutside: string[] = [];
-      for (const file of files) {
-        const source = await readFile(resolve(REPO_ROOT, file), "utf8");
-        for (const specifier of importSpecifiersIn(source)) {
-          if (specifier === UNRESOLVABLE_MODULE_TARGET) {
-            relativeOutside.push(`${file} uses a non-literal dynamic import`);
-            continue;
-          }
-          const resolution = resolveSpecifier(workspace, file, specifier);
-          if (resolution.kind === "internal") {
-            const targetInZone = zone.roots.some(
-              (root) => resolution.file === root || resolution.file.startsWith(`${root}/`),
-            );
-            if (!targetInZone) {
-              if (specifier.startsWith(".")) relativeOutside.push(`${file} reaches ${resolution.file} via ${specifier}`);
-              else actualReaches.add(specifier);
-            }
-          } else if (resolution.kind === "external") {
-            if (!specifier.startsWith("node:")) actualThirdParty.add(specifier);
-          } else {
-            actualReaches.add(specifier);
-          }
-        }
-      }
-      assert.deepEqual(relativeOutside, [], `${zone.id} has no unlisted relative cross-boundary edge`);
-      assert.deepEqual(
-        [...actualReaches].sort(),
-        [...documented.reaches].sort(),
+      assert.equal(measured.files.length, documented.files, `${zone.id} .ts file count drifted from the inventory`);
+      assert.deepEqual(measured.relativeOutside, [], `${zone.id} has no unlisted relative cross-boundary edge`);
+      // The measured tree is the enforced side here, and the comparison is the same one the three
+      // ownership tables use (K10-CORR2-01). This consumer compared sorted arrays by hand, which
+      // happened to preserve element identity; going through the shared rule is what stops this
+      // relation from drifting away from the others the next time one of them is touched.
+      assert.equal(
+        collectionDisagreement(`${zone.id} reaches`, measured.reaches, documented.reaches),
+        undefined,
         `${zone.id} workspace reaches drifted from the inventory`,
       );
-      assert.deepEqual(
-        [...actualThirdParty].sort(),
-        [...documented.thirdParty].sort(),
+      assert.equal(
+        collectionDisagreement(`${zone.id} reaches third-party`, measured.thirdParty, documented.thirdParty),
+        undefined,
         `${zone.id} third-party reaches drifted from the inventory`,
       );
     }
@@ -2990,7 +3025,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.deepEqual(
         parseDependencyTable(await realInventory()).rows.get("legacy-core")?.reaches,
-        new Set<string>(),
+        [],
         "the em dash still denies every workspace edge in the column that uses it",
       );
     });
@@ -3231,7 +3266,7 @@ describe("K1.0 policy and inventory agree", () => {
         disposition: "refused",
         owner: "K1.1",
       });
-      assert.equal(dependency.rows.get("runtime-integrations")?.thirdParty.size, 5);
+      assert.equal(dependency.rows.get("runtime-integrations")?.thirdParty.length, 5);
       assert.deepEqual(
         [...(dependency.rows.get("host-sdk")?.reaches ?? [])],
         ["@arrokothi/core", "@arrokothi/core/ports", "@arrokothi/core/reference"],
@@ -3534,6 +3569,343 @@ describe("K1.0 policy and inventory agree", () => {
         ),
         `a missing governed cell still fails closed; got: ${JSON.stringify(missingGoverned.disagreements)}`,
       );
+    });
+  });
+
+  describe("collection identity in relation comparison (K10-CORR2-01)", () => {
+    // The layer under the decoders. Whole-cell decoding (K10-CLEANUP-01) kept `` `a`, `b` `` and
+    // `` `a,b` `` apart as two elements and one; the comparison that consumed them then joined each
+    // side with commas and compared the two strings, and those two collections join to the same
+    // string. So a document could replace several declared roots or export subpaths with one
+    // invented member containing the separator and the oracle reported agreement — a false
+    // inventory passing the guard whose whole advertised value is rejecting false inventories.
+    //
+    // The correction is the equality, not the separator: collections are compared by cardinality
+    // and element identity, so the controls below are derived from what a collection *is* rather
+    // than from the two reported strings. Each family names the property it would defeat — a fix
+    // that only forbade a comma, only counted elements, or only compared member sets would each
+    // fail a different one — and every family is paired with the permitted spellings, above all
+    // reordering, that must still agree.
+    const span = (token: string): string => `\`${token}\``;
+    const cell = (tokens: readonly string[]): string => tokens.map(span).join(", ");
+
+    /**
+     * Every way a collection can be rewritten as a smaller one by joining members with the
+     * separator, in the order the sorted list presents them. This is the reproduced family, derived
+     * here rather than transcribed: 15 for the five subpaths, 7 for the four roots.
+     */
+    const contiguousMerges = (tokens: readonly string[]): string[][] => {
+      const out: string[][] = [];
+      for (let mask = 0; mask < (1 << (tokens.length - 1)) - 1; mask += 1) {
+        const groups = [tokens[0]!];
+        for (let i = 1; i < tokens.length; i += 1) {
+          if (mask & (1 << (i - 1))) groups.push(tokens[i]!);
+          else groups[groups.length - 1] += `,${tokens[i]!}`;
+        }
+        out.push(groups);
+      }
+      return out;
+    };
+
+    /** The two collection-valued ownership columns, each with its real cell and its real members. */
+    const columns = async (): Promise<
+      readonly {
+        readonly name: string;
+        readonly anchor: string;
+        readonly enforced: readonly string[];
+        readonly read: (parsed: ReturnType<typeof parseInventory>) => readonly string[] | undefined;
+        readonly names: RegExp;
+      }[]
+    > => {
+      const parsed = parseInventory(await realInventory());
+      const workspace = await loadWorkspace(REPO_ROOT);
+      return [
+        {
+          name: "Export subpaths",
+          anchor: cell(parsed.packages.get("@arrokothi/core")!.subpaths),
+          enforced: [...workspace.packages.get("@arrokothi/core")!.exports.keys()],
+          read: (p) => p.packages.get("@arrokothi/core")?.subpaths,
+          names: /^package @arrokothi\/core exports /,
+        },
+        {
+          name: "Zones roots",
+          anchor: cell(parsed.zones.get("runtime-integrations")!),
+          enforced: ZONES.find((zone) => zone.id === "runtime-integrations")!.roots,
+          read: (p) => p.zones.get("runtime-integrations"),
+          names: /^zone runtime-integrations owns /,
+        },
+      ];
+    };
+
+    /** Reports for one rewritten collection cell, with the decoded members it produced. */
+    const rewrite = async (
+      anchor: string,
+      tokens: readonly string[],
+      read: (parsed: ReturnType<typeof parseInventory>) => readonly string[] | undefined,
+    ): Promise<{ readonly decoded: readonly string[] | undefined; readonly reported: string[]; readonly unreadable: readonly string[] }> => {
+      const parsed = parseInventory(mutate(await realInventory(), [[anchor, cell(tokens)]]));
+      return {
+        decoded: read(parsed),
+        reported: inventoryDisagreements(parsed, policy, await loadWorkspace(REPO_ROOT)),
+        unreadable: parsed.unreadable,
+      };
+    };
+
+    test("every contiguous merge of a declared collection is reported, in both columns", async () => {
+      // The 22 relations the cleanup probe established as silently accepted, regenerated from the
+      // collection rather than copied: the decoder still reads the merged members, the row is still
+      // readable, and the disagreement is the comparison's, naming both sizes. A fix that reported
+      // these as unreadable cells would fail the readability assertion; the document is well formed
+      // and what it asserts is simply false.
+      let covered = 0;
+      for (const column of await columns()) {
+        const sortedEnforced = [...column.enforced].sort();
+        const merges = contiguousMerges(sortedEnforced);
+        assert.equal(merges.length, (1 << (sortedEnforced.length - 1)) - 1, "every nontrivial merge is generated");
+        for (const groups of merges) {
+          const { decoded, reported, unreadable } = await rewrite(column.anchor, groups, column.read);
+          assert.deepEqual(decoded, groups, `${column.name}: the decoder still preserves the rewritten boundaries`);
+          assert.deepEqual(unreadable, [], `${column.name}: the rewritten cell is well formed; its claim is what is false`);
+          const message = reported.find((line) => column.names.test(line));
+          assert.ok(message, `${column.name}: ${JSON.stringify(groups)} must be reported; got ${JSON.stringify(reported)}`);
+          assert.match(
+            message,
+            new RegExp(`\\(${sortedEnforced.length} elements\\) but the document gives .* \\(${groups.length} element`),
+            `${column.name}: the report must name both cardinalities`,
+          );
+          covered += 1;
+        }
+      }
+      assert.equal(covered, 22, "the reproduced family is covered exactly");
+    });
+
+    test("the separator byte is not the rule: any invented member is reported", async () => {
+      // A correction that blacklisted the comma, or the exact rendering `join(",")` produced, would
+      // pass the family above and fail here. Merging with a comma and a space, or with a character
+      // the renderer never emits, loses the same element boundaries.
+      for (const column of await columns()) {
+        const sortedEnforced = [...column.enforced].sort();
+        for (const [name, separator] of [["comma and space", ", "], ["a space", " "], ["a slash", "/"]] as const) {
+          const merged = [`${sortedEnforced[0]!}${separator}${sortedEnforced[1]!}`, ...sortedEnforced.slice(2)];
+          const { reported } = await rewrite(column.anchor, merged, column.read);
+          assert.ok(
+            reported.some((line) => column.names.test(line)),
+            `${column.name}: two members joined by ${name} are one invented member; got ${JSON.stringify(reported)}`,
+          );
+        }
+      }
+    });
+
+    test("cardinality alone is not the rule, and neither is membership alone", async () => {
+      // Left: merge two members and split a third, so the sizes match and the members do not — a
+      // comparison that only counted elements would accept it. Right: repeat one declared member in
+      // place of another, so the member *set* is a subset that a set comparison collapses onto the
+      // declared set; the whole-cell decoder rejects a repeat inside one cell, so this stays loud
+      // through the unreadable channel rather than through the comparison.
+      for (const column of await columns()) {
+        const sortedEnforced = [...column.enforced].sort();
+        const head = sortedEnforced[0]!;
+        const second = sortedEnforced[1]!;
+        const third = sortedEnforced[2]!;
+        const sameSize = [`${head},${second}`, third.slice(0, 3), third.slice(3), ...sortedEnforced.slice(3)];
+        const sameSizeResult = await rewrite(column.anchor, sameSize, column.read);
+        assert.equal(sameSize.length, sortedEnforced.length, "the rewritten collection has the declared size");
+        assert.ok(
+          sameSizeResult.reported.some((line) => column.names.test(line)),
+          `${column.name}: same size, different members must be reported; got ${JSON.stringify(sameSizeResult.reported)}`,
+        );
+
+        const repeated = [head, head, ...sortedEnforced.slice(2)];
+        const repeatedResult = await rewrite(column.anchor, repeated, column.read);
+        assert.ok(
+          repeatedResult.unreadable.length > 0,
+          `${column.name}: a repeated member must be accounted for; got ${JSON.stringify(repeatedResult.unreadable)}`,
+        );
+      }
+    });
+
+    test("a dropped or invented member is reported by size in both columns", async () => {
+      // Both ends deliberately. Dropping the *last* member in sorted order leaves the remaining
+      // members a prefix of the declared ones, so only the cardinality half of the rule can see it;
+      // dropping the first is caught by member identity. A correction that compared members without
+      // comparing sizes would pass one of these and fail the other.
+      for (const column of await columns()) {
+        const sortedEnforced = [...column.enforced].sort();
+        for (const [end, dropped] of [
+          ["last", sortedEnforced.slice(0, -1)],
+          ["first", sortedEnforced.slice(1)],
+        ] as const) {
+          const result = await rewrite(column.anchor, dropped, column.read);
+          assert.match(
+            result.reported.find((line) => column.names.test(line)) ?? "",
+            new RegExp(`\\(${sortedEnforced.length - 1} element`),
+            `${column.name}: the ${end} member dropped must be reported`,
+          );
+        }
+        const invented = await rewrite(column.anchor, [...sortedEnforced, "packages/invented/src"], column.read);
+        assert.match(
+          invented.reported.find((line) => column.names.test(line)) ?? "",
+          new RegExp(`\\(${sortedEnforced.length + 1} element`),
+          `${column.name}: an invented member must be reported`,
+        );
+      }
+    });
+
+    test("the loss is two-sided: the enforced collection cannot be split either", async () => {
+      // The mirror of the reported family, and the case a comma blacklist on the document side
+      // cannot reach. Here the *policy* declares one member that contains the separator and the
+      // document splits it into two: the joined renderings were equal, so the old comparison
+      // reported agreement about a zone whose single declared root does not exist in the document.
+      // The policy argument is injected, which is how the direction is observable at all — no real
+      // root or subpath spells a comma, and the invariant is not about which bytes they spell.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const commaZone: Zone = { id: "comma-zone", roots: ["packages/a,packages/b"] };
+      const injected = { zones: [...ZONES, commaZone], deferred: DEFERRED_EXTRACTIONS };
+      const anchor = "| `host-sdk` | `packages/sdk/src` |";
+
+      const split = inventoryDisagreements(
+        parseInventory(mutate(real, [[anchor, `${anchor}\n| \`comma-zone\` | \`packages/a\`, \`packages/b\` |`]])),
+        injected,
+        workspace,
+      );
+      assert.ok(
+        split.some((line) => /^zone comma-zone owns \["packages\/a,packages\/b"\] \(1 element\) but the document gives \["packages\/a", "packages\/b"\] \(2 elements\)$/.test(line)),
+        `splitting the enforced member must be reported; got ${JSON.stringify(split)}`,
+      );
+
+      const honest = inventoryDisagreements(
+        parseInventory(mutate(real, [[anchor, `${anchor}\n| \`comma-zone\` | \`packages/a,packages/b\` |`]])),
+        injected,
+        workspace,
+      );
+      assert.deepEqual(
+        honest.filter((line) => line.includes("comma-zone")),
+        [],
+        "the same zone spelled as its one declared root still agrees",
+      );
+    });
+
+    test("reordering stays permitted in every collection-valued relation", async () => {
+      // The positive twin the whole correction has to keep. The policy writes
+      // `runtime-integrations`' roots in a different order than the document does, and both
+      // dependency columns are lists whose order asserts nothing, so a comparison that fixed the
+      // defect by demanding a sequence would break the real document.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      for (const column of await columns()) {
+        const reversed = await rewrite(column.anchor, [...column.enforced].reverse(), column.read);
+        assert.deepEqual(reversed.reported, [], `${column.name}: a reordered collection still agrees`);
+      }
+
+      const reachesCell = "`@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`";
+      const reversedReaches = parseDependencyTable(
+        mutate(real, [[reachesCell, cell(["@arrokothi/core/reference", "@arrokothi/core/ports", "@arrokothi/core"])]]),
+      );
+      const measured = await measuredZoneEdges(ZONES.find((zone) => zone.id === "host-sdk")!, workspace);
+      assert.equal(
+        collectionDisagreement("host-sdk reaches", measured.reaches, reversedReaches.rows.get("host-sdk")!.reaches),
+        undefined,
+        "a reordered dependency cell still agrees with the measured tree",
+      );
+    });
+
+    test("the dependency columns are compared by the same rule as the ownership tables", async () => {
+      // The fourth table and the two relations that live outside `inventoryDisagreements`. They
+      // were not silently accepting the merged form, because their consumer happened to compare
+      // sorted arrays — but that was a second hand-written comparison, which is how the two in
+      // `inventoryDisagreements` came to differ from what the relation means. Both now go through
+      // the shared rule and are asserted here against the measurement the real guard uses.
+      const real = await realInventory();
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const hostSdk = ZONES.find((zone) => zone.id === "host-sdk")!;
+      const integrations = ZONES.find((zone) => zone.id === "runtime-integrations")!;
+
+      const merges: readonly { readonly zone: Zone; readonly column: "reaches" | "thirdParty"; readonly from: string; readonly to: string }[] = [
+        {
+          zone: hostSdk,
+          column: "reaches",
+          from: "`@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`",
+          to: "`@arrokothi/core,@arrokothi/core/ports,@arrokothi/core/reference`",
+        },
+        {
+          zone: integrations,
+          column: "thirdParty",
+          from: "`@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk`",
+          to: "`@langchain/core/documents,@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk`",
+        },
+      ];
+
+      for (const { zone, column, from, to } of merges) {
+        const measured = await measuredZoneEdges(zone, workspace);
+        const documented = parseDependencyTable(mutate(real, [[from, to]])).rows.get(zone.id)!;
+        assert.notEqual(
+          collectionDisagreement(`${zone.id} ${column}`, measured[column], documented[column]),
+          undefined,
+          `${zone.id} ${column}: a merged cell must disagree with the measured tree`,
+        );
+        const honest = parseDependencyTable(real).rows.get(zone.id)!;
+        assert.equal(
+          collectionDisagreement(`${zone.id} ${column}`, measured[column], honest[column]),
+          undefined,
+          `${zone.id} ${column}: the real cell still agrees`,
+        );
+      }
+
+      // The decoded members reach the comparison as members. A repeated specifier is rejected by
+      // the whole-cell decoder rather than collapsed on the way, which is what the previous `Set`
+      // representation depended on without saying so.
+      const repeated = parseDependencyTable(
+        mutate(real, [["`@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`", "`@arrokothi/core`, `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`"]]),
+      );
+      assert.ok(
+        repeated.unreadable.some((message) => /Dependency row for host-sdk is malformed/.test(message)),
+        `a repeated dependency specifier must be reported; got ${JSON.stringify(repeated.unreadable)}`,
+      );
+      assert.ok(
+        Array.isArray(parseDependencyTable(real).rows.get("host-sdk")!.reaches),
+        "the parsed relation carries its decoded members, not a set",
+      );
+    });
+
+    test("the Deferred tuple still distinguishes every scalar field", async () => {
+      // Re-asserted, not changed. The Deferred relation is three scalars compared exactly, so it
+      // has no collection to lose — including when a field is given the separator that defeated the
+      // collection comparison. This is the adjacent consumer the correction had to inspect and
+      // leave alone.
+      const workspace = await loadWorkspace(REPO_ROOT);
+      const row = "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 |";
+      for (const [name, replacement, expected] of [
+        ["a separator-bearing owner", "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1,K3.1 |", /deferred row DX-1 is owned by K1\.1 but the document says K1\.1,K3\.1/],
+        ["a reassigned owner", "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K3.1 |", /deferred row DX-1 is owned by K1\.1 but the document says K3\.1/],
+        ["a changed disposition", "| DX-1 | `packages/core/src/util/hash.ts` | legacy-only | K1.1 |", /deferred row DX-1 is migratable but the document says legacy-only/],
+        ["a moved path", "| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 |", /deferred row DX-1 covers packages\/core\/src\/util\/hash\.ts but the document gives packages\/core\/src\/util\/json\.ts/],
+      ] as const) {
+        const reported = inventoryDisagreements(
+          parseInventory(mutate(await realInventory(), [[row, replacement]])),
+          policy,
+          workspace,
+        );
+        assert.ok(reported.some((line) => expected.test(line)), `${name}: got ${JSON.stringify(reported)}`);
+      }
+    });
+
+    test("the diagnostic shows the boundaries it compared", async () => {
+      // The other half of the defect. The old message rendered a four-member collection and the
+      // one-member collection holding its comma-joined text almost identically — `[a, b]` against
+      // `[a,b]` — so a reader, or a control matching on the text, could not tell which relation the
+      // oracle had actually seen. Quoting each member and stating the size makes the two shapes
+      // different text, and the two mutations below are asserted to produce different reports.
+      const column = (await columns())[1]!;
+      const sortedEnforced = [...column.enforced].sort();
+      const merged = await rewrite(column.anchor, contiguousMerges(sortedEnforced)[0]!, column.read);
+      const dropped = await rewrite(column.anchor, sortedEnforced.slice(1), column.read);
+      const mergedMessage = merged.reported.find((line) => column.names.test(line));
+      const droppedMessage = dropped.reported.find((line) => column.names.test(line));
+      assert.ok(mergedMessage && droppedMessage, "both mutations are reported");
+      assert.notEqual(mergedMessage, droppedMessage, "two different false relations read differently");
+      assert.match(mergedMessage, /but the document gives \["packages\/agents\/strands\/src,packages\/interoperability\/mcp\/src,packages\/models\/gemini\/src,packages\/retrieval\/local\/src"\] \(1 element\)$/);
+      assert.match(droppedMessage, /but the document gives \["packages\/interoperability\/mcp\/src", "packages\/models\/gemini\/src", "packages\/retrieval\/local\/src"\] \(3 elements\)$/);
     });
   });
 

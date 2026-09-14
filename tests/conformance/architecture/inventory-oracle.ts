@@ -72,6 +72,20 @@
  * so a missing governed cell fails its decoder while an absent trailing ungoverned prose cell
  * asserts nothing. The reader withholds trailing ungoverned prose from the decoders physically by
  * passing `valueOf` only the governed prefix.
+ *
+ * Collections are *compared* as collections, never as renderings of themselves (K10-CORR2-01).
+ * Decoding a cell whole keeps `` `a`, `b` `` and `` `a,b` `` apart as two elements and one, but
+ * the comparison that consumed them joined each side with commas and compared the two strings, and
+ * a joined string is not an injective rendering: those two collections render identically, so one
+ * invented root or export subpath passed as several declared ones and the oracle reported
+ * agreement. Every collection-valued relation now goes through one `collectionDisagreement`, which
+ * compares cardinality and then element against element over a common order - so reordering stays
+ * permitted, a differently sized collection can never agree, and the diagnostic shows each
+ * element's boundaries and the size it found. The decoded elements reach it unchanged: no stage in
+ * between converts a relation to a `Set`, a string or any other shape that can drop one. The
+ * direction is the same tie-breaker as the two rules above, applied to equality: a comparison that
+ * is too strict only adds reports, while one that equates unequal relations deletes the rejection
+ * guarantee the whole oracle advertises.
  */
 
 import type { PackageEntry, Workspace } from "./module-graph.ts";
@@ -182,11 +196,18 @@ function decodeCount(cell: string): number | undefined {
  * denies every edge and then names one is a contradiction the reader reports instead of resolving
  * in the denial's favour. `nothing` is an explicit empty set in both columns; the em dash
  * additionally means "self, not cross-boundary" and is accepted only in the column that uses it.
+ *
+ * The decoded elements are returned as they were decoded, never as a `Set` (K10-CORR2-01). The
+ * previous `new Set(tokens)` was a second representation change on the way from the document to
+ * the comparison, and its correctness rested on a rule stated somewhere else entirely - that
+ * `decodeCodeSpanList` rejects a token repeated inside one cell - rather than on anything visible
+ * here. That coupling is the shape this packet is correcting: no stage between the governed text
+ * and the comparison may be able to lose an element. Keeping the decoded array makes the
+ * cardinality the document asserted survive to `collectionDisagreement`, which owns the equality.
  */
-function decodeEdgeCell(cell: string, emptySentinels: readonly string[]): Set<string> | undefined {
-  if (emptySentinels.includes(cell)) return new Set<string>();
-  const tokens = decodeCodeSpanList(cell);
-  return tokens === undefined ? undefined : new Set(tokens);
+function decodeEdgeCell(cell: string, emptySentinels: readonly string[]): string[] | undefined {
+  if (emptySentinels.includes(cell)) return [];
+  return decodeCodeSpanList(cell);
 }
 
 /** Workspace-reach column: "nothing" is the empty set, U+2014 is "self, not cross-boundary". */
@@ -1622,8 +1643,10 @@ export function parseInventory(markdown: string): ParsedInventory {
 /** One row of the cross-boundary dependency table. */
 export interface DependencyRow {
   readonly files: number;
-  readonly reaches: ReadonlySet<string>;
-  readonly thirdParty: ReadonlySet<string>;
+  /** Workspace specifiers the row claims, as decoded: elements, not a set (K10-CORR2-01). */
+  readonly reaches: readonly string[];
+  /** Third-party specifiers the row claims, as decoded: elements, not a set (K10-CORR2-01). */
+  readonly thirdParty: readonly string[];
 }
 
 export interface ParsedDependencyTable {
@@ -1671,11 +1694,80 @@ export function parseDependencyTable(markdown: string): ParsedDependencyTable {
 const sorted = (values: readonly string[]): string[] => [...values].sort();
 
 /**
+ * Whether two asserted collections are the same collection (K10-CORR2-01).
+ *
+ * Cardinality first, then element against element over a common order. Sorting is how the
+ * comparison stays indifferent to the order the document happens to list its members in - the
+ * policy writes `runtime-integrations`' four roots in a different order than the inventory does,
+ * and that is a permitted spelling, not a disagreement. Nothing is rendered: the elements
+ * themselves are compared, so a collection can never agree with a differently sized one and two
+ * collections with different members can never agree by producing the same text.
+ *
+ * This is the rule the previous `documented.join(",") === expected.join(",")` did not implement.
+ * A joined string is a *rendering* of a collection, and rendering is not injective: any collection
+ * whose members are joined by the separator renders identically to the one collection holding that
+ * whole rendering as a single member. The whole-cell decoder (K10-CLEANUP-01) already kept
+ * `` `a`, `b` `` and `` `a,b` `` apart as two elements and one, and this comparison then put them
+ * back together, so a document could assert one invented root or export subpath in place of
+ * several declared ones - or, symmetrically, split one declared comma-bearing member into several -
+ * and the oracle reported agreement. The loss is two-sided and belongs to the equality, not to the
+ * separator: it is corrected by comparing collections as collections, not by forbidding a byte.
+ */
+function sameCollection(a: readonly string[], b: readonly string[]): boolean {
+  if (a.length !== b.length) return false;
+  const left = sorted(a);
+  const right = sorted(b);
+  return left.every((value, index) => value === right[index]);
+}
+
+/**
+ * One collection rendered so that its element boundaries and its size survive the message.
+ *
+ * The diagnostic is the other half of K10-CORR2-01. A message that printed `[a, b]` for both a
+ * two-element collection and the one-element collection holding `a, b` reproduced the defect in the
+ * place a human or a control regex reads the result, so a report could name the right relation and
+ * still not show what is wrong with it. Each element is quoted with its own escaping and the size
+ * is stated, so the two cases read differently: `["a", "b"] (2 elements)` against
+ * `["a,b"] (1 element)`.
+ */
+function showCollection(values: readonly string[]): string {
+  const elements = sorted(values)
+    .map((value) => JSON.stringify(value))
+    .join(", ");
+  return `[${elements}] (${values.length} ${values.length === 1 ? "element" : "elements"})`;
+}
+
+/**
+ * How one asserted collection disagrees with the enforced one, or `undefined` when they agree.
+ *
+ * Every collection-valued relation in this document goes through here - the Zones table's roots,
+ * the Export table's subpaths and both dependency edge columns - so the equality is stated once
+ * and no table can quietly acquire a weaker comparison of its own. That is the same reason
+ * `readKeyedTable` owns row accounting for all four tables: the defect this replaces was two
+ * hand-written comparisons that had drifted from what the relation means, and a third consumer
+ * comparing by hand somewhere else is how it would come back.
+ *
+ * `enforced` is whichever side is not the document: the executable policy, the workspace manifests,
+ * or the measured import tree. `subject` names the relation and is completed by the caller, so the
+ * message reads as one sentence about that relation.
+ */
+export function collectionDisagreement(
+  subject: string,
+  enforced: readonly string[],
+  documented: readonly string[],
+): string | undefined {
+  if (sameCollection(documented, enforced)) return undefined;
+  return `${subject} ${showCollection(enforced)} but the document gives ${showCollection(documented)}`;
+}
+
+/**
  * Every way the document and the enforced reality disagree, as concrete messages.
  *
  * Each relation is compared in both directions and by whole row, so a swapped root, a reassigned
  * owner, a changed disposition or a wrong publishability claim is a disagreement rather than an
- * unchanged token set.
+ * unchanged token set. Collection-valued relations are compared by element identity and cardinality
+ * through `collectionDisagreement` (K10-CORR2-01), never through a rendering of the collection, so
+ * a differently sized or differently populated collection cannot agree by serializing the same way.
  */
 export function inventoryDisagreements(
   parsed: ParsedInventory,
@@ -1684,17 +1776,15 @@ export function inventoryDisagreements(
 ): string[] {
   const disagreements: string[] = [...parsed.unreadable.map((row) => `unreadable row: ${row}`)];
 
-  const policyZones = new Map(policy.zones.map((zone) => [zone.id, sorted(zone.roots)]));
+  const policyZones = new Map(policy.zones.map((zone) => [zone.id, zone.roots]));
   for (const [id, roots] of parsed.zones) {
     const expected = policyZones.get(id);
     if (expected === undefined) {
       disagreements.push(`zone ${id} is documented but not declared by the policy`);
       continue;
     }
-    const documented = sorted(roots);
-    if (documented.join(",") !== expected.join(",")) {
-      disagreements.push(`zone ${id} owns [${expected.join(", ")}] but the document gives it [${documented.join(", ")}]`);
-    }
+    const mismatch = collectionDisagreement(`zone ${id} owns`, expected, roots);
+    if (mismatch !== undefined) disagreements.push(mismatch);
   }
   for (const id of policyZones.keys()) {
     if (!parsed.zones.has(id)) disagreements.push(`zone ${id} is declared by the policy but not documented`);
@@ -1727,11 +1817,8 @@ export function inventoryDisagreements(
       disagreements.push(`package ${name} is documented but is not a workspace package`);
       continue;
     }
-    const declared = sorted([...entry.exports.keys()]);
-    const documented = sorted(row.subpaths);
-    if (documented.join(",") !== declared.join(",")) {
-      disagreements.push(`package ${name} exports [${declared.join(", ")}] but the document gives [${documented.join(", ")}]`);
-    }
+    const mismatch = collectionDisagreement(`package ${name} exports`, [...entry.exports.keys()], row.subpaths);
+    if (mismatch !== undefined) disagreements.push(mismatch);
     if (row.published === entry.isPrivate) {
       disagreements.push(
         `package ${name} is ${entry.isPrivate ? "private" : "publishable"} but the document says it is ${row.published ? "published" : "not published"}`,

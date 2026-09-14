@@ -32,13 +32,17 @@ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const WORK = "docs/development/work/K1.0";
 
 /**
- * Every work root whose raw evidence this guard owns. K1.0's correction packet keeps its own
- * report and validation directory, so it is listed here rather than left outside the check: an
- * evidence directory nothing verifies is exactly the gap this guard exists to close. Roots are
+ * Every work root whose raw evidence this guard owns. K1.0's correction packets keep their own
+ * reports and validation directories, so they are listed here rather than left outside the check:
+ * an evidence directory nothing verifies is exactly the gap this guard exists to close. Roots are
  * named explicitly rather than discovered, so adding a packet is a deliberate decision about who
  * checks its records instead of a silent widening of this one.
  */
-const WORK_ROOTS = [WORK, "docs/development/work/K1.0-correction-01"] as const;
+const WORK_ROOTS = [
+  WORK,
+  "docs/development/work/K1.0-correction-01",
+  "docs/development/work/K1.0-correction-02",
+] as const;
 
 /**
  * Validation directories whose manifest exists, as `root/directory`, oldest first within each

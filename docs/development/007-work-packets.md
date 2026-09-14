@@ -124,7 +124,7 @@ Historical K1.0 ACCEPT is preserved. Correction-01 subsequently received indepen
 
 ### K1.0-correction-02 — Collection identity in inventory comparison
 
-Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/cleanup-01.md). Repair loss of element boundaries in root/export comparison, trace all four inventory consumers, preserve existing parser/schema controls and revalidate original-base cumulative K1.0-C1–C9. [Bounded scope and copy-ready fixing prompt](work/K1.0-correction-02/handoff-01.md). Historical correction-01 ACCEPT remains; C4 claims and integration are held pending new C/H and fresh independent review. No successor release.
+Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/cleanup-01.md). Repair loss of element boundaries in root/export comparison, trace all four inventory consumers, preserve existing parser/schema controls and revalidate original-base cumulative K1.0-C1–C9. [Bounded scope and copy-ready fixing prompt](work/K1.0-correction-02/handoff-01.md); bounded scope, authority and preserved identities: [contract](work/K1.0-correction-02/contract.md). The criteria are K1.0-C1 … C9 exactly as [K1.0's contract](work/K1.0/contract.md) states them; this packet adds none and weakens none. Historical correction-01 ACCEPT remains; C4 claims and integration are held pending new C/H and fresh independent review. No successor release.
 
 ### K1.1 — Create, reserve and asynchronous dispatch
 
