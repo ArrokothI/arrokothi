@@ -133,9 +133,17 @@ describe("K1.0 target Kernel landing zone", () => {
     );
   });
 
-  test("the target zone's real import graph reaches nothing outside itself", async () => {
+  test("the target zone's real import graph reaches nothing outside itself except the approved JCS dependency", async () => {
     const violations = await boundaryViolations(await realGraph(), TARGET_KERNEL_RULES);
-    assert.deepEqual(violations, [], "new Kernel work depends on no legacy, Runtime, host or vendor code");
+    assert.deepEqual(violations, [], "new Kernel work depends on no legacy, Runtime, host or unapproved vendor code");
+    // And the approval is actually exercised: the only non-node: external edge is the
+    // owner-approved `canonicalize` specifier values.ts imports (K11-R1-JCS-01). A second vendor
+    // import would appear here as well as in the violations above.
+    const externals = (await realGraph()).edges
+      .filter((edge) => edge.resolution.kind === "external" && !edge.specifier.startsWith("node:"))
+      .map((edge) => edge.specifier)
+      .sort();
+    assert.deepEqual([...new Set(externals)], ["canonicalize"]);
   });
 
   test("that result is not vacuous: the graph has real files and a real internal edge", async () => {
@@ -389,12 +397,28 @@ describe("K1.0 forbidden-edge controls", () => {
     assert.equal(violations[0]!.specifier, "@arrokothi/sdk");
   });
 
-  test("an import of a third-party package is rejected", async () => {
+  test("an import of an unapproved third-party package is rejected", async () => {
     const violations = await violationsFor({
       "packages/kernel/src/index.ts": 'import { Agent } from "@strands-agents/sdk";\nexport const use = Agent;\n',
     });
     assert.equal(violations.length, 1);
-    assert.match(violations[0]!.reason, /node: builtins only/);
+    assert.match(violations[0]!.reason, /approved canonicalize package only/);
+  });
+
+  test("a similarly-named third-party package is not covered by the canonicalize approval", async () => {
+    // The approval is an exact specifier, not a prefix: `canonicalize-evil` must not ride along.
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts": 'import evil from "canonicalize-evil";\nexport const use = evil;\n',
+    });
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0]!.specifier, "canonicalize-evil");
+  });
+
+  test("the approved canonicalize specifier is accepted", async () => {
+    const violations = await violationsFor({
+      "packages/kernel/src/index.ts": 'import canonicalize from "canonicalize";\nexport const use = canonicalize;\n',
+    });
+    assert.deepEqual(violations, [], "the owner-approved JCS dependency is usable from the zone");
   });
 
   test("a workspace subpath that is not a declared export is rejected as unresolved", async () => {
@@ -832,7 +856,7 @@ describe("K1.0 policy and inventory agree", () => {
     // ever considered, so it vanished: no duplicate, no unreadable row, and the correct row made
     // recomputation green. Both orders are exercised because the old code skipped it either way.
     const real = await realInventory();
-    const correct = "| `target-kernel` | 10 | nothing | nothing |";
+    const correct = "| `target-kernel` | 10 | nothing | `canonicalize` |";
     const malformed = "| `target-kernel` | not-a-count | `@arrokothi/core` | nothing |";
 
     for (const [position, replacement] of [
@@ -853,7 +877,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("a dependency row with no recognisable key fails closed (K10-R4-01)", async () => {
     const real = await realInventory();
-    const correct = "| `target-kernel` | 10 | nothing | nothing |";
+    const correct = "| `target-kernel` | 10 | nothing | `canonicalize` |";
     const { unreadable } = parseDependencyTable(mutate(real, [[correct, `| not-a-zone | 2 | nothing | nothing |\n${correct}`]]));
     assert.ok(
       unreadable.some((message) => /Dependency row has no recognisable key/.test(message)),
@@ -892,8 +916,8 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("duplicate cross-boundary dependency rows fail closed (K10-R3-01)", async () => {
     const real = await realInventory();
-    const anchor = "| `target-kernel` | 10 | nothing | nothing |";
-    const stale = "| `target-kernel` | 999 | nothing | nothing |";
+    const anchor = "| `target-kernel` | 10 | nothing | `canonicalize` |";
+    const stale = "| `target-kernel` | 999 | nothing | `canonicalize` |";
     const variants = [
       mutate(real, [[anchor, `${stale}\n${anchor}`]]),
       mutate(real, [[anchor, `${anchor}\n${stale}`]]),
@@ -995,11 +1019,11 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)", async () => {
     const real = await realInventory();
-    const correct = "| `target-kernel` | 10 | nothing | nothing |";
+    const correct = "| `target-kernel` | 10 | nothing | `canonicalize` |";
     const badByEdge: Record<string, string> = {
-      "omitted trailing pipe": "| `target-kernel` | 999 | `@arrokothi/core` | nothing",
-      "omitted leading pipe": "`target-kernel` | 999 | `@arrokothi/core` | nothing |",
-      "omitted both edge pipes": "`target-kernel` | 999 | `@arrokothi/core` | nothing",
+      "omitted trailing pipe": "| `target-kernel` | 999 | `@arrokothi/core` | `canonicalize`",
+      "omitted leading pipe": "`target-kernel` | 999 | `@arrokothi/core` | `canonicalize` |",
+      "omitted both edge pipes": "`target-kernel` | 999 | `@arrokothi/core` | `canonicalize`",
     };
     for (const [edge, bad] of Object.entries(badByEdge)) {
       for (const position of ["before", "after"] as const) {
@@ -1173,7 +1197,7 @@ describe("K1.0 policy and inventory agree", () => {
       for (const position of ["before", "after"] as const) {
         test(`a Dependency body row beginning with the header label is accounted for, ${position} the correct row, with ${edge}`, async () => {
           const real = await realInventory();
-          const correct = "| `target-kernel` | 10 | nothing | nothing |";
+          const correct = "| `target-kernel` | 10 | nothing | `canonicalize` |";
           const mutated =
             position === "before"
               ? mutate(real, [[correct, `${bad}\n${correct}`]])
@@ -2946,7 +2970,7 @@ describe("K1.0 policy and inventory agree", () => {
     // contradictory spellings that must be reported, and the permitted spellings beside them that
     // must still parse — so a decoder that is merely stricter about the four reported strings would
     // fail the first half, and one that is stricter about everything would fail the second.
-    const REAL_DEPENDENCY_ROW = "| `target-kernel` | 10 | nothing | nothing |";
+    const REAL_DEPENDENCY_ROW = "| `target-kernel` | 10 | nothing | `canonicalize` |";
     const REAL_HOST_SDK_ROW =
       "| `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing |";
     const REAL_ZONE_ROW =
@@ -2998,7 +3022,7 @@ describe("K1.0 policy and inventory agree", () => {
       for (const count of ["2.5", "2oops", "+2", "-2", "02", "2e0", "0x2", "2,000", "1/2", "two", "2 files", ""]) {
         const unreadable = await dependencyUnreadable(
           REAL_DEPENDENCY_ROW,
-          `| \`target-kernel\` | ${count} | nothing | nothing |`,
+          `| \`target-kernel\` | ${count} | nothing | \`canonicalize\` |`,
         );
         assert.ok(
           unreadable.some((message) => /Dependency row for target-kernel is malformed/.test(message)),
@@ -3015,7 +3039,7 @@ describe("K1.0 policy and inventory agree", () => {
       assert.equal(parseDependencyTable(real).rows.get("legacy-core")?.files, 143);
       for (const [count, expected] of [["0", 0], ["7", 7], ["143", 143]] as const) {
         const { rows, unreadable } = parseDependencyTable(
-          mutate(real, [[REAL_DEPENDENCY_ROW, `| \`target-kernel\` | ${count} | nothing | nothing |`]]),
+          mutate(real, [[REAL_DEPENDENCY_ROW, `| \`target-kernel\` | ${count} | nothing | \`canonicalize\` |`]]),
         );
         assert.deepEqual(unreadable, [], `${count} is a well-formed count`);
         assert.equal(rows.get("target-kernel")?.files, expected, `${count} decodes to itself`);
@@ -3324,7 +3348,7 @@ describe("K1.0 policy and inventory agree", () => {
     // the short-row and correct-body twins.
     const DEP_HEADER = "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |";
     const DEP_DELIM = "|---|---|---|---|";
-    const DEP_ROW = "| `target-kernel` | 10 | nothing | nothing |";
+    const DEP_ROW = "| `target-kernel` | 10 | nothing | `canonicalize` |";
     const ZONES_HEADER = "| Zone id | Roots | Owner and status |";
     const ZONES_DELIM = "|---|---|---|";
     const ZONES_ROW =
@@ -3358,7 +3382,7 @@ describe("K1.0 policy and inventory agree", () => {
       const baseline = parseDependencyTable(real);
       const mutated = await depResult([
         [`${DEP_HEADER}\n${DEP_DELIM}`, `${DEP_HEADER} Extra claim |\n${DEP_DELIM}---|`],
-        [DEP_ROW, "| `target-kernel` | 10 | nothing | nothing | `evil-package` |"],
+        [DEP_ROW, "| `target-kernel` | 10 | nothing | `canonicalize` | `evil-package` |"],
       ]);
       assert.ok(
         mutated.unreadable.some((message) =>

@@ -24,13 +24,17 @@
  * numbers through `JSON.stringify`, applies none of the four limits and rejects no invalid value.
  * Adopting it would import exactly the behaviour rule 1 above forbids.
  *
- * `values.md` says to prefer an unmodified conforming JCS implementation over an almost-equivalent
- * serializer. The target zone may not add a third-party package without an owner decision under
- * AGENTS.md's third-party review, so this implementation is written directly against `values.md`'s
- * own stated rules and worked examples, behind this one module so a later approved dependency can
- * replace it without touching a caller. That open decision is K1.1-OPEN-2 in the packet contract.
+ * Canonical bytes come from the owner-approved unmodified conforming JCS implementation
+ * `canonicalize@3.0.0` (Apache-2.0, erdtman/canonicalize, zero runtime dependencies), used exactly
+ * as published via its default export. Owner approval for this exact dependency is recorded in
+ * K1.1's contract revision 3 (K11-R1-JCS-01); the AGENTS.md third-party record (source, version,
+ * license, reuse method, obligations) lives in `implementation-03.md`. ArrokothI boundary
+ * validation, the four semantic limits, per-root measurement and the `defineProperty` seal below
+ * remain this module's own: the dependency is called only with already-validated plain data and
+ * only to serialize it, never to decide validity.
  */
 
+import canonicalizeJcs from "canonicalize";
 import { Buffer } from "node:buffer";
 
 /** A value that may cross a Kernel boundary. `values.md`: "Boundary value and root". */
@@ -294,57 +298,23 @@ function walk(value: unknown, path: string, level: number, state: WalkState): vo
   }
 }
 
-const ESCAPES = new Map<number, string>([
-  [0x08, "\\b"],
-  [0x09, "\\t"],
-  [0x0a, "\\n"],
-  [0x0c, "\\f"],
-  [0x0d, "\\r"],
-]);
-
 /**
- * `values.md` rule 4: escape quote, backslash and C0 controls, with the five named escapes and
- * lowercase `\u00xx` for the rest. `/` and every other scalar value is emitted directly.
+ * Canonical bytes for an already-validated root, via the owner-approved unmodified JCS
+ * implementation.
+ *
+ * Called only after `walk` has accepted the value, so every input here is plain data the
+ * dependency serializes deterministically: `null`, boolean, finite number, well-formed string,
+ * or arrays/plain objects thereof with no `undefined`/symbol/accessor/non-enumerable/array-extra
+ * members and no cycles. The dependency is never asked to decide validity: refusal (with located
+ * ArrokothI issue codes) happens in `walk`, and the byte limit is measured here from its output.
+ * Verified byte-identical to `values.md` rules 1–6 on the accepted space (key UTF-16 order,
+ * shortest round-trip numbers with `-0` as `0`, rule-4 escapes with `/`/DEL/direct Unicode
+ * passthrough), including own `"__proto__"` members and null-prototype objects.
  */
-function encodeString(input: string): string {
-  let out = '"';
-  for (const character of input) {
-    const code = character.codePointAt(0) as number;
-    if (character === '"') out += '\\"';
-    else if (character === "\\") out += "\\\\";
-    else if (code <= 0x1f) {
-      const named = ESCAPES.get(code);
-      out += named ?? `\\u${code.toString(16).padStart(4, "0")}`;
-    } else out += character;
-  }
-  return `${out}"`;
-}
-
-/**
- * `values.md` rule 5: ECMA-262 `Number::toString`, the shortest round-trip spelling RFC 8785 adopts.
- * JavaScript's own string conversion *is* that algorithm, which is why the page's examples — `-0`
- * becoming `0`, `1e21` becoming `1e+21`, `1e-6` becoming `0.000001` — need no special cases here.
- */
-const encodeNumber = (value: number): string => String(value);
-
-/** Rule 3: member names sort as unsigned UTF-16 code-unit sequences, independent of locale. */
-const byCodeUnit = (left: string, right: string): number => (left < right ? -1 : left > right ? 1 : 0);
-
 function encode(value: BoundaryValue): string {
-  if (value === null) return "null";
-  switch (typeof value) {
-    case "boolean":
-      return value ? "true" : "false";
-    case "number":
-      return encodeNumber(value);
-    case "string":
-      return encodeString(value);
-    default:
-      break;
-  }
-  if (Array.isArray(value)) return `[${value.map(encode).join(",")}]`;
-  const names = Object.keys(value).sort(byCodeUnit);
-  return `{${names.map((name) => `${encodeString(name)}:${encode((value as Record<string, BoundaryValue>)[name] as BoundaryValue)}`).join(",")}}`;
+  const canonical = canonicalizeJcs(value) as string | undefined;
+  if (typeof canonical !== "string") throw new Error("JCS implementation returned no canonical form for a validated boundary value");
+  return canonical;
 }
 
 /** Every reason `value` is not an acceptable boundary value root. Empty means it is one. */

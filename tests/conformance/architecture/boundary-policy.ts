@@ -65,10 +65,22 @@ export const ZONES: readonly Zone[] = [TARGET_KERNEL, LEGACY_CORE, RUNTIME_INTEG
 export const TARGET_KERNEL_ENTRY_MODULES: readonly string[] = ["packages/kernel/src/index.ts"];
 
 /**
- * External specifiers the target Kernel zone may reach. Node builtins only: a target Kernel that
- * needs a third-party package needs an owner decision first, not an allowlist edit in a test.
+ * External specifiers the target Kernel zone may reach by prefix.
+ *
+ * Node builtins always. A further third-party need still requires an owner decision first,
+ * not an allowlist edit in a test.
  */
 export const TARGET_KERNEL_ALLOWED_EXTERNAL_PREFIXES: readonly string[] = ["node:"];
+
+/**
+ * Exact third-party specifiers the target Kernel zone may reach.
+ *
+ * Exactly one entry, owner-approved for K1.1 round 3 under AGENTS.md third-party review:
+ * `canonicalize` (exact `canonicalize@3.0.0`, Apache-2.0), the unmodified conforming JCS
+ * implementation `values.md` requires (K11-R1-JCS-01). Exact match only — unlike the prefix
+ * list above, this does not extend to similarly-named packages or subpaths.
+ */
+export const TARGET_KERNEL_ALLOWED_EXTERNAL_SPECIFIERS: readonly string[] = ["canonicalize"];
 
 /**
  * Portable leaves from outside the zone that the target Kernel may reuse.
@@ -98,6 +110,8 @@ export interface BoundaryRules {
   readonly allowedLeaves: readonly string[];
   /** External specifier prefixes that may be imported. */
   readonly allowedExternalPrefixes: readonly string[];
+  /** Exact third-party specifiers that may be imported (no prefix extension). */
+  readonly allowedExternalSpecifiers: readonly string[];
 }
 
 /** The rules the real target Kernel zone is held to. */
@@ -105,6 +119,7 @@ export const TARGET_KERNEL_RULES: BoundaryRules = {
   zoneRoots: TARGET_KERNEL.roots,
   allowedLeaves: TARGET_KERNEL_ALLOWED_LEAVES,
   allowedExternalPrefixes: TARGET_KERNEL_ALLOWED_EXTERNAL_PREFIXES,
+  allowedExternalSpecifiers: TARGET_KERNEL_ALLOWED_EXTERNAL_SPECIFIERS,
 };
 
 const isUnder = (file: string, roots: readonly string[]): boolean =>
@@ -169,10 +184,11 @@ export function boundaryViolations(graph: ModuleGraph, rules: BoundaryRules): Bo
     }
 
     if (rules.allowedExternalPrefixes.some((prefix) => edge.specifier.startsWith(prefix))) continue;
+    if (rules.allowedExternalSpecifiers.includes(edge.specifier)) continue;
     violations.push({
       from: edge.from,
       specifier: edge.specifier,
-      reason: "imports an external package; the zone may use node: builtins only",
+      reason: "imports an external package; the zone may use node: builtins and the approved canonicalize package only",
     });
   }
 

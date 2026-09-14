@@ -10,5 +10,8 @@
   "files": [
     "src"
   ],
-  "sideEffects": false
+  "sideEffects": false,
+  "dependencies": {
+    "canonicalize": "3.0.0"
+  }
 }

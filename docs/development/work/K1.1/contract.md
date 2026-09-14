@@ -5,24 +5,26 @@
 **Layer-3 maintenance:** [roadmap mapping K1.1](../../../../mental-model/roadmap.md#k11).
 **Governing process baseline:** `777b9955fb3a443f700b4f3d1f4f2aef1869345b` (integrated `main`,
 including 006/007/008/012 as they stand there).
-**Dependency:** K1.0 with corrections 01–02, integrated on `main` as
-`4f02e6cad2dbc9d5444fededbdc27f0dc695060d` (PR #24). Its formal integration receipts were still owed
-at that commit; see [Entry and owner release](#entry-and-owner-release).
+**Dependency:** K1.0 with corrections 01–02, integrated on `main` as PR #21 /
+`9baff3a03662720af6eefe1ecfabc41fde99298f`, with formal integration receipts
+[work/K1.0/integration-01.md](../K1.0/integration-01.md) and
+[work/K1.0-correction-02/integration-01.md](../K1.0-correction-02/integration-01.md), ledger-reconciled
+by `main` PR #26 / `05f48c204d1eae021b3464c206e5c11e84bb3505`. See
+[Entry and owner release](#entry-and-owner-release).
 **Base commit:** `777b9955fb3a443f700b4f3d1f4f2aef1869345b`.
-**Branch:** `codex/k1.1-create-reserve-async-dispatch`. **Contract revision 2 (round-2 correction of review-01: C11 removed, C7 restored to K1.2/K1.2/K1.2/K1.3 refusals, DEC-1 withdrawn, terminal live-evidence deferred to K1.3; values.md unchanged).**
+**Branch:** `codex/k1.1-create-reserve-async-dispatch`. **Contract revision 3 (round-3: main-merge provenance ancestry 05f48c2/87ee39c closing OPEN-1; owner-approved canonicalize@3.0.0 closing OPEN-2; C3/JCS substrate).**
 **Implementer:** Muse Spark, 2026-09-14 correction round. The `codex/` branch
 prefix is 006's naming convention for a packet branch, not a claim about which agent wrote it.
 
 ## Entry and owner release
 
 The owner released K1.1 by explicit instruction on 2026-09-14 ("Let's release K1.1"), delivered
-through [Prompt A](../../009-universal-prompts.md#prompt-a--coding-agent). 007 records the
-prerequisite as integrated on `main` and names one outstanding administrative item: the formal
-integration receipts under `work/K1.0/` and `work/K1.0-correction-02/`. Those receipts are owner
-records under [006](../../006-development-process.md#status-transitions); this packet does not write
-them, does not treat the owner's release as having written them, and carries the gap forward as
-[K1.1-OPEN-1](#unresolved-obligations-and-open-decisions). The substantive entry condition 006 states
-— "all prerequisite acceptances integrated" — is satisfied by the verified merge above.
+through [Prompt A](../../009-universal-prompts.md#prompt-a--coding-agent). The prerequisite
+acceptances are integrated as stated above; the substantive entry condition 006 states — "all
+prerequisite acceptances integrated" — is satisfied, and the formerly outstanding formal integration
+receipts (round-2 [K1.1-OPEN-1](#unresolved-obligations-and-open-decisions)) are now owner-supplied
+and in this branch's ancestry through the `87ee39c` main-merge. This packet does not write owner
+receipts and never treated the release as having written them; it records their arrival.
 
 This packet is K1 implementation. K1.0's accepted structural pass is preparation, not an E1 result;
 nothing here closes an E1 criterion or the K1 milestone, which [K1.4](../../007-work-packets.md#k14--legacy-bridge-and-k1e1-gate)
@@ -105,9 +107,12 @@ refused identically, so the refusal cannot be used to discover another principal
 Capacity limits refuse ingress before any acknowledgment. All of this holds whether or not a wait
 exists, which at this packet is always "not": wait matching is K1.3.
 
-**K1.1-C3 — canonical boundary values, equality and semantic limits.** The target zone owns one
-canonical value encoding implementing [values](../../../../mental-model/concepts/values.md)'
-RFC 8785/JCS rules 1–6 and its four fixed semantic limits. Non-finite numbers, `undefined`, symbols,
+**K1.1-C3 — canonical boundary values, equality and semantic limits.** The target zone produces
+one canonical value encoding through the owner-approved unmodified conforming JCS implementation
+`canonicalize@3.0.0` (round-3 owner decision closing K1.1-OPEN-2; AGENTS.md record in
+[implementation-03](implementation-03.md)), behind `packages/kernel/src/values.ts`, and enforces
+[values](../../../../mental-model/concepts/values.md)' RFC 8785/JCS rules 1–6 and its four fixed
+semantic limits around it. Non-finite numbers, `undefined`, symbols,
 functions, non-plain objects, lone surrogates and cycles are rejected before identity or equality is
 computed, never repaired. Equality is canonical-byte equality: key order is not semantic, array order
 is, and an absent member differs from an explicit `null`. Each boundary-value root is measured
@@ -158,12 +163,13 @@ acknowledgments are always empty here (K1.3 and K1.2 own them); the fields exist
 have a place to record them.
 
 **K1.1-C10 — the K1.0 structural boundary still holds, and its inventory matches the tree.** The
-target zone still imports nothing outside itself except `node:` builtins, approves no portable leaf,
-adds no third-party dependency and stays private. K1.0's guard and its
+target zone still imports nothing outside itself except `node:` builtins and the single
+owner-approved third-party specifier `canonicalize` (exact `canonicalize@3.0.0`), approves no
+portable leaf, and stays private. K1.0's guard and its
 [ownership inventory](../K1.0/ownership-inventory.md) are updated to the measured candidate tree —
-file count, export surface and the K1.1 disposition of its assigned deferred rows — under
-[015](../../015-structural-evidence-rules.md)'s editing rule, with no agreement check weakened and no
-schema relaxed.
+file count, export surface, third-party reach, and the K1.1 disposition of its assigned deferred
+rows — under [015](../../015-structural-evidence-rules.md)'s editing rule, with no agreement check
+weakened and no schema relaxed.
 
 ## Obligation/interaction coverage map
 
@@ -228,13 +234,28 @@ requires it only for Agent behaviour.
 
 ## Third-party review ([AGENTS.md](../../../../AGENTS.md))
 
-No third-party code, test, script, asset or dependency is copied, adapted, vendored or added. The
-target zone's dependency rule is unchanged: `node:` builtins only, no approved portable leaf. The
-canonical encoder is written against [values.md](../../../../mental-model/concepts/values.md)'s own
-stated rules and its own worked examples, which are repository-owned text; RFC 8785 is cited as the
-normative reference the repository already adopts, and no code, test vector or corpus from it or from
-any implementation of it is copied. See [K1.1-OPEN-2](#unresolved-obligations-and-open-decisions) for
-the standing owner decision this leaves open.
+One third-party dependency is added under the round-3 owner approval closing K11-R1-JCS-01:
+exact `canonicalize@3.0.0` (Apache-2.0, `git+https://github.com/erdtman/canonicalize.git`,
+homepage `https://github.com/erdtman/canonicalize#readme`, engines `node >= 18`, zero runtime
+dependencies), used unmodified via its default export and only to serialize already-validated plain
+data in `packages/kernel/src/values.ts`. Inspected at the installed revision: `package.json` license
+field `Apache-2.0`, standard 201-line Apache-2.0 `LICENSE` at the package root, no `NOTICE` file, no
+per-file license headers, 49-line dependency-free `lib/canonicalize.js` plus its `.d.ts` and `bin/`.
+No code, test vector or corpus is copied, adapted or vendored: reuse is by package-manager reference
+to the exact published version (`"canonicalize": "3.0.0"` in `packages/kernel/package.json`, pinned in
+`package-lock.json` with dist integrity
+`sha512-yYLfHyDMIXRyRqsKBRLX023riFLpXY2YOfdtqKXZRZy9qsfOJ9U+4F9YZL7MEzL5+ziN2x2nlBvY/Voi3EBljA==`).
+Apache-2.0 permits commercial use and distribution with no copyleft, non-commercial,
+source-available, hosted-service or multi-tenant restriction; obligations are preserving the license
+and stating changes — satisfied: the package is used unmodified, no ArrokothI change is folded into
+it, and the approval, version and license are recorded here, in the ownership inventory and in
+[implementation-03](implementation-03.md). No other third-party code, test, script, asset or
+dependency is copied, adapted, vendored or added. The target zone's portable-leaf list stays empty;
+its external rule is now `node:` builtins plus exactly this specifier (exact match, not a prefix).
+
+RFC 8785 is the normative reference the repository already adopts; the dependency is the conforming
+implementation of it, not a new reference. No RFC text, test vector or corpus is copied into the
+repository.
 
 ## Decisions taken within this contract
 
@@ -259,18 +280,19 @@ should be able to rule on them rather than infer them.
 
 These do not pass because tests pass. They are stated so a reviewer can weigh them.
 
-- **K1.1-OPEN-1 — prerequisite integration receipts still owed.** 007 records that the formal
-  integration receipts for K1.0 and K1.0-correction-02 remain owed. They are owner records; this
-  packet neither writes nor substitutes for them. Its base is the verified merge commit.
-- **K1.1-OPEN-2 — "unmodified conforming JCS implementation" versus the zone's dependency rule.**
-  [values.md](../../../../mental-model/concepts/values.md#canonical-form) says to use an unmodified
-  conforming JCS implementation rather than an almost-equivalent serializer. The target zone may not
-  add a third-party package without an owner decision under AGENTS.md's third-party review, and
-  [K1.0's inventory](../K1.0/ownership-inventory.md#what-the-target-zone-may-import) says so
-  explicitly. This packet therefore implements the encoding in-zone, directly against values.md's
-  rules and limits, behind one module so that a later owner-approved dependency can replace it
-  without touching a caller. The divergence from the stated preference is real and is the owner's to
-  settle, not the implementer's.
+- **K1.1-OPEN-1 — prerequisite integration receipts: RESOLVED by main PR #26.** 007 formerly
+  recorded the formal integration receipts for K1.0 and K1.0-correction-02 as owed before K1.1
+  release. Owner-supplied receipts now exist: [parent receipt](../K1.0/integration-01.md) and
+  [correction-02 receipt](../K1.0-correction-02/integration-01.md), integrated on `main` as PR #21 /
+  `9baff3a03662720af6eefe1ecfabc41fde99298f` with `main` PR #26 / `05f48c204d1eae021b3464c206e5c11e84bb3505`
+  reconciling the ledger. Both are ancestors of this correction's merge (`87ee39c`) and of C3.
+  K11-R1-PROC-01 closes on that ancestry; see [implementation-03](implementation-03.md).
+- **K1.1-OPEN-2 — CLOSED by round-3 owner approval (K11-R1-JCS-01).** [values.md](../../../../mental-model/concepts/values.md#canonical-form)
+  requires an unmodified conforming JCS implementation rather than an almost-equivalent serializer.
+  The owner approved exact `canonicalize@3.0.0` for this packet; `packages/kernel/src/values.ts` now
+  calls that dependency unmodified to serialize already-validated plain data, keeping ArrokothI's own
+  boundary validation, limits and seal. AGENTS.md record is in the Third-party review section above
+  and in [implementation-03](implementation-03.md).
 - **K1.1-OPEN-3 — accepted progress is unavoidably trivial here.** Progress is Runtime-owned and is
   installed only by Outcome acceptance, which is K1.2. Every Activation this packet dispatches
   therefore pins base revision 0 and absent progress. What K1.1 can and does prove is the *pinning*:

@@ -81,6 +81,16 @@ describe("K1.1-C8 the boundary carries no Agent or Workflow discriminator", () =
     }
   });
 
+  test("the JCS substrate is the owner-approved exact dependency (K11-R1-JCS-01)", async () => {
+    // values.md requires an unmodified conforming JCS implementation, not an almost-equivalent
+    // serializer. The owner approved exact `canonicalize@3.0.0`; this pins that decision
+    // structurally so a quiet swap of the substrate is a deliberate, reviewed change.
+    const manifest = JSON.parse(await readFile(resolve(SOURCE_ROOT, "../package.json"), "utf8")) as {
+      dependencies?: Record<string, string>;
+    };
+    assert.equal(manifest.dependencies?.["canonicalize"], "3.0.0", "exact pin, no range");
+  });
+
   test("which code can read progress is answered only by pinned revisions and a codec", async () => {
     const driver = await readFile(resolve(SOURCE_ROOT, "driver.ts"), "utf8");
     for (const pinned of ["definitionRevision", "runtimeContractRevision", "progressCodec"]) {
@@ -88,15 +98,20 @@ describe("K1.1-C8 the boundary carries no Agent or Workflow discriminator", () =
     }
   });
 
-  test("every import in the zone is internal or a node: builtin", async () => {
+  test("every import in the zone is internal, a node: builtin, or the approved JCS dependency", async () => {
     const files = await sourceFiles();
     const specifiers = files.flatMap((file) => [...file.text.matchAll(/from "([^"]+)"/g)].map((match) => match[1] as string));
     assert.ok(specifiers.length > 0, "the scan found real imports");
     for (const specifier of specifiers) {
       assert.ok(
-        specifier.startsWith("./") || specifier.startsWith("../") || specifier.startsWith("node:"),
+        specifier.startsWith("./") ||
+          specifier.startsWith("../") ||
+          specifier.startsWith("node:") ||
+          specifier === "canonicalize",
         `${specifier} is outside the zone; the transitive guard owns the full rule, this is its local twin`,
       );
     }
+    // The twin is not vacuous: the approved dependency is really imported exactly once, by values.ts.
+    assert.equal(specifiers.filter((specifier) => specifier === "canonicalize").length, 1);
   });
 });
