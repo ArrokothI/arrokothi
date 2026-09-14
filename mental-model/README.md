@@ -99,10 +99,12 @@ Read the major abstractions in this order:
 3. [Driver](driver.md): what translation and recovery must preserve.
 4. [Deployment](deployment.md): where code runs and which guarantees a profile can claim.
 
-Then use the [reference index](reference.md) to look up a term or a mechanism. Definitions
-live under `concepts/`; interacting rules live under `mechanisms/`. You do not yet need
-to know the identity fields, wait selector grammar or checkpoint publication protocol.
-Those pages teach them where they become useful.
+Then go to the [reference index](reference.md). If you want to keep learning, it opens
+with an explicit reading order for `concepts/` and `mechanisms/`; if you already know the
+architecture and want one term or mechanism, its lookup tables serve that instead.
+Definitions live under `concepts/`; interacting rules live under `mechanisms/`. You do
+not yet need to know the identity fields, wait selector grammar or checkpoint publication
+protocol. Those pages teach them where they become useful.
 
 ## How these pages are organized
 

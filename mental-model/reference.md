@@ -1,27 +1,70 @@
 # Reference index
 
 Start with [the overview](README.md), then [Kernel](kernel.md), [Runtime](runtime.md),
-[Driver](driver.md) and [Deployment](deployment.md). Use this index to retrieve one
-definition or the mechanism that composes it. Layer 3 is precise target/reference
+[Driver](driver.md) and [Deployment](deployment.md). This page then serves two different
+readers: the next section is a **reading order**, for someone learning Layer 3 for the
+first time; "Find a mechanism" further down is a **lookup table**, for someone who
+already knows the architecture and wants one page. Layer 3 is precise target/reference
 material; the [roadmap mapping](roadmap.md) identifies implementation owners and gates.
+
+## Reading `concepts/` and `mechanisms/` in order
+
+If you are learning Layer 3 rather than looking something up, read in this order. It
+tracks actual term dependency, not alphabetical or directory order — opening the folders
+in a file browser will not give you this sequence.
+
+**Concepts**, in dependency order:
+
+1. [core](concepts/core.md) — Kernel, Execution, Activation, Outcome, Event, wait
+2. [actions](concepts/actions.md) — Operation, Effect, admission, settlement, authority
+3. [identity](concepts/identity.md) — request keys, attempts, epochs, revisions, receipts
+4. [operations](concepts/operations.md) — hosts, trust modes, clocks, children, messages
+5. [roles](concepts/roles.md) — Agent, Workflow, Stage, Context, Skill
+6. [state](concepts/state.md) — progress, checkpoints, structured state, memory
+7. [values](concepts/values.md) — canonical form and value equality
+
+Read `core.md` before `actions.md`: `actions.md`'s first term, Effect, is defined in
+terms of Outcome, which `core.md` owns. The two pages are listed together under
+"Actions, authority and observations" and "Core coordination vocabulary" below because
+they are cross-referenced heavily, not because either order works equally well on a
+first pass.
+
+**Mechanisms**, in the same order as "Find a mechanism" below (creation → execution-cycle
+→ waits → lifecycle → authority → actions → output → communication → recovery →
+integration → composition → state → context → external-protocols → resources →
+evidence). That table doubles as this reading path; nothing about its Question/Owning-page
+framing implies otherwise. Reading `mechanisms/` alphabetically instead — the order a
+file browser or `ls` shows — puts `actions.md` before `execution-cycle.md` and
+`authority.md`, both of which it depends on; avoid that order for a first pass.
+
+Not every mechanism has a matching concept page and vice versa: `context` is a mechanism
+with no `concepts/context.md`, because its vocabulary lives in `concepts/roles.md`
+instead. The reverse also happens. Matching basenames (`actions`, `state`) mean the
+subject was large enough to split; they are not a promise that every subject splits.
 
 ## How pages are named
 
 Three conventions, so a path tells you what you are opening.
 
-- **`concepts/` defines, `mechanisms/` composes.** Where both exist for one subject —
+- **`concepts/` owns canonical vocabulary and its local invariants; `mechanisms/` owns
+  how several concepts interact.** This is closer to the real split than "concepts
+  define, mechanisms compose": `concepts/values.md` states the actual canonical-encoding
+  algorithm, and `concepts/identity.md` states substantive epoch/duplicate/retention
+  rules, not bare definitions. Where a subject splits across both directories —
   `actions` and `state` — the concept page is the sole definition of the terms and the
   mechanism page is the sole specification of how they interact. The shared name is
   deliberate; the directory says which half you are in.
 - **Layer-2 files use the short names.** `runtime.md` and `driver.md` cover the
   *Execution Runtime* and *Execution Driver*, whose formal names and shorthands are
-  fixed in [core vocabulary](concepts/core.md#execution-runtime). Authoring vocabulary
-  for Agents, Workflows and Stages is [`concepts/authoring.md`](concepts/authoring.md),
+  fixed in [core vocabulary](concepts/core.md#execution-runtime). Role vocabulary
+  for Agents, Workflows and Stages is [`concepts/roles.md`](concepts/roles.md),
   a different subject from the Layer-2 `runtime.md`.
 - **Each mechanism page opens with a Status line** naming whether it is a required
   Kernel contract, a per-Driver obligation or an optional Runtime design, and which
   development gate introduces it. Concept pages carry no Status line: they define
-  vocabulary, and a term is not a commitment to build anything.
+  vocabulary, and a term is not a commitment to build anything. A concept page you
+  reached directly still describes target specification, not shipped behavior — see
+  [Target, not shipped](README.md#target-not-shipped).
 
 ## Find a mechanism
 
@@ -40,7 +83,7 @@ Three conventions, so a path tells you what you are opening.
 | How do local branches, joins and Skills work? | [composition](mechanisms/composition.md) |
 | How do assertions, inferred claims, notes and artifacts interact? | [state](mechanisms/state.md) |
 | Which information/tools did a model actually see? | [context](mechanisms/context.md) |
-| How are external values, jobs and notifications mapped? | [interoperability](mechanisms/interoperability.md) |
+| How are external values, jobs and notifications mapped? | [external-protocols](mechanisms/external-protocols.md) |
 | Who owns resource lifetime and physical enforcement? | [resources](mechanisms/resources.md) |
 | What does inspection or a test actually prove? | [evidence](mechanisms/evidence.md) |
 
@@ -49,19 +92,6 @@ Three conventions, so a path tells you what you are opening.
 Each entry points to its sole definition section. Related words share a page so a
 reader can compare them without opening dozens of one-paragraph files. Linked local
 reminders elsewhere do not own another definition.
-
-### Actions, authority and observations
-
-- [Operation](concepts/actions.md#operation)
-- [Effect](concepts/actions.md#effect)
-- [Logical action and intent](concepts/actions.md#logical-action-and-intent)
-- [Admission and physical action attempt](concepts/actions.md#admission-and-physical-action-attempt)
-- [Settlement and reconciliation](concepts/actions.md#settlement-and-reconciliation)
-- [Principal and authority](concepts/actions.md#principal-and-authority)
-- [Exact consent](concepts/actions.md#exact-consent)
-- [Exposure and mediation](concepts/actions.md#exposure-and-mediation)
-- [Withdrawal and compensation](concepts/actions.md#withdrawal-and-compensation)
-- [Emission, result and output obligation](concepts/actions.md#emission-result-and-output-obligation)
 
 ### Core coordination vocabulary
 
@@ -78,6 +108,22 @@ reminders elsewhere do not own another definition.
 - [Wait, subscription and generation](concepts/core.md#wait-subscription-and-generation)
 - [Readiness](concepts/core.md#readiness)
 - [Timeout Event](concepts/core.md#timeout-event)
+
+### Actions, authority and observations
+
+Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect, this
+section's first term, is defined in terms of Outcome, which that section owns.
+
+- [Operation](concepts/actions.md#operation)
+- [Effect](concepts/actions.md#effect)
+- [Logical action and intent](concepts/actions.md#logical-action-and-intent)
+- [Admission and physical action attempt](concepts/actions.md#admission-and-physical-action-attempt)
+- [Settlement and reconciliation](concepts/actions.md#settlement-and-reconciliation)
+- [Principal and authority](concepts/actions.md#principal-and-authority)
+- [Exact consent](concepts/actions.md#exact-consent)
+- [Exposure and mediation](concepts/actions.md#exposure-and-mediation)
+- [Withdrawal and compensation](concepts/actions.md#withdrawal-and-compensation)
+- [Emission, result and output obligation](concepts/actions.md#emission-result-and-output-obligation)
 
 ### Identity, attempts and accepted versions
 
@@ -101,18 +147,18 @@ reminders elsewhere do not own another definition.
 - [Observation, cursor and routing](concepts/operations.md#observation-cursor-and-routing)
 - [Backpressure and cleanup debt](concepts/operations.md#backpressure-and-cleanup-debt)
 
-### Runtime authoring and context vocabulary
+### Runtime roles and context vocabulary
 
-- [Agent](concepts/authoring.md#agent)
-- [Workflow](concepts/authoring.md#workflow)
-- [Stage and local branch](concepts/authoring.md#stage-and-local-branch)
-- [Local worker](concepts/authoring.md#local-worker)
-- [Context](concepts/authoring.md#context)
-- [Projection and invocation binding](concepts/authoring.md#projection-and-invocation-binding)
-- [Invocation snapshot and cache](concepts/authoring.md#invocation-snapshot-and-cache)
-- [View and disclosure](concepts/authoring.md#view-and-disclosure)
-- [Skill and package](concepts/authoring.md#skill-and-package)
-- [Service and interaction template](concepts/authoring.md#service-and-interaction-template)
+- [Agent](concepts/roles.md#agent)
+- [Workflow](concepts/roles.md#workflow)
+- [Stage and local branch](concepts/roles.md#stage-and-local-branch)
+- [Local worker](concepts/roles.md#local-worker)
+- [Context](concepts/roles.md#context)
+- [Projection and invocation binding](concepts/roles.md#projection-and-invocation-binding)
+- [Invocation snapshot and cache](concepts/roles.md#invocation-snapshot-and-cache)
+- [View and disclosure](concepts/roles.md#view-and-disclosure)
+- [Skill and package](concepts/roles.md#skill-and-package)
+- [Service and interaction template](concepts/roles.md#service-and-interaction-template)
 
 ### Continuation, retained information and resources
 
@@ -145,8 +191,8 @@ reminders elsewhere do not own another definition.
 | publication intent, output subscription | [Output obligation](concepts/actions.md#emission-result-and-output-obligation), [replay](mechanisms/output.md) |
 | Structured Memory | [Structured state](concepts/state.md#structured-state) |
 | boundary, receipt, acceptance position | [Acceptance and receipt](concepts/identity.md#acceptance-boundary-and-receipt) |
-| worker, runtime, host | [Runtime](concepts/core.md#execution-runtime), [local worker](concepts/authoring.md#local-worker), [host roles](concepts/operations.md) |
-| Agent, Workflow, Stage, Skill, "runtime concepts" | [Authoring vocabulary](concepts/authoring.md) |
+| worker, runtime, host | [Runtime](concepts/core.md#execution-runtime), [local worker](concepts/roles.md#local-worker), [host roles](concepts/operations.md) |
+| Agent, Workflow, Stage, Skill, "runtime concepts", authoring | [Roles vocabulary](concepts/roles.md) |
 | ControllerResumption, interleave, closed Agent/Workflow union | Legacy implementation vocabulary; [baseline](../docs/development/002-implemented-kernel-baseline.md) and [target separation](mechanisms/evidence.md#structural-evidence) |
 
 Ordinary words such as process, queue, model, database and transport retain their

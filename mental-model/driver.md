@@ -43,4 +43,4 @@ before treating an integration-specific extension as a portable contract.
 
 Next: [integration](mechanisms/integration.md) for native fidelity,
 [recovery](mechanisms/recovery.md) for crash windows, and
-[interoperability](mechanisms/interoperability.md) for external protocol mappings.
+[external protocols](mechanisms/external-protocols.md) for external protocol mappings.

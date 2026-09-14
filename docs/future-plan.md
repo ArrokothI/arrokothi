@@ -23,7 +23,7 @@ old H–N/P1–P7/experimental sequences as current release promises.
 | Context compilation, historical retrieval, immutable snapshots | [Context/projections](../mental-model/mechanisms/context.md); advanced strategies below remain experiments. |
 | Native jobs, forms, checkpoints, resource lifetime and delivery | [Integration](../mental-model/mechanisms/integration.md), [recovery](../mental-model/mechanisms/recovery.md), [resources](../mental-model/mechanisms/resources.md). Specific support awaits R1/K3 evidence. |
 | Telemetry, raw model requests, privacy, attribution | [Evidence](../mental-model/mechanisms/evidence.md); no mandatory raw prompt journal. |
-| Service/schema/Task mapping and imported package permission | [Interoperability](../mental-model/mechanisms/interoperability.md); protocol breadth remains demand-gated. |
+| Service/schema/Task mapping and imported package permission | [External protocols](../mental-model/mechanisms/external-protocols.md); protocol breadth remains demand-gated. |
 
 ## Q1 — Does an Execution Kernel earn its cost?
 

@@ -70,13 +70,13 @@ address prerequisite ordering, overloaded words, competing rules and weak exampl
 | Whole-system overview | [Layer 1](README.md) |
 | Kernel detailed page | [Kernel](kernel.md), [cycle](mechanisms/execution-cycle.md), [waits](mechanisms/waits.md), [lifecycle](mechanisms/lifecycle.md), [authority](mechanisms/authority.md) |
 | Execution detailed page | [Runtime](runtime.md), [Driver](driver.md), [integration](mechanisms/integration.md), [recovery](mechanisms/recovery.md) |
-| Deployment detailed page | [Deployment](deployment.md), [resources](mechanisms/resources.md), [interoperability](mechanisms/interoperability.md) |
+| Deployment detailed page | [Deployment](deployment.md), [resources](mechanisms/resources.md), [external protocols](mechanisms/external-protocols.md) |
 | Execution protocol | [Identity](concepts/identity.md), [values](concepts/values.md), [creation](mechanisms/creation.md), cycle/waits/lifecycle above |
 | Authority and action lifecycle | [Action concepts](concepts/actions.md), [authority](mechanisms/authority.md), [actions](mechanisms/actions.md), [output](mechanisms/output.md) |
 | Children and communication | [Communication](mechanisms/communication.md) |
 | Runtime composition | [Local composition](mechanisms/composition.md) |
 | Memory/state | [State concepts](concepts/state.md), [state mechanisms](mechanisms/state.md) |
-| Context/projections | [Authoring concepts](concepts/authoring.md), [context construction](mechanisms/context.md) |
+| Context/projections | [Roles and context concepts](concepts/roles.md), [context construction](mechanisms/context.md) |
 | Recovery/compatibility and Driver fidelity | [Recovery](mechanisms/recovery.md), [integration](mechanisms/integration.md) |
 | Resource/isolation and evidence | [Operational terms](concepts/operations.md), [resources](mechanisms/resources.md), [evidence](mechanisms/evidence.md) |
 

@@ -10,6 +10,6 @@ CrewAI, Hermes, OpenClaw or Dify.
 
 Design references: [Runtime integration](../../../../mental-model/mechanisms/integration.md),
 [recovery](../../../../mental-model/mechanisms/recovery.md), and
-[interoperability](../../../../mental-model/mechanisms/interoperability.md). Prefer the native Runtime's supported
+[external protocols](../../../../mental-model/mechanisms/external-protocols.md). Prefer the native Runtime's supported
 API and preserve its context, tools, sessions and checkpoints. Before copying or adapting provider
 code or adding dependencies, follow the repository's [reuse requirements](../../../../AGENTS.md#third-party-code-and-license-review).

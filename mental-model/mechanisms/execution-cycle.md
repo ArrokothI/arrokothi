@@ -8,6 +8,18 @@ This page owns dispatch and acceptance; [waits](waits.md) owns input selection.
 **Status:** Required Kernel contract. Introduced by K1.1–K1.2; Effect intents by K2.1. This
 is target specification, not shipped behavior.
 
+## A first example
+
+Before the protocol details: the application creates Execution E for a weekly report.
+The Kernel sends Activation A1, writer epoch 1, base progress revision 0. The Runtime
+drafts the report and returns an Outcome proposing progress 1 and `await` for the
+editor's correction. The Kernel accepts progress, the wait registration and the next
+state together, as one decision. When the correction later arrives as an Event, the
+Kernel dispatches Activation A2 carrying it, still under epoch 1. The sections below
+cover retries, takeover and the exact validation order; the
+[worked trace](#worked-trace) extends this same scenario with a lost reply and an
+epoch takeover.
+
 ## Before sending
 
 The Kernel atomically reserves the exact Event batch and records dispatch intent,

@@ -1,10 +1,15 @@
 # Roadmap → Layer-3 maintenance map
 
-This is expected ownership/navigation, **not a whitelist, release or status ledger**.
-The [packet ledger](../docs/development/007-work-packets.md) owns status and release;
-the [milestone roadmap](../docs/development/001-current-status-and-roadmap.md) owns gates.
-Cleanup examines every affected concept/mechanism and its dependents, even when not
-listed here. Update this map when accepted work creates a new owner or changes scope.
+This page maps each roadmap gate (K0.1, K1.2, S1, and so on) to the `concepts/` and
+`mechanisms/` pages accepted work under that gate is expected to touch — ownership and
+navigation, for someone landing on a packet who needs to know which Layer-3 pages to
+read and maintain. **It is not a whitelist, release or status ledger:** for what is
+actually implemented and released, see the
+[packet ledger](../docs/development/007-work-packets.md), which owns status and release;
+the [milestone roadmap](../docs/development/001-current-status-and-roadmap.md) owns what
+each gate means. Cleanup examines every affected concept/mechanism and its dependents,
+even when not listed here. Update this map when accepted work creates a new owner or
+changes scope.
 
 Layer 1/2 change only when the whole-system model or a major abstraction changes.
 Layer 3 is maintained after acceptance under [Prompt C](../docs/development/009-universal-prompts.md#prompt-c--gpt-6-final-cleanup-close-or-reopen-and-push).
@@ -123,7 +128,7 @@ Concrete schema and admission. Expected Layer-3 owners:
 
 - [authority](mechanisms/authority.md)
 - [actions](mechanisms/actions.md)
-- [interoperability](mechanisms/interoperability.md)
+- [external-protocols](mechanisms/external-protocols.md)
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k22--concrete-schema-and-admission).
 
@@ -162,7 +167,7 @@ First real native boundary. Expected Layer-3 owners:
 Second boundary and R1/E3 initial gate. Expected Layer-3 owners:
 
 - [integration](mechanisms/integration.md)
-- [interoperability](mechanisms/interoperability.md)
+- [external-protocols](mechanisms/external-protocols.md)
 - [context](mechanisms/context.md)
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#r12--second-boundary-and-r1e3-initial-gate).
@@ -266,7 +271,7 @@ Selected stock Runtime migration. Expected Layer-3 owners:
 - [composition](mechanisms/composition.md)
 - [state](mechanisms/state.md)
 - [context](mechanisms/context.md)
-- [authoring](concepts/authoring.md)
+- [roles](concepts/roles.md)
 - [state](concepts/state.md)
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#r21--selected-stock-runtime-migration).
@@ -366,7 +371,7 @@ D1 physical gate. Expected Layer-3 owners:
 
 Packed-consumer prototype. Expected Layer-3 owners:
 
-- [interoperability](mechanisms/interoperability.md)
+- [external-protocols](mechanisms/external-protocols.md)
 - [integration](mechanisms/integration.md)
 - [evidence](mechanisms/evidence.md)
 
@@ -378,7 +383,7 @@ Release candidate freeze. Expected Layer-3 owners:
 
 - [recovery](mechanisms/recovery.md)
 - [integration](mechanisms/integration.md)
-- [interoperability](mechanisms/interoperability.md)
+- [external-protocols](mechanisms/external-protocols.md)
 - [operations](concepts/operations.md)
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#s12--release-candidate-freeze).

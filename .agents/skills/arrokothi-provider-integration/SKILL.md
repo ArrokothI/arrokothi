@@ -29,7 +29,7 @@ incomplete, and never infer permanent policy from implementation observations.
    adjacent owners it names. Read `docs/development/002-implemented-kernel-baseline.md` for current evidence;
    consult `docs/development/001-current-status-and-roadmap.md` for planned work.
    Use `mental-model/mechanisms/integration.md` for Driver assurance,
-   `mental-model/mechanisms/interoperability.md` for protocol/schema mapping and `mental-model/mechanisms/recovery.md` for native
+   `mental-model/mechanisms/external-protocols.md` for protocol/schema mapping and `mental-model/mechanisms/recovery.md` for native
    submit/checkpoint/upgrade windows (all under `mental-model/mechanisms/`). Read resource lifetime design
    when the integration owns a workspace/session. Never use a legacy step bridge as proof of whole-Runtime fidelity.
 2. **Preserve provider neutrality.** Do not add a core field, enum, lifecycle, or identity merely

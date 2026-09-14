@@ -8,7 +8,7 @@
 >
 > This document inventories the current MCP surface and records provisional ArrokothI mappings.
 > `TBD` means exactly that: no support commitment, kernel admission, or rejection has been made.
-> Canonical ArrokothI semantics remain in [protocol mapping](../../mental-model/mechanisms/interoperability.md),
+> Canonical ArrokothI semantics remain in [protocol mapping](../../mental-model/mechanisms/external-protocols.md),
 > [authority detail](../../mental-model/mechanisms/authority.md), and the other owners in the [reference index](../../mental-model/reference.md).
 
 ## 1. Research question

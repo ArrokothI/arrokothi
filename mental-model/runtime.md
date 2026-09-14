@@ -7,8 +7,8 @@ how to interpret observations.
 
 ## Keep useful native behavior
 
-An [Agent](concepts/authoring.md#agent) lets a model substantially choose its progression.
-A [Workflow](concepts/authoring.md#workflow) primarily follows authored progression.
+An [Agent](concepts/roles.md#agent) lets a model substantially choose its progression.
+A [Workflow](concepts/roles.md#workflow) primarily follows authored progression.
 Both can use functions, models, branches and people. They are authoring styles, not
 Kernel types. A whole Crew or Dify application can remain one Runtime with its own
 graph, memory and human-feedback handling.
@@ -44,7 +44,7 @@ That does not become durable suspension merely because the outer Execution is st
 
 ## State and quality remain Runtime concerns
 
-[Context](concepts/authoring.md#context) is the information selected for a computation.
+[Context](concepts/roles.md#context) is the information selected for a computation.
 Memory is retained information. Neither is Kernel History or automatic permission.
 For example, a note saying “the user usually approves publication” can inform a proposal;
 it cannot approve the current publication request.

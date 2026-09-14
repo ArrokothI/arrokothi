@@ -1,6 +1,6 @@
 # Composing work inside a Runtime
 
-[Agent, Workflow, Stage and local branch](../concepts/authoring.md) are optional Runtime
+[Agent, Workflow, Stage and local branch](../concepts/roles.md) are optional Runtime
 authoring concepts. They do not introduce Kernel schedulers or kind unions. A native
 Crew/Flow or ordinary code may supply this composition more simply.
 
@@ -60,7 +60,7 @@ data travels through results/state, not a hidden ever-growing ancestry notes sta
 operations, even under one provider tool namespace. Model-based transforms still cost
 money even when they perform no external business action.
 
-A [Skill](../concepts/authoring.md#skill-and-package) can load instructions into the
+A [Skill](../concepts/roles.md#skill-and-package) can load instructions into the
 current Runtime or invoke a composition through a function/child according to lifetime
 needs. Pin source/publisher/version, entry points, input/default bindings, requested
 operations/resources and supported Runtime/isolation requirements where used. These

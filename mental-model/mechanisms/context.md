@@ -1,6 +1,6 @@
 # Building context and preserving callable meaning
 
-[Context and projection](../concepts/authoring.md#context) are two selection tasks that
+[Context and projection](../concepts/roles.md#context) are two selection tasks that
 can share one Runtime module. Neither grants authority. Native frameworks may own
 both without recompilation into an ArrokothI format.
 

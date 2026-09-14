@@ -4,6 +4,18 @@
 [creation](../mechanisms/creation.md) and [the execution cycle](../mechanisms/execution-cycle.md)
 apply them. Names below are conceptual; they do not freeze API or wire spelling.
 
+## A running example
+
+Follow one Execution through these terms before the detailed definitions below. The
+application creates Execution E using request key `submit-report-17`. Its first
+Activation runs as Runtime attempt 1 under writer epoch 1. That attempt's Outcome is
+accepted at progress revision 1, producing a receipt for that Outcome-acceptance
+boundary. If the attempt stalls and an operator authorizes takeover, writer epoch
+advances to 2 for a new Runtime attempt of the same exchange; epoch 1's Outcome, if it
+arrives late, is rejected in full even though nothing about its content changed. The
+sections below define each of these terms precisely and cover cases this summary
+skips — duplicate retries, the other revision kinds and receipt scope by boundary.
+
 ## Request key and Input ID
 
 A **request key** is a caller-chosen identifier reused when retrying one intended
