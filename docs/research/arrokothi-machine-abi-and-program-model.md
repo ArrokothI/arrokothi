@@ -1,6 +1,6 @@
 # ArrokothI Machine, ABI, and Program Model
 
-> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q8 and the [detail-design map](../detail-design/README.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
+> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q8 and the [mental-model reference index](../../mental-model/reference.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
 
 > **Status: non-canonical 2.0 research direction.**
 >
@@ -13,7 +13,7 @@
 > conceptual documents for 2.0 as a coordinated whole.
 >
 > Related current research: [`jit-capability-namespace-and-context-scouts.md`](jit-capability-namespace-and-context-scouts.md).
-> Current canonical security ownership remains in [Deployment](../deployment.md).
+> Current canonical security ownership remains in [Deployment](../../mental-model/deployment.md).
 
 ## 1. Executive hypothesis
 

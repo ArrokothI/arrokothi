@@ -4,23 +4,19 @@ ArrokothI is a provider-neutral **execution kernel**. The Kernel manages logical
 
 ## Architecture first
 
-`docs/README.md` is the canonical map. Read [`docs/mental-model.md`](docs/mental-model.md) first.
+Read [mental-model/README.md](mental-model/README.md) for the whole-system model, then
+[Kernel](mental-model/kernel.md), [Runtime](mental-model/runtime.md),
+[Driver](mental-model/driver.md) and [Deployment](mental-model/deployment.md) as relevant.
+The [reference index](mental-model/reference.md) maps each project term to one canonical
+definition and each interaction to its owning Layer-3 mechanism. Read the precise owner
+before implementing; do not reconstruct semantics from historical records or API names.
 
-Current architecture has three detailed owners:
-
-- [`docs/kernel.md`](docs/kernel.md) — Execution identity/lifecycle, Activation/Outcome protocol, Events, Effects, authority, scheduling, communication, history, recovery;
-- [`docs/execution.md`](docs/execution.md) — Execution Runtime/Driver, Agent, Workflow, context/native memory/tools, internal async work, provider runtimes;
-- [`docs/deployment.md`](docs/deployment.md) — process topology, Kernel Workers, Execution Hosts, trusted vs isolated execution, embedding, CLI/service/MCP placement, observability.
-
-[`docs/detail-design/`](docs/detail-design/) is the implementation-oriented design map beneath those
-three owners. It routes protocol, authority/consent, action lifecycle/delivery, recovery/compatibility,
-children/communication, Runtime composition, state/memory, context/projections, Driver fidelity,
-interoperability, resource lifetime/isolation and evidence. Read the relevant page before implementing
-its contract. Optional Runtime designs are not mandatory Kernel types or automatic release commitments.
-
-The legacy mental-model directory has been removed. Use current detail design and the legacy
-knowledge disposition in `docs/development/005-detail-design-review.md`; use Git history only for
-historical comparison. Do not recreate old architecture aliases or depend on removed files.
+[The roadmap mapping](mental-model/roadmap.md) identifies expected Layer-3 maintenance
+for each packet, not a whitelist. Accepted semantic changes update affected definitions,
+mechanisms and dependent descriptions; fill defined placeholders and remove superseded
+current prose. Change Layer 1/2 only when the whole-system model or major abstraction changes.
+Preserve historical implementation/review/integration/cleanup evidence under 008. Do not
+create aliases to replaced architecture documents or route current work through them.
 
 `docs/development/` describes current implementation and migration work. It does not override architecture. The current 0.8.x code still contains the previous `Harness`, synchronous `ExecutionController.activate(...)`, and `ControllerResumption` design; do not infer the target architecture from those implementation names.
 
@@ -60,8 +56,8 @@ For provider integrations, prefer a narrow `Execution Driver` that preserves the
 
 ## Before an architecture change
 
-1. Read `docs/mental-model.md` and the one canonical owner for the concept.
-2. Use `docs/detail-design/README.md` to read the relevant protocol, action, recovery, Runtime, resource or evidence design and its counterexamples.
+1. Read `mental-model/README.md` and use `mental-model/reference.md` to locate the canonical owner.
+2. Use `mental-model/reference.md` to read the relevant protocol, action, recovery, Runtime, resource or evidence design and its counterexamples.
 3. Read `docs/development/002-implemented-kernel-baseline.md` and the development front door to understand current code/migration status.
 4. Inspect affected implementation and conformance tests.
 5. State whether the change belongs to Kernel, Execution Runtime/Driver, or deployment.

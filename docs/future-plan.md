@@ -2,7 +2,7 @@
 
 **Status:** unresolved thinking, not accepted architecture or a second roadmap. The active sequence
 is [K0–K5/R1/R2/D1/S1](development/001-current-status-and-roadmap.md). Current contracts live in the
-[architecture map](README.md) and [detail design](detail-design/README.md). This file replaces the old
+[architecture map](README.md) and [detail design](../mental-model/reference.md). This file replaces the old
 feature inventory with questions that can change an investment decision.
 
 A question can be investigated cheaply before a release if its prerequisites exist. “Future” does
@@ -16,14 +16,14 @@ old H–N/P1–P7/experimental sequences as current release promises.
 | Previously unresolved family | Current decision / remaining uncertainty |
 |---|---|
 | PendingOperation versus ControllerResumption | Kernel owns action/wait records; Runtime owns internal async work. No generic Kernel suspension hierarchy. Native recoverability is still Driver-specific. |
-| Stale continuation, output vs completion, timeout races | [Protocol](detail-design/execution-protocol.md), [Runtime composition](detail-design/runtime-composition.md), [action lifecycle](detail-design/action-lifecycle.md). Native conflict/re-evaluation strategy remains replaceable. |
-| Exact consent, delegation, revocation and evidence | [Authority](detail-design/authority-and-actions.md). Policy representation/scaling and remote freshness need concrete implementations. |
-| Typed Stage/child results, local joins, notes and Skills | [Runtime composition](detail-design/runtime-composition.md); optional R2, not Kernel graph types. |
-| Structured/Derived/Working/Artifact semantics and promotion | [State/memory](detail-design/memory-and-state.md). Optional application/Runtime vocabulary, not four Kernel stores. |
-| Context compilation, historical retrieval, immutable snapshots | [Context/projections](detail-design/context-and-projections.md); advanced strategies below remain experiments. |
-| Native jobs, forms, checkpoints, resource lifetime and delivery | [Integration](detail-design/runtime-integration.md), [recovery](detail-design/recovery-and-compatibility.md), [resources](detail-design/resources-and-isolation.md). Specific support awaits R1/K3 evidence. |
-| Telemetry, raw model requests, privacy, attribution | [Evidence](detail-design/evidence-and-observability.md); no mandatory raw prompt journal. |
-| Service/schema/Task mapping and imported package permission | [Interoperability](detail-design/interoperability.md); protocol breadth remains demand-gated. |
+| Stale continuation, output vs completion, timeout races | [Protocol](../mental-model/mechanisms/execution-cycle.md), [Runtime composition](../mental-model/mechanisms/composition.md), [action lifecycle](../mental-model/mechanisms/actions.md). Native conflict/re-evaluation strategy remains replaceable. |
+| Exact consent, delegation, revocation and evidence | [Authority](../mental-model/mechanisms/authority.md). Policy representation/scaling and remote freshness need concrete implementations. |
+| Typed Stage/child results, local joins, notes and Skills | [Runtime composition](../mental-model/mechanisms/composition.md); optional R2, not Kernel graph types. |
+| Structured/Derived/Working/Artifact semantics and promotion | [State/memory](../mental-model/mechanisms/state.md). Optional application/Runtime vocabulary, not four Kernel stores. |
+| Context compilation, historical retrieval, immutable snapshots | [Context/projections](../mental-model/mechanisms/context.md); advanced strategies below remain experiments. |
+| Native jobs, forms, checkpoints, resource lifetime and delivery | [Integration](../mental-model/mechanisms/integration.md), [recovery](../mental-model/mechanisms/recovery.md), [resources](../mental-model/mechanisms/resources.md). Specific support awaits R1/K3 evidence. |
+| Telemetry, raw model requests, privacy, attribution | [Evidence](../mental-model/mechanisms/evidence.md); no mandatory raw prompt journal. |
+| Service/schema/Task mapping and imported package permission | [Interoperability](../mental-model/mechanisms/interoperability.md); protocol breadth remains demand-gated. |
 
 ## Q1 — Does an Execution Kernel earn its cost?
 
@@ -172,7 +172,7 @@ Planner/Evaluator Execution kinds, universal team model or fixed reasoning budge
 
 Evaluate an AI supervisor over delegated coding workers as an application/Runtime experiment with the
 Kernel fixed, not a K4/K5/S1 gate or a new Kernel role. The existing
-[output-to-input bridge](detail-design/composition-and-communication.md#child-output-observation)
+[output-to-input bridge](../mental-model/mechanisms/output.md#observation-does-not-send-input)
 provides the boundary: UI observers read independently; an authorized application adapter selects
 worker observations and submits explicit addressed input to the supervisor for a later eligible
 Activation. Observation alone never wakes it. No Kernel subscription actor is needed.
@@ -203,7 +203,7 @@ pause/resume, preemption and reassignment remain future questions, not capabilit
 baseline. Resource inspection uses the owning service's permitted interface.
 
 Intelligent supervision is advisory/strategic detection and intervention. Hard concurrency safety
-remains [native/resource ownership and exclusion](detail-design/resources-and-isolation.md#shared-mutation-and-takeover),
+remains [native/resource ownership and exclusion](../mental-model/mechanisms/resources.md#shared-mutation),
 including across different Executions. A worker's `file_write: planned | started | completed` can be
 structured Emission content; acceptance proves that it reported the activity, not file mutation,
 completion or ownership. Permitted diagnostic/tool traces retain their own evidence limits and do

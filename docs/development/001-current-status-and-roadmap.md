@@ -1,6 +1,10 @@
 # Development roadmap
 
-Adopted 2026-09-08 for the revised [architecture](../mental-model.md). This document owns milestone
+[Layer-3 maintenance by packet](../../mental-model/roadmap.md) links these milestones to
+canonical concept/mechanism owners. Cleanup follows that expected mapping and checks additional
+affected dependencies; it does not repeat every rule in milestone prose.
+
+Adopted 2026-09-08 for the revised [architecture](../../mental-model/README.md). This document owns milestone
 scope and gates; the [work-packet ledger](007-work-packets.md) owns current implementation/review
 status and dependencies. K0.1, the post-K0.1 process review and K0.2 are accepted, integrated and
 owner-closed. The [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure, with the accepted
@@ -11,7 +15,7 @@ Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the
 [review](004-architecture-review.md) records decisions and the disposition of P1–P7/B1–B3.
-The old plan is [historical](legacy/2026-09-pre-redesign-roadmap.md), not an additional checklist.
+Superseded plans are historical evidence, not an additional checklist.
 
 Use the [development process](006-development-process.md) for each implementation/review cycle,
 the [standard report](008-implementation-report.md), and [reusable prompts](009-universal-prompts.md).
@@ -29,12 +33,12 @@ scheduled. Use this design routing when implementing:
 
 | Slice | Design to implement/test |
 |---|---|
-| K0/K1 | [Protocol](../detail-design/execution-protocol.md): equality/receipt scope, eligible batches, wait generations, terminal disposition |
-| K2 | [Authority](../detail-design/authority-and-actions.md) + [actions](../detail-design/action-lifecycle.md): policy freshness, correction/withdrawal order, certainty versus responsibility; input-request intent/admission |
-| R1/K3 | [Driver](../detail-design/runtime-integration.md) + [recovery](../detail-design/recovery-and-compatibility.md): native submit/checkpoint gaps, pin/delete races, safe takeover |
-| K4 | [Composition](../detail-design/composition-and-communication.md): durable reply closure, required children, transitive revocation, nonrenewable total spawn credits; authenticated human requests and authorized output observation |
-| R2 | [Runtime composition](../detail-design/runtime-composition.md), [state/memory](../detail-design/memory-and-state.md), [context](../detail-design/context-and-projections.md): typed values, barriers, freshness and scratch isolation |
-| K5/D1/S1 | [Resources](../detail-design/resources-and-isolation.md) + [evidence](../detail-design/evidence-and-observability.md): cleanup/retention debt, compatibility/refusal, physical and public support claims |
+| K0/K1 | [Protocol](../../mental-model/mechanisms/execution-cycle.md): equality/receipt scope, eligible batches, wait generations, terminal disposition |
+| K2 | [Authority](../../mental-model/mechanisms/authority.md) + [actions](../../mental-model/mechanisms/actions.md): policy freshness, correction/withdrawal order, certainty versus responsibility; input-request intent/admission |
+| R1/K3 | [Driver](../../mental-model/mechanisms/integration.md) + [recovery](../../mental-model/mechanisms/recovery.md): native submit/checkpoint gaps, pin/delete races, safe takeover |
+| K4 | [Composition](../../mental-model/mechanisms/communication.md): durable reply closure, required children, transitive revocation, nonrenewable total spawn credits; authenticated human requests and authorized output observation |
+| R2 | [Runtime composition](../../mental-model/mechanisms/composition.md), [state/memory](../../mental-model/mechanisms/state.md), [context](../../mental-model/mechanisms/context.md): typed values, barriers, freshness and scratch isolation |
+| K5/D1/S1 | [Resources](../../mental-model/mechanisms/resources.md) + [evidence](../../mental-model/mechanisms/evidence.md): cleanup/retention debt, compatibility/refusal, physical and public support claims |
 
 ## Sequence and ownership
 
@@ -226,7 +230,7 @@ active slots release exactly once. Test durable reply closure and transitive del
 
 Support authorized application observers subscribing to any permitted Execution's accepted output,
 including child progress, through the bounded read/cursor boundary in
-[action lifecycle](../detail-design/action-lifecycle.md#authorized-output-subscriptions). Reuse K2
+[action lifecycle](../../mental-model/mechanisms/output.md#authorized-subscriptions-and-replay). Reuse K2
 accepted-output records and K3 persistence. Stable IDs/cursors, reconnect without a replay/live gap,
 and draining retained progress through child completion are required. Observation alone creates no
 parent Event or Activation; reacting requires explicit message/input routing. This adds an output

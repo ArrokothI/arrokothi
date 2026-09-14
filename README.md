@@ -12,45 +12,11 @@ An Execution Runtime may be ArrokothI-native or provided by Hermes, OpenClaw, Di
 
 ## Architecture
 
-Start with [`docs/mental-model.md`](docs/mental-model.md).
-
-| Document | Purpose |
-|---|---|
-| [`docs/kernel.md`](docs/kernel.md) | Kernel-owned Execution semantics |
-| [`docs/execution.md`](docs/execution.md) | Agent/Workflow and provider Runtime/Driver semantics |
-| [`docs/deployment.md`](docs/deployment.md) | Embedding, processes, trust/isolation, MCP/protocol placement |
-| [`docs/detail-design/`](docs/detail-design/) | Protocol, actions, recovery, Runtime, resource and evidence design |
-| [`docs/development/`](docs/development/README.md) | Current implementation and migration evidence |
-
-
-## Core boundary
-
-```text
-Kernel
-  │
-  │ ExecutionActivation
-  ▼
-Execution Driver
-  ▼
-Execution Runtime
-  │
-  │ ExecutionOutcome
-  ▼
-Kernel
-```
-
-The Runtime owns reasoning, graph traversal, model calls, context, native memory, tools, and internal asynchronous work. The Kernel owns whether an Outcome is accepted and what it means operationally.
-
-One Execution has at most one current Activation authorized to commit progress; different Executions may compute concurrently.
-
-## Trust
-
-There are two primary execution trust modes:
-
-- **Trusted Execution** — Runtime may intentionally use ambient filesystem/network/process capabilities; Kernel guarantees apply to Kernel-mediated paths.
-- **Isolated Execution** — Runtime runs behind a physical isolation boundary appropriate to the deployment claim.
-
-Kernel authority does not magically contain arbitrary trusted code. Strong prevention requires Kernel mediation or isolation.
+Start with [the mental model](mental-model/README.md). It explains the main interactions
+and logical/physical distinction, then leads to Kernel, Runtime, Driver and Deployment.
+Use [the reference index](mental-model/reference.md) for precise vocabulary and mechanisms,
+and [the roadmap mapping](mental-model/roadmap.md) for expected documentation maintenance.
+[Development](docs/development/README.md) records actual implementation and acceptance.
 
 ## Current implementation
 
@@ -79,13 +45,12 @@ For implementation guidance, start at the [Kernel, Execution and Deployment guid
 | `packages/agents/*` | Provider/native Agent integration packages |
 | `packages/interoperability/*` | Protocol boundary packages such as MCP |
 | `tests/conformance` | Semantic and boundary tests |
-| `docs/detail-design` | Current detailed designs below the canonical architecture |
+| `mental-model` | Progressive architecture, canonical terms and precise mechanisms |
 | `docs/development` | Implemented baseline, roadmap/evidence, migration status |
 | `docs/architecture-strategy-study` | Comparative architecture diagnosis that informed the redesign |
 
-The [structure/evidence assessment](docs/development/013-structure-and-evidence-sequencing.md)
-plans K1.0 boundary preparation after K0.2 and after the benchmark-owned E1 fixture preparation
-that precedes all K1 implementation, before K1.1; no structural migration is implemented or
-released by that plan. Current layout above remains the implemented layout.
+K1.0 prepared a private, refusal-only `packages/kernel` and checked the target/legacy
+separation. It implements no target protocol and earns no E1 result. See the
+[status ledger](docs/development/007-work-packets.md) for release and acceptance details.
 
 The target dependency direction is application/SDK → Kernel + Execution Drivers → Execution Runtimes/providers. Provider-specific concepts should not become Kernel semantics merely because one integration exposes them.

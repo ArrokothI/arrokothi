@@ -47,7 +47,7 @@ incomplete, and never infer permanent policy from implementation observations.
 6. **Inspect the diff.** Run `git diff` and read every change. Confirm each hunk maps to an
    acceptance criterion or a necessary supporting change.
 7. **Check invariants and doc consistency.** Re-derive the current protected distinctions from
-   `docs/mental-model.md` and the owning canonical documents. If semantics changed, confirm the
+   `mental-model/README.md` and the owning canonical documents. If semantics changed, confirm the
    owning normative doc and conformance tests were updated in the same change.
 8. **Report findings (audit tasks).** For each acceptance criterion, give a clear verdict:
    - **PASS** — implemented and covered by validation, with the test/evidence named.

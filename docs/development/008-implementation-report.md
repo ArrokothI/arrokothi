@@ -48,6 +48,15 @@ or an accessible pinned external artifact with digest and retention owner. A tem
 hash of an inaccessible payload is insufficient. Keep secrets/private evaluation material out of records.
 Scripts, fixtures, configuration and evaluators are payload, never administrative attachments.
 
+## Reference maintenance evidence
+
+For accepted-work documentation maintenance, record the accepted semantic sources, changed Layer-3
+owners (or why none changed), additional dependencies inspected, resolved placeholders, replaced
+current descriptions, index/link/example validation, and any justified Layer-1/2 change. Use the
+[roadmap mapping](../../mental-model/roadmap.md) as a starting point, not a whitelist. Preserve sealed
+historical records. If reference payload was not reviewed in H, identify its separate C/H and review
+dependency under 006; do not attach it as output-only evidence or extend an old ACCEPT silently.
+
 ## Independent review record
 
 Record actual reviewer/session/model/date; full base/C/H, contract and evidence identities; policy

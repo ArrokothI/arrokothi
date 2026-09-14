@@ -22,7 +22,7 @@ listed in [`../README.md`](../README.md); accepted implementation decisions rema
 
 The [active roadmap](../development/001-current-status-and-roadmap.md) owns horizon placement.
 The [future questions](../future-plan.md) select current hypotheses and negative gates; the
-[detail-design map](../detail-design/README.md) holds accepted boundary rules and optional Runtime designs.
+[mental-model reference index](../../mental-model/reference.md) holds accepted boundary rules and optional Runtime designs.
 Machine/ABI and JIT prototype sequences remain hypotheses; a 2.0 Machine is not committed.
 The [strategy study](../architecture-strategy-study/README.md) independently reviews these directions.
 

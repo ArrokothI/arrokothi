@@ -60,24 +60,27 @@ A reviewer verifies the contract diff as well as the code.
 ## Design and likely code/test locations
 
 Paths are navigation hints, not required package layout. Resolve moved paths from the current tree.
-All packets read the mental model, canonical owner and evidence detail. Detail filenames below are
-relative to `docs/detail-design/`; source hints are relative to repository root.
+All packets start at [the mental model](../../mental-model/README.md) and follow its owning
+concept/mechanism. The [per-packet maintenance map](../../mental-model/roadmap.md) supplies precise
+Layer-3 links; source hints below remain relative to repository root.
 
 | Parent | Canonical/detail sources | Likely touchpoints; retained test families | Explicit exclusions |
 |---|---|---|---|
-| K0/K1 | kernel.md; execution-protocol, recovery-and-compatibility, evidence-and-observability | core runtime/harness, execution/context, ports/controller/runtime-store/scheduler, reference store; conformance execution/contracts, SDK host | No database, production native recovery, cognition rewrite; K1 initially refuses Effects until K2 |
-| K2 | kernel.md; authority-and-actions, action-lifecycle, execution-protocol, interoperability | core runtime/effect-processor, schema/catalog/policy ports; effects, confirmation, reauthorization and MCP tests | No durable restart claim, remote instantaneous policy, action rollback or universal pending hierarchy |
-| R1 | execution.md, deployment.md; runtime-integration, recovery-and-compatibility, resources-and-isolation, context-and-projections | new narrow Driver boundary outside core semantics; provider package tests and native paired fixtures | No four maintained Drivers, graph importer, forced durable live callback or untested fidelity |
-| K3 | kernel.md, execution.md, deployment.md; recovery-and-compatibility, resources-and-isolation, action-lifecycle | runtime-store/scheduler/reference and chosen storage/host adapter; actual process fault runner and independent ledger | No two production backends, disk disaster, multi-region, arbitrary native retry or new host fleet |
-| K4 | kernel.md; composition-and-communication, authority-and-actions, action-lifecycle, execution-protocol | child-link, structural-budget, event-router, input requests, output read boundary; composition/interaction plus process faults | No pub/sub actors, automatic forwarding, arbitrary detach, Kernel graph joins or universal sessions |
-| R2 | execution.md; runtime-composition, memory-and-state, context-and-projections | stock controllers, workflow adapters/control, SDK exports, application examples; Agent evals/Workflow tests | No new model loop or graph engine required, universal memory or foreign parity |
-| K5 | kernel.md, deployment.md; resources-and-isolation, evidence-and-observability, recovery-and-compatibility, action-lifecycle | storage/admission/output/inspection and native resource adapters; operations and application comparison fixtures | No production SLA without measurement, infinite retention, Kernel token ledger or inspector product |
-| D1 | deployment.md; resources-and-isolation, evidence-and-observability | selected external sandbox adapter and physical adversarial fixtures | No custom sandbox; no claim derived from benchmark construction isolation |
-| S1 | all relevant supported owners; interoperability, runtime-integration, recovery-and-compatibility, evidence-and-observability | package manifests/build/exports, SDK, guides, skills, clean consumers and benchmark E6 | No broad protocol parity, all P0X campaign, leaderboard or architecture-completeness release gate |
+| K0/K1 | [execution-cycle](../../mental-model/mechanisms/execution-cycle.md), [waits](../../mental-model/mechanisms/waits.md), [lifecycle](../../mental-model/mechanisms/lifecycle.md), [evidence](../../mental-model/mechanisms/evidence.md) | core runtime/harness, execution/context, ports/controller/runtime-store/scheduler, reference store; conformance execution/contracts, SDK host | No database, production native recovery, cognition rewrite; K1 initially refuses Effects until K2 |
+| K2 | [authority](../../mental-model/mechanisms/authority.md), [actions](../../mental-model/mechanisms/actions.md), [communication](../../mental-model/mechanisms/communication.md), [interoperability](../../mental-model/mechanisms/interoperability.md) | core runtime/effect-processor, schema/catalog/policy ports; effects, confirmation, reauthorization and MCP tests | No durable restart claim, remote instantaneous policy, action rollback or universal pending hierarchy |
+| R1 | [integration](../../mental-model/mechanisms/integration.md), [recovery](../../mental-model/mechanisms/recovery.md), [resources](../../mental-model/mechanisms/resources.md), [context](../../mental-model/mechanisms/context.md) | new narrow Driver boundary outside core semantics; provider package tests and native paired fixtures | No four maintained Drivers, graph importer, forced durable live callback or untested fidelity |
+| K3 | [recovery](../../mental-model/mechanisms/recovery.md), [resources](../../mental-model/mechanisms/resources.md), [actions](../../mental-model/mechanisms/actions.md) | runtime-store/scheduler/reference and chosen storage/host adapter; actual process fault runner and independent ledger | No two production backends, disk disaster, multi-region, arbitrary native retry or new host fleet |
+| K4 | [communication](../../mental-model/mechanisms/communication.md), [authority](../../mental-model/mechanisms/authority.md), [output](../../mental-model/mechanisms/output.md), [waits](../../mental-model/mechanisms/waits.md) | child-link, structural-budget, event-router, input requests, output read boundary; composition/interaction plus process faults | No pub/sub actors, automatic forwarding, arbitrary detach, Kernel graph joins or universal sessions |
+| R2 | [composition](../../mental-model/mechanisms/composition.md), [state](../../mental-model/mechanisms/state.md), [context](../../mental-model/mechanisms/context.md) | stock controllers, workflow adapters/control, SDK exports, application examples; Agent evals/Workflow tests | No new model loop or graph engine required, universal memory or foreign parity |
+| K5 | [resources](../../mental-model/mechanisms/resources.md), [evidence](../../mental-model/mechanisms/evidence.md), [recovery](../../mental-model/mechanisms/recovery.md), [output](../../mental-model/mechanisms/output.md) | storage/admission/output/inspection and native resource adapters; operations and application comparison fixtures | No production SLA without measurement, infinite retention, Kernel token ledger or inspector product |
+| D1 | [resources](../../mental-model/mechanisms/resources.md), [evidence](../../mental-model/mechanisms/evidence.md) | selected external sandbox adapter and physical adversarial fixtures | No custom sandbox; no claim derived from benchmark construction isolation |
+| S1 | [interoperability](../../mental-model/mechanisms/interoperability.md), [integration](../../mental-model/mechanisms/integration.md), [recovery](../../mental-model/mechanisms/recovery.md), [evidence](../../mental-model/mechanisms/evidence.md) | package manifests/build/exports, SDK, guides, skills, clean consumers and benchmark E6 | No broad protocol parity, all P0X campaign, leaderboard or architecture-completeness release gate |
 
 ## Packet contracts
 
 ### K0.1 — Protocol decisions and legacy disposition
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k01); also inspect affected dependencies.
 
 **Dependencies:** —. **Scope:** Produce a versioned contract worksheet: equality/limits, scoped receipts, batches, three clocks, cancellation/terminal obligations, progress compatibility, locally ordered policy. Map every 001 K0 boundary to an assertion; classify legacy data as migratable, legacy-only or refused.
 
@@ -85,10 +88,14 @@ relative to `docs/detail-design/`; source hints are relative to repository root.
 
 ### K0.2 — Public controls and K0/E0 gate
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k02); also inspect affected dependencies.
+
 **Dependencies:** K0.1. **Scope:** Build the smallest public delayed-Runtime/typed-output/input-wait fixture, independent sink and direct baseline specification. Include both public application shapes and unsafe/state-loss control specifications; obtain pinned E0 evidence.
 
 **Acceptance:** All K0 exit requirements and E0 ownership observations covered; fixture preparation is explicitly distinguished from later K1 candidate success.
 ### K1.0 — Target boundary and legacy quarantine
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k10); also inspect affected dependencies.
 
 **Dependencies:** K0.2, and the benchmark-owned E1 fixture preparation required before K1
 implementation. K1.0 is K1 implementation, so it cannot start on K0.2 acceptance alone; the required
@@ -114,6 +121,8 @@ recorded in the status ledger below and [cleanup-01](work/K1.0/cleanup-01.md).
 
 ### K1.0-correction-01 — Whole-cell inventory fidelity
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k10-correction-01); also inspect affected dependencies.
+
 Corrective record under 006, required by [K10-CLEANUP-01](work/K1.0/cleanup-01.md).
 Correct K1.0-C4's value decoding and compare complete asserted relations; revalidate cumulative
 C1–C9 without weakening them. Owner's copy-ready coding handoff:
@@ -124,9 +133,13 @@ Historical K1.0 and correction-01 ACCEPTs and cleanup invalidations are preserve
 
 ### K1.0-correction-02 — Collection identity in inventory comparison
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k10-correction-02); also inspect affected dependencies.
+
 Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/cleanup-01.md). Repair loss of element boundaries in root/export comparison, trace all four inventory consumers, preserve existing parser/schema controls and revalidate original-base cumulative K1.0-C1–C9. [Bounded scope and copy-ready fixing prompt](work/K1.0-correction-02/handoff-01.md); bounded scope, authority and preserved identities: [contract](work/K1.0-correction-02/contract.md). The criteria are K1.0-C1 … C9 exactly as [K1.0's contract](work/K1.0/contract.md) states them; this packet adds none and weakens none. Historical correction-01 ACCEPT and invalidation remain. Correction-02 has independent ACCEPT at H `def91fb9f34ade40a65cbde999c0ffe192d18239`; [cleanup is complete](work/K1.0-correction-02/cleanup-01.md), with integration pending owner merge. No successor release.
 
 ### K1.1 — Create, reserve and asynchronous dispatch
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k11); also inspect affected dependencies.
 
 **Dependencies:** K1.0. **Scope:** Implement atomic create/initial input, scoped identity, opaque pinned progress, reservation and Driver dispatch; expose minimum inspection. Refuse unsupported next forms until their packet lands.
 
@@ -134,11 +147,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K1.2 — Outcome acceptance and receipts
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k12); also inspect affected dependencies.
+
 **Dependencies:** K1.1. **Scope:** Implement whole-envelope validation, receipt replay/conflict, epoch/revision checks, whole-batch acknowledgment, progress and accepted output, continue/complete/fail. Explicitly refuse not-yet-supported Effects/waits.
 
 **Acceptance:** Stale/conflicting/malformed proposals change no accepted state; exact duplicate returns original receipt; one progress writer and typed terminal/output semantics.
 
 ### K1.3 — Wait and cancellation races
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k13); also inspect affected dependencies.
 
 **Dependencies:** K1.2. **Scope:** Implement finite any-of, input subscriptions, eligible unmatched accounting, wait generation/deadlines, out-of-band cancellation and terminal disposition.
 
@@ -146,11 +163,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K1.4 — Legacy bridge and K1/E1 gate
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k14); also inspect affected dependencies.
+
 **Dependencies:** K1.3. **Scope:** Integrate the new boundary with SDK host driving; bridge viable existing controllers as private Runtime machinery. Port useful conformance and document unsupported legacy features.
 
 **Acceptance:** Full K1/E1 matrix and K1.0 structural obligations pass, including actual accepted asynchronous exchange through the supported entry; legacy resumptions do not drive new Kernel types/stores. Existing supported behavior is preserved or explicitly migrated/refused.
 
 ### K2.1 — Atomic Effect intents
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k21); also inspect affected dependencies.
 
 **Dependencies:** K1.4. **Scope:** Commit all intents with progress/input/output/next state, bind same-Outcome keys and dispatch only from accepted records. Record attempts separately.
 
@@ -158,11 +179,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K2.2 — Concrete schema and admission
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k22); also inspect affected dependencies.
+
 **Dependencies:** K2.1. **Scope:** Select/license-review a mature validator and narrow schema subset; validate custom/stock/MCP paths. Bind final operation/input; define unknown operation and overlapping grants; order consent, withdrawal/revocation and dispatch epoch.
 
 **Acceptance:** Zero executor calls for malformed/refused requests; stale ownership, payload/version/account change, duplicate approval, grant overlap and correction/admission races cannot bypass exact admission.
 
 ### K2.3 — Settlement, uncertainty and completion
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k23); also inspect affected dependencies.
 
 **Dependencies:** K2.2. **Scope:** Implement trusted attempt evidence, duplicate/conflict and immutable refinements, result validity versus certainty, safe retry/refusal and required-work accounting.
 
@@ -170,11 +195,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K2.4 — Input requests and K2/E2 gate
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k24); also inspect affected dependencies.
+
 **Dependencies:** K2.3. **Scope:** Implement immutable human request/schema/eligible responder intent and authorized admission/disclosure with correlated denial; same-Outcome wait. Run all K2 and native-attribution controls.
 
 **Acceptance:** Display settles nothing and is not consent; safe/unsafe/state-losing subjects get distinct attributed verdicts despite laboratory protection; complete K2/E2 gate passes.
 
 ### R1.1 — First real native boundary
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#r11); also inspect affected dependencies.
 
 **Dependencies:** K1.4. **Scope:** Probe Hermes unless the owner-selected application requires another Runtime; preserve native context/tools and declare identity, pause/output/cancel, resources and lost-submit behavior. Mediated paths additionally require K2.4.
 
@@ -182,11 +211,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### R1.2 — Second boundary and R1/E3 initial gate
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#r12); also inspect affected dependencies.
+
 **Dependencies:** R1.1, K2.4. **Scope:** Probe one bounded CrewAI or published Dify application before freezing a shared extension. Compare submit/pause/result mapping and produce K3 constraints.
 
 **Acceptance:** Two independent Runtime designs inform the boundary; E3 initial structural evidence covers the claimed profile and known gaps. No live quality or production durability claim inherited.
 
 ### K3.1 — Fault harness and substrate experiment contract
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k31); also inspect affected dependencies.
 
 **Dependencies:** K2.4, R1.2. **Scope:** Build real worker/host kill control with surviving store/sink ledger. Pin the full 001 K3 crash matrix and measurement protocol. Select one mature comparator after API/operating/license review.
 
@@ -194,11 +227,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K3.2 — Narrow transactional persistent candidate
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k32); also inspect affected dependencies.
+
 **Dependencies:** K3.1. **Scope:** Implement persistent accepted truth, intents/receipts, readiness reconstruction and phase-specific recovery on one transactional path. Keep effects externally observable.
 
 **Acceptance:** Actual process kills at input/dispatch/Outcome/action/settlement/terminal boundaries preserve records or truthful unknown/refusal; no empty-store fallback. Record remaining native-specific windows for K3.3.
 
 ### K3.3 — Native recovery and resource windows
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k33); also inspect affected dependencies.
 
 **Dependencies:** K3.2. **Scope:** Implement/test safe reattach/replay/refusal, stale-host exclusion, checkpoint pin/delete, allocation-before-handle, revoked replay disclosure and unavailable code/checkpoint/resource behavior.
 
@@ -206,11 +243,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K3.4 — Comparator and K3/E4 decision gate
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k34); also inspect affected dependencies.
+
 **Dependencies:** K3.3. **Scope:** Run the same full core matrix against one mature substrate facade; collect raw traces/repeats/latency/transition and repeated native cost. Owner chooses simpler adequate substrate, retire losing production mechanism.
 
 **Acceptance:** Complete E4 core matrix has zero specified invariant violations and comparable observations; owner records choose/reuse/narrow/stop. Neither serialization nor one passing prototype closes K3.
 
 ### K4.1 — Durable children and delegation
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k41); also inspect affected dependencies.
 
 **Dependencies:** K3.4. **Scope:** Implement idempotent child/link/root budget reservation, required result accounting, terminal routing, cancellation/late result policy and transitive grant constraints.
 
@@ -218,11 +259,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K4.2 — Addressed messages and replies
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k42); also inspect affected dependencies.
+
 **Dependencies:** K4.1. **Scope:** Implement mediated destination acceptance and recoverable sender settlement, scoped reply records where selected applications need them; support parent clarification subscriptions.
 
 **Acceptance:** Lost receipt repeats one mailbox identity; notify is distinct from processing/reply; wrong/late/conflicting reply refused, closure and wake survive process death, no second parent writer.
 
 ### K4.3 — Durable human response lifecycle
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k43); also inspect affected dependencies.
 
 **Dependencies:** K4.2. **Scope:** Complete K2 request path with authenticated/schema-valid response, atomic closure/receipt/Event/readiness, request expiry versus wait timeout and restart.
 
@@ -230,11 +275,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K4.4 — Authorized retained output
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k44); also inspect affected dependencies.
+
 **Dependencies:** K4.3. **Scope:** Implement bounded authorized output reads/cursors/reconnect through completion, independently from explicit message/parent result routing. Declare finite retention.
 
 **Acceptance:** Execute entire P/C/E1/E2/M1 fixture in 001 under process death: no replay/live gap or duplicate accepted IDs, no observation-induced parent input/Activation, denied reads disclose nothing.
 
 ### K4.5 — K4/E4 composition gate
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k45); also inspect affected dependencies.
 
 **Dependencies:** K4.4. **Scope:** Run combined composition matrix and compare direct composition using same public policy/services; ensure ownership survives crossed human/child/message/output/cancel races.
 
@@ -242,11 +291,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### R2.1 — Selected stock Runtime migration
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#r21); also inspect affected dependencies.
+
 **Dependencies:** K2.4. **Scope:** Port needed Agent/Workflow behavior behind accepted boundary with fixed Kernel; update public surface/migration matrix and independent behavior tests.
 
 **Acceptance:** No new Kernel cognition/graph/memory types; supported legacy semantics and refusal paths accounted for. Native quality not inferred from kernel conformance.
 
 ### R2.2 — Typed local composition
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#r22); also inspect affected dependencies.
 
 **Dependencies:** R2.1. **Scope:** Implement direct local values/computed result and required barriers; test branch-local scratch, stale callbacks/conflicts, selected state/artifact binding.
 
@@ -254,11 +307,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### R2.3 — Public child/join and R2 gate
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#r23); also inspect affected dependencies.
+
 **Dependencies:** R2.2, K4.5. **Scope:** Exercise selected application via public imports using extraction → validation → child → join → computed terminal result. Document every unsupported authoring form.
 
 **Acceptance:** R2 exit passes with independent Agent/Workflow tests; omitted native facilities remain outside supported claims. Required only if these surfaces ship.
 
 ### K5.1 — Bounded queues, retention and output
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k51); also inspect affected dependencies.
 
 **Dependencies:** K4.5. **Scope:** Implement measured mailbox/history/output/deduplication and host admission limits; expiration, replay/live, slow/disconnected readers, revoked access and capacity refusal.
 
@@ -266,11 +323,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K5.2 — Operations, upgrade and deletion
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k52); also inspect affected dependencies.
+
 **Dependencies:** K5.1. **Scope:** Expose wait/unknown/recovery holds and authenticated reconcile; test principal/resource/secret changes, fenced migration/refusal, cleanup debt, privacy deletion and uncertain usage.
 
 **Acceptance:** E4 operating faults and compatibility matrix reproducible; deleted data explicitly disables affected recovery, terminal cancellation retains unknown owner and cleanup evidence.
 
 ### R1.3 — Supported Driver evidence
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#r13); also inspect affected dependencies.
 
 **Dependencies:** R1.2, K3.4. **Scope:** For each proposed supported Driver, run representative live paired fidelity, cancellation/restart and one upstream-version upgrade with predeclared quality/cost margins.
 
@@ -278,11 +339,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### K5.3 — Applications and comparison preparation
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k53); also inspect affected dependencies.
+
 **Dependencies:** K5.2, R1.3. **Scope:** Complete both 001 public application shapes and competent direct plus mature comparator arms; include R2.3 only for stock facilities used. Freeze margins/repeats/evidence and owner budget before confirmatory runs.
 
 **Acceptance:** Runnable equal-policy/service applications, calibrated independent observations and approved comparison protocol; prepared fixtures alone are not application-value success.
 
 ### K5.4 — K5/E5 operating and value gate
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k54); also inspect affected dependencies.
 
 **Dependencies:** K5.3. **Scope:** Execute repeat plan and publish attributable verified outcomes, repairs, quality, total cost, operating burden and strongest counterexample; obtain owner continue/narrow/stop decision.
 
@@ -290,11 +355,15 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### D1.1 — One isolation profile
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#d11); also inspect affected dependencies.
+
 **Dependencies:** K3.4 + owner demand. **Scope:** Select/license-review existing backend; declare credentials, network/filesystem/process/quota/resource/cleanup threat model and implement bounded adapter.
 
 **Acceptance:** Supported work succeeds and actual advertised host tests declared bypass paths; mocks/lab container earn no subject containment credit.
 
 ### D1.2 — D1 physical gate
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#d12); also inspect affected dependencies.
 
 **Dependencies:** D1.1. **Scope:** Exercise restart, stale/native powers, process-tree/resource cleanup and limits on the advertised profile; capture independent sink/host observations.
 
@@ -302,17 +371,23 @@ Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/c
 
 ### S1.1 — Packed-consumer prototype
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#s11); also inspect affected dependencies.
+
 **Dependencies:** K2.4. **Scope:** Prototype compiled JS/types and clean packed install outside workspace links/loaders; retain current consumers and document experimental exports.
 
 **Acceptance:** Fresh offline deterministic public example imports packed packages with supported Node; prototype does not establish stable exports, registry publication or release acceptance.
 
 ### S1.2 — Release candidate freeze
 
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#s12); also inspect affected dependencies.
+
 **Dependencies:** K5.4, R1.3, S1.1. **Scope:** Finalize supported exports/names, guides/skills, persistent deployment and compatibility/refusal matrix. Require R2.3/D1.2 only if corresponding claims ship. Complete actual dependency/terms inventory.
 
 **Acceptance:** Clean installs and examples pass; exact final source/build/provider/profile identity frozen, no unsupported claim or unresolved license adoption; prepare E6 independent construction handoff.
 
 ### S1.3 — S1/E6 final acceptance
+
+**Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#s13); also inspect affected dependencies.
 
 **Dependencies:** S1.2. **Scope:** Run fresh final-surface public construction canary and independently re-evaluate immutable recovery/value/support evidence; publish reproducibility artifacts and limits.
 
@@ -373,14 +448,14 @@ there is no second editable “done” checkbox in 001.
 |---|---|---|
 | K0 | K0.1–K0.2 | K0.2 ACCEPTED, including E0 |
 | K1 | K1.0–K1.4 | K1.4 ACCEPTED, structural obligations plus full E1 |
-| K2 | K2.1–K2.4 | K2.4 ACCEPTED, full E2 |
-| R1 | R1.1–R1.2 initial; R1.3 supported profile | R1.2 unlocks K3; R1.3 is separately required for shipped Driver claims |
-| K3 | K3.1–K3.4 | K3.4 ACCEPTED, full E4 core and owner substrate decision |
-| K4 | K4.1–K4.5 | K4.5 ACCEPTED, full E4 composition |
-| R2 | R2.1–R2.3 | R2.3 if selected stock surfaces ship |
-| K5 | K5.1–K5.4 | K5.4 ACCEPTED, E4 operations and E5 positive value decision |
-| D1 | D1.1–D1.2 | D1.2 only for an isolation claim |
-| S1 | S1.1–S1.3 | S1.3 ACCEPTED, E6 on final candidate and all shipped claims |
+| K2 | [authority](../../mental-model/mechanisms/authority.md), [actions](../../mental-model/mechanisms/actions.md), [communication](../../mental-model/mechanisms/communication.md), [interoperability](../../mental-model/mechanisms/interoperability.md) | K2.4 ACCEPTED, full E2 |
+| R1 | [integration](../../mental-model/mechanisms/integration.md), [recovery](../../mental-model/mechanisms/recovery.md), [resources](../../mental-model/mechanisms/resources.md), [context](../../mental-model/mechanisms/context.md) | R1.2 unlocks K3; R1.3 is separately required for shipped Driver claims |
+| K3 | [recovery](../../mental-model/mechanisms/recovery.md), [resources](../../mental-model/mechanisms/resources.md), [actions](../../mental-model/mechanisms/actions.md) | K3.4 ACCEPTED, full E4 core and owner substrate decision |
+| K4 | [communication](../../mental-model/mechanisms/communication.md), [authority](../../mental-model/mechanisms/authority.md), [output](../../mental-model/mechanisms/output.md), [waits](../../mental-model/mechanisms/waits.md) | K4.5 ACCEPTED, full E4 composition |
+| R2 | [composition](../../mental-model/mechanisms/composition.md), [state](../../mental-model/mechanisms/state.md), [context](../../mental-model/mechanisms/context.md) | R2.3 if selected stock surfaces ship |
+| K5 | [resources](../../mental-model/mechanisms/resources.md), [evidence](../../mental-model/mechanisms/evidence.md), [recovery](../../mental-model/mechanisms/recovery.md), [output](../../mental-model/mechanisms/output.md) | K5.4 ACCEPTED, E4 operations and E5 positive value decision |
+| D1 | [resources](../../mental-model/mechanisms/resources.md), [evidence](../../mental-model/mechanisms/evidence.md) | D1.2 only for an isolation claim |
+| S1 | [interoperability](../../mental-model/mechanisms/interoperability.md), [integration](../../mental-model/mechanisms/integration.md), [recovery](../../mental-model/mechanisms/recovery.md), [evidence](../../mental-model/mechanisms/evidence.md) | S1.3 ACCEPTED, E6 on final candidate and all shipped claims |
 
 R2 and D1 start PLANNED with conditional entry; absence of demand does not pretend completion.
 The owner may DEFER them with a corresponding unsupported feature declaration. If E5 selects an

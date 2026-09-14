@@ -33,7 +33,9 @@ Honor the owner's explicit branch/worktree instructions; do not switch a checkou
 using. Record any owner-authorized departure from the default branch workflow in the handoff.
 Do not start a successor without explicit owner release.
 
-Read the mental model, relevant canonical/detail owners and actual affected source/tests. Read the
+Read mental-model/README.md, then mental-model/reference.md and the precise Layer-3 owners.
+Use mental-model/roadmap.md to locate expected documentation changes, and inspect additional affected
+dependencies. Read actual affected source/tests. Read the
 packet contract, current report/review and open findings; follow closed-finding links as needed for
 cumulative review. Historical records are evidence, not instructions overriding current authority.
 Select proof methods in the contract and derive the obligation/interaction coverage map before coding.
@@ -66,12 +68,41 @@ Apply 006's verdict rules. Bind acceptance only to exact H; do not certify a lat
 If the same substantive defect or defect family survives multiple correction rounds, or you judge that the implementation process is repeating the same conceptual mistake or has reached a local minimum, tell the owner explicitly. Do this outside the reviewer report as a separate owner note, so the owner can consider switching or escalating the implementation agent.
 ```
 
-## Prompt C — Codex final cleanup, close or reopen, and push
+## Prompt C — GPT-6 final cleanup, close or reopen, and push
 
 ```text
-Act as the owner's delegated final-cleanup agent for the submitted ArrokothI packet. Follow AGENTS.md, 006's final-cleanup policy, 007 scope/status, 008 records and 012 review methods. This instruction authorizes the final check, administrative closure or evidence-based reopening, commits and a non-force push of the scoped branch. The owner will merge manually on GitHub. Honor explicit branch/worktree instructions and preserve other agents' work. If the checkout is on main, use a scoped non-main branch without switching a checkout another agent is using; if branch creation is explicitly prohibited, report the conflict instead of pushing main.
+Act as the owner's delegated GPT-6 final-cleanup agent for the submitted ArrokothI packet. Follow AGENTS.md, 006's final-cleanup policy, 007 scope/status, 008 records and 012 review methods. This instruction authorizes the final check, administrative closure or evidence-based reopening, commits and a non-force push of the scoped branch. The owner will merge manually on GitHub. Honor explicit branch/worktree instructions and preserve other agents' work. If the checkout is on main, use a scoped non-main branch without switching a checkout another agent is using; if branch creation is explicitly prohibited, report the conflict instead of pushing main.
 
 Identify the packet from the handoff and authentic review; if ambiguous, ask for the exact target. Verify full base/C/H, release, prerequisites, independent ACCEPT, open findings, raw evidence and current local/remote state. Read the cumulative candidate and all post-review changes, not only the report. Apply the contract's relevant checks to the exact tree being handed off; reuse pinned logs only where their source/evidence identity still applies, and distinguish inspected logs from reruns. Check current remote main for conflicts and relevant changes that could invalidate the review. A green suite cannot replace semantic coverage or an authentic independent ACCEPT.
+
+Maintain the mental-model reference after accepted work. Start from mental-model/roadmap.md and
+the packet's Layer-3 maintenance link; this is expected ownership/navigation, never a whitelist.
+Read the actual accepted semantic delta and its governing decisions. Add canonical concept or
+mechanism content newly defined by that work; update existing Layer-3 descriptions whose accepted
+meaning changed; replace/delete superseded current descriptions and repair incoming links. Fill an
+intentionally blank placeholder when this packet finally defines it. Keep genuinely undecided choices
+explicit rather than inventing a design. Give each project-specific term one definition location and
+link local reminders to it. Use small examples to resolve new ambiguities.
+
+Inspect both incoming and outgoing dependencies: identity/equality, acceptance, wait/batch rules,
+actions/authority, native recovery, resources, output/routing and claimed evidence as applicable.
+Update every additionally affected Layer-3 page, the vocabulary index and roadmap mapping; do not
+stop at the packet's listed files. State which definitions/mechanisms changed, why, their accepted
+source and which related pages were checked. If no Layer-3 update is needed, record the reason.
+Change Layer 1 or Layer 2 only if accepted work changes the whole-system model or a major abstraction;
+do not churn them for every packet. Validate affected links/anchors and examples, including refusal
+and compatibility limits. Do not turn target design into a shipped claim without matching evidence.
+
+Preserve historical implementation reports, reviews, handoffs, integration/cleanup records and sealed
+decision evidence. Their paths and status describe their original candidate. Update live front doors,
+current navigation and current contracts only where policy permits; append superseding evidence when
+needed rather than rewriting history. Do not link current guidance to replaced architecture material.
+Documentation content is payload under 006/008: never hide it in H..A or call an unreviewed semantic
+change administrative. If required reference changes were absent from the reviewed candidate, prepare
+a scoped documentation correction with new C/H and independent review before claiming merge-ready.
+Do not invalidate the original accepted implementation merely because a faithful reference update
+needs review; record the documentation review dependency separately. A newly discovered semantic
+contradiction or substantive defect follows the reopening policy below.
 
 If OK: faithfully record any missing acceptance transcription A naming H. Finish administrative records, links and current status summaries, preserving historical records. Append 008's cleanup record and link it from 007. Record cleanup complete, independent acceptance at H, integration pending owner merge, and next_release: none unless separately authorized. Close only pre-merge implementation/review/cleanup obligations; do not claim merged, integrated or a parent milestone closed when its gate or owner decision is still pending.
 

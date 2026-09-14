@@ -2,7 +2,7 @@
  * `@arrokothi/kernel` - the target Kernel landing zone.
  *
  * This package is the enforced location for new Kernel work under the target
- * [Activation/Outcome protocol](../../../docs/kernel.md#activation-and-outcome). At this revision it
+ * [Activation/Outcome protocol](../../../mental-model/mechanisms/execution-cycle.md). At this revision it
  * implements none of that protocol. It exists so that the first protocol packet cannot quietly
  * inherit the current 0.8.x `Harness`/controller vocabulary, and so that the dependency rule which
  * prevents that inheritance is executable rather than aspirational.

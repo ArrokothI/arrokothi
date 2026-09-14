@@ -5,7 +5,7 @@ This is the human-readable half of K1.0's boundary. The executable half is
 and [`kernel-landing-zone.test.ts`](../../../../tests/conformance/architecture/kernel-landing-zone.test.ts)
 asserts that the two agree, so neither can describe a boundary the other does not enforce.
 
-Nothing here is Kernel semantics. [Kernel](../../../kernel.md) and [Execution](../../../execution.md)
+Nothing here is Kernel semantics. [Kernel](../../../../mental-model/kernel.md) and [Execution](../../../../mental-model/runtime.md)
 own what the Kernel means. This file owns only *where code lives and what it may import*.
 
 ## Zones
@@ -21,8 +21,8 @@ unzoned and carries no new rule from this packet.
 | `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |
 
 `packages/kernel` is a new directory rather than a rename of `packages/core`. A rename would carry
-the existing Harness/controller graph into the target name, which [Execution](../../../execution.md#migration-and-tests)
-rejects directly: "Do not rename files and call that an asynchronous migration." The target zone is
+the existing Harness/controller graph into the target name, which the [structural evidence contract](../../../../mental-model/mechanisms/evidence.md#structural-evidence)
+distinguishes from implementing the asynchronous protocol. The target zone is
 `private` in its manifest, so an unimplemented Kernel cannot be published by accident.
 
 ## Current cross-boundary dependencies

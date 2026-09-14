@@ -1,7 +1,7 @@
 # Kernel guide
 
-The Kernel manages Executions and mediated work. Target semantics live in [Kernel](../../kernel.md)
-and [Execution protocol detail](../../detail-design/execution-protocol.md).
+The Kernel manages Executions and mediated work. Target semantics live in [Kernel](../../../mental-model/kernel.md)
+and [Execution protocol detail](../../../mental-model/mechanisms/execution-cycle.md).
 
 ## Available in 0.8.x
 

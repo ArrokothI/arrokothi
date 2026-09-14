@@ -23,8 +23,8 @@ export interface Zone {
  * The target Kernel zone. New Kernel work lands here and nowhere else.
  *
  * `packages/kernel` was chosen over renaming `packages/core` because renaming would carry the
- * current Harness/controller graph into the target name, which `docs/execution.md` explicitly warns
- * against: "Do not rename files and call that an asynchronous migration."
+ * current Harness/controller graph into the target name.
+ * `mental-model/mechanisms/evidence.md#structural-evidence` distinguishes quarantine from protocol implementation.
  */
 export const TARGET_KERNEL: Zone = {
   id: "target-kernel",

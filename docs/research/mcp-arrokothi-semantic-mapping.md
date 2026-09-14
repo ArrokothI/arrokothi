@@ -1,6 +1,6 @@
 # MCP 2026-07-28 ↔ ArrokothI Semantic Mapping
 
-> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q11 and the [detail-design map](../detail-design/README.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
+> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q11 and the [mental-model reference index](../../mental-model/reference.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
 
 > **Status: non-canonical research note.**
 >
@@ -8,8 +8,8 @@
 >
 > This document inventories the current MCP surface and records provisional ArrokothI mappings.
 > `TBD` means exactly that: no support commitment, kernel admission, or rejection has been made.
-> Canonical ArrokothI semantics remain in [protocol mapping](../detail-design/interoperability.md),
-> [authority detail](../detail-design/authority-and-actions.md), and the other owners listed in [`../README.md`](../README.md).
+> Canonical ArrokothI semantics remain in [protocol mapping](../../mental-model/mechanisms/interoperability.md),
+> [authority detail](../../mental-model/mechanisms/authority.md), and the other owners listed in [`../README.md`](../README.md).
 
 ## 1. Research question
 

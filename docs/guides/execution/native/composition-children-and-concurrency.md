@@ -1,8 +1,8 @@
 # Children, data flow, and concurrency
 
-[Guide home](README.md). Current target semantics are owned by [Kernel](../../../kernel.md) and
-[Execution](../../../execution.md), with [composition detail](../../../detail-design/composition-and-communication.md),
-[authority detail](../../../detail-design/authority-and-actions.md), and [memory/state detail](../../../detail-design/memory-and-state.md).
+[Guide home](README.md). Current target semantics are owned by [Kernel](../../../../mental-model/kernel.md) and
+[Execution](../../../../mental-model/runtime.md), with [composition detail](../../../../mental-model/mechanisms/communication.md),
+[authority detail](../../../../mental-model/mechanisms/authority.md), and [memory/state detail](../../../../mental-model/mechanisms/state.md).
 This page describes the implemented 0.8.x authoring surface.
 
 ## Call a child when it needs independent runtime identity

@@ -1,8 +1,8 @@
 # Current authoring surface and API map
 
 [Guide home](README.md) · [Quick start](../../deployment/quick-start.md). Target semantics are owned by
-[Execution](../../../execution.md) and [Kernel](../../../kernel.md), with current composition and memory detail in
-[`detail-design/`](../../../detail-design). The `@arrokothi/sdk` bootstrap composes the existing 0.8.x
+[Execution](../../../../mental-model/runtime.md) and [Kernel](../../../../mental-model/kernel.md), with current composition and memory detail in
+[the mental-model reference](../../../../mental-model/reference.md). The `@arrokothi/sdk` bootstrap composes the existing 0.8.x
 stock controllers; this table describes implemented behavior, not the full target architecture.
 
 ## What each surface can do

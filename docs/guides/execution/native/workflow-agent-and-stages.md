@@ -1,7 +1,7 @@
 # Choose control and Stages
 
-[Guide home](README.md). Current target semantics are owned by [Execution](../../../execution.md), with
-[target Runtime composition](../../../detail-design/runtime-composition.md). This page describes
+[Guide home](README.md). Current target semantics are owned by [Execution](../../../../mental-model/runtime.md), with
+[target Runtime composition](../../../../mental-model/mechanisms/composition.md). This page describes
 the implemented 0.8.x Agent/Workflow/Stage authoring surface.
 
 Use ordinary deterministic code when the answer is computable. Put it in a Function Stage only when

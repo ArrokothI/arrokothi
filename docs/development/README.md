@@ -1,8 +1,9 @@
 # Development
 
 This directory records the implemented baseline, active migration plan and evidence. Architecture
-is owned by [Mental model](../mental-model.md), [Kernel](../kernel.md), [Execution](../execution.md)
-and [Deployment](../deployment.md). Current hosted repository:
+starts at [the mental model](../../mental-model/README.md); the
+[reference index](../../mental-model/reference.md) owns concept/mechanism navigation and
+[roadmap mapping](../../mental-model/roadmap.md) guides Layer-3 maintenance. Current hosted repository:
 [ArrokothI/arrokothi](https://github.com/ArrokothI/arrokothi); historical names and local checkout
 paths remain valid evidence locators and are not mass-renamed.
 
@@ -22,7 +23,6 @@ paths remain valid evidence locators and are not mass-renamed.
 | [Findings](003-evidence-and-findings.md) | Existing implementation defects, historical results and current disposition |
 | [Architecture review](004-architecture-review.md) | 2026-09-08 decisions, inspected prior art, unresolved questions and old-plan disposition |
 | [Detail-design review](005-detail-design-review.md) | Preserved legacy knowledge, refined contracts, future-question disposition and implementation gates |
-| [Legacy](legacy/) | Superseded plans; historical evidence, never an additional active sequence |
 
 The target uses asynchronous Activation/Outcome exchange with opaque Runtime progress. Current code
 still uses `Harness`, synchronous controller invocation, Agent/Workflow progress kinds and
@@ -37,14 +37,6 @@ When implementing a slice, update the code, conformance, baseline and guides tog
 Preserve useful behavior, move Runtime machinery out of Kernel semantics, version incompatible
 contracts explicitly, and distinguish tests of current code from future acceptance criteria.
 
-K0.1, the post-K0.1 process review and K0.2 are independently accepted, integrated and owner-closed.
-The [status ledger](007-work-packets.md) links their exact candidates, reviews and integration
-receipts; the [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure with the accepted E0
-evidence. Historical worksheets, assessments and attempt records describe their own dates and
-candidates; their earlier holds do not override the ledger and subsequent owner decisions.
-
-The structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is itself K1
-implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared fixtures and
-a structural pass are not an E1 result. **The owner released K1.0 on 2026-09-13**, directing that the
-E1 dependency be treated as the already-built but unaccepted preparation. **K1.0-correction-02 round 1 is independently ACCEPTED** at H `def91fb9f34ade40a65cbde999c0ffe192d18239`, over C `95d74530f37c7af8706ef92d29574425a39afcf1`, original base `c9a9ed7e6e538ab0542fc6a999426264abb6212a`. OpenAI GPT-5.6 Sol (High) recorded [review-01](work/K1.0-correction-02/review-01.md) at A `4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0`, closing K10-CORR1-CLEANUP-01. [Delegated cleanup](work/K1.0-correction-02/cleanup-01.md) is complete; integration is pending the owner's manual merge and verified push is supplied in the external handoff. The cumulative C1–C9 acceptance restores the current structural claim; both earlier ACCEPT/invalidation records remain historical. No E1 result or K1 milestone closure; `next_release: none`.
-Benchmark owns its evidence preparation and release decisions separately.
+Resolve current acceptance, correction history and release through [007](007-work-packets.md).
+Historical worksheets, reports and reviews describe their candidate at the time. K1.0's
+accepted structural preparation is not target execution, E1 acceptance or permission to begin K1.1.

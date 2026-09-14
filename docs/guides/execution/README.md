@@ -1,7 +1,7 @@
 # Execution guide
 
 An Execution Runtime performs the work behind the Kernel boundary. Target semantics are in
-[Execution](../../execution.md); the Driver preserves the selected Runtime's native behavior.
+[Execution](../../../mental-model/runtime.md); the Driver preserves the selected Runtime's native behavior.
 
 | Topic | Start here |
 |---|---|

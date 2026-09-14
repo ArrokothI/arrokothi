@@ -1,8 +1,8 @@
 # Capabilities, Effects, and authority
 
-[Guide home](README.md). Current target semantics are owned by the [Kernel](../../kernel.md), with
-[authority/action detail](../../detail-design/authority-and-actions.md) and deployment trust limits in
-[Deployment](../../deployment.md). This page describes the implemented 0.8.x authoring surface.
+[Guide home](README.md). Current target semantics are owned by the [Kernel](../../../mental-model/kernel.md), with
+[authority/action detail](../../../mental-model/mechanisms/authority.md) and deployment trust limits in
+[Deployment](../../../mental-model/deployment.md). This page describes the implemented 0.8.x authoring surface.
 
 ## Assemble the action path
 

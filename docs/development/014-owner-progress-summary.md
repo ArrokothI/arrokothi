@@ -191,10 +191,10 @@ the owner handoff should give you the concrete change, what its evidence proves,
 the independent verdict, integration status and the next release or hold. Ask for the underlying
 review only when a finding, tradeoff or unsupported claim affects your decision.
 
-Your planned detail-design reading can proceed alongside this preparation. For understanding E1 and
-K1, prioritize [Execution protocol](../detail-design/execution-protocol.md), then
-[Evidence and observability](../detail-design/evidence-and-observability.md), and the relevant parts
-of [Recovery and compatibility](../detail-design/recovery-and-compatibility.md). The agents still
+Your planned mental-model reading can proceed alongside this preparation. For understanding E1 and
+K1, prioritize [Execution protocol](../../mental-model/mechanisms/execution-cycle.md), then
+[Evidence and observability](../../mental-model/mechanisms/evidence.md), and the relevant parts
+of [Recovery and compatibility](../../mental-model/mechanisms/recovery.md). The agents still
 must read the governing detail pages before implementing their contracts. You do not have to finish
 every optional Runtime design before understanding or releasing E1 preparation.
 

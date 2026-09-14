@@ -1,10 +1,10 @@
 # Agent Caching: Semantics, External Patterns, and ArrokothI Design Guidance
 
-> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q6 and the [detail-design map](../detail-design/README.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
+> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q6 and the [mental-model reference index](../../mental-model/reference.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
 
 > **Status: focused non-canonical research note.**
 >
-> This document compares external caching patterns and derives implementation guidance for ArrokothI. It does **not** redefine current kernel semantics. Canonical ownership remains with [authority detail](../detail-design/authority-and-actions.md), [state/memory detail](../detail-design/memory-and-state.md), [Kernel](../kernel.md), and the other documents indexed by [`../README.md`](../README.md).
+> This document compares external caching patterns and derives implementation guidance for ArrokothI. It does **not** redefine current kernel semantics. Canonical ownership remains with [authority detail](../../mental-model/mechanisms/authority.md), [state/memory detail](../../mental-model/mechanisms/state.md), [Kernel](../../mental-model/kernel.md), and the other documents indexed by [`../README.md`](../README.md).
 >
 > Research date: **2026-09-02**.
 
