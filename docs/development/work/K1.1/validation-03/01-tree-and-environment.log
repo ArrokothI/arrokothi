@@ -1,0 +1,54 @@
+# 01 tree and environment (validation-03, clean payload C3)
+## identities
+payload C3: 615cdf884ac560aec659162353680e55f732804c
+governing base: 777b9955fb3a443f700b4f3d1f4f2aef1869345b
+reviewed payload C: 8cd9e269b1c08f166dec1b567aedf7d1b4810b34
+reviewed H: 0f345b3c9ab49f6c5d9e09b162641cda78f96356
+review record: 1489227b4c80a2d059e8e71f92b233ed76bff8d5 (preserved)
+round-2 payload C2: 6b7e5fb0eb3cb323788f97889b84db845a7b3f9f
+round-2 candidate H2: 297cc56ff186638817e0edfba7a3ce9f103d561e (preserved)
+integrated main (PR26): 05f48c204d1eae021b3464c206e5c11e84bb3505
+main-merge into branch: 87ee39c2832f9ebd41aa8e5b084b76af0d14ff8c
+branch:    codex/k1.1-create-reserve-async-dispatch
+remote:    https://github.com/ArrokothI/arrokothi.git
+date: 2026-09-14T19:28:23Z
+
+## environment
+v25.2.1
+11.6.2
+Version 5.9.3
+arm64
+cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+
+## ancestry
+integrated main 05f48c204d1eae021b3464c206e5c11e84bb3505 in ancestry of C3: yes
+K1.0 parent receipt in tree: 2
+payload commits main-merge..C3:
+615cdf8 fix(K1.1): adopt owner-approved canonicalize@3.0.0 as JCS substrate
+
+## working tree status at C3 (validation-03 directory itself is written by this run)
+
+## cumulative diffstat governing-base..C3
+ packages/kernel/tests/inspection.test.ts           |  131 +
+ packages/kernel/tests/receipts.test.ts             |  263 ++
+ packages/kernel/tests/refusals.test.ts             |   79 +
+ packages/kernel/tests/unsupported.test.ts          |   43 +-
+ packages/kernel/tests/values.test.ts               |  393 +++
+ tests/conformance/architecture/boundary-policy.ts  |   22 +-
+ .../architecture/kernel-landing-zone.test.ts       |  140 +-
+ 57 files changed, 20826 insertions(+), 96 deletions(-)
+
+## correction delta H2..C3
+ .../development/002-implemented-kernel-baseline.md |  6 +-
+ docs/development/007-work-packets.md               | 18 ++--
+ .../work/K1.0-correction-02/integration-01.md      | 42 ++++++++++
+ docs/development/work/K1.0/integration-01.md       | 47 +++++++++++
+ docs/development/work/K1.0/ownership-inventory.md  | 43 ++++++----
+ docs/development/work/K1.1/contract.md             | 98 +++++++++++++---------
+ package-lock.json                                  | 17 +++-
+ packages/kernel/package.json                       |  5 +-
+ packages/kernel/src/values.ts                      | 76 +++++------------
+ packages/kernel/tests/boundary.test.ts             | 19 ++++-
+ tests/conformance/architecture/boundary-policy.ts  | 22 ++++-
+ .../architecture/kernel-landing-zone.test.ts       | 60 +++++++++----
+ 12 files changed, 309 insertions(+), 144 deletions(-)
