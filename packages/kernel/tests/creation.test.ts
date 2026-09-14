@@ -11,7 +11,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator } from "../src/index.ts";
+import { ExecutionCoordinator, canonicalize } from "../src/index.ts";
 import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
 
 const coordinator = (): ExecutionCoordinator => new ExecutionCoordinator({ driver: recordingDriver() });
@@ -233,6 +233,64 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.equal(second.replayed, false, "the second request is its own, not a replay of the first");
   });
 
+  test("K11-R3-ID-02 an identity field that is not text is refused rather than packed into a colliding key", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+
+    // Every object renders as `[object Object]` with no length, so before this rule two genuinely
+    // different creation keys packed identically: the first created an Execution and the second was
+    // refused as its conflict, having named nothing of the sort.
+    const first = refused(
+      kernel.createExecution(author, createRequest({ creationKey: { a: 1 } as never, initialInput: { kind: "k", payload: 1 } })),
+    );
+    const second = refused(
+      kernel.createExecution(author, createRequest({ creationKey: { b: 2 } as never, initialInput: { kind: "k", payload: 2 } })),
+    );
+    for (const refusal of [first, second]) {
+      assert.equal(refusal.classification, "malformed_value");
+      assert.match(refusal.reason, /creationKey unsupported_form/);
+    }
+    assert.deepEqual(kernel.visibleExecutions(author), [], "neither request named an Execution");
+
+    // The sharper case is `kind`, which is content: two different kinds under one key were accepted
+    // as an exact replay of each other, which is the opposite of C1's conflict rule.
+    const kindA = refused(
+      kernel.createExecution(author, createRequest({ creationKey: "k1", initialInput: { kind: { a: 1 } as never, payload: 1 } })),
+    );
+    assert.match(kindA.reason, /initialInput\.kind unsupported_form/);
+    const kindB = refused(
+      kernel.createExecution(author, createRequest({ creationKey: "k1", initialInput: { kind: { b: 2 } as never, payload: 1 } })),
+    );
+    assert.equal(kindB.classification, "malformed_value", "and the second is not answered as a replay of the first");
+    assert.deepEqual(kernel.visibleExecutions(author), []);
+
+    // The rule covers every identity-bearing field of the creation envelope, and reports them all.
+    const many = refused(
+      kernel.createExecution(caller("app-a", "tenant-a", "tenant-b"), {
+        creationKey: 17 as never,
+        scope: "tenant-a",
+        definitionRevision: null as never,
+        runtimeContractRevision: "r@1",
+        progressCodec: ["c"] as never,
+        authorityContext: { tenant: "a" },
+        initialInput: { kind: "k", payload: 1, subscriptionClass: 5 as never },
+      }),
+    );
+    assert.equal(many.classification, "malformed_value");
+    for (const field of ["creationKey", "definitionRevision", "progressCodec", "initialInput.subscriptionClass"]) {
+      assert.ok(many.reason.includes(`${field} unsupported_form`), `${field} is named in the refusal`);
+    }
+  });
+
+  test("K11-R3-ID-02 identity text is still held to the ordinary boundary-value rules", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const refusal = refused(kernel.createExecution(author, createRequest({ creationKey: "bad\ud800key" })));
+    assert.equal(refusal.classification, "malformed_value");
+    assert.match(refusal.reason, /creationKey lone_surrogate/);
+    assert.deepEqual(kernel.visibleExecutions(author), []);
+  });
+
   test("the payload cannot supply or change the producer namespace", () => {
     const kernel = coordinator();
     const impersonating = {
@@ -289,6 +347,65 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     (payload["__proto__"] as Record<string, unknown>)["admin"] = false;
     const after = accepted(kernel.inspect(author, created.executionId));
     assert.deepEqual((after.mailbox[0]?.payload as Record<string, unknown>)["__proto__"], { admin: true });
+  });
+
+  test("K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    // Owns 1 at position 0, reads 2 there. The round-3 path validated the read, bound canonical
+    // bytes from the read, and retained the owned value: identity named a value nobody kept.
+    const payload = new Proxy([1], {
+      get(inner, property, receiver): unknown {
+        if (property === "0") return 2;
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    const refusal = refused(
+      kernel.createExecution(author, createRequest({ creationKey: "unstable", initialInput: { kind: "k", payload: payload as never } })),
+    );
+    assert.equal(refusal.classification, "malformed_value");
+    assert.match(refusal.reason, /unstable_representation/);
+    assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created under either reading");
+
+    // The same rule reaches the authority context, which is its own boundary-value root.
+    const context = new Proxy({ tenant: "a" } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "tenant") return "b";
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    const contextRefusal = refused(
+      kernel.createExecution(author, createRequest({ creationKey: "unstable-2", authorityContext: context as never })),
+    );
+    assert.equal(contextRefusal.classification, "malformed_value");
+    assert.match(contextRefusal.reason, /authorityContext\.tenant unstable_representation/);
+    assert.deepEqual(kernel.visibleExecutions(author), []);
+  });
+
+  test("K11-R2-VAL-02 what creation retained is exactly what its canonical identity described", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const payload = JSON.parse('{"__proto__":{"admin":true},"list":[1,[2,{"deep":null}]],"safe":2}') as Record<string, unknown>;
+    const created = accepted(
+      kernel.createExecution(author, createRequest({ creationKey: "coherent", initialInput: { kind: "application.request", payload: payload as never } })),
+    );
+
+    const stored = accepted(kernel.inspect(author, created.executionId)).mailbox[0]?.payload;
+    const bound = canonicalize(payload);
+    const retained = canonicalize(stored);
+    assert.ok(bound.ok && retained.ok);
+    assert.equal(retained.value.canonical, bound.value.canonical, "the retained structure canonicalizes to the bytes that accepted it");
+
+    // And that identity is what decides a replay: a fresh spelling of the same logical value is the
+    // lost-response row, while one differing anywhere is a conflict.
+    const replay = accepted(
+      kernel.createExecution(
+        author,
+        createRequest({ creationKey: "coherent", initialInput: { kind: "application.request", payload: JSON.parse('{"safe":2,"list":[1,[2,{"deep":null}]],"__proto__":{"admin":true}}') as never } }),
+      ),
+    );
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.executionId, created.executionId);
   });
 
   test("K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation", () => {

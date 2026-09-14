@@ -62,7 +62,6 @@ describe("target Kernel scaffolding", () => {
       "ok",
       "refuseUnsupportedSurface",
       "sameLogicalValue",
-      "sealBoundaryValue",
     ]);
     // Nothing named for a boundary no accepted packet has built. The list above is exact so adding
     // one is a deliberate, reviewed change rather than a drift.

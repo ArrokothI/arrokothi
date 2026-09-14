@@ -13,7 +13,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator } from "../src/index.ts";
+import { ExecutionCoordinator, canonicalize } from "../src/index.ts";
 import { accepted, caller, createRequest, delayedDriver, recordingDriver, refused, rejectingDriver, throwingDriver } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
@@ -377,5 +377,60 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     assert.ok(Object.prototype.hasOwnProperty.call(recarried, "__proto__"));
     assert.deepEqual(recarried, carried);
     assert.deepEqual(accepted(kernel.inspect(author, created.executionId)).mailbox[0]?.payload, carried);
+  });
+
+  test("K11-R2-VAL-02 the Activation, redelivery and inspection carry the one value identity described", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const payload = { list: [1, [2, { deep: null }]], safe: "yes" };
+    const context = { tenant: "a", nested: { flags: [true, false] } };
+    const created = accepted(
+      kernel.createExecution(
+        author,
+        createRequest({ authorityContext: context, initialInput: { kind: "application.request", payload } }),
+      ),
+    );
+    accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    accepted(kernel.redeliver(author, created.executionId));
+
+    const bound = canonicalize(payload);
+    const boundContext = canonicalize(context);
+    assert.ok(bound.ok && boundContext.ok);
+
+    const first = driver.seen[0];
+    const second = driver.seen[1];
+    const inspected = accepted(kernel.inspect(author, created.executionId));
+
+    // Every projection of the accepted value is the same object, and that object is what the
+    // canonical bytes identity was taken from. A projection that re-derived the value from the
+    // caller's own object - which is what three separate passes amounted to - could differ here.
+    assert.equal(second, first, "ordinary redelivery re-sends the same frozen Activation");
+    assert.equal(first?.events[0]?.payload, inspected.mailbox[0]?.payload, "one retained structure, not two copies");
+    assert.equal(first?.executionView, inspected.authorityContext);
+
+    for (const projection of [first?.events[0]?.payload, inspected.mailbox[0]?.payload]) {
+      const again = canonicalize(projection);
+      assert.ok(again.ok);
+      assert.equal(again.value.canonical, bound.value.canonical);
+    }
+    const contextAgain = canonicalize(first?.executionView);
+    assert.ok(contextAgain.ok);
+    assert.equal(contextAgain.value.canonical, boundContext.value.canonical);
+  });
+
+  test("K11-R2-VAL-02 a payload with no single reading never reaches a Driver", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const payload = new Proxy([1], {
+      get(inner, property, receiver): unknown {
+        if (property === "0") return 2;
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    const refusal = refused(
+      kernel.createExecution(author, createRequest({ initialInput: { kind: "k", payload: payload as never } })),
+    );
+    assert.equal(refusal.classification, "malformed_value");
+    assert.deepEqual(driver.seen, [], "no Activation was built from a value with two readings");
   });
 });

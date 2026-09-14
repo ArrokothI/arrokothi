@@ -10,7 +10,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type BoundaryValue, type ExecutionView } from "../src/index.ts";
+import { ExecutionCoordinator, canonicalize, type BoundaryValue, type ExecutionView } from "../src/index.ts";
 import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
@@ -116,6 +116,26 @@ describe("K1.1-C9 what a reader can see", () => {
     assert.throws(() => {
       (stored as Record<string, unknown>)["safe"] = 99;
     }, TypeError);
+  });
+
+  test("K11-R2-VAL-02 inspection exposes the structure identity was taken from, twice over", () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const payload = JSON.parse('{"__proto__":{"x":1},"list":[1,[2,{"deep":null}]],"safe":2}') as Record<string, unknown>;
+    const created = accepted(
+      kernel.createExecution(author, createRequest({ initialInput: { kind: "application.request", payload: payload as never } })),
+    );
+
+    const bound = canonicalize(payload);
+    assert.ok(bound.ok);
+    const first = accepted(kernel.inspect(author, created.executionId)).mailbox[0]?.payload;
+    const second = accepted(kernel.inspect(author, created.executionId)).mailbox[0]?.payload;
+
+    assert.equal(second, first, "two reads expose the one retained structure, not two reconstructions");
+    for (const exposed of [first, second]) {
+      const again = canonicalize(exposed);
+      assert.ok(again.ok);
+      assert.equal(again.value.canonical, bound.value.canonical);
+    }
   });
 
   test("visibleExecutions lists what this caller may reach, and nothing else", () => {

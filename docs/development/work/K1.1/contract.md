@@ -12,7 +12,11 @@ including 006/007/008/012 as they stand there).
 by `main` PR #26 / `05f48c204d1eae021b3464c206e5c11e84bb3505`. See
 [Entry and owner release](#entry-and-owner-release).
 **Base commit:** `777b9955fb3a443f700b4f3d1f4f2aef1869345b`.
-**Branch:** `codex/k1.1-create-reserve-async-dispatch`. **Contract revision 3 (round-3: main-merge provenance ancestry 05f48c2/87ee39c closing OPEN-1; owner-approved canonicalize@3.0.0 closing OPEN-2; C3/JCS substrate).**
+**Branch:** `codex/k1.1-create-reserve-async-dispatch`. **Contract revision 4 (round-4: value acceptance
+reconstructed around one capture (K11-R2-VAL-02); retained evidence immutable at its single mint
+(K11-R2-EVID-01); identity fields required to be text (self-found K11-R3-ID-02). Revision 3 closed
+OPEN-1 by the 05f48c2/87ee39c main-merge ancestry and OPEN-2 by the owner-approved canonicalize@3.0.0
+substrate; both stand unchanged.)**
 **Implementer:** Muse Spark, 2026-09-14 correction round. The `codex/` branch
 prefix is 006's naming convention for a packet branch, not a claim about which agent wrote it.
 
@@ -92,7 +96,11 @@ Execution and its retained decision; a caller repeating a seen response gets the
 no second one. Same scope and key with different content is a conflict that creates nothing and is
 recorded. A fresh key with identical content creates a second Execution. Another authenticated
 caller may use the same key text without colliding. The principal comes from the authenticated
-caller parameter only; no field of the request payload can supply or change it.
+caller parameter only; no field of the request payload can supply or change it. Every field that
+names a request — the creation key, the authority scope, the pinned revisions and codec, the input
+kind and any declared subscription class — must be text before it is packed into an identity, because
+the packing is injective over text only; a non-text field is refused as a malformed value naming that
+field, never packed into a key two different requests could share.
 
 **K1.1-C2 — post-creation input ingress under the Input ID triple.** Input identity is the triple
 (authenticated producer namespace, destination Execution ID, producer request key). Acceptance
@@ -107,9 +115,9 @@ refused identically, so the refusal cannot be used to discover another principal
 Capacity limits refuse ingress before any acknowledgment. All of this holds whether or not a wait
 exists, which at this packet is always "not": wait matching is K1.3.
 
-**K1.1-C3 — canonical boundary values, equality and semantic limits.** The target zone produces
-one canonical value encoding through the owner-approved unmodified conforming JCS implementation
-`canonicalize@3.0.0` (round-3 owner decision closing K1.1-OPEN-2; AGENTS.md record in
+**K1.1-C3 — canonical boundary values, equality and semantic limits, from one observation.** The
+target zone produces one canonical value encoding through the owner-approved unmodified conforming JCS
+implementation `canonicalize@3.0.0` (round-3 owner decision closing K1.1-OPEN-2; AGENTS.md record in
 [implementation-03](implementation-03.md)), behind `packages/kernel/src/values.ts`, and enforces
 [values](../../../../mental-model/concepts/values.md)' RFC 8785/JCS rules 1–6 and its four fixed
 semantic limits around it. Non-finite numbers, `undefined`, symbols,
@@ -118,6 +126,16 @@ computed, never repaired. Equality is canonical-byte equality: key order is not 
 is, and an absent member differs from an explicit `null`. Each boundary-value root is measured
 independently; sibling roots are not summed. Values exactly at a limit pass and one unit over is
 rejected, for all four limits.
+
+**Acceptance reads a caller's value once.** Validation, canonical bytes, retained content, Activation
+projection and inspection are all derived from one immutable snapshot taken during that single pass;
+the caller's object is never consulted again. For every accepted root, the structure whose canonical
+bytes decide identity *is* the structure retained and later exposed, so re-canonicalizing what was
+retained reproduces the bytes that accepted it. A representation that does not present one structure
+to read — an own data descriptor and an ordinary property read that disagree, an array position
+`length` claims but the value does not own, an own-name listing with no property behind it, or a
+structure whose observation throws — is **refused**, not normalized into whichever reading won and
+not repaired. No exotic object kind is named by the rule or by its implementation.
 
 **K1.1-C4 — dispatch intent, reservation and asynchrony.** Before sending, one atomic decision
 reserves the exact Event batch and records dispatch intent, writer epoch, accepted progress and base
@@ -135,11 +153,19 @@ the Activation ID, the writer epoch, the pinned progress revision and the reserv
 never re-selects: Events accepted after reservation stay out of that batch and stay queued. Redelivery
 of a resolved or never-dispatched exchange is refused. Nothing in this packet advances a writer epoch.
 
-**K1.1-C6 — per-boundary receipts, principal-scoped.** Creation, input ingress and dispatch intent
-each mint their own receipt naming that boundary and its position; there is no single receipt per
-Execution and no receipt from one boundary is returned for another. Exact replay returns the original
-token; every refusal mints none. Receipt reads authenticate and scope before revealing anything, and
-a caller outside the scope gets the same answer as for an Execution that does not exist.
+**K1.1-C6 — per-boundary receipts, principal-scoped, and not caller-mutable.** Creation, input
+ingress and dispatch intent each mint their own receipt naming that boundary and its position; there
+is no single receipt per Execution and no receipt from one boundary is returned for another. Exact
+replay returns the original token; every refusal mints none. Receipt reads authenticate and scope
+before revealing anything, and a caller outside the scope gets the same answer as for an Execution
+that does not exist.
+
+**Retained evidence is immutable.** A receipt and a refusal record are retained evidence, and the
+Kernel deliberately returns the same object it retains, so each is immutable from the single point
+where it is created. No mutation a caller performs on a receipt returned by creation, ingress,
+dispatch, redelivery or inspection, or on a refusal record returned directly or read through
+inspection, can change the Kernel's retained decision or what a later replay or inspection reports.
+`readonly` alone does not satisfy this: it is erased at run time.
 
 **K1.1-C7 — explicit refusal of unlanded surfaces.** Outcome submission, authorized takeover,
 the recovery hold for unavailable pinned code, and out-of-band cancellation exist as refusing
@@ -157,7 +183,9 @@ pinned Definition/Runtime-contract revision and progress codec alone.
 **K1.1-C9 — minimum inspection that acknowledges nothing and leaks nothing.** Inspection reports
 lifecycle state, accepted progress and its revision, the unresolved Activation with its writer epoch
 and reserved batch, queued Events in acceptance order with their dispositions, recorded refusals with
-their reasons, and the receipts above. Reading acknowledges no Event and mutates nothing. Inspection
+their reasons, and the receipts above. Reading acknowledges no Event and mutates nothing. What it
+exposes is the retained structure itself — the same value C3's acceptance bound identity to, and
+evidence C6 holds immutable — not a separately derived copy that could describe something else. Inspection
 is authenticated and scoped on the same terms as K1.1-C6. `B-5` terminal dispositions and
 acknowledgments are always empty here (K1.3 and K1.2 own them); the fields exist so later packets
 have a place to record them.
@@ -211,6 +239,12 @@ weakened and no schema relaxed.
 | C1/C2/C9 accepted content is immutable (creation.md, core.md) | edit the caller's own object after acceptance; edit a returned view | the recorded content is unchanged; the frozen copy throws | `inspection.test.ts` |
 | C4 the intent precedes the send (execution-cycle.md) | a Driver that reads the Kernel back from inside `deliver` | it already sees `RUNNING`, the Activation and the reserved batch; input it submits from there is queued and does not join that batch | `dispatch.test.ts` |
 | C4 the exchange is immutable (core.md) | a Driver that edits the Activation it was handed | the write throws; redelivery still carries the content captured before it | `dispatch.test.ts` |
+| C3 one observation, one value (values.md) | a value whose own data descriptor and property read disagree; an array position `length` claims but nothing owns; an own-name listing with nothing behind it; a length that disagrees with itself; an observation that throws | each refused with a located code (`unstable_representation`, `undefined_member`); **forbidden:** accepting either reading, normalizing the value, or letting the exception leave the boundary | `values.test.ts` |
+| C3 accepted content re-canonicalizes to its own identity (values.md) | every accepted shape in the packet's vocabulary, including own `__proto__`, at-limit depth and nesting | re-canonicalizing the retained structure reproduces the accepting bytes exactly | `values.test.ts` |
+| C1/C2/C4/C9 the one value reaches every projection (values.md, core.md) | accept a payload and an authority context, dispatch, redeliver, inspect twice | Activation payload, redelivered payload and both inspection reads are the same retained structure, and it canonicalizes to the bytes that decided replay; **forbidden:** a projection derived again from the caller's object | `creation.test.ts`, `ingress.test.ts`, `dispatch.test.ts`, `inspection.test.ts` |
+| C1/C2 a value with no single reading is refused at both ingress points (values.md) | such a payload and such an authority context at create and at submit | `malformed_value` locating the position; **forbidden:** an Execution, a queued Event, or any Activation reaching a Driver | `creation.test.ts`, `ingress.test.ts`, `dispatch.test.ts` |
+| C1/C2/C6/C9 retained evidence is immutable (identity.md) | cast away `readonly` and mutate every returned receipt and refusal, then replay and inspect | the retained token, boundary, position, classification, reason and Execution are unchanged; every exposed evidence object is frozen; **forbidden:** a replay or inspection reporting an edited value | `evidence.test.ts` |
+| C1/C2 identity fields are text (identity.md) | non-text creation key, scope, revisions, codec, input kind, subscription class, request key; a non-text destination | each refused as `malformed_value` naming the field; a non-text destination answers as an unknown destination; `packIdentity` raises on a non-text part; **forbidden:** two different requests packing to one identity, or a different request answered as a replay | `creation.test.ts`, `ingress.test.ts`, `receipts.test.ts` |
 | C2 capacity is a declared limit (creation.md) | construct a coordinator with capacity 0 or 2.5 | refused as a configuration error, not discovered as a runtime refusal | `ingress.test.ts` |
 
 ## Command plan
@@ -221,14 +255,19 @@ Run on the payload commit C, from the repository root, Node 22.9+:
 npm run typecheck
 npm test
 npm run test:conformance
+npm run test:kernel
 npm run test:sdk
 npm run check:builder-docs
+node --test --test-reporter=tap "tests/conformance/architecture/*.test.ts"
 ```
 
 `npm test` is the superset that includes the new `packages/kernel/tests/*.test.ts` files and the
 architecture conformance suite; `test:conformance` and `test:sdk` are run separately because this
 packet touches the architecture guard and must show the public host path unchanged.
 `check:builder-docs` is run because the inventory document and package documentation change.
+`test:kernel` and the architecture suite are run and recorded separately as well: the packet's own
+case inventory and the K1.0 structural guard are where a change to this zone shows up first, and the
+round-4 export-surface change (K1.1-DEC-3) is enforced in both the packet suite and the guard.
 `npm run test:evals` is **not** run: this packet adds no Agent behaviour and no model path, and 006
 requires it only for Agent behaviour.
 
@@ -275,6 +314,28 @@ should be able to rule on them rather than infer them.
 - **K1.1-DEC-2 — one epoch per exchange, starting at 1.** `identity.md` leaves "whether it resets
   for a later Activation" to the implementation and constrains only advances within one unresolved
   exchange. Nothing in this packet advances an epoch, and the takeover that does is K1.2's.
+- **K1.1-DEC-3 — there is no supported way to seal a value the zone has not validated.** The
+  round-4 correction of K11-R2-VAL-02 makes the immutable snapshot the product of the capture pass
+  that accepted the value, and removes the separately callable `sealBoundaryValue` from the zone's
+  export surface. A second entry point that snapshots caller-owned state is exactly the second
+  reading that let identity and retained content describe different structures, so it is removed
+  rather than documented as dangerous. `canonicalize` is the whole supported path; C10's measured
+  export surface and the two export-surface controls are updated to the tree this produces.
+- **K1.1-DEC-4 — retained evidence is frozen where it is minted, not copied where it is
+  returned.** `mintReceipt` and `mintRefusal` are the only places a receipt or refusal record comes
+  into existence, and both freeze. The Kernel then shares one object between what it retains and what
+  it returns, which is what lets an exact replay return *the original* receipt rather than an
+  equal-looking reconstruction. The rejected alternative — detaching a copy at each exit — would put
+  the invariant in every current and future exit path instead of in the two constructors.
+- **K1.1-DEC-5 — a non-text identity field is a refusal; a non-text `packIdentity` part is a
+  raised error.** Caller-supplied request fields are data crossing a boundary, so a non-text creation
+  key, scope, revision, codec, kind, subscription class or request key is refused as
+  `malformed_value` naming the field. `packIdentity`'s parts also include the authenticated caller's
+  namespace and the authority scope, which arrive from the host's authentication boundary rather than
+  from the request; a non-text part there is a programming error at that boundary and raises a
+  `TypeError`, the same way an invalid `mailboxCapacity` raises rather than inventing a protocol
+  refusal. A non-text `destination` needs neither: it matches no minted Execution ID and is already
+  answered as an unknown destination, which discloses nothing.
 
 ## Unresolved obligations and open decisions
 

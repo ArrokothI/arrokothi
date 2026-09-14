@@ -6,7 +6,33 @@
  * request?", "is this input an exact replay or a conflict?" — is a question about *logical* value
  * equality, and that question has exactly one accepted answer: the canonical bytes are equal.
  *
- * Three properties are deliberate and are the reason this is one module rather than a helper:
+ * ## The one invariant this module exists to hold
+ *
+ * **One observation, one value.** Each position of a caller's object is observed once, during a
+ * single capture pass — one own-property descriptor, and one ordinary read that must agree with it.
+ * That pass produces an immutable structural snapshot, and *everything afterwards is derived from
+ * the snapshot*: the issues that refuse it, the canonical bytes that decide its identity, the
+ * content the Kernel retains, what inspection exposes, and what an Activation carries. The caller's
+ * object is never consulted again.
+ *
+ * This is stronger than "copy the value somewhere". The previous shape of this module validated the
+ * caller's object in one pass, canonicalized *the caller's object* in a second, and copied it in a
+ * third. Three passes over one JavaScript object need not see the same thing: an ordinary array
+ * `Proxy` can make indexed reads and own data descriptors disagree, so validation could accept `2`,
+ * the JCS implementation could bind canonical `[2]`, and the retained copy could hold `[1]`
+ * (K11-R2-VAL-02). Identity then named a value nobody retained. Capturing once removes the class,
+ * not one example of it: after the capture pass there is no second reading of caller-owned state to
+ * disagree with.
+ *
+ * Coherence alone would still let an exotic representation be *normalized* into a plain snapshot, and
+ * `values.md` says to reject unsupported values rather than repair them. So the capture pass also
+ * refuses any container whose own data descriptor and ordinary property read disagree, whose array
+ * position is supplied by anything other than an own data property, or whose structure cannot be
+ * observed at all (a trap that throws). Those are `unstable_representation`, `undefined_member` and
+ * `unsupported_form` refusals, not repairs, and they are stated structurally rather than by naming
+ * `Proxy`: nothing here tests for a particular exotic object kind.
+ *
+ * Three further properties are deliberate and are the reason this is one module rather than a helper:
  *
  * 1. **Validation runs before equality, never after.** A non-finite number, a lone surrogate or a
  *    class instance is rejected at the boundary; it is never coerced to `null`, `"NaN"` or U+FFFD
@@ -29,9 +55,9 @@
  * as published via its default export. Owner approval for this exact dependency is recorded in
  * K1.1's contract revision 3 (K11-R1-JCS-01); the AGENTS.md third-party record (source, version,
  * license, reuse method, obligations) lives in `implementation-03.md`. ArrokothI boundary
- * validation, the four semantic limits, per-root measurement and the `defineProperty` seal below
- * remain this module's own: the dependency is called only with already-validated plain data and
- * only to serialize it, never to decide validity.
+ * validation, the four semantic limits, per-root measurement and the capture pass below remain this
+ * module's own: the dependency is called only with an already-captured immutable snapshot of plain
+ * data, and only to serialize it — never to decide validity, and never on caller-owned state.
  */
 
 import canonicalizeJcs from "canonicalize";
@@ -65,6 +91,14 @@ export type ValueIssueCode =
   | "undefined_member"
   /** A symbol-keyed or non-enumerable own property, which canonical form cannot represent. */
   | "unrepresentable_member"
+  /**
+   * The value does not present one stable structure to read.
+   *
+   * Its own data descriptor and ordinary property access disagree, or observing its structure threw.
+   * Such a value has no single content to bind identity to, so it is refused rather than normalized
+   * into whichever reading happened to win (K11-R2-VAL-02).
+   */
+  | "unstable_representation"
   | "string_too_long"
   | "too_many_entries"
   | "too_deep"
@@ -80,7 +114,10 @@ export interface ValueIssue {
 
 /** A validated root together with its canonical form. Equality compares `canonical`. */
 export interface CanonicalValue {
-  /** A frozen structural copy, so accepted content cannot be edited through the caller's reference. */
+  /**
+   * The captured snapshot: frozen, detached from the caller, and the *only* structure `canonical`
+   * describes. Re-canonicalizing it reproduces `canonical` exactly.
+   */
   readonly value: BoundaryValue;
   /** RFC 8785/JCS bytes as a JavaScript string; `canonicalBytes` is its UTF-8 length. */
   readonly canonical: string;
@@ -127,8 +164,19 @@ const scalarValueCount = (input: string): number => {
   return count;
 };
 
-interface WalkState {
+/**
+ * What a capture returns when the value at that position is not acceptable.
+ *
+ * A distinct sentinel rather than `undefined`, because `undefined` is itself one of the refused
+ * things this pass reports. Every path that returns `REFUSED` has already recorded at least one
+ * located issue.
+ */
+const REFUSED = Symbol("refused boundary value");
+type Captured = BoundaryValue | typeof REFUSED;
+
+interface CaptureState {
   readonly issues: ValueIssue[];
+  /** Containers currently on the path, by identity, so a self-reference is a cycle and not a hang. */
   readonly open: Set<object>;
 }
 
@@ -149,28 +197,83 @@ const isArrayIndex = (name: string): boolean => {
 };
 
 /**
- * One pass that validates structure, strings, numbers and all three structural limits.
+ * One member's value, or a refusal, from the one descriptor already read for that position.
+ *
+ * `descriptor.value` is the structural fact — what the object *owns* — and `container[key]` is what
+ * ordinary property access, including the JCS implementation's own member access, would see. On an
+ * ordinary object these are the same thing by construction. Where they differ, the value has no
+ * single content: one reading would decide identity and the other would be retained. `values.md`
+ * rejects unsupported values rather than repairing them, so the disagreement is refused here and
+ * neither reading is preferred.
+ *
+ * Each position is observed exactly twice — its own descriptor and one ordinary read — and never
+ * again. The descriptor is read by the caller of this function, which is also what decides that the
+ * position exists at all, so there is only ever one descriptor per position to reason about.
+ * Whatever the container answers on any later read cannot matter: nothing downstream reads it.
+ */
+function describedValue(
+  container: object,
+  key: string,
+  descriptor: PropertyDescriptor | undefined,
+  path: string,
+  state: CaptureState,
+): { readonly ok: true; readonly value: unknown } | { readonly ok: false } {
+  if (descriptor === undefined) {
+    // The structure said this member exists — an own-names listing, or an array position below
+    // `length` — but it owns no property there. Anything a read would return comes from somewhere
+    // else (a prototype, a trap), so there is no own content to accept.
+    state.issues.push({
+      path,
+      code: "undefined_member",
+      message: "position has no own property; a value supplied only through a prototype or a dynamic read is not accepted content",
+    });
+    return { ok: false };
+  }
+  if (!("value" in descriptor)) {
+    state.issues.push({ path, code: "unrepresentable_member", message: "member is an accessor, which canonical form cannot represent" });
+    return { ok: false };
+  }
+  const read = (container as Record<string, unknown>)[key];
+  if (!Object.is(descriptor.value, read)) {
+    state.issues.push({
+      path,
+      code: "unstable_representation",
+      message: "member is supplied differently by its own data descriptor and by ordinary property access, so it has no single content",
+    });
+    return { ok: false };
+  }
+  return { ok: true, value: descriptor.value };
+}
+
+/**
+ * The single pass: validate structure, strings, numbers and all three structural limits while
+ * building the immutable snapshot that every later use of this value is taken from.
  *
  * `level` counts the containers entered on the path to this value, so the root container is level 1
  * and `values.md`'s depth is the greatest level any path reaches. Descent stops one level past the
  * limit: a value nested ten thousand deep is reported as too deep rather than exhausting the stack.
+ *
+ * Refusals are collected rather than thrown: `values.md` expects every reason a value was refused,
+ * located, so a caller can fix all of them at once. A refused position stops contributing to the
+ * snapshot but does not stop its siblings from being examined.
  */
-function walk(value: unknown, path: string, level: number, state: WalkState): void {
-  if (value === null) return;
+function capture(value: unknown, path: string, level: number, state: CaptureState): Captured {
+  if (value === null) return null;
 
   const type = typeof value;
-  if (type === "boolean") return;
+  if (type === "boolean") return value as boolean;
   if (type === "number") {
     if (!Number.isFinite(value)) {
       state.issues.push({ path, code: "non_finite_number", message: `expected a finite number, received ${String(value)}` });
+      return REFUSED;
     }
-    return;
+    return value as number;
   }
   if (type === "string") {
     const text = value as string;
     if (!isWellFormed(text)) {
       state.issues.push({ path, code: "lone_surrogate", message: "string contains an unpaired surrogate and has no UTF-8 encoding" });
-      return;
+      return REFUSED;
     }
     const length = scalarValueCount(text);
     if (length > BOUNDARY_LIMITS.stringScalarValues) {
@@ -179,18 +282,19 @@ function walk(value: unknown, path: string, level: number, state: WalkState): vo
         code: "string_too_long",
         message: `string is ${length} Unicode scalar values, above the limit of ${BOUNDARY_LIMITS.stringScalarValues}`,
       });
+      return REFUSED;
     }
-    return;
+    return text;
   }
   if (type !== "object") {
     state.issues.push({ path, code: "unsupported_form", message: `expected a boundary value, received ${describe(value)}` });
-    return;
+    return REFUSED;
   }
 
   const container = value as object;
   if (state.open.has(container)) {
     state.issues.push({ path, code: "cycle", message: "value refers to itself and has no canonical form" });
-    return;
+    return REFUSED;
   }
 
   const entered = level + 1;
@@ -200,116 +304,223 @@ function walk(value: unknown, path: string, level: number, state: WalkState): vo
       code: "too_deep",
       message: `container nesting passes the depth limit of ${BOUNDARY_LIMITS.containerDepth}`,
     });
-    return;
+    return REFUSED;
   }
 
   state.open.add(container);
   try {
-    if (Array.isArray(container)) {
-      // Arrays must be genuine arrays: a subclass instance or a re-prototyped array would
-      // canonicalize as a plain array and lose its exotic identity, so refuse it instead.
-      if (Object.getPrototypeOf(container) !== Array.prototype) {
-        state.issues.push({ path, code: "unsupported_form", message: `expected a plain array, received ${describe(container)}` });
-        return;
-      }
-      // An array carrying extra own properties (`a = [1]; a.tag = "x"`, or `a["01"] = 1`)
-      // would canonicalize as if they were not there. Reject it rather than drop them.
-      // Only canonical indices count; numeric-looking non-indices such as `"01"` are extra.
-      const extra = Object.getOwnPropertyNames(container).filter((name) => name !== "length" && !isArrayIndex(name));
-      if (extra.length > 0 || Object.getOwnPropertySymbols(container).length > 0) {
-        state.issues.push({ path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
-      }
-      if (container.length > BOUNDARY_LIMITS.containerEntries) {
-        state.issues.push({
-          path,
-          code: "too_many_entries",
-          message: `array has ${container.length} entries, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
-        });
-      }
-      for (let index = 0; index < container.length; index += 1) {
-        const descriptor = Object.getOwnPropertyDescriptor(container, String(index));
-        if (descriptor !== undefined && !("value" in descriptor)) {
-          state.issues.push({ path: element(path, index), code: "unrepresentable_member", message: "array element is an accessor, which canonical form cannot represent" });
-          continue;
-        }
-        const item = (container as unknown as readonly unknown[])[index];
-        if (item === undefined) {
-          state.issues.push({ path: element(path, index), code: "undefined_member", message: "array element is undefined; an array has no absent positions" });
-          continue;
-        }
-        walk(item, element(path, index), entered, state);
-      }
-      return;
-    }
-
-    const prototype = Object.getPrototypeOf(container);
-    if (prototype !== Object.prototype && prototype !== null) {
-      state.issues.push({ path, code: "unsupported_form", message: `expected a plain object, received ${describe(container)}` });
-      return;
-    }
-    if (Object.getOwnPropertySymbols(container).length > 0) {
-      state.issues.push({ path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" });
-    }
-    const names = Object.getOwnPropertyNames(container);
-    const enumerable = Object.keys(container);
-    if (names.length !== enumerable.length) {
-      state.issues.push({ path, code: "unrepresentable_member", message: "object has non-enumerable own members, which canonical form would silently drop" });
-    }
-    if (enumerable.length > BOUNDARY_LIMITS.containerEntries) {
-      state.issues.push({
-        path,
-        code: "too_many_entries",
-        message: `object has ${enumerable.length} members, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
-      });
-    }
-    for (const key of enumerable) {
-      if (!isWellFormed(key)) {
-        state.issues.push({ path: child(path, key), code: "lone_surrogate", message: "member name contains an unpaired surrogate" });
-        continue;
-      }
-      const nameLength = scalarValueCount(key);
-      if (nameLength > BOUNDARY_LIMITS.stringScalarValues) {
-        state.issues.push({
-          path: child(path, key),
-          code: "string_too_long",
-          message: `member name is ${nameLength} Unicode scalar values, above the limit of ${BOUNDARY_LIMITS.stringScalarValues}`,
-        });
-      }
-      // Read through the descriptor, never through a getter: an enumerable accessor is not
-      // plain data and canonical form cannot represent it, so it is refused rather than invoked.
-      const descriptor = Object.getOwnPropertyDescriptor(container, key);
-      if (descriptor !== undefined && !("value" in descriptor)) {
-        state.issues.push({ path: child(path, key), code: "unrepresentable_member", message: "member is an accessor, which canonical form cannot represent" });
-        continue;
-      }
-      const member = descriptor !== undefined && "value" in descriptor ? descriptor.value : (container as Record<string, unknown>)[key];
-      if (member === undefined) {
-        state.issues.push({
-          path: child(path, key),
-          code: "undefined_member",
-          message: "member is present with no value; omit the member instead, since absent and null are different values",
-        });
-        continue;
-      }
-      walk(member, child(path, key), entered, state);
-    }
+    // Every structural observation of caller-owned state happens inside this block. A container
+    // whose structure cannot be observed without throwing has no readable content; it is refused
+    // like any other unsupported form rather than escaping as an exception from a Kernel boundary.
+    return Array.isArray(container)
+      ? captureArray(container as readonly unknown[] & object, path, entered, state)
+      : captureObject(container, path, entered, state);
+  } catch (error) {
+    state.issues.push({
+      path,
+      code: "unstable_representation",
+      message: `observing this value's structure threw (${describe(error)}), so it presents no readable content`,
+    });
+    return REFUSED;
   } finally {
     state.open.delete(container);
   }
 }
 
+/** The array half of `capture`. Positions come from own data properties below `length`, only. */
+function captureArray(container: readonly unknown[] & object, path: string, entered: number, state: CaptureState): Captured {
+  // Arrays must be genuine arrays: a subclass instance or a re-prototyped array would
+  // canonicalize as a plain array and lose its exotic identity, so refuse it instead.
+  if (Object.getPrototypeOf(container) !== Array.prototype) {
+    state.issues.push({ path, code: "unsupported_form", message: `expected a plain array, received ${describe(container)}` });
+    return REFUSED;
+  }
+
+  // `length` decides which positions exist, so it is held to the same one-stable-structure rule as
+  // any other member before it is trusted to bound the loop.
+  const lengthDescriptor = Object.getOwnPropertyDescriptor(container, "length");
+  const lengthRead: unknown = (container as { length: unknown }).length;
+  if (
+    lengthDescriptor === undefined ||
+    !("value" in lengthDescriptor) ||
+    !Object.is(lengthDescriptor.value, lengthRead) ||
+    typeof lengthRead !== "number"
+  ) {
+    state.issues.push({
+      path,
+      code: "unstable_representation",
+      message: "array length is not one stable own data property, so which positions exist cannot be established",
+    });
+    return REFUSED;
+  }
+  const length = lengthRead;
+
+  let refused = false;
+
+  // An array carrying extra own properties (`a = [1]; a.tag = "x"`, or `a["01"] = 1`)
+  // would canonicalize as if they were not there. Reject it rather than drop them.
+  // Only canonical indices count; numeric-looking non-indices such as `"01"` are extra.
+  const extra = Object.getOwnPropertyNames(container).filter((name) => name !== "length" && !isArrayIndex(name));
+  if (extra.length > 0 || Object.getOwnPropertySymbols(container).length > 0) {
+    state.issues.push({ path, code: "unrepresentable_member", message: "array has own members outside its indices, which canonical form would silently drop" });
+    refused = true;
+  }
+  if (length > BOUNDARY_LIMITS.containerEntries) {
+    state.issues.push({
+      path,
+      code: "too_many_entries",
+      message: `array has ${length} entries, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
+    });
+    refused = true;
+  }
+
+  const captured: Captured[] = new Array<Captured>(length);
+  for (let index = 0; index < length; index += 1) {
+    const where = element(path, index);
+    const key = String(index);
+    const member = describedValue(container, key, Object.getOwnPropertyDescriptor(container, key), where, state);
+    if (!member.ok) {
+      refused = true;
+      continue;
+    }
+    if (member.value === undefined) {
+      state.issues.push({ path: where, code: "undefined_member", message: "array element is undefined; an array has no absent positions" });
+      refused = true;
+      continue;
+    }
+    const item = capture(member.value, where, entered, state);
+    if (item === REFUSED) {
+      refused = true;
+      continue;
+    }
+    captured[index] = item;
+  }
+
+  if (refused) return REFUSED;
+  const out: BoundaryValue[] = new Array<BoundaryValue>(length);
+  for (let index = 0; index < length; index += 1) {
+    // `defineProperty`, never assignment, for the same reason the object half uses it: the key is
+    // installed as own data whatever it spells.
+    Object.defineProperty(out, String(index), { value: captured[index] as BoundaryValue, writable: false, enumerable: true, configurable: false });
+  }
+  return Object.freeze(out) as unknown as BoundaryValue[];
+}
+
+/** The object half of `capture`. Members come from own enumerable string-keyed data properties. */
+function captureObject(container: object, path: string, entered: number, state: CaptureState): Captured {
+  const prototype = Object.getPrototypeOf(container) as object | null;
+  if (prototype !== Object.prototype && prototype !== null) {
+    state.issues.push({ path, code: "unsupported_form", message: `expected a plain object, received ${describe(container)}` });
+    return REFUSED;
+  }
+
+  let refused = false;
+  if (Object.getOwnPropertySymbols(container).length > 0) {
+    state.issues.push({ path, code: "unrepresentable_member", message: "object has symbol-keyed members, which canonical form cannot represent" });
+    refused = true;
+  }
+
+  // One own-names observation and one descriptor per name. The same descriptor answers "is this
+  // member enumerable?" and "what does this member own?", so those two questions cannot be settled
+  // from different readings of the same object.
+  const names = Object.getOwnPropertyNames(container);
+  const enumerable: [string, PropertyDescriptor][] = [];
+  let nonEnumerable = false;
+  for (const name of names) {
+    const descriptor = Object.getOwnPropertyDescriptor(container, name);
+    if (descriptor === undefined) {
+      // The object listed an own name it does not own. There is no content behind it to accept.
+      state.issues.push({
+        path: child(path, name),
+        code: "unstable_representation",
+        message: "object lists an own member it does not own, so its structure has no single reading",
+      });
+      refused = true;
+      continue;
+    }
+    if (descriptor.enumerable) enumerable.push([name, descriptor]);
+    else nonEnumerable = true;
+  }
+  if (nonEnumerable) {
+    state.issues.push({ path, code: "unrepresentable_member", message: "object has non-enumerable own members, which canonical form would silently drop" });
+    refused = true;
+  }
+  if (enumerable.length > BOUNDARY_LIMITS.containerEntries) {
+    state.issues.push({
+      path,
+      code: "too_many_entries",
+      message: `object has ${enumerable.length} members, above the limit of ${BOUNDARY_LIMITS.containerEntries}`,
+    });
+    refused = true;
+  }
+
+  const captured: [string, BoundaryValue][] = [];
+  for (const [key, descriptor] of enumerable) {
+    const where = child(path, key);
+    if (!isWellFormed(key)) {
+      state.issues.push({ path: where, code: "lone_surrogate", message: "member name contains an unpaired surrogate" });
+      refused = true;
+      continue;
+    }
+    const nameLength = scalarValueCount(key);
+    if (nameLength > BOUNDARY_LIMITS.stringScalarValues) {
+      state.issues.push({
+        path: where,
+        code: "string_too_long",
+        message: `member name is ${nameLength} Unicode scalar values, above the limit of ${BOUNDARY_LIMITS.stringScalarValues}`,
+      });
+      refused = true;
+      continue;
+    }
+    const member = describedValue(container, key, descriptor, where, state);
+    if (!member.ok) {
+      refused = true;
+      continue;
+    }
+    if (member.value === undefined) {
+      state.issues.push({
+        path: where,
+        code: "undefined_member",
+        message: "member is present with no value; omit the member instead, since absent and null are different values",
+      });
+      refused = true;
+      continue;
+    }
+    const item = capture(member.value, where, entered, state);
+    if (item === REFUSED) {
+      refused = true;
+      continue;
+    }
+    captured.push([key, item]);
+  }
+
+  if (refused) return REFUSED;
+  // The snapshot preserves the validated prototype (`Object.prototype` or `null`) and installs every
+  // member with `defineProperty`, never assignment. Plain assignment `snapshot[name] = ...` invokes
+  // the inherited legacy `__proto__` setter for that one key instead of creating an own data
+  // property: a valid own `"__proto__"` member would vanish from the record, its value would
+  // silently become the snapshot's prototype, and the retained structure would stop matching the
+  // canonical bytes taken from it (K02-R2-02, K11-R1-VAL-01). `defineProperty` gives no member name
+  // special treatment.
+  const snapshot = Object.create(prototype) as Record<string, BoundaryValue>;
+  for (const [name, member] of captured) {
+    Object.defineProperty(snapshot, name, { value: member, writable: false, enumerable: true, configurable: false });
+  }
+  return Object.freeze(snapshot);
+}
+
 /**
- * Canonical bytes for an already-validated root, via the owner-approved unmodified JCS
- * implementation.
+ * Canonical bytes for a captured snapshot, via the owner-approved unmodified JCS implementation.
  *
- * Called only after `walk` has accepted the value, so every input here is plain data the
- * dependency serializes deterministically: `null`, boolean, finite number, well-formed string,
- * or arrays/plain objects thereof with no `undefined`/symbol/accessor/non-enumerable/array-extra
- * members and no cycles. The dependency is never asked to decide validity: refusal (with located
- * ArrokothI issue codes) happens in `walk`, and the byte limit is measured here from its output.
- * Verified byte-identical to `values.md` rules 1–6 on the accepted space (key UTF-16 order,
- * shortest round-trip numbers with `-0` as `0`, rule-4 escapes with `/`/DEL/direct Unicode
- * passthrough), including own `"__proto__"` members and null-prototype objects.
+ * Called only on the frozen snapshot `capture` built, never on caller-owned state. Every input here
+ * is therefore plain data the dependency serializes deterministically — `null`, boolean, finite
+ * number, well-formed string, or frozen arrays/plain objects thereof with own data members only, no
+ * `undefined`/symbol/accessor/non-enumerable/array-extra members and no cycles — and the bytes it
+ * returns describe exactly the structure the Kernel retains. The dependency is never asked to decide
+ * validity: refusal (with located ArrokothI issue codes) happens in `capture`, and the byte limit is
+ * measured here from its output. Verified byte-identical to `values.md` rules 1–6 on the accepted
+ * space (key UTF-16 order, shortest round-trip numbers with `-0` as `0`, rule-4 escapes with
+ * `/`/DEL/direct Unicode passthrough), including own `"__proto__"` members and null-prototype objects.
  */
 function encode(value: BoundaryValue): string {
   const canonical = canonicalizeJcs(value) as string | undefined;
@@ -317,82 +528,70 @@ function encode(value: BoundaryValue): string {
   return canonical;
 }
 
+/**
+ * The whole acceptance path, run once: capture, canonicalize the capture, measure its bytes.
+ *
+ * Both public entry points go through this, so "what was refused" and "what was accepted" can never
+ * be answered by two different passes over the caller's object.
+ */
+function accept(value: unknown): { readonly ok: true; readonly value: CanonicalValue } | { readonly ok: false; readonly issues: ValueIssue[] } {
+  const state: CaptureState = { issues: [], open: new Set() };
+  const snapshot = capture(value, "", 0, state);
+  if (snapshot === REFUSED || state.issues.length > 0) {
+    return {
+      ok: false,
+      issues:
+        state.issues.length > 0
+          ? state.issues
+          : // Unreachable by construction — every REFUSED path records a located issue — but a
+            // silent empty refusal would be worse than a generic one, so it is stated rather than
+            // assumed.
+            [{ path: "", code: "unsupported_form", message: "value is not an acceptable boundary value" }],
+    };
+  }
+
+  const canonical = encode(snapshot);
+  const canonicalBytes = Buffer.byteLength(canonical, "utf8");
+  if (canonicalBytes > BOUNDARY_LIMITS.canonicalBytes) {
+    return {
+      ok: false,
+      issues: [
+        {
+          path: "",
+          code: "too_many_bytes",
+          message: `canonical form is ${canonicalBytes} bytes, above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}`,
+        },
+      ],
+    };
+  }
+  return { ok: true, value: Object.freeze({ value: snapshot, canonical, canonicalBytes }) };
+}
+
 /** Every reason `value` is not an acceptable boundary value root. Empty means it is one. */
 export function boundaryValueIssues(value: unknown): ValueIssue[] {
-  const state: WalkState = { issues: [], open: new Set() };
-  walk(value, "", 0, state);
-  if (state.issues.length > 0) return state.issues;
-
-  const canonical = encode(value as BoundaryValue);
-  const bytes = Buffer.byteLength(canonical, "utf8");
-  if (bytes > BOUNDARY_LIMITS.canonicalBytes) {
-    return [
-      {
-        path: "",
-        code: "too_many_bytes",
-        message: `canonical form is ${bytes} bytes, above the per-root limit of ${BOUNDARY_LIMITS.canonicalBytes}`,
-      },
-    ];
-  }
-  return [];
+  const result = accept(value);
+  return result.ok ? [] : result.issues;
 }
 
 /** Whether `value` is an acceptable boundary value root. */
 export const isBoundaryValue = (value: unknown): value is BoundaryValue => boundaryValueIssues(value).length === 0;
 
 /**
- * Validates one root and returns it with its canonical form, or every reason it was refused.
+ * Validates one root and returns the captured snapshot with its canonical form, or every reason it
+ * was refused.
  *
  * The returned object is what identity decisions compare: two requests carry the same logical value
- * exactly when their `canonical` strings are equal.
+ * exactly when their `canonical` strings are equal. `value` is the structure those bytes were taken
+ * from — not a copy of something else that was canonicalized separately — so re-canonicalizing it
+ * reproduces `canonical`, and what the Kernel retains, dispatches and exposes is that same structure.
+ *
+ * There is deliberately no exported way to seal a value without validating it. The snapshot only
+ * means anything as the product of the capture pass that accepted it; a separate sealing entry point
+ * is exactly the second reading of caller-owned state that made identity and retained content
+ * disagree (K11-R2-VAL-02).
  */
 export function canonicalize(value: unknown): { readonly ok: true; readonly value: CanonicalValue } | { readonly ok: false; readonly issues: ValueIssue[] } {
-  const issues = boundaryValueIssues(value);
-  if (issues.length > 0) return { ok: false, issues };
-  const canonical = encode(value as BoundaryValue);
-  return {
-    ok: true,
-    value: { value: sealBoundaryValue(value as BoundaryValue), canonical, canonicalBytes: Buffer.byteLength(canonical, "utf8") },
-  };
-}
-
-/**
- * A frozen structural copy of an already-validated root.
- *
- * Accepted content is immutable, and a caller keeps a reference to the object it passed in. Without
- * this, an application could edit an accepted Event's payload after acceptance - or an observer could
- * edit it through an inspection view - while the canonical bytes that decided its identity stayed the
- * same. The copy is taken once, at the boundary that accepts the value.
- *
- * Members are installed with `defineProperty`, never assignment, and the copy preserves the
- * validated prototype (`Object.prototype` or `null` for objects, `Array.prototype` for arrays).
- * Plain assignment `sealed[name] = ...` invokes the inherited legacy `__proto__` setter for that
- * one key instead of creating an own data property: a valid own `"__proto__"` member would vanish
- * from the record, its value would silently become the copy's prototype, and the retained
- * structural value would differ from the canonical bytes that accepted it (K02-R2-02, K11-R1-VAL-01).
- * `defineProperty` creates an own data property whatever the key is, so no member name gets
- * special treatment. Validation has already refused symbols, non-enumerables, accessors and
- * array extras, so copying the enumerable string-keyed data members is faithful over the whole
- * accepted space.
- */
-export function sealBoundaryValue(value: BoundaryValue): BoundaryValue {
-  if (value === null || typeof value !== "object") return value;
-  if (Array.isArray(value)) {
-    const out = new Array((value as readonly unknown[]).length);
-    for (let index = 0; index < (value as readonly unknown[]).length; index += 1) {
-      const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
-      const member = descriptor !== undefined && "value" in descriptor ? (descriptor.value as BoundaryValue) : (value as readonly BoundaryValue[])[index] as BoundaryValue;
-      Object.defineProperty(out, String(index), { value: sealBoundaryValue(member), writable: true, enumerable: true, configurable: true });
-    }
-    return Object.freeze(out) as unknown as BoundaryValue[];
-  }
-  const sealed: Record<string, BoundaryValue> = Object.create(Object.getPrototypeOf(value) as object | null);
-  for (const name of Object.keys(value)) {
-    const descriptor = Object.getOwnPropertyDescriptor(value, name);
-    const member = descriptor !== undefined && "value" in descriptor ? (descriptor.value as BoundaryValue) : (value as Record<string, BoundaryValue>)[name] as BoundaryValue;
-    Object.defineProperty(sealed, name, { value: sealBoundaryValue(member), writable: true, enumerable: true, configurable: true });
-  }
-  return Object.freeze(sealed);
+  return accept(value);
 }
 
 /**

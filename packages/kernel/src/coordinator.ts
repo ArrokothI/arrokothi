@@ -58,7 +58,7 @@ import type {
   MailboxEntryView,
 } from "./inspection.ts";
 import { isTerminal, type ExecutionState } from "./lifecycle.ts";
-import { UNKNOWN_DESTINATION_REASON, type RefusalClassification, type RefusalRecord } from "./refusal.ts";
+import { UNKNOWN_DESTINATION_REASON, mintRefusal, type RefusalClassification, type RefusalRecord } from "./refusal.ts";
 import { err, ok, type Result } from "./result.ts";
 import { refuseUnsupportedSurface } from "./unsupported.ts";
 import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue } from "./values.ts";
@@ -209,6 +209,17 @@ interface ExecutionRecord {
 
 const DEFAULT_MAILBOX_CAPACITY = 1_024;
 
+/**
+ * The one `queued` disposition object, frozen and shared.
+ *
+ * A disposition is retained accepted state that inspection and both ingress answers expose. Every
+ * entry accepted in this packet is `queued` and carries no per-entry data, so one immutable value
+ * serves them all and no exposed reference can be edited into a different disposition. K1.2 and K1.3
+ * record their own dispositions by *replacing* an entry's disposition with a new frozen value, which
+ * is why `MailboxEntry.disposition` stays a writable field while the object it names does not.
+ */
+const QUEUED: MailboxDisposition = Object.freeze({ kind: "queued" });
+
 const describeFailure = (reason: unknown): string =>
   reason instanceof Error ? `${reason.name}: ${reason.message}` : String(reason);
 
@@ -248,21 +259,54 @@ const located = (issues: readonly ValueIssue[], label: string): ValueIssue[] =>
 /** Renders issues into one reason a person can act on. */
 const explain = (issues: readonly ValueIssue[]): string => issues.map((issue) => `${issue.path} ${issue.code}`).join("; ");
 
+/**
+ * One identity-bearing request field, which has to be text before it can name anything.
+ *
+ * `identity.md` requires that two different requests never name one identity. This package gets that
+ * from `packIdentity`'s length-prefixed packing, which is injective **over text**. A field that is
+ * not text defeats it: every object stringifies to `[object Object]` with no length, so two
+ * genuinely different creation keys, request keys or input kinds pack identically — and the Kernel
+ * then answers a second, different request with the first one's retained decision, or refuses an
+ * unrelated request as its conflict.
+ *
+ * TypeScript declares these fields `string`, but a request envelope crossing a Kernel boundary is
+ * caller-supplied data, not a compile-time guarantee. So the boundary checks it, and refuses a
+ * non-text identity field as a malformed value with the field named — the same answer, and the same
+ * located reason, as any other unacceptable request content (K11-R3-ID-02).
+ *
+ * Text is then held to the ordinary boundary-value rules as well, so a lone surrogate or an
+ * over-limit name is refused here rather than becoming part of a stored key.
+ */
+function acceptIdentityText(value: unknown, label: string, issues: ValueIssue[]): value is string {
+  if (typeof value !== "string") {
+    const received = value === null ? "null" : Array.isArray(value) ? "array" : typeof value;
+    issues.push({ path: label, code: "unsupported_form", message: `expected text that can name a request, received ${received}` });
+    return false;
+  }
+  const checked = canonicalize(value);
+  if (!checked.ok) {
+    issues.push(...located(checked.issues, label));
+    return false;
+  }
+  return true;
+}
+
 function acceptInputContent(content: InputContent, prefix: string): Result<AcceptedInput, ValueIssue[]> {
   const issues: ValueIssue[] = [];
-  const kind = canonicalize(content.kind);
-  if (!kind.ok) issues.push(...located(kind.issues, `${prefix}kind`));
+  // `kind` and `subscriptionClass` are packed into this input's content identity, so they are held
+  // to the identity-text rule rather than only to the boundary-value rules.
+  const kindOk = acceptIdentityText(content.kind, `${prefix}kind`, issues);
   const payload = canonicalize(content.payload);
   if (!payload.ok) issues.push(...located(payload.issues, `${prefix}payload`));
 
   let subscriptionClass: string | null = null;
   if (content.subscriptionClass !== undefined) {
-    const declared = canonicalize(content.subscriptionClass);
-    if (declared.ok) subscriptionClass = content.subscriptionClass;
-    else issues.push(...located(declared.issues, `${prefix}subscriptionClass`));
+    if (acceptIdentityText(content.subscriptionClass, `${prefix}subscriptionClass`, issues)) {
+      subscriptionClass = content.subscriptionClass;
+    }
   }
 
-  if (!kind.ok || !payload.ok || issues.length > 0) return err(issues);
+  if (!kindOk || !payload.ok || issues.length > 0) return err(issues);
   return ok({
     kind: content.kind,
     payload: payload.value,
@@ -285,22 +329,23 @@ interface AcceptedCreation {
 
 function acceptCreationContent(request: CreateExecutionRequest): Result<AcceptedCreation, ValueIssue[]> {
   const issues: ValueIssue[] = [];
-  const scalars: [string, string][] = [
+  // Each of these is packed into the creation content identity, so each is identity text.
+  const scalars: [string, unknown][] = [
     ["scope", request.scope],
     ["definitionRevision", request.definitionRevision],
     ["runtimeContractRevision", request.runtimeContractRevision],
     ["progressCodec", request.progressCodec],
   ];
+  let scalarsOk = true;
   for (const [label, value] of scalars) {
-    const checked = canonicalize(value);
-    if (!checked.ok) issues.push(...located(checked.issues, label));
+    if (!acceptIdentityText(value, label, issues)) scalarsOk = false;
   }
   const authorityContext = canonicalize(request.authorityContext);
   if (!authorityContext.ok) issues.push(...located(authorityContext.issues, "authorityContext"));
   const initialInput = acceptInputContent(request.initialInput, "initialInput.");
   if (!initialInput.ok) issues.push(...initialInput.error);
 
-  if (!authorityContext.ok || !initialInput.ok || issues.length > 0) return err(issues);
+  if (!scalarsOk || !authorityContext.ok || !initialInput.ok || issues.length > 0) return err(issues);
   return ok({
     authorityContext: authorityContext.value,
     initialInput: initialInput.value,
@@ -359,9 +404,15 @@ export class ExecutionCoordinator {
       return err(this.#refusal("unauthorized_scope", `caller cannot create an Execution in authority scope "${request.scope}"`, null));
     }
 
+    // The creation key is not content — it never joins the content identity — but it is the text
+    // the caller-scoped key is packed from, so it is held to the same identity-text rule. Both are
+    // checked before either is reported, so one call names every reason the request was refused.
+    const keyIssues: ValueIssue[] = [];
+    const keyOk = acceptIdentityText(request.creationKey, "creationKey", keyIssues);
     const content = acceptCreationContent(request);
-    if (!content.ok) {
-      return err(this.#refusal("malformed_value", `creation content is not an acceptable boundary value: ${explain(content.error)}`, null));
+    if (!keyOk || !content.ok) {
+      const issues = [...keyIssues, ...(content.ok ? [] : content.error)];
+      return err(this.#refusal("malformed_value", `creation content is not an acceptable boundary value: ${explain(issues)}`, null));
     }
 
     const creationKey: CreationKeyId = {
@@ -410,7 +461,7 @@ export class ExecutionCoordinator {
       // The initial input is accepted by the creation boundary, in the same atomic decision, so it
       // carries that boundary's receipt rather than minting a second one for the same decision.
       receipt,
-      disposition: { kind: "queued" },
+      disposition: QUEUED,
     };
 
     const record: ExecutionRecord = {
@@ -462,9 +513,16 @@ export class ExecutionCoordinator {
     const record = this.#visible(caller, request.destination);
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
 
+    // The producer request key is the third member of the Input ID triple, so it is identity text
+    // for the same reason the creation key is. `destination` needs no such check: a non-text
+    // destination simply matches no minted Execution ID and has already been answered above as an
+    // unknown destination, which discloses nothing.
+    const keyIssues: ValueIssue[] = [];
+    const keyOk = acceptIdentityText(request.requestKey, "requestKey", keyIssues);
     const content = acceptInputContent(request, "");
-    if (!content.ok) {
-      return err(this.#refusal("malformed_value", `input content is not an acceptable boundary value: ${explain(content.error)}`, record));
+    if (!keyOk || !content.ok) {
+      const issues = [...keyIssues, ...(content.ok ? [] : content.error)];
+      return err(this.#refusal("malformed_value", `input content is not an acceptable boundary value: ${explain(issues)}`, record));
     }
 
     const inputId: InputId = {
@@ -480,7 +538,7 @@ export class ExecutionCoordinator {
           receipt: existing.receipt,
           replayed: true,
           acceptancePosition: existing.acceptancePosition,
-          disposition: { ...existing.disposition },
+          disposition: existing.disposition,
         });
       }
       return err(
@@ -525,7 +583,7 @@ export class ExecutionCoordinator {
       subscriptionClass: content.value.subscriptionClass,
       acceptancePosition: record.nextAcceptancePosition,
       receipt,
-      disposition: { kind: "queued" },
+      disposition: QUEUED,
     };
     record.nextAcceptancePosition += 1;
     record.mailbox.push(entry);
@@ -537,7 +595,7 @@ export class ExecutionCoordinator {
       receipt,
       replayed: false,
       acceptancePosition: entry.acceptancePosition,
-      disposition: { ...entry.disposition },
+      disposition: entry.disposition,
     });
   }
 
@@ -744,14 +802,16 @@ export class ExecutionCoordinator {
     return record ?? null;
   }
 
+  /**
+   * Records one refusal and returns that same retained record.
+   *
+   * The caller's copy and the Execution's retained copy are deliberately the same object: a refusal
+   * is retained evidence, and `mintRefusal` freezes it, so sharing the reference is safe and keeps
+   * "what was returned" and "what was recorded" the same fact rather than two that could drift.
+   */
   #refusal(classification: RefusalClassification, reason: string, record: ExecutionRecord | null): RefusalRecord {
     this.#acceptancePosition += 1;
-    const refusal: RefusalRecord = {
-      classification,
-      reason,
-      position: this.#acceptancePosition,
-      executionId: record === null ? null : record.executionId,
-    };
+    const refusal = mintRefusal(classification, reason, this.#acceptancePosition, record === null ? null : record.executionId);
     if (record !== null) record.refusals.push(refusal);
     return refusal;
   }
@@ -833,7 +893,7 @@ const toMailboxView = (entry: MailboxEntry, reserved: ReadonlySet<string>): Mail
   subscriptionClass: entry.subscriptionClass,
   sourceCategory: "application_input",
   acceptancePosition: entry.acceptancePosition,
-  disposition: { ...entry.disposition },
+  disposition: entry.disposition,
   reserved: reserved.has(entry.eventId),
   receipt: entry.receipt,
 });

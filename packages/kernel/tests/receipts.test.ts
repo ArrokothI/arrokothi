@@ -12,10 +12,33 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
 import { ExecutionCoordinator } from "../src/index.ts";
+import { packIdentity } from "../src/identity.ts";
 import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 const coordinator = (): ExecutionCoordinator => new ExecutionCoordinator({ driver: recordingDriver() });
+
+describe("K11-R3-ID-02 identity packing is injective only over text, and says so", () => {
+  test("the length-prefixed packing separates parts no separator could", () => {
+    assert.notEqual(packIdentity(["ab", "c"]), packIdentity(["a", "bc"]));
+    assert.equal(packIdentity(["ab", "c"]), packIdentity(["ab", "c"]));
+    assert.equal(packIdentity([]), "");
+    assert.equal(packIdentity([""]), "0:");
+    assert.notEqual(packIdentity(["", "a"]), packIdentity(["a", ""]));
+  });
+
+  test("a part that is not text is raised rather than packed into a colliding key", () => {
+    // Two different objects would both render `[object Object]` with no length. Producing a key from
+    // them would make one request answer for another, so the packing refuses to produce one at all.
+    for (const part of [{ a: 1 }, ["a"], 17, null, undefined, true]) {
+      assert.throws(() => packIdentity([part as unknown as string]), TypeError, `${String(part)} is not an identity part`);
+    }
+    // Caller-supplied identity fields never reach here: the request boundary refuses them first with
+    // a located malformed-value reason. This guard is for the host's trusted authentication boundary,
+    // where a non-text namespace or scope would be a programming error rather than a bad request.
+    assert.throws(() => packIdentity(["app-a", 1 as unknown as string, "key"]), /identity parts must be text/);
+  });
+});
 
 describe("K1.1-C6 one receipt per accepted boundary", () => {
   test("creation, ingress and dispatch intent each mint their own", () => {

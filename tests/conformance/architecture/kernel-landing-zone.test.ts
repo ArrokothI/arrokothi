@@ -210,7 +210,6 @@ describe("K1.0 target Kernel landing zone", () => {
       "ok",
       "refuseUnsupportedSurface",
       "sameLogicalValue",
-      "sealBoundaryValue",
     ]);
   });
 });

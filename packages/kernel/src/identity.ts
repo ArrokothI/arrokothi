@@ -54,7 +54,22 @@ export interface CreationKeyId {
  * whatever characters they contain. Identity comparison is over the parts; this is only their
  * storage spelling.
  */
-export const packIdentity = (parts: readonly string[]): string => parts.map((part) => `${part.length}:${part}`).join("");
+export const packIdentity = (parts: readonly string[]): string =>
+  parts
+    .map((part) => {
+      // The length prefix is what makes the packing injective, and it only means anything for text.
+      // A non-string part would stringify to something like `[object Object]` with an undefined
+      // length, so two different parts could pack identically and one request could be mistaken for
+      // another. Every caller-supplied identity part is refused as a malformed value before it
+      // reaches here; a part arriving from the host's trusted authentication boundary that is not
+      // text is a programming error at that boundary, and is raised as one rather than silently
+      // producing a colliding key (K11-R3-ID-02).
+      if (typeof part !== "string") {
+        throw new TypeError(`identity parts must be text; received ${part === null ? "null" : typeof part}`);
+      }
+      return `${part.length}:${part}`;
+    })
+    .join("");
 
 export const inputIdKey = (id: InputId): string => packIdentity([id.producerNamespace, id.destination, id.requestKey]);
 export const creationKeyIdKey = (id: CreationKeyId): string => packIdentity([id.producerNamespace, id.scope, id.requestKey]);
@@ -73,6 +88,10 @@ export type ReceiptBoundary = "creation" | "input_ingress" | "dispatch_intent";
  *
  * "There is no single receipt per Execution." The token carries its boundary, so a receipt from one
  * boundary can never be mistaken for, or compare equal to, a receipt from another.
+ *
+ * `readonly` here is a compile-time claim only. The runtime claim — that this is *retained* evidence
+ * the Kernel can still return unchanged on a later replay — is held by `mintReceipt` freezing every
+ * receipt at the one place receipts are created. See its note.
  */
 export interface Receipt {
   readonly boundary: ReceiptBoundary;
@@ -88,11 +107,28 @@ const BOUNDARY_PREFIX: Record<ReceiptBoundary, string> = {
   dispatch_intent: "dsp",
 };
 
-export const mintReceipt = (boundary: ReceiptBoundary, position: number): Receipt => ({
-  boundary,
-  token: `${BOUNDARY_PREFIX[boundary]}:${position}`,
-  position,
-});
+/**
+ * The one place a receipt comes into existence, and the one place its immutability is established.
+ *
+ * `identity.md` calls a receipt "retained evidence that one specific request was accepted", and
+ * K1.1-C6 requires exact replay to return *the original* token. The Kernel keeps one receipt object
+ * per accepted decision and hands that same object to the caller, stores it on the Execution record,
+ * attaches it to the mailbox entry or Activation it accepted, and returns it again on every later
+ * replay and inspection. Copying it at each of those exits would be several places to forget; a
+ * receipt that cannot be edited at all is one place to get right, and it keeps receipt identity
+ * (`===`) meaningful for a replay that must return the same evidence rather than an equal-looking
+ * reconstruction.
+ *
+ * Without this, ordinary JavaScript could cast away `readonly`, edit a returned receipt's token, and
+ * have the Kernel's own later replay and inspection report the edited value as the decision it had
+ * retained (K11-R2-EVID-01).
+ */
+export const mintReceipt = (boundary: ReceiptBoundary, position: number): Receipt =>
+  Object.freeze({
+    boundary,
+    token: `${BOUNDARY_PREFIX[boundary]}:${position}`,
+    position,
+  });
 
 /** Whether the caller may reach Executions bound to `scope`.
  *

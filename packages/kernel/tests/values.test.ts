@@ -10,7 +10,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, sealBoundaryValue, type BoundaryValue } from "../src/index.ts";
+import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/index.ts";
 
 const canonicalOf = (value: unknown): string => {
   const result = canonicalize(value);
@@ -234,22 +234,188 @@ describe("K1.1-C3 boundary values are validated, never repaired", () => {
       assert.deepEqual(issueCodes(subclass), ["unsupported_form"]);
     });
 
-    test("sealBoundaryValue detaches and freezes without invoking getters", () => {
+    test("acceptance detaches and freezes without invoking any accessor", () => {
       let invoked = 0;
-      const input: Record<string, unknown> = { a: 1 };
-      Object.defineProperty(input, "evil", {
+      const withAccessor: Record<string, unknown> = { a: 1 };
+      Object.defineProperty(withAccessor, "evil", {
         get() { invoked += 1; return 1; },
-        enumerable: false,
+        enumerable: true,
         configurable: true,
       });
-      // Non-enumerable accessors are already refused; sealing a valid value never invokes anything.
-      const valid = JSON.parse('{"__proto__":{"x":1},"safe":2}');
-      const sealed = sealBoundaryValue(valid) as Record<string, unknown>;
-      assert.equal(invoked, 0);
-      assert.ok(Object.prototype.hasOwnProperty.call(sealed, "__proto__"));
+      assert.deepEqual(issueCodes(withAccessor), ["unrepresentable_member"], "an accessor is refused, not called");
+      assert.equal(invoked, 0, "refusing it never ran it");
+
+      const valid = JSON.parse('{"__proto__":{"x":1},"safe":2}') as unknown;
+      const result = canonicalize(valid);
+      assert.ok(result.ok);
+      const snapshot = result.value.value as Record<string, unknown>;
+      assert.ok(Object.prototype.hasOwnProperty.call(snapshot, "__proto__"));
       assert.throws(() => {
-        (sealed as Record<string, unknown>)["safe"] = 99;
+        (snapshot as Record<string, unknown>)["safe"] = 99;
       }, TypeError);
+    });
+  });
+
+  /**
+   * K11-R2-VAL-02 - one observation, one value.
+   *
+   * The round-3 implementation validated the caller's object, canonicalized the caller's object and
+   * copied the caller's object in three separate passes. Nothing forced those three readings to
+   * agree, so a value that answers differently depending on how it is asked could be accepted with
+   * canonical bytes describing one structure and a retained copy holding another.
+   *
+   * The fixtures below are *representation* counterexamples, not one exotic object type: each one
+   * makes an ordinary structural question - "what does this position own?" - have two answers. The
+   * rule under test is stated the same way, so nothing here or in `values.ts` tests for `Proxy`.
+   */
+  describe("K11-R2-VAL-02 identity and retained content come from one observation", () => {
+    /** A container whose own data descriptors and ordinary property reads deliberately disagree. */
+    const disagreeing = <T extends object>(target: T, key: string, read: unknown): T =>
+      new Proxy(target, {
+        get(inner, property, receiver): unknown {
+          if (property === key) return read;
+          return Reflect.get(inner, property, receiver);
+        },
+      });
+
+    test("an array position read differently than it is owned is refused, not silently picked", () => {
+      const value = disagreeing([1], "0", 2);
+      // The fixture really is the ambiguity the finding names, not a broken test double.
+      assert.equal(Array.isArray(value), true);
+      assert.equal(Object.getPrototypeOf(value), Array.prototype);
+      assert.equal(Object.getOwnPropertyDescriptor(value, "0")?.value, 1, "owns 1");
+      assert.equal((value as unknown as number[])[0], 2, "reads 2");
+
+      assert.deepEqual(issueCodes(value), ["unstable_representation"]);
+      assert.equal(canonicalize(value).ok, false, "and it produces no identity at all");
+    });
+
+    test("an object member read differently than it is owned is refused the same way", () => {
+      const value = disagreeing({ a: 1 }, "a", 2);
+      assert.equal(Object.getOwnPropertyDescriptor(value, "a")?.value, 1);
+      assert.equal((value as { a: number }).a, 2);
+      assert.deepEqual(issueCodes(value), ["unstable_representation"]);
+      assert.equal(boundaryValueIssues(value)[0]?.path, "a", "and the refusal locates the member");
+    });
+
+    test("the disagreement is refused at depth and under a valid root", () => {
+      const nestedDisagreement = { outer: [{ inner: disagreeing({ a: 1 }, "a", 2) }] };
+      assert.deepEqual(issueCodes(nestedDisagreement), ["unstable_representation"]);
+      assert.equal(boundaryValueIssues(nestedDisagreement)[0]?.path, "outer[0].inner.a");
+    });
+
+    test("an array position supplied only by a dynamic read, owning nothing, is refused", () => {
+      // `length` says the position exists; the object owns nothing there. The round-3 code read the
+      // supplied 7 as the element, while the JCS implementation skipped the absent position: the
+      // pair canonicalized to `[]` and retained `[7]`.
+      const hollow: unknown[] = [];
+      hollow.length = 1;
+      const value = disagreeing(hollow, "0", 7);
+      assert.equal(Object.getOwnPropertyDescriptor(value, "0"), undefined, "owns nothing at 0");
+      assert.equal((value as unknown[])[0], 7, "but reads 7");
+      assert.deepEqual(issueCodes(value), ["undefined_member"]);
+      assert.equal(boundaryValueIssues(value)[0]?.path, "[0]");
+    });
+
+    test("a member supplied only by a prototype is not accepted as own content", () => {
+      // Same rule, no Proxy: the value is read through the prototype chain and owned nowhere.
+      const base = { a: 1 };
+      const derived: Record<string, unknown> = Object.create(base);
+      assert.equal(derived["a"], 1, "reads through the prototype");
+      assert.equal(Object.prototype.hasOwnProperty.call(derived, "a"), false, "and owns nothing");
+      // An object whose prototype is neither Object.prototype nor null is refused outright.
+      assert.deepEqual(issueCodes(derived), ["unsupported_form"]);
+    });
+
+    test("a length that does not agree with itself cannot decide which positions exist", () => {
+      const value = disagreeing([1, 2], "length", 5);
+      assert.deepEqual(issueCodes(value), ["unstable_representation"]);
+      assert.equal(boundaryValueIssues(value)[0]?.path, "", "the root array is what has no stable shape");
+    });
+
+    test("a structure that cannot be observed is refused rather than thrown out of the boundary", () => {
+      const hostile = new Proxy({ a: 1 }, {
+        getOwnPropertyDescriptor(): PropertyDescriptor {
+          throw new Error("no descriptors for you");
+        },
+      });
+      let issues: ReturnType<typeof boundaryValueIssues> = [];
+      assert.doesNotThrow(() => {
+        issues = boundaryValueIssues(hostile);
+      }, "a Kernel boundary refuses; it does not propagate a caller's exception");
+      assert.deepEqual(issues.map((issue) => issue.code), ["unstable_representation"]);
+    });
+
+    test("an object listing an own member it does not own is refused", () => {
+      const lying = new Proxy({} as Record<string, unknown>, {
+        ownKeys(): string[] {
+          return ["ghost"];
+        },
+        getOwnPropertyDescriptor(): PropertyDescriptor | undefined {
+          return undefined;
+        },
+      });
+      assert.deepEqual(issueCodes(lying), ["unstable_representation"]);
+    });
+
+    test("every accepted root re-canonicalizes to the bytes that accepted it", () => {
+      // The invariant itself, checked over the whole shape vocabulary this packet accepts rather
+      // than over the counterexamples alone: the retained structure is what `canonical` describes.
+      const roots: unknown[] = [
+        null,
+        true,
+        0,
+        -0,
+        "text",
+        [],
+        {},
+        [1, "two", false, null, [3], { four: 4 }],
+        { b: 2, a: 1, nested: { deep: [1, { x: null }] } },
+        JSON.parse('{"__proto__":{"admin":true},"safe":2}'),
+        JSON.parse('{"a":[{"__proto__":{"deep":true}}],"b":{"c":{"__proto__":1}}}'),
+        { "": "empty name", "0": "numeric name", "\u007f": "del" },
+        nested(BOUNDARY_LIMITS.containerDepth),
+        alternating(BOUNDARY_LIMITS.containerDepth),
+      ];
+      for (const root of roots) {
+        const result = canonicalize(root);
+        assert.ok(result.ok, `${JSON.stringify(root)} is accepted`);
+        const retained = result.value.value;
+        const again = canonicalize(retained);
+        assert.ok(again.ok, "the retained structure is itself an acceptable boundary value");
+        assert.equal(again.value.canonical, result.value.canonical, "identity describes exactly what was retained");
+        assert.equal(again.value.canonicalBytes, result.value.canonicalBytes);
+        assert.deepEqual(again.value.value, retained);
+      }
+    });
+
+    test("a value that answers differently on each read is bound to the one reading that was taken", () => {
+      // This fixture agrees with its own descriptor on the first read and diverges afterwards, which
+      // is precisely what a three-pass acceptance path could not survive. Acceptance reads each
+      // position once, so the reading it took is the reading it keeps.
+      let reads = 0;
+      const shifting = new Proxy({ a: 1 } as Record<string, unknown>, {
+        get(inner, property, receiver): unknown {
+          if (property === "a") {
+            reads += 1;
+            return reads;
+          }
+          return Reflect.get(inner, property, receiver);
+        },
+      });
+
+      const result = canonicalize(shifting);
+      assert.ok(result.ok, "the first reading agreed with the own descriptor, so it is acceptable");
+      assert.equal(reads, 1, "the caller's object was read exactly once");
+      assert.equal(result.value.canonical, '{"a":1}');
+      assert.deepEqual(result.value.value, { a: 1 });
+
+      // Reading the caller's object again now returns something else entirely. The accepted value is
+      // unaffected, and re-canonicalizing what was retained still yields the bytes that bound it.
+      assert.equal(shifting["a"], 2, "the source has moved on");
+      const again = canonicalize(result.value.value);
+      assert.ok(again.ok);
+      assert.equal(again.value.canonical, result.value.canonical);
     });
   });
 });

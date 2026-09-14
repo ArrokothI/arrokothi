@@ -15,7 +15,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { BOUNDARY_LIMITS, ExecutionCoordinator, isTerminal, type BoundaryValue, type ExecutionView } from "../src/index.ts";
+import { BOUNDARY_LIMITS, ExecutionCoordinator, canonicalize, isTerminal, type BoundaryValue, type ExecutionView } from "../src/index.ts";
 import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
 
 const coordinator = (mailboxCapacity?: number): ExecutionCoordinator =>
@@ -244,6 +244,33 @@ describe("K1.1-C2 the triple keeps unrelated requests apart", () => {
     assert.deepEqual(view(kernel, second.executionId).queued, [second.initialEventId, toSecond.eventId]);
   });
 
+  test("K11-R3-ID-02 a request key that is not text names nothing and is refused", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+    const before = view(kernel, executionId);
+
+    const first = refused(kernel.submitInput(author, input(executionId, { requestKey: { p: 1 } as never, payload: 1 })));
+    const second = refused(kernel.submitInput(author, input(executionId, { requestKey: { q: 2 } as never, payload: 2 })));
+    for (const refusal of [first, second]) {
+      assert.equal(refusal.classification, "malformed_value");
+      assert.match(refusal.reason, /requestKey unsupported_form/);
+    }
+    assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox, "neither named an Event");
+
+    // `kind` is content and is identity text for the same reason.
+    const kindRefusal = refused(kernel.submitInput(author, input(executionId, { requestKey: "ok", kind: 7 as never })));
+    assert.match(kindRefusal.reason, /kind unsupported_form/);
+    assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox);
+  });
+
+  test("K11-R3-ID-02 a destination that is not text answers as an unknown destination, disclosing nothing", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+    const missing = refused(kernel.submitInput(author, input("execution-404", { requestKey: "a" })));
+    const nonText = refused(kernel.submitInput(author, input({ destination: executionId } as never, { requestKey: "a" })));
+    assert.deepEqual({ ...nonText, position: 0 }, { ...missing, position: 0 }, "the same answer as any destination that does not exist");
+  });
+
   test("no packing of the three parts can make two identities collide", () => {
     const kernel = coordinator();
     const { executionId } = start(kernel);
@@ -382,6 +409,62 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
 
     (payload["__proto__"] as Record<string, unknown>)["x"] = 99;
     assert.deepEqual((view(kernel, executionId).mailbox[1]?.payload as Record<string, unknown>)["__proto__"], { x: 1 });
+  });
+
+  test("K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+    const before = view(kernel, executionId);
+
+    const payload = new Proxy([1], {
+      get(inner, property, receiver): unknown {
+        if (property === "0") return 2;
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    const refusal = refused(kernel.submitInput(author, input(executionId, { requestKey: "unstable", payload: payload as never })));
+    assert.equal(refusal.classification, "malformed_value");
+    assert.match(refusal.reason, /payload\[0\] unstable_representation/, "and the refusal locates the position");
+    assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox, "nothing was queued under either reading");
+
+    // The same refusal reaches a position `length` claims but the value does not own, which the
+    // round-3 path canonicalized as absent while retaining the dynamically supplied element.
+    const hollow: unknown[] = [];
+    hollow.length = 1;
+    const supplied = new Proxy(hollow, {
+      get(inner, property, receiver): unknown {
+        if (property === "0") return 7;
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    const hollowRefusal = refused(kernel.submitInput(author, input(executionId, { requestKey: "hollow", payload: supplied as never })));
+    assert.equal(hollowRefusal.classification, "malformed_value");
+    assert.match(hollowRefusal.reason, /payload\[0\] undefined_member/);
+    assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox);
+  });
+
+  test("K11-R2-VAL-02 the accepted content, the replay decision and the exposed value are one structure", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+    const payload = { list: [1, [2, { deep: null }]], safe: "yes" };
+    const first = accepted(kernel.submitInput(author, input(executionId, { requestKey: "coherent", payload })));
+
+    const stored = view(kernel, executionId).mailbox[1]?.payload;
+    const bound = canonicalize(payload);
+    const retained = canonicalize(stored);
+    assert.ok(bound.ok && retained.ok);
+    assert.equal(retained.value.canonical, bound.value.canonical, "identity describes exactly the exposed structure");
+
+    // The bytes that describe the retained value are the bytes that decide replay and conflict.
+    const replay = accepted(
+      kernel.submitInput(author, input(executionId, { requestKey: "coherent", payload: { safe: "yes", list: [1, [2, { deep: null }]] } })),
+    );
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.eventId, first.eventId);
+    const conflict = refused(
+      kernel.submitInput(author, input(executionId, { requestKey: "coherent", payload: { safe: "yes", list: [1, [2, { deep: 0 }]] } })),
+    );
+    assert.equal(conflict.classification, "duplicate_conflict");
   });
 
   test("K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing", () => {

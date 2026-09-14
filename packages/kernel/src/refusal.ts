@@ -36,7 +36,13 @@ export type RefusalClassification =
   /** There is no unresolved Activation to redeliver. */
   | "no_unresolved_exchange";
 
-/** One refused request, retained and inspectable. */
+/**
+ * One refused request, retained and inspectable.
+ *
+ * Like a receipt, this is retained evidence: it is returned to the caller, pushed onto the
+ * Execution's refusal list and reported again by inspection. `readonly` is a compile-time claim
+ * only; `mintRefusal` below establishes the runtime one.
+ */
 export interface RefusalRecord {
   readonly classification: RefusalClassification;
   /** Human-readable and specific; the classification is what code should branch on. */
@@ -59,3 +65,20 @@ export interface RefusalRecord {
  * sentences, which would reintroduce exactly the distinction `unknown_destination` exists to erase.
  */
 export const UNKNOWN_DESTINATION_REASON = "no Execution with that identifier is visible to this caller";
+
+/**
+ * The one place a refusal record comes into existence, and where its immutability is established.
+ *
+ * `execution-cycle.md` requires the reason to be *recorded*, and K1.1-C9 reports recorded refusals
+ * through inspection. The coordinator retains the same object it returns to the caller, so a caller
+ * that could edit the returned record would be editing the Kernel's retained classification and
+ * reason, and inspection would then report the edited version (K11-R2-EVID-01). Freezing at the
+ * single construction site makes that structurally impossible rather than relying on every exit
+ * path to remember to copy.
+ */
+export const mintRefusal = (
+  classification: RefusalClassification,
+  reason: string,
+  position: number,
+  executionId: string | null,
+): RefusalRecord => Object.freeze({ classification, reason, position, executionId });

@@ -147,10 +147,13 @@ builtins and, since round 3, the single owner-approved third-party specifier `ca
   non-finite numbers through `JSON.stringify`, enforces none of the four semantic limits and rejects
   no invalid value. Extracting it would import exactly the repair-on-encode behaviour
   [values](../../../../mental-model/concepts/values.md) forbids. `packages/kernel/src/values.ts` keeps
-  ArrokothI's own boundary validation, limits and seal, and calls unmodified `canonicalize@3.0.0`
-  only to serialize already-validated plain data. Owner approval and the AGENTS.md third-party record
-  are in [K1.1's round-3 report](../K1.1/implementation-03.md); the former K1.1-OPEN-2 question is
-  closed by that decision.
+  ArrokothI's own boundary validation, limits and single capture pass, and calls unmodified
+  `canonicalize@3.0.0` only to serialize the immutable snapshot that capture produced. Owner approval
+  and the AGENTS.md third-party record are in [K1.1's round-3 report](../K1.1/implementation-03.md);
+  the former K1.1-OPEN-2 question is closed by that decision. K1.1 round 4 removed the separately
+  callable seal from the zone's export surface: validation, canonical bytes and retained content come
+  from one capture, so there is no supported way to seal a value the zone has not validated
+  ([K11-R2-VAL-02](../K1.1/implementation-04.md)).
 - **DX-3** (`util/result.ts`, migratable) — **not extracted; implemented in-zone.** The legacy file
   is ten lines of the same shape. Crossing the boundary to reuse them would freeze a dependency edge
   for no behaviour.
