@@ -66,8 +66,9 @@ tell whether payment ran.” Neither justifies blindly submitting a new payment.
 ## Withdrawal and remaining responsibility
 
 Withdrawal before admission atomically prevents future admission and records refusal.
-If admission won, attempt cancellation only where supported and retain possible execution.
-Expiry before admission closes the request; expiry after send does not prove non-execution.
+If admission already won, attempt cancellation only where supported, and still treat
+the action as possibly having executed. Expiry before admission closes the request;
+expiry after send does not prove non-execution.
 Wait expiry is a separate clock.
 
 Every accepted action retains responsibility until a known disposition is accounted
@@ -76,7 +77,8 @@ or responsibility, not external truth. Acknowledged unknown evidence cannot sati
 [completion](lifecycle.md#completion-is-an-accounting-check).
 
 Late authenticated evidence after failure/cancellation updates the original ledger
-and responsible owner, without reopening the Execution. No reliable query means retain
-unknown for the application; elapsed time, Agent prose or weakly consistent absence
-cannot establish success/failure. Refusing arbitrary detachment is compatible with
+and responsible owner, without reopening the Execution. Without a reliable query, the
+application must retain the result as unknown; elapsed time, Agent prose or weakly
+consistent absence cannot establish success or failure. Refusing arbitrary detachment
+is compatible with
 the minimal release, but failures still need an application reconciliation owner.

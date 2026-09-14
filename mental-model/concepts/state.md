@@ -29,8 +29,8 @@ handle the gap between those stores.
 
 ## Recovery and re-execution
 
-**Recovery** reconstructs accepted truth and, when the supported native contract
-permits, continues the same logical work. **Reattachment** reconnects to an existing
+**Recovery** reconstructs accepted truth and, if the supported native contract allows
+it, continues the same logical work. **Reattachment** reconnects to an existing
 native job. **Replay** repeats the same immutable exchange only when its phase-specific
 contract proves that safe. **Restart-from-input** is an explicitly authorized new
 Execution, with causation linking it to the original. A terminal lifetime never reopens.
@@ -70,9 +70,9 @@ If recovery depends on them, their Runtime checkpoint contract must retain them.
 ## Artifact reference
 
 An **artifact** is source material or work product held by an application/native store.
-An **artifact reference** crosses the protocol by naming its store/namespace, object,
-required immutable version/digest, media/schema hint, size, access owner and retention
-responsibility. This is a contract, not a universal Kernel Artifact class.
+An **artifact reference** crosses the protocol as a bundle of facts about it: store/namespace,
+object, required immutable version/digest, media/schema hint, size, access owner and
+retention responsibility. This is a contract, not a universal Kernel Artifact class.
 A URL or hash alone supplies neither access nor availability.
 
 ## Resource binding and attachment

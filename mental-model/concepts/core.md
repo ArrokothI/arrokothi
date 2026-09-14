@@ -20,9 +20,9 @@ is not an Execution. The application chooses what work merits this lifetime.
 ## Execution Runtime
 
 An **Execution Runtime**, shortened to **Runtime**, is code or a service that performs
-an Execution's work and owns the meaning of its continuation data. Here “Runtime”
-does not mean the JavaScript VM or deployment host. Native algorithms and internal
-workers remain opaque to the Kernel.
+an Execution's work and owns the meaning of its continuation data. This “Runtime” is
+not the JavaScript VM or the deployment host. Native algorithms and internal workers
+stay opaque to the Kernel.
 
 ## Execution Driver
 
@@ -33,15 +33,16 @@ It is an adapter, not a second scheduler or required service.
 ## Definition
 
 A **Definition** is the versioned executable code/configuration selected for an Execution.
-Its pinned revision identifies the intended program, rather than merely a friendly name.
-The **Runtime contract** is the versioned agreement through which the Driver interprets
-Activation, Outcome and progress for that program. These are distinct compatibility bindings.
+Its pinned revision identifies the intended program — not just a friendly name. The
+**Runtime contract** is the separate versioned agreement through which the Driver
+interprets Activation, Outcome and progress for that program: one pins the program,
+the other pins how it is read.
 
 ## Activation
 
 An **Activation** is one immutable semantic exchange asking a Runtime to advance an
-Execution from pinned progress and a fixed Event batch. “Bounded exchange” bounds its
-protocol data, not the duration of its computation. An Activation ID names this exchange.
+Execution from pinned progress and a fixed Event batch. “Bounded” describes its
+protocol data, not how long its computation may run. An Activation ID names this exchange.
 
 The exchange stays the same through ordinary delivery retries and authorized takeover.
 New semantic input requires a new Activation after resolution; it cannot be slipped
@@ -75,9 +76,9 @@ this cursor was processed” marker. Events can remain unacknowledged behind lat
 ## Batch, reservation and acknowledgment
 
 A **batch** is the finite, enumerable set of accepted Event references pinned in one
-Activation. **Reservation** is the Kernel decision fixing that batch as part of dispatch
-intent. The implementation chooses a finite bound of at least one; an ordinary
-continuation can still have an empty batch.
+Activation. **Reservation** is the Kernel decision that fixes that batch as part of
+dispatch intent. The implementation picks a finite bound of at least one, but an
+ordinary continuation can still carry an empty batch.
 
 **Acknowledgment** records that the Runtime accounted for an Event. Accepted Outcome
 acknowledges the whole reserved batch, not just selected members. It does not certify

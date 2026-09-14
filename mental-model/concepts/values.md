@@ -5,7 +5,7 @@ E-1–E-7. Transport framing and the native checkpoint format remain separate ch
 
 ## Codec
 
-A **codec** encodes and decodes values. Three uses must be distinguished:
+A **codec** encodes and decodes values. Keep three uses distinct:
 
 | Qualified name | Owner | What it does |
 |---|---|---|
@@ -38,7 +38,7 @@ value. It serves equality and size measurement, not authentication or semantic r
 Two values are equal exactly when their canonical bytes are equal. A hash can assist
 comparison or storage naming but never proves permission, consent or authenticity.
 
-The accepted encoding follows RFC 8785/JCS, with these complete byte-affecting rules:
+The accepted encoding follows RFC 8785/JCS, under these byte-level rules:
 
 1. UTF-8 JSON, no byte-order mark and no insignificant whitespace.
 2. Literal spellings are `null`, `true`, `false`.

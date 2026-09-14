@@ -22,10 +22,11 @@ epoch takeover.
 
 ## Before sending
 
-The Kernel atomically reserves the exact Event batch and records dispatch intent,
-current writer epoch, accepted progress/base revision, progress codec, pinned
-Runtime/Definition revisions and supplied authorized execution view. This makes the
-Execution `RUNNING`. The accepted intent is reconstructible even if notification is lost.
+As one decision, the Kernel atomically reserves the exact Event batch and records:
+dispatch intent, the current writer epoch, accepted progress and base revision, the
+progress codec, pinned Runtime/Definition revisions, and the supplied authorized
+execution view. This makes the Execution `RUNNING`. The accepted intent is
+reconstructible even if notification is lost.
 
 Sending proceeds through the Driver without synchronously waiting for native work
 in the coordinator loop. The Driver may call a local function or submit a remote job.
@@ -70,8 +71,8 @@ Perform these steps in order:
    base progress revision, cancellation fence/terminal state, bounded values, unique
    proposal/emission keys, supported next step, wait references and completion obligations.
    Bind any same-Outcome Effect reference by its local proposal key.
-4. Atomically acknowledge the entire batch, install progress and its accepted revision,
-   record emissions and output obligations, all Effect intents, next state and any
+4. Atomically: acknowledge the entire batch; install progress and its accepted revision;
+   record emissions and output obligations, all Effect intents, next state, and any
    wait/deadline/readiness. The validation and commit are ordered against cancellation;
    a pre-cancel check cannot authorize a post-cancel commit. For `await`, follow the
    exact internal order in [wait registration](waits.md#registering-a-wait).
@@ -80,8 +81,8 @@ Perform these steps in order:
 An envelope/reference error rejects the whole proposal: no acknowledgment, progress,
 emission, Effect intent, wait, deadline, readiness or next-state mutation. Record the
 reason; never silently drop or endlessly retry it. An invalid current Runtime response
-that cannot be classified normally ends or holds the exchange under an inspectable
-protocol-failure/recovery decision. Native mutations are not rolled back by rejection.
+that cannot be classified instead ends or holds the exchange, under an inspectable
+protocol-failure/recovery decision. Rejection does not roll back native mutations.
 
 [Cancellation](lifecycle.md#cancellation-order) owns exact replay of a cancellation-losing
 rejection. It must not be confused with replay of an already accepted Outcome.

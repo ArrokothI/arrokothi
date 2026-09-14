@@ -35,8 +35,8 @@ cancel acts on its nonterminal result or reports its already terminal result. If
 cancellation wins, every new losing Outcome (`continue`, `await`, `complete`, `fail`)
 is rejected in full, with no accepted component.
 
-Record the losing proposal's scoped Execution/Activation/epoch/base revision and
-canonical content with classification **cancellation/terminal-conflict**, reason
+Record the losing proposal — its scoped Execution/Activation/epoch/base revision and
+canonical content — under classification **cancellation/terminal-conflict**, reason
 **cancellation accepted before Outcome acceptance**. Its exact authenticated retry
 returns that same recorded rejection, including after cancellation completes. It
 does not manufacture an acceptance receipt. Retention expiry never removes the
@@ -50,9 +50,9 @@ marker cannot defer the semantic fence, install losing progress or add a lifecyc
 ## Completion is an accounting check
 
 An Outcome proposing completion must propose no new Effects. Required owned actions
-and children must have known dispositions and their relevant results accounted for
-in previously acknowledged Events or this batch, unless responsibility was explicitly
-transferred/abandoned under policy. Approved but undispatched work is still pending.
+and children must have known dispositions, with their relevant results accounted for
+in previously acknowledged Events or this batch — unless responsibility was explicitly
+transferred or abandoned under policy. Approved but undispatched work is still pending.
 Acknowledging an unknown-action Event is not settlement and cannot discharge it.
 
 A child failure can be accounted for without implying application success; the Runtime

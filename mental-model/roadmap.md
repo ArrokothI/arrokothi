@@ -15,8 +15,8 @@ Layer 1/2 change only when the whole-system model or a major abstraction changes
 Layer 3 is maintained after acceptance under [Prompt C](../docs/development/009-universal-prompts.md#prompt-c--gpt-6-final-cleanup-close-or-reopen-and-push).
 No extra sequencing packet is required: the existing packet scopes identify these owners.
 
-Historical packets are mapped for retrieval and future corrections, not retroactive
-edits of sealed contracts/reports or a change to their acceptance.
+Historical packets are mapped for retrieval and future corrections — not retroactive
+edits of sealed contracts/reports, and not a change to their acceptance.
 
 ## K0.1
 

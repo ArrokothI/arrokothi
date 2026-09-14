@@ -10,8 +10,8 @@ Planner, evaluator, router and retriever are application roles, not separate Ker
 
 ## Workflow
 
-A **Workflow** primarily follows authored allowed progression, which can include
-branches and loops selected by models. Agent and Workflow can share implementation
+A **Workflow** primarily follows an authored, allowed progression, which can include
+branches and loops that models select. Agent and Workflow can share implementation
 machinery and coexist within one Runtime.
 
 ## Stage and local branch

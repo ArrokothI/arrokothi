@@ -40,8 +40,9 @@ types match: two schemas can declare the same fields and still disagree about wh
 security constraints cannot be ignored. New operation versions cannot reinterpret approval.
 
 HTTP success is transport evidence, not semantic completion. A malformed response
-after possible execution retains uncertainty or proven execution plus invalid result
-when separable. Native status words must be translated by meaning.
+after possible execution stays uncertain, unless the adapter can separate “it ran”
+from “the result is invalid” — in which case record both. Native status words must
+be translated by meaning.
 
 ## Mapping worksheet
 

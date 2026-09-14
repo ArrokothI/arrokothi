@@ -40,8 +40,9 @@ Telemetry remains a projection, not authoritative lifecycle storage.
 Held `RUNNING` must visibly show its reason and permitted next actions; terminal work
 with a live remote action shows that obligation. Read-only inspection comes first;
 control, reconciliation and authority changes use authenticated recorded commands,
-not ad-hoc stored-status edits. Scope fields and existence disclosure to the principal.
-Parent ownership does not expose private native prompts, notes or resource metadata.
+not ad-hoc stored-status edits. Scope both field visibility and existence disclosure
+to what the principal is authorized to see. Parent ownership does not expose private
+native prompts, notes or resource metadata.
 Inspection privilege does not grant re-execution or settlement privilege.
 
 For allowed debugging/evaluation, correlate native invocation/run with Execution and

@@ -22,16 +22,16 @@ A **request key** is a caller-chosen identifier reused when retrying one intende
 request, such as `submit-report-17`. It is not a content hash: two intentional requests
 may carry identical content and must still be distinguishable.
 
-An **Input ID** is the triple **(authenticated producer namespace, destination Execution
-ID, producer request key)**. The namespace comes from trusted principal context, not
-a payload's self-declared `user_id`. Two producers can use the text `17` without collision;
-the same producer sending `17` to two Executions also names different inputs.
-It is never a global cross-tenant deduplication ID.
+An **Input ID** is a triple: authenticated producer namespace, destination Execution
+ID, and producer request key. The namespace comes from trusted principal context, not
+a payload's self-declared `user_id`. Two producers can use the text `17` without colliding;
+the same producer sending `17` to two Executions also names different inputs. It is
+never a global cross-tenant deduplication ID.
 
-A **caller-scoped creation key** applies the same retry idea to creation before an
+A **caller-scoped creation key** applies the same retry idea to creation, before an
 Execution exists: the authenticated caller scope and request key identify one create
-request. Its binding includes the complete creation content. This is a scope rule,
-not a new project-specific durable object or a specified token format.
+request, and its binding includes the complete creation content. This is a scope rule,
+not a new durable object type or a fixed token format.
 
 ## Runtime attempt
 
@@ -42,9 +42,9 @@ Use **physical action attempt** for a service invocation; it has a different own
 
 ## Writer epoch
 
-A **writer epoch** identifies which Runtime attempt may have its Outcome accepted for
-the current Activation. It is a monotonically increasing integer or equivalent total
-order within that exchange. Only authenticated takeover advances it. Ordinary delivery
+A **writer epoch** identifies which Runtime attempt's Outcome may be accepted for the
+current Activation. It is a monotonically increasing integer, or an equivalent total
+order, within that exchange. Only authenticated takeover advances it; ordinary delivery
 retry preserves it. Whether it resets for a later Activation is implementation-owned.
 
 It fences **the entire Outcome acceptance**: batch acknowledgment, progress, emissions,

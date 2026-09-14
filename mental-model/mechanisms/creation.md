@@ -42,8 +42,8 @@ has a [terminal disposition](lifecycle.md), while authenticated late action evid
 still belongs to its action ledger. Capacity limits refuse ingress before acknowledgment.
 
 Deduplication and receipt lookup respect the [retention contract](evidence.md#retention-and-deletion).
-An expired key must not silently become another consequential request under a claim
-of unlimited deduplication. The exact expired-key policy must be published.
+An expired key must never silently become another consequential request — deduplication
+is not unlimited. The exact expired-key policy must be published.
 
 For child creation, this same retry principle additionally covers parent correlation
 and budget reservation; [child creation](communication.md#children) owns those rules.

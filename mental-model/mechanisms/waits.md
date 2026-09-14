@@ -37,8 +37,8 @@ Each dependency alternative supplies a nonempty subset of these fields:
 
 All supplied fields within an alternative must match (AND). Any matching alternative
 can qualify an Event (ANY-OF). Empty alternatives and empty supplied kind sets are
-invalid. Payload selectors, labels as extra fields, ranges, prefixes, regex, arbitrary
-predicates, negation and all-of are unsupported. Input subscriptions instead match a
+invalid. Unsupported: payload selectors, labels as extra fields, ranges, prefixes,
+regex, arbitrary predicates, negation and all-of. Input subscriptions instead match a
 declared application-input class by identity equality; their concrete spelling is
 implementation-owned.
 

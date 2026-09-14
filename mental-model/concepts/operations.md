@@ -15,7 +15,7 @@ instead of an ArrokothI-managed host.
 
 **Trusted Execution** intentionally permits ambient filesystem/network/process powers
 supplied by the deployment. Kernel action guarantees cover only the mediated paths.
-Arbitrary same-process code is not contained by an interface contract.
+An interface contract alone does not contain arbitrary same-process code.
 
 ## Isolated Execution
 
@@ -78,7 +78,7 @@ input later. It is not destination acceptance until that mailbox actually accept
 
 ## Backpressure and cleanup debt
 
-**Backpressure** bounds admitted/queued work when capacity is exhausted. It must be
-applied before promising acceptance that cannot be retained. **Cleanup debt** is known
+**Backpressure** bounds admitted/queued work when capacity is exhausted. Apply it
+before promising an acceptance the system cannot actually retain. **Cleanup debt** is known
 remaining resource cleanup with a responsible owner and lifetime/cost consequences.
 Terminal Execution state does not imply that debt or remote work has disappeared.

@@ -16,9 +16,9 @@ K2/R1/K5. This is target specification, not shipped behavior.
 
 ## Fix bindings for each invocation
 
-Retain invocation identity, relevant Runtime input/state version, selected information
+Retain: invocation identity, relevant Runtime input/state version, selected information
 or references, exact alias→stable-target mapping, local-control origin, operation
-versions and provider/model configuration. Pin rendering version when controlled.
+versions, and provider/model configuration. Pin rendering version when controlled.
 Resolve a delayed `search_docs` reply through the map it saw, never the latest catalog.
 Refuse ambiguous aliases or assign collision-safe names before sending.
 

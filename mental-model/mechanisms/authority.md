@@ -36,7 +36,8 @@ lifetime must be declared. Child budgets do not grant permission.
 
 Overlapping policy rules need explicit semantics: additive allows combine only under
 the same policy contract; attenuation constraints intersect; explicit denies cannot
-disappear through a union. No accidental source-order first match. Unknown identities,
+disappear through a union. Source order must never decide the match by accident.
+Unknown identities,
 resources/operations or unavailable required policy lead to refusal/hold, never ambient
 fallback. Concrete `check(request)` is fundamental; bulk enumeration is optional.
 
@@ -53,8 +54,8 @@ Validate and normalize before requesting approval. Bind the decision to:
 - destination/account and resource revision or immutable content digest where meaningful;
 - eligible authenticated approver, decision ID, validity and required approval policy.
 
-Render decisive values from that exact bound request. A publication approval should
-show the recipient and immutable draft, not just an Agent's reassuring summary.
+Show the values that matter, drawn from that exact bound request. A publication approval
+should show the recipient and immutable draft, not just an Agent's reassuring summary.
 Large content needs an accessible preview plus immutable version/digest. A hash alone
 does not prove the person saw the content. The application owns the UI.
 

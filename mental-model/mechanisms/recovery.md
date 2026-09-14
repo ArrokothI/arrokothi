@@ -41,8 +41,8 @@ assumes storage survives process failure.
 An adapter ledger written only after remote submission does not close the lost-handle
 window. Before submission pin exact configuration and a stable native request identity;
 use native submit/query idempotency if available. “Latest run” and nearest timestamp
-cannot establish the right job or exclusive ownership. Repeat billing and native tools
-belong in the Driver's phase-specific recovery declaration.
+cannot establish the right job or exclusive ownership. The risk of repeat billing, and
+how native tools are handled, belong in the Driver's phase-specific recovery declaration.
 
 ## Checkpoint publication
 
@@ -57,8 +57,9 @@ tickets checked at acceptance plus a grace period are one implementation option,
 not a mandatory universal artifact service. Preserve the last accepted checkpoint
 while supported recovery can still require it.
 
-Native state may advance before Kernel acceptance because their stores do not share
-a transaction. Never resume two accepted/candidate revisions against one mutable
+Native state may advance before Kernel acceptance, because the native store and the
+Kernel's store do not share one transaction. Never resume two accepted/candidate revisions
+against one mutable
 session. Use native exclusive ownership, immutable branchable checkpoints with
 controlled actions, or refusal. Forkable state alone does not make repeated tool calls safe.
 A mutable session locator remains a locator; it must not be advertised as a snapshot.

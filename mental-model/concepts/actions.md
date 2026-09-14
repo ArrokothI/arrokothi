@@ -18,9 +18,9 @@ Examples include invoking a service, reading governed data, requesting human inp
 creating a child and sending a message. An Emission is not an Effect.
 
 A **proposal key** is the Runtime's stable local name for that proposal within the
-Activation. Acceptance binds it to an **Effect ID**, the immutable logical request
-identity within the Execution (for example, Activation plus local key). It is not
-the ID of a physical send. A wait may refer to the same Outcome's proposal key.
+Activation. Acceptance binds it to an **Effect ID** — the immutable logical request
+identity within the Execution, such as an Activation paired with a local key. This is
+not the ID of a physical send. A wait may refer to the same Outcome's proposal key.
 
 ## Logical action and intent
 
@@ -31,8 +31,8 @@ work unless explicitly qualified as native.
 
 ## Admission and physical action attempt
 
-**Admission** is the ordered decision authorizing a concrete action attempt under
-current policy and required consent, recording its intent under current dispatch
+**Admission** is the ordered decision that authorizes a concrete action attempt under
+current policy and required consent. It records that intent under current dispatch
 ownership. A **physical action attempt** is one invocation of that logical action
 through a trusted adapter. Admission can precede sending and cannot prove receipt.
 Its dispatch ownership/fencing is separate from the Runtime's writer epoch.
@@ -58,8 +58,9 @@ certainty. Acknowledging an unknown observation does not remove the obligation.
 
 ## Principal and authority
 
-A **principal** is an authenticated application identity (user, service, acting-on-behalf-of
-identity), with tenant/application scope where applicable. An Execution is not a principal.
+A **principal** is an authenticated application identity — a user, a service, or an
+acting-on-behalf-of identity — with tenant/application scope where applicable. An
+Execution is not a principal.
 **Authority** is the upper bound of Kernel-mediated operations/resources available to
 an Execution. **Policy** decides whether a concrete request is permitted now and can
 narrow that bound. A **grant** records authority and, when applicable, delegation constraints.
