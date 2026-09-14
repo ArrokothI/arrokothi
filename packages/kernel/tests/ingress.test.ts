@@ -247,13 +247,26 @@ describe("K1.1-C2 the triple keeps unrelated requests apart", () => {
   test("no packing of the three parts can make two identities collide", () => {
     const kernel = coordinator();
     const { executionId } = start(kernel);
-    const split = caller("app", "tenant-a");
 
-    // ("app-a", id, "correction-1") and ("app", id, "-a correction-1") would collide under a naive
-    // separator-joined key. They are different inputs and must stay so.
-    const wide = accepted(kernel.submitInput(author, input(executionId, { requestKey: "correction-1" })));
-    const narrow = accepted(kernel.submitInput(split, input(executionId, { requestKey: "-a correction-1" })));
-    assert.notEqual(narrow.eventId, wide.eventId);
+    // Two triples whose parts render identically once joined by any single separator. With the
+    // destination `d` fixed, ("x", d, "y d k") and ("x d y", d, "k") both read "x d y d k". This is
+    // the K1.0-correction-02 failure in another place: a joined rendering is not injective, so an
+    // identity compared through one would bind two different inputs to one Event.
+    const separator = " ";
+    const left = caller("x", "tenant-a");
+    const right = caller(["x", executionId, "y"].join(separator), "tenant-a");
+    const leftKey = ["y", executionId, "k"].join(separator);
+
+    assert.equal(
+      [left.namespace, executionId, leftKey].join(separator),
+      [right.namespace, executionId, "k"].join(separator),
+      "the two triples really are indistinguishable once joined",
+    );
+
+    const first = accepted(kernel.submitInput(left, input(executionId, { requestKey: leftKey })));
+    const second = accepted(kernel.submitInput(right, input(executionId, { requestKey: "k", payload: { text: "different" } })));
+    assert.notEqual(second.eventId, first.eventId, "but they are different inputs and stay so");
+    assert.equal(second.replayed, false, "and the second is not treated as a replay or a conflict");
   });
 });
 

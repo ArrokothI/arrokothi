@@ -220,6 +220,19 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     assert.notEqual(inB.executionId, inA.executionId);
   });
 
+  test("no packing of the creation key's three parts can make two requests collide", () => {
+    const kernel = coordinator();
+    // ("a", "b c", "d") and ("a b", "c", "d") join to the same text under any single separator.
+    const wide = caller("a", "b c");
+    const narrow = caller("a b", "c");
+    assert.equal(["a", "b c", "d"].join(" "), ["a b", "c", "d"].join(" "), "the two keys really do render alike");
+
+    const first = accepted(kernel.createExecution(wide, createRequest({ scope: "b c", creationKey: "d" })));
+    const second = accepted(kernel.createExecution(narrow, createRequest({ scope: "c", creationKey: "d" })));
+    assert.notEqual(second.executionId, first.executionId);
+    assert.equal(second.replayed, false, "the second request is its own, not a replay of the first");
+  });
+
   test("the payload cannot supply or change the producer namespace", () => {
     const kernel = coordinator();
     const impersonating = {

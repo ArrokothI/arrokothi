@@ -108,6 +108,23 @@ describe("K1.1-C6 reads are authenticated and scoped first", () => {
     assert.deepEqual(kernel.visibleExecutions(outsider), []);
   });
 
+  test("the two refusals cost the same, so timing and position leak nothing either", () => {
+    const kernel = coordinator();
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const outsider = caller("app-c", "tenant-c");
+
+    // Identical text is not enough: a record position that advances differently for the hidden case
+    // is a side channel of exactly the kind ID-8 forbids. Both orders are measured, so the check
+    // cannot be satisfied by a constant offset.
+    const hiddenFirst = refused(kernel.inspect(outsider, created.executionId));
+    const missingAfter = refused(kernel.inspect(outsider, "execution-404"));
+    const missingFirst = refused(kernel.inspect(outsider, "execution-405"));
+    const hiddenAfter = refused(kernel.inspect(outsider, created.executionId));
+
+    assert.equal(missingAfter.position - hiddenFirst.position, 1, "an invisible Execution costs one position");
+    assert.equal(hiddenAfter.position - missingFirst.position, 1, "and so does one that does not exist");
+  });
+
   test("a caller that holds the scope sees the Execution and its receipts", () => {
     const kernel = coordinator();
     const created = accepted(kernel.createExecution(author, createRequest()));
