@@ -20,7 +20,9 @@ the hold at its own date.
 
 By a **separate instruction on 2026-09-13 the owner released K1.0**, accepting already-built but unaccepted benchmark E1 fixture preparation as its prerequisite; the exact exception and identities remain in [K1.0's contract](work/K1.0/contract.md). No E1 criterion is closed. K1.0 round-16 H `f3aa29d7ecba2a23aa85788b7efdebdd383cab24` received historical independent ACCEPT at A `36595f57d1f8cec8c4bf8a6293e888ca27750fab`; [cleanup-01](work/K1.0/cleanup-01.md) then held integration for K10-CLEANUP-01.
 
-**K1.0-correction-02 round 1 is independently ACCEPTED** at H `def91fb9f34ade40a65cbde999c0ffe192d18239`, over C `95d74530f37c7af8706ef92d29574425a39afcf1`, original base `c9a9ed7e6e538ab0542fc6a999426264abb6212a`. OpenAI GPT-5.6 Sol (High) recorded [review-01](work/K1.0-correction-02/review-01.md) at A `4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0`, closing K10-CORR1-CLEANUP-01. [Delegated cleanup](work/K1.0-correction-02/cleanup-01.md) is complete; integration is pending the owner's manual merge and verified push is supplied in the external handoff. The cumulative C1–C9 acceptance restores the current structural claim; both earlier ACCEPT/invalidation records remain historical. No E1 result or K1 milestone closure; `next_release: none`.
+**K1.0-correction-02 round 1 is independently ACCEPTED** at H `def91fb9f34ade40a65cbde999c0ffe192d18239`, over C `95d74530f37c7af8706ef92d29574425a39afcf1`, original base `c9a9ed7e6e538ab0542fc6a999426264abb6212a`. OpenAI GPT-5.6 Sol (High) recorded [review-01](work/K1.0-correction-02/review-01.md) at A `4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0`, closing K10-CORR1-CLEANUP-01. [Delegated cleanup](work/K1.0-correction-02/cleanup-01.md) is complete. The owner merged the accepted candidate to `main` on 2026-09-14 as `4f02e6c` (PR #24); K1.0 with corrections 01–02 is therefore **integrated**, and the formal integration receipts under `work/K1.0/` and `work/K1.0-correction-02/` remain owed before K1.1 release. The cumulative C1–C9 acceptance restores the current structural claim; both earlier ACCEPT/invalidation records remain historical. No E1 result or K1 milestone closure; `next_release: none`.
+
+The K1.1–K1.3 seeds below were re-checked on 2026-09-14 against the rewritten mental model and the K0 fixture that E1 pins (`tests/conformance/k0/`, mirrored by the benchmark's E1 kernel-fixture pin). No packet was added, removed or reordered; three fixture-exercised behaviors (authorized takeover, recovery hold for unavailable pinned code, post-creation input ingress) gained an explicit K1 owner so that K1.4 does not meet them unassigned.
 
 ## How to read a packet
 
@@ -129,37 +131,37 @@ C1–C9 without weakening them. Owner's copy-ready coding handoff:
 [handoff-01](work/K1.0-correction-01/handoff-01.md); bounded scope, authority and preserved
 identities: [contract](work/K1.0-correction-01/contract.md). The criteria are K1.0-C1 … C9 exactly as
 [K1.0's contract](work/K1.0/contract.md) states them; this packet adds none and weakens none.
-Historical K1.0 and correction-01 ACCEPTs and cleanup invalidations are preserved. Correction-02 supplies the accepted cumulative correction; its [cleanup record](work/K1.0-correction-02/cleanup-01.md) closes pre-merge obligations. Integration awaits owner merge; no successor release.
+Historical K1.0 and correction-01 ACCEPTs and cleanup invalidations are preserved. Correction-02 supplies the accepted cumulative correction; its [cleanup record](work/K1.0-correction-02/cleanup-01.md) closes pre-merge obligations. Integrated with correction-02 as `4f02e6c`; no successor release.
 
 ### K1.0-correction-02 — Collection identity in inventory comparison
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k10-correction-02); also inspect affected dependencies.
 
-Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/cleanup-01.md). Repair loss of element boundaries in root/export comparison, trace all four inventory consumers, preserve existing parser/schema controls and revalidate original-base cumulative K1.0-C1–C9. [Bounded scope and copy-ready fixing prompt](work/K1.0-correction-02/handoff-01.md); bounded scope, authority and preserved identities: [contract](work/K1.0-correction-02/contract.md). The criteria are K1.0-C1 … C9 exactly as [K1.0's contract](work/K1.0/contract.md) states them; this packet adds none and weakens none. Historical correction-01 ACCEPT and invalidation remain. Correction-02 has independent ACCEPT at H `def91fb9f34ade40a65cbde999c0ffe192d18239`; [cleanup is complete](work/K1.0-correction-02/cleanup-01.md). No successor release.
+Corrective record under 006 for [K10-CORR1-CLEANUP-01](work/K1.0-correction-01/cleanup-01.md). Repair loss of element boundaries in root/export comparison, trace all four inventory consumers, preserve existing parser/schema controls and revalidate original-base cumulative K1.0-C1–C9. [Bounded scope and copy-ready fixing prompt](work/K1.0-correction-02/handoff-01.md); bounded scope, authority and preserved identities: [contract](work/K1.0-correction-02/contract.md). The criteria are K1.0-C1 … C9 exactly as [K1.0's contract](work/K1.0/contract.md) states them; this packet adds none and weakens none. Historical correction-01 ACCEPT and invalidation remain. Correction-02 has independent ACCEPT at H `def91fb9f34ade40a65cbde999c0ffe192d18239`; [cleanup is complete](work/K1.0-correction-02/cleanup-01.md) and the candidate is integrated on `main` as `4f02e6c`. No successor release.
 
 ### K1.1 — Create, reserve and asynchronous dispatch
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k11); also inspect affected dependencies.
 
-**Dependencies:** K1.0. **Scope:** Implement atomic create/initial input, scoped identity, opaque pinned progress, reservation and Driver dispatch; expose minimum inspection. Refuse unsupported next forms until their packet lands.
+**Dependencies:** K1.0 as integrated, including corrections 01–02. **Scope:** Implement atomic create/initial input, scoped identity, opaque pinned progress, reservation and Driver dispatch; expose minimum inspection. Own post-creation input ingress under the Input ID triple as [creation](../../mental-model/mechanisms/creation.md) states it: exact replay returns the retained disposition, conflicting content under an existing key is recorded and refused, the same key text from different producers never collides, and input to a terminal or unknown destination is refused with an inspectable reason. Refuse unsupported next forms until their packet lands.
 
-**Acceptance:** Delayed fake A does not prevent B dispatch on the same coordinator; retries preserve identity/batch, reservation does not acknowledge input, no Agent/Workflow discriminator in the new boundary.
+**Acceptance:** Delayed fake A does not prevent B dispatch on the same coordinator; retries preserve identity/batch, reservation does not acknowledge input, no Agent/Workflow discriminator in the new boundary. Ingress replay, conflict, cross-producer and terminal-destination cases behave as scoped above whether or not any wait exists; wait matching itself remains K1.3.
 
 ### K1.2 — Outcome acceptance and receipts
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k12); also inspect affected dependencies.
 
-**Dependencies:** K1.1. **Scope:** Implement whole-envelope validation, receipt replay/conflict, epoch/revision checks, whole-batch acknowledgment, progress and accepted output, continue/complete/fail. Explicitly refuse not-yet-supported Effects/waits.
+**Dependencies:** K1.1. **Scope:** Implement whole-envelope validation, receipt replay/conflict, epoch/revision checks, whole-batch acknowledgment, progress recording, continue/complete/fail. Own authorized takeover as [identity](../../mental-model/concepts/identity.md) and the [retry-versus-takeover table](../../mental-model/mechanisms/execution-cycle.md) state it: the same Activation ID advances its writer epoch only through an authenticated control, the older attempt is fenced with no staleness window, and an ordinary retry never advances the epoch. Own the recovery hold for unavailable pinned progress code: the Execution stays RUNNING under an inspectable protocol-failure/recovery reason with progress and revision intact, and the hold clears when compatible code is available; this is [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) exchange handling, not K3 process-fault recovery, and claims no persistence. Record Emission identities and the typed terminal result at acceptance; output observation, replay and cursors stay K4.4. Refuse Effects as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) fixes for K1: the whole envelope is rejected, no Effect ID, denied-action or admission record is created, and the Activation stays open. Refuse `complete` proposing any obligation whole, since every obligation kind is unsupported before K2.3; refuse not-yet-supported waits until K1.3.
 
-**Acceptance:** Stale/conflicting/malformed proposals change no accepted state; exact duplicate returns original receipt; one progress writer and typed terminal/output semantics.
+**Acceptance:** Stale/conflicting/malformed proposals change no accepted state; exact duplicate returns original receipt; one progress writer and typed terminal/output semantics. A stale-epoch proposal after takeover is refused while the new epoch commits; a retry-only sequence shows no epoch change. A missing-code hold is distinguishable by inspection from a failed or waiting Execution and reverts to ordinary progress without a new revision. An Effect-bearing envelope leaves no K2-style record that E2 attribution could mistake for a denial.
 
 ### K1.3 — Wait and cancellation races
 
 **Layer-3 maintenance:** [expected owners](../../mental-model/roadmap.md#k13); also inspect affected dependencies.
 
-**Dependencies:** K1.2. **Scope:** Implement finite any-of, input subscriptions, eligible unmatched accounting, wait generation/deadlines, out-of-band cancellation and terminal disposition.
+**Dependencies:** K1.2. **Scope:** Implement finite any-of, input subscriptions, eligible unmatched accounting, wait generation/deadlines, out-of-band cancellation and terminal disposition. Of the three clocks in [operations](../../mental-model/concepts/operations.md), this packet implements wait deadlines and routes Execution-deadline expiry through the same cancellation path; scheduler leases remain K3. Matching consumes input already admitted by K1.1 ingress; this packet adds no second ingress rule.
 
-**Acceptance:** Before/during/after wait arrivals, stale timers, unmatched backlog and cancel/complete schedules lose no accepted input or wake and never reopen a terminal execution.
+**Acceptance:** Before/during/after wait arrivals, stale timers, unmatched backlog and cancel/complete schedules lose no accepted input or wake and never reopen a terminal execution. A stale timer from a superseded wait generation is discarded with an inspectable reason and no state change; Execution-deadline expiry and explicit cancellation produce the same terminal disposition shape.
 
 ### K1.4 — Legacy bridge and K1/E1 gate
 
