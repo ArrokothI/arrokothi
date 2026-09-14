@@ -1,0 +1,20 @@
+Subject: payload C 95d74530f37c7af8706ef92d29574425a39afcf1, unchanged at A 4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0. Temporary original read-only probe, complete source follows:
+import assert from 'node:assert/strict';
+import { collectionDisagreement } from '/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/inventory-oracle.ts';
+const alphabet = ['', 'a', 'b', 'a,b', 'a\\b', 'a\"b', '\u0000', '\u00a0'];
+const arrays = [[]];
+let level = [[]];
+for (let n = 1; n <= 3; n++) { level = level.flatMap(a => alphabet.map(x => [...a,x])); arrays.push(...level); }
+const counts = a => { const m = new Map(); for(const x of a) m.set(x,(m.get(x)||0)+1); return m; };
+let checked=0;
+for(const a of arrays) for(const b of arrays) {
+ const left=counts(a), right=counts(b);
+ const expected = left.size===right.size && [...left].every(([x,n])=>right.get(x)===n);
+ assert.equal(collectionDisagreement('probe',a,b)===undefined,expected);
+ checked++;
+}
+console.log(JSON.stringify({arrays: arrays.length, pairs:checked, failures:0, oracle:'frequency maps; empty, multiplicity, separator, slash, quote, NUL, NBSP'}));
+
+$ node --experimental-strip-types /tmp/k10-corr2-collection-probe.mjs
+{"arrays":585,"pairs":342225,"failures":0,"oracle":"frequency maps; empty, multiplicity, separator, slash, quote, NUL, NBSP"}
+EXIT 0

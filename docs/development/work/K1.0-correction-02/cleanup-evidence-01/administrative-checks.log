@@ -1,0 +1,6 @@
+009 words and paragraph boundaries exactly match A; only physical wrapping changed. No literal newline escape placeholders.
+Relative links checked: 115
+Issues: []
+H to current checkout: zero changes in packages, tests, package.json and package-lock.json.
+Previously tracked packet contracts, reports, reviews and raw evidence unchanged.
+Correction-02 package manifests unchanged from correction parent; original-base wiring delta inspected.

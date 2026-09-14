@@ -1,5 +1,19 @@
 # ArrokothI and benchmark: completed foundations and the next step
 
+## Current update — K1.0 correction-02 cleanup complete, 2026-09-14
+
+**K1.0's pre-merge implementation, review and cleanup are complete. Integration awaits your manual GitHub merge after the verified push in the cleanup handoff.** The independent reviewer accepted the whole cumulative packet at H `def91fb9f34ade40a65cbde999c0ffe192d18239`. The final correction compares lists by their actual members and size, so two different lists cannot pass merely because joining their members produces the same text. Earlier acceptance and reopening records remain intact.
+
+The practical result is a private location for future Kernel implementation, meaningful import guards, and an ownership inventory checked against the code. Existing legacy consumers remain supported. This still implements no asynchronous protocol and establishes no E1 result. **K0 remains closed; K1 remains open; `next_release: none`.**
+
+Cleanup reran the 2,060-test suite, typecheck and builder-doc checks, checked the now-present evidence manifests, and independently challenged 342,225 collection pairs. Current remote main is still the original reviewed base, so there is no intervening main change or merge conflict. See [the cleanup record](work/K1.0-correction-02/cleanup-01.md), [independent ACCEPT](work/K1.0-correction-02/review-01.md) and [authoritative ledger](007-work-packets.md).
+
+**Next owner action:** manually merge the verified scoped branch. Then request verification of the actual remote merge before recording integration. Prompt B/C copy/paste formatting is cleaned up without changing their adopted instructions. The requested fixing-prompt and progress-based escalation improvements are prepared separately as an unaccepted prompt-maintenance draft; 006 requires independent review before adopting substantive workflow changes.
+
+## Earlier update — correction-02 awaiting review (historical)
+
+The following update describes the submitted candidate before its independent ACCEPT; the current update above supersedes its next action and holds.
+
 ## Current owner update — correction-02 submitted for review, 2026-09-14
 
 **Do not merge K1.0 yet.** The defect cleanup found is fixed and the packet is back with a reviewer, not accepted. The guard used to decide whether two lists agree by gluing each list into one string with commas and comparing the strings. Two different lists can produce the same string — five real export subpaths and one invented subpath that happens to contain commas look identical that way — so a false inventory passed the guard whose whole job is to reject false inventories.
