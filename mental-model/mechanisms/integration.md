@@ -5,7 +5,8 @@ the native system keeps its algorithms and state. This page owns integration sup
 claims; [recovery](recovery.md) owns the common continuation protocol.
 
 **Status:** Per-Driver obligation, not Kernel semantics. Introduced by R1; supported
-versions frozen at S1. This is target specification, not shipped behavior.
+versions frozen at S1. K1.4's legacy bridge uses only the reference-Runtime shape below
+and earns no support record here. This is target specification, not shipped behavior.
 
 ## Select the smallest useful integration
 
