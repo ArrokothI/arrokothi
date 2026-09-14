@@ -43,7 +43,8 @@ receipts; the [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure wit
 evidence. Historical worksheets, assessments and attempt records describe their own dates and
 candidates; their earlier holds do not override the ledger and subsequent owner decisions.
 
-The planned structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is
-itself K1 implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared
-fixtures and a structural pass are not an E1 result. K1.0 remains unimplemented and unreleased;
-`next_release: none`. Benchmark owns its evidence preparation and release decisions separately.
+The structural preparation packet is K1.0, after K0.2 and before K1.1. Because K1.0 is itself K1
+implementation, it also comes after the benchmark-owned E1 fixture preparation; prepared fixtures and
+a structural pass are not an E1 result. **The owner released K1.0 on 2026-09-13**, directing that the
+E1 dependency be treated as the already-built but unaccepted preparation. **K1.0-correction-02 round 1 is independently ACCEPTED** at H `def91fb9f34ade40a65cbde999c0ffe192d18239`, over C `95d74530f37c7af8706ef92d29574425a39afcf1`, original base `c9a9ed7e6e538ab0542fc6a999426264abb6212a`. OpenAI GPT-5.6 Sol (High) recorded [review-01](work/K1.0-correction-02/review-01.md) at A `4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0`, closing K10-CORR1-CLEANUP-01. [Delegated cleanup](work/K1.0-correction-02/cleanup-01.md) is complete; integration is pending the owner's manual merge and verified push is supplied in the external handoff. The cumulative C1–C9 acceptance restores the current structural claim; both earlier ACCEPT/invalidation records remain historical. No E1 result or K1 milestone closure; `next_release: none`.
+Benchmark owns its evidence preparation and release decisions separately.

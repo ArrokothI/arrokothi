@@ -1,0 +1,215 @@
+== K10-R15-01 distinguishing demonstration: reviewed H15 vs committed C ==
+
+$ node --experimental-strip-types demo-r1501.mts
+
+Case                                                         H15 (reviewed)   C (committed)    want
+----------------------------------------------------------------------------------------------------------------
+baseline, unmutated inventory                                GREEN            GREEN            GREEN 
+VT before the closing hash run (review-16's counterexample) [must catch] GREEN            RED(2)           RED 
+FF before the closing hash run [must catch]                  GREEN            RED(2)           RED 
+VT after the closing hash run [must catch]                   GREEN            RED(2)           RED 
+FF after the closing hash run [must catch]                   GREEN            RED(2)           RED 
+VT at the end of the content [must catch]                    GREEN            RED(2)           RED 
+FF at the end of the content [must catch]                    GREEN            RED(2)           RED 
+SPACE before the closing run terminates normally             GREEN            GREEN            GREEN 
+TAB before the closing run terminates normally               GREEN            GREEN            GREEN 
+SPACE after the closing run terminates normally              GREEN            GREEN            GREEN 
+TAB after the closing run terminates normally                GREEN            GREEN            GREEN 
+trailing SPACE terminates normally                           GREEN            GREEN            GREEN 
+trailing TAB terminates normally                             GREEN            GREEN            GREEN 
+plain exact heading terminates normally                      GREEN            GREEN            GREEN 
+VT in a key cell [must catch]                                GREEN            RED(2)           RED 
+FF in a key cell [must catch]                                GREEN            RED(2)           RED 
+VT in a value cell [must catch]                              GREEN            RED(1)           RED 
+FF in a value cell [must catch]                              GREEN            RED(1)           RED 
+VT row indentation [must catch]                              RED(2)           RED(2)           RED 
+SPACE/TAB cell padding still parses                          GREEN            GREEN            GREEN 
+three spaces of row indentation still parses                 GREEN            GREEN            GREEN 
+review-15: NBSP after the separator [must catch]             RED(2)           RED(2)           RED 
+review-15: NBSP at the end of the title [must catch]         RED(2)           RED(2)           RED 
+review-15: NBSP in a key cell [must catch]                   RED(2)           RED(2)           RED 
+round-12: a VT type-7 opener still hides the heading [must catch] RED(2)           RED(2)           RED 
+round-12: "<div<NBSP>x>" stays ordinary                      GREEN            GREEN            GREEN 
+round-13: whole inventory recoded LF -> lone CR              GREEN            GREEN            GREEN 
+round-13: whole inventory recoded LF -> CRLF                 GREEN            GREEN            GREEN 
+round-15: whole inventory re-separated with TAB              GREEN            GREEN            GREEN 
+----------------------------------------------------------------------------------------------------------------
+cases 29; distinguishing (H15 != C) 10; agreeing 19; C wrong 0
+
+Review-16's required observable, verbatim messages from C:
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why it is assigned there
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | contradictory planted table
+Same document under the reviewed H15:
+  (nothing: the planted contradictory table is hidden)
+
+exit: 0
+
+== provenance of the two columns ==
+H column: a verbatim copy of  git show d3d614f6cee4393d4ac63ecc2f29045b205505ff:tests/conformance/architecture/inventory-oracle.ts
+  local copy sha256 de0d8d6ac26cb1be1bd9031c22b726624eff77d5640ddc8c9efd7aa98d08c628
+  git blob          292c6a587125d84028769e0f6f31d20bc3ba7f23
+  git show sha256   de0d8d6ac26cb1be1bd9031c22b726624eff77d5640ddc8c9efd7aa98d08c628
+  Its two imports are type-only and erased by --experimental-strip-types, so it runs
+  standalone and is the reviewed code rather than a paraphrase.
+C column: the committed production parser imported from its real repository path
+  git blob          cdb06c345f4841faa70e1668c1830e5bce92786d
+  working sha256    628a9cc7617e2a2577c6161404ca770709f66fed8c77ad6fe932e5108752d2f8
+
+== the program, quoted in full (it enters no tracked path) ==
+--- demo-r1501.mts ---
+/**
+ * K10-R15-01 distinguishing demonstration: reviewed H15 vs committed C, through the full
+ * production path `parseInventory` -> `inventoryDisagreements` on the real ownership inventory.
+ *
+ * The H column is the reviewed candidate's `inventory-oracle.ts` taken byte-for-byte with
+ * `git show d3d614f6cee4393d4ac63ecc2f29045b205505ff:tests/conformance/architecture/inventory-oracle.ts`.
+ * Its two imports are type-only and erased by `--experimental-strip-types`, so it runs
+ * standalone and is the reviewed code rather than a paraphrase.
+ *
+ * GREEN = zero messages (the document is accepted). RED(n) = n messages.
+ * "must catch" marks a case where a planted contradictory further table has to surface.
+ */
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+
+const REPO = "/Users/rex-shih/Documents/ArrokothI/arrokothi";
+const ARCH = `${REPO}/tests/conformance/architecture`;
+const H_ORACLE = new URL("./oracle-H15.ts", import.meta.url).pathname;
+
+const H = await import(H_ORACLE);
+const C = await import(`${ARCH}/inventory-oracle.ts`);
+const { ZONES, DEFERRED_EXTRACTIONS } = await import(`${ARCH}/boundary-policy.ts`);
+const { loadWorkspace } = await import(`${ARCH}/module-graph.ts`);
+
+const real = await readFile(resolve(REPO, "docs/development/work/K1.0/ownership-inventory.md"), "utf8");
+const workspace = await loadWorkspace(REPO);
+const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
+
+const VT = String.fromCharCode(0x000b);
+const FF = String.fromCharCode(0x000c);
+const NBSP = String.fromCharCode(0x00a0);
+const TITLE = "What this packet does not establish";
+
+const lastDxRow =
+  "| DX-12 | `packages/core/src/ports/controller.ts` | refused | K1.1 | The closed `DefinitionKind` controller port is replaced by the Driver boundary; it is not carried forward in this shape. |\n";
+const badDeferredTable =
+  "| Id | Current path | Disposition | Owner | Why it is assigned there |\n|---|---|---|---|---|\n| DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | contradictory planted table |\n";
+
+const mutate = (from: string, to: string): string => {
+  if (real.split(from).length - 1 !== 1) throw new Error(`anchor is not unique: ${JSON.stringify(from)}`);
+  return real.replace(from, to);
+};
+const withHeading = (headingLine: string): string =>
+  mutate(lastDxRow, `${lastDxRow}\n${headingLine}\n\n${badDeferredTable}\n## ${TITLE}\n`);
+
+const verdict = (mod: typeof C, markdown: string): string => {
+  const messages: string[] = mod.inventoryDisagreements(mod.parseInventory(markdown), policy, workspace);
+  return messages.length === 0 ? "GREEN" : `RED(${messages.length})`;
+};
+
+type Case = { readonly name: string; readonly markdown: string; readonly want: "GREEN" | "RED" };
+const cases: readonly Case[] = [
+  { name: "baseline, unmutated inventory", markdown: real, want: "GREEN" },
+
+  // --- review-16's counterexample and the class boundary around it ---
+  { name: `VT before the closing hash run (review-16's counterexample) [must catch]`, markdown: withHeading(`## ${TITLE}${VT}##`), want: "RED" },
+  { name: `FF before the closing hash run [must catch]`, markdown: withHeading(`## ${TITLE}${FF}##`), want: "RED" },
+  { name: `VT after the closing hash run [must catch]`, markdown: withHeading(`## ${TITLE} ##${VT}`), want: "RED" },
+  { name: `FF after the closing hash run [must catch]`, markdown: withHeading(`## ${TITLE} ##${FF}`), want: "RED" },
+  { name: `VT at the end of the content [must catch]`, markdown: withHeading(`## ${TITLE}${VT}`), want: "RED" },
+  { name: `FF at the end of the content [must catch]`, markdown: withHeading(`## ${TITLE}${FF}`), want: "RED" },
+
+  // --- the SPACE/TAB twins: the class must not have been narrowed too far ---
+  { name: `SPACE before the closing run terminates normally`, markdown: withHeading(`## ${TITLE} ##`), want: "GREEN" },
+  { name: `TAB before the closing run terminates normally`, markdown: withHeading(`## ${TITLE}\t##`), want: "GREEN" },
+  { name: `SPACE after the closing run terminates normally`, markdown: withHeading(`## ${TITLE} ## `), want: "GREEN" },
+  { name: `TAB after the closing run terminates normally`, markdown: withHeading(`## ${TITLE} ##\t`), want: "GREEN" },
+  { name: `trailing SPACE terminates normally`, markdown: withHeading(`## ${TITLE} `), want: "GREEN" },
+  { name: `trailing TAB terminates normally`, markdown: withHeading(`## ${TITLE}\t`), want: "GREEN" },
+  { name: `plain exact heading terminates normally`, markdown: withHeading(`## ${TITLE}`), want: "GREEN" },
+
+  // --- the table side of the same substitution ---
+  {
+    name: `VT in a key cell [must catch]`,
+    markdown: mutate("| DX-1 | `packages/core/src/util/hash.ts`", `| DX-1${VT} | \`packages/core/src/util/hash.ts\``),
+    want: "RED",
+  },
+  {
+    name: `FF in a key cell [must catch]`,
+    markdown: mutate("| DX-4 | `packages/core/src/schema/value-schema.ts`", `| DX-4${FF} | \`packages/core/src/schema/value-schema.ts\``),
+    want: "RED",
+  },
+  {
+    name: `VT in a value cell [must catch]`,
+    markdown: mutate("| `packages/core/src/util/hash.ts` | migratable |", `| \`packages/core/src/util/hash.ts\` | ${VT}migratable |`),
+    want: "RED",
+  },
+  {
+    name: `FF in a value cell [must catch]`,
+    markdown: mutate("| `packages/core/src/util/json.ts` | migratable |", `| \`packages/core/src/util/json.ts\` | migratable${FF} |`),
+    want: "RED",
+  },
+  {
+    name: `VT row indentation [must catch]`,
+    markdown: mutate("| DX-3 | ", `${VT}| DX-3 | `),
+    want: "RED",
+  },
+  {
+    name: `SPACE/TAB cell padding still parses`,
+    markdown: mutate(
+      "| DX-1 | `packages/core/src/util/hash.ts` | migratable |",
+      "|\tDX-1 \t| `packages/core/src/util/hash.ts` | \tmigratable\t |",
+    ),
+    want: "GREEN",
+  },
+  { name: `three spaces of row indentation still parses`, markdown: mutate("| DX-3 | ", "   | DX-3 | "), want: "GREEN" },
+
+  // --- preserved prior corrections: identical in both columns ---
+  { name: `review-15: NBSP after the separator [must catch]`, markdown: withHeading(`## ${NBSP}${TITLE}`), want: "RED" },
+  { name: `review-15: NBSP at the end of the title [must catch]`, markdown: withHeading(`## ${TITLE}${NBSP}`), want: "RED" },
+  { name: `review-15: NBSP in a key cell [must catch]`, markdown: mutate("| DX-2 | `packages/core/src/util/json.ts`", `| DX-2${NBSP} | \`packages/core/src/util/json.ts\``), want: "RED" },
+  {
+    name: `round-12: a VT type-7 opener still hides the heading [must catch]`,
+    markdown: mutate(lastDxRow, `${lastDxRow}\n\n<Warning${VT}title="x">\n## ${TITLE}\n\n${badDeferredTable}\n## ${TITLE}\n`),
+    want: "RED",
+  },
+  {
+    name: `round-12: "<div<NBSP>x>" stays ordinary`,
+    markdown: mutate(lastDxRow, `${lastDxRow}\n<div${NBSP}x>\n## ${TITLE}\n\n${badDeferredTable}\n## ${TITLE}\n`),
+    want: "GREEN",
+  },
+  { name: `round-13: whole inventory recoded LF -> lone CR`, markdown: real.replace(/\r?\n/g, "\r"), want: "GREEN" },
+  { name: `round-13: whole inventory recoded LF -> CRLF`, markdown: real.replace(/\r?\n/g, "\r\n"), want: "GREEN" },
+  { name: `round-15: whole inventory re-separated with TAB`, markdown: real.replace(/^(#{1,6}) /gm, "$1\t"), want: "GREEN" },
+];
+
+const pad = (text: string, width: number): string => (text.length >= width ? text : text + " ".repeat(width - text.length));
+let distinguishing = 0;
+let agreeing = 0;
+let wrong = 0;
+
+console.log(pad("Case", 60), pad("H15 (reviewed)", 16), pad("C (committed)", 16), "want");
+console.log("-".repeat(112));
+for (const item of cases) {
+  const h = verdict(H, item.markdown);
+  const c = verdict(C, item.markdown);
+  const ok = item.want === "GREEN" ? c === "GREEN" : c.startsWith("RED");
+  if (!ok) wrong++;
+  if (h !== c) distinguishing++;
+  else agreeing++;
+  console.log(pad(item.name, 60), pad(h, 16), pad(c, 16), item.want, ok ? "" : "  <-- C FAILED ITS OWN EXPECTATION");
+}
+console.log("-".repeat(112));
+console.log(`cases ${cases.length}; distinguishing (H15 != C) ${distinguishing}; agreeing ${agreeing}; C wrong ${wrong}`);
+
+console.log("");
+console.log("Review-16's required observable, verbatim messages from C:");
+for (const message of C.inventoryDisagreements(C.parseInventory(withHeading(`## ${TITLE}${VT}##`)), policy, workspace)) {
+  console.log(`  - ${message}`);
+}
+console.log("Same document under the reviewed H15:");
+const hMessages: string[] = H.inventoryDisagreements(H.parseInventory(withHeading(`## ${TITLE}${VT}##`)), policy, workspace);
+console.log(hMessages.length === 0 ? "  (nothing: the planted contradictory table is hidden)" : hMessages.map((m) => `  - ${m}`).join("\n"));
+
+if (wrong !== 0) process.exitCode = 1;
+--- end demo-r1501.mts ---

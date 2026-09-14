@@ -1,0 +1,198 @@
+== K1.0-correction-01 validation-02: tree, environment and identities ==
+
+$ date -u +%Y-%m-%dT%H:%M:%SZ
+2026-09-13T23:03:31Z
+$ pwd
+/Users/rex-shih/Documents/ArrokothI/arrokothi
+$ node -v
+v25.2.1
+$ npm -v
+11.6.2
+$ npx tsc -v
+Version 5.9.3
+$ uname -mrs
+Darwin 25.6.0 arm64
+
+$ git rev-parse --abbrev-ref HEAD
+codex/k1.0-target-boundary-legacy-quarantine
+$ git rev-parse HEAD   # payload C (round-2 schema-ownership correction)
+36460438e95e968beec0b354b07a616b53981256
+$ git rev-parse HEAD~1 # parent of C (the round-1 review record)
+2d50fa3b3d7e23b01823f6d93e80952f70c0c5cc
+$ git remote -v
+origin	https://github.com/ArrokothI/arrokothi.git (fetch)
+origin	https://github.com/ArrokothI/arrokothi.git (push)
+$ git status --porcelain   # expect only validation-02/, which this run writes
+
+== ancestry: base, accepted candidate, acceptance record, cleanup, round-1 C/H/review all preserved ==
+  c9a9ed7e6e538ab0542fc6a999426264abb6212a is an ancestor of C: exit 0
+  d693d59aefe5335c8950d57cec6d6b57e375cadc is an ancestor of C: exit 0
+  f3aa29d7ecba2a23aa85788b7efdebdd383cab24 is an ancestor of C: exit 0
+  36595f57d1f8cec8c4bf8a6293e888ca27750fab is an ancestor of C: exit 0
+  b8e394dd2a58b839b131943f4ca9b250abff94af is an ancestor of C: exit 0
+  76ce938074ffa910fbd74374e388ba8d226af4c6 is an ancestor of C: exit 0
+  61133e9c8fd6fc80c6995fd26495e11e9f7f2e57 is an ancestor of C: exit 0
+  2d50fa3b3d7e23b01823f6d93e80952f70c0c5cc is an ancestor of C: exit 0
+$ git ls-remote origin main
+c9a9ed7e6e538ab0542fc6a999426264abb6212a	refs/heads/main
+$ git ls-remote origin codex/k1.0-target-boundary-legacy-quarantine
+2d50fa3b3d7e23b01823f6d93e80952f70c0c5cc	refs/heads/codex/k1.0-target-boundary-legacy-quarantine
+
+== correction delta: round-1 review record (2d50fa3b3d7e23b01823f6d93e80952f70c0c5cc) .. C ==
+$ git diff --stat 2d50fa3b3d7e23b01823f6d93e80952f70c0c5cc HEAD
+ .../work/K1.0-correction-01/contract.md            |  34 ++-
+ docs/development/work/K1.0/contract.md             |  46 +++-
+ tests/conformance/architecture/inventory-oracle.ts | 139 +++++++---
+ .../architecture/kernel-landing-zone.test.ts       | 298 +++++++++++++++++++++
+ 4 files changed, 478 insertions(+), 39 deletions(-)
+
+$ git diff --stat f3aa29d7ecba2a23aa85788b7efdebdd383cab24 HEAD   # historically accepted H .. C
+ .../work/K1.0-correction-01/review-01.md           |  141 ++
+ .../validation-01/01-tree-and-environment.log      |  384 +++
+ .../validation-01/02-typecheck.log                 |    7 +
+ .../validation-01/03-test-full.log                 | 2662 ++++++++++++++++++++
+ .../validation-01/04-test-conformance.log          | 2509 ++++++++++++++++++
+ .../validation-01/05-check-builder-docs.log        |    8 +
+ .../validation-01/06-test-kernel.log               |   21 +
+ .../validation-01/07-test-sdk.log                  |   37 +
+ .../validation-01/08-cleanup01-demonstration.log   |  283 +++
+ .../validation-01/09-whole-cell-audit.log          |  665 +++++
+ .../validation-01/10-c4-control-inventory.log      | 1401 ++++++++++
+ .../K1.0-correction-01/validation-01/MANIFEST.md   |  107 +
+ docs/development/work/K1.0/cleanup-01.md           |  158 ++
+ .../work/K1.0/cleanup-evidence-01/README.md        |   19 +
+ .../work/K1.0/cleanup-evidence-01/builder-docs.log |    5 +
+ .../cell-decoding-counterexamples.log              |   45 +
+ .../cleanup-evidence-01/final-architecture.log     |  406 +++
+ .../work/K1.0/cleanup-evidence-01/test-full.log    | 2643 +++++++++++++++++++
+ .../work/K1.0/cleanup-evidence-01/typecheck.log    |    4 +
+ docs/development/work/K1.0/contract.md             |   95 +-
+ docs/development/work/K1.0/review-17.md            |  114 +
+ .../architecture/evidence-records.test.ts          |   43 +-
+ tests/conformance/architecture/inventory-oracle.ts |  301 ++-
+ .../architecture/kernel-landing-zone.test.ts       |  684 +++++
+ 31 files changed, 13189 insertions(+), 93 deletions(-)
+
+== cumulative base..C ==
+$ git diff --stat c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD | tail -8; $ git diff --shortstat c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD
+ tests/conformance/architecture/boundary-policy.ts  |  211 +
+ .../architecture/evidence-records.test.ts          |  206 +
+ .../architecture/import-scanner.test.ts            |  395 ++
+ tests/conformance/architecture/inventory-oracle.ts | 1746 +++++++++
+ .../architecture/kernel-landing-zone.test.ts       | 4051 ++++++++++++++++++++
+ ...ries.test.ts => legacy-core-boundaries.test.ts} |   76 +-
+ tests/conformance/architecture/module-graph.ts     |  345 ++
+ 236 files changed, 117749 insertions(+), 39 deletions(-)
+ 236 files changed, 117749 insertions(+), 39 deletions(-)
+
+== preserved immutable records are byte-unchanged ==
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/review-17.md
+(empty above means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/cleanup-01.md
+(empty above means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/implementation-16.md
+(empty above means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/cleanup-evidence-01 docs/development/work/K1.0/validation-16
+(empty above means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0-correction-01/handoff-01.md
+(empty above means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0-correction-01/implementation-01.md
+ .../work/K1.0-correction-01/implementation-01.md   | 285 +++++++++++++++++++++
+ 1 file changed, 285 insertions(+)
+(empty above means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0-correction-01/validation-01
+ .../validation-01/01-tree-and-environment.log      |  384 +++
+ .../validation-01/02-typecheck.log                 |    7 +
+ .../validation-01/03-test-full.log                 | 2662 ++++++++++++++++++++
+ .../validation-01/04-test-conformance.log          | 2509 ++++++++++++++++++
+ .../validation-01/05-check-builder-docs.log        |    8 +
+ .../validation-01/06-test-kernel.log               |   21 +
+ .../validation-01/07-test-sdk.log                  |   37 +
+ .../validation-01/08-cleanup01-demonstration.log   |  283 +++
+ .../validation-01/09-whole-cell-audit.log          |  665 +++++
+ .../validation-01/10-c4-control-inventory.log      | 1401 ++++++++++
+ .../K1.0-correction-01/validation-01/MANIFEST.md   |  107 +
+ 11 files changed, 8084 insertions(+)
+(empty above means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0-correction-01/review-01.md
+ .../work/K1.0-correction-01/review-01.md           | 141 +++++++++++++++++++++
+ 1 file changed, 141 insertions(+)
+(empty above means unchanged)
+
+== the 007 ledger is not re-truncated ==
+$ wc -l docs/development/007-work-packets.md
+     401 docs/development/007-work-packets.md
+$ grep -c '^### ' docs/development/007-work-packets.md
+36
+
+== frozen fixture: tests/conformance/k0 byte-identical to base ==
+$ git diff --stat c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD -- tests/conformance/k0
+(empty above means byte-identical)
+
+== no legacy production, provider, SDK, example, script, benchmark or configuration file changed ==
+$ git diff --name-only 2d50fa3b3d7e23b01823f6d93e80952f70c0c5cc HEAD
+docs/development/work/K1.0-correction-01/contract.md
+docs/development/work/K1.0/contract.md
+tests/conformance/architecture/inventory-oracle.ts
+tests/conformance/architecture/kernel-landing-zone.test.ts
+
+== blob identities for the C4 files ==
+reviewed round-1 C inventory-oracle.ts git blob:     014a07dbcfcf04679602fd5ab1493e0fe566f5c1
+C (round 2)      inventory-oracle.ts git blob:     1305b0873cc77c393d50a8a5513b989626f17eeb
+reviewed round-1 C inventory-oracle.ts sha256:       22a822a46a1eac786b2d0190c25d4fada3685b306f23b676dd825b1ded2dd6b2
+C (round 2)      inventory-oracle.ts sha256:       a4a4bcbadf434fca685382646b682b5560e3f261cc662bf0b3c17fc27e82d256
+C (round 2)      kernel-landing-zone.test.ts blob: fa20c3c4834e28ed3a975817ffbe6e7f4778836c
+C (round 2)      K1.0 contract blob:               6682169fb47d5f2ea24c5c19d015f8e274df3d81
+
+== schema-ownership call-site inventory in the C4 parser ==
+Every governed table must state its schema independently of the candidate document; no arity
+may be inferred from the header discovery found.
+
+$ grep -n 'expectedHeader\|ungovernedTrailing\|RowSpec' tests/conformance/architecture/inventory-oracle.ts
+68: * its exact expected header in `RowSpec.expectedHeader` — arity and every label, including the
+1393:interface RowSpec<T> {
+1408:  readonly expectedHeader: readonly string[];
+1425:  readonly ungovernedTrailing: number;
+1432:   * prefix — the first `expectedHeader.length - ungovernedTrailing` cells, with missing cells
+1479:  spec: RowSpec<T>,
+1489:  // checked against `spec.expectedHeader`, independently of each other and of any body data: the
+1495:  const schemaArity = spec.expectedHeader.length;
+1498:    governed.header.every((cell, index) => cell === spec.expectedHeader[index]);
+1500:    if (governed.header[0] !== spec.expectedHeader[0]) {
+1502:        `${spec.table} table header starts with "${governed.header[0] ?? ""}", not "${spec.expectedHeader[0]}": ${governed.header.join(" | ")} (governed schema: ${spec.expectedHeader.join(" | ")})`,
+1506:        `${spec.table} table header must be "${spec.expectedHeader.join(" | ")}" but the document has "${governed.header.join(" | ")}"`,
+1541:    const value = spec.valueOf(cells.slice(0, schemaArity - spec.ungovernedTrailing));
+1567:      expectedHeader: ["Zone id", "Roots", "Owner and status"],
+1569:      ungovernedTrailing: 1,
+1582:      expectedHeader: ["Id", "Current path", "Disposition", "Owner", "Why it is assigned there"],
+1584:      ungovernedTrailing: 1,
+1603:      expectedHeader: ["Package", "Exported subpaths", "Published?"],
+1605:      ungovernedTrailing: 0,
+1651:      expectedHeader: ["Zone", "`.ts` files", "Reaches `legacy-core` via", "Reaches third-party"],
+1653:      ungovernedTrailing: 0,
+
+$ grep -n 'expectedHeaderFirstCell\|governed.header.length' tests/conformance/architecture/inventory-oracle.ts
+63: * a body row's excess cells against `governed.header.length` and checked only the header's first
+1497:    governed.header.length === schemaArity &&
+1534:        `${spec.table} row for ${key} carries ${cells.length} cells but its header declares ${governed.header.length}; the excess is read by no column (governed schema allows ${schemaArity}): ${cells.join(" | ")}`,
+(empty above means the header-derived authority is gone)
+
+$ grep -n 'decodeCodeSpanList(\|decodeCodeSpan(\|decodeCount(\|decodeEdgeCell(\|PUBLISHED_VOCABULARY' tests/conformance/architecture/inventory-oracle.ts | head -20
+135:function decodeCodeSpanList(cell: string): string[] | undefined {
+156:function decodeCodeSpan(cell: string): string | undefined {
+157:  const tokens = decodeCodeSpanList(cell);
+171:function decodeCount(cell: string): number | undefined {
+186:function decodeEdgeCell(cell: string, emptySentinels: readonly string[]): Set<string> | undefined {
+188:  const tokens = decodeCodeSpanList(cell);
+206:const PUBLISHED_VOCABULARY: ReadonlyMap<string, boolean> = new Map([
+1570:      keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
+1572:      valueOf: (cells) => decodeCodeSpanList(cells[1] ?? ""),
+1588:        const currentPath = decodeCodeSpan(cells[1] ?? "");
+1606:      keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
+1609:        const subpaths = decodeCodeSpanList(cells[1] ?? "");
+1610:        const published = PUBLISHED_VOCABULARY.get(cells[2] ?? "");
+1654:      keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
+1657:        const files = decodeCount(cells[1] ?? "");
+1658:        const reaches = decodeEdgeCell(cells[2] ?? "", REACHES_EMPTY);
+1659:        const thirdParty = decodeEdgeCell(cells[3] ?? "", THIRD_PARTY_EMPTY);
+(the round-1 whole-cell decoders, kept unchanged)

@@ -1,0 +1,45 @@
+Inspected tree/head: 36595f57d1f8cec8c4bf8a6293e888ca27750fab
+Accepted H: f3aa29d7ecba2a23aa85788b7efdebdd383cab24
+Payload C: d693d59aefe5335c8950d57cec6d6b57e375cadc
+Cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+Environment: Node v25.2.1; npm 11.6.2; TypeScript 5.9.3; Darwin arm64
+Command: node /tmp/k10-cleanup/reproduce.mjs
+Inline program (quoted for reproduction; not a new test/fixture):
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import { pathToFileURL } from 'node:url';
+const root = process.cwd();
+const load = p => import(pathToFileURL(`${root}/${p}`));
+const {parseDependencyTable, parseInventory, inventoryDisagreements} = await load('tests/conformance/architecture/inventory-oracle.ts');
+const {loadWorkspace} = await load('tests/conformance/architecture/module-graph.ts');
+const {ZONES, DEFERRED_EXTRACTIONS} = await load('tests/conformance/architecture/boundary-policy.ts');
+const source = fs.readFileSync('docs/development/work/K1.0/ownership-inventory.md', 'utf8');
+const baseline = parseDependencyTable(source);
+const workspace = await loadWorkspace(root);
+const anchor = '| `target-kernel` | 2 | nothing | nothing |';
+assert.equal(source.split(anchor).length - 1, 1);
+const mutations = [
+  ['baseline', anchor],
+  ['fractional count', '| `target-kernel` | 2.5 | nothing | nothing |'],
+  ['count with junk suffix', '| `target-kernel` | 2oops | nothing | nothing |'],
+  ['mixed empty/workspace claim', '| `target-kernel` | 2 | nothing, `@arrokothi/core` | nothing |'],
+  ['mixed empty/external claim', '| `target-kernel` | 2 | nothing | nothing, `evil-package` |'],
+];
+for (const [name, replacement] of mutations) {
+  const changed = source.replace(anchor, replacement);
+  const parsed = parseDependencyTable(changed);
+  assert.deepEqual(parsed, baseline);
+  assert.deepEqual(inventoryDisagreements(parseInventory(changed), {zones: ZONES, deferred: DEFERRED_EXTRACTIONS}, workspace), []);
+  const row = parsed.rows.get('target-kernel');
+  console.log(JSON.stringify({name, replacement, unreadable: parsed.unreadable, files: row.files, reaches: [...row.reaches], thirdParty: [...row.thirdParty], equalsBaseline: true}));
+}
+console.log('Confirmed: all four invalid/contradictory cells are indistinguishable from baseline to the existing downstream assertions. Exit 0 confirms the defect, not correctness.');
+
+Output:
+{"name":"baseline","replacement":"| `target-kernel` | 2 | nothing | nothing |","unreadable":[],"files":2,"reaches":[],"thirdParty":[],"equalsBaseline":true}
+{"name":"fractional count","replacement":"| `target-kernel` | 2.5 | nothing | nothing |","unreadable":[],"files":2,"reaches":[],"thirdParty":[],"equalsBaseline":true}
+{"name":"count with junk suffix","replacement":"| `target-kernel` | 2oops | nothing | nothing |","unreadable":[],"files":2,"reaches":[],"thirdParty":[],"equalsBaseline":true}
+{"name":"mixed empty/workspace claim","replacement":"| `target-kernel` | 2 | nothing, `@arrokothi/core` | nothing |","unreadable":[],"files":2,"reaches":[],"thirdParty":[],"equalsBaseline":true}
+{"name":"mixed empty/external claim","replacement":"| `target-kernel` | 2 | nothing | nothing, `evil-package` |","unreadable":[],"files":2,"reaches":[],"thirdParty":[],"equalsBaseline":true}
+Confirmed: all four invalid/contradictory cells are indistinguishable from baseline to the existing downstream assertions. Exit 0 confirms the defect, not correctness.
+Exit: 0

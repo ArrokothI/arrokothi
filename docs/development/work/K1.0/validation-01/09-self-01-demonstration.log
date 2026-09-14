@@ -1,0 +1,53 @@
+# self-01-demonstration - K1.0-SELF-01 demonstrated 811758ee1037c3862d1ebd2ec799fad5f6c3b57f
+
+Output-only evidence under 006. Run from the repository root against the clean payload
+tree. It adds no script, fixture, evaluator rule, threshold or configuration to the
+candidate: the file was written outside the repository, copied in, run, and removed.
+Full source is quoted here so the run is reproducible.
+
+$ node --experimental-strip-types ./k1-0-defect-demo.mjs
+
+--- begin source ---
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, resolve } from "node:path";
+import { loadWorkspace, walkModuleGraph } from "./tests/conformance/architecture/module-graph.ts";
+import { boundaryViolations, traversableUnder, TARGET_KERNEL_RULES } from "./tests/conformance/architecture/boundary-policy.ts";
+
+const files = {
+  "packages/kernel/package.json": JSON.stringify({ name: "@arrokothi/kernel", private: true, exports: { ".": "./src/index.ts" } }),
+  "packages/core/package.json": JSON.stringify({ name: "@arrokothi/core", exports: { ".": "./src/index.ts", "./ports": "./src/ports/index.ts" } }),
+  "packages/core/src/index.ts": 'export * from "./runtime/harness.ts";\nexport * from "./ports/index.ts";\n',
+  "packages/core/src/ports/index.ts": 'export * from "../runtime/harness.ts";\nexport type LegacyController = { readonly kind: string };\n',
+  "packages/core/src/runtime/harness.ts": "export class LegacyHarness {}\n",
+  "packages/kernel/src/index.ts": 'export * from "@arrokothi/core";\n',
+};
+const root = await mkdtemp(resolve(tmpdir(), "k1-0-defect-"));
+for (const [p, c] of Object.entries(files)) { await mkdir(dirname(resolve(root, p)), { recursive: true }); await writeFile(resolve(root, p), c); }
+const ws = await loadWorkspace(root);
+
+for (const [label, traverse] of [["BEFORE the fix (walk continues through a forbidden file)", () => true],
+                                 ["AFTER  the fix (walk stops at a forbidden file)", traversableUnder(TARGET_KERNEL_RULES)]]) {
+  const g = await walkModuleGraph(ws, ["packages/kernel/src/index.ts"], traverse);
+  const v = boundaryViolations(g, TARGET_KERNEL_RULES);
+  console.log(`\n${label}`);
+  console.log(`  violations: ${v.length}`);
+  for (const x of v) console.log(`    from ${x.from} -> ${x.specifier}`);
+}
+await rm(root, { recursive: true, force: true });
+--- end source ---
+
+--- begin output ---
+
+BEFORE the fix (walk continues through a forbidden file)
+  violations: 4
+    from packages/kernel/src/index.ts -> @arrokothi/core
+    from packages/core/src/index.ts -> ./runtime/harness.ts
+    from packages/core/src/index.ts -> ./ports/index.ts
+    from packages/core/src/ports/index.ts -> ../runtime/harness.ts
+
+AFTER  the fix (walk stops at a forbidden file)
+  violations: 1
+    from packages/kernel/src/index.ts -> @arrokothi/core
+exit code: 0
+--- end output ---

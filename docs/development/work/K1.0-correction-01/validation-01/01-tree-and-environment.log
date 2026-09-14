@@ -1,0 +1,384 @@
+== K1.0-correction-01 validation-01: tree, environment and identities ==
+
+$ date -u +%Y-%m-%dT%H:%M:%SZ
+2026-09-13T22:39:07Z
+$ pwd
+/Users/rex-shih/Documents/ArrokothI/arrokothi
+$ node -v
+v25.2.1
+$ npm -v
+11.6.2
+$ npx tsc -v
+Version 5.9.3
+$ uname -mrs
+Darwin 25.6.0 arm64
+
+$ git rev-parse --abbrev-ref HEAD
+codex/k1.0-target-boundary-legacy-quarantine
+$ git rev-parse HEAD   # payload C
+76ce938074ffa910fbd74374e388ba8d226af4c6
+$ git rev-parse HEAD~1 # parent of C (the pinned head this correction started from)
+b8e394dd2a58b839b131943f4ca9b250abff94af
+$ git remote -v
+origin	https://github.com/ArrokothI/arrokothi.git (fetch)
+origin	https://github.com/ArrokothI/arrokothi.git (push)
+$ git status --porcelain   # expect only validation-01/, which this run writes
+
+== ancestry: base, the accepted candidate, its acceptance record and the cleanup are all preserved ==
+  c9a9ed7e6e538ab0542fc6a999426264abb6212a is an ancestor of C: exit 0
+  d693d59aefe5335c8950d57cec6d6b57e375cadc is an ancestor of C: exit 0
+  f3aa29d7ecba2a23aa85788b7efdebdd383cab24 is an ancestor of C: exit 0
+  36595f57d1f8cec8c4bf8a6293e888ca27750fab is an ancestor of C: exit 0
+  b8e394dd2a58b839b131943f4ca9b250abff94af is an ancestor of C: exit 0
+$ git ls-remote origin main
+c9a9ed7e6e538ab0542fc6a999426264abb6212a	refs/heads/main
+$ git ls-remote origin codex/k1.0-target-boundary-legacy-quarantine
+b8e394dd2a58b839b131943f4ca9b250abff94af	refs/heads/codex/k1.0-target-boundary-legacy-quarantine
+
+== correction delta: pinned head (b8e394dd2a58b839b131943f4ca9b250abff94af) .. C ==
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD
+ .../work/K1.0-correction-01/contract.md            |  89 +++++
+ docs/development/work/K1.0/contract.md             |  59 +++-
+ .../architecture/evidence-records.test.ts          |  43 ++-
+ tests/conformance/architecture/inventory-oracle.ts | 190 ++++++++--
+ .../architecture/kernel-landing-zone.test.ts       | 386 +++++++++++++++++++++
+ 5 files changed, 721 insertions(+), 46 deletions(-)
+
+$ git diff --stat f3aa29d7ecba2a23aa85788b7efdebdd383cab24 HEAD   # accepted H .. C
+ docs/development/001-current-status-and-roadmap.md |   17 +-
+ docs/development/007-work-packets.md               |   40 +-
+ docs/development/014-owner-progress-summary.md     |   27 +
+ docs/development/README.md                         |   16 +-
+ .../work/K1.0-correction-01/contract.md            |   89 +
+ .../work/K1.0-correction-01/handoff-01.md          |   33 +
+ docs/development/work/K1.0/cleanup-01.md           |  158 ++
+ .../work/K1.0/cleanup-evidence-01/README.md        |   19 +
+ .../work/K1.0/cleanup-evidence-01/builder-docs.log |    5 +
+ .../cell-decoding-counterexamples.log              |   45 +
+ .../cleanup-evidence-01/final-architecture.log     |  406 +++
+ .../work/K1.0/cleanup-evidence-01/test-full.log    | 2643 ++++++++++++++++++++
+ .../work/K1.0/cleanup-evidence-01/typecheck.log    |    4 +
+ docs/development/work/K1.0/contract.md             |   59 +-
+ docs/development/work/K1.0/review-17.md            |  114 +
+ .../architecture/evidence-records.test.ts          |   43 +-
+ tests/conformance/architecture/inventory-oracle.ts |  190 +-
+ .../architecture/kernel-landing-zone.test.ts       |  386 +++
+ 18 files changed, 4217 insertions(+), 77 deletions(-)
+
+== cumulative base..C ==
+$ git diff --stat c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD
+ docs/development/001-current-status-and-roadmap.md |   10 +-
+ .../development/002-implemented-kernel-baseline.md |   10 +
+ docs/development/007-work-packets.md               |   43 +-
+ docs/development/014-owner-progress-summary.md     |   27 +
+ docs/development/README.md                         |   16 +-
+ .../work/K1.0-correction-01/contract.md            |   89 +
+ .../work/K1.0-correction-01/handoff-01.md          |   33 +
+ docs/development/work/K1.0/cleanup-01.md           |  158 +
+ .../work/K1.0/cleanup-evidence-01/README.md        |   19 +
+ .../work/K1.0/cleanup-evidence-01/builder-docs.log |    5 +
+ .../cell-decoding-counterexamples.log              |   45 +
+ .../cleanup-evidence-01/final-architecture.log     |  406 +++
+ .../work/K1.0/cleanup-evidence-01/test-full.log    | 2643 ++++++++++++++
+ .../work/K1.0/cleanup-evidence-01/typecheck.log    |    4 +
+ docs/development/work/K1.0/contract.md             |  491 +++
+ docs/development/work/K1.0/implementation-01.md    |  224 ++
+ docs/development/work/K1.0/implementation-02.md    |  322 ++
+ docs/development/work/K1.0/implementation-03.md    |  299 ++
+ docs/development/work/K1.0/implementation-04.md    |  230 ++
+ docs/development/work/K1.0/implementation-05.md    |  243 ++
+ docs/development/work/K1.0/implementation-06.md    |  252 ++
+ docs/development/work/K1.0/implementation-07.md    |  247 ++
+ docs/development/work/K1.0/implementation-08.md    |  251 ++
+ docs/development/work/K1.0/implementation-09.md    |  236 ++
+ docs/development/work/K1.0/implementation-10.md    |  235 ++
+ docs/development/work/K1.0/implementation-11.md    |  232 ++
+ docs/development/work/K1.0/implementation-12.md    |  219 ++
+ docs/development/work/K1.0/implementation-13.md    |  202 ++
+ docs/development/work/K1.0/implementation-14.md    |  199 ++
+ docs/development/work/K1.0/implementation-15.md    |  363 ++
+ docs/development/work/K1.0/implementation-16.md    |  366 ++
+ docs/development/work/K1.0/ownership-inventory.md  |  116 +
+ docs/development/work/K1.0/review-01.md            |  211 ++
+ docs/development/work/K1.0/review-02.md            |  223 ++
+ docs/development/work/K1.0/review-03.md            |  220 ++
+ docs/development/work/K1.0/review-04.md            |  206 ++
+ docs/development/work/K1.0/review-05.md            |  209 ++
+ docs/development/work/K1.0/review-06.md            |  229 ++
+ docs/development/work/K1.0/review-07.md            |  233 ++
+ docs/development/work/K1.0/review-08.md            |  249 ++
+ docs/development/work/K1.0/review-09.md            |  294 ++
+ docs/development/work/K1.0/review-10.md            |  351 ++
+ docs/development/work/K1.0/review-11.md            |  235 ++
+ docs/development/work/K1.0/review-12.md            |  302 ++
+ docs/development/work/K1.0/review-13.md            |  144 +
+ docs/development/work/K1.0/review-14.md            |  106 +
+ docs/development/work/K1.0/review-15.md            |  105 +
+ docs/development/work/K1.0/review-16.md            |  143 +
+ docs/development/work/K1.0/review-17.md            |  114 +
+ .../K1.0/validation-01/01-tree-and-environment.log |   44 +
+ .../work/K1.0/validation-01/02-typecheck.log       |   10 +
+ .../work/K1.0/validation-01/03-test-full.log       | 2418 +++++++++++++
+ .../K1.0/validation-01/04-test-conformance.log     | 2265 ++++++++++++
+ .../K1.0/validation-01/05-check-builder-docs.log   |   11 +
+ .../work/K1.0/validation-01/06-test-kernel.log     |   24 +
+ .../work/K1.0/validation-01/07-test-sdk.log        |   40 +
+ .../K1.0/validation-01/08-scanner-comparison.log   |  130 +
+ .../validation-01/09-self-01-demonstration.log     |   53 +
+ .../work/K1.0/validation-01/MANIFEST.md            |   46 +
+ .../K1.0/validation-02/01-tree-and-environment.log |   79 +
+ .../work/K1.0/validation-02/02-typecheck.log       |    5 +
+ .../work/K1.0/validation-02/03-test-full.log       | 2422 +++++++++++++
+ .../K1.0/validation-02/04-test-conformance.log     | 2269 ++++++++++++
+ .../K1.0/validation-02/05-check-builder-docs.log   |    6 +
+ .../work/K1.0/validation-02/06-test-kernel.log     |   19 +
+ .../work/K1.0/validation-02/07-test-sdk.log        |   35 +
+ .../K1.0/validation-02/08-scanner-comparison.log   |  127 +
+ .../K1.0/validation-02/09-r101-demonstration.log   |   86 +
+ .../work/K1.0/validation-02/MANIFEST.md            |   65 +
+ .../K1.0/validation-03/01-tree-and-environment.log |   90 +
+ .../work/K1.0/validation-03/02-typecheck.log       |   10 +
+ .../work/K1.0/validation-03/03-test-full.log       | 2474 +++++++++++++
+ .../K1.0/validation-03/04-test-conformance.log     | 2321 ++++++++++++
+ .../K1.0/validation-03/05-check-builder-docs.log   |   11 +
+ .../work/K1.0/validation-03/06-test-kernel.log     |   24 +
+ .../work/K1.0/validation-03/07-test-sdk.log        |   40 +
+ .../validation-03/08-two-extractor-comparison.log  |   99 +
+ .../K1.0/validation-03/09-r201-demonstration.log   |  173 +
+ .../K1.0/validation-03/10-r202-demonstration.log   |  135 +
+ .../work/K1.0/validation-03/MANIFEST.md            |   56 +
+ .../K1.0/validation-04/01-tree-and-environment.log |   10 +
+ .../work/K1.0/validation-04/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-04/03-test-full.log       | 2475 +++++++++++++
+ .../K1.0/validation-04/04-test-conformance.log     | 2322 ++++++++++++
+ .../K1.0/validation-04/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-04/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-04/07-test-sdk.log        |   34 +
+ .../K1.0/validation-04/08-r301-demonstration.log   |    8 +
+ .../work/K1.0/validation-04/MANIFEST.md            |   64 +
+ .../K1.0/validation-05/01-tree-and-environment.log |  122 +
+ .../work/K1.0/validation-05/02-typecheck.log       |   10 +
+ .../work/K1.0/validation-05/03-test-full.log       | 2490 +++++++++++++
+ .../K1.0/validation-05/04-test-conformance.log     | 2337 ++++++++++++
+ .../K1.0/validation-05/05-check-builder-docs.log   |   11 +
+ .../work/K1.0/validation-05/06-test-kernel.log     |   24 +
+ .../work/K1.0/validation-05/07-test-sdk.log        |   40 +
+ .../K1.0/validation-05/08-r401-demonstration.log   |  128 +
+ .../work/K1.0/validation-05/09-digest-audit.log    |  126 +
+ .../work/K1.0/validation-05/MANIFEST.md            |   59 +
+ .../K1.0/validation-06/01-tree-and-environment.log |  141 +
+ .../work/K1.0/validation-06/02-typecheck.log       |    8 +
+ .../work/K1.0/validation-06/03-test-full.log       | 2494 +++++++++++++
+ .../K1.0/validation-06/04-test-conformance.log     | 2341 ++++++++++++
+ .../K1.0/validation-06/05-check-builder-docs.log   |    9 +
+ .../work/K1.0/validation-06/06-test-kernel.log     |   22 +
+ .../work/K1.0/validation-06/07-test-sdk.log        |   38 +
+ .../K1.0/validation-06/08-r501-demonstration.log   |  153 +
+ .../work/K1.0/validation-06/MANIFEST.md            |   48 +
+ .../K1.0/validation-07/01-tree-and-environment.log |   83 +
+ .../work/K1.0/validation-07/02-typecheck.log       |    8 +
+ .../work/K1.0/validation-07/03-test-full.log       | 2517 +++++++++++++
+ .../K1.0/validation-07/04-test-conformance.log     | 2364 ++++++++++++
+ .../K1.0/validation-07/05-check-builder-docs.log   |    9 +
+ .../work/K1.0/validation-07/06-test-kernel.log     |   22 +
+ .../work/K1.0/validation-07/07-test-sdk.log        |   38 +
+ .../K1.0/validation-07/08-r601-demonstration.log   |  326 ++
+ .../K1.0/validation-07/09-silent-exit-audit.log    |  272 ++
+ .../work/K1.0/validation-07/MANIFEST.md            |   86 +
+ .../K1.0/validation-08/01-tree-and-environment.log |   87 +
+ .../work/K1.0/validation-08/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-08/03-test-full.log       | 2526 +++++++++++++
+ .../K1.0/validation-08/04-test-conformance.log     | 2373 +++++++++++++
+ .../K1.0/validation-08/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-08/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-08/07-test-sdk.log        |   34 +
+ .../K1.0/validation-08/08-r701-demonstration.log   |  261 ++
+ .../K1.0/validation-08/09-silent-exit-audit.log    |  464 +++
+ .../work/K1.0/validation-08/MANIFEST.md            |   89 +
+ .../K1.0/validation-09/01-tree-and-environment.log |   31 +
+ .../work/K1.0/validation-09/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-09/03-test-full.log       | 2547 +++++++++++++
+ .../K1.0/validation-09/04-test-conformance.log     | 2394 +++++++++++++
+ .../K1.0/validation-09/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-09/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-09/07-test-sdk.log        |   34 +
+ .../validation-09/08-r801-r802-demonstration.log   |   14 +
+ .../validation-09/09-state-transition-audit.log    |  232 ++
+ .../work/K1.0/validation-09/MANIFEST.md            |   73 +
+ .../K1.0/validation-10/01-tree-and-environment.log |   30 +
+ .../work/K1.0/validation-10/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-10/03-test-full.log       | 2574 ++++++++++++++
+ .../K1.0/validation-10/04-test-conformance.log     | 2421 +++++++++++++
+ .../K1.0/validation-10/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-10/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-10/07-test-sdk.log        |   34 +
+ .../validation-10/08-r901-r902-demonstration.log   |   20 +
+ .../09-structural-transition-audit.log             |  241 ++
+ .../work/K1.0/validation-10/MANIFEST.md            |   76 +
+ .../K1.0/validation-11/01-tree-and-environment.log |   34 +
+ .../work/K1.0/validation-11/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-11/03-test-full.log       | 2591 ++++++++++++++
+ .../K1.0/validation-11/04-test-conformance.log     | 2438 +++++++++++++
+ .../K1.0/validation-11/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-11/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-11/07-test-sdk.log        |   34 +
+ .../08-r1001-r1002-r1003-demonstration.log         |  194 +
+ .../09-structural-transition-audit.log             |  114 +
+ .../work/K1.0/validation-11/MANIFEST.md            |  114 +
+ .../K1.0/validation-12/01-tree-and-environment.log |   50 +
+ .../work/K1.0/validation-12/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-12/03-test-full.log       | 2597 ++++++++++++++
+ .../K1.0/validation-12/04-test-conformance.log     | 2444 +++++++++++++
+ .../K1.0/validation-12/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-12/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-12/07-test-sdk.log        |   34 +
+ .../K1.0/validation-12/08-r1101-demonstration.log  |  121 +
+ .../K1.0/validation-12/09-boundary-token-audit.log |  111 +
+ .../work/K1.0/validation-12/MANIFEST.md            |   89 +
+ .../K1.0/validation-13/01-tree-and-environment.log |   54 +
+ .../work/K1.0/validation-13/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-13/03-test-full.log       | 2606 ++++++++++++++
+ .../K1.0/validation-13/04-test-conformance.log     | 2453 +++++++++++++
+ .../K1.0/validation-13/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-13/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-13/07-test-sdk.log        |   34 +
+ .../K1.0/validation-13/08-r1201-demonstration.log  |  129 +
+ .../validation-13/09-lexical-transition-audit.log  |   80 +
+ .../work/K1.0/validation-13/MANIFEST.md            |   84 +
+ .../K1.0/validation-14/01-tree-and-environment.log |   54 +
+ .../work/K1.0/validation-14/02-typecheck.log       |    4 +
+ .../work/K1.0/validation-14/03-test-full.log       | 2616 ++++++++++++++
+ .../K1.0/validation-14/04-test-conformance.log     | 2463 +++++++++++++
+ .../K1.0/validation-14/05-check-builder-docs.log   |    5 +
+ .../work/K1.0/validation-14/06-test-kernel.log     |   18 +
+ .../work/K1.0/validation-14/07-test-sdk.log        |   34 +
+ .../K1.0/validation-14/08-r1301-demonstration.log  |  112 +
+ .../09-line-ending-transition-audit.log            |   78 +
+ .../work/K1.0/validation-14/MANIFEST.md            |   77 +
+ .../K1.0/validation-15/01-tree-and-environment.log |  290 ++
+ .../work/K1.0/validation-15/02-typecheck.log       |    7 +
+ .../work/K1.0/validation-15/03-test-full.log       | 2635 ++++++++++++++
+ .../K1.0/validation-15/04-test-conformance.log     | 2482 +++++++++++++
+ .../K1.0/validation-15/05-check-builder-docs.log   |    8 +
+ .../work/K1.0/validation-15/06-test-kernel.log     |   21 +
+ .../work/K1.0/validation-15/07-test-sdk.log        |   37 +
+ .../K1.0/validation-15/08-r1401-demonstration.log  |  228 ++
+ .../K1.0/validation-15/09-atx-whitespace-audit.log |  204 ++
+ .../K1.0/validation-15/10-c4-control-inventory.log | 1203 +++++++
+ .../work/K1.0/validation-15/MANIFEST.md            |  108 +
+ .../K1.0/validation-16/01-tree-and-environment.log |  329 ++
+ .../work/K1.0/validation-16/02-typecheck.log       |    7 +
+ .../work/K1.0/validation-16/03-test-full.log       | 2646 ++++++++++++++
+ .../K1.0/validation-16/04-test-conformance.log     | 2493 +++++++++++++
+ .../K1.0/validation-16/05-check-builder-docs.log   |    8 +
+ .../work/K1.0/validation-16/06-test-kernel.log     |   21 +
+ .../work/K1.0/validation-16/07-test-sdk.log        |   37 +
+ .../K1.0/validation-16/08-r1501-demonstration.log  |  215 ++
+ .../validation-16/09-whitespace-class-audit.log    |  454 +++
+ .../K1.0/validation-16/10-c4-control-inventory.log | 1264 +++++++
+ .../work/K1.0/validation-16/MANIFEST.md            |  111 +
+ package-lock.json                                  |    9 +
+ package.json                                       |    6 +-
+ packages/kernel/package.json                       |   14 +
+ packages/kernel/src/index.ts                       |   20 +
+ packages/kernel/src/unsupported.ts                 |   31 +
+ packages/kernel/tests/unsupported.test.ts          |   46 +
+ tests/conformance/architecture/boundary-policy.ts  |  211 ++
+ .../architecture/evidence-records.test.ts          |  206 ++
+ .../architecture/import-scanner.test.ts            |  395 ++
+ tests/conformance/architecture/inventory-oracle.ts | 1667 +++++++++
+ .../architecture/kernel-landing-zone.test.ts       | 3753 ++++++++++++++++++++
+ ...ries.test.ts => legacy-core-boundaries.test.ts} |   76 +-
+ tests/conformance/architecture/module-graph.ts     |  345 ++
+ 223 files changed, 108793 insertions(+), 39 deletions(-)
+
+== preserved immutable records: review-14/15/16/17, cleanup-01 and its evidence are byte-unchanged ==
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/review-14.md
+  (empty means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/review-15.md
+  (empty means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/review-16.md
+  (empty means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/review-17.md
+  (empty means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/cleanup-01.md
+  (empty means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/implementation-16.md
+  (empty means unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0/cleanup-evidence-01 docs/development/work/K1.0/validation-16
+  (empty means every prior raw-evidence file is unchanged)
+$ git diff --stat b8e394dd2a58b839b131943f4ca9b250abff94af HEAD -- docs/development/work/K1.0-correction-01/handoff-01.md
+  (empty means the owner's handoff is unchanged)
+
+== the restored 007 ledger is not re-truncated ==
+$ wc -l docs/development/007-work-packets.md
+     399 docs/development/007-work-packets.md
+$ grep -c '^### ' docs/development/007-work-packets.md
+36
+$ grep -c '^### K5.2 —' docs/development/007-work-packets.md
+1
+
+== frozen fixture: tests/conformance/k0 byte-identical to base ==
+$ git diff --stat c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD -- tests/conformance/k0
+(empty above means byte-identical)
+
+== no legacy production, provider, SDK, example, script, benchmark or configuration file changed ==
+$ git diff --name-only b8e394dd2a58b839b131943f4ca9b250abff94af HEAD
+docs/development/work/K1.0-correction-01/contract.md
+docs/development/work/K1.0/contract.md
+tests/conformance/architecture/evidence-records.test.ts
+tests/conformance/architecture/inventory-oracle.ts
+tests/conformance/architecture/kernel-landing-zone.test.ts
+
+== blob identities for the C4 files ==
+accepted H inventory-oracle.ts git blob:     cdb06c345f4841faa70e1668c1830e5bce92786d
+C          inventory-oracle.ts git blob:     014a07dbcfcf04679602fd5ab1493e0fe566f5c1
+accepted H inventory-oracle.ts sha256:       628a9cc7617e2a2577c6161404ca770709f66fed8c77ad6fe932e5108752d2f8
+C          inventory-oracle.ts sha256:       22a822a46a1eac786b2d0190c25d4fada3685b306f23b676dd825b1ded2dd6b2
+accepted H kernel-landing-zone.test.ts blob: f8e7a52cc3722c5afcd31875974f3d22b7ff7569
+C          kernel-landing-zone.test.ts blob: 91a05351f95f6da6d0b832ed3cd0fafa18c9f30d
+accepted H evidence-records.test.ts blob:    5ba859fbe763ed263832d42916d1c778ff58122c
+C          evidence-records.test.ts blob:    46a13f180bf6a6aed93de93631ceb91094296860
+
+== whole-cell decoder call-site inventory in the C4 parser ==
+Every governed column must reach exactly one total decoder, and the fail-open helpers must
+be gone from the module rather than merely unused at the four call sites.
+
+$ grep -n 'decodeCodeSpanList(\|decodeCodeSpan(\|decodeCount(\|decodeEdgeCell(\|PUBLISHED_VOCABULARY' tests/conformance/architecture/inventory-oracle.ts
+121:function decodeCodeSpanList(cell: string): string[] | undefined {
+142:function decodeCodeSpan(cell: string): string | undefined {
+143:  const tokens = decodeCodeSpanList(cell);
+157:function decodeCount(cell: string): number | undefined {
+172:function decodeEdgeCell(cell: string, emptySentinels: readonly string[]): Set<string> | undefined {
+174:  const tokens = decodeCodeSpanList(cell);
+192:const PUBLISHED_VOCABULARY: ReadonlyMap<string, boolean> = new Map([
+1497:      keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
+1499:      valueOf: (cells) => decodeCodeSpanList(cells[1] ?? ""),
+1513:        const currentPath = decodeCodeSpan(cells[1] ?? "");
+1529:      keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
+1532:        const subpaths = decodeCodeSpanList(cells[1] ?? "");
+1533:        const published = PUBLISHED_VOCABULARY.get(cells[2] ?? "");
+1575:      keyOf: (cells) => decodeCodeSpan(cells[0] ?? ""),
+1578:        const files = decodeCount(cells[1] ?? "");
+1579:        const reaches = decodeEdgeCell(cells[2] ?? "", REACHES_EMPTY);
+1580:        const thirdParty = decodeEdgeCell(cells[3] ?? "", THIRD_PARTY_EMPTY);
+
+$ grep -n 'backticked\|parseInt\|parseFloat\|toLowerCase\|toUpperCase\|\.trim()' tests/conformance/architecture/inventory-oracle.ts
+87: * - **Prefix numeric parse.** `Number.parseInt("2.5", 10)` and `Number.parseInt("2oops", 10)` are
+94: * - **Subset extraction.** The previous `backticked` helper collected the code spans occurring
+189: * at a position whose vocabulary is fixed ASCII (the same reasoning that keeps `toLowerCase` out of
+392: * `\s` and `String.prototype.trim()` conflate:
+430: * `String.prototype.trim()`, erasing NBSP, U+FEFF, U+3000, U+2009 and every
+543: * `String.prototype.trim()`, which erased NBSP and every other Unicode space, so a heading
+567: * `line.trim()` erased Unicode whitespace here too, so `<NBSP>| a | b |` lost its first
+679:      startNumber: ordered !== undefined ? Number.parseInt(ordered.slice(0, -1), 10) : null,
+688:    startNumber: ordered !== undefined ? Number.parseInt(ordered.slice(0, -1), 10) : null,
+823:    const name = tag.tag.toLowerCase();
+(expected: one prose mention of the removed helper; the list-marker parseInt, whose argument
+ is already an all-digit match; and the HTML tag-name fold, whose name is ASCII by its own
+ grammar. No governed cell reaches any of them.)
+
+$ grep -n '.includes("nothing")\|startsWith("yes")\|startsWith("no")' tests/conformance/architecture/inventory-oracle.ts
+90: * - **Substring sentinel.** `cell.includes("nothing")` made a cell that both denies and names an
+92: *   shape let `startsWith("yes")` / `startsWith("no")` take a publishability claim from a cell's
+(empty above means the substring and prefix sentinels are gone)

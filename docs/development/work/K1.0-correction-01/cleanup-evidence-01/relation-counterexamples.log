@@ -1,0 +1,105 @@
+Command: node --experimental-strip-types /tmp/k10-final-cleanup/reproduce.mjs
+Cwd: /Users/rex-shih/Documents/ArrokothI/arrokothi
+Program (verbatim; read-only probe, not a production fixture):
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { parseInventory, inventoryDisagreements, parseDependencyTable } from '/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/inventory-oracle.ts';
+import { loadWorkspace } from '/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/module-graph.ts';
+import { ZONES, DEFERRED_EXTRACTIONS } from '/Users/rex-shih/Documents/ArrokothI/arrokothi/tests/conformance/architecture/boundary-policy.ts';
+const H = '1295c68b03ae5d8eb0bbb86e974353402ff9a518';
+console.log({ H, inspectedHead: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), node: process.version, platform: process.platform, arch: process.arch });
+for (const path of ['tests/conformance/architecture/inventory-oracle.ts', 'tests/conformance/architecture/module-graph.ts', 'tests/conformance/architecture/boundary-policy.ts', 'docs/development/work/K1.0/ownership-inventory.md']) {
+  const live = await readFile(path);
+  assert.deepEqual(live, execFileSync('git', ['show', `${H}:${path}`]));
+  console.log('H byte identity', path, createHash('sha256').update(live).digest('hex'));
+}
+const md = await readFile('docs/development/work/K1.0/ownership-inventory.md', 'utf8');
+const workspace = await loadWorkspace(process.cwd());
+const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
+const baseline = parseInventory(md);
+assert.deepEqual(inventoryDisagreements(baseline, policy, workspace), []);
+const span = (x) => '`' + x + '`';
+const list = (xs) => xs.map(span).join(', ');
+const cases = [
+  { name: 'Export', tokens: [...workspace.packages.get('@arrokothi/core').exports.keys()].sort(), old: list(baseline.packages.get('@arrokothi/core').subpaths), get: p => p.packages.get('@arrokothi/core').subpaths },
+  { name: 'Zones', tokens: [...policy.zones.find(z => z.id === 'runtime-integrations').roots].sort(), old: list(baseline.zones.get('runtime-integrations')), get: p => p.zones.get('runtime-integrations') },
+];
+let silent = 0;
+for (const c of cases) {
+  assert.equal(md.split(c.old).length, 2, 'unique mutation anchor');
+  // Every ordered partition of the sorted expected list, except the unchanged singleton partition.
+  // Merging adjacent elements puts the comma INSIDE a code span rather than between spans.
+  for (let mask = 0; mask < (1 << (c.tokens.length - 1)) - 1; mask++) {
+    const groups = [c.tokens[0]];
+    for (let i = 1; i < c.tokens.length; i++) {
+      if (mask & (1 << (i - 1))) groups.push(c.tokens[i]);
+      else groups[groups.length - 1] += ',' + c.tokens[i];
+    }
+    const parsed = parseInventory(md.replace(c.old, list(groups)));
+    const actual = c.get(parsed);
+    assert.deepEqual(actual, groups, 'decoder preserves the changed element boundaries');
+    assert.notDeepEqual([...actual].sort(), c.tokens, 'the asserted relation is false');
+    const disagreements = inventoryDisagreements(parsed, policy, workspace);
+    assert.deepEqual(parsed.unreadable, []);
+    assert.deepEqual(disagreements, [], 'reproduces the defect: false relation accepted');
+    silent++;
+    console.log(JSON.stringify({ table: c.name, mask, expected: c.tokens, decoded: actual, unreadable: parsed.unreadable, disagreements }));
+  }
+  const reordered = parseInventory(md.replace(c.old, list([...c.tokens].reverse())));
+  assert.deepEqual(inventoryDisagreements(reordered, policy, workspace), []);
+  console.log(c.name, 'positive permutation accepted');
+}
+// Adjacent consumers: dependency sets and scalar Deferred owners retain distinguishing values.
+const depOld = '`@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference`';
+const dep = parseDependencyTable(md.replace(depOld, '`@arrokothi/core,@arrokothi/core/execution,@arrokothi/core/ports,@arrokothi/core/reference`'));
+assert.notDeepEqual([...dep.rows.get('runtime-integrations').reaches].sort(), [...parseDependencyTable(md).rows.get('runtime-integrations').reaches].sort());
+console.log('Dependency array comparison distinguishes collapsed elements (same deep equality used by its real guard)');
+const deferred = parseInventory(md.replace('| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 |', '| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1,K3.1 |'));
+assert.ok(inventoryDisagreements(deferred, policy, workspace).some(x => x.includes('K1.1,K3.1')));
+console.log('Deferred scalar comparison rejects changed owner');
+assert.equal(silent, 22);
+console.log('REPRODUCED: 22 false ownership/export relations silently accepted; 2 positive permutations accepted; 2 adjacent consumer distinctions retained. Exit 0 establishes reproduction, not correctness.');
+
+OUTPUT:
+{
+  H: '1295c68b03ae5d8eb0bbb86e974353402ff9a518',
+  inspectedHead: '41728edfc3cfc5c745e4293c511a740942f7b631',
+  node: 'v25.2.1',
+  platform: 'darwin',
+  arch: 'arm64'
+}
+H byte identity tests/conformance/architecture/inventory-oracle.ts a4a4bcbadf434fca685382646b682b5560e3f261cc662bf0b3c17fc27e82d256
+H byte identity tests/conformance/architecture/module-graph.ts cdc4a3e9632f8fdbf8987552f5945c6958db01479aad6305c566839ffa72ad6e
+H byte identity tests/conformance/architecture/boundary-policy.ts 53805ecf62778cdff1a0e45352bfc33ae60f5857cb2e6f1dcf6041ade47050ae
+H byte identity docs/development/work/K1.0/ownership-inventory.md b194a2255e9d11adda7d9999d38651b3fb262d1af66e67954437f5a45b3d0db5
+{"table":"Export","mask":0,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".,./execution,./ports,./reference,./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":1,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".","./execution,./ports,./reference,./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":2,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".,./execution","./ports,./reference,./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":3,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".","./execution","./ports,./reference,./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":4,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".,./execution,./ports","./reference,./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":5,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".","./execution,./ports","./reference,./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":6,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".,./execution","./ports","./reference,./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":7,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".","./execution","./ports","./reference,./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":8,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".,./execution,./ports,./reference","./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":9,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".","./execution,./ports,./reference","./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":10,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".,./execution","./ports,./reference","./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":11,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".","./execution","./ports,./reference","./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":12,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".,./execution,./ports","./reference","./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":13,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".","./execution,./ports","./reference","./testing"],"unreadable":[],"disagreements":[]}
+{"table":"Export","mask":14,"expected":[".","./execution","./ports","./reference","./testing"],"decoded":[".,./execution","./ports","./reference","./testing"],"unreadable":[],"disagreements":[]}
+Export positive permutation accepted
+{"table":"Zones","mask":0,"expected":["packages/agents/strands/src","packages/interoperability/mcp/src","packages/models/gemini/src","packages/retrieval/local/src"],"decoded":["packages/agents/strands/src,packages/interoperability/mcp/src,packages/models/gemini/src,packages/retrieval/local/src"],"unreadable":[],"disagreements":[]}
+{"table":"Zones","mask":1,"expected":["packages/agents/strands/src","packages/interoperability/mcp/src","packages/models/gemini/src","packages/retrieval/local/src"],"decoded":["packages/agents/strands/src","packages/interoperability/mcp/src,packages/models/gemini/src,packages/retrieval/local/src"],"unreadable":[],"disagreements":[]}
+{"table":"Zones","mask":2,"expected":["packages/agents/strands/src","packages/interoperability/mcp/src","packages/models/gemini/src","packages/retrieval/local/src"],"decoded":["packages/agents/strands/src,packages/interoperability/mcp/src","packages/models/gemini/src,packages/retrieval/local/src"],"unreadable":[],"disagreements":[]}
+{"table":"Zones","mask":3,"expected":["packages/agents/strands/src","packages/interoperability/mcp/src","packages/models/gemini/src","packages/retrieval/local/src"],"decoded":["packages/agents/strands/src","packages/interoperability/mcp/src","packages/models/gemini/src,packages/retrieval/local/src"],"unreadable":[],"disagreements":[]}
+{"table":"Zones","mask":4,"expected":["packages/agents/strands/src","packages/interoperability/mcp/src","packages/models/gemini/src","packages/retrieval/local/src"],"decoded":["packages/agents/strands/src,packages/interoperability/mcp/src,packages/models/gemini/src","packages/retrieval/local/src"],"unreadable":[],"disagreements":[]}
+{"table":"Zones","mask":5,"expected":["packages/agents/strands/src","packages/interoperability/mcp/src","packages/models/gemini/src","packages/retrieval/local/src"],"decoded":["packages/agents/strands/src","packages/interoperability/mcp/src,packages/models/gemini/src","packages/retrieval/local/src"],"unreadable":[],"disagreements":[]}
+{"table":"Zones","mask":6,"expected":["packages/agents/strands/src","packages/interoperability/mcp/src","packages/models/gemini/src","packages/retrieval/local/src"],"decoded":["packages/agents/strands/src,packages/interoperability/mcp/src","packages/models/gemini/src","packages/retrieval/local/src"],"unreadable":[],"disagreements":[]}
+Zones positive permutation accepted
+Dependency array comparison distinguishes collapsed elements (same deep equality used by its real guard)
+Deferred scalar comparison rejects changed owner
+REPRODUCED: 22 false ownership/export relations silently accepted; 2 positive permutations accepted; 2 adjacent consumer distinctions retained. Exit 0 establishes reproduction, not correctness.
+
+Exit: 0

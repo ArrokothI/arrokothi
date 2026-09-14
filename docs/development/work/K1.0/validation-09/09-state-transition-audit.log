@@ -1,0 +1,232 @@
+## Stage 1 — fence opener as table-body terminator is consumed exactly once (K10-R8-01)
+### bare backtick fence immediately after the body; complete table inside stays green
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> open(`x3)/- | fence-marker-open | consumed-once | -- | ```
+22 | open(`x3)/- -> open(`x3)/- | fence-raw | consumed-once | -- | | Zone id | Roots | Owner and status |
+23 | open(`x3)/- -> open(`x3)/- | fence-raw | consumed-once | -- | |---|---|---|
+24 | open(`x3)/- -> open(`x3)/- | fence-raw | consumed-once | -- | | `target-kernel` | `packages/core/src` | this is code, not a...
+25 | open(`x3)/- -> -/- | fence-closer | consumed-once | -- | ```
+26 | -/- -> -/- | blank | consumed-once | -- | 
+observable: GREEN (no disagreement)
+lines=122 transitions=122 SINGLE-CONSUMPTION-OK
+
+### same block with info string stays green
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> open(`x3)/- | fence-marker-open | consumed-once | -- | ```markdown
+22 | open(`x3)/- -> open(`x3)/- | fence-raw | consumed-once | -- | | Zone id | Roots | Owner and status |
+23 | open(`x3)/- -> open(`x3)/- | fence-raw | consumed-once | -- | |---|---|---|
+24 | open(`x3)/- -> open(`x3)/- | fence-raw | consumed-once | -- | | `target-kernel` | `packages/core/src` | this is code, not a...
+25 | open(`x3)/- -> -/- | fence-closer | consumed-once | -- | ```
+26 | -/- -> -/- | blank | consumed-once | -- | 
+observable: GREEN (no disagreement)
+lines=122 transitions=122 SINGLE-CONSUMPTION-OK
+
+### tilde fence stays green
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> open(~x3)/- | fence-marker-open | consumed-once | -- | ~~~
+22 | open(~x3)/- -> open(~x3)/- | fence-raw | consumed-once | -- | | Zone id | Roots | Owner and status |
+23 | open(~x3)/- -> open(~x3)/- | fence-raw | consumed-once | -- | |---|---|---|
+24 | open(~x3)/- -> open(~x3)/- | fence-raw | consumed-once | -- | | `target-kernel` | `packages/core/src` | this is code, not a...
+25 | open(~x3)/- -> -/- | fence-closer | consumed-once | -- | ~~~
+26 | -/- -> -/- | blank | consumed-once | -- | 
+observable: GREEN (no disagreement)
+lines=122 transitions=122 SINGLE-CONSUMPTION-OK
+
+### shorter closer (3 vs 4) does not close; table stays raw
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> open(`x4)/- | fence-marker-open | consumed-once | -- | ````
+22 | open(`x4)/- -> open(`x4)/- | fence-raw | consumed-once | -- | | Zone id | Roots | Owner and status |
+23 | open(`x4)/- -> open(`x4)/- | fence-raw | consumed-once | -- | |---|---|---|
+24 | open(`x4)/- -> open(`x4)/- | fence-raw | consumed-once | -- | | `target-kernel` | `packages/core/src` | this is code, not a...
+25 | open(`x4)/- -> open(`x4)/- | fence-raw | consumed-once | -- | ```
+26 | open(`x4)/- -> -/- | fence-closer | consumed-once | -- | ````
+27 | -/- -> -/- | blank | consumed-once | -- | 
+observable: GREEN (no disagreement)
+lines=123 transitions=123 SINGLE-CONSUMPTION-OK
+
+### real unfenced second table at the same location still fails (further table)
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> -/- | blank | consumed-once | -- | 
+22 | -/- -> -/- | ordinary | consumed-once | -T | | Zone id | Roots | Owner and status |
+23 | -/- -> -/- | ordinary | consumed-once | -T | |---|---|---|
+24 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/core/src` | stale contradictory...
+25 | -/- -> -/- | blank | consumed-once | -- | 
+observable: RED (2 disagreement(s))
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+lines=121 transitions=121 SINGLE-CONSUMPTION-OK
+
+## Stage 2 — raw HTML block context (K10-R8-02)
+### script block: heading inside is raw; later table surfaces
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> -/- | blank | consumed-once | -- | 
+22 | -/- -> -/html1 | html-open | consumed-once | -- | <script>
+23 | -/html1 -> -/html1 | html-raw | consumed-once | -- | ## Current cross-boundary dependencies
+24 | -/html1 -> -/- | html-close-line | consumed-once | -- | </script>
+25 | -/- -> -/- | blank | consumed-once | -- | 
+26 | -/- -> -/- | ordinary | consumed-once | -T | | Zone id | Roots | Owner and status |
+27 | -/- -> -/- | ordinary | consumed-once | -T | |---|---|---|
+28 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/core/src` | stale contradictory...
+observable: RED (2 disagreement(s))
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+lines=125 transitions=125 SINGLE-CONSUMPTION-OK
+
+### comment block (type 2, adjacent challenger): same invariant, different closer
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> -/- | blank | consumed-once | -- | 
+22 | -/- -> -/html2 | html-open | consumed-once | -- | <!--
+23 | -/html2 -> -/html2 | html-raw | consumed-once | -- | ## Current cross-boundary dependencies
+24 | -/html2 -> -/- | html-close-line | consumed-once | -- | -->
+25 | -/- -> -/- | blank | consumed-once | -- | 
+26 | -/- -> -/- | ordinary | consumed-once | -T | | Zone id | Roots | Owner and status |
+27 | -/- -> -/- | ordinary | consumed-once | -T | |---|---|---|
+28 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/core/src` | stale contradictory...
+observable: RED (2 disagreement(s))
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+lines=125 transitions=125 SINGLE-CONSUMPTION-OK
+
+### pre block (type 1 alternate tag)
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> -/- | blank | consumed-once | -- | 
+22 | -/- -> -/html1 | html-open | consumed-once | -- | <pre>
+23 | -/html1 -> -/html1 | html-raw | consumed-once | -- | ## Current cross-boundary dependencies
+24 | -/html1 -> -/- | html-close-line | consumed-once | -- | </pre>
+25 | -/- -> -/- | blank | consumed-once | -- | 
+26 | -/- -> -/- | ordinary | consumed-once | -T | | Zone id | Roots | Owner and status |
+27 | -/- -> -/- | ordinary | consumed-once | -T | |---|---|---|
+28 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/core/src` | stale contradictory...
+observable: RED (2 disagreement(s))
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+lines=125 transitions=125 SINGLE-CONSUMPTION-OK
+
+### div block (type 6, ends at blank line)
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> -/- | blank | consumed-once | -- | 
+22 | -/- -> -/html6 | html-open | consumed-once | -- | <div>
+23 | -/html6 -> -/html6 | html-raw | consumed-once | -- | ## Current cross-boundary dependencies
+24 | -/html6 -> -/- | html-end-blank | consumed-once | -- | 
+25 | -/- -> -/- | ordinary | consumed-once | -T | | Zone id | Roots | Owner and status |
+26 | -/- -> -/- | ordinary | consumed-once | -T | |---|---|---|
+27 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/core/src` | stale contradictory...
+28 | -/- -> -/- | blank | consumed-once | -- | 
+observable: RED (2 disagreement(s))
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+lines=124 transitions=124 SINGLE-CONSUMPTION-OK
+
+### inline HTML stays ordinary (no block opened); later table still surfaces
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> -/- | blank | consumed-once | -- | 
+22 | -/- -> -/- | ordinary | consumed-once | -T | The tokens <code>hi</code> and <a href="https://example.com">...
+23 | -/- -> -/- | blank | consumed-once | -- | 
+24 | -/- -> -/- | ordinary | consumed-once | -T | | Zone id | Roots | Owner and status |
+25 | -/- -> -/- | ordinary | consumed-once | -T | |---|---|---|
+26 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/core/src` | stale contradictory...
+observable: RED (2 disagreement(s))
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+lines=123 transitions=123 SINGLE-CONSUMPTION-OK
+
+## Stage 3 — additional neighboring transitions (not named by the reviewer)
+### indented-code table after the body: code, never rows (green)
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> -/- | blank | consumed-once | -- | 
+22 | -/- -> -/- | indented-code | consumed-once | -- |     | Zone id | Roots | Owner and status |
+23 | -/- -> -/- | indented-code | consumed-once | -- |     |---|---|---|
+24 | -/- -> -/- | indented-code | consumed-once | -- |     | `target-kernel` | `packages/core/src` | this is code, n...
+25 | -/- -> -/- | blank | consumed-once | -- | 
+26 | -/- -> -/- | ordinary | consumed-once | -T | `packages/kernel` is a new directory rather than a rename of ...
+observable: GREEN (no disagreement)
+lines=121 transitions=121 SINGLE-CONSUMPTION-OK
+
+### blockquote table-shaped lines: quote break, never top-level rows (green)
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> -/- | blank | consumed-once | -- | 
+22 | -/- -> -/- | blockquote | consumed-once | -- | > | Zone id | Roots | Owner and status |
+23 | -/- -> -/- | blockquote | consumed-once | -- | > |---|---|---|
+24 | -/- -> -/- | blockquote | consumed-once | -- | > | `target-kernel` | `packages/core/src` | this is code, not...
+25 | -/- -> -/- | blank | consumed-once | -- | 
+26 | -/- -> -/- | blank | consumed-once | -- | 
+observable: GREEN (no disagreement)
+lines=122 transitions=122 SINGLE-CONSUMPTION-OK
+
+### real table after the quote break is still discovered (red)
+idx | fenceBefore/htmlBefore -> fenceAfter/htmlAfter | classification | consumed | head?/table? | line
+17 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel work u...
+18 | -/- -> -/- | ordinary | consumed-once | -T | | `legacy-core` | `packages/core/src` | The current 0.8.x `Ha...
+19 | -/- -> -/- | ordinary | consumed-once | -T | | `runtime-integrations` | `packages/agents/strands/src`, `pa...
+20 | -/- -> -/- | ordinary | consumed-once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstrap and...
+21 | -/- -> -/- | blank | consumed-once | -- | 
+22 | -/- -> -/- | blockquote | consumed-once | -- | > quoted prose, not a row
+23 | -/- -> -/- | blank | consumed-once | -- | 
+24 | -/- -> -/- | ordinary | consumed-once | -T | | Zone id | Roots | Owner and status |
+25 | -/- -> -/- | ordinary | consumed-once | -T | |---|---|---|
+26 | -/- -> -/- | ordinary | consumed-once | -T | | `target-kernel` | `packages/core/src` | stale contradictory...
+observable: RED (2 disagreement(s))
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+lines=123 transitions=123 SINGLE-CONSUMPTION-OK
+
+## Stage 4 — preserved round-8 heading matrix (headings outside raw blocks still delimit)
+### prose mention of next heading + contradictory table
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### fenced next-heading mention + contradictory table
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### escaped hash + contradictory table
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: Zone id | Roots | Owner and status
+  - unreadable row: Zones section contains a further table; this row is outside the governed table: `target-kernel` | `packages/core/src` | stale contradictory further table
+### real ATX next heading terminates (planted table after it is outside: green)
+  (no message)

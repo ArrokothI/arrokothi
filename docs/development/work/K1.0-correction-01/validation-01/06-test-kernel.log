@@ -1,0 +1,21 @@
+$ npm run test:kernel
+
+> arrokothi-agent-kernel@0.8.1 test:kernel
+> node --test --experimental-strip-types packages/kernel/tests/*.test.ts
+
+▶ target Kernel scaffolding
+  ✔ an unimplemented surface throws rather than returning anything (0.609583ms)
+  ✔ the refusal names the surface and the packet that owns implementing it (0.18625ms)
+  ✔ the refusal points at the supported implementation instead of leaving a dead end (0.087084ms)
+  ✔ the package exports the refusal and nothing that could look like a protocol (0.567583ms)
+✔ target Kernel scaffolding (2.086042ms)
+ℹ tests 4
+ℹ suites 1
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 84.601792
+
+exit: 0

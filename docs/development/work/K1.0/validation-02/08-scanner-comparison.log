@@ -1,0 +1,127 @@
+# scanner-comparison - old raw-text scanner versus payload C 960a446b77bbd7d6973900eb23e10558c2584763 (TypeScript-parser scanner)
+
+Output-only evidence under 006. Run from the repository root against the clean payload
+tree. It adds no script, fixture, evaluator rule, threshold or configuration to the
+candidate: the file was written outside the repository, copied in, run, and removed.
+Full source is quoted here so the run is reproducible.
+
+$ node --experimental-strip-types ./k10-compare-tmp.mts
+
+--- begin source ---
+// Compares the pre-K1.0 raw-text scanner with the K10-R1-01 TypeScript-parser scanner,
+// over every .ts file in the tree. Output-only evidence: it introduces no script, fixture,
+// threshold or configuration into the candidate, and it reads the committed scanner rather
+// than reimplementing it.
+import { readFile, readdir } from "node:fs/promises";
+import { resolve } from "node:path";
+import { importSpecifiersIn } from "./tests/conformance/architecture/module-graph.ts";
+
+const ROOT = process.cwd();
+// The exact regex removed from tests/conformance/architecture/kernel-boundaries.test.ts at base.
+const OLD = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)["']([^"']+)["']/g;
+const oldSpecifiers = (s: string) => [...s.matchAll(OLD)].map((m) => m[1]);
+
+const files: string[] = [];
+for (const dir of ["packages", "tests", "examples", "scripts"]) {
+  const entries = await readdir(resolve(ROOT, dir), { recursive: true });
+  files.push(...entries.filter((p) => p.endsWith(".ts") && !p.includes("node_modules")).map((p) => `${dir}/${p}`));
+}
+files.sort();
+
+let identical = 0;
+const droppedByNew: [string, string][] = [];
+const addedByNew: [string, string][] = [];
+for (const file of files) {
+  const source = await readFile(resolve(ROOT, file), "utf8");
+  const before = new Set(oldSpecifiers(source));
+  const after = new Set(importSpecifiersIn(source));
+  const dropped = [...before].filter((x) => !after.has(x));
+  const added = [...after].filter((x) => !before.has(x));
+  if (dropped.length === 0 && added.length === 0) { identical += 1; continue; }
+  for (const x of dropped) droppedByNew.push([file, x]);
+  for (const x of added) addedByNew.push([file, x]);
+}
+
+console.log(`files scanned: ${files.length}`);
+console.log(`identical results: ${identical}`);
+console.log(`\nreported by the OLD scanner and not by the new one (${droppedByNew.length}):`);
+for (const [f, x] of droppedByNew) console.log(`  ${f}\n    ${JSON.stringify(x).slice(0, 160)}`);
+console.log(`\nreported by the NEW scanner and not by the old one (${addedByNew.length}):`);
+for (const [f, x] of addedByNew) console.log(`  ${f}\n    ${JSON.stringify(x)}`);
+--- end source ---
+
+--- begin output ---
+files scanned: 325
+identical results: 317
+
+reported by the OLD scanner and not by the new one (32):
+  packages/interoperability/mcp/src/import/result.ts
+    "this may have happened and the answer was lost"
+  packages/retrieval/local/src/lexical.ts
+    ", "
+  packages/retrieval/local/src/records.ts
+    "nothing matched"
+  scripts/check-builder-docs.ts
+    "@arrokothi/sdk"
+  tests/conformance/architecture/import-scanner.test.ts
+    " immediately before a quoted term as a bare import, recorded as K0.2-SELF-01\n *   and left open there because changing a live guard under no criterion risked 
+  tests/conformance/architecture/import-scanner.test.ts
+    ", () => {\n    const source = "
+  tests/conformance/architecture/import-scanner.test.ts
+    "@arrokothi/sdk"
+  tests/conformance/architecture/import-scanner.test.ts
+    ", "
+  tests/conformance/architecture/import-scanner.test.ts
+    ", () => {\n    const fixture = "
+  tests/conformance/architecture/import-scanner.test.ts
+    "@arrokothi/core"
+  tests/conformance/architecture/import-scanner.test.ts
+    "@arrokothi/core/ports"
+  tests/conformance/architecture/import-scanner.test.ts
+    ": "
+  tests/conformance/architecture/import-scanner.test.ts
+    "./a.ts"
+  tests/conformance/architecture/import-scanner.test.ts
+    "./b.ts"
+  tests/conformance/architecture/import-scanner.test.ts
+    ";"
+  tests/conformance/architecture/import-scanner.test.ts
+    ");\n      for (const real of site.realImports) {\n        assert.ok(specifiers.includes(real), `${real} is still reported`);\n      }\n    });\n  }\n\n  test("
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "./runtime/harness.ts"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "./ports/index.ts"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "../runtime/harness.ts"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "./unaudited.ts"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "../../core/src/runtime/harness.ts"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "./internal.ts"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "@arrokothi/sdk"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "@strands-agents/sdk"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "@arrokothi/core/internals"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "./helper.ts"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "../../core/src/util/hash.ts"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "../../core/src/util/unaudited.ts"
+  tests/conformance/architecture/kernel-landing-zone.test.ts
+    "../../core/src/util/composite.ts"
+  tests/conformance/architecture/legacy-core-boundaries.test.ts
+    " before a quoted term as a bare import (K0.2-SELF-01). It is\n * replaced by the shared TypeScript-parser scanner, whose fidelity in both directions is\n * ass
+  tests/conformance/architecture/module-graph.ts
+    " before\n *    a quoted term is not read as a bare import, and a regular-expression literal containing quote\n *    characters cannot corrupt the rest of the f
+  tests/conformance/architecture/module-graph.ts
+    "..."
+
+reported by the NEW scanner and not by the old one (1):
+  tests/conformance/architecture/legacy-core-boundaries.test.ts
+    "node:test"
+exit code: 0
+--- end output ---

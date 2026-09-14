@@ -1,5 +1,60 @@
 # ArrokothI and benchmark: completed foundations and the next step
 
+## Current update — K1.0 correction-02 cleanup complete, 2026-09-14
+
+**K1.0's pre-merge implementation, review and cleanup are complete. Integration awaits your manual GitHub merge after the verified push in the cleanup handoff.** The independent reviewer accepted the whole cumulative packet at H `def91fb9f34ade40a65cbde999c0ffe192d18239`. The final correction compares lists by their actual members and size, so two different lists cannot pass merely because joining their members produces the same text. Earlier acceptance and reopening records remain intact.
+
+The practical result is a private location for future Kernel implementation, meaningful import guards, and an ownership inventory checked against the code. Existing legacy consumers remain supported. This still implements no asynchronous protocol and establishes no E1 result. **K0 remains closed; K1 remains open; `next_release: none`.**
+
+Cleanup reran the 2,060-test suite, typecheck and builder-doc checks, checked the now-present evidence manifests, and independently challenged 342,225 collection pairs. Current remote main is still the original reviewed base, so there is no intervening main change or merge conflict. See [the cleanup record](work/K1.0-correction-02/cleanup-01.md), [independent ACCEPT](work/K1.0-correction-02/review-01.md) and [authoritative ledger](007-work-packets.md).
+
+**Next owner action:** manually merge the verified scoped branch. Then request verification of the actual remote merge before recording integration. Prompt B/C copy/paste formatting is cleaned up without changing their adopted instructions. The requested fixing-prompt and progress-based escalation improvements are prepared separately as an unaccepted prompt-maintenance draft; 006 requires independent review before adopting substantive workflow changes.
+
+## Earlier update — correction-02 awaiting review (historical)
+
+The following update describes the submitted candidate before its independent ACCEPT; the current update above supersedes its next action and holds.
+
+## Current owner update — correction-02 submitted for review, 2026-09-14
+
+**Do not merge K1.0 yet.** The defect cleanup found is fixed and the packet is back with a reviewer, not accepted. The guard used to decide whether two lists agree by gluing each list into one string with commas and comparing the strings. Two different lists can produce the same string — five real export subpaths and one invented subpath that happens to contain commas look identical that way — so a false inventory passed the guard whose whole job is to reject false inventories.
+
+The correction changes what “the same list” means rather than banning the comma: two lists agree only when they are the same length and hold the same members, and one shared rule now decides that for every list in the inventory, including the two dependency columns that previously compared on their own. Listing members in a different order is still fine, which the real document depends on. Measured against the previously reviewed code, it accepted 22 of 22 false lists; this candidate accepts none, and also catches the mirror case that a comma ban would have missed.
+
+All 2,060 tests pass with zero failures or skips (nine new ones this round, none removed); typecheck and builder-doc checks pass. Historical ACCEPTs are preserved and **C4 claims and integration stay on hold** until a fresh, separate independent review of the whole packet returns ACCEPT. [Report](work/K1.0-correction-02/implementation-01.md), [evidence](work/K1.0-correction-02/validation-01/MANIFEST.md), [original finding](work/K1.0-correction-01/cleanup-01.md), [authoritative ledger](007-work-packets.md).
+
+**Next owner action:** send the pushed candidate head to a **fresh, separate** review session for a cumulative review of base → H against K1.0-C1–C9. The coding session cannot accept its own work. Worth asking that reviewer specifically: does any *other* stage of this pipeline still assume the meaning arriving from upstream survives — that is the shape all three findings have shared. Universal Prompt B/C changes remain pending under the owner's “if accept” condition.
+
+The private target zone and legacy quarantine remain on the branch, unmerged. No asynchronous protocol or E1 result is established. K0 stays closed, K1 stays open, benchmark E1 preparation stays unaccepted, and `next_release: none`.
+
+## Earlier owner update — K1.0 cleanup reopened, 2026-09-13
+
+The following update describes the first cleanup and is superseded by the current update above.
+
+**Do not merge K1.0 yet.** The owner released it against already-built but unaccepted benchmark E1
+preparation. Round 16 received an authentic independent ACCEPT at
+`f3aa29d7ecba2a23aa85788b7efdebdd383cab24`, but final cleanup found a reproducible C4 evidence defect:
+the inventory guard accepts `2.5` as two files and can discard a named dependency if the same cell
+also says “nothing.” The actual inventory is correct; the check cannot reliably reject these false
+claims. All 2,030 tests, typecheck and builder-doc checks passed during cleanup, showing why the
+additional semantic counterexamples matter.
+
+The historical ACCEPT remains. **C4 claims and integration are on hold**, with corrective packet
+**K1.0-correction-01** requesting correction of whole-cell parsing and fresh cumulative independent
+review. The private target Kernel location and legacy quarantine exist on the branch, but nothing
+has been merged and no asynchronous protocol or E1 result is established. K0 remains closed; K1
+remains open. Benchmark E1 preparation remains unaccepted. `next_release: none`.
+
+**Next owner action:** hand the [copy-ready fixing prompt](work/K1.0-correction-01/handoff-01.md) to
+a coding session. After correction, obtain new C/H validation, independent ACCEPT and a repeated
+cleanup before manual GitHub merge. [Cleanup finding and evidence](work/K1.0/cleanup-01.md);
+[authoritative ledger](007-work-packets.md). The requested universal Prompt B/C improvements remain
+pending under the owner's “if accept” condition; the immediate corrective fixing prompt is supplied.
+
+## Earlier foundation snapshot — historical
+
+The remainder records the snapshot before the K1.0 release. Its “next step” and release-hold wording
+is superseded by the current update above; the completed-foundation explanations remain useful.
+
 **Status snapshot: 2026-09-13, America/New_York.**
 
 The contract, public fixtures, evidence preparation and development workflows are accepted and

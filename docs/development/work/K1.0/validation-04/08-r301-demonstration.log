@@ -1,0 +1,8 @@
+HEAD 0f012d4eed6ccc905236ccdafc25148d399619d6
+real-doc disagreements: []
+K10-R3-01 zone false-BEFORE-correct disagreements: ["unreadable row: duplicate Zones row for zone target-kernel: `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.**","zone target-kernel owns [packages/kernel/src] but the document gives it [packages/core/src]"]
+K10-R3-01 zone false-AFTER-correct disagreements: ["unreadable row: duplicate Zones row for zone target-kernel: `target-kernel` | `packages/core/src` | stale/contradictory duplicate"]
+K10-R3-01 DX false-BEFORE-correct disagreements: ["unreadable row: duplicate Deferred row for DX-1: DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing.","deferred row DX-1 covers packages/core/src/util/hash.ts but the document gives packages/core/src/util/json.ts"]
+K10-R3-01 DX false-AFTER-correct disagreements: ["unreadable row: duplicate Deferred row for DX-1: DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale duplicate"]
+K10-R3-01 pkg false-BEFORE-correct disagreements: ["unreadable row: duplicate Export row for package @arrokothi/kernel: `@arrokothi/kernel` | `.` | No (private)","package @arrokothi/kernel is private but the document says it is published"]
+K10-R3-01 pkg false-AFTER-correct disagreements: ["unreadable row: duplicate Export row for package @arrokothi/kernel: `@arrokothi/kernel` | `.` | Yes"]

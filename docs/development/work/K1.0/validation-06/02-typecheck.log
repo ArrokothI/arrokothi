@@ -1,0 +1,8 @@
+# 02 - typecheck, clean C 459be4e51370ebb8e859a46b29a966944bbd755a
+
+$ npm run typecheck
+
+> arrokothi-agent-kernel@0.8.1 typecheck
+> tsc --noEmit -p tsconfig.json
+
+EXIT:0

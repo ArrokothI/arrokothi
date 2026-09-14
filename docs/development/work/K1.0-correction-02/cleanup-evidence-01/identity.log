@@ -1,0 +1,36 @@
+$ git rev-parse HEAD origin/main origin/codex/k1.0-target-boundary-legacy-quarantine
+4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0
+c9a9ed7e6e538ab0542fc6a999426264abb6212a
+4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0
+EXIT 0
+$ git diff --name-status def91fb9f34ade40a65cbde999c0ffe192d18239 HEAD
+A	docs/development/work/K1.0-correction-02/review-01.md
+EXIT 0
+$ git diff --name-status c9a9ed7e6e538ab0542fc6a999426264abb6212a HEAD -- packages tests/conformance/k0 examples
+A	packages/kernel/package.json
+A	packages/kernel/src/index.ts
+A	packages/kernel/src/unsupported.ts
+A	packages/kernel/tests/unsupported.test.ts
+EXIT 0
+$ git merge-base --is-ancestor 0535160e677231da41b06d9f822e62e2f0364dd1 c9a9ed7e6e538ab0542fc6a999426264abb6212a
+EXIT 0
+$ git merge-base --is-ancestor origin/main HEAD
+EXIT 0
+$ node --version
+v25.2.1
+EXIT 0
+$ npm --version
+11.6.2
+EXIT 0
+Advertised remote SHAs independently checked by git ls-remote on 2026-09-14: ArrokothI main c9a9ed7e6e538ab0542fc6a999426264abb6212a; scoped branch 4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0; benchmark main 5a3f1ba525f68244701b1f73a1d29c4902ffe589; E1 preparation branch 8de04779d279dba82cf834d419e465d2b677ef46.
+01-tree-and-environment.log sha256 b1ad9bef66e2f4d4c87766fdd6112e50ee9e08876e364a007bef3d152656283a MATCH
+02-typecheck.log sha256 c475b2ae23554485a94a8d3300078667c2ed32fc6aebe05cc778de2d75fb5617 MATCH
+03-test-full.log sha256 fce4b5f57136907a34d7d0bd664aef646cfb9a846a2f595b9d4d73fe076be7b1 MATCH
+04-test-conformance.log sha256 4728d3ebad45e5dde7f418f91f548ec8dabb552f8f8d10587ec635d75ca4ce92 MATCH
+05-check-builder-docs.log sha256 4b117380728d9819e24c8dc7bae85cbf305bbe09f07bd7fc1d0d0ccc571e6203 MATCH
+06-test-kernel.log sha256 f61d76f5f237811f82c62911f843db012bfb3151bd9f282096d52351a19e84c0 MATCH
+07-test-sdk.log sha256 28a6ba453e3fa9761a5bd1567756a77270a0492eac58f2a95c43a80455110ae2 MATCH
+08-corr2-demonstration.log sha256 2c9870d67ac8d8d92a15a4bbf5be65b63848778850930b7fc6bd8bda74ce6239 MATCH
+09-distinguishing-ablation.log sha256 ecf2ada931470c23e19b23301a090795ebcefcd34e717c9a021997deb9e3f118 MATCH
+10-c4-control-inventory.log sha256 fa999d6f738a5444870b7cbf45acdb3b244aaa82568cb115bce32ca3cf9000d3 MATCH
+All 10 correction-02 raw logs exist and match their manifest.

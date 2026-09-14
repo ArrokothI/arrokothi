@@ -1,0 +1,241 @@
+## Stage 1 — container depth gates section identity (K10-R9-01)
+### bullet item hides its heading; later table surfaces
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d1 -/-[c2] | list-marker | once | -- | - note
+108 | d1->d1 -/-[c2] | blank | once | -- | 
+109 | d1->d1 -/-[c2] | list-content | once | -- |   ## What this packet does not establish
+110 | d1->d1 -/-[c2] | blank | once | -- | 
+111 | d1->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+112 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+113 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+114 | d0->d0 -/- | blank | once | -- | 
+115 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+observable: RED (2)
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why it is assigned there
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory further table
+lines=125 transitions=125 SINGLE-OK
+
+### ordered item, width-derived content indent
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d1 -/-[c3] | list-marker | once | -- | 1. note
+108 | d1->d1 -/-[c3] | blank | once | -- | 
+109 | d1->d1 -/-[c3] | list-content | once | -- |    ## What this packet does not establish
+110 | d1->d1 -/-[c3] | blank | once | -- | 
+111 | d1->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+112 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+113 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+114 | d0->d0 -/- | blank | once | -- | 
+115 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+observable: RED (2)
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why it is assigned there
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory further table
+lines=125 transitions=125 SINGLE-OK
+
+### wide marker: 3sp table escapes, bullet keeps it nested
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d1 -/-[c4] | list-marker | once | -- | 10. note
+108 | d1->d1 -/-[c4] | blank | once | -- | 
+109 | d1->d0 -/- | ordinary | once | -T |    | Id | Current path | Disposition | Owner | Why |
+110 | d0->d0 -/- | ordinary | once | -T |    |---|---|---|---|---|
+111 | d0->d0 -/- | ordinary | once | -T |    | DX-1 | `x` | m | K | s |
+112 | d0->d0 -/- | blank | once | -- | 
+113 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+114 | d0->d0 -/- | blank | once | -- | 
+115 | d0->d0 -/- | ordinary | once | HT | ## What this packet does not establish
+observable: RED (2)
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: DX-1 | `x` | m | K | s
+lines=123 transitions=123 SINGLE-OK
+
+### pop back to the outer item stays nested
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d1 -/-[c2] | list-marker | once | -- | - outer
+108 | d1->d1 -/-[c2] | blank | once | -- | 
+109 | d1->d2 -/-[c2>c4] | list-marker | once | -- |   - inner
+110 | d2->d2 -/-[c2>c4] | blank | once | -- | 
+111 | d2->d1 -/-[c2] | list-content | once | -- |   ## What this packet does not establish
+112 | d1->d1 -/-[c2] | blank | once | -- | 
+113 | d1->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+114 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+115 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+observable: RED (2)
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why it is assigned there
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory further table
+lines=127 transitions=127 SINGLE-OK
+
+### restricted marker after prose stays prose
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d0 -/- | ordinary | once | -T | Some prose about deferrals.
+108 | d0->d0 -/- | ordinary | once | -T | 2. item
+109 | d0->d0 -/- | blank | once | -- | 
+110 | d0->d0 -/- | ordinary | once | HT |   ## What this packet does not establish
+111 | d0->d0 -/- | blank | once | -- | 
+112 | d0->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+113 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+114 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+115 | d0->d0 -/- | blank | once | -- | 
+observable: GREEN (no disagreement)
+lines=126 transitions=126 SINGLE-OK
+
+### thematic break opens no container
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d0 -/- | ordinary | once | -T | * * *
+108 | d0->d0 -/- | blank | once | -- | 
+109 | d0->d0 -/- | ordinary | once | HT |   ## What this packet does not establish
+110 | d0->d0 -/- | blank | once | -- | 
+111 | d0->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+112 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+113 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+114 | d0->d0 -/- | blank | once | -- | 
+115 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+observable: GREEN (no disagreement)
+lines=125 transitions=125 SINGLE-OK
+
+## Stage 2 — complete-tag grammar and paragraph rule (K10-R9-02)
+### double-quoted > opens the raw block
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d0 -/- | html-open | once | -- | <Warning title="a>b">
+108 | d0->d0 -/html7 | html-raw | once | -- | ## What this packet does not establish
+109 | d0->d0 -/html7 | html-end-blank | once | -- | 
+110 | d0->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+111 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+112 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+113 | d0->d0 -/- | blank | once | -- | 
+114 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+115 | d0->d0 -/- | blank | once | -- | 
+observable: RED (2)
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why it is assigned there
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory further table
+lines=124 transitions=124 SINGLE-OK
+
+### closing tag with attributes is malformed prose
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d0 -/- | ordinary | once | -T | </Warning title="x">
+108 | d0->d0 -/- | ordinary | once | HT | ## What this packet does not establish
+109 | d0->d0 -/- | blank | once | -- | 
+110 | d0->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+111 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+112 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+113 | d0->d0 -/- | blank | once | -- | 
+114 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+115 | d0->d0 -/- | blank | once | -- | 
+observable: GREEN (no disagreement)
+lines=124 transitions=124 SINGLE-OK
+
+### mid-paragraph tag stays prose; heading delimits
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d0 -/- | ordinary | once | -T | Some prose about deferrals.
+108 | d0->d0 -/- | ordinary | once | -T | <Warning title="x">
+109 | d0->d0 -/- | ordinary | once | HT | ## What this packet does not establish
+110 | d0->d0 -/- | blank | once | -- | 
+111 | d0->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+112 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+113 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+114 | d0->d0 -/- | blank | once | -- | 
+115 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+observable: GREEN (no disagreement)
+lines=125 transitions=125 SINGLE-OK
+
+### uppercase declaration opens; single-line closes itself
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d0 -/- | html-open | once | -- | <!DOCTYPE greeting [
+108 | d0->d0 -/html4 | html-raw | once | -- | ## What this packet does not establish
+109 | d0->d0 -/html4 | html-close-line | once | -- | ]>
+110 | d0->d0 -/- | blank | once | -- | 
+111 | d0->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+112 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+113 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+114 | d0->d0 -/- | blank | once | -- | 
+115 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+observable: RED (2)
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why it is assigned there
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory further table
+lines=125 transitions=125 SINGLE-OK
+
+## Stage 3 — preserved round-8/9 behavior and neighbors
+### bare fence with complete table stays green
+idx | depth fence/html/container | classification | once | H/T | line
+17 | d0->d0 -/- | ordinary | once | -T | | `target-kernel` | `packages/kernel/src` | New Kernel ...
+18 | d0->d0 -/- | ordinary | once | -T | | `legacy-core` | `packages/core/src` | The current 0.8...
+19 | d0->d0 -/- | ordinary | once | -T | | `runtime-integrations` | `packages/agents/strands/src...
+20 | d0->d0 -/- | ordinary | once | -T | | `host-sdk` | `packages/sdk/src` | Application bootstr...
+21 | d0->d0 -/- | fence-marker-open | once | -- | ```
+22 | d0->d0 open(`x3)/- | fence-raw | once | -- | | Zone id | Roots | Owner and status |
+23 | d0->d0 open(`x3)/- | fence-raw | once | -- | |---|---|---|
+24 | d0->d0 open(`x3)/- | fence-raw | once | -- | | `target-kernel` | `packages/core/src` | code |
+25 | d0->d0 open(`x3)/- | fence-closer | once | -- | ```
+26 | d0->d0 -/- | blank | once | -- | 
+observable: GREEN (no disagreement)
+lines=122 transitions=122 SINGLE-OK
+
+### script block hides its heading only
+idx | depth fence/html/container | classification | once | H/T | line
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d0 -/- | html-open | once | -- | <script>
+108 | d0->d0 -/html1 | html-raw | once | -- | ## What this packet does not establish
+109 | d0->d0 -/html1 | html-close-line | once | -- | </script>
+110 | d0->d0 -/- | blank | once | -- | 
+111 | d0->d0 -/- | ordinary | once | -T | | Id | Current path | Disposition | Owner | Why it is a...
+112 | d0->d0 -/- | ordinary | once | -T | |---|---|---|---|---|
+113 | d0->d0 -/- | ordinary | once | -T | | DX-1 | `packages/core/src/util/json.ts` | migratable ...
+114 | d0->d0 -/- | blank | once | -- | 
+115 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+observable: RED (2)
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: Id | Current path | Disposition | Owner | Why it is assigned there
+  - unreadable row: Deferred section contains a further table; this row is outside the governed table: DX-1 | `packages/core/src/util/json.ts` | migratable | K1.1 | stale contradictory further table
+lines=125 transitions=125 SINGLE-OK
+
+### indented-code table stays code
+idx | depth fence/html/container | classification | once | H/T | line
+102 | d0->d0 -/- | ordinary | once | -T | | DX-9 | `packages/core/src/ports/scheduler.ts` | legac...
+103 | d0->d0 -/- | ordinary | once | -T | | DX-10 | `packages/core/src/controllers` | legacy-only...
+104 | d0->d0 -/- | ordinary | once | -T | | DX-11 | `packages/agents/strands/src/agent-executor.t...
+105 | d0->d0 -/- | ordinary | once | -T | | DX-12 | `packages/core/src/ports/controller.ts` | ref...
+106 | d0->d0 -/- | blank | once | -- | 
+107 | d0->d0 -/- | indented-code | once | -- |     | Id | Roots |
+108 | d0->d0 -/- | indented-code | once | -- |     |---|---|
+109 | d0->d0 -/- | indented-code | once | -- |     | DX-1 | code |
+110 | d0->d0 -/- | blank | once | -- | 
+111 | d0->d0 -/- | ordinary | once | -T | An assignment is an owner, not a promise that the named...
+observable: GREEN (no disagreement)
+lines=121 transitions=121 SINGLE-OK
+
+## Stage 4 — clean-document invariant spot check
+clean inventory: 117 transitions, 4 with depth>0
+  idx 72 list-marker [c3] 1. Modules inside `packages/kernel/src`.
+  idx 73 list-marker [c3] 2. `node:` builtins.
+  idx 74 list-marker [c3] 3. Nothing else.
+  idx 75 blank [c3] 
+observable: []

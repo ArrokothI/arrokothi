@@ -5,8 +5,9 @@ scope and gates; the [work-packet ledger](007-work-packets.md) owns current impl
 status and dependencies. K0.1, the post-K0.1 process review and K0.2 are accepted, integrated and
 owner-closed. The [K0.2 receipt](work/K0.2/integration-01.md) records K0 closure, with the accepted
 benchmark E0 evidence; this establishes the contract/fixture gate, not a working target Kernel.
-No successor is released (`next_release: none`); K1.0 still requires benchmark-owned E1 fixture
-preparation and separate owner release. Historical planning source starting point:
+The owner released **K1.0** on 2026-09-13 against built-but-unaccepted E1 preparation.
+**K1.0-correction-02 round 1 is independently ACCEPTED** at H `def91fb9f34ade40a65cbde999c0ffe192d18239`, over C `95d74530f37c7af8706ef92d29574425a39afcf1`, original base `c9a9ed7e6e538ab0542fc6a999426264abb6212a`. OpenAI GPT-5.6 Sol (High) recorded [review-01](work/K1.0-correction-02/review-01.md) at A `4c3c2cf6cb0d4a0c6dd5ecbd97ceccadb8f161b0`, closing K10-CORR1-CLEANUP-01. [Delegated cleanup](work/K1.0-correction-02/cleanup-01.md) is complete; integration is pending the owner's manual merge and verified push is supplied in the external handoff. The cumulative C1–C9 acceptance restores the current structural claim; both earlier ACCEPT/invalidation records remain historical. No E1 result or K1 milestone closure; `next_release: none`.
+Historical planning source starting point:
 `agent-kernel a5f426f77820166368a67bf4161a548b2751a3a7`, `benchmark 04148be`.
 The [baseline](002-implemented-kernel-baseline.md) describes current 0.8.x; the
 [review](004-architecture-review.md) records decisions and the disposition of P1–P7/B1–B3.

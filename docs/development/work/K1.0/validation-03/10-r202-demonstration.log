@@ -1,0 +1,135 @@
+# r202-demonstration - K10-R2-02 demonstrated, payload C 839b32d085306b96358295edf86fec85836ce462
+
+Output-only evidence under 006. Run from the repository root against the clean payload
+tree. It adds no script, fixture, evaluator rule, threshold or configuration to the
+candidate: the file was written outside the repository, copied in, run, and removed.
+Full source is quoted here so the run is reproducible.
+
+$ node --experimental-strip-types ./k1-0-r202-demo.mjs
+
+--- begin source ---
+// K10-R2-02 demonstrated: nine plausible wrong row associations, each checked by the round-2
+// token-set agreement tests and by the committed relational oracle. Output-only evidence; this
+// source is quoted in the log.
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { loadWorkspace } from "./tests/conformance/architecture/module-graph.ts";
+import { ZONES, DEFERRED_EXTRACTIONS } from "./tests/conformance/architecture/boundary-policy.ts";
+import { parseInventory, inventoryDisagreements } from "./tests/conformance/architecture/inventory-oracle.ts";
+
+const ROOT = process.cwd();
+const NL = String.fromCharCode(10);
+const INVENTORY = "docs/development/work/K1.0/ownership-inventory.md";
+
+// The round-2 agreement checks, reduced to what they actually compared: independent token sets and
+// global substring presence. Quoted in shape from kernel-landing-zone.test.ts at
+// d4347837699b80e5cbffa83d48dd7a8c9e53f7e6 (the reviewed H2).
+function round2Complaints(markdown, workspace) {
+  const complaints = [];
+
+  const zonesSection = markdown.split("## Zones")[1]?.split("## Current cross-boundary")[0] ?? "";
+  const documentedIds = new Set();
+  for (const line of zonesSection.split(NL)) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("| `")) continue;
+    const id = trimmed.split("|")[1]?.trim().replace(/`/g, "");
+    if (id !== undefined && id !== "" && id !== "Zone id") documentedIds.add(id);
+  }
+  const policyIds = ZONES.map((z) => z.id).sort();
+  if ([...documentedIds].sort().join(",") !== policyIds.join(",")) complaints.push("zone id set differs");
+  const documentedRoots = new Set((zonesSection.match(/`packages\/[^`]+src`/g) ?? []).map((t) => t.replace(/`/g, "")));
+  for (const zone of ZONES) {
+    for (const root of zone.roots) if (!documentedRoots.has(root)) complaints.push("missing root " + root);
+  }
+  for (const root of documentedRoots) {
+    if (!ZONES.some((z) => z.roots.includes(root))) complaints.push("undeclared root " + root);
+  }
+
+  const deferredSection = markdown.split("## Deferred extraction")[1]?.split("## What this packet")[0] ?? markdown;
+  const documentedDx = new Set(deferredSection.match(/DX-\d+/g) ?? []);
+  if ([...documentedDx].sort().join(",") !== DEFERRED_EXTRACTIONS.map((r) => r.id).sort().join(",")) {
+    complaints.push("DX id set differs");
+  }
+  for (const row of DEFERRED_EXTRACTIONS) {
+    if (!markdown.includes(row.id)) complaints.push("missing " + row.id);
+    if (!markdown.includes(row.currentPath)) complaints.push("missing path " + row.currentPath);
+    if (!markdown.includes(row.owner)) complaints.push("missing owner " + row.owner);
+  }
+
+  for (const [name, entry] of workspace.packages) {
+    if (!markdown.includes(name)) complaints.push("missing package " + name);
+    for (const subpath of entry.exports.keys()) {
+      if (!markdown.includes(subpath)) complaints.push("missing subpath " + subpath);
+    }
+  }
+  const exportSection = markdown.split("## Export ownership")[1]?.split("## What the target zone may import")[0] ?? "";
+  for (const token of exportSection.match(/`@arrokothi\/[^`]+`/g) ?? []) {
+    const name = token.replace(/`/g, "");
+    if (!workspace.packages.has(name)) complaints.push("undeclared package " + name);
+  }
+
+  return complaints;
+}
+
+const MUTATIONS = [
+  ["two zones' roots swapped (the review's case)", [
+    ["| `target-kernel` | `packages/kernel/src` |", "| `target-kernel` | `PLACEHOLDER` |"],
+    ["| `legacy-core` | `packages/core/src` |", "| `legacy-core` | `packages/kernel/src` |"],
+    ["| `target-kernel` | `PLACEHOLDER` |", "| `target-kernel` | `packages/core/src` |"],
+  ]],
+  ["one zone's root replaced", "| `target-kernel` | `packages/kernel/src` |", "| `target-kernel` | `packages/core/src` |"],
+  ["a deferred row's owner is reassigned", "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 |", "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K3.1 |"],
+  ["a deferred row's disposition is changed", "| DX-5 | `packages/core/src/runtime/harness.ts` | legacy-only | K1.4 |", "| DX-5 | `packages/core/src/runtime/harness.ts` | migratable | K1.4 |"],
+  ["a deferred row's path is moved", "| DX-8 | `packages/core/src/ports/runtime-store.ts` | legacy-only | K3.1 |", "| DX-8 | `packages/core/src/ports/scheduler.ts` | legacy-only | K3.1 |"],
+  ["a private package is claimed published", "| `@arrokothi/kernel` | `.` | No (private) |", "| `@arrokothi/kernel` | `.` | Yes |"],
+  ["a published package is claimed private", "| `@arrokothi/sdk` | `.` | Yes |", "| `@arrokothi/sdk` | `.` | No (private) |"],
+  ["an exported subpath is dropped", "| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes |", "| `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference` | Yes |"],
+  ["a package row is deleted", "| `@arrokothi/provider-gemini` | `.` | Yes |" + NL, ""],
+  ["an undeclared zone is added", "| `host-sdk` | `packages/sdk/src` |", "| `host-sdk` | `packages/sdk/src` |" + NL + "| `invented-zone` | `packages/kernel/src` |"],
+];
+
+const workspace = await loadWorkspace(ROOT);
+const original = await readFile(resolve(ROOT, INVENTORY), "utf8");
+const policy = { zones: ZONES, deferred: DEFERRED_EXTRACTIONS };
+
+console.log("Baseline, unmutated document:");
+console.log("  round-2 token-set checks: " + round2Complaints(original, workspace).length + " complaints");
+console.log("  committed relational oracle: " + inventoryDisagreements(parseInventory(original), policy, workspace).length + " disagreements");
+console.log("");
+console.log("Mutation".padEnd(42) + "| round-2 | committed | what the committed oracle says");
+console.log("-".repeat(120));
+for (const [name, a, b] of MUTATIONS) {
+  const edits = Array.isArray(a) ? a : [[a, b]];
+  let mutated = original;
+  let ok = true;
+  for (const [from, to] of edits) {
+    if (mutated.split(from).length - 1 !== 1) { ok = false; break; }
+    mutated = mutated.replace(from, to);
+  }
+  if (!ok) { console.log(name.padEnd(42) + "| ANCHOR NOT FOUND EXACTLY ONCE"); continue; }
+  const before = round2Complaints(mutated, workspace);
+  const after = inventoryDisagreements(parseInventory(mutated), policy, workspace);
+  const says = after.length > 0 ? after[0] : "(nothing)";
+  console.log(name.padEnd(42) + "|" + String(before.length).padStart(8) + " |" + String(after.length).padStart(10) + " | " + says);
+}
+--- end source ---
+
+--- begin output ---
+Baseline, unmutated document:
+  round-2 token-set checks: 0 complaints
+  committed relational oracle: 0 disagreements
+
+Mutation                                  | round-2 | committed | what the committed oracle says
+------------------------------------------------------------------------------------------------------------------------
+two zones' roots swapped (the review's case)|       0 |         2 | zone target-kernel owns [packages/kernel/src] but the document gives it [packages/core/src]
+one zone's root replaced                  |       1 |         1 | zone target-kernel owns [packages/kernel/src] but the document gives it [packages/core/src]
+a deferred row's owner is reassigned      |       0 |         1 | deferred row DX-1 is owned by K1.1 but the document says K3.1
+a deferred row's disposition is changed   |       0 |         1 | deferred row DX-5 is legacy-only but the document says migratable
+a deferred row's path is moved            |       1 |         1 | deferred row DX-8 covers packages/core/src/ports/runtime-store.ts but the document gives packages/core/src/ports/scheduler.ts
+a private package is claimed published    |       0 |         1 | package @arrokothi/kernel is private but the document says it is published
+a published package is claimed private    |       0 |         1 | package @arrokothi/sdk is publishable but the document says it is not published
+an exported subpath is dropped            |       1 |         1 | package @arrokothi/core exports [., ./execution, ./ports, ./reference, ./testing] but the document gives [., ./execution, ./ports, ./reference]
+a package row is deleted                  |       1 |         1 | package @arrokothi/provider-gemini exists in the workspace but is not documented
+an undeclared zone is added               |       1 |         1 | zone invented-zone is documented but not declared by the policy
+exit code: 0
+--- end output ---

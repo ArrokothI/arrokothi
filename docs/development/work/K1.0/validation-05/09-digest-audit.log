@@ -1,0 +1,126 @@
+# digest-audit - K10-R4-02 adjacent-path digest audit, payload C 6fd225e0115d6b91bd5088e22d41d137088d9688
+
+Output-only evidence under 006. Run from the repository root against the clean payload
+tree. It adds no script, fixture, evaluator rule, threshold or configuration to the
+candidate: the file was written outside the repository, copied in, run, and removed.
+Full source is quoted here so the run is reproducible.
+
+$ node --experimental-strip-types ./k1-0-digest-audit.mjs
+
+--- begin source ---
+// K10-R4-02 adjacent-path audit: every digest recorded in every K1.0 validation manifest, checked
+// for well-formedness and against the file it names. Output-only evidence; source quoted in the log.
+import { createHash } from "node:crypto";
+import { readFile, readdir } from "node:fs/promises";
+import { resolve } from "node:path";
+
+const ROOT = process.cwd();
+const WORK = "docs/development/work/K1.0";
+
+const allDirs = (await readdir(resolve(ROOT, WORK), { withFileTypes: true }))
+  .filter((e) => e.isDirectory() && e.name.startsWith("validation-"))
+  .map((e) => e.name)
+  .sort();
+
+// A round whose manifest has not been written yet is a capture in progress: it records no digests,
+// so it has none that can be wrong. Reported, then skipped - the same rule the committed
+// evidence-records.test.ts applies.
+const dirs = [];
+const inProgress = [];
+for (const d of allDirs) {
+  const names = await readdir(resolve(ROOT, WORK, d));
+  if (names.includes("MANIFEST.md")) dirs.push(d);
+  else inProgress.push(d);
+}
+if (inProgress.length > 0) console.log("capture in progress, no manifest yet: " + inProgress.join(", ") + String.fromCharCode(10));
+
+let checked = 0;
+const problems = [];
+
+for (const dir of dirs) {
+  const manifestPath = `${WORK}/${dir}/MANIFEST.md`;
+  const manifest = await readFile(resolve(ROOT, manifestPath), "utf8");
+  const files = (await readdir(resolve(ROOT, WORK, dir))).filter((f) => f.endsWith(".log")).sort();
+
+  console.log(dir + "  (" + files.length + " logs)");
+  for (const file of files) {
+    // The manifest row for this log: the last backticked token on its line.
+    const line = manifest.split(String.fromCharCode(10)).find((l) => l.includes("](" + file + ")"));
+    if (line === undefined) {
+      problems.push(dir + "/" + file + ": no manifest row");
+      console.log("    " + file.padEnd(34) + "NO MANIFEST ROW");
+      continue;
+    }
+    const tokens = (line.match(/`([0-9a-fA-F]+)`/g) ?? []).map((t) => t.replace(/`/g, ""));
+    const recorded = tokens[tokens.length - 1];
+    const actual = createHash("sha256").update(await readFile(resolve(ROOT, WORK, dir, file))).digest("hex");
+    checked += 1;
+
+    let verdict;
+    if (recorded === undefined) {
+      verdict = "NO DIGEST RECORDED";
+    } else if (recorded.length !== 64) {
+      verdict = "NOT SHA-256: " + recorded.length + " hex characters";
+    } else if (recorded !== actual) {
+      verdict = "MISMATCH: recorded " + recorded;
+    } else {
+      verdict = "ok";
+    }
+    if (verdict !== "ok") problems.push(dir + "/" + file + ": " + verdict);
+    console.log("    " + file.padEnd(34) + verdict);
+  }
+}
+
+console.log("");
+console.log("digests checked: " + checked + "   problems: " + problems.length);
+for (const p of problems) console.log("  " + p);
+--- end source ---
+
+--- begin output ---
+capture in progress, no manifest yet: validation-05
+
+validation-01  (9 logs)
+    01-tree-and-environment.log       ok
+    02-typecheck.log                  ok
+    03-test-full.log                  ok
+    04-test-conformance.log           ok
+    05-check-builder-docs.log         ok
+    06-test-kernel.log                ok
+    07-test-sdk.log                   ok
+    08-scanner-comparison.log         ok
+    09-self-01-demonstration.log      ok
+validation-02  (9 logs)
+    01-tree-and-environment.log       ok
+    02-typecheck.log                  ok
+    03-test-full.log                  ok
+    04-test-conformance.log           ok
+    05-check-builder-docs.log         ok
+    06-test-kernel.log                ok
+    07-test-sdk.log                   ok
+    08-scanner-comparison.log         ok
+    09-r101-demonstration.log         ok
+validation-03  (10 logs)
+    01-tree-and-environment.log       ok
+    02-typecheck.log                  ok
+    03-test-full.log                  ok
+    04-test-conformance.log           ok
+    05-check-builder-docs.log         ok
+    06-test-kernel.log                ok
+    07-test-sdk.log                   ok
+    08-two-extractor-comparison.log   ok
+    09-r201-demonstration.log         ok
+    10-r202-demonstration.log         ok
+validation-04  (8 logs)
+    01-tree-and-environment.log       ok
+    02-typecheck.log                  ok
+    03-test-full.log                  ok
+    04-test-conformance.log           ok
+    05-check-builder-docs.log         ok
+    06-test-kernel.log                ok
+    07-test-sdk.log                   NOT SHA-256: 52 hex characters
+    08-r301-demonstration.log         ok
+
+digests checked: 36   problems: 1
+  validation-04/07-test-sdk.log: NOT SHA-256: 52 hex characters
+exit code: 0
+--- end output ---

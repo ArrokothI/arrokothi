@@ -1,0 +1,14 @@
+H8 oracle pinned via git show 065e864a796da6195ceca1d489201d2d687f7b8d:tests/conformance/architecture/inventory-oracle.ts
+SHA-256: d25f7576307570cdee231efb0c6821175f41176902d7dde5627fcf869f14555e
+OK   F1 bare fence + complete table (want H8 RED / C GREEN): H8=RED C=GREEN (newly distinguishing)
+OK   F2 info-string fence + complete table (want GREEN / GREEN): H8=GREEN C=GREEN
+OK   F3 tilde fence + complete table (want H8 RED / C GREEN): H8=RED C=GREEN (newly distinguishing)
+OK   F4 real unfenced second table (want RED / RED): H8=RED C=RED
+OK   F5 mismatched closer inside fence (want GREEN / GREEN): H8=GREEN C=GREEN
+OK   F6 shorter closer than opener (want H8 RED / C GREEN): H8=RED C=GREEN (newly distinguishing)
+OK   H8 script block + heading + contradictory table (want H8 GREEN / C RED): H8=GREEN C=RED (newly distinguishing)
+OK   H-comment block + heading + table (want H8 GREEN / C RED): H8=GREEN C=RED (newly distinguishing)
+OK   H-pre block + heading + table (want H8 GREEN / C RED): H8=GREEN C=RED (newly distinguishing)
+OK   H-div block + heading + table (want H8 GREEN / C RED): H8=GREEN C=RED (newly distinguishing)
+OK   indented-code table (want H8 RED / C GREEN): H8=RED C=GREEN (newly distinguishing)
+newly distinguishing cases: 8

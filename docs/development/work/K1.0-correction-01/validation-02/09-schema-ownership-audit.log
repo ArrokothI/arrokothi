@@ -1,0 +1,340 @@
+== K10-CORR1-R1-01 independent schema/column-ownership audit ==
+
+The reference imports nothing from inventory-oracle.ts and takes no arity from any candidate
+header. Its four schemas are verbatim header lines read out of ownership-inventory.md at run
+time (each required exactly once); its splitter, discovery, header check, whole-cell decoders
+and relation assembly are separately implemented (regex/round-trip style, not index walks).
+Chain covered per document: physical line -> table discovery -> header/schema validation ->
+allowed body arity/column ownership -> per-cell whole decoding -> keyed relation -> downstream
+comparison (real-doc agreement plus a decoded-but-false owner reaching the consumer).
+
+$ node --experimental-strip-types /tmp/corr1-audit.mts
+independent schemas: 4 verbatim header lines, each exactly once in ownership-inventory.md
+matrix: 29 documents across Zones/Dependency/Export/Deferred
+[AGREE new] [agree old] Dependency :: baseline | ref:clean new:clean old:clean
+[AGREE new] [MISS old] Dependency :: attack: widened header+delimiter+extra body cell | ref:LOUD new:LOUD old:clean
+[AGREE new] [MISS old] Dependency :: widened header only, bodies at schema width | ref:LOUD new:LOUD old:clean
+[AGREE new] [agree old] Dependency :: narrowed header, bodies at schema width | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [MISS old] Dependency :: renamed middle header cell | ref:LOUD new:LOUD old:clean
+[AGREE new] [MISS old] Dependency :: reordered header | ref:LOUD new:LOUD old:clean
+[AGREE new] [agree old] Dependency :: ordinary excess body cell | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Dependency :: short row missing governed cell | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Dependency :: cleanup: junk-suffixed count | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Zones :: baseline | ref:clean new:clean old:clean
+[AGREE new] [MISS old] Zones :: attack: widened header+delimiter+extra body cell | ref:LOUD new:LOUD old:clean
+[AGREE new] [MISS old] Zones :: renamed trailing prose header | ref:LOUD new:LOUD old:clean
+[AGREE new] [agree old] Zones :: ordinary excess body cell | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Zones :: short row omitting only ungoverned prose | ref:clean new:clean old:clean
+[AGREE new] [agree old] Zones :: short row missing governed cell | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Zones :: cleanup: unquoted root | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Export :: baseline | ref:clean new:clean old:clean
+[AGREE new] [MISS old] Export :: attack: widened header+delimiter+extra body cell | ref:LOUD new:LOUD old:clean
+[AGREE new] [MISS old] Export :: renamed Published? header | ref:LOUD new:LOUD old:clean
+[AGREE new] [agree old] Export :: ordinary excess body cell | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Export :: short row missing governed cell | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Export :: cleanup: publishability prefix | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Deferred :: baseline | ref:clean new:clean old:clean
+[AGREE new] [MISS old] Deferred :: attack: widened header+delimiter+extra body cell | ref:LOUD new:LOUD old:clean
+[AGREE new] [MISS old] Deferred :: renamed rationale header | ref:LOUD new:LOUD old:clean
+[AGREE new] [agree old] Deferred :: ordinary excess body cell | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Deferred :: short row omitting only ungoverned prose | ref:clean new:clean old:clean
+[AGREE new] [agree old] Deferred :: short row missing governed cell | ref:LOUD new:LOUD old:LOUD
+[AGREE new] [agree old] Deferred :: cleanup: appended owner word | ref:clean new:clean old:clean
+downstream real-doc disagreements under new C: []
+downstream decoded-but-false owner reaches consumer: true ["deferred row DX-3 is owned by K1.1 but the document says K1.1 or later"]
+reference-vs-new disagreements: 0; old-vs-reference misses: 10; documents: 29
+
+exit: 0
+
+== the program, quoted in full (it enters no tracked path) ==
+--- /tmp/corr1-audit.mts ---
+/* K10-CORR1-R1-01 independent schema/column-ownership audit.
+ * Covers: physical line -> table discovery -> header/schema validation -> allowed body
+ * arity/column ownership -> per-cell whole decoding -> keyed relation -> downstream comparison.
+ * The reference imports NOTHING from inventory-oracle.ts and takes no arity from any candidate
+ * header: schemas are verbatim header lines read out of ownership-inventory.md at run time.
+ * Run from the repo root: node --experimental-strip-types /tmp/corr1-audit.mts
+ */
+import { execSync } from "node:child_process";
+import { readFile, writeFile, rm } from "node:fs/promises";
+import { resolve } from "node:path";
+
+const ROOT = process.cwd();
+const ORACLE = "tests/conformance/architecture/inventory-oracle.ts";
+const TMP = "tests/conformance/architecture/__tmp_reviewed_oracle_b.ts";
+const REVIEWED_C = "76ce938074ffa910fbd74374e388ba8d226af4c6";
+
+const oldSource: string = execSync(`git show ${REVIEWED_C}:${ORACLE}`, { cwd: ROOT, encoding: "utf8" });
+await writeFile(resolve(ROOT, TMP), oldSource, "utf8");
+try {
+  const NewOracle = await import(resolve(ROOT, ORACLE));
+  const OldOracle = await import(resolve(ROOT, TMP));
+  const { loadWorkspace } = await import(resolve(ROOT, "tests/conformance/architecture/module-graph.ts"));
+  const { ZONES, DEFERRED_EXTRACTIONS } = await import(resolve(ROOT, "tests/conformance/architecture/boundary-policy.ts"));
+
+  const real: string = await readFile(resolve(ROOT, "docs/development/work/K1.0/ownership-inventory.md"), "utf8");
+
+  // ---- independent schemas: verbatim header lines, uniqueness-checked ----
+  const canonicalHeaders = [
+    "| Zone id | Roots | Owner and status |",
+    "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |",
+    "| Package | Exported subpaths | Published? |",
+    "| Id | Current path | Disposition | Owner | Why it is assigned there |",
+  ];
+  for (const h of canonicalHeaders) {
+    const n = real.split(h).length - 1;
+    if (n !== 1) throw new Error(`independent schema header not unique/found: ${h} x${n}`);
+  }
+  console.log(`independent schemas: ${canonicalHeaders.length} verbatim header lines, each exactly once in ownership-inventory.md`);
+
+  // ---- independent cell splitter (GFM: optional edge pipes, \| escapes, SPACE/TAB trim) ----
+  const splitCells = (line: string): string[] => {
+    const parts: string[] = [];
+    let cur = "";
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === "|") {
+        let bs = 0;
+        for (let j = i - 1; j >= 0 && line[j] === "\\"; j--) bs++;
+        if (bs % 2 === 0) { parts.push(cur); cur = ""; continue; }
+      }
+      cur += line[i];
+    }
+    parts.push(cur);
+    let s = 0, e = parts.length;
+    if (line.startsWith("|")) s = 1;
+    if (line.endsWith("|")) {
+      let bs = 0;
+      for (let j = line.length - 2; j >= 0 && line[j] === "\\"; j--) bs++;
+      if (bs % 2 === 0) e = parts.length - 1;
+    }
+    return parts.slice(s, e).map((c) => c.replace(/\\\|/g, "|").replace(/^[ \t]+/, "").replace(/[ \t]+$/, ""));
+  };
+  const isDelim = (cells: readonly string[]): boolean => cells.length > 0 && cells.every((c) => /^:?-+:?$/.test(c));
+
+  // ---- independent discovery: section by exact ## title, header+delim arity match, body to blank ----
+  interface Table { header: string[]; body: string[][] }
+  const discover = (doc: string, title: string, next: string): Table[] => {
+    const lines = doc.split(/\r\n|\r|\n/);
+    const idx = (t: string) => lines.findIndex((l) => l === `## ${t}`);
+    const start = idx(title), end = idx(next);
+    if (start === -1) return [];
+    const stop = end === -1 ? lines.length : end;
+    const tables: Table[] = [];
+    let i = start + 1;
+    let open: { header: string[]; body: string[][] } | null = null;
+    const close = () => { if (open) { tables.push(open); open = null; } };
+    while (i < stop) {
+      const line = lines[i]!;
+      if (line.trim() === "") { close(); i++; continue; }
+      if (/^#{1,6}( |$)/.test(line.trimStart()) || line.startsWith("```") || line.startsWith(">")) { close(); i++; continue; }
+      if (open) { open.body.push(splitCells(line.replace(/^[ \t]+/, "").replace(/[ \t]+$/, ""))); i++; continue; }
+      if (!line.includes("|")) { i++; continue; }
+      const h = splitCells(line.replace(/^[ \t]+/, "").replace(/[ \t]+$/, ""));
+      const dLine = lines[i + 1] ?? "";
+      const d = splitCells(dLine.replace(/^[ \t]+/, "").replace(/[ \t]+$/, ""));
+      if (dLine.trim() !== "" && d.length === h.length && isDelim(d)) { open = { header: h, body: [] }; i += 2; continue; }
+      i++;
+    }
+    close();
+    return tables;
+  };
+
+  // ---- independent whole-cell decoders (regex/round-trip style, not index walks) ----
+  const singleSpan = (cell: string): string | undefined => {
+    const m = /^`([^`]+)`$/.exec(cell);
+    return m ? m[1] : undefined;
+  };
+  const spanList = (cell: string): string[] | undefined => {
+    const parts = cell.split(",");
+    const out: string[] = [];
+    for (const p of parts) {
+      const t = singleSpan(p.replace(/^[ \t]+/, "").replace(/[ \t]+$/, ""));
+      if (t === undefined || out.includes(t)) return undefined;
+      out.push(t);
+    }
+    return out.length > 0 ? out : undefined;
+  };
+  const count = (cell: string): number | undefined => {
+    if (!/^(0|[1-9][0-9]*)$/.test(cell)) return undefined;
+    const n = Number(cell);
+    return Number.isSafeInteger(n) ? n : undefined;
+  };
+  const edge = (cell: string, dash: boolean): string[] | undefined => {
+    if (cell === "nothing" || (dash && cell === "—")) return [];
+    const l = spanList(cell);
+    return l === undefined ? undefined : [...l].sort();
+  };
+  const published = (cell: string): boolean | undefined =>
+    cell === "Yes" ? true : cell === "No" || cell === "No (private)" ? false : undefined;
+
+  interface RefVerdict { loud: boolean; notes: string[]; relation: Record<string, unknown> }
+  const judge = (tableName: string, schema: string[], governedWidth: number, decode: (cells: string[]) => unknown, doc: string, title: string, next: string): RefVerdict => {
+    const notes: string[] = [];
+    const relation: Record<string, unknown> = {};
+    const tables = discover(doc, title, next);
+    if (tables.length === 0) { notes.push("missing table"); return { loud: true, notes, relation }; }
+    const [gov, ...further] = tables;
+    if (gov!.header.length !== schema.length || !gov!.header.every((c, i) => c === schema[i])) {
+      notes.push(`header must be [${schema.join(" | ")}] but is [${gov!.header.join(" | ")}]`);
+    }
+    const seen = new Set<string>();
+    for (const cells of gov!.body) {
+      const rawKey = cells[0] ?? "";
+      const key = tableName === "Deferred" ? (/^DX-\d+$/.test(rawKey) ? rawKey : undefined) : singleSpan(rawKey);
+      if (key === undefined) { notes.push(`no key: ${cells.join(" | ")}`); continue; }
+      if (seen.has(key)) { notes.push(`duplicate: ${key}`); continue; }
+      seen.add(key);
+      if (cells.length > schema.length) { notes.push(`excess: ${key} carries ${cells.length}, schema allows ${schema.length}`); continue; }
+      const v = decode(cells);
+      if (v === undefined) { notes.push(`malformed: ${key}`); continue; }
+      relation[key] = v;
+    }
+    for (const f of further) for (const r of [f.header, ...f.body]) notes.push(`further: ${r.join(" | ")}`);
+    void governedWidth;
+    return { loud: notes.length > 0, notes, relation };
+  };
+
+  const schemas: Record<string, { cells: string[]; governed: number; title: string; next: string; decode: (c: string[]) => unknown }> = {
+    Zones: {
+      cells: splitCells(canonicalHeaders[0]!), governed: 2, title: "Zones", next: "Current cross-boundary dependencies",
+      decode: (c) => { const l = spanList(c[1] ?? ""); return l === undefined ? undefined : [...l]; },
+    },
+    Dependency: {
+      cells: splitCells(canonicalHeaders[1]!), governed: 4, title: "Current cross-boundary dependencies", next: "Export ownership",
+      decode: (c) => {
+        const n = count(c[1] ?? ""); const r = edge(c[2] ?? "", true); const t = edge(c[3] ?? "", false);
+        return n === undefined || r === undefined || t === undefined ? undefined : { files: n, reaches: r, thirdParty: t };
+      },
+    },
+    Export: {
+      cells: splitCells(canonicalHeaders[2]!), governed: 3, title: "Export ownership", next: "What the target zone may import",
+      decode: (c) => {
+        const s = spanList(c[1] ?? ""); const p = published(c[2] ?? "");
+        return s === undefined || p === undefined ? undefined : { subpaths: [...s], published: p };
+      },
+    },
+    Deferred: {
+      cells: splitCells(canonicalHeaders[3]!), governed: 4, title: "Deferred extraction and bridge owners", next: "What this packet does not establish",
+      decode: (c) => {
+        const p = singleSpan(c[1] ?? "");
+        if (p === undefined || c[2] === undefined || c[3] === undefined) return undefined;
+        return { currentPath: p, disposition: c[2], owner: c[3] };
+      },
+    },
+  };
+
+  const mutate = (markdown: string, edits: readonly (readonly [string, string])[]): string => {
+    let m = markdown;
+    for (const [from, to] of edits) {
+      if (m.split(from).length - 1 !== 1) throw new Error(`anchor not unique: ${from}`);
+      m = m.replace(from, to);
+    }
+    return m;
+  };
+
+  const ZH = "| Zone id | Roots | Owner and status |"; const ZD = "|---|---|---|";
+  const ZROW = "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **Contains no protocol implementation at this revision.** |";
+  const DH = "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |"; const DD = "|---|---|---|---|";
+  const DROW = "| `target-kernel` | 2 | nothing | nothing |";
+  const EH = "| Package | Exported subpaths | Published? |"; const ED = "|---|---|---|";
+  const EROW = "| `@arrokothi/kernel` | `.` | No (private) |";
+  const FH = "| Id | Current path | Disposition | Owner | Why it is assigned there |"; const FD = "|---|---|---|---|---|";
+  const FROW = "| DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 | Same packet: accept/reject results at the dispatch boundary. |";
+
+  interface Doc { table: string; name: string; edits: readonly (readonly [string, string])[] }
+  const docs: Doc[] = [
+    { table: "Dependency", name: "baseline", edits: [] },
+    { table: "Dependency", name: "attack: widened header+delimiter+extra body cell", edits: [[`${DH}\n${DD}`, `${DH} Extra claim |\n${DD}---|`], [DROW, "| `target-kernel` | 2 | nothing | nothing | `evil-package` |"]] },
+    { table: "Dependency", name: "widened header only, bodies at schema width", edits: [[`${DH}\n${DD}`, `${DH} Extra claim |\n${DD}---|`]] },
+    { table: "Dependency", name: "narrowed header, bodies at schema width", edits: [[`${DH}\n${DD}`, "| Zone | `.ts` files | Reaches `legacy-core` via |\n|---|---|---|"]] },
+    { table: "Dependency", name: "renamed middle header cell", edits: [[`${DH}\n${DD}`, `${DH.replace("Reaches \`legacy-core\` via", "Reaches legacy-core via")}\n${DD}`]] },
+    { table: "Dependency", name: "reordered header", edits: [[`${DH}\n${DD}`, "| Zone | Reaches third-party | Reaches `legacy-core` via | `.ts` files |\n|---|---|---|---|"]] },
+    { table: "Dependency", name: "ordinary excess body cell", edits: [[DROW, `${DROW.slice(0, -1)} | \`evil-package\` |`]] },
+    { table: "Dependency", name: "short row missing governed cell", edits: [[DROW, "| `target-kernel` | 2 | nothing |"]] },
+    { table: "Dependency", name: "cleanup: junk-suffixed count", edits: [[DROW, "| `target-kernel` | 2oops | nothing | nothing |"]] },
+    { table: "Zones", name: "baseline", edits: [] },
+    { table: "Zones", name: "attack: widened header+delimiter+extra body cell", edits: [[`${ZH}\n${ZD}`, `${ZH} Extra claim |\n${ZD}---|`], [ZROW, `${ZROW.slice(0, -1)} | \`packages/evil/src\` |`]] },
+    { table: "Zones", name: "renamed trailing prose header", edits: [[`${ZH}\n${ZD}`, `${ZH.replace("Owner and status", "Owner")}\n${ZD}`]] },
+    { table: "Zones", name: "ordinary excess body cell", edits: [[ZROW, `${ZROW.slice(0, -1)} | \`packages/evil/src\` |`]] },
+    { table: "Zones", name: "short row omitting only ungoverned prose", edits: [[ZROW, "| `target-kernel` | `packages/kernel/src` |"]] },
+    { table: "Zones", name: "short row missing governed cell", edits: [[ZROW, "| `target-kernel` |"]] },
+    { table: "Zones", name: "cleanup: unquoted root", edits: [[ZROW, ZROW.replace("`packages/kernel/src`", "`packages/kernel/src`, packages/evil/src")]] },
+    { table: "Export", name: "baseline", edits: [] },
+    { table: "Export", name: "attack: widened header+delimiter+extra body cell", edits: [[`${EH}\n${ED}`, `${EH} Extra claim |\n${ED}---|`], [EROW, "| `@arrokothi/kernel` | `.` | No (private) | `sneaky-subpath` |"]] },
+    { table: "Export", name: "renamed Published? header", edits: [[`${EH}\n${ED}`, `${EH.replace("Published?", "Published")}\n${ED}`]] },
+    { table: "Export", name: "ordinary excess body cell", edits: [[EROW, "| `@arrokothi/kernel` | `.` | No (private) | `sneaky-subpath` |"]] },
+    { table: "Export", name: "short row missing governed cell", edits: [[EROW, "| `@arrokothi/kernel` | `.` |"]] },
+    { table: "Export", name: "cleanup: publishability prefix", edits: [[EROW, "| `@arrokothi/kernel` | `.` | Yes, but only in theory |"]] },
+    { table: "Deferred", name: "baseline", edits: [] },
+    { table: "Deferred", name: "attack: widened header+delimiter+extra body cell", edits: [[`${FH}\n${FD}`, `${FH} Extra claim |\n${FD}---|`], [FROW, `${FROW.slice(0, -1)} | \`evil-claim\` |`]] },
+    { table: "Deferred", name: "renamed rationale header", edits: [[`${FH}\n${FD}`, `${FH.replace("Why it is assigned there", "Rationale")}\n${FD}`]] },
+    { table: "Deferred", name: "ordinary excess body cell", edits: [[FROW, `${FROW.slice(0, -1)} | \`evil-claim\` |`]] },
+    { table: "Deferred", name: "short row omitting only ungoverned prose", edits: [[FROW, "| DX-3 | `packages/core/src/util/result.ts` | migratable | K1.1 |"]] },
+    { table: "Deferred", name: "short row missing governed cell", edits: [[FROW, "| DX-3 | `packages/core/src/util/result.ts` | migratable |"]] },
+    { table: "Deferred", name: "cleanup: appended owner word", edits: [[FROW, FROW.replace("| K1.1 |", "| K1.1 or later |")]] },
+  ];
+
+  const prodOf = (oracle: typeof NewOracle, table: string, doc: string): { loud: boolean; relation: Record<string, unknown> } => {
+    if (table === "Dependency") {
+      const { rows, unreadable } = oracle.parseDependencyTable(doc);
+      const relation: Record<string, unknown> = {};
+      for (const [k, v] of rows) relation[k] = { files: v.files, reaches: [...v.reaches].sort(), thirdParty: [...v.thirdParty].sort() };
+      return { loud: unreadable.length > 0, relation };
+    }
+    const parsed = oracle.parseInventory(doc);
+    const bucket = table === "Zones" ? parsed.zones : table === "Export" ? parsed.packages : parsed.deferred;
+    const relation: Record<string, unknown> = {};
+    for (const [k, v] of bucket as Map<string, unknown>) relation[k] = v;
+    const loud = parsed.unreadable.some((m: string) => m.startsWith(`${table} `));
+    return { loud, relation };
+  };
+
+  console.log(`matrix: ${docs.length} documents across Zones/Dependency/Export/Deferred`);
+  let refNewBad = 0;
+  let oldRefBad = 0;
+  const norm = (r: Record<string, unknown>): string => JSON.stringify(r, Object.keys(r).sort());
+  for (const d of docs) {
+    const doc = mutate(real, d.edits);
+    const s = schemas[d.table]!;
+    const ref = judge(d.table, s.cells, s.governed, s.decode, doc, s.title, s.next);
+    const prod = prodOf(NewOracle, d.table, doc);
+    const old = prodOf(OldOracle, d.table, doc);
+    const agreeLoud = ref.loud === prod.loud;
+    // Relations must match even on loud documents: loudness says *something* is wrong, but the
+    // recorded remainder must still be exactly what the independent schema owns — no more, no less.
+    const agreeRel = norm(ref.relation) === norm(prod.relation);
+    const ok = agreeLoud && agreeRel;
+    if (!ok) refNewBad++;
+    const oldOk = old.loud === ref.loud && (ref.loud || norm(old.relation) === norm(ref.relation));
+    if (!oldOk) oldRefBad++;
+    console.log(`[${ok ? "AGREE" : "DISAGREE"} new] [${oldOk ? "agree" : "MISS"} old] ${d.table} :: ${d.name} | ref:${ref.loud ? "LOUD" : "clean"} new:${prod.loud ? "LOUD" : "clean"} old:${old.loud ? "LOUD" : "clean"}`);
+    if (!ok) {
+      console.log(`    ref notes: ${JSON.stringify(ref.notes)}`);
+      console.log(`    ref relation: ${JSON.stringify(ref.relation)}`);
+      console.log(`    new relation: ${JSON.stringify(prod.relation)}`);
+    }
+  }
+  // non-vacuity + downstream: the real document is clean and agrees with the executable
+  // policy under the new C, and a decoded-but-false value still reaches the consumer.
+  const workspace = await loadWorkspace(ROOT);
+  const newDis = NewOracle.inventoryDisagreements(
+    NewOracle.parseInventory(real),
+    { zones: ZONES, deferred: DEFERRED_EXTRACTIONS },
+    workspace,
+  );
+  console.log(`downstream real-doc disagreements under new C: ${JSON.stringify(newDis)}`);
+  const ownerDoc = mutate(real, [[FROW, FROW.replace("| K1.1 |", "| K1.1 or later |")]]);
+  const ownerDis = NewOracle.inventoryDisagreements(
+    NewOracle.parseInventory(ownerDoc),
+    { zones: ZONES, deferred: DEFERRED_EXTRACTIONS },
+    workspace,
+  );
+  const ownerSeen = ownerDis.some((m: string) => /deferred row DX-3 is owned by K1\.1 but the document says K1\.1 or later/.test(m));
+  console.log(`downstream decoded-but-false owner reaches consumer: ${ownerSeen} ${JSON.stringify(ownerDis)}`);
+  if (newDis.length !== 0 || !ownerSeen) throw new Error("downstream check failed");
+  console.log(`reference-vs-new disagreements: ${refNewBad}; old-vs-reference misses: ${oldRefBad}; documents: ${docs.length}`);
+  if (refNewBad !== 0) throw new Error("audit failed");
+} finally {
+  await rm(resolve(ROOT, TMP), { force: true });
+}
+--- end /tmp/corr1-audit.mts ---
