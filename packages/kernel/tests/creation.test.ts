@@ -344,6 +344,59 @@ describe("K1.1-C1 the key is scoped, and the scope comes from authentication", (
     }
   });
 
+  test("K11-R2-VAL-02 creation identity and replay agree under a capture-time Object.keys replacement", () => {
+    const kernel = coordinator();
+    const author = caller("app-a", "tenant-a");
+    const realKeys = Object.keys;
+    // The payload reads coherently (descriptor 1, read 1) while installing a live-global
+    // replacement that would make `{a:1}` serialize as `{}`. Review-04's H5 bound the wrong
+    // bytes here, so a later logically different request could collide under one identity.
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "a") {
+          (Object as unknown as Record<string, unknown>).keys = () => [];
+          return 1;
+        }
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    let created: { executionId: string; initialEventId: string; replayed: boolean };
+    try {
+      created = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({ creationKey: "ambient-keys", initialInput: { kind: "k", payload: sneaky as never } }),
+        ),
+      );
+    } finally {
+      Object.keys = realKeys;
+    }
+    assert.equal(created!.replayed, false);
+    const view = accepted(kernel.inspect(author, created!.executionId));
+    assert.deepEqual(view.mailbox[0]?.payload, { a: 1 }, "retained content is the snapshot, not {}");
+    const retained = canonicalize(view.mailbox[0]?.payload);
+    assert.ok(retained.ok);
+    assert.equal(retained.value.canonical, '{"a":1}', "retained inspection re-canonicalizes to the bound bytes");
+
+    // Identity proves it too: a fresh plain spelling of the same logical value replays (it would
+    // conflict had identity bound `{}`), while different content under the key still conflicts.
+    const replay = accepted(
+      kernel.createExecution(
+        author,
+        createRequest({ creationKey: "ambient-keys", initialInput: { kind: "k", payload: { a: 1 } as never } }),
+      ),
+    );
+    assert.equal(replay.replayed, true, "exact replay finds the same Execution by canonical identity");
+    assert.equal(replay.executionId, created!.executionId);
+    const conflict = refused(
+      kernel.createExecution(
+        author,
+        createRequest({ creationKey: "ambient-keys", initialInput: { kind: "k", payload: { a: 2 } as never } }),
+      ),
+    );
+    assert.equal(conflict.classification, "duplicate_conflict");
+  });
+
   test("the payload cannot supply or change the producer namespace", () => {
     const kernel = coordinator();
     const impersonating = {

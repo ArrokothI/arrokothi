@@ -47,29 +47,42 @@ export interface CreationKeyId {
 }
 
 /**
+ * Load-time `Object.freeze`: receipts are minted after caller-owned values have been observed,
+ * and a capture-time side effect can replace the global before the mint runs. The runtime
+ * immutability claim (K11-R2-EVID-01) must not depend on that global.
+ */
+const PrimordialObjectFreeze = Object.freeze;
+
+/**
  * Keys for the Kernel's own lookup tables, and for comparing multi-part content identities.
  *
  * Each part is length-prefixed rather than joined with a separator, so no choice of caller text can
  * make two different identities collide: `("ab", "c")` and `("a", "bc")` produce different keys
  * whatever characters they contain. Identity comparison is over the parts; this is only their
  * storage spelling.
+ *
+ * Built with an index loop and string concatenation, not `Array.prototype.map`/`join`: identity
+ * is packed after caller observation in the same tick, and a capture-time side effect can replace
+ * those prototype methods before packing runs. Packing must be a function only of the parts.
  */
-export const packIdentity = (parts: readonly string[]): string =>
-  parts
-    .map((part) => {
-      // The length prefix is what makes the packing injective, and it only means anything for text.
-      // A non-string part would stringify to something like `[object Object]` with an undefined
-      // length, so two different parts could pack identically and one request could be mistaken for
-      // another. Every caller-supplied identity part is refused as a malformed value before it
-      // reaches here; a part arriving from the host's trusted authentication boundary that is not
-      // text is a programming error at that boundary, and is raised as one rather than silently
-      // producing a colliding key (K11-R3-ID-02).
-      if (typeof part !== "string") {
-        throw new TypeError(`identity parts must be text; received ${part === null ? "null" : typeof part}`);
-      }
-      return `${part.length}:${part}`;
-    })
-    .join("");
+export const packIdentity = (parts: readonly string[]): string => {
+  let out = "";
+  for (let index = 0; index < parts.length; index += 1) {
+    const part = parts[index] as string;
+    // The length prefix is what makes the packing injective, and it only means anything for text.
+    // A non-string part would stringify to something like `[object Object]` with an undefined
+    // length, so two different parts could pack identically and one request could be mistaken for
+    // another. Every caller-supplied identity part is refused as a malformed value before it
+    // reaches here; a part arriving from the host's trusted authentication boundary that is not
+    // text is a programming error at that boundary, and is raised as one rather than silently
+    // producing a colliding key (K11-R3-ID-02).
+    if (typeof part !== "string") {
+      throw new TypeError(`identity parts must be text; received ${part === null ? "null" : typeof part}`);
+    }
+    out += `${part.length}:${part}`;
+  }
+  return out;
+};
 
 export const inputIdKey = (id: InputId): string => packIdentity([id.producerNamespace, id.destination, id.requestKey]);
 export const creationKeyIdKey = (id: CreationKeyId): string => packIdentity([id.producerNamespace, id.scope, id.requestKey]);
@@ -124,7 +137,7 @@ const BOUNDARY_PREFIX: Record<ReceiptBoundary, string> = {
  * retained (K11-R2-EVID-01).
  */
 export const mintReceipt = (boundary: ReceiptBoundary, position: number): Receipt =>
-  Object.freeze({
+  PrimordialObjectFreeze({
     boundary,
     token: `${BOUNDARY_PREFIX[boundary]}:${position}`,
     position,

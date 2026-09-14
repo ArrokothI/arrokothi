@@ -124,6 +124,58 @@ describe("K1.1-C4 what one dispatch intent pins", () => {
     );
   });
 
+  test("K11-R4-DISP-01 the batch bound is observed once: a 1,1,0 shifting getter selects the validated bound", () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const created = started(kernel);
+    withInputs(kernel, created.executionId, ["c1", "c2"]);
+
+    // Caller-owned state: validates as 1, then shifts to 0 for selection. The old triple read
+    // (`isInteger`, `< 1`, `slice`) accepted the request and reserved an empty prefix.
+    let reads = 0;
+    const shifting = {
+      get bound(): number {
+        reads += 1;
+        return reads <= 2 ? 1 : 0;
+      },
+    };
+    const result = accepted(kernel.dispatch(author, created.executionId, shifting as never));
+    assert.equal(reads, 1, "one dispatch request has one observed batch bound");
+    assert.deepEqual(result.batch, [created.initialEventId], "the exact value validated is the exact value used for selection");
+    const view = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual(view.activation?.batch, [created.initialEventId]);
+  });
+
+  test("K11-R4-DISP-01 validation uses the primordial integer test even if the observation pollutes it", () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const created = started(kernel);
+    const realIsInteger = Number.isInteger;
+    const shifting = {
+      get bound(): unknown {
+        (Number as unknown as Record<string, unknown>).isInteger = () => true;
+        return "2";
+      },
+    };
+    let result: ReturnType<typeof kernel.dispatch>;
+    try {
+      result = kernel.dispatch(author, created.executionId, shifting as never);
+    } finally {
+      (Number as unknown as Record<string, unknown>).isInteger = realIsInteger;
+    }
+    assert.equal(result!.ok, false, "a non-integer bound is refused despite the polluted validator");
+    assert.equal(!result!.ok && result!.error.classification, "invalid_batch_bound");
+    assert.equal(accepted(kernel.inspect(author, created.executionId)).state, "READY", "and no exchange was opened");
+  });
+
+  test("K11-R4-DISP-01 a non-object envelope is refused as an invalid bound, not thrown out of the boundary", () => {
+    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
+    const created = started(kernel);
+    for (const options of [null, undefined, 3, "1"]) {
+      const result = kernel.dispatch(author, created.executionId, options as never);
+      assert.equal(result.ok, false, `${String(options)} is refused`);
+      assert.equal(!result.ok && result.error.classification, "invalid_batch_bound");
+    }
+    assert.equal(accepted(kernel.inspect(author, created.executionId)).state, "READY", "and no exchange was opened");
+  });
   test("the bound selects an acceptance-order prefix and must be at least one", () => {
     for (const [bound, expected] of [
       [1, 1],
@@ -432,6 +484,50 @@ describe("K1.1-C5 ordinary redelivery is the same exchange", () => {
     );
     assert.equal(refusal.classification, "malformed_value");
     assert.deepEqual(driver.seen, [], "no Activation was built from a value with two readings");
+  });
+
+  test("K11-R2-VAL-02 Activation, redelivery and inspection carry exactly the value whose bytes were bound", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver });
+    const realKeys = Object.keys;
+    // The initial input reads coherently while installing the review-04 replacement. Creation,
+    // dispatch, redelivery and inspection must then all agree on `{a:1}` with bytes `{"a":1}`.
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "a") {
+          (Object as unknown as Record<string, unknown>).keys = () => [];
+          return 1;
+        }
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    let created: { executionId: string; initialEventId: string };
+    try {
+      created = accepted(
+        kernel.createExecution(
+          author,
+          createRequest({ creationKey: "ambient-keys-dispatch", initialInput: { kind: "k", payload: sneaky as never } }),
+        ),
+      );
+    } finally {
+      Object.keys = realKeys;
+    }
+    accepted(kernel.dispatch(author, created!.executionId, { bound: 1 }));
+    const redelivered = accepted(kernel.redeliver(author, created!.executionId));
+    assert.equal(redelivered.redelivered, true);
+
+    const first = driver.seen[0];
+    const second = driver.seen[1];
+    const inspected = accepted(kernel.inspect(author, created!.executionId));
+    assert.equal(second, first, "redelivery re-sends the same Activation object");
+    assert.deepEqual(first?.events[0]?.payload, { a: 1 }, "the Activation carries the retained snapshot, not {}");
+    assert.equal(first?.events[0]?.payload, inspected.mailbox[0]?.payload, "Activation and inspection share the one retained structure");
+    assert.deepEqual(redelivered.batch, [created!.initialEventId]);
+    for (const projection of [first?.events[0]?.payload, inspected.mailbox[0]?.payload]) {
+      const again = canonicalize(projection);
+      assert.ok(again.ok);
+      assert.equal(again.value.canonical, '{"a":1}', "every projection re-canonicalizes to the bytes that bound it");
+    }
   });
 
   test("K11-R2-VAL-02 Activation, redelivery and inspection agree under ambient toJSON pollution", () => {

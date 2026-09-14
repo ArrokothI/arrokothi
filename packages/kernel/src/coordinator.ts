@@ -63,6 +63,31 @@ import { err, ok, type Result } from "./result.ts";
 import { refuseUnsupportedSurface } from "./unsupported.ts";
 import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue } from "./values.ts";
 
+/**
+ * Load-time references used on paths that run after caller-owned state has been observed.
+ *
+ * A capture-time side effect (installed while `canonicalize` observes a hostile value) can
+ * replace `Number.isInteger` or `Array.prototype` methods before the validation below runs in
+ * the same tick. The dispatch-bound decision and the refusal formatters therefore use only
+ * these references — and index loops with index assignment rather than `map`/`join`/`push` —
+ * so an observed-then-validated field cannot be steered between its validation and its use
+ * (K11-R4-DISP-01) and a refusal cannot be turned into a leaked exception.
+ */
+const PrimordialNumberIsInteger = Number.isInteger;
+const PrimordialArrayIsArray = Array.isArray;
+
+/** Single-observation append for refusal issue lists (see the note above). */
+const appendIssue = (target: ValueIssue[], issue: ValueIssue): void => {
+  target[target.length] = issue;
+};
+
+/** Multi-append without spread iteration or `push` (both consult ambient state). */
+const appendIssues = (target: ValueIssue[], extra: readonly ValueIssue[]): void => {
+  for (let index = 0; index < extra.length; index += 1) {
+    target[target.length] = extra[index] as ValueIssue;
+  }
+};
+
 // -- Requests and accepted answers -------------------------------------------
 
 /** The content of one input Event, independent of which boundary accepts it. */
@@ -268,14 +293,26 @@ interface AcceptedInput {
 }
 
 /** Re-locates a root's issues under the field name the caller used. */
-const located = (issues: readonly ValueIssue[], label: string): ValueIssue[] =>
-  issues.map((issue) => ({
-    ...issue,
-    path: issue.path === "" ? label : issue.path.startsWith("[") ? `${label}${issue.path}` : `${label}.${issue.path}`,
-  }));
+const located = (issues: readonly ValueIssue[], label: string): ValueIssue[] => {
+  const out: ValueIssue[] = [];
+  for (let index = 0; index < issues.length; index += 1) {
+    const issue = issues[index] as ValueIssue;
+    const path = issue.path === "" ? label : issue.path.startsWith("[") ? `${label}${issue.path}` : `${label}.${issue.path}`;
+    out[out.length] = { ...issue, path };
+  }
+  return out;
+};
 
 /** Renders issues into one reason a person can act on. */
-const explain = (issues: readonly ValueIssue[]): string => issues.map((issue) => `${issue.path} ${issue.code}`).join("; ");
+const explain = (issues: readonly ValueIssue[]): string => {
+  let out = "";
+  for (let index = 0; index < issues.length; index += 1) {
+    const issue = issues[index] as ValueIssue;
+    if (index > 0) out += "; ";
+    out += `${issue.path} ${issue.code}`;
+  }
+  return out;
+};
 
 /**
  * One identity-bearing request field, which has to be text before it can name anything.
@@ -297,13 +334,13 @@ const explain = (issues: readonly ValueIssue[]): string => issues.map((issue) =>
  */
 function acceptIdentityText(value: unknown, label: string, issues: ValueIssue[]): value is string {
   if (typeof value !== "string") {
-    const received = value === null ? "null" : Array.isArray(value) ? "array" : typeof value;
-    issues.push({ path: label, code: "unsupported_form", message: `expected text that can name a request, received ${received}` });
+    const received = value === null ? "null" : PrimordialArrayIsArray(value) ? "array" : typeof value;
+    appendIssue(issues, { path: label, code: "unsupported_form", message: `expected text that can name a request, received ${received}` });
     return false;
   }
   const checked = canonicalize(value);
   if (!checked.ok) {
-    issues.push(...located(checked.issues, label));
+    appendIssues(issues, located(checked.issues, label));
     return false;
   }
   return true;
@@ -322,7 +359,7 @@ function acceptInputContent(content: InputContent, prefix: string): Result<Accep
   // to the identity-text rule rather than only to the boundary-value rules.
   const kindOk = acceptIdentityText(kindObserved, `${prefix}kind`, issues);
   const payload = canonicalize(payloadObserved);
-  if (!payload.ok) issues.push(...located(payload.issues, `${prefix}payload`));
+  if (!payload.ok) appendIssues(issues, located(payload.issues, `${prefix}payload`));
 
   let subscriptionClass: string | null = null;
   if (hasSubscription) {
@@ -374,21 +411,23 @@ function acceptCreationContent(
     ["progressCodec", codecObserved],
   ];
   let scalarsOk = true;
-  for (const [label, value] of scalars) {
-    if (!acceptIdentityText(value, label, issues)) scalarsOk = false;
+  // Index loop, not destructuring iteration: `for...of` consults the ambient `Symbol.iterator`.
+  for (let scalarIndex = 0; scalarIndex < scalars.length; scalarIndex += 1) {
+    const scalar = scalars[scalarIndex] as [string, unknown];
+    if (!acceptIdentityText(scalar[1], scalar[0], issues)) scalarsOk = false;
   }
   const authorityObserved: unknown = (request as { authorityContext?: unknown }).authorityContext;
   const initialObserved: unknown = (request as { initialInput?: unknown }).initialInput;
   const authorityContext = canonicalize(authorityObserved);
-  if (!authorityContext.ok) issues.push(...located(authorityContext.issues, "authorityContext"));
+  if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, "authorityContext"));
   const initialInput =
     initialObserved !== undefined && initialObserved !== null && typeof initialObserved === "object"
       ? acceptInputContent(initialObserved as InputContent, "initialInput.")
       : (() => {
-          issues.push({ path: "initialInput", code: "unsupported_form", message: "expected input content" });
+          appendIssue(issues, { path: "initialInput", code: "unsupported_form", message: "expected input content" });
           return err([] as ValueIssue[]) as Result<AcceptedInput, ValueIssue[]>;
         })();
-  if (!initialInput.ok) issues.push(...initialInput.error);
+  if (!initialInput.ok) appendIssues(issues, initialInput.error);
 
   if (!scalarsOk || !authorityContext.ok || !initialInput.ok || issues.length > 0) return err(issues);
   const definitionRevision = definitionObserved as string;
@@ -425,11 +464,11 @@ export class ExecutionCoordinator {
 
   constructor(options: CoordinatorOptions) {
     const capacity = options.mailboxCapacity ?? DEFAULT_MAILBOX_CAPACITY;
-    if (!Number.isInteger(capacity) || capacity < 1) {
+    if (!PrimordialNumberIsInteger(capacity) || (capacity as number) < 1) {
       // A configuration error, not a protocol refusal: creation accepts its initial input as part of
       // one atomic decision, so a capacity below one would declare a limit the first Execution
       // necessarily breaks.
-      throw new RangeError(`mailboxCapacity must be an integer of at least 1, received ${String(capacity)}`);
+      throw new RangeError(`mailboxCapacity must be an integer of at least 1, received ${typeof capacity === "number" ? `${capacity}` : typeof capacity}`);
     }
     this.#driver = options.driver;
     this.#mailboxCapacity = capacity;
@@ -479,7 +518,11 @@ export class ExecutionCoordinator {
     const keyOk = acceptIdentityText(creationKeyObserved, "creationKey", keyIssues);
     const content = acceptCreationContent(request, scope);
     if (!keyOk || !content.ok) {
-      const issues = [...keyIssues, ...(content.ok ? [] : content.error)];
+      // No spread: spread iteration consults the ambient `Symbol.iterator`, which content
+      // observation in the same tick may have replaced.
+      const issues: ValueIssue[] = [];
+      appendIssues(issues, keyIssues);
+      if (!content.ok) appendIssues(issues, content.error);
       return err(this.#refusal("malformed_value", `creation content is not an acceptable boundary value: ${explain(issues)}`, null));
     }
     const creationKeyText = creationKeyObserved as string;
@@ -592,7 +635,9 @@ export class ExecutionCoordinator {
     const keyOk = acceptIdentityText(requestKeyObserved, "requestKey", keyIssues);
     const content = acceptInputContent(request, "");
     if (!keyOk || !content.ok) {
-      const issues = [...keyIssues, ...(content.ok ? [] : content.error)];
+      const issues: ValueIssue[] = [];
+      appendIssues(issues, keyIssues);
+      if (!content.ok) appendIssues(issues, content.error);
       return err(this.#refusal("malformed_value", `input content is not an acceptable boundary value: ${explain(issues)}`, record));
     }
     const requestKey = requestKeyObserved as string;
@@ -632,7 +677,12 @@ export class ExecutionCoordinator {
       );
     }
 
-    const unacknowledged = record.mailbox.filter((entry) => entry.disposition.kind === "queued").length;
+    // Counted with an index loop: content observation above runs caller traps in the same tick,
+    // which can replace `Array.prototype.filter` before this line runs.
+    let unacknowledged = 0;
+    for (let index = 0; index < record.mailbox.length; index += 1) {
+      if ((record.mailbox[index] as MailboxEntry).disposition.kind === "queued") unacknowledged += 1;
+    }
     if (unacknowledged >= this.#mailboxCapacity) {
       return err(
         this.#refusal(
@@ -687,15 +737,28 @@ export class ExecutionCoordinator {
     const record = this.#visible(caller, executionId);
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
 
-    if (!Number.isInteger(options.bound) || options.bound < 1) {
+    // K11-R4-DISP-01: `options` is caller-owned JavaScript state. The bound is observed exactly
+    // once into a local; validation, refusal reporting and batch selection all use that one
+    // observation. Reading `options.bound` three times lets a shifting getter validate as `1`
+    // and select as `0`, accepting a request under one value and committing under another.
+    // The integer test itself is the load-time reference: the observation (a getter) can replace
+    // the global before validation runs in the same tick. A non-object envelope has no bound to
+    // observe and is refused the same way, rather than throwing a `TypeError` out of the boundary.
+    const boundObserved: unknown =
+      options !== null && typeof options === "object" ? (options as { bound?: unknown }).bound : undefined;
+    if (!PrimordialNumberIsInteger(boundObserved) || (boundObserved as number) < 1) {
+      // Only numbers are interpolated: anything else failing validation may be an object whose
+      // `toString` trap throws, and the refusal reason must not invoke it.
+      const received = typeof boundObserved === "number" ? `${boundObserved}` : typeof boundObserved;
       return err(
         this.#refusal(
           "invalid_batch_bound",
-          `batch bound must be an integer of at least 1, received ${String(options.bound)}; a Runtime dispatched with an unbounded-below batch cannot be told why it was activated`,
+          `batch bound must be an integer of at least 1, received ${received}; a Runtime dispatched with an unbounded-below batch cannot be told why it was activated`,
           record,
         ),
       );
     }
+    const bound = boundObserved as number;
     if (isTerminal(record.state)) {
       return err(this.#refusal("terminal_destination", `Execution ${record.executionId} ended as ${record.state} and is not dispatched`, record));
     }
@@ -709,7 +772,16 @@ export class ExecutionCoordinator {
       );
     }
 
-    const selected = record.mailbox.filter((entry) => entry.disposition.kind === "queued").slice(0, options.bound);
+    // The batch is the acceptance-order prefix of exactly the validated length: the same `bound`
+    // observation that passed validation selects, with no second read of the envelope. The prefix
+    // is built with an index loop rather than `filter`/`slice` so a getter side effect that
+    // replaced an `Array.prototype` method before selection runs cannot change which Events the
+    // validated bound names.
+    const selected: MailboxEntry[] = [];
+    for (let index = 0; index < record.mailbox.length && selected.length < bound; index += 1) {
+      const entry = record.mailbox[index] as MailboxEntry;
+      if (entry.disposition.kind === "queued") selected[selected.length] = entry;
+    }
     record.activationsMinted += 1;
     const activationId = `${record.executionId}/activation-${record.activationsMinted}`;
     const receipt = this.#mint("dispatch_intent");

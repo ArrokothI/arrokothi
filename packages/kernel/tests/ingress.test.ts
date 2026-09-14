@@ -467,6 +467,34 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
     assert.equal(conflict.classification, "duplicate_conflict");
   });
 
+  test("K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement", () => {
+    const kernel = coordinator();
+    const { executionId } = start(kernel);
+    const realKeys = Object.keys;
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "a") {
+          (Object as unknown as Record<string, unknown>).keys = () => [];
+          return 1;
+        }
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    let first: { eventId: string; replayed: boolean };
+    try {
+      first = accepted(kernel.submitInput(author, input(executionId, { requestKey: "ambient-keys", payload: sneaky as never })));
+    } finally {
+      Object.keys = realKeys;
+    }
+    assert.equal(first!.replayed, false);
+    assert.deepEqual(view(kernel, executionId).mailbox[1]?.payload, { a: 1 });
+    const replay = accepted(kernel.submitInput(author, input(executionId, { requestKey: "ambient-keys", payload: { a: 1 } })));
+    assert.equal(replay.replayed, true, "exact replay returns the recorded disposition by canonical identity");
+    assert.equal(replay.eventId, first!.eventId);
+    const conflict = refused(kernel.submitInput(author, input(executionId, { requestKey: "ambient-keys", payload: { a: 2 } })));
+    assert.equal(conflict.classification, "duplicate_conflict");
+  });
+
   test("K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing", () => {
     const kernel = coordinator();
     const { executionId } = start(kernel);

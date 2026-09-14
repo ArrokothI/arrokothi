@@ -729,3 +729,87 @@ describe("K11-R3-LIMIT-01 over-limit arrays refuse without work proportional to 
     assert.deepEqual(issueCodes(target), ["too_many_entries"]);
   });
 });
+
+describe("K11-R2-VAL-02 serializer execution environment is caller-independent (round-6)", () => {
+  test("a capture-time one-shot Object.keys replacement cannot change canonical bytes", () => {
+    const realKeys = Object.keys;
+    // Coherent on the one reading capture takes (descriptor 1, read 1), while the read installs
+    // a live-global replacement as its side effect. Review-04's witness bound `{}` here while
+    // retaining `{a:1}`; the restored serializer environment must bind `{"a":1}`.
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "a") {
+          (Object as unknown as Record<string, unknown>).keys = () => [];
+          return 1;
+        }
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    assert.equal(Object.getOwnPropertyDescriptor(sneaky, "a")?.value, 1, "owns 1");
+    let result: ReturnType<typeof canonicalize>;
+    try {
+      result = canonicalize(sneaky);
+      assert.notEqual(Object.keys, realKeys, "the replacement was live across the boundary call");
+    } finally {
+      Object.keys = realKeys;
+    }
+    assert.ok(result!.ok, "the coherent reading is still acceptable");
+    assert.equal(result!.ok && result!.value.canonical, '{"a":1}', "bytes describe the snapshot, not the replacement");
+    assert.deepEqual(result!.ok && result!.value.value, { a: 1 });
+    const again = canonicalize(result!.ok && result!.value.value);
+    assert.ok(again.ok);
+    assert.equal(again.ok && again.value.canonical, '{"a":1}', "retained state re-canonicalizes to its identity");
+  });
+
+  test("a capture-time replacement that makes Object.keys throw neither leaks nor diverts bytes", () => {
+    const realKeys = Object.keys;
+    const sneaky = new Proxy({ a: 1 } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "a") {
+          (Object as unknown as Record<string, unknown>).keys = () => {
+            throw new Error("keys boom");
+          };
+          return 1;
+        }
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    let threw = false;
+    let result: ReturnType<typeof canonicalize> | undefined;
+    try {
+      result = canonicalize(sneaky);
+    } catch {
+      threw = true;
+    } finally {
+      Object.keys = realKeys;
+    }
+    // The restored environment neutralizes a configurable replacement, so the valid value is
+    // still accepted with its own bytes; what must never happen is the ambient exception
+    // escaping the Kernel boundary (review-04's `escaped: keys boom`) or bytes for `{}`.
+    assert.equal(threw, false, "the Kernel boundary contains serializer failure; it does not propagate the ambient exception");
+    assert.ok(result && result.ok, "the coherent reading is still acceptable");
+    assert.equal(result && result.ok && result.value.canonical, '{"a":1}');
+    assert.deepEqual(result && result.ok && result.value.value, { a: 1 });
+  });
+
+  test("a capture-time Array.prototype.join replacement cannot change canonical bytes either", () => {
+    const realJoin = Array.prototype.join;
+    const sneaky = new Proxy({ list: [1, 2] } as Record<string, unknown>, {
+      get(inner, property, receiver): unknown {
+        if (property === "list") {
+          (Array.prototype as unknown as Record<string, unknown>).join = () => "";
+        }
+        return Reflect.get(inner, property, receiver);
+      },
+    });
+    let result: ReturnType<typeof canonicalize>;
+    try {
+      result = canonicalize(sneaky);
+      assert.notEqual(Array.prototype.join, realJoin, "the replacement was live across the boundary call");
+    } finally {
+      (Array.prototype as unknown as Record<string, unknown>).join = realJoin;
+    }
+    assert.ok(result!.ok);
+    assert.equal(result!.ok && result!.value.canonical, '{"list":[1,2]}', "array bytes survive prototype replacement too, not only Object.keys");
+  });
+});

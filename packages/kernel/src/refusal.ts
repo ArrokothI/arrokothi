@@ -76,9 +76,16 @@ export const UNKNOWN_DESTINATION_REASON = "no Execution with that identifier is 
  * single construction site makes that structurally impossible rather than relying on every exit
  * path to remember to copy.
  */
+/**
+ * Load-time `Object.freeze`: refusals are minted after caller-owned values have been observed,
+ * and a capture-time side effect can replace the global before the mint runs. The runtime
+ * immutability claim (K11-R2-EVID-01) must not depend on that global.
+ */
+const PrimordialObjectFreeze = Object.freeze;
+
 export const mintRefusal = (
   classification: RefusalClassification,
   reason: string,
   position: number,
   executionId: string | null,
-): RefusalRecord => Object.freeze({ classification, reason, position, executionId });
+): RefusalRecord => PrimordialObjectFreeze({ classification, reason, position, executionId });
