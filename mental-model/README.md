@@ -130,8 +130,9 @@ Everything in these pages is specification. Each Layer-3 mechanism page opens wi
 **Status** line saying whether it is a required Kernel contract, a per-Driver obligation
 or an optional Runtime design, and which development gate introduces it. Those gates —
 K1, K2, R1 and so on — are the milestones in the
-[development roadmap](../docs/development/001-current-status-and-roadmap.md). Only K0 is
-complete, so a page naming any later gate describes work that has not been built yet.
+[development roadmap](../docs/development/001-current-status-and-roadmap.md). Only the K0
+gate is complete (accepted K1.0 work is structural preparation, not a K1 gate), so a page
+naming any later gate describes protocol behavior that has not been built yet.
 
 So far K0.1 settled the protocol decisions, K0.2 supplied public controls, and K1.0
 prepared a private, refusal-only target package that implements none of the protocol.

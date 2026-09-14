@@ -11,12 +11,12 @@ shipped behavior.
 
 ## A first example
 
-Before the rules: the Runtime finishes a draft and proposes `await` with one dependency
-alternative matching a correction message from the editor, no deadline set. The Execution
-enters `WAITING`. When the editor's correction arrives as an Event, it matches that
-alternative, the wait retires, and the next Activation's batch carries that Event. Had a
-deadline been set instead and no correction arrived in time, the wait would retire on
-expiry with a timeout Event in the batch instead. The sections below give the exact
+Before the rules: the Runtime finishes a draft and proposes `await` with one input
+subscription matching a correction from the editor, no deadline set. The Execution
+enters `WAITING`. When the editor's correction arrives as an application-input Event, it
+matches that subscription, the wait retires, and the next Activation's batch carries that
+Event. Had a deadline been set instead and no correction arrived in time, the wait would
+retire on expiry with a timeout Event in the batch instead. The sections below give the exact
 selector, eligibility and batch-selection rules this example simplifies; read the [small
 distinguishing examples](#small-distinguishing-examples) near the end alongside them.
 
