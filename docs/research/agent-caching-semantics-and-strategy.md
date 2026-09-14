@@ -1,10 +1,10 @@
 # Agent Caching: Semantics, External Patterns, and ArrokothI Design Guidance
 
-> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q6 and the [detail-design map](../detail-design/README.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
+> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q6 and the [mental-model reference index](../../mental-model/reference.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
 
 > **Status: focused non-canonical research note.**
 >
-> This document compares external caching patterns and derives implementation guidance for ArrokothI. It does **not** redefine current kernel semantics. Canonical ownership remains with [authority detail](../detail-design/authority-and-actions.md), [state/memory detail](../detail-design/memory-and-state.md), [Kernel](../kernel.md), and the other documents indexed by [`../README.md`](../README.md).
+> This document compares external caching patterns and derives implementation guidance for ArrokothI. It does **not** redefine current kernel semantics. Canonical ownership remains with [authority detail](../../mental-model/mechanisms/authority.md), [state/memory detail](../../mental-model/mechanisms/state.md), [Kernel](../../mental-model/kernel.md), and the other owners in the [reference index](../../mental-model/reference.md).
 >
 > Research date: **2026-09-02**.
 
@@ -58,7 +58,7 @@ For ArrokothI this leads to a strong default direction:
 6. **Authority and memory-read caches must fail closed on uncertainty.** A stale Active View can leak existence even if final Effect authorization later denies execution; a stale memory view can leak data directly.
 7. **Instrument first.** Cache hit rate, saved work, invalidation causes, provider cached tokens, and cold-path cost should justify each cache.
 
-This fits the active 0.8.x efficiency guidance in [`../development/004-efficiency-and-developer-ergonomics.md`](../development/legacy/2026-09-baseline/004-efficiency-and-developer-ergonomics.md): optimize the mechanism at the owning layer, preserve semantic equivalence, and do not collapse architectural distinctions merely because one implementation is expensive.
+This fits the active 0.8.x efficiency guidance in [archived efficiency guidance](../legacy/development/2026-09-baseline/004-efficiency-and-developer-ergonomics.md): optimize the mechanism at the owning layer, preserve semantic equivalence, and do not collapse architectural distinctions merely because one implementation is expensive.
 
 ---
 

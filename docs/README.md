@@ -1,43 +1,31 @@
-# ArrokothI architecture
+# Documentation
 
-Start with [the mental model](mental-model.md). The canonical documents describe the target architecture; current 0.8.x implementation remains behind it.
+Start with [the mental model](../mental-model/README.md) for the logical architecture,
+then follow its reading path to Kernel, Runtime, Driver and Deployment. The
+[reference index](../mental-model/reference.md) locates canonical vocabulary and exact
+mechanisms. The [roadmap mapping](../mental-model/roadmap.md) connects accepted work to
+the Layer-3 pages it should maintain.
 
-| Document | Sole detailed owner |
+| Material | Purpose |
 |---|---|
-| [Mental model](mental-model.md) | Whole-system picture and vocabulary map |
-| [Kernel](kernel.md) | Execution lifecycle, Activation/Outcome acceptance, Events/waits, Effects/authority, history and recovery semantics |
-| [Execution](execution.md) | Runtime/Driver, Agent/Workflow, progress/checkpoint meaning, native tools/context/memory and integration fidelity |
-| [Deployment](deployment.md) | Processes, physical trust/isolation, resources, protocol placement and operating profiles |
+| [Mental model](../mental-model/README.md) | Progressive target architecture and specification graph |
+| [Development](development/README.md) | Implemented baseline, active roadmap, policy and acceptance evidence |
+| [Guides](guides/README.md) | Currently implemented SDK/application behavior |
+| [Future questions](future-plan.md) | Unresolved hypotheses; not another release sequence |
+| [Research](research/README.md) | Conditional experiments and analysis |
+| [Architecture strategy study](architecture-strategy-study/README.md) | Historical research evidence |
+| [Legacy](legacy/README.md) | Retired architecture and development documents, kept as evidence only |
 
-The Kernel owns acceptance and governance, the Runtime owns how work is done, and deployment owns physical enforcement. A concept has one canonical owner; other documents link instead of redefining it. Add a Kernel concept only when a demonstrated correctness obligation requires it. Opaque work still needs an explicit recovery contract; opacity never establishes replay safety.
+Target semantics and historical implementation are different. K0/K1.0 acceptance does
+not mean the asynchronous target Kernel or production native recovery has shipped.
+Use the [status ledger](development/007-work-packets.md) and
+[implemented baseline](development/002-implemented-kernel-baseline.md) for actual claims.
 
-## Detail design
+Nothing under [`legacy/`](legacy/README.md) is current authority, including pages that still
+call themselves canonical. Historical records may link into it to show what they reviewed;
+current guidance must not.
 
-[The detail-design map](detail-design/README.md) routes twelve focused pages: Execution protocol;
-principals/authority/consent; action lifecycle/delivery; recovery/compatibility; children/communication;
-Runtime composition; state/memory; context/projections; Runtime integration; interoperability;
-resource lifetime/isolation; and evidence/observability.
-
-These pages preserve implementation-useful semantics beneath the three owners. They distinguish
-required boundary contracts from optional Runtime designs, name the relevant development slices,
-and include counterexamples and practical prior-art links. They do not claim new implementation.
-The [detail-design review](development/005-detail-design-review.md) records legacy knowledge disposition
-and changes to the target contract. Current design is self-contained after removal of the legacy directory.
-
-## Supporting material
-
-| Supporting material | Role |
-|---|---|
-| [Development](development/README.md) | Active roadmap, implemented baseline and evidence; not an alternative architecture |
-| [Architecture review](development/004-architecture-review.md) | Decisions, migration consequences and pinned prior-art navigation |
-| [Future plan](future-plan.md) | Unresolved/evidence-gated work only; not the active roadmap |
-| [Architecture strategy study](architecture-strategy-study/README.md) | Historical research/evidence that informed the redesign |
-| [Research](research/README.md) | Conditional hypotheses, not a release checklist |
-| [Guides](guides/README.md) | Implemented SDK/application behavior; distinguish it from the target |
-
-The legacy mental-model directory and old root architecture files have been removed. Historical
-versions remain in Git history; the [detail-design review](development/005-detail-design-review.md)
-records the current homes of retained concepts. `agent-engineering/` was also retired: its reusable
-principles are covered by detail design, future questions and the relevant implementation guides.
-
-When sources disagree, the canonical owner decides target meaning; detail design expands that meaning without overriding it; development records what is implemented; historical research/guides/legacy material do not override current architecture.
+[Source ownership](../mental-model/sources.md#ownership-and-precedence) explains document
+precedence. Exact concept/mechanism owners supply Layer-3 detail; upper layers summarize
+without independently redefining it. Sealed decision/review records retain historical
+paths and candidate status as evidence, not competing current navigation.

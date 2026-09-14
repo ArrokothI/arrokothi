@@ -13,28 +13,17 @@ ArrokothI separates a provider-neutral **Kernel** from opaque **Execution Runtim
 
 ## Source of truth
 
-Read [`docs/README.md`](../../../docs/README.md) and [`docs/mental-model.md`](../../../docs/mental-model.md), then the one detailed owner:
+Read [the overview](../../../mental-model/README.md), then the relevant major
+abstraction and [reference index](../../../mental-model/reference.md). Canonical
+definitions live in `mental-model/concepts/`; exact interactions in
+`mental-model/mechanisms/`. The index and `mental-model/sources.md` identify ownership,
+accepted decision coverage and intentionally unselected choices.
 
-- `docs/kernel.md` for Kernel/Execution semantics;
-- `docs/execution.md` for Runtime/Driver/Agent/Workflow semantics;
-- `docs/deployment.md` for process topology, trust/isolation, embedding, and protocol placement.
-
-Use `docs/detail-design/README.md` for implementation-oriented depth:
-
-- `execution-protocol.md`: identities, receipts, batches, waits/deadlines and terminal obligations;
-- `authority-and-actions.md` + `action-lifecycle.md`: principals, consent/revocation, admission, certainty and delivery;
-- `recovery-and-compatibility.md`: native/Kernel failure windows, checkpoint pinning and version/refusal;
-- `composition-and-communication.md`: children, reply ownership, finite budgets and supervision;
-- `runtime-composition.md`, `memory-and-state.md`, `context-and-projections.md`: optional Runtime authoring/state/context;
-- `runtime-integration.md` + `interoperability.md`: native fidelity and protocol/schema mappings;
-- `resources-and-isolation.md` + `evidence-and-observability.md`: physical lifetime, cleanup, inspection and attribution.
-
-Each detail page expands its canonical owner and labels target/optional status and roadmap gates.
-Current design must remain understandable without legacy files. `docs/future-plan.md` preserves
-unresolved hypotheses; it is not another implementation sequence.
-
-The legacy mental-model directory was removed; current detail design preserves retained concepts,
-and Git history supplies historical comparison. Current implementation still contains legacy names and mechanisms; consult `docs/development/` for migration status rather than promoting implementation observations into architecture.
+For accepted work, use `mental-model/roadmap.md` as expected maintenance scope and inspect
+additional affected dependencies. Maintain Layer 3; change Layer 1/2 only for changes to
+the whole-system model or major abstractions. Preserve sealed historical evidence under
+008. Current code/API names are implementation observations, not target definitions.
+Optional reference Runtime concepts are not mandatory Kernel entities or release promises.
 
 ## Procedure
 

@@ -6,7 +6,7 @@ implementation sequence.
 These notes are **non-canonical working material**. They may compare external systems, inventory a
 protocol surface, record hypotheses, or frame experiments. They do not change ArrokothI semantics,
 commit a roadmap item, or authorize implementation. Canonical ownership remains with the documents
-listed in [`../README.md`](../README.md); accepted implementation decisions remain under
+listed in the [reference index](../../mental-model/reference.md); accepted implementation decisions remain under
 [`../development/`](../development/).
 
 ## Status vocabulary
@@ -22,7 +22,7 @@ listed in [`../README.md`](../README.md); accepted implementation decisions rema
 
 The [active roadmap](../development/001-current-status-and-roadmap.md) owns horizon placement.
 The [future questions](../future-plan.md) select current hypotheses and negative gates; the
-[detail-design map](../detail-design/README.md) holds accepted boundary rules and optional Runtime designs.
+[mental-model reference index](../../mental-model/reference.md) holds accepted boundary rules and optional Runtime designs.
 Machine/ABI and JIT prototype sequences remain hypotheses; a 2.0 Machine is not committed.
 The [strategy study](../architecture-strategy-study/README.md) independently reviews these directions.
 

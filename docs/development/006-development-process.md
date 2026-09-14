@@ -13,10 +13,15 @@ reviewer; record actual session/model and access.
 A separate session is required for acceptance. Model choice alone does not establish independence
 or access to GitHub, private files or a shell. The implementer cannot supply its own acceptance.
 
-Architecture precedence: mental model and the relevant canonical owner → detail design → development
-contract/status → implementation observations. Historical studies, examples and agent reports cannot
-override architecture. If normative sources conflict, block the affected contract for an owner
-decision; do not silently pick the rule the implementation happens to satisfy.
+Architecture precedence: the current [mental-model reference](../../mental-model/README.md)
+(specifically each canonical Layer-3 concept/mechanism owner) → development contract/status →
+implementation observations. Layer 1/2 summarize those owners at deliberately lower detail; they
+are not independent places to redefine a rule. This relocation preserves previously accepted
+architecture and K0.1 decisions, with [provenance](../../mental-model/sources.md). Historical studies,
+examples and agent reports cannot override it. Resolve disagreements through governing accepted
+records when possible; if normative conflict remains, block the affected contract for an owner
+decision rather than silently selecting implementation behavior. This documentation rewrite does
+not authorize an architecture change or relax the baseline governing its own review.
 
 One authoritative status lives in the table in 007. Store packet material under
 `docs/development/work/<packet-id>/`: `contract.md`, `implementation-01.md`, `review-01.md`, and
@@ -247,6 +252,23 @@ and credentials; absence is BLOCKED_EXTERNAL, never fake-model proof of live qua
 Apply AGENTS.md's third-party review before reuse. Record exact source/version, inspected terms,
 use method, required obligations and unresolved issues in the report; use “none” when no new reuse
 occurred. A task profile does not exempt applicable repository policy.
+
+## Maintaining the mental-model reference
+
+Accepted work maintains Layer 3: add newly defined concepts/mechanisms, update changed semantics,
+replace superseded current descriptions, fill placeholders that are now defined, and inspect related
+incoming/outgoing dependencies. Start at [the packet mapping](../../mental-model/roadmap.md); it is
+expected ownership, not a whitelist. Keep one canonical definition per project-specific term and
+update the reference index and links. Change Layer 1/2 only for a whole-system or major-abstraction
+change. Record accepted sources, changed owners, dependencies checked, examples and link validation.
+
+[Prompt C](009-universal-prompts.md) includes this check in delegated final cleanup. Documentation
+content remains payload: updates absent from the reviewed candidate require a scoped documentation
+correction with new C/H and independent review before merge-ready, rather than being smuggled into
+H..A or self-accepted as administrative cleanup. Keep that documentation dependency separate from
+invalidation of an otherwise sound accepted implementation. Substantive defects use the existing
+reopening policy. Preserve sealed reports/reviews/handoffs/integration/cleanup and decision evidence;
+update live navigation or append superseding notes instead of retroactively changing their record.
 
 ## Owner learning loop
 

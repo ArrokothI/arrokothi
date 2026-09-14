@@ -33,7 +33,7 @@ The [third neutral canary artifact](../../../benchmark/docs/benchmark-v3-neutral
 
 This establishes that the frozen ArrokothI release can be used by a real coding agent through the tested construction path. It does **not** establish live runtime model quality, hidden-case superiority, better native Agent behavior, production isolation of ArrokothI, or comparative advantage over any upstream system. The benchmark checkpoint is a laboratory checkpoint, not an ArrokothI recovery test.
 
-The framework used by that artifact predates the current SDK HEAD even though the package version remains 0.8.1. The root benchmark README/readiness narrative and ArrokothI's [external validation note](../development/legacy/2026-09-baseline/008-external-validation-gates.md) do not fully reflect the later artifact. Consult exact build/commit evidence rather than inferring a campaign result from a routing document. This study deliberately does not reproduce evaluator-private cases or turn hidden judgments into implementation advice.
+The framework used by that artifact predates the current SDK HEAD even though the package version remains 0.8.1. The root benchmark README/readiness narrative and ArrokothI's [external validation note](../legacy/development/2026-09-baseline/008-external-validation-gates.md) do not fully reflect the later artifact. Consult exact build/commit evidence rather than inferring a campaign result from a routing document. This study deliberately does not reproduce evaluator-private cases or turn hidden judgments into implementation advice.
 
 ## Where the current protocol is insufficient
 

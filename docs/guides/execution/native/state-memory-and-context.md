@@ -1,7 +1,7 @@
 # State, memory, and context
 
-[Guide home](README.md). Current target semantics are owned by [Execution](../../../execution.md), with
-[current memory/state detail](../../../detail-design/memory-and-state.md). This page describes the
+[Guide home](README.md). Current target semantics are owned by [Runtime](../../../../mental-model/runtime.md), with
+[current memory/state detail](../../../../mental-model/mechanisms/state.md). This page describes the
 implemented 0.8.x storage/context surface; use [the wiring reference](current-authoring-surface.md#structured-memory-wiring) to implement it.
 
 ## Choose by ownership and meaning
@@ -110,5 +110,5 @@ notes are not a Kernel checkpoint or proof of durable recovery.
 
 Keep tool purposes distinct and descriptions concrete. Return bounded relevant fields and actionable
 errors; preserve raw evidence separately from model-facing summaries. Start with a small useful context
-and measure discovery/compaction against it. [Context design](../../../detail-design/context-and-projections.md)
+and measure discovery/compaction against it. [Context design](../../../../mental-model/mechanisms/context.md)
 owns invocation bindings and freshness; [future experiments](../../../future-plan.md) cover advanced strategies.

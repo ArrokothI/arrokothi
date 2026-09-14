@@ -32,7 +32,7 @@ than auditing every line or deriving Kernel changes from private cases. Frozen a
 as historical evidence, not current target behavior.
 
 The upstream review inspected the specific implementations and tests linked in
-[Execution](../execution.md#prior-art-navigation), [Kernel](../kernel.md) and [Deployment](../deployment.md).
+[Execution](../legacy/architecture/execution.md#prior-art-navigation), [Kernel](../legacy/architecture/kernel.md) and [Deployment](../legacy/architecture/deployment.md).
 Upstream tests and live models were not run. Dify API imports `graphon==0.7.0`; `dify-agent` separately
 pins `graphon==0.5.2` and Pydantic AI dependencies. The absent dependency internals were not audited.
 This is architectural source evidence, not a current upstream compatibility or performance claim.

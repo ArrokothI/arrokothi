@@ -191,12 +191,12 @@ the owner handoff should give you the concrete change, what its evidence proves,
 the independent verdict, integration status and the next release or hold. Ask for the underlying
 review only when a finding, tradeoff or unsupported claim affects your decision.
 
-Your planned detail-design reading can proceed alongside this preparation. For understanding E1 and
-K1, prioritize [Execution protocol](../detail-design/execution-protocol.md), then
-[Evidence and observability](../detail-design/evidence-and-observability.md), and the relevant parts
-of [Recovery and compatibility](../detail-design/recovery-and-compatibility.md). The agents still
-must read the governing detail pages before implementing their contracts. You do not have to finish
-every optional Runtime design before understanding or releasing E1 preparation.
+Your planned mental-model reading can proceed alongside this preparation. For understanding E1 and
+K1, prioritize [Execution protocol](../../mental-model/mechanisms/execution-cycle.md), then
+[Evidence and observability](../../mental-model/mechanisms/evidence.md), and the relevant parts
+of [Recovery and compatibility](../../mental-model/mechanisms/recovery.md). The agents still
+must read the governing concept and mechanism pages before implementing their contracts. You do not
+have to finish every optional Runtime design before understanding or releasing E1 preparation.
 
 The universal prompts are available in [ArrokothI's role launchers](009-universal-prompts.md) and
 [benchmark's role launchers](https://github.com/ArrokothI/benchmark/blob/ea37331f1e337b5c1106bb6c26784707f306ae0c/docs/development/009-role-launchers.md).

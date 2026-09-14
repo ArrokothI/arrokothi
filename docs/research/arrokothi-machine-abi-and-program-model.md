@@ -1,19 +1,19 @@
 # ArrokothI Machine, ABI, and Program Model
 
-> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q8 and the [detail-design map](../detail-design/README.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
+> **Current disposition (2026-09-08):** see [future questions](../future-plan.md) Q8 and the [mental-model reference index](../../mental-model/reference.md). The sketches and captured protocol/provider observations below remain research. Old Harness/resumption/memory ownership and prototype sequences do not override the opaque Runtime target or schedule work.
 
 > **Status: non-canonical 2.0 research direction.**
 >
 > This note records a post-1.0 architectural hypothesis. It does **not** change current kernel
 > semantics, does not authorize a 1.x implementation rewrite, and does not supersede the canonical
-> owners in [`../README.md`](../README.md).
+> owners in the [reference index](../../mental-model/reference.md).
 >
 > The intended sequencing is deliberate: first make the 1.0 line coherent, usable, testable, and
 > practically successful; then use that working system plus benchmark evidence to redesign the core
 > conceptual documents for 2.0 as a coordinated whole.
 >
 > Related current research: [`jit-capability-namespace-and-context-scouts.md`](jit-capability-namespace-and-context-scouts.md).
-> Current canonical security ownership remains in [Deployment](../deployment.md).
+> Current canonical security ownership remains in [Deployment](../../mental-model/deployment.md).
 
 ## 1. Executive hypothesis
 
